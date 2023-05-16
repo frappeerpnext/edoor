@@ -1,0 +1,39 @@
+{
+  "name": "frontdesk",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --base=/assets/edoor/frontdesk/ && yarn copy-html-entry",
+    "preview": "vite preview",
+    "copy-html-entry": "cp ../edoor/public/frontdesk/index.html ../edoor/www/frontdesk.html"
+  },
+  "dependencies": {
+    "frappe-js-sdk": "^1.2.3",
+    "idb-keyval": "^6.2.0",
+    "number-format.js": "^2.0.9",
+    "@fullcalendar/core": "^5.11.3",
+    "@fullcalendar/interaction": "^5.11.3",
+    "@fullcalendar/resource-timeline": "^5.11.3",
+    "@fullcalendar/vue3": "^5.11.2",
+    "pm2": "^5.3.0",
+    "primeflex": "^3.3.0",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.29.0",
+    "socket.io": "^4.6.1",
+    "socket.io-client": "^4.6.1",
+    "vue": "^3.2.47",
+    "vue-debounce": "^4.0.0",
+    "vue-promise-dialogs": "^2.0.0",
+    "vue-router": "^4.1.6",
+    "vue2-timeago": "^3.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.23",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.3.2"
+  }
+}

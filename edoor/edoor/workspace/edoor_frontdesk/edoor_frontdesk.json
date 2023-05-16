@@ -1,0 +1,41 @@
+{
+ "charts": [],
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}}]",
+ "creation": "2023-04-27 15:51:56.916990",
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "message",
+ "idx": 0,
+ "label": "eDoor Frontdesk",
+ "links": [],
+ "modified": "2023-05-15 11:33:19.583399",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "eDoor Frontdesk",
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Reservations",
+   "link_to": "Reservation",
+   "stats_filter": "{\"arrival_date\":[\"Timespan\",\"this month\"]}",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Frontdesk",
+   "type": "URL",
+   "url": "http://192.168.10.114:1212/edoor/frontdesk"
+  }
+ ],
+ "title": "eDoor Frontdesk"
+}

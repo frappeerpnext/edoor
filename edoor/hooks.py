@@ -185,3 +185,6 @@ app_license = "MIT"
 # auth_hooks = [
 #	"edoor.auth.validate"
 # ]
+
+# website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
+website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': 'frontdesk'},]

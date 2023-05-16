@@ -1,0 +1,262 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-05-15 11:18:43.673836",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "reservation_type",
+  "property",
+  "reservation",
+  "arrival_date",
+  "arrival_time",
+  "departure_date",
+  "departure_time",
+  "room_types",
+  "rooms",
+  "guest",
+  "guest_name",
+  "guest_phone_number",
+  "guest_email",
+  "adult",
+  "child",
+  "pax",
+  "reservation_status",
+  "reservation_status_color",
+  "is_active_reservation",
+  "rooms_section",
+  "stays"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Reservation Stay Number",
+   "options": "ST.YYYY.-.####"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reservation",
+   "options": "Reservation"
+  },
+  {
+   "fetch_from": "reservation.arrival_date",
+   "fetch_if_empty": 1,
+   "fieldname": "arrival_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Arrival Date"
+  },
+  {
+   "fetch_from": "reservation.departure_date",
+   "fetch_if_empty": 1,
+   "fieldname": "departure_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Departure Date"
+  },
+  {
+   "fetch_from": "reservation.arrival_time",
+   "fetch_if_empty": 1,
+   "fieldname": "arrival_time",
+   "fieldtype": "Time",
+   "label": "Arrival Time"
+  },
+  {
+   "fetch_from": "reservation.departure_time",
+   "fetch_if_empty": 1,
+   "fieldname": "departure_time",
+   "fieldtype": "Time",
+   "label": "Departure Time"
+  },
+  {
+   "fieldname": "room_types",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Types"
+  },
+  {
+   "fieldname": "rooms",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Rooms"
+  },
+  {
+   "fetch_from": "reservation.guest",
+   "fetch_if_empty": 1,
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "reservation.adult",
+   "fetch_if_empty": 1,
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Adult"
+  },
+  {
+   "fetch_from": "reservation.child",
+   "fetch_if_empty": 1,
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Child"
+  },
+  {
+   "fetch_from": "reservation.pax",
+   "fetch_if_empty": 1,
+   "fieldname": "pax",
+   "fieldtype": "Int",
+   "label": "Pax"
+  },
+  {
+   "fieldname": "reservation_status",
+   "fieldtype": "Link",
+   "label": "Reservation Status",
+   "options": "Reservation Status"
+  },
+  {
+   "fetch_from": "reservation_status.color",
+   "fieldname": "reservation_status_color",
+   "fieldtype": "Data",
+   "label": "Reservation Status Color"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fetch_if_empty": 1,
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Guest Name"
+  },
+  {
+   "fetch_from": "guest.phone_number",
+   "fetch_if_empty": 1,
+   "fieldname": "guest_phone_number",
+   "fieldtype": "Data",
+   "label": "Guest Phone Number"
+  },
+  {
+   "fetch_from": "guest.email_address",
+   "fetch_if_empty": 1,
+   "fieldname": "guest_email",
+   "fieldtype": "Data",
+   "label": "Guest Email"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_status.is_active_reservation",
+   "fieldname": "is_active_reservation",
+   "fieldtype": "Check",
+   "label": "Is Active Reservation"
+  },
+  {
+   "fieldname": "rooms_section",
+   "fieldtype": "Section Break",
+   "label": "Rooms"
+  },
+  {
+   "fieldname": "stays",
+   "fieldtype": "Table",
+   "label": "Rooms",
+   "options": "Reservation Stay Room"
+  },
+  {
+   "fetch_from": "reservation.reservation_type",
+   "fieldname": "reservation_type",
+   "fieldtype": "Data",
+   "label": "Reservation Type"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-16 15:37:36.654169",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Reservation Stay",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Reservation Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Reservation User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

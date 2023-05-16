@@ -1,0 +1,26 @@
+{
+ "content": null,
+ "creation": "2023-04-29 21:23:19.975587",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2023-04-29 21:23:19.975587",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "pos",
+ "owner": "Administrator",
+ "page_name": "pos",
+ "roles": [
+  {
+   "role": "Sales User"
+  },
+  {
+   "role": "Sales Manager"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "ePOS"
+}
