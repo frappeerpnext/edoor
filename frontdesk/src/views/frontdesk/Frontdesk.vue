@@ -1,33 +1,30 @@
 <template lang="">
     <div>
         <div style="max-width: 100%; height: 1000px" class="p-6">
-            <div>
+            <div class="pb-16">
+                <NewFITReservationButton/>
                 <div class="relative" aria-haspopup="true" aria-controls="overlay_menu">
                     <FullCalendar :options="calendarOptions" class="h-full">
                         <template v-slot:eventContent="{event}">
-
-                            <div class="group relative">
-                                {{ event.title }}
-                                <div class="invisible group-hover:visible absolute bg-blue-600 p-4 rounded-md z-50">
-                                    This is the content that will be shown on hover.
+                                <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
+                                <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
+                                    <table>
+                                        <tbody>
+                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
+                                            <tr><td><div>Reference #: ${event.reference_number || ''}</div></td></tr>
+                                        <tr><td><div>Guest: ${event.title}</div></td></tr>
+                                        <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
+                                        <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
+                                        <tr><td><div>Room: ${event.extendedProps?.adult}</div></td></tr>
+                                        <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>`, escape: true, class: 'event-tooltip' }">
+                                    {{ event.title }}
+                                    
                                 </div>
-                            </div>
-                            
                         </template>
                     </FullCalendar> 
-                    <div class="w-44 absolute pt-2 z-50" :style="{left:eventInfo.left + 'px',top:eventInfo.top+'px'}"  v-if="eventInfo.isShow">
-                        <div class="bg-white border border-gray-300 rounded-sm shadow-lg text-black" v-if="eventInfo.data">
-                            <div class="bg-gray-100 text-lg p-1">{{eventInfo.data.title}}</div>
-                            <div class="p-1 text-sm">
-                                <!-- <p>Ref No : {{eventInfo.data.extendedProps.internal_ref_no}}</p> -->
-                                <p>Start date : {{ moment(eventInfo.data.start).format("MMM DD, YYYY") }}</p>
-                                <p>Start end : {{ moment(eventInfo.data.end).format("MMM DD, YYYY") }}</p>
-                                <!-- <p>Total night : {{eventInfo.data.extendedProps.total_night}}</p>
-                                <p>Adult : {{eventInfo.data.extendedProps.adult}}</p>
-                                <p>Room : {{eventInfo.data.extendedProps.room}}</p> -->
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -40,8 +37,15 @@ import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
+import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
+import { useDialog } from 'primevue/usedialog';
+const frappe = inject('$frappe')
+const call = frappe.call();
 const moment = inject('$moment')
-let loading = ref(false)
+
+const dialog = useDialog();
+
 let showTooltip = ref(false)
 const reservation = ref({})
 let eventInfo = reactive({
@@ -50,45 +54,81 @@ let eventInfo = reactive({
     top: 0,
     data: null
 })
+function dateFormat(date){
+    return moment(date).format("MMM DD, YYYY")
+}
 const calendarOptions = reactive({
     plugins: [interactionPlugin, resourceTimelinePlugin],
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     timeZone: 'UTC',
-    initialView: 'resourceTimelineMonth',
-    resourceGroupField: 'title',
-    //resourceAreaHeaderContent: 'Rooms',
+    initialView: 'resourceTimeline',
+    initialDate: '2023-05-17',
+    dateIncrement: { days: 5 },
+    dayHeaderContent: (args) => {
+        return moment(args.date).format('MMM YYYY');
+    },
+    visibleRange: function (currentDate) {
+        // Generate a new date for manipulating in the next step
+        var startDate = new Date(currentDate.valueOf());
+        var endDate = new Date(currentDate.valueOf());
+
+        // Adjust the start & end dates, respectively
+        startDate.setDate(startDate.getDate() - 1); // One day in the past
+
+        endDate.setDate(endDate.getDate() + 31); // Two days into the future
+
+        // Remove times from start/end
+        startDate = startDate.toISOString().substr(0, 10);
+        endDate = endDate.toISOString().substr(0, 10);
+
+        return { start: startDate, end: endDate };
+    },
     resourceAreaColumns: [
         {
             labelText: 'xxx',
             headerContent: 'Room'
         },
+   
         {
-            field: 'title',
-            cellDidMount: function (arg) {
-                //arg.el.innerHTML +=`<input type="text" value="${arg.fieldValue}" />`;
-            }
-        },
-        {
-            field: 'icon',
+            field: 'housekeeping_status',
             width: 80,
             cellDidMount: function (arg) {
                 if (arg.fieldValue)
-                    arg.el.innerHTML = `<div class="pt-2 pl-1"><img class="inline" src="${arg.fieldValue}" width="25"/></div>`;
+                    arg.el.innerHTML = `<div class="pt-2 pl-1">${arg.fieldValue}</div>`;
 
             },
             cellClassNames: 'area-column-hide-value'
         }
     ],
-    resources: [
-        { id: 'a', title: 'Room A' },
-        { id: 'b', title: 'Room B' },
-        { id: 'c', title: 'Room C' }
-    ],
-    events: [
-        { id: '1', resourceId: 'a', start: '2023-05-01T12:00:00+00:00', end: '2023-05-20T07:00:00', title: 'event 1' },
-        { id: '2', resourceId: 'b', start: '2023-05-06T12:00:00+00:00', end: '2023-05-20T22:00:00', title: 'event 2' },
-        { id: '3', resourceId: 'c', start: '2023-05-06T12:00:00+00:00', end: '2023-05-20T18:00:00', title: 'event 3' }
-    ],
+    resources: function (info, successCallback, failureCallback) {
+
+        call.get('edoor.api.frontdesk.get_room_chart_resource', {
+            property: "propety_1",
+            room_type: "room_type",
+            building: "building"
+        }).then((result) => {
+            console.log(result.message)
+            successCallback(result.message)
+        }).catch((error) => {
+            alert("load data fiale")
+        });
+    },
+    events: function (info, successCallback, failureCallback) {
+
+        call.get('edoor.api.frontdesk.get_room_chart_calendar_event', {
+            start: info.start,
+            end: info.end,
+            property: "propety_1",
+            room_type: "room_type",
+            building: "building"
+        }).then((result) => {
+                successCallback(result.message)
+            })
+            .catch((error) => {
+                alert("load data fiale")
+            });
+    },
+
     selectable: true,
     editable: true,
     resourceAreaWidth: "350px",
@@ -104,6 +144,7 @@ const calendarOptions = reactive({
             day: '2-digit',
         }
     ],
+
     dateClick: (($event) => {
         console.log($event)
     }),
@@ -111,14 +152,12 @@ const calendarOptions = reactive({
         console.log($event)
     }),
     eventClick: ((info) => {
-        this.reservation = info.event.extendedProps.data;
-        this.onChangeModal(true);
+        const data = info.event._def.extendedProps  ;
+        showReservationDetail(data.reservation)
     }),
     eventMouseEnter: (($event) => {
         eventInfo.data = $event.event;
-        // showTooltip.value = true;
-        showTooltip.value.toggle(event);
-        alert(showTooltip.value )
+        // showTooltip.value = true; 
     }),
     eventMouseLeave: (() => {
         showTooltip.value = !showTooltip.value;
@@ -131,41 +170,46 @@ const calendarOptions = reactive({
     }
 
 })
-
-function onMousePointer(event) {
-    var eventDoc, doc, body;
-    event = event || window.event; // IE-ism
-
-    if (event.pageX == null && event.clientX != null) {
-        eventDoc = (event.target && event.target.ownerDocument) || document;
-        doc = eventDoc.documentElement;
-        body = eventDoc.body;
-        event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-        event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
-    }
-    // check screen
-    var screenX = window.innerWidth;
-    var screenY = window.innerHeight;
-    var pageX = event.pageX;
-    var pageY = event.pageY;
-
-    if ((screenX - pageX) < 200)
-        pageX = pageX - 220;
-    if ((screenY - pageY) < 200)
-        pageY = pageY - 220;
-
-    if (eventInfo.isShow) {
-        eventInfo.left = pageX;
-        eventInfo.top = pageY;
-    }
-}
 function onSelected($event) {
     console.log($event)
 }
- 
+
+
+function showReservationDetail(name) {
+    
+    const dialogRef = dialog.open(ReservationDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Reservation Detail',
+            style: {
+                width: '50vw',
+            },
+            maximizable: true,
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true
+        },
+        onClose: (options) => {
+            console.log(options)
+        }
+    });
+}
+
+
+
 </script>
 <style>
-    .fc-h-event {
-        padding: 0;
-    }
+.fc-h-event {
+    padding: 0;
+}
+.fc-event { height: 40px !important; }
+.fc-event-main,
+.fc-event-main > span {
+    display: block;
+    height: 100%;
+}
 </style>

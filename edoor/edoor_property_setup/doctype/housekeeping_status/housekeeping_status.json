@@ -9,7 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "status",
-  "status_color"
+  "status_color",
+  "icon"
  ],
  "fields": [
   {
@@ -26,11 +27,16 @@
    "fieldtype": "Color",
    "in_list_view": 1,
    "label": "Status Color"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-15 19:54:44.758318",
+ "modified": "2023-05-16 17:49:37.290400",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",

@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/assets/edoor/frontdesk/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue</title>
-    <script type="module" crossorigin src="/assets/edoor/frontdesk/assets/index-6eb366f8.js"></script>
-    <link rel="stylesheet" href="/assets/edoor/frontdesk/assets/index-3635ae38.css">
-  </head>
-  <body>
-    <div id="app"></div>
-		<script>window.csrf_token = '{{ csrf_token }}';</script>
-    
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/assets/edoor/frontdesk/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + Vue</title>
+  <style>
+    html,
+    body {
+      background-color: #eff2f7;
+      height: 100%;
+      font-size: var(--font-size);
+      letter-spacing: 0.02rem;
+      overflow-x: hidden;
+      color: var(--text-color);
+      font-weight: var(--primary-font-weight);
+
+    }
+  </style>
+  <script type="module" crossorigin src="/assets/edoor/frontdesk/assets/index-a977d9e1.js"></script>
+  <link rel="stylesheet" href="/assets/edoor/frontdesk/assets/index-bc4e7714.css">
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>window.csrf_token = '{{ csrf_token }}';</script>
+  
+</body>
+
 </html>

@@ -1,14 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + Vue</title>
-  </head>
-  <body>
-    <div id="app"></div>
-		<script>window.csrf_token = '{{ csrf_token }}';</script>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + Vue</title>
+  <style>
+    html,
+    body {
+      background-color: #eff2f7;
+      height: 100%;
+      font-size: var(--font-size);
+      letter-spacing: 0.02rem;
+      overflow-x: hidden;
+      color: var(--text-color);
+      font-weight: var(--primary-font-weight);
+
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>window.csrf_token = '{{ csrf_token }}';</script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
 </html>

@@ -1,0 +1,187 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2023-05-21 11:41:26.295980",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "reservation",
+  "reservation_stay",
+  "room_type_id",
+  "room_type",
+  "room_id",
+  "room_number",
+  "rate_type",
+  "date",
+  "rate",
+  "tax_rule",
+  "discount_type",
+  "discount",
+  "discount_amount",
+  "tax_rule_data",
+  "taxable_amount_1",
+  "taxable_amount_2",
+  "taxable_amount_3",
+  "tax_1_amount",
+  "tax_2_amount",
+  "tax_3_amount",
+  "total_amount",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "label": "Reservation",
+   "options": "Reservation"
+  },
+  {
+   "fieldname": "reservation_stay",
+   "fieldtype": "Link",
+   "label": "Reservation Stay",
+   "options": "Reservation Stay"
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "room_id",
+   "fieldtype": "Link",
+   "label": "Room ID",
+   "options": "Room"
+  },
+  {
+   "fetch_from": "room_id.room_number",
+   "fieldname": "room_number",
+   "fieldtype": "Data",
+   "label": "Room Number"
+  },
+  {
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
+  },
+  {
+   "fieldname": "tax_rule",
+   "fieldtype": "Link",
+   "label": "Tax Rule",
+   "options": "Tax Rule"
+  },
+  {
+   "fieldname": "discount_type",
+   "fieldtype": "Select",
+   "label": "Discount Type",
+   "options": "Percent\nAmount"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Float",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Data",
+   "label": "Discount Amount"
+  },
+  {
+   "fieldname": "tax_rule_data",
+   "fieldtype": "JSON",
+   "label": "Tax Rule Data"
+  },
+  {
+   "fieldname": "taxable_amount_1",
+   "fieldtype": "Currency",
+   "label": "Taxable Amount 1"
+  },
+  {
+   "fieldname": "taxable_amount_2",
+   "fieldtype": "Currency",
+   "label": "Taxable Amount 2"
+  },
+  {
+   "fieldname": "taxable_amount_3",
+   "fieldtype": "Currency",
+   "label": "Taxable Amount 3"
+  },
+  {
+   "fieldname": "tax_1_amount",
+   "fieldtype": "Currency",
+   "label": "Tax 1 Amount"
+  },
+  {
+   "fieldname": "tax_2_amount",
+   "fieldtype": "Currency",
+   "label": "Tax 2 Amount"
+  },
+  {
+   "fieldname": "tax_3_amount",
+   "fieldtype": "Currency",
+   "label": "Tax 3 Amount"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-21 11:53:06.357672",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Reservation Room Rate",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

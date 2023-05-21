@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}}]",
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "docstatus": 0,
  "doctype": "Workspace",
@@ -10,7 +10,7 @@
  "idx": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-05-15 11:33:19.583399",
+ "modified": "2023-05-17 16:13:49.437296",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -27,6 +27,13 @@
    "label": "Reservations",
    "link_to": "Reservation",
    "stats_filter": "{\"arrival_date\":[\"Timespan\",\"this month\"]}",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Business Source",
+   "link_to": "Business Source",
    "type": "DocType"
   },
   {

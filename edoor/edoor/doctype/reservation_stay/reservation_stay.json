@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "reference_number",
   "naming_series",
   "reservation_type",
   "property",
@@ -29,7 +30,12 @@
   "reservation_status_color",
   "is_active_reservation",
   "rooms_section",
-  "stays"
+  "stays",
+  "keyword",
+  "rate_type",
+  "working_day",
+  "working_date",
+  "cashier_shift"
  ],
  "fields": [
   {
@@ -63,6 +69,7 @@
    "label": "Departure Date"
   },
   {
+   "default": "12:00",
    "fetch_from": "reservation.arrival_time",
    "fetch_if_empty": 1,
    "fieldname": "arrival_time",
@@ -70,6 +77,7 @@
    "label": "Arrival Time"
   },
   {
+   "default": "12:00",
    "fetch_from": "reservation.departure_time",
    "fetch_if_empty": 1,
    "fieldname": "departure_time",
@@ -155,6 +163,7 @@
    "label": "Guest Email"
   },
   {
+   "fetch_from": "reservation.property",
    "fieldname": "property",
    "fieldtype": "Link",
    "label": "Property",
@@ -183,11 +192,47 @@
    "fieldname": "reservation_type",
    "fieldtype": "Data",
    "label": "Reservation Type"
+  },
+  {
+   "fetch_from": "reservation.reference_number",
+   "fetch_if_empty": 1,
+   "fieldname": "reference_number",
+   "fieldtype": "Data",
+   "label": "Reference Number"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "Keyword"
+  },
+  {
+   "fetch_from": "reservation.rate_type",
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type"
+  },
+  {
+   "fieldname": "working_day",
+   "fieldtype": "Link",
+   "label": "Working Day",
+   "options": "Working Day"
+  },
+  {
+   "fetch_from": "working_day.posting_date",
+   "fieldname": "working_date",
+   "fieldtype": "Date",
+   "label": "Working Date"
+  },
+  {
+   "fieldname": "cashier_shift",
+   "fieldtype": "Data",
+   "label": "Cashier Shift"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-16 15:37:36.654169",
+ "modified": "2023-05-20 13:02:31.942469",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
@@ -255,6 +300,7 @@
    "write": 1
   }
  ],
+ "search_fields": "reservation,reference_number,guest,guest_name,guest_phone_number,guest_email,room_types,rooms",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

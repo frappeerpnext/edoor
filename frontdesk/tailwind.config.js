@@ -10,7 +10,13 @@ module.exports = {
     fontSize:{
       'xl12':[
         '35px'
-      ]
+      ],
+      base: "12px",
+    },
+    fontFamily: {
+      sans: ['Poppins', 'sans-serif'],
+      serif: ['Poppins', 'serif'],
+      mono: ['Poppins', 'monospace'],
     },
     extend: {
       fontSize: {

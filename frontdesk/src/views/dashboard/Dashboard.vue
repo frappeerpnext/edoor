@@ -1,194 +1,261 @@
 <template>
-    <ProgressBar v-if="isLoading" mode="indeterminate" style="height: 6px"></ProgressBar>
-    <br/>
- 
- 
- <Button label="Today" @click="onShowTodayData()" />
-  <Button label="Tomorrow" @click="onShowTommorowData()" /> 
-  <Calendar v-model="date" @date-select="onDateSelect" dateFormat="dd-mm-yy"/>
- 
-<h1>Dashboard</h1>
-{{  data }} 
-{{ moment(data.working_date).format("dddd") }}
-{{ moment(data.working_date).format("MMMM") }}
-{{ moment(data.working_date).format("DD") }}
-{{ moment(data.working_date).format("yyyy") }}
-<table border="1">
-    <tr>
-        <td style="width: 800px;text-align: center; font-size: 24px;">Arrival ({{ data.arrival }})</td>
-        <td style="width: 800px;text-align: center; font-size: 24px;">Departure ({{ data.departure }})</td>
-    </tr>
+    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3 py-3">
+        <div class="text-start">
+            <div class="font-bold">{{ property.name }}</div>
+            <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
+        </div>
+        <div class="text-center">
+            <Button label="Today" class="w-48 btn-date__t" :class="selected_date == data.working_date ? 'active' : ''"
+                @click="onShowTodayData()" />
+            <Button label="Tomorrow" class="w-48 btn-date__t" :class="selected_date == tomorrow ? 'active' : ''"
+                @click="onShowTommorowData()" />
+            <Calendar v-model="date" class="w-48 btn-calendar__t" @date-select="onDateSelect" dateFormat="dd-mm-yy"
+                showIcon />
+        </div>
+        <div class="text-end flex justify-end">
+            <div class="mr-2">
+                <NewFITReservationButton />
+            </div>
+            <div>
+                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon">
+                    <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
+                </Button>
+            </div>
+        </div>
+    </div>
+    <div class="grid">
+        <div class="col-2">
+            <ComSystemDateKPI :data="data"></ComSystemDateKPI>
+        </div>
+        <div class="col ">
+            <ComPanel title="Today's occupancy">
+                <div class="grid">
+                    <div class="col-6 flex align-items-center justify-content-center">
+                        <ComdonutChart value_doughnut="80"></ComdonutChart>
+                    </div>
+                    <div class="col-5">
+                        <ComChartStatus :value="15" title="Occupied" class="btn-green-edoor"> </ComChartStatus>
+                        <ComChartStatus :value="5" title="Vacant" class="bg-warning-edoor"> </ComChartStatus>
+                        <ComChartStatus :value="20" title="Total rooms" class="btn-sec-edoor"> </ComChartStatus>
+                        <div class="grid mt-3 text-center">
+                            <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
+                            <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
+                        </div>
+                    </div>
+                </div>
+            </ComPanel>
+        </div>
+        <div class="col">
+            <ComPanel title="Today's actions">
+                <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
+                    <ComKPI :value="15" title="Arrival" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Check-in remaining" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Departure" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Check-out remaining" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Pickup" class="bg-warning-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Drop off" class="bg-og-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="15" title="Stayover" class="primary-btn-edoor"> </ComKPI>
+                </div>
+            </ComPanel>
+        </div>
+        <div class="col-2">
+            <ComPanel title="Room Status">
+                <div class="px-1">
+                    <template v-for="(item, index) in data.housekeeping_status" :key="index">
 
-    <tr>
-        <td>
-<iframe  style="height: 500px;margin-top: 5px;" width="100%" :src="arrivalUrl"></iframe>
-        </td>
-        <td>
-     
-<iframe style="height: 500px;margin-top: 5px;" width="100%" :src="departureUrl"></iframe>
-        </td>
-    </tr>
-</table>
-<DynamicDialog  />
+                        <ComDashboardRowStatus :value="item.total" :badgeColor="item.color" :icon="item.icon">{{ item.status
+                        }}
+                        </ComDashboardRowStatus>
+
+                    </template>
+                </div>
+            </ComPanel>
+        </div>
+    </div>
+
+    <div class="px-2 py-2 bg-white mt-2">
+        <TabView class="tabview-custom">
+            <TabPanel>
+                <template #header>
+                    <span>Arrivals</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival
+                    }}</span>
+                </template>
+                <div class="mt-2">
+                    <iframe style="height: 500px;" width="100%" :src="arrivalUrl"></iframe>
+                </div>
+            </TabPanel>
+            <TabPanel>
+                <template #header>
+                    <span>Departures</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure }}</span>
+                </template>
+                <div class="mt-2">
+                    <iframe style="height: 500px;" width="100%" :src="departureUrl"></iframe>
+                </div>
+            </TabPanel>
+            <TabPanel>
+                <template #header>
+                    <span>Stayover</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
+                    }}</span>
+                </template>
+                <div class="mt-2">
+                    <iframe style="height: 500px;" width="100%" :src="inhouseUrl"></iframe>
+                </div>
+            </TabPanel>
+            <TabPanel>
+                <template #header>
+                    <span>Upcoming note</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
+                    }}</span>
+                </template>
+                <div class="mt-2">
+                    <iframe style="height: 500px;" width="100%" :src="inhouseUrl"></iframe>
+                </div>
+            </TabPanel>
+        </TabView>
+    </div>
+    <div class="mt-3">
+    <ComPanel title="Monthly occupancy (May/2023)">
+        <MTDOccupancyChart />
+    </ComPanel>
+    </div>
 </template>
+
 <script setup>
-    
-    import Calendar from 'primevue/calendar';
-    import ProgressBar from 'primevue/progressbar';
-    
-    import { inject,ref, onUnmounted } from '@/plugin'
-    import GuestDetail from "@/views/guest/GuestDetail.vue"
+import ComKPI from './components/ComKPI.vue';
+import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
+import Calendar from 'primevue/calendar';
+import ComdonutChart from './components/ComDonutChart.vue';
+import ComChartStatus from './components/ComChartStatus.vue';
+import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
 
-    const moment = inject("$moment")
-    import { useToast } from "primevue/usetoast";
-    const toast = useToast();
-    
-    import { useDialog } from 'primevue/usedialog';
- 
-    const dialog = useDialog();
+import { inject, ref, onUnmounted } from '@/plugin'
 
+import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
+import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
+import { useToast } from "primevue/usetoast";
+import { useDialog } from 'primevue/usedialog';
+import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
+import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
+const toast = useToast();
+const socket = inject("$socket");
+const moment = inject("$moment")
+const gv = inject("$gv")
 
-    const api = inject('$frappe')
-    const data = ref({})
-    const date = ref(null)
-    const selected_date = ref(null)
-    const arrivalUrl = ref("");
-    const departureUrl = ref("");
-    const isLoading = ref(false)
-    const setting = JSON.parse( localStorage.getItem("setting"))
-    const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" +  setting.backend_port;
- 
-
-    function getArrivalUrl(){
-        let url = serverUrl + "/printview?name=" + localStorage.getItem("current_property") + "&doctype=Business Branch&format=eDoor%20Dashboard%20Arrival%20Guest&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
-        url = url + "&working_date=" + selected_date.value
-        return url;
-        
-    }
-
-    function getDepartureUrl(){
-        let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + localStorage.getItem("current_property") + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
-        url = url + "&working_date=" + selected_date.value
-        return url;
-        
-    }
-
-    function onShowTodayData(){
-     
-        selected_date.value = data.value.working_date
-        date.value =moment(data.value.working_date).format("DD-MM-YYYY")
-        arrivalUrl.value = getArrivalUrl();
-        departureUrl.value = getDepartureUrl()
-        getData()
-    }
-
-    
-    function onShowTommorowData(){
-        const today = moment(data.value.working_date);
-        const tomorrow = today.add(1, 'days');
-        
-        selected_date.value = tomorrow.format("YYYY-MM-DD")
-        date.value =tomorrow.format("DD-MM-YYYY")
-        arrivalUrl.value = getArrivalUrl();
-        departureUrl.value = getDepartureUrl()
-        getData()
-    }
-
-    function onDateSelect(event){
-      
-        selected_date.value =  moment(event).format("YYYY-MM-DD")
-        arrivalUrl.value = getArrivalUrl();
-        departureUrl.value = getDepartureUrl()
-        getData();
-    }
-
-    getData();
-
-
-    function getData(){
-        isLoading.value = true;
-        const call = api.call();
-        call.get('edoor.api.frontdesk.get_dashboard_data',{
-            property:localStorage.getItem("current_property"),
-            date:selected_date.value
-        })
-        .then((result) => 
-        {
-            
-            data.value = result.message
-
-            if(!selected_date.value){ 
-                date.value =moment(data.value.working_date).format("DD-MM-YYYY")
-                selected_date.value = data.value.working_date;
-                arrivalUrl.value = getArrivalUrl();
-                departureUrl.value = getDepartureUrl()
-            }
-       
-            isLoading.value = false;
-
-        })
-        .catch((error) => {
-            toast.add({ severity: 'error', summary: 'Waring', detail:error.exception.split(":")[1], life: 3000 })
-            isLoading.value = false;
-
-        });
-        }
-    
-   
-
-function showGuestDetail(name) {
-    const dialogRef = dialog.open(GuestDetail, {
-        data:{
-            name: name
-        },
-        props: {
-            header: 'Guest Detail',
-            style: {
-                width: '50vw',
-            },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-            modal: true
-        },
-        onClose: (options) => {
-            console.log(options)
-        }
-    });
-}
-
-
-const actionClickHandler = async function (e) {
-    if (e.isTrusted && typeof (e.data) == 'string') {
-
-        const data = e.data.split("|")
-
-        if (data.length > 0) {
-
-            if (data[0] == "view_guest_detail") {
-              
-               showGuestDetail(data[1])
-
-            }else if (data[0] == "view_reservation_stay_detail") {
-                alert(1234)
-            }
-        }
-
-    }
-};
-
-
-window.addEventListener('message', actionClickHandler, false);
-
-
-
-onUnmounted(() => {
-    window.removeEventListener('message', actionClickHandler, false);
+socket.on("RefresheDoorDashboard", (arg) => {
+    console.log(arg)
+    toast.add({ severity: 'info', summary: 'Info', detail: "Dashboard is updated", life: 3000 })
 })
 
 
 
-    
+
+const dialog = useDialog();
+
+const api = inject('$frappe')
+const data = ref({})
+const date = ref(null)
+const selected_date = ref(null)
+const arrivalUrl = ref("");
+const departureUrl = ref("");
+const inhouseUrl = ref("");
+const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+const tomorrow = ref('')
+function getArrivalUrl() {
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format=eDoor%20Dashboard%20Arrival%20Guest&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    url = url + "&working_date=" + selected_date.value
+    return url;
+}
+
+function getDepartureUrl() {
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url = url + "&working_date=" + selected_date.value
+    return url;
+
+}
+
+function getInhouseGuestUrl() {
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Stay%20Over%20Guest&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url = url + "&working_date=" + selected_date.value
+    return url;
+
+}
+
+function onShowTodayData() {
+
+    selected_date.value = data.value.working_date
+    date.value = moment(data.value.working_date).format("DD-MM-YYYY")
+    arrivalUrl.value = getArrivalUrl();
+    departureUrl.value = getDepartureUrl();
+    inhouseUrl.value = getInhouseGuestUrl();
+    getData()
+
+    // this.classList.add("active");
+}
+
+
+function onShowTommorowData() {
+    const today = moment(data.value.working_date);
+    tomorrow.value = today.add(1, 'days');
+    tomorrow.value = tomorrow.value.format("YYYY-MM-DD")
+    selected_date.value = tomorrow.value
+    date.value = tomorrow.value.format("DD-MM-YYYY")
+    arrivalUrl.value = getArrivalUrl();
+    departureUrl.value = getDepartureUrl();
+    inhouseUrl.value = getInhouseGuestUrl();
+    getData()
+}
+
+function onDateSelect(event) {
+
+    selected_date.value = moment(event).format("YYYY-MM-DD")
+    arrivalUrl.value = getArrivalUrl();
+    departureUrl.value = getDepartureUrl();
+    inhouseUrl.value = getInhouseGuestUrl();
+    getData();
+}
+
+getData();
+
+
+function getData() {
+    gv.loading = true;
+    const call = api.call();
+    call.get('edoor.api.frontdesk.get_dashboard_data', {
+        property: localStorage.getItem("edoor_property"),
+        date: selected_date.value
+    })
+        .then((result) => {
+
+            data.value = result.message
+
+            if (!selected_date.value) {
+                date.value = moment(data.value.working_date).format("DD-MM-YYYY")
+                selected_date.value = data.value.working_date;
+                arrivalUrl.value = getArrivalUrl();
+                departureUrl.value = getDepartureUrl();
+                inhouseUrl.value = getInhouseGuestUrl();
+            }
+
+            gv.loading = false;
+
+        })
+        .catch((error) => {
+            toast.add({ severity: 'error', summary: 'Waring', detail: error.exception.split(":")[1], life: 3000 })
+            gv.loading = false;
+
+        });
+}
+
+
+
+
+
 
 </script>
+<style scoped></style>

@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "property",
   "reservation_type",
   "naming_series",
   "reference_number",
@@ -17,11 +18,23 @@
   "arrival_time",
   "departure_time",
   "guest",
+  "guest_name",
+  "guest_type",
+  "phone_number",
+  "email_address",
   "adult",
   "child",
   "pax",
+  "business_source_type",
+  "room_numbers",
+  "reservation_status",
+  "status_color",
+  "keyword",
+  "rate_type",
   "business_source",
-  "business_source_type"
+  "working_day",
+  "working_date",
+  "cashier_shift"
  ],
  "fields": [
   {
@@ -38,24 +51,31 @@
   {
    "fieldname": "reservation_date",
    "fieldtype": "Date",
-   "label": "Reservation Date"
+   "in_list_view": 1,
+   "label": "Reservation Date",
+   "reqd": 1
   },
   {
    "fieldname": "arrival_date",
    "fieldtype": "Date",
-   "label": "Arrival Date"
+   "in_list_view": 1,
+   "label": "Arrival Date",
+   "reqd": 1
   },
   {
    "fieldname": "departure_date",
    "fieldtype": "Date",
-   "label": "Departure Date"
+   "label": "Departure Date",
+   "reqd": 1
   },
   {
+   "default": "12:00:00",
    "fieldname": "arrival_time",
    "fieldtype": "Time",
    "label": "Arrival Time"
   },
   {
+   "default": "12:00:00",
    "fieldname": "departure_time",
    "fieldtype": "Time",
    "label": "Departure Time"
@@ -64,7 +84,8 @@
    "fieldname": "guest",
    "fieldtype": "Link",
    "label": "Guest",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1
   },
   {
    "fieldname": "adult",
@@ -82,11 +103,7 @@
    "label": "Pax"
   },
   {
-   "fieldname": "business_source",
-   "fieldtype": "Data",
-   "label": "Business Source"
-  },
-  {
+   "fetch_from": "business_source.business_source_type",
    "fieldname": "business_source_type",
    "fieldtype": "Data",
    "label": "Business Source Type"
@@ -95,8 +112,97 @@
    "default": "FIT",
    "fieldname": "reservation_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Reservation Type",
-   "options": "FIT\nGIT"
+   "options": "FIT\nGIT",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
+  },
+  {
+   "fieldname": "room_numbers",
+   "fieldtype": "Data",
+   "label": "Room Numbers"
+  },
+  {
+   "fieldname": "reservation_status",
+   "fieldtype": "Link",
+   "label": "Reservation Status",
+   "options": "Reservation Status"
+  },
+  {
+   "fetch_from": "reservation_status.color",
+   "fieldname": "status_color",
+   "fieldtype": "Data",
+   "label": "Status Color"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "Keyword"
+  },
+  {
+   "fetch_from": "guest.customer_group",
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
+  },
+  {
+   "fetch_from": "guest.phone_number",
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fetch_from": "guest.email_address",
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "label": "Business Source",
+   "options": "Business Source",
+   "reqd": 1
+  },
+  {
+   "fieldname": "working_day",
+   "fieldtype": "Link",
+   "label": "Working Day",
+   "options": "Working Day",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "working_day.posting_date",
+   "fieldname": "working_date",
+   "fieldtype": "Date",
+   "label": "Working Date"
+  },
+  {
+   "fieldname": "cashier_shift",
+   "fieldtype": "Data",
+   "label": "Cashier Shift",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -107,7 +213,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-05-16 15:34:16.355223",
+ "modified": "2023-05-20 12:40:31.651101",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
@@ -175,6 +281,7 @@
    "write": 1
   }
  ],
+ "search_fields": "reference_number,guest,guest_name,phone_number,email_address",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

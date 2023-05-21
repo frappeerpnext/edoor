@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "hash",
+ "creation": "2023-05-16 23:41:21.090211",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "room_type_id",
+  "property",
+  "room_type",
+  "date",
+  "total_rooms",
+  "room_available"
+ ],
+ "fields": [
+  {
+   "fetch_from": "room_type_id.property",
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch"
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
+  },
+  {
+   "fieldname": "total_rooms",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Rooms"
+  },
+  {
+   "fieldname": "room_available",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Room Available"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-17 00:49:25.356460",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Room Type Availability",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

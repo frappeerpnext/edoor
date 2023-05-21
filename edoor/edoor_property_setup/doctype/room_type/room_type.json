@@ -11,6 +11,7 @@
   "naming_series",
   "property",
   "room_type",
+  "alias",
   "base_adult",
   "base_child",
   "rate"
@@ -52,11 +53,16 @@
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate"
+  },
+  {
+   "fieldname": "alias",
+   "fieldtype": "Data",
+   "label": "Alias"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-15 11:00:40.100600",
+ "modified": "2023-05-18 16:49:56.365066",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

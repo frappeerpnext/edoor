@@ -1,0 +1,261 @@
+:root {
+    --font-family: Poppins, sans-serif !important;
+    --primary-font-weight: 400;
+    --text-color: #364963;
+    --primary-border-color: #4d40ca;
+    --bg-mango-color: #4d40ca;
+    --btn-border-color: #a0bde0;
+    --bg-primary-color: #106ebe;
+    --bg-btn-color: #3b82f6;
+    --bg-btn-sec-color: #395173;
+    --bg-warning-color: #fd952c;
+    --bg-warning-hover: #fa8b1d;
+    --bg-og-color: #ff5b00;
+    --bg-danger-color: #e80000;
+    --bg-amguest-color: #00cbd0;
+    --bg-btn-green-color: #50ac58;
+    --bg-btn-green-hover: #31b63c;
+    --bg-gray-color: #e7e7e7;
+    --text-color-btn: #000;
+    --font-size: 13px;
+    --bg-tb-color: #eaf0f5;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+    background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--bg-mango-color);
+}
+
+.bg-amount__guest {
+    background-color: var(--bg-amguest-color);
+}
+
+.bg-amount__guest.border-round {
+    border-radius: 6px !important;
+}
+
+.prime-font-weight {
+    font-weight: var(--primary-font-weight);
+}
+
+.header-bar {
+    box-shadow: 0px 1px 2px rgba(25, 39, 52, 0.05), 0px 0px 4px rgba(25, 39, 52, 0.1);
+    background-color: var(--bg-primary-color);
+    height: 62.5px;
+    position: fixed;
+    z-index: 1000;
+}
+
+.text-color-btn {
+    color: var(--text-color-btn);
+}
+
+.text-color-chart {
+    color: var(--bg-btn-green-color);
+}
+
+.bg-gray-edoor {
+    background-color: var(--bg-tb-color);
+}
+
+.btn-sec-edoor {
+    background-color: var(--bg-btn-sec-color);
+}
+
+.btn-green-edoor {
+    background-color: var(--bg-btn-green-color);
+}
+
+.bg-warning-edoor {
+    background-color: var(--bg-warning-color);
+}
+
+.border-color-edoor {
+    border-color: var(--btn-border-color);
+}
+
+.bg-og-edoor {
+    background-color: var(--bg-og-color);
+}
+
+.primary-btn-edoor {
+    background-color: var(--bg-btn-color);
+}
+
+.d-bg-edoor {
+    background-color: var(--bg-primary-color);
+}
+
+.wrap-page-content.px-2 {
+    position: relative;
+    top: 62.5px;
+}
+
+.wrapper-foot-deco {
+    padding: 2px 0;
+}
+
+.wrapper-foot-deco p {
+    font-weight: 300;
+    font-size: 12px;
+}
+
+button:focus,
+input:focus {
+    box-shadow: unset !important;
+}
+
+.btn-grobe-set {
+    border: var(--btn-border-color);
+    background-color: var(--bg-btn-color);
+}
+
+button span {
+    font-weight: unset !important;
+}
+
+.p-component {
+    font-family: var(--font-family);
+}
+
+.progress-bar .pi {
+    font-size: 24px;
+}
+
+.wrap-pro-bar .progress-bar:not(:last-child) {
+    border-right: 1px solid #ffffff2b;
+}
+
+.progress-bar img {
+    height: 30px;
+}
+
+.p-progressbar {
+    background: transparent !important;
+}
+
+.p-progressbar .p-progressbar-value {
+    background-color: #0f3f69 !important
+}
+
+.top-pro-bar-cus .progress-bar:hover,
+.top-pro-bar-cus .progress-bar.active {
+    background-color: #2a4f7c !important;
+}
+
+.btn-search-top,
+.btn-setting-top {
+    font-size: 18px !important;
+}
+
+#overlay_menu_more,
+#overlay_menu,
+.p-dialog {
+    border-radius: 0 !important;
+    border-top: 2px solid var(--primary-border-color) !important;
+    background-color: rgb(255, 255, 255);
+}
+
+.tool__tip_custom .p-tooltip-text {
+    background-color: rgb(255, 255, 255) !important;
+    color: rgb(0, 0, 0) !important;
+    border-radius: 0 !important;
+}
+
+.tool__tip_custom.p-tooltip-bottom .p-tooltip-arrow {
+    border-bottom-color: #ccc !important;
+}
+
+.bg__primary-set {
+    background-color: var(--bg-btn-color) !important;
+    border: 1px solid var(--btn-border-color) !important;
+}
+
+.guest-user__pro {
+    background-color: #2a7dc4;
+}
+
+.bg__primary-set .p-button-label {
+    font-weight: unset !important;
+}
+
+button.p-button.btn-date__t {
+    background-color: #fff;
+    color: var(--text-color);
+}
+
+.btn-date__t,
+.unrounded__box_cus,
+.btn-date__tt {
+    border-radius: 0 !important;
+}
+
+.btn-date__tt {
+    background-color: var(--bg-btn-sec-color) !important;
+    border: 1px solid var(--btn-border-color) !important;
+}
+
+.btn-calendar__t .p-inputtext,
+.btn-choose__pro {
+    border-radius: 0 !important;
+}
+
+.btn-calendar__t input {
+    text-align: center !important;
+}
+
+.btn-choose__pro {
+    background-color: #2a7dc4 !important;
+    border: #a0bde0 !important;
+}
+
+#overlay_menu {
+    top: 63px !important
+}
+
+button.p-button,
+.btn-calendar__t input {
+    font-size: 1.1rem !important;
+    padding: 0.65rem 0.65rem !important;
+    font-weight: var(--primary-font-weight) !important;
+}
+
+button.p-button.btn-date__t.active {
+    background-color: var(--bg-btn-color) !important;
+    border: 1px solid var(--btn-border-color) !important;
+    color: #fff;
+}
+
+button.p-button.btn-date__t:hover {
+    background-color: var(--bg-btn-color);
+    border: 1px solid var(--btn-border-color);
+
+}
+
+.btn-inner-set-icon img {
+    height: 20px;
+}
+
+.txt-st__det {
+    font-weight: var(--primary-font-weight) !important;
+}
+
+.btn-calendar__t .p-button-icon-only {
+    border-radius: 0 !important;
+    background-color: var(--bg-btn-color) !important;
+    border: unset !important;
+}
+
+.p-tabview-nav-content .p-tabview-nav {
+    background-color: var(--bg-tb-color);
+}

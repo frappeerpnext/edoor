@@ -1,21 +1,25 @@
 import './index.css';
 //theme
-import "primevue/resources/themes/lara-light-indigo/theme.css";
+import "./assets/css/theme.css";
 //core
-import "primevue/resources/primevue.min.css";
+import "./assets/css/primevue.css";
 //icon 
 import 'primeicons/primeicons.css';
 // flex css
 import '/node_modules/primeflex/primeflex.css'
 
+import './assets/css/style.css'
+
+
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
+import Error from "./components/Error.vue";
 
 import router from './router';
 import resourceManager from "../../../doppio/libs/resourceManager";
 import call from "../../../doppio/libs/controllers/call";
-import socket from "../../../doppio/libs/controllers/socket";
+
 import Auth from "../../../doppio/libs/controllers/auth";
 import { FrappeApp } from 'frappe-js-sdk';
 import {resourcesPlugin} from "./resources"
@@ -24,10 +28,12 @@ setConfig('resourceFetcher', frappeRequest)
 import PrimeVue from 'primevue/config';
 
 const app = createApp(App);
+
 const auth = reactive(new Auth());
 const frappe = new FrappeApp()
 // inject
 import moment from "./utils/moment";
+import Gv from './providers/gv';
 
 // directive
 import BadgeDirective from 'primevue/badgedirective';
@@ -74,9 +80,13 @@ import Tooltip from 'primevue/tooltip';
 import Badge from 'primevue/badge';
 import Chip from 'primevue/chip';
 import DialogService from 'primevue/dialogservice';
+import AutoComplete from 'primevue/autocomplete';
 // custom components //
 import ComAvatar from './components/form/ComAvatar.vue'
+import ComAutoComplete from './components/form/ComAutoComplete.vue'
+import ComPanel from './components/layout/components/ComPanel.vue'
 
+import socket from './utils/socketio';
 
 
 
@@ -121,9 +131,13 @@ app.component('Sidebar', Sidebar);
 app.component('Badge', Badge);
 app.component('Chip', Chip);
 app.component('Tooltip', Tooltip);
+app.component('AutoComplete', AutoComplete)
 
 // use custom components //
 app.component('ComAvatar', ComAvatar)
+app.component('ComPanel',ComPanel)
+app.component('ComAutoComplete',ComAutoComplete)
+ 
 
 
 // Plugins
@@ -146,18 +160,19 @@ app.use(resourceManager);
 // components can inject this
 app.provide("$auth", auth);
 app.provide("$call", call);
-app.provide("$socket", socket); 
+app.provide("$socket",socket)
 app.provide("$frappe", frappe);
 
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
 
+
+const gv = reactive(new Gv());
 app.provide("$moment", moment)
+app.provide("$gv", gv)
 // get global data
 const apiCall = frappe.call()
-apiCall.get('edoor.api.frontdesk.get_logged_user').then((r)=>{
-	localStorage.setItem('current_user', JSON.stringify(r.message))
-})
+
 
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {
@@ -165,7 +180,9 @@ router.beforeEach(async (to, from, next) => {
 		// this route requires auth, check if logged in
 		// if not, redirect to login page.
 		if (!auth.isLoggedIn) {
-			window.location.replace('http://192.168.10.114:1216/')
+			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+			const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+			window.location.replace(serverUrl)
 		} else {
 			next();
 		} 
@@ -178,6 +195,21 @@ router.beforeEach(async (to, from, next) => {
 		next();
 	}
 });
+apiCall.get('edoor.api.frontdesk.get_logged_user').then((r)=>{
+	
+	localStorage.setItem('edoor_user', JSON.stringify(r.message))
+	if(r.message.property){
+		if (r.message.property.length==1){
+			localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+		}
+	}
+	app.mount("#app");
 
-app.mount("#app");
+}).catch((error)=>{
+	 
+	const errorApp = createApp(Error);
+	errorApp.mount("#app");
+})
+
+
  
