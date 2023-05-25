@@ -1,6 +1,6 @@
 <template>
     <div class="wrap-page">
-        <ProgressBar class="absolute top-0 right-0 left-0 z-50" v-if="gv.loading" mode="indeterminate" style="height: 6px">
+        <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading" mode="indeterminate">
         </ProgressBar>
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
@@ -57,7 +57,8 @@
                                 <p title="Guest Ledger">Guest Ledger</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="City Ledger" @onClick="onLink('city-ledger')">
+                        <ComHeaderBarItemButton title="City Ledger" @onClick="onLink('city-ledger')"
+                            class="hidden xl:block">
                             <template #icon>
                                 <img :src="iconEdoorCityLedger">
                             </template>
@@ -65,7 +66,7 @@
                                 <p title="City Ledger">City Ledger</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Reports" @onClick="onLink('reports')">
+                        <ComHeaderBarItemButton title="Reports" @onClick="onLink('reports')" class="hidden xl:block">
                             <template #icon>
                                 <img :src="iconEdoorReport">
                             </template>
@@ -74,7 +75,7 @@
                             </template>
                         </ComHeaderBarItemButton>
 
-                        <ComHeaderBarItemButtonMore />
+                        <!-- <ComHeaderBarItemButtonMore /> -->
                     </div>
                 </div>
                 <div class="flex-grow">
@@ -85,8 +86,7 @@
                         <div class="px-2 flex items-center">
                             <div>
                                 <Button icon="pi pi-search btn-search-top" text rounded severity="secondary"
-                                    aria-label="Setting" class="p-link text-white" @click="onSearch" aria-haspopup="true"
-                                    aria-controls="overlay_menu" />
+                                    aria-label="Setting" class="p-link text-white" @click="onSearch" />
                             </div>
                             <div>
                                 <Button icon="pi pi-cog btn-setting-top" text rounded severity="secondary"
@@ -106,21 +106,30 @@
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Refresh</span>
                                     </button>
-                                    <button @click="onLogout"
+                                    <button @click="onRegistration"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-sign-out !text-red-500" />
-                                        <span class="ml-2  !text-red-500">Log Out</span>
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Registration</span>
+                                    </button>
+                                    <button @click="onOpenCashierShift"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Open cashier shift</span>
+                                    </button>
+                                    <button @click="onCloseCashierShift"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Close cashier shift</span>
+                                    </button>
+                                    <button @click="onRunNightAudit"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Run night audit</span>
                                     </button>
                                 </template>
                             </Menu>
                         </div>
-                        <div class="guest-user__pro flex items-center h-full justify-center white-space-nowrap overflow-hidden text-overflow-ellipsis"
-                            style="width:180px">
-                            <ComAvatar :image="user.photo">
-                                <div class="font-lg font-bold text-white">{{ user.name }}</div>
-                                <div class="text-ms text-white">{{ user.role }}</div>
-                            </ComAvatar>
-                        </div>
+                        <ComAvatarUserProfile :user="user" />
                     </div>
                 </div>
             </div>
@@ -138,6 +147,7 @@
 <script setup>
 import { ref, inject, useToast, useRouter } from '@/plugin'
 import ComAvatar from '../form/ComAvatar.vue';
+import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar';
 import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue';
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
@@ -157,7 +167,6 @@ import ComFooter from '../../components/layout/components/ComFooter.vue';
 
 
 const dialog = useDialog();
-
 
 const router = useRouter()
 const frappe = inject('$frappe')
@@ -236,6 +245,4 @@ function onSearch() {
     });
 }
 
-
-console.log(document.getElementsByClassName('header-bar').offsetHeight);
 </script>

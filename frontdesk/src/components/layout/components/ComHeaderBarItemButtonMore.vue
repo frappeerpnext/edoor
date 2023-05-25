@@ -9,9 +9,17 @@
     </ComHeaderBarItemButton>
     <Menu ref="show" id="overlay_menu_more" :popup="true" style="min-width: 180px;">
         <template #end>
+            <button @click="onLink('city-ledger')"
+                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround xl:hidden">
+                <span class="ml-2">City Ledger</span>
+            </button>
+            <button @click="onLink('reports')"
+                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround xl:hidden">
+                <span class="ml-2">Reports</span>
+            </button>
             <button @click="onLink('cashier-shift')"
                 class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <span class="ml-2">Chasier Report</span>
+                <span class="ml-2">Cashier Report</span>
             </button>
             <button @click="onLink('sale/view/list')"
                 class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
@@ -25,7 +33,7 @@
     </Menu>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref } from '@/plugin'
 import ComHeaderBarItemButton from './ComHeaderBarItemButton.vue';
 import iconEdoorMores from '../../../assets/svg/icon-mores.svg'
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))

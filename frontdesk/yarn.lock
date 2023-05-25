@@ -2296,6 +2296,11 @@ vue-router@^4.1.6:
   dependencies:
     "@vue/devtools-api" "^6.5.0"
 
+vue-screen@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/vue-screen/-/vue-screen-2.2.0.tgz#70733bcae6cfc82dc61b6eb68a1d49f5d61dc5a5"
+  integrity sha512-M5gpl+6gsDlcEADvmrSWPmEu431+n+SRi0n8JOcZcH3uon+6SRJn4lH/AhcOp7lGXXsD0S7FkalPeopK+kTDow==
+
 vue2-timeago@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/vue2-timeago/-/vue2-timeago-3.0.2.tgz#dfd54839d4bdd61fc3020492bf9a4c5122ed6f58"

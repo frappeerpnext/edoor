@@ -1,7 +1,7 @@
 <template>
-    <div @click="onClick" class="w-full flex align-items-center justify-center text-color border-noround">
+    <div class="w-full flex align-items-center justify-center text-color border-noround">
         <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" />
-        <div class="flex flex-column align">
+        <div class="flex flex-column align" style="width:98px;">
             <slot></slot>
         </div>
     </div>
@@ -14,10 +14,12 @@ const props = defineProps({
         type: String,
         default: 'large'
     }
+
 })
 
-function onClick() {
-    emit('onClick')
-}
+
+// function onClick() {
+//     emit('onClick')
+// }
 </script>
  

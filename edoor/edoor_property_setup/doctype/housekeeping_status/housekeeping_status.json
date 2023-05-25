@@ -10,7 +10,8 @@
  "field_order": [
   "status",
   "status_color",
-  "icon"
+  "icon",
+  "sort_order"
  ],
  "fields": [
   {
@@ -30,13 +31,18 @@
   },
   {
    "fieldname": "icon",
-   "fieldtype": "Data",
+   "fieldtype": "Code",
    "label": "Icon"
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-16 17:49:37.290400",
+ "modified": "2023-05-22 09:17:39.425755",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",

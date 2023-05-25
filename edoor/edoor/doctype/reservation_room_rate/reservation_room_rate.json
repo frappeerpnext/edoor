@@ -29,6 +29,7 @@
   "tax_1_amount",
   "tax_2_amount",
   "tax_3_amount",
+  "total_tax",
   "total_amount",
   "note"
  ],
@@ -42,12 +43,14 @@
   {
    "fieldname": "reservation",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Reservation",
    "options": "Reservation"
   },
   {
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Reservation Stay",
    "options": "Reservation Stay"
   },
@@ -61,6 +64,7 @@
    "fetch_from": "room_type_id.room_type",
    "fieldname": "room_type",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Room Type"
   },
   {
@@ -73,17 +77,20 @@
    "fetch_from": "room_id.room_number",
    "fieldname": "room_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Room Number"
   },
   {
    "fieldname": "rate_type",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Rate Type",
    "options": "Rate Type"
   },
   {
    "fieldname": "rate",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Rate"
   },
   {
@@ -106,6 +113,7 @@
   {
    "fieldname": "discount_amount",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Discount Amount"
   },
   {
@@ -146,6 +154,7 @@
   {
    "fieldname": "total_amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Amount"
   },
   {
@@ -156,12 +165,19 @@
   {
    "fieldname": "date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Date"
+  },
+  {
+   "fieldname": "total_tax",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Tax"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-21 11:53:06.357672",
+ "modified": "2023-05-21 12:18:27.035450",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

@@ -28,6 +28,7 @@
     "vue-debounce": "^4.0.0",
     "vue-promise-dialogs": "^2.0.0",
     "vue-router": "^4.1.6",
+    "vue-screen": "^2.2.0",
     "vue2-timeago": "^3.0.2"
   },
   "devDependencies": {

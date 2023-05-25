@@ -35,9 +35,13 @@ class ReservationStay(Document):
 		if self.stays:
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays])
 			self.room_types = ','.join([d.room_type for d in self.stays])
+
 		for d in self.stays:
-			d.reservation_status = d.reservation_status or self.reservation_status
+			
+			d.reservation_status = self.reservation_status
+			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
+
 		 
 			if not d.guest:
 				d.guest = self.guest
@@ -77,6 +81,8 @@ class ReservationStay(Document):
 				#generate room to reservation room rate
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
+					"reservation":self.reservation,
+					"reservation_stay":self.name,
 					"room_type_id":stay.room_type_id,
 					"room_id":stay.room_id,
 					"date":d,
@@ -84,6 +90,7 @@ class ReservationStay(Document):
 					"rate_type":self.rate_type,
 					"property":self.property
 				}).insert()
+				 
 
 
 		

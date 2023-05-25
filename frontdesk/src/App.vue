@@ -3,6 +3,8 @@
     <Property v-else />
     <DynamicDialog />
     <Toast />
+    <ConfirmDialog></ConfirmDialog>
+
 </template>
 
 

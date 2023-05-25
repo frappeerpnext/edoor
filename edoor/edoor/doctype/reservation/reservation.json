@@ -12,6 +12,7 @@
   "reservation_type",
   "naming_series",
   "reference_number",
+  "internal_reference_number",
   "reservation_date",
   "arrival_date",
   "departure_date",
@@ -34,7 +35,8 @@
   "business_source",
   "working_day",
   "working_date",
-  "cashier_shift"
+  "cashier_shift",
+  "note"
  ],
  "fields": [
   {
@@ -203,6 +205,16 @@
    "fieldtype": "Data",
    "label": "Cashier Shift",
    "reqd": 1
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "internal_reference_number",
+   "fieldtype": "Data",
+   "label": "Internal Reference Number"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -213,7 +225,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-05-20 12:40:31.651101",
+ "modified": "2023-05-24 10:27:58.846357",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

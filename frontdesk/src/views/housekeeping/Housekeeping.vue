@@ -1,9 +1,9 @@
 <template>
     <h1>Housekeeping</h1>
+  
     {{ selectedRooms }}
-   
     <ComAutoComplete v-model="data.room_type" placeholder="Room Type" doctype="Room Type"   />
-    <ComAutoComplete v-model="data.housekeeping_status" placeholder="Housekeeping Status" doctype="Housekeeping Status"   />
+    <ComAutoComplete v-model="data.housekeeping_status" placeholder="Housekeeping Status" doctype="Housekeeping Status" />
 
     <DataTable v-model:selection="selectedRooms"  dataKey="name" :value="room_list" tableStyle="min-width: 50rem">
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
@@ -21,26 +21,24 @@
                 </SplitButton>
         </template>
     </Column>
- 
     </DataTable>
 </template>
+
+
 <script setup>
-    import {ref,inject} from "@/plugin"
-    import Tag from 'primevue/tag';
-    import { useToast } from "primevue/usetoast";
-    const frappe = inject("$frappe")
-    const db = frappe.db()
+
+import { ref, inject } from "@/plugin"
+import Tag from 'primevue/tag';
+import { useToast } from "primevue/usetoast";
+const frappe = inject("$frappe")
+const db = frappe.db()
 
 const toast = useToast();
-    const data = ref({})
-    const room_list = ref([])
-    const selectedRooms = ref([])
-
-    
-const houseKeepingStatus =ref([])  
-
-
-    db.getDocList('Room',{
+const data = ref({})
+const room_list = ref([])
+const selectedRooms = ref([])
+const houseKeepingStatus = ref([])
+db.getDocList('Room',{
         fields: ['name',"room_type_id","room_type","room_number","housekeeping_status","status_color"],
     })
     .then((docs) => 
@@ -74,6 +72,4 @@ const houseKeepingStatus =ref([])
     }
     )
     .catch((error) => console.error(error));
-
-
 </script>

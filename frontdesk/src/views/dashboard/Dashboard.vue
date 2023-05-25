@@ -1,23 +1,23 @@
 <template>
-    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3 py-3">
+    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3 py-2">
         <div class="text-start">
             <div class="font-bold">{{ property.name }}</div>
             <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
         </div>
         <div class="text-center">
-            <Button label="Today" class="w-48 btn-date__t" :class="selected_date == data.working_date ? 'active' : ''"
+            <Button label="Today" class="w-48 h-12 btn-date__t" :class="selected_date == data.working_date ? 'active' : ''"
                 @click="onShowTodayData()" />
-            <Button label="Tomorrow" class="w-48 btn-date__t" :class="selected_date == tomorrow ? 'active' : ''"
+            <Button label="Tomorrow" class="w-48 h-12 btn-date__t" :class="selected_date == tomorrow ? 'active' : ''"
                 @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 btn-calendar__t" @date-select="onDateSelect" dateFormat="dd-mm-yy"
-                showIcon />
+            <Calendar v-model="date" class="w-48 h-12 btn-calendar__t h-res__setting" @date-select="onDateSelect"
+                dateFormat="dd-MM-yy" showIcon />
         </div>
         <div class="text-end flex justify-end">
             <div class="mr-2">
                 <NewFITReservationButton />
             </div>
             <div>
-                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon">
+                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon h-12">
                     <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
                 </Button>
             </div>
@@ -31,12 +31,16 @@
             <ComPanel title="Today's occupancy">
                 <div class="grid">
                     <div class="col-6 flex align-items-center justify-content-center">
-                        <ComdonutChart value_doughnut="80"></ComdonutChart>
+                        <ComdonutChart :value_doughnut=data.total_room_occupy :value_room_vacant=data.total_room_vacant
+                            :value_total_room=data.total_room></ComdonutChart>
                     </div>
                     <div class="col-5">
-                        <ComChartStatus :value="15" title="Occupied" class="btn-green-edoor"> </ComChartStatus>
-                        <ComChartStatus :value="5" title="Vacant" class="bg-warning-edoor"> </ComChartStatus>
-                        <ComChartStatus :value="20" title="Total rooms" class="btn-sec-edoor"> </ComChartStatus>
+                        <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
+                        </ComChartStatus>
+                        <ComChartStatus :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
+                        </ComChartStatus>
+                        <ComChartStatus :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
+                        </ComChartStatus>
                         <div class="grid mt-3 text-center">
                             <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
                             <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
@@ -48,12 +52,13 @@
         <div class="col">
             <ComPanel title="Today's actions">
                 <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
-                    <ComKPI :value="15" title="Arrival" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Check-in remaining" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Departure" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Check-out remaining" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Pickup" class="bg-warning-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Drop off" class="bg-og-edoor"> </ComKPI>
+                    <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="data.arrival_remaining" title="Check-in remaining" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="data.departure" title="Departure" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="data.departure_remaining" title="Check-out remaining" class="primary-btn-edoor">
+                    </ComKPI>
+                    <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor"> </ComKPI>
+                    <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor"> </ComKPI>
                     <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor"> </ComKPI>
                     <ComKPI :value="15" title="Stayover" class="primary-btn-edoor"> </ComKPI>
                 </div>
@@ -63,11 +68,9 @@
             <ComPanel title="Room Status">
                 <div class="px-1">
                     <template v-for="(item, index) in data.housekeeping_status" :key="index">
-
-                        <ComDashboardRowStatus :value="item.total" :badgeColor="item.color" :icon="item.icon">{{ item.status
-                        }}
+                        <ComDashboardRowStatus :value="item.total" :badgeColor="item.color" :icon="item.icon">
+                            <template #content>{{ item.status }}</template> >
                         </ComDashboardRowStatus>
-
                     </template>
                 </div>
             </ComPanel>
@@ -79,8 +82,7 @@
             <TabPanel>
                 <template #header>
                     <span>Arrivals</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival
-                    }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival }}</span>
                 </template>
                 <div class="mt-2">
                     <iframe style="height: 500px;" width="100%" :src="arrivalUrl"></iframe>
@@ -118,16 +120,15 @@
         </TabView>
     </div>
     <div class="mt-3">
-    <ComPanel title="Monthly occupancy (May/2023)">
-        <MTDOccupancyChart />
-    </ComPanel>
+        <ComPanel title="Monthly occupancy (May/2023)">
+            <MTDOccupancyChart />
+        </ComPanel>
     </div>
 </template>
 
 <script setup>
 import ComKPI from './components/ComKPI.vue';
 import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
-import Calendar from 'primevue/calendar';
 import ComdonutChart from './components/ComDonutChart.vue';
 import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
@@ -227,7 +228,7 @@ function getData() {
     gv.loading = true;
     const call = api.call();
     call.get('edoor.api.frontdesk.get_dashboard_data', {
-        property: localStorage.getItem("edoor_property"),
+        property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: selected_date.value
     })
         .then((result) => {

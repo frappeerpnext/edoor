@@ -29,3 +29,12 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
 
     # Return the generated dates.
     return dates
+@frappe.whitelist()
+def clear_reservation():
+    frappe.db.sql("delete from `tabReservation`")
+    frappe.db.sql("delete from `tabReservation Stay`")
+    frappe.db.sql("delete from `tabReservation Stay Room`")
+    frappe.db.sql("delete from `tabReservation Room Rate`")
+    frappe.db.sql("delete from `tabTemp Room Occupy`")
+    frappe.db.commit()
+    return "done"

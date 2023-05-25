@@ -27,7 +27,7 @@
   "child",
   "pax",
   "reservation_status",
-  "reservation_status_color",
+  "status_color",
   "is_active_reservation",
   "rooms_section",
   "stays",
@@ -35,7 +35,37 @@
   "rate_type",
   "working_day",
   "working_date",
-  "cashier_shift"
+  "cashier_shift",
+  "adr_rate",
+  "room_nights",
+  "total_room_rate",
+  "room_charge",
+  "room_discount",
+  "total_room_tax",
+  "total_room_charge",
+  "extra_charge",
+  "extra_charge_discount",
+  "extra_charge_tax",
+  "total_extra_charge",
+  "total_charge",
+  "total_payment",
+  "balance",
+  "pickup_and_drop_off_tab",
+  "require_pickup",
+  "pickup_time",
+  "arrival_mode",
+  "arrival_flight_number",
+  "pickup_location",
+  "driver",
+  "pickup_note",
+  "column_break_51",
+  "required_drop_off",
+  "drop_off_time",
+  "departure_mode",
+  "departure_flight_number",
+  "drop_off_location",
+  "drop_off_driver",
+  "drop_off_note"
  ],
  "fields": [
   {
@@ -135,12 +165,6 @@
    "options": "Reservation Status"
   },
   {
-   "fetch_from": "reservation_status.color",
-   "fieldname": "reservation_status_color",
-   "fieldtype": "Data",
-   "label": "Reservation Status Color"
-  },
-  {
    "fetch_from": "guest.customer_name_en",
    "fetch_if_empty": 1,
    "fieldname": "guest_name",
@@ -228,11 +252,168 @@
    "fieldname": "cashier_shift",
    "fieldtype": "Data",
    "label": "Cashier Shift"
+  },
+  {
+   "fetch_from": "reservation_status.color",
+   "fieldname": "status_color",
+   "fieldtype": "Data",
+   "label": "Status Color"
+  },
+  {
+   "fieldname": "adr_rate",
+   "fieldtype": "Currency",
+   "label": "ADR Rate"
+  },
+  {
+   "fieldname": "room_nights",
+   "fieldtype": "Int",
+   "label": "Room Nights"
+  },
+  {
+   "fieldname": "total_room_rate",
+   "fieldtype": "Currency",
+   "label": "Total Room Rate"
+  },
+  {
+   "fieldname": "room_charge",
+   "fieldtype": "Currency",
+   "label": "Room Charge"
+  },
+  {
+   "fieldname": "room_discount",
+   "fieldtype": "Currency",
+   "label": "Room Discount"
+  },
+  {
+   "fieldname": "total_room_tax",
+   "fieldtype": "Currency",
+   "label": "Total Room Tax"
+  },
+  {
+   "fieldname": "total_room_charge",
+   "fieldtype": "Currency",
+   "label": "Total Room Charge"
+  },
+  {
+   "fieldname": "extra_charge",
+   "fieldtype": "Currency",
+   "label": "Extra Charge"
+  },
+  {
+   "fieldname": "extra_charge_discount",
+   "fieldtype": "Currency",
+   "label": "Extra Charge Discount"
+  },
+  {
+   "fieldname": "extra_charge_tax",
+   "fieldtype": "Currency",
+   "label": "Extra Charge Tax"
+  },
+  {
+   "fieldname": "total_extra_charge",
+   "fieldtype": "Currency",
+   "label": "Total Extra Charge"
+  },
+  {
+   "fieldname": "total_charge",
+   "fieldtype": "Currency",
+   "label": "Total Charge"
+  },
+  {
+   "fieldname": "total_payment",
+   "fieldtype": "Currency",
+   "label": "Total Payment"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
+  },
+  {
+   "fieldname": "pickup_and_drop_off_tab",
+   "fieldtype": "Tab Break",
+   "label": "Pickup and Drop Off"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_pickup",
+   "fieldtype": "Check",
+   "label": "Require Pickup"
+  },
+  {
+   "fieldname": "pickup_time",
+   "fieldtype": "Time",
+   "label": "Pickup Time"
+  },
+  {
+   "fieldname": "arrival_mode",
+   "fieldtype": "Data",
+   "label": "Arrival Mode"
+  },
+  {
+   "fieldname": "arrival_flight_number",
+   "fieldtype": "Data",
+   "label": "Arrival Flight Number"
+  },
+  {
+   "fieldname": "pickup_location",
+   "fieldtype": "Data",
+   "label": "Pickup Location"
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Data",
+   "label": "Pickup Driver"
+  },
+  {
+   "fieldname": "pickup_note",
+   "fieldtype": "Small Text",
+   "label": "Pickup Note"
+  },
+  {
+   "fieldname": "column_break_51",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "required_drop_off",
+   "fieldtype": "Check",
+   "label": "Required Drop Off"
+  },
+  {
+   "fieldname": "drop_off_time",
+   "fieldtype": "Time",
+   "label": "Drop Off Time"
+  },
+  {
+   "fieldname": "departure_mode",
+   "fieldtype": "Data",
+   "label": "Departure Mode"
+  },
+  {
+   "fieldname": "departure_flight_number",
+   "fieldtype": "Data",
+   "label": "Departure Flight Number"
+  },
+  {
+   "fieldname": "drop_off_location",
+   "fieldtype": "Data",
+   "label": "Drop Off Location"
+  },
+  {
+   "fieldname": "drop_off_driver",
+   "fieldtype": "Data",
+   "label": "Drop Off Driver"
+  },
+  {
+   "fieldname": "drop_off_note",
+   "fieldtype": "Data",
+   "label": "Drop Off Note"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-20 13:02:31.942469",
+ "modified": "2023-05-23 18:00:41.361814",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

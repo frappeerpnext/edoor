@@ -1,5 +1,5 @@
 <template>
-    <Button @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon">
+    <Button @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon h-12">
         <img class="mr-2" :src="iconEdoorNewReservation">New reservataion</Button>
 </template>
 <script setup>
@@ -23,6 +23,7 @@ function onClick() {
             },
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;

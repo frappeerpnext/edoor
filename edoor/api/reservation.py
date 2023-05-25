@@ -1,5 +1,8 @@
 import json
+
+from edoor.api.frontdesk import get_working_day
 import frappe
+from frappe.utils.data import add_to_date
 
 @frappe.whitelist()
 def get_reservation_detail(name):
@@ -8,8 +11,26 @@ def get_reservation_detail(name):
         "reservation":reservation
     }
 
+
+@frappe.whitelist()
+def get_reservation_stay_detail(name):
+    reservation_stay= frappe.get_doc("Reservation Stay",name)
+    reservation = frappe.get_doc("Reservation",reservation_stay.reservation)
+    guest=frappe.get_doc("Customer",reservation_stay.guest)
+    master_guest = guest
+    if reservation.guest != reservation_stay.guest:
+        master_guest = frappe.get_doc("Customer",reservation.guest)
+    return {
+        "reservation":reservation,
+        "reservation_stay":reservation_stay,
+        "guest":guest,
+        "master_guest":master_guest
+    }
+
 @frappe.whitelist()
 def check_room_availability(property,room_type_id=None,start_date=None,end_date=None):
+    end_date = add_to_date(end_date,days=-1)
+
     if not room_type_id:
         room_type_id = ''
 
@@ -38,25 +59,16 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
 
 @frappe.whitelist()
 def check_room_type_availability(property,start_date=None,end_date=None):
-    sql = """
-        select 
-            room_type,
-            name
-        from `tabRoom Type` 
-        where 
-            property = '{0}' and 
-            name not in (
-                select 
-                    room_type_id 
-                from `tabTemp Room Occupy` 
-                where
-                    date between '{1}' and '{2}' 
-            )   
-    """
-    sql = sql.format(property,start_date, end_date)
-    data = frappe.db.sql(sql,as_dict=1)
-    return data
+    end_date = add_to_date(end_date,days=-1)
+    #get all room type and total room 
 
+    room_type = frappe.db.sql("select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}' group by room_type_id,room_type".format(property),as_dict=1)
+    for t in room_type:
+        sql = "select coalesce(count(  distinct room_id),0) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
+        t["occupy"] = frappe.db.sql(sql,as_dict=1)[0]["total_room"]
+
+    return  [d for d in room_type if d['total_room'] - d["occupy"] > 0]
+ 
 
 
 @frappe.whitelist()
@@ -79,6 +91,8 @@ def add_new_fit_reservation(doc):
             "doctype":"Reservation Stay",
             "reservation":reservation.name,
             "reservation_status":"Reserved",
+            "arrival_time":reservation.arrival_time,
+            "departure_time":reservation.departure_time,
             "stays":[
                 {
                     "doctype":"Reservation Stay Room",
@@ -87,6 +101,8 @@ def add_new_fit_reservation(doc):
                     "rate":d["rate"],
                     "guest":reservation.guest,
                     "reservation_status":"Reserved",
+                    "start_time":reservation.arrival_time,
+                    "end_time":reservation.departure_time,
                 }
             ]
         }
@@ -95,6 +111,55 @@ def add_new_fit_reservation(doc):
 
     frappe.db.commit()
     return reservation
+
+
+@frappe.whitelist(methods="POST")
+def check_in(reservation,reservation_stays=None):
+    
+    #reservation_stays is list of stay in a reservation separate by comma
+    #reservation_stays is apply then we skip check reservation 
+    doc = frappe.get_doc("Reservation",reservation)
+    working_day = get_working_day(doc.property)
+   
+    if not working_day["cashier_shift"]:
+        frappe.throw("There is no cashier shift open. Please open cashier shift first")
+
+    
+    
+   
+    stays = []
+    if not reservation:
+        frappe.throw("There is no reservation to check in")
+
+    if reservation_stays:
+        stays = reservation_stays.split(',')
+    else:
+        stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
+    
+    for s in stays:
+        stay = frappe.get_doc("Reservation Stay", s)
+        if stay.reservation_status=="Inhouse":
+            frappe.throw("Stay #: {}. Room: {}. This room is already checkin.".format(stay.name, stay.rooms))
+
+      
+        if str(stay.arrival_date) != str(working_day["date_working_day"]):
+            frappe.throw("Stay #: {}. Room: {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
+
+        stay.reservation_status = "Inhouse"
+        stay.save()
+
+    frappe.db.commit()
+
+    return {
+        "reservation":doc
+    }
+
+
+
+
+    
+
+
 
 def check_field(doc, key):
     if key in doc.keys():

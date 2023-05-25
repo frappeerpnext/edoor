@@ -1,120 +1,159 @@
 <template lang="">
     <div>
-        <div style="max-width: 100%; height: 1000px" class="p-6">
-            <div class="pb-16">
-                <NewFITReservationButton/>
+        <ComHeader>
+            <template #start>
+                <div @click="onRefresh()">Frontdesk</div>
+            </template>
+            <template #end>
+                <div class="flex  gap-2 justify-content-end">
+                    <NewFITReservationButton/>
+                    <Button label="New group booking" class="btn-date__tt btn-inner-set-icon">
+                        <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
+                    </Button>
+                </div>
+            </template>
+        </ComHeader>
+        <div style="max-width: 100%; height: 1000px">
+            <div>
                 <div class="relative" aria-haspopup="true" aria-controls="overlay_menu">
-                    <FullCalendar :options="calendarOptions" class="h-full">
+                    <div class="flex justify-between mb-2">
+                        <div>
+                            <Calendar panelClass="room-chart-celendar" v-model="filterDate" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar />
+                        </div>
+                        <div>
+                            <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onFilter="onFilter($event)" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()"/>
+                        </div>
+                    </div>
+                    <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                         <template v-slot:eventContent="{event}">
                                 <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
                                 <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
                                     <table>
                                         <tbody>
                                             <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
-                                            <tr><td><div>Reference #: ${event.reference_number || ''}</div></td></tr>
+                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
                                         <tr><td><div>Guest: ${event.title}</div></td></tr>
                                         <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
                                         <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
-                                        <tr><td><div>Room: ${event.extendedProps?.adult}</div></td></tr>
+                                        <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
                                         <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
                                         </tbody>
                                     </table>
                                 </div>`, escape: true, class: 'event-tooltip' }">
+                                
                                     {{ event.title }}
                                     
                                 </div>
                         </template>
-                    </FullCalendar> 
+                    </FullCalendar>
+                    <ReservationStatusLabel/>
                 </div>
             </div>
         </div>
     </div>
     
-</template>
-<script setup>
-import { ref, reactive, inject } from '@/plugin'
-import '@fullcalendar/core/vdom' // solves problem with Vite
-import FullCalendar from '@fullcalendar/vue3'
-import interactionPlugin from '@fullcalendar/interaction'
-import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
-import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
-import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
-import { useDialog } from 'primevue/usedialog';
-const frappe = inject('$frappe')
-const call = frappe.call();
-const moment = inject('$moment')
-
-const dialog = useDialog();
-
-let showTooltip = ref(false)
-const reservation = ref({})
-let eventInfo = reactive({
+  </template>
+  <script setup>
+  import { ref, reactive, inject,onUnmounted,useToast,useDialog,onMounted,computed } from '@/plugin'
+  
+  import '@fullcalendar/core/vdom' // solves problem with Vite
+  import FullCalendar from '@fullcalendar/vue3'
+  import interactionPlugin from '@fullcalendar/interaction'
+  import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+  import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
+  import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
+  import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
+  import NewReservation from '@/views/reservation/NewReservation.vue';
+  import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
+  import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
+  import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
+  const socket = inject("$socket");
+  const frappe = inject('$frappe')
+  const call = frappe.call();
+  const moment = inject('$moment')
+  const fullCalendar = ref(null)
+  
+  const toast = useToast();
+  const dialog = useDialog();
+  const property = JSON.parse(localStorage.getItem("edoor_property"))
+  const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+  let fullcalendarInitialDate = ref(moment( working_day.date_working_day).add(-1, 'days').format("yyyy-MM-DD"))
+  let showTooltip = ref(false)
+  const reservation = ref({})
+  const isLoading = ref(true)
+  const filter = reactive({
+    peroid: 'month',
+    view_type: localStorage.getItem('reservation_chart_view') == null ? 'room_type' : localStorage.getItem('reservation_chart_view')
+  })
+  let filterDate = ref('')
+  let eventInfo = reactive({
     isShow: false,
     left: 0,
     top: 0,
     data: null
-})
-function dateFormat(date){
+  }) 
+  let roomChartResourceFilter = reactive({
+        property: property.name,
+        room_type: "room_type",
+        building: "building",
+        view_type: filter.view_type // room_type = true or room = false
+    })
+ 
+  socket.on("RefresheDoorDashboard", (arg) => {
+    if (arg == property.name){
+        onRefresh()
+        toast.add({ severity: 'info', summary: 'Info', detail: "Reservation updated", life: 3000 })
+    
+    }
+    
+  })
+  
+ 
+  function dateFormat(date){
     return moment(date).format("MMM DD, YYYY")
-}
-const calendarOptions = reactive({
+  }
+  
+  const calendarOptions = reactive({
     plugins: [interactionPlugin, resourceTimelinePlugin],
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     timeZone: 'UTC',
     initialView: 'resourceTimeline',
-    initialDate: '2023-05-17',
-    dateIncrement: { days: 5 },
-    dayHeaderContent: (args) => {
-        return moment(args.date).format('MMM YYYY');
-    },
+    resourceOrder: 'sort_order',
+    dateIncrement: { days: 3 },
+    nowIndicator: true,
+    now: working_day.date_working_day + " 12:00:00",
+    initialDate: fullcalendarInitialDate.value,  
+    stickyHeaderDates:true,
+    headerToolbar: false,
+    refetchResourcesOnNavigate: true, 
     visibleRange: function (currentDate) {
-        // Generate a new date for manipulating in the next step
+        // // Generate a new date for manipulating in the next step
         var startDate = new Date(currentDate.valueOf());
         var endDate = new Date(currentDate.valueOf());
-
+  
         // Adjust the start & end dates, respectively
         startDate.setDate(startDate.getDate() - 1); // One day in the past
-
+  
         endDate.setDate(endDate.getDate() + 31); // Two days into the future
-
+  
         // Remove times from start/end
         startDate = startDate.toISOString().substr(0, 10);
-        endDate = endDate.toISOString().substr(0, 10);
-
+        endDate = endDate.toISOString().substr(0, 10); 
+  
         return { start: startDate, end: endDate };
     },
-    resourceAreaColumns: [
-        {
-            labelText: 'xxx',
-            headerContent: 'Room'
-        },
-   
-        {
-            field: 'housekeeping_status',
-            width: 80,
-            cellDidMount: function (arg) {
-                if (arg.fieldValue)
-                    arg.el.innerHTML = `<div class="pt-2 pl-1">${arg.fieldValue}</div>`;
-
-            },
-            cellClassNames: 'area-column-hide-value'
-        }
-    ],
+    resourceAreaColumns:resourceColumn(),
     resources: function (info, successCallback, failureCallback) {
-
-        call.get('edoor.api.frontdesk.get_room_chart_resource', {
-            property: "propety_1",
-            room_type: "room_type",
-            building: "building"
-        }).then((result) => {
-            console.log(result.message)
+  
+        call.get('edoor.api.frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
             successCallback(result.message)
         }).catch((error) => {
-            alert("load data fiale")
+            console.log(error)
+            //alert("load data fiale")
         });
     },
     events: function (info, successCallback, failureCallback) {
-
+       
         call.get('edoor.api.frontdesk.get_room_chart_calendar_event', {
             start: info.start,
             end: info.end,
@@ -122,16 +161,17 @@ const calendarOptions = reactive({
             room_type: "room_type",
             building: "building"
         }).then((result) => {
+                
                 successCallback(result.message)
             })
             .catch((error) => {
                 alert("load data fiale")
             });
     },
-
+  
     selectable: true,
     editable: true,
-    resourceAreaWidth: "350px",
+    resourceAreaWidth: "250px",
     height: 'auto',
     slotDuration: {
         "hours": 12
@@ -139,21 +179,44 @@ const calendarOptions = reactive({
     slotLabelInterval: {
         "hours": 24
     },
-    slotLabelFormat: [
-        {
-            day: '2-digit',
-        }
-    ],
+   
+    slotLabelFormat : function (date) {
+      
+      //console.log(date.date.year,date.date.month,date.date.day)
+      // console.log(moment(date.date.marker).format("DD"))
+      return " "
+    },
 
-    dateClick: (($event) => {
-        console.log($event)
+    slotLabelDidMount:function(date){
+      
+      const d = moment(date.date).format("DD")
+      const day = moment(date.date).format("ddd")
+      if(moment( date.date).format("yyyy-MM-DD") ==working_day.date_working_day ){
+        date.el.getElementsByTagName("a")[0].innerHTML ="<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" +  day + "</span><br/>" + d  + "<br/><span class='font-light'>"+ moment(date.date).format("MMM") + "</span></div>"
+      }else{ 
+      if(day=="Sat" || day =="Sun"){
+        date.el.getElementsByTagName("a")[0].innerHTML ="<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" +  day + "</span><br/>" + d + "<br/><span class='font-light'>"+ moment(date.date).format("MMM") + "</span></div>"
+      } 
+      else{
+        date.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d  + "<br/><span class='font-light'>"+ moment(date.date).format("MMM")+"</span></div>"
+      }
+    }
+      
+  
+      //console.log()
+    },
+    
+    select: (($event) => {
+        
+        onSelectedDate($event)
     }),
     eventResizeStop: (($event) => {
         console.log($event)
     }),
     eventClick: ((info) => {
         const data = info.event._def.extendedProps  ;
-        showReservationDetail(data.reservation)
+
+        showReservationStayDetail(data.reservation_stay)
     }),
     eventMouseEnter: (($event) => {
         eventInfo.data = $event.event;
@@ -168,15 +231,222 @@ const calendarOptions = reactive({
             info.revert();
         }
     }
+  
+  })
+  function onSelectedDate(event) {
+    const start = event.startStr
+        const end = event.endStr
+        const totalSlotsSelected = Math.abs(new Date(end) - new Date(start)) / 1000 / 60 / 60 / 24
+ 
+    if(totalSlotsSelected<1){
+        return
+    }        
 
-})
-function onSelected($event) {
-    console.log($event)
-}
+    if(event.resource._resource.extendedProps.type=="room"){
+        
+        const dialogRef = dialog.open(NewReservation, {
+        data: {
+            arrival_date: event.start,
+            departure_date:event.end,
+            room_type_id:event.resource._resource.parentId,
+            room_id:event.resource._resource.id
+        },
+        props: {
+            header: 'New Reservation',
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data != undefined) {
+                showReservationDetail(data.name)
+            }
+        }
+    });
+    }
+  
+  
+  }
+  function resourceColumn(){
+    if(filter.view_type == 'room_type'){
+        return [
+            {
+                labelText: 'xxx',
+                headerContent: 'Room'
+            },
+            {
+                field: 'housekeeping_status',
+                width: 40,
+                cellContent: function(arg) {
+                    const el = arg.resource._context.calendarApi.el
+                    const item = arg.resource.extendedProps
+                    if(item.housekeeping_icon){
+                        el.innerHTML = `<div class="cell-status text-center" title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                    }
+                    else{
+                        el.innerHTML = ''
+                    }
 
+                    let dom = [ el.innerHTML ]
+                    return { html: dom }
+                }
+            }
+        ]
+    }else{
+        return [
+            {
+                labelText: 'xxx',
+                headerContent: 'Room'
+            },
+            {
+                field: 'room_type_alias',
+                headerContent: 'Room Type',
+                cellContent: function(arg) {
+                    const el = arg.resource._context.calendarApi.el
+                    const item = arg.resource.extendedProps
+                    
+                    if(item.room_type){
+                        el.innerHTML = `<div title="${item.room_type}">${arg.fieldValue}</div>`;
+                    }
+                    else{
+                        el.innerHTML = ''
+                    }
+                    const dom = [ el.innerHTML ]
+                    return { html: dom }
+                }
+            },
+            {
+                field: 'housekeeping_status',
+                width: 40,
+                cellContent: function(arg) {
+                    const el = arg.resource._context.calendarApi.el
+                    const item = arg.resource.extendedProps
+                    if(item.housekeeping_icon){
+                        el.innerHTML = `<div class="cell-status text-center" title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                    }
+                    else{
+                        el.innerHTML = ''
+                    }
 
-function showReservationDetail(name) {
+                    const dom = [ el.innerHTML ]
+                    return { html: dom }
+                }
+            }
+        ]
+    }
+  }
+  function onView(){
+    if(localStorage.getItem('reservation_chart_view') != null){
+        filter.view_type = localStorage.getItem('reservation_chart_view')
+        filter.view_type = filter.view_type == 'room_type' ? 'room' : 'room_type'
+        roomChartResourceFilter.view_type = filter.view_type
+        localStorage.setItem('reservation_chart_view', filter.view_type)
+    }else{
+        roomChartResourceFilter.view_type = filter.view_type
+        localStorage.setItem('reservation_chart_view', filter.view_type)
+    }
     
+    const cal =  fullCalendar.value.getApi()
+    cal.setOption('resourceAreaColumns', resourceColumn())
+    cal.refetchResources()
+  }
+  function onFilter(key, refresh = false, filter_date = ''){
+    filter.peroid = key
+    const cal =  fullCalendar.value.getApi()
+    const visibleRange = cal.currentData.options.visibleRange
+    const initialDate = cal.currentData.options.initialDate
+    if(visibleRange.start == undefined || refresh == true || filter_date != ''){
+        if(filter_date != ''){
+            visibleRange.start = moment(filter_date).format("yyyy-MM-DD")
+
+        }
+        else{
+            visibleRange.start = moment(initialDate).format("yyyy-MM-DD")
+        }
+    }
+    if(key == 'week'){
+        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(7, 'days').format("yyyy-MM-DD") });
+    }
+    else if(key == '14_days'){
+        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(14, 'days').format("yyyy-MM-DD") });
+    }
+    else if(key == 'month'){
+        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(1, 'months').format("yyyy-MM-DD") });
+    }
+  }
+  function onFilterToday(){
+    onFilter(filter.peroid, true)
+  }
+  function onFilterDate(event){
+    const filter_date = moment(event).add(-1, 'days')
+    onFilter(filter.peroid, false, filter_date)
+  }
+  function onPrevNext(key){
+    const cal =  fullCalendar.value.getApi()
+    const visibleRange = cal.currentData.options.visibleRange
+    const dateIncrement = cal.currentData.options.dateIncrement
+    if(visibleRange.start == undefined || visibleRange.end == undefined){
+        const initialDate = cal.currentData.options.initialDate
+        visibleRange.start = moment(initialDate).format("yyyy-MM-DD")
+        visibleRange.end = moment(initialDate).add(1, 'months').format("yyyy-MM-DD")
+    }
+    if(key == 'prev'){
+        const startDate = moment(visibleRange.start).add((dateIncrement.days * -1), 'days').format("yyyy-MM-DD")
+        const endDate = moment(visibleRange.end).add((dateIncrement.days * -1), 'days').format("yyyy-MM-DD")
+        cal.changeView('resourceTimeline', { start: startDate, end: endDate });
+    }
+    else if(key == 'next'){
+        const startDate = moment(visibleRange.start).add((dateIncrement.days), 'days').format("yyyy-MM-DD")
+        const endDate = moment(visibleRange.end).add((dateIncrement.days), 'days').format("yyyy-MM-DD")
+        cal.changeView('resourceTimeline', { start: startDate, end: endDate });
+    } 
+  }
+
+  const onRefresh = () =>{
+    const cal =  fullCalendar.value.getApi()
+    cal.refetchEvents() 
+    // cal.setOption({now:"2023-05-18"})
+  }
+//   function onOrder(){
+//     const cal = fullCalendar.value.getApi()
+//     cal.setOption('resourceOrder', '-sort_order')
+//   }
+  function showReservationStayDetail(name) {
+   
+    const dialogRef = dialog.open(ReservationStayDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Reservation Stay Detail',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if(data){
+                if(data.action="view_reservation_detail"){
+                    showReservationDetail(data.reservation)
+                }
+            }
+        }
+    });
+  }
+
+  
+
+  function showReservationDetail(name) {
+   
     const dialogRef = dialog.open(ReservationDetail, {
         data: {
             name: name
@@ -184,32 +454,60 @@ function showReservationDetail(name) {
         props: {
             header: 'Reservation Detail',
             style: {
-                width: '50vw',
+                width: '80vw',
             },
             maximizable: true,
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
             modal: true
         },
         onClose: (options) => {
-            console.log(options)
+            const data = options.data;
+            if(data){
+                 
+            }
         }
     });
-}
+  }
 
+  onMounted(()=>{
+   
+    // call.get("edoor.api.frontdesk.get_working_day", {
+    //       property: property.name
+    //   }).then((result) => {
+   
+    //     working_day.value = result.message
+    //     fullCalendar.value.getApi().gotoDate(working_day.value.date_working_day);
+    //     //fullCalendar.value.getApi().setOption("now",working_day.value.date_working_day);
+         
+  
+    //   })
 
+    filterDate.value = moment(fullcalendarInitialDate.value).toDate()
+  
+  })
+  
+  onUnmounted(() => {
+    socket.off("RefresheDoorDashboard");
+    socket.disconnect()
+  })
+  </script>
+  <style>
+   
+  .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame{
+    justify-content:center!important
+  }
+  .current_day{
+    background: #5b029f;
+    color: #fff;
+  }
+  .line-height-15{
+    line-height: 15px;
+  }
+  .room-chart-celendar .p-datepicker-buttonbar button[aria-label="Clear"] {
+    display: none;
+    }
+    .room-chart-celendar .p-datepicker-buttonbar button[aria-label="Today"] {
+        flex-grow: 1;
+    }
+    
 
-</script>
-<style>
-.fc-h-event {
-    padding: 0;
-}
-.fc-event { height: 40px !important; }
-.fc-event-main,
-.fc-event-main > span {
-    display: block;
-    height: 100%;
-}
-</style>
+  </style>

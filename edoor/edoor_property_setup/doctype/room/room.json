@@ -17,7 +17,9 @@
   "room_number",
   "sort_order",
   "housekeeping_status",
-  "status_color"
+  "status_color",
+  "housekeeping_icon",
+  "room_type_alias"
  ],
  "fields": [
   {
@@ -88,11 +90,24 @@
   {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "housekeeping_status.icon",
+   "fieldname": "housekeeping_icon",
+   "fieldtype": "Code",
+   "hidden": 1,
+   "label": "Housekeeping Icon"
+  },
+  {
+   "fetch_from": "room_type_id.alias",
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-18 17:02:18.160596",
+ "modified": "2023-05-25 11:29:03.997348",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

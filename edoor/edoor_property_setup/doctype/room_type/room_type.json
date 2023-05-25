@@ -14,7 +14,8 @@
   "alias",
   "base_adult",
   "base_child",
-  "rate"
+  "rate",
+  "sort_order"
  ],
  "fields": [
   {
@@ -58,11 +59,16 @@
    "fieldname": "alias",
    "fieldtype": "Data",
    "label": "Alias"
+  },
+  {
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-18 16:49:56.365066",
+ "modified": "2023-05-25 11:10:44.376763",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

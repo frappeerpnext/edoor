@@ -22,10 +22,12 @@ import call from "../../../doppio/libs/controllers/call";
 
 import Auth from "../../../doppio/libs/controllers/auth";
 import { FrappeApp } from 'frappe-js-sdk';
-import {resourcesPlugin} from "./resources"
+import { resourcesPlugin } from "./resources"
 import { setConfig, frappeRequest } from './resource'
 setConfig('resourceFetcher', frappeRequest)
 import PrimeVue from 'primevue/config';
+import ConfirmationService from 'primevue/confirmationservice';
+
 
 const app = createApp(App);
 
@@ -81,12 +83,18 @@ import Badge from 'primevue/badge';
 import Chip from 'primevue/chip';
 import DialogService from 'primevue/dialogservice';
 import AutoComplete from 'primevue/autocomplete';
+import Calendar from 'primevue/calendar';
 // custom components //
 import ComAvatar from './components/form/ComAvatar.vue'
 import ComAutoComplete from './components/form/ComAutoComplete.vue'
+import ComSelect from './components/form/ComSelect.vue'
 import ComPanel from './components/layout/components/ComPanel.vue'
+import ComHeader from './components/layout/components/ComHeader.vue'
+import ComFieldset from './components/layout/components/ComFieldset.vue'
 
 import socket from './utils/socketio';
+
+
 
 
 
@@ -132,18 +140,23 @@ app.component('Badge', Badge);
 app.component('Chip', Chip);
 app.component('Tooltip', Tooltip);
 app.component('AutoComplete', AutoComplete)
+app.component('Calendar', Calendar)
 
 // use custom components //
 app.component('ComAvatar', ComAvatar)
-app.component('ComPanel',ComPanel)
-app.component('ComAutoComplete',ComAutoComplete)
- 
+app.component('ComPanel', ComPanel)
+app.component('ComAutoComplete', ComAutoComplete)
+app.component('ComSelect', ComSelect)
+app.component('ComHeader', ComHeader)
+app.component('ComFieldset', ComFieldset)
+
+
 
 
 // Plugins
 app.use(router);
 app.use(resourcesPlugin);
-app.use(PrimeVue,{ 
+app.use(PrimeVue, {
 	ripple: true,
 	inputStyle: "filled",
 	pt: {
@@ -155,12 +168,13 @@ app.use(PrimeVue,{
 app.use(ToastService);
 app.use(DialogService);
 app.use(resourceManager);
+app.use(ConfirmationService);
 
 // Global Properties,
 // components can inject this
 app.provide("$auth", auth);
 app.provide("$call", call);
-app.provide("$socket",socket)
+app.provide("$socket", socket)
 app.provide("$frappe", frappe);
 
 app.directive('badge', BadgeDirective);
@@ -185,7 +199,7 @@ router.beforeEach(async (to, from, next) => {
 			window.location.replace(serverUrl)
 		} else {
 			next();
-		} 
+		}
 	} else {
 		if (auth.isLoggedIn) {
 			next({ name: 'Dashboard' });
@@ -195,21 +209,25 @@ router.beforeEach(async (to, from, next) => {
 		next();
 	}
 });
-apiCall.get('edoor.api.frontdesk.get_logged_user').then((r)=>{
-	
-	localStorage.setItem('edoor_user', JSON.stringify(r.message))
-	if(r.message.property){
-		if (r.message.property.length==1){
+apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
+	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
+}).then((r) => {
+	console.log(r)
+	localStorage.setItem('edoor_user', JSON.stringify(r.message.user))
+	localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
+
+	if (r.message.property) {
+		if (r.message.property.length == 1) {
 			localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
 		}
 	}
+
 	app.mount("#app");
 
-}).catch((error)=>{
-	 
-	const errorApp = createApp(Error);
-	errorApp.mount("#app");
+}).catch((error) => {
+
+	// const errorApp = createApp(Error);
+	// errorApp.mount("#app");
 })
 
 
- 
