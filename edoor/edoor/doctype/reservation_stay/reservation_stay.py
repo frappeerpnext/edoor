@@ -37,7 +37,7 @@ class ReservationStay(Document):
 			self.room_types = ','.join([d.room_type for d in self.stays])
 
 		for d in self.stays:
-			
+			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
@@ -62,34 +62,54 @@ class ReservationStay(Document):
 			#d.total_amount = (d.rate or  0 )* (d.room_nights or 1)
 
 	def after_insert(self):
-		
-		dates = get_date_range(self.arrival_date, self.departure_date)
-		for stay in self.stays: 
-			for d in dates:
-				#generate room to room occupy
-				frappe.get_doc({
-					"doctype":"Temp Room Occupy",
-					"room_type_id":stay.room_type_id,
-					"room_id":stay.room_id,
-					"date":d,
-					"type":"Reservation",
-					"property":self.property
-				}).insert()
+		#generate_room_occupy_and_rate(self)
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy_and_rate", queue='short', self=self)
+
+def generate_room_occupy_and_rate(self):		
+	dates = get_date_range(self.arrival_date, self.departure_date)
+	for stay in self.stays: 
+		for d in dates:
+			#generate room to temp room occupy
+			frappe.get_doc({
+				"doctype":"Temp Room Occupy",
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"type":"Reservation",
+				"property":self.property,
+				"stay_room_id":stay.name,
+				"is_arrival":1 if d == self.arrival_date
+			}).insert()
 
 
+			#generate room to room occupy
+			frappe.get_doc({
+				"doctype":"Room Occupy",
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"type":"Reservation",
+				"property":self.property,
+				"stay_room_id":stay.name,
+				"reservation":self.reservation,
+				"reservation_stay":self.name
+			}).insert()
 
-				#generate room to reservation room rate
-				frappe.get_doc({
-					"doctype":"Reservation Room Rate",
-					"reservation":self.reservation,
-					"reservation_stay":self.name,
-					"room_type_id":stay.room_type_id,
-					"room_id":stay.room_id,
-					"date":d,
-					"rate":stay.rate,
-					"rate_type":self.rate_type,
-					"property":self.property
-				}).insert()
+
+			#generate room to reservation room rate
+			frappe.get_doc({
+				"doctype":"Reservation Room Rate",
+				"reservation":self.reservation,
+				"reservation_stay":self.name,
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"rate":stay.rate,
+				"rate_type":self.rate_type,
+				"property":self.property
+			}).insert()
+
+	
 				 
 
 
