@@ -1,170 +1,181 @@
 <template>
-    <div class="n__re-custom">
-        <div class="grid">
-            <div class="flex col">
-                <div class="arr_wfit">
-                    <label>Arrival Date</label><br />
-                    <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.arrival_date"
-                        placeholder="Arrival Date" @date-select="onDateSelect" dateFormat="dd-mm-yy" />
-                </div>
-                <div class="night__wfit">
-                    <label class="hidden">Room Night</label><br />
-                    <ComReservationInputNight v-model="doc.reservation.room_night" @onUpdate="onRoomNightChanged" />
-                </div>
-                <div class="arr_wfit">
-                    <label>Departure Date</label><br />
-                    <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
-                        placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
-                        :minDate="departureMinDate" />
-                </div>
-            </div>
-            <div class="col">
-                <label>Internal Ref. Number</label><br />
-                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Internal Ref. Number"
-                    v-model="doc.reservation.internal_reference_number" />
-            </div>
-            <div class="col">
-                <label>Reservation Date</label><br />
-                <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
-                    placeholder="Reservation Date" dateFormat="dd-mm-yy" />
-            </div>
-        </div>
-        <div>
-            <label>Business Source</label><br />
-            <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
-                doctype="Business Source" />
-        </div>
-        <div>
-            <label>Rate Type</label><br />
-            <ComAutoComplete v-model="doc.reservation.rate_type" placeholder="Rate Type" doctype="Rate Type" />
-        </div>
-        <div>
-            <label>Adult</label><br />
-            <InputNumber v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="1" :max="100" />
-        </div>
-        <div>
-            <label>Child</label><br />
-            <InputNumber v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0" :max="100" />
-        </div>
-        <div>
-            Total Pax: {{ total_pax }}
-        </div>
-        <!-- {{ working_day.date_working_day }} -->
-        <!-- {{ working_day }} -->
-        <label>Select Customer</label>
-        <ComAutoComplete v-model="doc.reservation.guest" class="pb-2" placeholder="Guest" doctype="Customer"
-            @onSelected="onSelectedCustomer" />
-        <hr>
-
-        <div class="py-2 clan-grid-set">
-            <ComFieldset nameLegend='New guest info'>
-                <h1>New Guest Info</h1>
-                <div class="grid grid-rows-4 grid-flow-col gap-4">
+    <div class="n__re-custom grid">
+        <div class="col">
+            <div class="bg-card-info border-round-xl p-3 h-full">
+                <div class="">
                     <div>
-                        <label>Guest Name</label>
-                        <InputText type="text" class="p-inputtext-sm h-12" placeholder="Guest Name"
-                            v-model="doc.guest_info.customer_name_en" />
+                        <label>Reservation Date<span class="sup-rq-custom">*</span></label><br />
+                        <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
+                            placeholder="Reservation Date" dateFormat="dd-mm-yy" showButtonBar />
                     </div>
-                    <div>
-                        <label>Guest Type</label>
-                        <ComAutoComplete v-model="doc.guest_info.customer_group" placeholder="Guest Type"
-                            doctype="Customer Group" />
+                    <div class="pt-2">
+                        <label>Internal Ref. No</label><br />
+                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Internal Ref. Number"
+                            v-model="doc.reservation.internal_reference_number" />
                     </div>
-                    <div>
-                        <label>Gender</label>
-                        <Dropdown v-model="doc.guest_info.gender" :options="gender_list" placeholder="Gender" />
-                    </div>
-                    <div>
-                        <label>Country</label>
-                        <ComAutoComplete v-model="doc.guest_info.country" placeholder="Country" doctype="Country" />
-                    </div>
-                    <div>
-                        <label>Phone Number</label>
-                        <InputText type="text" class="p-inputtext-sm" placeholder="Phone Number"
-                            v-model="doc.guest_info.phone_number" />
-                    </div>
-                    <div>
-                        <label>Email Address</label>
-                        <InputText type="text" class="p-inputtext-sm" placeholder="Email Address"
-                            v-model="doc.guest_info.email_address" />
-                    </div>
-                    <div>
-                        <label>Identity Type</label>
-                        <ComAutoComplete v-model="doc.guest_info.identity_type" placeholder="Identity Type"
-                            doctype="Identity Type" />
-                    </div>
-                    <div>
-                        <label>ID/Passport Number</label>
-                        <InputText type="text" class="p-inputtext-sm" placeholder="ID/Passport Number"
-                            v-model="doc.guest_info.id_card_number" />
-                    </div>
-                    <div>
-                        <label>ID Expire Date</label>
-                        <Calendar class="p-inputtext-sm" v-model="doc.guest_info.expired_date" placeholder="ID Expire Date"
-                            dateFormat="dd-mm-yy" />
-                    </div>
-                </div>
-            </ComFieldset>
-            <div class="pt-2">
-                <ComFieldset nameLegend='Stay information'>
-                    <div class="grid grid-rows-4 grid-flow-col gap-4">
-                        <div>
-                            <label>Note</label>
-                            <InputText type="text" class="p-inputtext-sm" placeholder="Note"
-                                v-model="doc.reservation.note" />
+                    <div class="grid pt-2 m-0">
+                        <div class="arr_wfit col px-0">
+                            <label>Arrival</label><br />
+                            <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
+                                v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
+                                @date-select="onDateSelect" dateFormat="dd-mm-yy" showButtonBar />
+                        </div>
+                        <div class="night__wfit col-fixed px-0">
+                            <div>
+                                <label class="hidden">Room Night</label><br />
+                            </div>
+                            <ComReservationInputNight v-model="doc.reservation.room_night" @onUpdate="onRoomNightChanged" />
+                        </div>
+                        <div class="arr_wfit col px-0">
+                            <label>Departure</label><br />
+                            <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
+                                placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
+                                :minDate="departureMinDate" />
                         </div>
                     </div>
-                </ComFieldset>
+                </div>
+
+                <div class="">
+                    <div class="grid">
+                        <div class="col">
+                            <div class="pt-2">
+                                <label>Business Source</label><br />
+                                <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
+                                    doctype="Business Source" class="auto__Com_Cus w-full" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="pt-2">
+                                <label>Rate Type</label><br />
+                                <ComAutoComplete v-model="doc.reservation.rate_type" placeholder="Rate Type"
+                                    doctype="Rate Type" class="auto__Com_Cus w-full" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid pt-2">
+                        <div class="col">
+                            <label>Adults</label><br />
+                            <InputNumber v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="1"
+                                :max="100" class="w-full" />
+                        </div>
+                        <div class="col">
+                            <label>Children</label><br />
+                            <InputNumber v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0"
+                                :max="100" class="w-full" />
+                        </div>
+                        <div class="col-fixed" style="width: 100px">
+                            <label>Total Pax</label><br>
+                            <div class="p-inputtext-pt text-center border-0 h-12">{{ total_pax }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-            <ComFieldset nameLegend='Room'>
-                <table>
-                    <tr>
-                        <th>Room Type</th>
-                        <th>Room</th>
-                        <th>Rate</th>
-                        <th>Room Nights</th>
-                        <th>Amount</th>
-                    </tr>
-                    <tr v-for="(  d, index  ) in   doc.reservation_stay  " :key="index">
-                        <td>
-                            <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
-                                optionLabel="room_type" placeholder="Select Room Type" class="w-full md:w-14rem" />
-                        </td>
-
-                        <td>
-
-                            <Dropdown v-model="d.room_id" :options="rooms.filter((r) => r.room_type_id == d.room_type_id)"
-                                optionValue="name" optionLabel="room_number" placeholder="Select Room" showClear filter
-                                class="w-full md:w-14rem" />
-                        </td>
-                        <td>
-                            <InputText type="text" class="p-inputtext-sm" placeholder="Rate" v-model="d.rate" />
-                        </td>
-
-                        <td>
-                            {{ doc.reservation.room_night }}
-                        </td>
-                        <td>
-                            {{ (doc.reservation.room_night ?? 0) * (d.rate ?? 0) }}
-                        </td>
-
-
-
-                    </tr>
-                </table>
-                Total Room Night: {{ doc.reservation.room_night * doc.reservation_stay.length }}
-                Total Amount: {{ doc.reservation_stay.reduce((n, d) => n + d.rate * doc.reservation.room_night, 0) }}
-            </ComFieldset>
+        <div class="col">
+            <div class="bg-card-info border-round-xl p-3 h-full">
+                <h1 class="text-lg line-height-4 font-bold mb-3">Guest Information</h1>
+                <div>
+                    <div class="w-full n__re-custom">
+                        <label>Search Guest</label>
+                        <ComAutoComplete v-model="doc.reservation.guest" class="pb-2" placeholder="Guest" doctype="Customer"
+                            @onSelected="onSelectedCustomer" />
+                        <div class="grid">
+                            <div class="col-12 pt-2">
+                                <label>Guest Name</label><br />
+                                <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Guest Name"
+                                    v-model="doc.guest_info.customer_name_en" />
+                            </div>
+                            <div class="col-4 pt-2">
+                                <label>Guest Type</label><br />
+                                <ComAutoComplete v-model="doc.guest_info.customer_group" class="w-full"
+                                    placeholder="Guest Type" doctype="Customer Group" />
+                            </div>
+                            <div class="col-4 pt-2">
+                                <label>Gender</label><br />
+                                <Dropdown v-model="doc.guest_info.gender" :options="gender_list" placeholder="Gender"
+                                    class="w-full" />
+                            </div>
+                            <div class="col-4 pt-2">
+                                <label>Country</label><br />
+                                <ComAutoComplete v-model="doc.guest_info.country" class="w-full" placeholder="Country"
+                                    doctype="Country" />
+                            </div>
+                            <div class="col-4 pt-1">
+                                <label>Phone Number</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                                    v-model="doc.guest_info.phone_number" />
+                            </div>
+                            <div class="col-4 pt-1">
+                                <label>Email Address</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email Address"
+                                    v-model="doc.guest_info.email_address" />
+                            </div>
+                            <div class="col-4 pt-1">
+                                <label>Identity Type</label><br />
+                                <ComAutoComplete v-model="doc.guest_info.identity_type" class="w-full"
+                                    placeholder="Identity Type" doctype="Identity Type" />
+                            </div>
+                            <div class="col-4 pt-1">
+                                <label>ID/Passport Number</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                                    v-model="doc.guest_info.id_card_number" />
+                            </div>
+                            <div class="col-4 pt-1">
+                                <label>ID Expire Date</label><br />
+                                <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
+                                    placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-
-
-        <Button @click="onSave">Save</Button>
-        <Button @click="onAddRoom">Add</Button>
-        <hr />
-        {{ doc }}
+    </div>
+    <div class="bg-card-info border-round-xl mt-3 p-3 add-room-reserv">
+        <div class="grid" v-for="(  d, index  ) in   doc.reservation_stay  " :key="index">
+            <div class="col">
+                <div class="font-medium" v-if="index == 0">Room Type</div>
+                <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name" optionLabel="room_type"
+                    placeholder="Select Room Type" class="w-full" />
+            </div>
+            <div class="col">
+                <div class="font-medium" v-if="index == 0">Room Name</div>
+                <Dropdown v-model="d.room_id" :options="rooms.filter((r) => r.room_type_id == d.room_type_id)"
+                    optionValue="name" optionLabel="room_number" placeholder="Select Room" showClear filter
+                    class="w-full" />
+            </div>
+            <div class="col">
+                <div class="font-medium" v-if="index == 0">Rate</div>
+                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Rate" v-model="d.rate" />
+            </div>
+            <div class="col-fixed" style="width:150px">
+                <div class="font-medium" v-if="index == 0">Total Nights</div>
+                <div class="p-inputtext-pt text-center border-0 h-12">{{ doc.reservation.room_night }}</div>
+            </div>
+            <div class="col-fixed" style="width:150px">
+                <div class="font-medium" v-if="index == 0">Amount</div>
+                <div class="p-inputtext-pt text-center border-0 h-12">{{ (doc.reservation.room_night ?? 0) * (d.rate ??
+                    0)
+                }}</div>
+            </div>
+            <div class="col-1">
+                <div class="flex justify-end w-full h-12" v-if="index != 0">
+                    <Button icon="pi pi-trash" @click="deleteResRoom" class="tr-h__custom text-3xl h-full"
+                        aria-label="Filter" />
+                </div>
+            </div>
+        </div>
+        <Button @click="onAddRoom" class="px-4 border-round-xl border-0">Add Room</Button><br />
+    </div>
+    <!-- <hr class="my-3"> -->
+    <div class="mt-3">
+        <div>
+            <label>Note</label><br />
+            <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30" class="w-full border-round-xl" />
+        </div>
+    </div>
+    <div class="flex justify-end w-full mt-1">
+        <Button class="h-12 border-round-xl border-0" @click="onSave">Save</Button>
     </div>
 </template>
 <script setup>
@@ -202,8 +213,7 @@ const doc = ref({
         "doctype": "Customer",
         "gender": "Not Set"
     },
-    reservation_stay: [
-        {},]
+    reservation_stay: [{ rate: 0 },]
 })
 
 const gender_list = ["Not Set", "Male", "Female"]
@@ -247,7 +257,7 @@ const getRooms = () => {
         .then((result) => {
 
             rooms.value = result.message;
-            console.log(result)
+            console.log("room", result)
         })
 }
 
@@ -272,7 +282,7 @@ const onAddRoom = () => {
             // room_type: null,
             // room_id: "RM-0039",
             // room_number: null,
-            // rate: 150
+            rate: 0
 
         }
     )
@@ -320,7 +330,7 @@ onMounted(() => {
             getRoomType()
             getRooms()
         } else {
-
+            console.log(dialogRef.value.data)
             if (dialogRef.value.data?.arrival_date) {
                 doc.value.reservation.arrival_date = dialogRef.value.data.arrival_date
                 doc.value.reservation.departure_date = dialogRef.value.data.departure_date

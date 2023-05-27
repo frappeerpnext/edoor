@@ -65,15 +65,7 @@
             </ComPanel>
         </div>
         <div class="col-2">
-            <ComPanel title="Room Status">
-                <div class="px-1">
-                    <template v-for="(item, index) in data.housekeeping_status" :key="index">
-                        <ComDashboardRowStatus :value="item.total" :badgeColor="item.color" :icon="item.icon">
-                            <template #content>{{ item.status }}</template> >
-                        </ComDashboardRowStatus>
-                    </template>
-                </div>
-            </ComPanel>
+            <ComHousekeepingStatus/>
         </div>
     </div>
 
@@ -141,6 +133,7 @@ import { useToast } from "primevue/usetoast";
 import { useDialog } from 'primevue/usedialog';
 import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
 import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
+import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")

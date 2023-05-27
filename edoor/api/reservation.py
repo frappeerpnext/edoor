@@ -47,13 +47,16 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
             room_type_id = if('{1}'='', room_type_id, '{1}') and
             name not in (
                 select 
-                    room_id 
+                    distinct
+                    coalesce(room_id,'') 
                 from `tabTemp Room Occupy` 
                 where
                     date between '{2}' and '{3}' 
             )   
     """
+
     sql = sql.format(property,room_type_id,start_date, end_date)
+     
     data = frappe.db.sql(sql,as_dict=1)
     return data
 
@@ -87,6 +90,10 @@ def add_new_fit_reservation(doc):
     
     #start insert insert reservation stay
     for d in doc["reservation_stay"]:
+        room = None
+        if   'room_id' in d.keys():
+            room = d["room_id"]
+
         stay = {
             "doctype":"Reservation Stay",
             "reservation":reservation.name,
@@ -97,8 +104,8 @@ def add_new_fit_reservation(doc):
                 {
                     "doctype":"Reservation Stay Room",
                     "room_type_id": d["room_type_id"],
-                    "room_id":d["room_id"],
-                    "rate":d["rate"],
+                    "room_id":room,
+                    "rate":d["rate"] or 0,
                     "guest":reservation.guest,
                     "reservation_status":"Reserved",
                     "start_time":reservation.arrival_time,

@@ -19,8 +19,13 @@
     --text-color-btn: #000;
     --font-size: 13px;
     --bg-tb-color: #eaf0f5;
+    --bg-card-info: #f4f5fa;
+    --trash-can-bg: #e6e6e6;
 }
 
+.bg-card-info {
+    background-color: var(--bg-card-info);
+}
 
 .bg-system-date {
     background-color: var(--bg-mango-color);
@@ -300,10 +305,6 @@ button.p-button,
     font-size: 1rem !important;
 }
 
-/* .p-calendar .p-inputtext.depart-arr {
-    width: 350px !important;
-} */
-
 .night__btn_set .border-start-0 {
     border-left: 0 !important;
 }
@@ -318,4 +319,125 @@ button.p-button,
 
 .n__re-custom .arr_wfit {
     width: 37.5%;
+}
+
+label {
+    font-weight: 500;
+}
+
+.auto__Com_Cus .p-autocomplete,
+.auto__Com_Cus .p-autocomplete input,
+.n__re-custom .w-full .p-autocomplete input,
+.n__re-custom .w-full .p-autocomplete {
+    width: 100%;
+}
+
+
+.n__re-custom button.p-button {
+    padding: unset !important;
+}
+
+
+.n__re-custom .p-inputnumber-buttons-stacked .p-inputnumber-input {
+    border-right: 0 !important;
+}
+
+.p-inputtext-pt {
+    background: #ebf0f6;
+    padding: 0.65625rem 0.65625rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+}
+
+.tr-h__custom {
+    height: 100%;
+    background: var(--trash-can-bg);
+    border: var(--trash-can-bg);
+    color: var(--bg-btn-color);
+    padding: .65rem 1.65rem !important;
+}
+
+.tr-h__custom span {
+    font-size: 16px;
+}
+
+span.p-button-icon.pi.pi-ellipsis-h {
+    font-size: 1.5rem;
+}
+
+.p-focus.p-inputwrapper-focus {
+    outline: 0 !important;
+    box-shadow: unset !important;
+    border-color: var(--btn-border-color) !important;
+}
+
+.p-inputtext:enabled:focus {
+    border-color: var(--btn-border-color);
+    box-shadow: unset !important;
+}
+
+.p-datepicker-buttonbar button[aria-label="Clear"] {
+    display: none !important;
+}
+
+.p-datepicker-buttonbar button[aria-label="Today"] {
+    background: #EEF2FF;
+    width: 100% !important;
+}
+
+.p-datepicker-buttonbar {
+    justify-content: center !important;
+}
+
+.depart-arr.w-full.h-12.overflow-hidden input {
+    height: 100%;
+}
+
+.auto__Com_Cus input {
+    width: 100% !important;
+}
+
+.p-listbox .p-listbox-list {
+    padding: 0.5rem 0;
+}
+
+.p-listbox-list-wrapper .border-b.border-color-edoor {
+    padding-bottom: 0.5rem;
+}
+
+.n__re-custom .p-inputtext-sm .p-inputtext {
+    border-radius: .5rem;
+    /* border: transparent; */
+}
+
+.n__re-custom button.p-button,
+.n__re-custom .p-inputtext.p-inputtext-sm,
+.n__re-custom .auto__Com_Cus .p-autocomplete input,
+.n__re-custom .p-autocomplete .p-autocomplete-input,
+.n__re-custom .p-dropdown,
+.add-room-reserv .p-dropdown,
+.add-room-reserv .p-inputtext.p-inputtext-sm {
+    border-radius: 0.5rem;
+    /* border: transparent; */
+    background-color: #fff;
+}
+
+.n__re-custom .p-inputnumber-buttons-stacked .p-inputnumber-input {
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
+    /* border: transparent; */
+}
+
+.p-inputnumber-button-group .p-button-icon-only {
+    background: var(--bg-btn-color) !important;
+}
+
+.add-room-reserv .p-inputtext-pt,
+.add-room-reserv .p-button.p-button-icon-only,
+.n__re-custom .p-inputtext-pt {
+    border-radius: 0.5rem;
+    /* border: transparent; */
 }

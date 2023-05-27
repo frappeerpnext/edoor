@@ -1,15 +1,22 @@
 <template>
-    <div class="flex night__btn_set h-12" :class="className">
-        <Button class="border-start-0 w-3/12" @click="onDecrease" :disabled="(value <= 1)">-</Button>
-        <div class="text-center bg-black text-white p-2 w-6/12">
-            <div class="flex items-center justify-center w-full">
-                <div>
-                    <div style="line-height:.3">{{ value }}</div>
-                    <div>Nights</div>
+    <div class="night__btn_set" style="height: calc(100% - 19.5px);" :class="className">
+        <div class="h-full grid m-0">
+            <div class="col p-0 flex w-full h-full px-1">
+                <Button class="w-full h-full justify-center" @click="onDecrease" :disabled="(value <= 1)">-</Button>
+            </div>
+            <div class="col-6 p-0 h-full">
+                <div class="text-center bg-black text-white h-full border-round-xl">
+                    <div class="flex items-center justify-center w-full h-full">
+                        <div>
+                            <div style="line-height:1">{{ value }} <br /> <span style="font-size:11px">Nights</span></div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <div class="col p-0 flex w-full h-full px-1">
+                <Button class="w-full h-full justify-center" @click="onIncrease">+</Button>
+            </div>
         </div>
-        <Button class="border-end-0 w-3/12" @click="onIncrease">+</Button>
     </div>
 </template>
 <script setup>

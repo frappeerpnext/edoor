@@ -41,10 +41,6 @@
 
             <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy" v-model="filter.date_range"
                 selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
-
-
-
-
         </div>
 
         <hr />

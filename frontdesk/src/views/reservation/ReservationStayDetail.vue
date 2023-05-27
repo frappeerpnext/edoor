@@ -2,6 +2,58 @@
     <h1>Reservation Stay Detail</h1>
     <TabView>
         <TabPanel header="General Information">
+            <div class="grid mt-5 ml-0 ms-0">
+                <div class="col">
+                    <ComReservationStayDetailGuestInfo v-model="doc"/>
+                </div> 
+                <div class="col-5">
+                    <ComReservationStayPanel title="Stay Information" >
+                        <template #content>
+                        <div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Res. Date" :value="doc.reservation_stay?.name"  valueClass="grow"  ></ComBoxStayInformation>
+                                <ComBoxStayInformation title="Int. No" :value="doc.reservation_stay?.reservation"  valueClass="grow" titleClass="w-4rem" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Book. No" :value="doc.reservation_stay?.naming_series"  valueClass="grow" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Res. No" :value="doc.reservation_stay?.naming_series"  valueClass="grow" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <!-- <ComBoxStayInformation title="Rooms" :value="doc.reservation_stay?.rooms"  valueClass="grow" >
+                                    
+                                </ComBoxStayInformation> -->
+                                <div v-if="doc.reservation_stay?.rooms.split(',').length>3">
+                                    {{ doc.reservation_stay?.rooms.split(",").slice(0,3).join(",") }} view {{ doc.reservation_stay?.rooms.split(",").length  }} more
+                                </div>
+                                
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Arraval" :value="moment(doc.reservation_stay?.arrival_date).format('DD-MM-yyyy')" valueClass="col-4" ></ComBoxStayInformation>
+                                <ComBoxStayInformation :value="doc.reservation_stay?.arrival_time" valueClass="col" ></ComBoxStayInformation>
+                                <ComBoxStayInformation :value="moment(doc.reservation_stay?.arrival_date).format('ddd')" valueClass="col" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Departure" :value="doc.reservation_stay?.departure_date" valueClass="col-4" ></ComBoxStayInformation>
+                                <ComBoxStayInformation :value="doc.reservation_stay?.departure_time" valueClass="col" ></ComBoxStayInformation>
+                                <ComBoxStayInformation :value="doc.reservation_stay?.arrival_time" valueClass="col" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Nights" :value="doc.reservation_stay?.room_nights"  valueClass="col-2" ></ComBoxStayInformation>
+                            </div>
+                            <div class="flex mt-2">
+                                <ComBoxStayInformation title="Adults" :value="doc.reservation_stay?.room_nights"  valueClass="col-2" ></ComBoxStayInformation>
+                                <ComBoxStayInformation title="Children" :value="doc.reservation_stay?.room_nights"  valueClass="col-2" titleClass="w-5rem" ></ComBoxStayInformation>
+                            </div>
+                        </div>
+                        </template>
+                    </ComReservationStayPanel>
+                </div>
+                <div class="col">
+                    <ComReservationStayDetailChargeSummary :data="doc.reservation_stay"></ComReservationStayDetailChargeSummary>
+                </div>
+            </div>
             <ComFieldset nameLegend='Stay Information'>
             <div class="grid grid-rows-4 grid-flow-col gap-4">
                 <div>Name:{{ doc.reservation_stay?.name }}</div> 
@@ -10,7 +62,6 @@
                 <div>Modified:{{ doc.reservation_stay?.modified }}</div>
                 <div>Modified:{{ doc.reservation_stay?.modified_by }}</div>
                 <div>idx:{{ doc.reservation_stay?.idx }}</div>
-
             </div>    
                 Naming Series:{{ doc.reservation_stay?.naming_series }} <br/>
                 Reservation Type:{{ doc.reservation_stay?.reservation_type }} <br/>
@@ -55,10 +106,22 @@
                 Balance:{{ doc.reservation_stay?.balance }} <br/>
                 Require Pickup:{{ doc.reservation_stay?.require_pickup }} <br/>
                 Required Drop Off:{{ doc.reservation_stay?.required_drop_off }} <br/>
-                Doctype:{{ doc.reservation_stay?.doctype }} <br/>
-             
+                Doctype:{{ doc.reservation_stay?.doctype }} <br/>             
             </ComFieldset>
             <ComFieldset nameLegend='Master Guest'>
+                <div class="flex">
+                     <div class="">
+                        <!-- <Avatar image="/images/avatar/amyelsner.png" class="mr-2" size="xlarge" shape="circle" /> -->
+                        <div class="flex" >
+                        <Avatar icon="pi pi-user" class="mr-2" size="xlarge" shape="circle" />
+                        <div><spna> {{ doc.master_guest?.customer_name_en }} | {{ doc.master_guest?.customer_name_kh }} <Tag value="Primary" rounded></Tag>   </spna>
+                        <div> {{ doc.master_guest?.phoneNumber1 }}</div>
+                        <div>{{ doc.master_guest?.email_address }}</div>
+                        </div>
+                        </div>
+                     </div> 
+                </div>
+                {{ doc.master_guest }}
                 Customer Name en:{{ doc.master_guest?.customer_name_en }} <br/>
                 Customer Name kh:{{ doc.master_guest?.customer_name_kh }} <br/>
                 Customer Code Name:{{ doc.master_guest?.customer_code_name }} <br/>
@@ -153,13 +216,21 @@
     <ReservationPrintButton/>
 </template>
 <script setup>
-import { inject, ref, onMounted, computed, useToast } from '@/plugin'
+import { inject, ref, onMounted, computed, useToast,useRoute,useRouter } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 import ReservationPrintButton from "@/views/reservation/components/ReservationPrintButton.vue"
 import ComReservationStayRoomRate from '@/views/reservation/components/ComReservationStayRoomRate.vue';
+import ComCardProfileGuest from '@/views/reservation/components/ComCardProfileGuest.vue';
+import ComReservationStayDetailGuestInfo from './components/ComReservationStayDetailGuestInfo.vue';
+import ComReservationStayPanel from './components/ComReservationStayPanel.vue';
+import ComReservationStayDetailChargeSummary from './components/ComReservationStayDetailChargeSummary.vue';
+import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
+const route = useRoute()
+const router = useRouter()
+
 const frappe = inject("$frappe")
 const call = frappe.call();
-
+const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast()
 const socket = inject("$socket")
@@ -178,13 +249,20 @@ const doc = ref({})
 onMounted(() => {
  
     if (!dialogRef) {
-        alert("no dialog")
+        if(route.params.name){ 
+            name.value = route.params.name
+            getReservationDetail();
+        }else{
+            alert("Go back to reserveatin list")
+        }
+
     } else {
 
         name.value = dialogRef.value.data.name;
         getReservationDetail();
-
     }
+   
+
 });
 
 const getReservationDetail = () => {

@@ -19,10 +19,12 @@ import { useDialog } from 'primevue/usedialog';
 const dialog = useDialog();
 
 const hasProperty = ref(false)
+
 if (localStorage.getItem("edoor_property") == null) {
+   
     const user = JSON.parse(localStorage.getItem("edoor_user"))
 
-        if (user.property.length == 1) {
+        if (user?.property?.length == 1) {
             localStorage.setItem("edoor_property", JSON.stringify(user.property[0]))
             hasProperty.value = true
         }
@@ -32,7 +34,7 @@ if (localStorage.getItem("edoor_property") == null) {
 } else {
     hasProperty.value = true
 }
-
+ 
 const actionClickHandler = async function (e) {
     if (e.isTrusted && typeof (e.data) == 'string') {
 

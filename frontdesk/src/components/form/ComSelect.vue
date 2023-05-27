@@ -1,5 +1,8 @@
-<template> 
-    <Dropdown :showClear="clear" :style="{ 'min-width': width }"
+<template>
+    <MultiSelect v-if="isMultipleSelect"  :showClear="clear" :style="{ 'min-width': width }"
+        v-model="selected" :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
+        @update:modelValue="onUpdate" :placeholder="placeholder" />
+    <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }"
         v-model="selected" :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
         @update:modelValue="onUpdate" :placeholder="placeholder" />
 </template>
@@ -9,8 +12,7 @@ const emit = defineEmits(['update:modelValue', 'onSelected', 'onSelectedValue'])
 const props = defineProps({
     doctype: String,
     placeholder: String,
-    modelValue: [String, Number],
-
+    modelValue: [String, Number, Array],
     optionLabel: {
         type: String,
         default: ''
@@ -47,7 +49,11 @@ const props = defineProps({
     groupFilterValue: {
         type: [String, Number, Boolean],
         default: null
-    }
+    },
+    isMultipleSelect:{
+        type: Boolean,
+        default: false
+    } 
 })
 const toast = useToast();
 const frappe = inject('$frappe')
@@ -67,7 +73,17 @@ let selected = computed({
 onMounted(() => {
     watch(()=>props.groupFilterValue,(newValue, oldValue)=>{
         if(newValue != null){
-            dataOptions.value = data.value.filter(r => r[props.groupFilterField] == newValue)
+            if(props.isMultipleSelect && Array.isArray(newValue)){
+                dataOptions.value = []
+                newValue.forEach(n=>{ 
+                    dataOptions.value = dataOptions.value.concat(data.value.filter(r => r[props.groupFilterField] == n))
+                })
+                
+            }
+            else{
+                dataOptions.value = data.value.filter(r => r[props.groupFilterField] == newValue)
+            }
+            
         }else{
             dataOptions.value = data.value
         }
@@ -139,10 +155,23 @@ function onDocList() {
     });
 }
 function onUpdate(r) {
-    const obj = data.value.find(d => d[option.value] == r)
-    console.log(r)
+    let result = null 
+    if(props.isMultipleSelect){
+        result = []
+        if(r.length > 0){
+            r.forEach(n=>{
+                result = result.concat(data.value.find(r => r[option.value] == n))
+            })
+        }else{
+            result = data.value.find(d => d[option.value] == r)
+        }
+        
+    }else{
+        result = data.value.find(d => d[option.value] == r)
+    }
+    
     emit('onSelectedValue', r)
-    emit('onSelected', obj)
+    emit('onSelected', result)
     emit('update:modelValue', r)
 }
 

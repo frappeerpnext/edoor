@@ -22,7 +22,9 @@
   "guest_name",
   "guest_type",
   "phone_number",
+  "phone_number_2",
   "email_address",
+  "guest_photo",
   "adult",
   "child",
   "pax",
@@ -215,6 +217,18 @@
    "fieldname": "internal_reference_number",
    "fieldtype": "Data",
    "label": "Internal Reference Number"
+  },
+  {
+   "fetch_from": "guest.photo",
+   "fieldname": "guest_photo",
+   "fieldtype": "Attach Image",
+   "label": "Guest Photo"
+  },
+  {
+   "fetch_from": "guest.phone_number_2",
+   "fieldname": "phone_number_2",
+   "fieldtype": "Data",
+   "label": "Phone Number 2"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -225,7 +239,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-05-24 10:27:58.846357",
+ "modified": "2023-05-26 17:17:19.819461",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

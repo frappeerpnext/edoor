@@ -8,13 +8,16 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "stay_room_id",
   "property",
   "room_type_id",
   "room_type",
   "room_id",
   "room_name",
   "date",
-  "type"
+  "type",
+  "is_arrival",
+  "is_departure"
  ],
  "fields": [
   {
@@ -65,13 +68,32 @@
    "default": "Reservation",
    "fieldname": "type",
    "fieldtype": "Select",
+   "in_standard_filter": 1,
    "label": "Type",
    "options": "Reservation\nBlock"
+  },
+  {
+   "description": "We use this field to check room availability for record that no room assignment",
+   "fieldname": "stay_room_id",
+   "fieldtype": "Data",
+   "label": "Stay Room ID"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_arrival",
+   "fieldtype": "Check",
+   "label": "Is Arrival"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_departure",
+   "fieldtype": "Check",
+   "label": "Is Departure"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-18 17:03:06.198952",
+ "modified": "2023-05-26 17:29:04.774734",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

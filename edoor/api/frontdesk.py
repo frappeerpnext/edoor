@@ -1,7 +1,10 @@
+import secrets
+from edoor.api.utils import get_date_range
 import frappe
 import datetime
 import random
 from datetime import datetime
+from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta
 # Get the current date
 
@@ -25,20 +28,7 @@ def get_dashboard_data(property = None,date = None):
         total_room = data[0]["total"] or 0
 
     #get total room occupy
-    
-    #get house keeping status
-    hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
-    housekeeping_status = []
-    for d in hk_data:
-        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
-
-        
-        housekeeping_status.append({
-            "status":d.name,
-            "color":d.status_color,
-            "icon":d.icon,
-            "total":total
-        })
+     
     
 
     return {
@@ -52,10 +42,27 @@ def get_dashboard_data(property = None,date = None):
         "departure_remaining":8,
         "pick_up":5,
         "drop_off":5,
-        "housekeeping_status":housekeeping_status,
+         "unassign_room":10,
         "stay_over":8
         
     }
+
+@frappe.whitelist()
+def get_house_keeping_status(property):
+    #get house keeping status
+    hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
+    housekeeping_status = []
+    for d in hk_data:
+        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
+
+        
+        housekeeping_status.append({
+            "status":d.name,
+            "color":d.status_color,
+            "icon":d.icon,
+            "total":total
+        })
+    return housekeeping_status
 
 @frappe.whitelist()
 def get_mtd_room_occupany(property):
@@ -76,7 +83,16 @@ def get_mtd_room_occupany(property):
 
 @frappe.whitelist()
 def get_edoor_setting(property = None):
+  
+    epos_setting = frappe.get_doc('ePOS Settings')
+    edoor_setting = {
+        "backend_port":epos_setting.backend_port
+    }
+    
     user = get_logged_user()
+    if not frappe.db.exists("Business Branch", property):
+        return {"user":user,"property":"Invalid Property", "edoor_setting":edoor_setting}
+     
 
     working_day = None 
     if property:
@@ -85,7 +101,9 @@ def get_edoor_setting(property = None):
         if len(user["property"])==1:
              working_day = get_working_day(user["property"][0]["name"])
 
-    return {"user":get_logged_user(), "working_day": working_day}
+    
+    return {"user":get_logged_user(), "working_day": working_day,"edoor_setting":edoor_setting}
+
 @frappe.whitelist()
 def get_logged_user():
     data = frappe.get_doc('User',frappe.session.user)
@@ -138,8 +156,10 @@ def get_room_chart_resource(property = '', room_type = '', building = '', view_t
             alias
             from 
                 `tabRoom Type` 
+            where property='{}'
             
         """
+        sql=sql.format(property)
         room_types = frappe.db.sql(sql, as_dict=1)
         for t in room_types:
             rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{}' and disabled = 0 order by room_number".format(t["name"]),as_dict=1)
@@ -155,36 +175,43 @@ def get_room_chart_resource(property = '', room_type = '', building = '', view_t
         resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where disabled = 0 order by room_number",as_dict=1)
     
     resources.append({
-        "id": "z1_vacant_room",
+        "id": "vacant_room",
         "title": "Vacant Room",
+        "sort_order":1000
     })
     
     resources.append({
-        "id": "z2_occupany",
+        "id": "occupany",
         "title": "Occupancy",
+        "sort_order":1001
     })
   
     resources.append({
-        "id": "z3_out_of_order",
+        "id": "out_of_order",
         "title": "Out of Order",
+        "sort_order":1002
     })
     
     resources.append({
-        "id": "z4_arrival_departure",
+        "id": "arrival_departure",
         "title": "Arrival/Departure",
+        "sort_order":1003
     })
     resources.append({
-        "id": "z5_arrival_departure",
+        "id": "pax",
         "title": "PAX",
+        "sort_order":1004
     })
 
 
     return resources
  
 
+
 @frappe.whitelist()
-def get_room_chart_calendar_event(start=None,end=None):
+def get_room_chart_calendar_event(property, start=None,end=None):
     
+
     events = []
     sql = """
         select 
@@ -200,54 +227,197 @@ def get_room_chart_calendar_event(start=None,end=None):
             pax,
             reference_number,
             reservation,
-            parent as reservation_stay
+            parent as reservation_stay,
+            'stay' as type,
+            1 as editable
 
         from 
             `tabReservation Stay Room` 
         where 
-            show_in_room_chart = 1  
-
+            show_in_room_chart = 1   and 
+            name in (
+                select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' 
+            ) and 
+            property = '{}'
 
     """
-    # and
-    #         start_date between cast('{}' as date) and cast('{}' as date)  
-
-    #sql = sql.format(start, end)
-
-    data = frappe.db.sql(sql, as_dict=1)
+    sql = sql.format(
+            datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'), 
+            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d')
+            ,property)
+  
     
+    data = frappe.db.sql(sql, as_dict=1)
+    for d in data:
+        d["editable"]  = d["editable"] ==1
     events = data
-    events.append(   {
-            "id": "36e6xx8c4236",
-            "resourceId": "RT-0001",
-            "room_number": "602",
-            "start": "2023-05-24T00:00:00.000000",
-            "end": "2023-05-24T12:00:00.000000",
-            "title": "10",
-            "color": "#29CD42",
-            "adult": 1,
-            "child": 0,
-            "pax": 0,
-            "reservation": "RS2023-0076"
-        })
-    events.append(   {
-            "id": "36e6xx8c4236",
-            "resourceId": "RT-0001",
-            "room_number": "602",
-            "start": "2023-05-24T12:00:00.000000",
-            "end": "2023-05-25T00:00:00.000000",
-            "title": "10",
-            "color": "red",
-            "adult": 1,
-            "child": 0,
-            "pax": 0,
-            "reservation": "RS2023-0076"
-        })
+   
+
+    # check if room chart view is group by room type then add event to room type resource
+    room_type_events = get_calendar_event_for_room_type_resource(start=start,end=end,property=property)
+    events = events + room_type_events
+
     #get event from room block
+    events = events +  get_room_block_event(start,end,property)
+    
 
     return events
-    return [ 
-        { "id": '1', "resourceId": 'a', "start": '2023-05-01T12:00', "end": '2023-05-20T07:00', "title": 'event 1' },
-        { "id": '2', "resourceId": 'b', "start": '2023-05-06T12:00', "end": '2023-05-20T22:00', "title": 'event 2' },
-        { "id": '3', "resourceId": 'c', "start": '2023-05-06T12:00', "end": '2023-05-20T18:00', "title": 'event 3' }
-    ]
+
+
+@frappe.whitelist()
+def get_room_block_event(start,end,property):
+    sql = """
+        select 
+            name as id, 
+            room_id as resourceId,
+            room_number,
+            concat(start_date,'T00:00:00') as start ,
+            concat(end_date,'T23:00:00') as end,
+            'Room Block' as title,
+            status_color as color,
+            reason,
+            'room_block' as type,
+            0 as editable
+
+        from 
+            `tabRoom Block` 
+        where 
+            docstatus = 1   and 
+            name in (
+                select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' 
+            ) and 
+            property = '{}'
+
+    """
+    sql = sql.format(
+            datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'), 
+            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d')
+            ,property)
+  
+    data = frappe.db.sql(sql, as_dict=1)
+    
+    for d in data:
+        d["editable"] = d["editable"]  == 1
+    
+    return data
+
+@frappe.whitelist()
+def get_calendar_event_for_room_type_resource(start,end,property):
+    """
+        There are 2 place to get room type resource event and other resource event
+        1. From temp room occupy for current and future date 
+        2. From room type Daily Property Data for past date
+
+    """
+    events = []
+    working_day = get_working_day(property=property)
+    dates = get_date_range( datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ"),datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ"),False)
+    future_dates =  [d for d in dates if d.date() >= working_day["date_working_day"]]
+    past_dates =  [d for d in dates if d.date() < working_day["date_working_day"]]
+    
+    #1. get date for future date by from temp room occupy
+    if future_dates:
+        #get all room type with total room
+        sql = "select room_type_id, room_type, count(name) as total_room from `tabRoom` where property='{}' and disabled = 0 group by room_type_id, room_type".format(property)
+        room_type_data = frappe.db.sql(sql,as_dict=1)
+    
+
+         
+        sql = """
+                select 
+                    room_type_id, 
+                    date, 
+                    sum(if(type='Reservation',1,0)) as total_occupy,
+                    sum(if(type='Block',1,0)) as total_block,
+                    sum(if(coalesce(room_id,'')='',1,0)) as total_unassign_room
+                from 
+                    `tabTemp Room Occupy` 
+                where 
+                    property='{}' and 
+                    date between '{}' and '{}' 
+                group by 
+                    room_type_id, 
+                    date 
+            """
+        sql = sql.format(
+            property,
+            future_dates[0].strftime('%Y-%m-%d'),
+            future_dates[len(future_dates)-1].strftime('%Y-%m-%d'),
+        )
+        temp_occupy_data = frappe.db.sql(sql,as_dict=1)
+        #get temp room occupy 
+        
+        for d in room_type_data:
+            for x in future_dates:
+                events.append(      
+                {
+                    "resourceId": d["room_type_id"],
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title": d["total_room"] - Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
+                    "color": "#29CD42",
+                    "type":"available_room"
+                })
+
+                #add event for unssign room
+                events.append(      
+                {
+                    "resourceId": d["room_type_id"],
+                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T0:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_unassign_room or 0),
+                    "color": "#cccccc",
+                    "type":"unassign_room"
+                })
+
+        #add event for Vacant Room 
+        total_room = Enumerable(room_type_data).sum(lambda r:r.total_room)
+        for x in future_dates:
+                
+                events.append(      
+                {
+                    "resourceId": "vacant_room",
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title": total_room - Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
+                    "color": "#ccce45",
+                    "type":"vacant_room"
+                })
+
+                #add event for room occupy
+                events.append(      
+                {
+                    "resourceId": "occupany",
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
+                    "color": "#ccce45",
+                    "type":"occupany"
+                })
+                #add event for room occupy percentage
+                events.append(      
+                {
+                    "resourceId": "occupany",
+                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title":  str.format("{:.0%}", Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0) / total_room) ,
+                    "color": "#ddce45",
+                    "type":"occupany"
+                })
+                
+                #add event for total block
+                total_block =Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_block or 0) 
+                events.append(      
+                {
+                    "resourceId": "out_of_order",
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title": total_block,
+                    "color": "red" if total_block>0 else '#ccc',
+                    "type":"out_of_order"
+                })
+
+    return events
+
+    
+    

@@ -209,23 +209,29 @@ router.beforeEach(async (to, from, next) => {
 		next();
 	}
 });
+
 apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
 }).then((r) => {
-	console.log(r)
 	localStorage.setItem('edoor_user', JSON.stringify(r.message.user))
-	localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-
-	if (r.message.property) {
-		if (r.message.property.length == 1) {
-			localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+	if(r.message.property=="Invalid Property"){
+		localStorage.removeItem("edoor_property")
+	}
+	else{
+		localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
+	
+		if (r.message.property) {
+			if (r.message.property.length == 1) {
+				localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+			}
 		}
 	}
 
+	
 	app.mount("#app");
 
 }).catch((error) => {
-
+	 console.log(error)
 	// const errorApp = createApp(Error);
 	// errorApp.mount("#app");
 })

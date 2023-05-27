@@ -1,5 +1,5 @@
 <template>
-    <div class="flex py-2 align-items-center border-b border-color-edoor font-medium">
+    <div class="flex align-items-center border-b border-color-edoor font-medium">
         <div class="flex-none pr-4 flex items-center" v-if="icon">
             <span v-html="icon"></span>
         </div>
@@ -7,18 +7,18 @@
             <slot name="content"></slot>
         </div>
         <div class="flex-none">
-            <div :class="badgeClass" class="px-2 py-1 my-1 border-round-lg text-white" :style="{backgroundColor: badgeColor}">{{ value }}</div>
+            <div :class="badgeClass" class="px-2 py-1 my-1 border-round-lg text-white"
+                :style="{ backgroundColor: badgeColor }">{{ value }}</div>
         </div>
     </div>
-
 </template>
 <script setup>
- const props = defineProps({
+const props = defineProps({
     badgeColor: String,
     badgeClass: String,
-    icon:String,
-    value: [String,Number]
- })
+    icon: String,
+    value: [String, Number]
+})
 </script>
 <style lang="">
     

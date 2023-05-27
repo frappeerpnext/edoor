@@ -1,0 +1,129 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-05-25 16:06:38.143063",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "room_type_id",
+  "room",
+  "total_room",
+  "total_occupy",
+  "total_vacant",
+  "total_room_block"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type Id",
+   "options": "Room Type"
+  },
+  {
+   "fieldname": "total_room",
+   "fieldtype": "Int",
+   "label": "Total Room"
+  },
+  {
+   "fieldname": "total_occupy",
+   "fieldtype": "Int",
+   "label": "Total Occupy"
+  },
+  {
+   "fieldname": "total_vacant",
+   "fieldtype": "Int",
+   "label": "Total Vacant"
+  },
+  {
+   "fieldname": "total_room_block",
+   "fieldtype": "Int",
+   "label": "Total Room Block"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room",
+   "fieldtype": "Data",
+   "label": "Room Type"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-25 16:08:22.183920",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Room Type Occupy",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Reservation User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Report Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Reservation Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

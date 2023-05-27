@@ -1,8 +1,8 @@
 <template>
     <div class="w-full flex align-items-center justify-center text-color border-noround">
         <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" />
-        <div class="flex flex-column align" style="width:98px;">
-            <slot></slot>
+        <div class="flex flex-column align" style="width:98px;" v-if="$slots.default">
+            <slot name="default"></slot>
         </div>
     </div>
 </template>

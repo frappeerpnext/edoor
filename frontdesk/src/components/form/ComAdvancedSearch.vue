@@ -62,7 +62,6 @@ onMounted(() => {
 function onSearch() { 
     call.get('frappe.desk.search.search_widget', { doctype: doctype.value, txt: keyword.value }).then((result) => {
         data.value = result.values
-        console.log(result)
     })
     .catch((error) => {
         alert("load data fiale")

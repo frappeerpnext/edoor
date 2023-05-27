@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-05-25 20:20:01.830398",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "stay_room_id",
+  "date",
+  "reservation",
+  "reservation_stay",
+  "room_id",
+  "room_number",
+  "room_type_id",
+  "room_type",
+  "type",
+  "property"
+ ],
+ "fields": [
+  {
+   "fieldname": "stay_room_id",
+   "fieldtype": "Data",
+   "label": "Stay Room ID"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reservation"
+  },
+  {
+   "fieldname": "reservation_stay",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reservation Stay"
+  },
+  {
+   "fieldname": "room_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Room ID",
+   "options": "Room"
+  },
+  {
+   "fetch_from": "room_id.room_number",
+   "fieldname": "room_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Number"
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "Reservation\nBlock"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-05-26 15:42:07.737637",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Room Occupy",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

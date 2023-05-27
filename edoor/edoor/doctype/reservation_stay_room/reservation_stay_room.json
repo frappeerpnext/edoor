@@ -37,7 +37,7 @@
   {
    "fieldname": "property",
    "fieldtype": "Data",
-   "hidden": 1,
+   "in_list_view": 1,
    "label": "Property"
   },
   {
@@ -190,7 +190,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-05-19 15:35:59.239116",
+ "modified": "2023-05-25 21:39:14.437183",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

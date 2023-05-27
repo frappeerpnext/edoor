@@ -36,5 +36,6 @@ def clear_reservation():
     frappe.db.sql("delete from `tabReservation Stay Room`")
     frappe.db.sql("delete from `tabReservation Room Rate`")
     frappe.db.sql("delete from `tabTemp Room Occupy`")
+    frappe.db.sql("delete from `tabRoom Occupy`")
     frappe.db.commit()
     return "done"

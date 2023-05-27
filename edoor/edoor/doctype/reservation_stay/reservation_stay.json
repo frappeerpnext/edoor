@@ -65,7 +65,9 @@
   "departure_flight_number",
   "drop_off_location",
   "drop_off_driver",
-  "drop_off_note"
+  "drop_off_note",
+  "additional_guests_tab",
+  "additional_guests"
  ],
  "fields": [
   {
@@ -409,11 +411,22 @@
    "fieldname": "drop_off_note",
    "fieldtype": "Data",
    "label": "Drop Off Note"
+  },
+  {
+   "fieldname": "additional_guests",
+   "fieldtype": "Table",
+   "label": "Additional Guests",
+   "options": "Additional Stay Guest"
+  },
+  {
+   "fieldname": "additional_guests_tab",
+   "fieldtype": "Tab Break",
+   "label": "Additional Guests"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-23 18:00:41.361814",
+ "modified": "2023-05-26 18:09:48.672800",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

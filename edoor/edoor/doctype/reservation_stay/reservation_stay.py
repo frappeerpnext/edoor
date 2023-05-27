@@ -78,7 +78,7 @@ def generate_room_occupy_and_rate(self):
 				"type":"Reservation",
 				"property":self.property,
 				"stay_room_id":stay.name,
-				"is_arrival":1 if d == self.arrival_date
+				"is_arrival":0
 			}).insert()
 
 
