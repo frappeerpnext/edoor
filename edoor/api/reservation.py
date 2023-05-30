@@ -15,13 +15,16 @@ def get_reservation_detail(name):
 @frappe.whitelist()
 def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
+    
     reservation = frappe.get_doc("Reservation",reservation_stay.reservation)
+    total_reservation_stay = frappe.db.count("Reservation Stay", {'reservation': reservation.name})
     guest=frappe.get_doc("Customer",reservation_stay.guest)
     master_guest = guest
     if reservation.guest != reservation_stay.guest:
         master_guest = frappe.get_doc("Customer",reservation.guest)
     return {
         "reservation":reservation,
+        "total_reservation_stay": total_reservation_stay,
         "reservation_stay":reservation_stay,
         "guest":guest,
         "master_guest":master_guest
@@ -163,9 +166,59 @@ def check_in(reservation,reservation_stays=None):
 
 
 
-
+@frappe.whitelist()
+def change_reservation_guest( guest, reservation='',reservation_stay='', is_apply_all_stays='false', is_apply_master_guest='false', is_only_master_guest='false'):
+    doc_guest = json.loads(guest)
+    #check if not have guest selected then create new guest
+    if doc_guest.get("name") is None:
+        guest_info = frappe.get_doc(doc_guest).insert()
+    else:
+        guest_info = frappe.get_doc(doc_guest).save()
     
+    # update master guest
+    if(is_apply_master_guest == 'true' or is_only_master_guest == 'true'):
+        reservation_doc = frappe.get_doc('Reservation', reservation)
+        reservation_doc.guest = guest_info.name
+        reservation_doc.save()
 
+    # update only stay
+    if(is_only_master_guest == 'false'):
+        if(is_apply_all_stays == 'false'):
+            reservation_stay_doc = frappe.get_doc('Reservation Stay', reservation_stay)
+            reservation_stay_doc.guest = guest_info.name
+            reservation_stay_doc.save()
+        else:
+            reservation_stays = frappe.get_list('Reservation Stay',filters={"reservation":reservation})
+            for s in reservation_stays:
+                reservation_stay_doc = frappe.get_doc('Reservation Stay', s)
+                reservation_stay_doc.guest = guest_info.name
+                reservation_stay_doc.save()
+    frappe.db.commit()
+    return {
+        'guest': guest_info
+    }
+    
+@frappe.whitelist()
+def change_reservation_additional_guest(guest,reservation_stay):
+ 
+    doc_guest = json.loads(guest)
+    if doc_guest.get("name") is None:
+        doc_guest = json.loads(guest)
+        doc_guest = frappe.get_doc(doc_guest).insert()
+    
+    doc_stay = frappe.get_doc('Reservation Stay', reservation_stay)
+    for i in doc_stay.additional_guests:
+        if i['guest'] == doc_guest['name']:
+            return {
+                'xx': i['guest']
+            }
+    
+    # doc_stay.append('additional_guests',{'guest':doc_guest['name']})
+    # doc_stay = doc_stay.save()
+    # frappe.db.commit()
+    return {
+        'result': doc_stay
+    }
 
 
 def check_field(doc, key):
@@ -184,3 +237,15 @@ def update_reservation(self):
     #update adult and pax
 
     #update room_chage, tax and payment and balance
+
+@frappe.whitelist()
+def get_reservation_guest(reservation=None, reservation_stay=None):
+    sql = """
+            select guest as name, guest_name from `tabReservation` where name='{0}'
+            union 
+            select guest as name, guest_name from `tabReservation Stay` where name='{1}' 
+            union 
+            select guest as name, guest_name from `tabAdditional Stay Guest` where parent='{1}' 
+        """
+    sql = sql.format((reservation or ''), (reservation_stay or ''))
+    return frappe.db.sql(sql, as_dict=1)

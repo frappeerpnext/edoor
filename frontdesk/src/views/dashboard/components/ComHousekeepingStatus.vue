@@ -1,5 +1,5 @@
 <template>
-    <Listbox :options="data" optionLabel="status" class="w-full h-full" @change="onViewRoomList">
+    <Listbox :options="data" optionLabel="status" class="w-full h-full border-round-xl" @change="onViewRoomList">
         <template #option="slotProps">
             <ComDashboardRowStatus :value="slotProps.option.total" :badgeColor="slotProps.option.color"
                 :icon="slotProps.option.icon">

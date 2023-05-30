@@ -2,57 +2,69 @@
     <div>
         <ComHeader>
             <template #start>
-                <Button @click="onShowSummary">Show Summary</Button>
-                <div @click="onRefresh()">Frontdesk</div>
+                <div class="flex">
+                    <div class="flex align-items-center">
+                        <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
+                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
+                        <div class="ml-8">May 30 - Jun 16, 2023</div>
+                    </div>
+                </div>
             </template>
             <template #end>
-                <div class="flex  gap-2 justify-content-end">
+                <div class="flex gap-2 justify-content-end">
                     <NewFITReservationButton/>
-                    <Button label="New group booking" class="btn-date__tt btn-inner-set-icon">
+                    <Button label="New group booking" class="btn-date__tt btn-inner-set-icon border-none">
                         <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
                     </Button>
                 </div>
             </template>
         </ComHeader>
-        <div style="max-width: 100%; height: 1000px">
+        <div class="flex justify-between mb-3">
+            <ComRoomChartFilterSelect>
+                <template #date>
+                    <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar showIcon />
+                </template>
+            </ComRoomChartFilterSelect>
             <div>
-                <div class="relative" aria-haspopup="true" aria-controls="overlay_menu">
-                    <div class="flex justify-between mb-2">
-                        <div>
-                            <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar />
+                <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
+            </div>
+        </div>
+        <div style="max-width: 100%;">
+            <div>  
+                <div :class="showSummary ? 'flex' : ''">
+                    <div v-if="showSummary" style="width: 225px">
+                        <div class="bg-white p-2">
+                            <div class="font-semibold">Today Guest</div>
+                            <ComTodaySummary/>
                         </div>
-                        <div>
-                            <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onFilter="onFilter($event)" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()"/>
-                        </div>
-                    </div>
-                    <div v-if="showSummary">
-                        <ComTodaySummary/>
                         <ComHousekeepingStatus/>
                     </div>
-                    <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
-                        <template v-slot:eventContent="{event}">
-                                <!-- <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
-                                <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
-                                    <table>
-                                        <tbody>
-                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
-                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
-                                        <tr><td><div>Guest: ${event.title}</div></td></tr>
-                                        <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
-                                        <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
-                                        <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
-                                        <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>`, escape: true, class: 'event-tooltip' }">
-                                
-                                    {{ event.title }}
+                    <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
+                        <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
+                            <template v-slot:eventContent="{event}">
+                                    <!-- <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
+                                    <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
+                                        <table>
+                                            <tbody>
+                                                <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
+                                                <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
+                                            <tr><td><div>Guest: ${event.title}</div></td></tr>
+                                            <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
+                                            <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
+                                            <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
+                                            <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>`, escape: true, class: 'event-tooltip' }">
                                     
-                                </div> -->
-                                {{ event.title }}
-                        </template>
-                    </FullCalendar>
-                    <ReservationStatusLabel/>
+                                        {{ event.title }}
+                                        
+                                    </div> -->
+                                    {{ event.title }}
+                            </template>
+                        </FullCalendar>
+                        <ReservationStatusLabel/>
+                    </div>
                 </div>
             </div>
         </div>
@@ -75,10 +87,16 @@ import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue
 import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue';
+import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 const socket = inject("$socket");
 const frappe = inject('$frappe')
 const call = frappe.call();
 const moment = inject('$moment')
+const filter = reactive({
+    peroid: 'today',
+    view_type: '',
+    date: ''
+})
 const fullCalendar = ref(null)
 
 const toast = useToast();
@@ -86,7 +104,8 @@ const dialog = useDialog();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
-let fullcalendarInitialDate = ref(onInitialDate())
+const initialDate = onInitialDate()
+let fullcalendarInitialDate = ref(initialDate.start)
 let showTooltip = ref(false)
 const reservation = ref({})
 const isLoading = ref(true)
@@ -95,11 +114,7 @@ if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
 
-const filter = reactive({
-    peroid: 'today',
-    view_type: '',
-    date: ''
-})
+
 let eventInfo = reactive({
     isShow: false,
     left: 0,
@@ -142,8 +157,8 @@ const calendarOptions = reactive({
     headerToolbar: false,
     refetchResourcesOnNavigate: true,
     visibleRange: function (currentDate) {
-        const startDate = moment(onInitialDate()).format('yyyy-MM-DD')
-        const endDate = moment(onInitialDate()).add(31, 'days').format('yyyy-MM-DD')
+        const startDate = initialDate.start
+        const endDate = initialDate.end
         return { start: startDate, end: endDate };
     },
     resourceAreaColumns: resourceColumn(),
@@ -170,7 +185,7 @@ const calendarOptions = reactive({
                 alert("load data fiale")
             });
     },
-    eventAllow: function(dropInfo, draggedEvent) {
+    eventAllow: function (dropInfo, draggedEvent) {
         return false
     },
     selectable: true,
@@ -216,12 +231,12 @@ const calendarOptions = reactive({
     }),
     eventClick: ((info) => {
         const data = info.event._def.extendedProps;
-        if (data.type=="stay"){
+        if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
-        }else {
-            alert("Open dialog of " + data.type )
+        } else {
+            alert("Open dialog of " + data.type)
         }
-        
+
     }),
     eventMouseEnter: (($event) => {
         eventInfo.data = $event.event;
@@ -241,53 +256,64 @@ const calendarOptions = reactive({
 
 function getRoomChartlocationStorage() {
     if (localStorage.getItem('reservation_chart')) {
-        return JSON.parse(localStorage.getItem('reservation_chart'))
+        const result = JSON.parse(localStorage.getItem('reservation_chart'))
+        filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+        return result;
+
     } else {
         let _date = moment(working_day.date_working_day).add(-1, 'days').format("yyyy-MM-DD")
         const dataStorage = {
             view: 'room_type',
             peroid: 'today',
-            date: _date
+            start_date: _date,
+            end_date: moment(_date).add(1, 'months').format("yyyy-MM-DD")
         }
+
         localStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
-        if (localStorage.getItem('reservation_chart'))
-            return JSON.parse(localStorage.getItem('reservation_chart'))
+        if (localStorage.getItem('reservation_chart')) {
+            const result = JSON.parse(localStorage.getItem('reservation_chart'))
+            filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+            return result
+        }
+
         return ''
     }
 }
-function setRoomChartlocationStorage(date='',view='',peroid='') {
+function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', peroid = '') {
     // set room chart localstorage
-    
+
     let dataStorage = getRoomChartlocationStorage()
-    if(date != '')
-        dataStorage.date =  date
-    if(view != '')
+    if (start_date != '')
+        dataStorage.start_date = start_date
+    if (end_date != '')
+        dataStorage.end_date = end_date
+    if (view != '')
         dataStorage.view = view
-    if(peroid != '')
+    if (peroid != '')
         dataStorage.peroid = peroid
-    console.log(dataStorage)
-    onUpdateFilterDate(dataStorage.date)
+
+
+
     localStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
+    filter.date = moment(dataStorage.start_date).add(1, 'days').format("yyyy-MM-DD")
     return dataStorage
 
 }
 
-function onInitialDate(date = '', refresh = false) {
-    if (date) {
-        const storage = setRoomChartlocationStorage(date, '','')
-        
-        return storage.date
-    }
-    else {
-        const roomChartStorage = getRoomChartlocationStorage()
-        const view_date = roomChartStorage.date
-        if (refresh || !view_date) {
-            const date_working_day = moment(working_day.date_working_day).add(-1, 'days').format("yyyy-MM-DD")
-            setRoomChartlocationStorage(date_working_day)
-            return date_working_day
-        } else {
-            return view_date
-        }
+function onFilterToday() {
+
+    const startDate = moment(working_day.date_working_day).subtract(1, 'days').format("yyyy-MM-DD")
+    const currentViewChart = setRoomChartlocationStorage(startDate, '', '', '')
+    onFilter(currentViewChart.peroid)
+
+}
+
+function onInitialDate() {
+    const roomChartStorage = getRoomChartlocationStorage()
+
+    return {
+        start: roomChartStorage.start_date,
+        end: roomChartStorage.end_date
     }
 
 }
@@ -299,14 +325,14 @@ function onSelectedDate(event) {
     if (totalSlotsSelected < 1) {
         return
     }
- 
+
     if (event.resource._resource.extendedProps.type == "room") {
- 
+
         const dialogRef = dialog.open(NewReservation, {
             data: {
                 arrival_date: event.start,
                 departure_date: event.end,
-                room_type_id:event.resource._resource.extendedProps.room_type_id,
+                room_type_id: event.resource._resource.extendedProps.room_type_id,
                 room_id: event.resource._resource.id
             },
             props: {
@@ -409,76 +435,59 @@ function onShowSummary() {
 function onView() {
     filter.view_type = filter.view_type == 'room_type' ? 'room' : 'room_type'
     roomChartResourceFilter.view_type = filter.view_type
-    setRoomChartlocationStorage('',filter.view_type,'')
+    setRoomChartlocationStorage('', '', filter.view_type, '')
     const cal = fullCalendar.value.getApi()
     cal.setOption('resourceAreaColumns', resourceColumn())
     cal.refetchResources()
 }
-function onFilter(key, refresh = false, filter_date = '') {
+function onFilter(key) {
     filter.peroid = key
     const cal = fullCalendar.value.getApi()
     const visibleRange = cal.currentData.options.visibleRange
-    const initialDate = cal.currentData.options.initialDate
-    if (visibleRange.start == undefined || refresh == true || filter_date != '') {
-        if (filter_date != '') {
-            visibleRange.start = moment(filter_date).format("yyyy-MM-DD")
-            onInitialDate(visibleRange.start)
-        }
-        else {
-            if(refresh){
-                visibleRange.start = moment(working_day.date_working_day).add(-1, 'days').format("yyyy-MM-DD")
-            }
-            else{
-                visibleRange.start = moment(initialDate).format("yyyy-MM-DD")
-            }
-            
-            onInitialDate(visibleRange.start)
-        }
-    }
 
-    if (key == 'today') {
-        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(1, 'months').format("yyyy-MM-DD") });
-    }
-    else if (key == 'week') {
-        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(7, 'days').format("yyyy-MM-DD") });
+    if (key == 'week') {
+        const currentViewChart = setRoomChartlocationStorage('', '', '', key)
+        visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
+        visibleRange.end = moment(currentViewChart.start_date).add(7, 'days').format("yyyy-MM-DD")
+        const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
+        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
     else if (key == '14_days') {
-        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(14, 'days').format("yyyy-MM-DD") });
+        const currentViewChart = setRoomChartlocationStorage('', '', '', key)
+        visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
+        visibleRange.end = moment(currentViewChart.start_date).add(14, 'days').format("yyyy-MM-DD")
+        const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
+        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
-    else if (key == 'month') {
-        cal.changeView('resourceTimeline', { start: moment(visibleRange.start).format("yyyy-MM-DD"), end: moment(visibleRange.start).add(1, 'months').format("yyyy-MM-DD") });
+    else {
+        var currentViewChart = getRoomChartlocationStorage()
+        visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
+        visibleRange.end = moment(currentViewChart.start_date).add(1, 'months').format("yyyy-MM-DD")
+        const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
+        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
 }
-function onFilterToday() {
-    onFilter(filter.peroid, true)
-}
+
 function onFilterDate(event) {
-    
-    const filter_date = moment(event).add(-1, 'days')
-    onFilter(filter.peroid, false, filter_date)
+
+    const filter_date = moment(event).add(-1, 'days').format("yyyy-MM-DD")
+    const setViewChart = setRoomChartlocationStorage(filter_date, '', '', '', '')
+    onFilter(setViewChart.peroid)
 }
 function onPrevNext(key) {
     const cal = fullCalendar.value.getApi()
-    const visibleRange = cal.currentData.options.visibleRange
     const dateIncrement = cal.currentData.options.dateIncrement
-    if (visibleRange.start == undefined || visibleRange.end == undefined) {
-        const initialDate = cal.currentData.options.initialDate
-        visibleRange.start = moment(initialDate).format("yyyy-MM-DD")
-        visibleRange.end = moment(initialDate).add(1, 'months').format("yyyy-MM-DD")
-        onUpdateFilterDate(visibleRange.start)
-
-    }
+    const currentViewChart = getRoomChartlocationStorage()
     if (key == 'prev') {
-        const startDate = moment(visibleRange.start).add((dateIncrement.days * -1), 'days').format("yyyy-MM-DD")
-        const endDate = moment(visibleRange.end).add((dateIncrement.days * -1), 'days').format("yyyy-MM-DD")
-        onInitialDate(startDate)
-        cal.changeView('resourceTimeline', { start: startDate, end: endDate });
-    }
-    else if (key == 'next') {
-        const startDate = moment(visibleRange.start).add((dateIncrement.days), 'days').format("yyyy-MM-DD")
-        const endDate = moment(visibleRange.end).add((dateIncrement.days), 'days').format("yyyy-MM-DD")
-        onInitialDate(startDate)
-        cal.changeView('resourceTimeline', { start: startDate, end: endDate });
+        const start = moment(currentViewChart.start_date).subtract(dateIncrement.days, 'days').format('yyyy-MM-DD')
+        const end = moment(currentViewChart.start_end).subtract(dateIncrement.days, 'days').format('yyyy-MM-DD')
+        const setCurrentViewChart = setRoomChartlocationStorage(start, end, '', '')
+        onFilter(setCurrentViewChart.peroid, true)
+    } else {
+        const start = moment(currentViewChart.start_date).add(dateIncrement.days, 'days').format('yyyy-MM-DD')
+        const end = moment(currentViewChart.start_end).add(dateIncrement.days, 'days').format('yyyy-MM-DD')
+        const setCurrentViewChart = setRoomChartlocationStorage(start, end, '', '')
+        onFilter(setCurrentViewChart.peroid, true)
     }
 }
 
@@ -553,12 +562,9 @@ onMounted(() => {
 
 
     //   })
-    const initialDate = onInitialDate()
-    onUpdateFilterDate(initialDate)
+    onInitialDate()
+
 })
-function onUpdateFilterDate(date) {
-    filter.date = moment(date).add(1, 'days').toDate()
-}
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
     socket.disconnect()
@@ -584,5 +590,9 @@ onUnmounted(() => {
 
 .room-chart-celendar .p-datepicker-buttonbar button[aria-label="Today"] {
     flex-grow: 1;
+}
+
+.chart-show-summary {
+    width: calc(100vw - 225px);
 }
 </style>

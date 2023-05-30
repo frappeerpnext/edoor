@@ -10,6 +10,8 @@ from frappe.utils.data import pretty_date
 class RoomBlock(Document):
 	def validate(self):
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
+		 
+		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
 		
 		if datetime.strptime(self.start_date, "%Y-%m-%d").date() < datetime.now().date():
 			frappe.throw("Start date cannot be less than current date")

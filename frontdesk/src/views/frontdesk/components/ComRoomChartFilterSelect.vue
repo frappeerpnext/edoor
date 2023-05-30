@@ -1,0 +1,39 @@
+<template lang="">
+    <div>
+        <div class="flex gap-2">
+            <div>
+                <slot name="date"></slot>
+            </div>
+            <div>
+                {{filter.room_type}}
+                <ComSelect placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" optionLabel="room_type" optionValue="name"></ComSelect>
+            </div>
+            <div>
+                <ComSelect placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
+            </div>
+            <div>
+                <ComSelect placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
+            </div>
+            <div>
+                <ComSelect placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
+            </div>
+            <div>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search" />
+                    <InputText v-model="value1" placeholder="Guest Name" />
+                </span>
+            </div>
+        </div>
+
+    </div>
+</template>
+<script setup>
+import { reactive } from 'vue';
+const filter = reactive({
+    room_type: null,
+    room_number: null
+})
+</script>
+<style lang="">
+    
+</style>

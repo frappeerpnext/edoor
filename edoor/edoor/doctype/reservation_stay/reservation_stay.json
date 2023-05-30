@@ -168,7 +168,6 @@
   },
   {
    "fetch_from": "guest.customer_name_en",
-   "fetch_if_empty": 1,
    "fieldname": "guest_name",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -176,14 +175,12 @@
   },
   {
    "fetch_from": "guest.phone_number",
-   "fetch_if_empty": 1,
    "fieldname": "guest_phone_number",
    "fieldtype": "Data",
    "label": "Guest Phone Number"
   },
   {
    "fetch_from": "guest.email_address",
-   "fetch_if_empty": 1,
    "fieldname": "guest_email",
    "fieldtype": "Data",
    "label": "Guest Email"
@@ -426,7 +423,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-26 18:09:48.672800",
+ "modified": "2023-05-27 15:07:56.738008",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

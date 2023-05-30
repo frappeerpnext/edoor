@@ -5,19 +5,19 @@
             <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
         </div>
         <div class="text-center">
-            <Button label="Today" class="w-48 h-12 btn-date__t" :class="selected_date == data.working_date ? 'active' : ''"
-                @click="onShowTodayData()" />
-            <Button label="Tomorrow" class="w-48 h-12 btn-date__t" :class="selected_date == tomorrow ? 'active' : ''"
-                @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 h-12 btn-calendar__t h-res__setting" @date-select="onDateSelect"
-                dateFormat="dd-MM-yy" showIcon />
+            <Button label="Today" class="w-48 h-12 btn-date__t border-noround-right border-none"
+                :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
+            <Button label="Tomorrow" class="w-48 h-12 btn-date__t border-noround border-x-none border-none"
+                :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
+            <Calendar v-model="date" class="w-48 h-12 das-calendar" @date-select="onDateSelect" dateFormat="dd-MM-yy"
+                showIcon showButtonBar />
         </div>
         <div class="text-end flex justify-end">
             <div class="mr-2">
                 <NewFITReservationButton />
             </div>
             <div>
-                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon h-12">
+                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon h-12 border-none">
                     <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
                 </Button>
             </div>
@@ -27,7 +27,7 @@
         <div class="col-2">
             <ComSystemDateKPI :data="data"></ComSystemDateKPI>
         </div>
-        <div class="col ">
+        <div class="col">
             <ComPanel title="Today's occupancy">
                 <div class="grid">
                     <div class="col-6 flex align-items-center justify-content-center">
@@ -41,6 +41,7 @@
                         </ComChartStatus>
                         <ComChartStatus :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
                         </ComChartStatus>
+                        <!-- <ComHousekeepingStatus /> -->
                         <div class="grid mt-3 text-center">
                             <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
                             <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
@@ -52,27 +53,34 @@
         <div class="col">
             <ComPanel title="Today's actions">
                 <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
-                    <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="data.arrival_remaining" title="Check-in remaining" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="data.departure" title="Departure" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="data.departure_remaining" title="Check-out remaining" class="primary-btn-edoor">
+                    <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="data.arrival_remaining" title="Check-in remaining"
+                        class="primary-btn-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="data.departure" title="Departure" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="data.departure_remaining" title="Check-out remaining"
+                        class="primary-btn-edoor border-round-lg">
                     </ComKPI>
-                    <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor"> </ComKPI>
-                    <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor"> </ComKPI>
-                    <ComKPI :value="15" title="Stayover" class="primary-btn-edoor"> </ComKPI>
+                    <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                    <ComKPI :value="15" title="Stayover" class="primary-btn-edoor border-round-lg"> </ComKPI>
                 </div>
             </ComPanel>
         </div>
         <div class="col-2">
-            <ComHousekeepingStatus/>
+            <ComPanel title="Room Status">
+                <ComHousekeepingStatus />
+            </ComPanel>
         </div>
     </div>
 
-    <div class="px-2 py-2 bg-white mt-2">
+    <div class="px-3 py-3 bg-white mt-2 border-round-xl tab-reserv-no">
         <TabView class="tabview-custom">
             <TabPanel>
                 <template #header>
+                    <!-- <span class="pr-1">
+                        <Checkbox v-model="checked" :binary="true" />
+                    </span> -->
                     <span>Arrivals</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival }}</span>
                 </template>
@@ -246,10 +254,5 @@ function getData() {
         });
 }
 
-
-
-
-
-
+const checked = ref(false);
 </script>
-<style scoped></style>

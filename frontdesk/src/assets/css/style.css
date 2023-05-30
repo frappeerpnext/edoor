@@ -21,10 +21,40 @@
     --bg-tb-color: #eaf0f5;
     --bg-card-info: #f4f5fa;
     --trash-can-bg: #e6e6e6;
+    --bg-purple-cs: #4338ca;
+    --bg-gray-10: #f0f0f0;
+    --color-gray-100: #c4c4c4;
+    --bg-color-teal: #14b8b1;
+
+}
+
+.border-gray-edoor-100 {
+    border-color: var(--color-gray-100)
 }
 
 .bg-card-info {
     background-color: var(--bg-card-info);
+}
+
+.bg-border-color-teal {
+    border-color: var(--bg-color-teal);
+}
+
+.text-color-teal-edoor {
+    color: var(--bg-color-teal);
+}
+
+.bg-purple-cs {
+    background-color: var(--bg-purple-cs);
+    color: #fff;
+}
+
+.border-green-edoor {
+    border-color: var(--bg-btn-green-color);
+}
+
+.color-purple-edoor {
+    color: var(--bg-purple-cs);
 }
 
 .bg-system-date {
@@ -60,7 +90,11 @@
 }
 
 .bg-gray-edoor {
-    background-color: var(--bg-tb-color);
+    background-color: var(--bg-tb-color) !important;
+}
+
+.bg-gray-edoor-10 {
+    background-color: var(--bg-gray-10) !important;
 }
 
 .btn-sec-edoor {
@@ -186,15 +220,9 @@ button.p-button.btn-date__t {
     color: var(--text-color);
 }
 
-.btn-date__t,
-.unrounded__box_cus,
-.btn-date__tt {
-    border-radius: 0 !important;
-}
-
 .btn-date__tt {
     background-color: var(--bg-btn-sec-color) !important;
-    border: 1px solid var(--btn-border-color) !important;
+    /* border: 1px solid var(--btn-border-color) !important; */
 }
 
 .btn-calendar__t .p-inputtext,
@@ -245,7 +273,6 @@ button.p-button,
 
 button.p-button.btn-date__t.active {
     background-color: var(--bg-btn-color) !important;
-    border: 1px solid var(--btn-border-color) !important;
     color: #fff;
 }
 
@@ -271,6 +298,11 @@ button.p-button.btn-date__t:hover {
 
 .p-tabview-nav-content .p-tabview-nav {
     background-color: var(--bg-tb-color);
+}
+
+.p-tabview-nav-content {
+    border-top-left-radius: .5rem;
+    border-top-right-radius: .5rem;
 }
 
 .landing-page-custom {
@@ -334,7 +366,8 @@ label {
 
 
 .n__re-custom button.p-button {
-    padding: unset !important;
+    padding-top: unset !important;
+    padding-bottom: unset !important;
 }
 
 
@@ -353,7 +386,6 @@ label {
 }
 
 .tr-h__custom {
-    height: 100%;
     background: var(--trash-can-bg);
     border: var(--trash-can-bg);
     color: var(--bg-btn-color);
@@ -401,43 +433,68 @@ span.p-button-icon.pi.pi-ellipsis-h {
 }
 
 .p-listbox .p-listbox-list {
-    padding: 0.5rem 0;
+    padding: 0;
 }
 
 .p-listbox-list-wrapper .border-b.border-color-edoor {
     padding-bottom: 0.5rem;
 }
 
-.n__re-custom .p-inputtext-sm .p-inputtext {
-    border-radius: .5rem;
-    /* border: transparent; */
-}
-
-.n__re-custom button.p-button,
-.n__re-custom .p-inputtext.p-inputtext-sm,
-.n__re-custom .auto__Com_Cus .p-autocomplete input,
-.n__re-custom .p-autocomplete .p-autocomplete-input,
-.n__re-custom .p-dropdown,
-.add-room-reserv .p-dropdown,
-.add-room-reserv .p-inputtext.p-inputtext-sm {
-    border-radius: 0.5rem;
-    /* border: transparent; */
-    background-color: #fff;
-}
-
-.n__re-custom .p-inputnumber-buttons-stacked .p-inputnumber-input {
+.p-inputnumber-buttons-stacked .p-inputnumber-input {
     border-top-left-radius: .5rem;
     border-bottom-left-radius: .5rem;
-    /* border: transparent; */
 }
 
 .p-inputnumber-button-group .p-button-icon-only {
     background: var(--bg-btn-color) !important;
 }
 
-.add-room-reserv .p-inputtext-pt,
-.add-room-reserv .p-button.p-button-icon-only,
-.n__re-custom .p-inputtext-pt {
+.p-inputtext-pt,
+.p-button.p-button-icon-only,
+.p-inputtext-pt,
+.p-inputtext-sm .p-inputtext {
     border-radius: 0.5rem;
-    /* border: transparent; */
+}
+
+.child-adults-txt input {
+    width: 7rem;
+}
+
+.p-calendar-w-btn .p-inputtext {
+    border-radius: .5rem 0 0 .5rem;
+    border-right: 0;
+}
+
+.p-calendar-w-btn .p-datepicker-trigger {
+    border: 0;
+}
+
+.das-calendar input {
+    border: 0;
+    border-radius: 0 !important;
+}
+
+.das-calendar input {
+    border-right: 0 !important;
+}
+
+.tab-reserv-no .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    padding: .6rem;
+}
+
+.icon-search>.p-autocomplete-input {
+    background-image: url('../svg/search-svgrepo-com.svg');
+    background-repeat: no-repeat;
+    background-position-x: 4px;
+    background-size: 20px;
+    padding-left: 28px;
+    background-position-y: center;
+}
+
+.p-inputnumber-buttons-stacked .p-inputnumber-button-group .p-button.p-inputnumber-button {
+    border: 0;
+}
+
+.p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-up {
+    border-bottom: 1px solid var(--btn-border-color) !important;
 }

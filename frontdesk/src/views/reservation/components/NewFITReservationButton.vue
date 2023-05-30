@@ -1,5 +1,5 @@
 <template>
-    <Button @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon h-12">
+    <Button @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon h-12 border-none">
         <img class="mr-2" :src="iconEdoorNewReservation">New reservataion</Button>
 </template>
 <script setup>

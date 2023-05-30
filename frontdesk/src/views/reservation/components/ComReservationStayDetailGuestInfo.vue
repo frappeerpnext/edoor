@@ -1,12 +1,12 @@
 <template>
-    <div>
-        <ComReservationStayPanel class="mb-2" title="Master Guest" >
+    <div v-if="data">
+        <ComReservationStayPanel class="mb-2" titleClass="text-color-teal-edoor" title="Master Guest" v-if="data.master_guest?.name != data.guest?.name">
             <template #btn>
                 <Button icon="pi pi-ellipsis-h" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />
             </template>
             <template #content>
-                <ComCardProfileGuest :photo="data?.master_guest?.photo" :name="data?.master_guest?.customer_name_en" :phoneNumber2="data?.master_guest?.phone_number_2" :phoneNumber1="data?.master_guest?.phone_number_1" :email="data?.master_guest?.email_address" ></ComCardProfileGuest>
+                <ComCardProfileGuest :photo="data?.master_guest?.photo" :color-status="data?.reservation_stay?.status_color" :name="data?.master_guest?.customer_name_en" :phoneNumber2="data?.master_guest?.phone_number_2" :phoneNumber1="data?.master_guest?.phone_number_1" :email="data?.master_guest?.email_address" ></ComCardProfileGuest>
             </template>
         </ComReservationStayPanel>
         <ComReservationStayPanel title="Stay Guests">
@@ -15,9 +15,19 @@
                 <Menu ref="menuStayGuest" id="menu_stay_guest" :model="menuStayGuestList" :popup="true" />
             </template>
             <template #content>
-                <ComCardProfileGuest :photo="data?.guest?.photo" :name="data?.guest?.customer_name_en" :phoneNumber2="data?.guest?.phone_number_2"  :phoneNumber1="data?.guest?.phone_number_1" :email="data?.guest?.email_address" ></ComCardProfileGuest>
+                <ComCardProfileGuest :photo="data?.guest?.photo" :color-status="data?.reservation_stay?.status_color" :name="data?.guest?.customer_name_en" :phoneNumber2="data?.guest?.phone_number_2"  :phoneNumber1="data?.guest?.phone_number_1" :email="data?.guest?.email_address" ></ComCardProfileGuest>
+                <div class="border-t" v-if="data.reservation_stay && data.reservation_stay.additional_guests && data.reservation_stay.additional_guests.length > 0">
+                    <div class="py-2" v-for="(ad, index) in data.reservation_stay.additional_guests" :key="index">
+                        <ComCardProfileGuest :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
+                            <template #end>
+                                <Button icon="pi pi-ellipsis-h" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name)"/>
+                            </template>
+                        </ComCardProfileGuest>
+                    </div>
+                </div>
+                <Menu ref="menuAdditionalGuest" :model="menuAdditionalGuestList" :popup="true" />
             </template>
-        </ComReservationStayPanel>
+        </ComReservationStayPanel> 
     </div>
 </template>
 <script setup>
@@ -25,12 +35,15 @@ import {ref, useDialog, inject, computed, useToast} from '@/plugin'
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const props = defineProps({
     modelValue: Object
 })
+const emit = defineEmits(['update:modelValue'])
 const dialog = useDialog()
 const toast = useToast()
 const frappe = inject('$frappe')
+const socket = inject("$socket")
 const db = frappe.db()
 const menuMasterGuest = ref()
 const loading = ref(false)
@@ -44,56 +57,75 @@ const data = computed({
 })
 const menuMasterGuestList = ref([
     {
-        label: 'Change master guest',
+        label: 'Change guest',
         command: () =>{
             onAdvancedSearch('master_guest')
         }
-    },
-    {
-        label: 'Add stay guest',
-        command: () =>{
-            alert()
-        }
-    },
-    {
-        label: 'Add additional guest',
-        command: () =>{
-            alert()
-        }
     }
 ])
-const onMenuMasterGuest = (event) => {
-    menuMasterGuest.value.toggle(event);
-};
+
 
 
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
-        label: 'Change stay guest',
+        label: 'Change guest',
         command: () =>{
-            alert()
+            onAdvancedSearch('stay_guest')
         }
     },
     {
         label: 'Add additional guest',
         command: () =>{
-            alert()
-        }
-    },
-    {
-        label: 'Delete guest',
-        command: () =>{
-            alert()
+            onAdvancedSearch('additional_guest')
         }
     }
 ])
+const menuAdditionalGuest = ref()
+const menuAdditionalGuestList = ref([
+{
+        label: 'Add additional guest',
+        command: () =>{
+            onAdvancedSearch('additional_guest')
+        }
+    },
+    {
+        label: 'Delete',
+        command: ($event) =>{
+            onDeleteAdditionalGuest()
+        }
+    }
+])
+
+const onMenuMasterGuest = (event) => {
+    menuMasterGuest.value.toggle(event);
+};
+
 const onMenuStayGuest = (event) => {
     menuStayGuest.value.toggle(event);
 };
 
-function onAdvancedSearch(guest_type) {
-    console.log(guest_type)
+const onMenuAdditionalGuest = ($event, name) => {
+ 
+    menuAdditionalGuest.value.additional_guest_name = name
+    menuAdditionalGuest.value.toggle($event); 
+};
+
+function onDeleteAdditionalGuest(){
+    const additionalGuests = data.value.reservation_stay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
+    const reservationStayData = JSON.parse(JSON.stringify(data.value.reservation_stay))
+    reservationStayData.additional_guests = additionalGuests
+    db.updateDoc('Reservation Stay', reservationStayData.name, reservationStayData)
+        .then((doc) => {
+            data.value.reservation_stay = doc
+            toast.add({ severity: 'success', summary: 'Deleted Successful', detail: '', life: 3000 });
+        })
+        .catch((error) => {
+            toast.add({ severity: 'error', summary: 'Error', detail: JSON.stringify(error), life: 3000 });
+        });
+    }
+
+function onAdvancedSearch(guest_type) { 
     dialog.open(ComReservationChangeGuest, {
         props: {
             header: 'Select Guest',
@@ -108,53 +140,31 @@ function onAdvancedSearch(guest_type) {
             },
             modal: true
         },
+        data:{
+            reservation: props.modelValue?.reservation,
+            reservation_stay: props.modelValue?.reservation_stay,
+            guest_type: guest_type,
+            is_change_master_guest: guest_type == 'master_guest',
+            is_change_stay_guest: guest_type == 'stay_guest',
+            is_change_additional_guest: guest_type == 'additional_guest',
+            total_reservation_stay: props.modelValue.total_reservation_stay
+        },
         onClose(r) {
             if(r.data){
                 loading.value = true
-                if(guest_type == 'master_guest'){
-                    onUpdateGuest(r.data, guest_type)
-                }
-                // db.getDoc('Customer', r.data)
-                // .then((doc) => {
-                //     if(guest_type == 'master_guest'){
-                //         console.log(doc)
-                //     }
-                // })
-                // .catch((error) => console.error(error));
+                if(r.data.is_master_guest)
+                    data.value.master_guest = r.data.guest
+                if(r.data.is_guest_stay)
+                    data.value.guest = r.data.guest
+                if(r.data.reservation_stay)
+                    data.value.reservation_stay = r.data.reservation_stay
+                socket.emit("RefresheDoorDashboard", property.name);
+                emit('update:modelValue', data.value)
+                toast.add({ severity: 'success', summary: 'Updated Successful', detail: '', life: 3000 });
             }
         }
     });
 }
-
-function onUpdateGuest(guest_name, guest_type){
-    let doctype = ''
-    let name = ''
-    if(guest_type == 'master_guest'){
-        doctype = 'Reservation'
-        name = data.value.reservation.name
-    }
-        
-    db.updateDoc(doctype, name, {
-        guest: guest_name,
-    })
-    .then((doc) => {
-        if(guest_type == 'master_guest'){
-            onUpdateMasterGuestInfo(doc)
-        }
-    })
-    .catch((error) => console.error(error));
-}
-
-function onUpdateMasterGuestInfo(doc){
-    data.value.master_guest.name = doc.guest
-    data.value.master_guest.photo = doc.guest_photo
-    data.value.master_guest.customer_name_en = doc.guest_name
-    data.value.master_guest.phone_number_2 = doc.phone_number_2
-    data.value.master_guest.phone_number_1 = doc.phone_number
-    data.value.master_guest.email_address = doc.email_address
-    toast.add({ severity: 'success', summary: 'Updated Successful', detail: '', life: 3000 });
-}
-
 </script>
 <style lang="">
     

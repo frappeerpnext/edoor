@@ -2,12 +2,17 @@
     <h1>Housekeeping</h1>
     {{ selectedRooms }}
     {{ filter }}
-
+    
+    <ComSelect v-model="filter.selected_building" @onSelected="onSearch"
+                placeholder="Building" doctype="Building" />
     <ComSelect :isMultipleSelect="true" isFilter v-model="filter.selected_room_type" optionLabel="room_type"
         optionValue="name" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
     <ComSelect :isMultipleSelect="true" isFilter v-model="filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
-
+        <ComSelect isFilter v-model="filter.selected_housekeeping_status" placeholder="Housekeeper"
+                doctype="Housekeeper" @onSelected="onSearch" />
+    
+    
     <Button label=" Change Housekeeping Status" severity="warning" @click="onChangeHousekeepingStatus" />
 
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
@@ -39,6 +44,8 @@
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="room_number" header="Room #"></Column>
         <Column field="room_type" header="Room Type"></Column>
+        <Column field="room_type" header="Room Type"></Column>
+
         <Column field="housekeeper" header="Housekeeper"></Column>
         <Column field="housekeeping_status" header="Status">
             <template #body="slotProps">
@@ -47,9 +54,10 @@
         </Column>
         <Column field="housekeeping_status" header="Status">
             <template #body="slotProps">
-                <SplitButton label="Change Status" :model="houseKeepingStatus">
-
+                <SplitButton label="Change Status" :model="houseKeepingStatus" @onItemClick="onItemClick('xx')">
+                   
                 </SplitButton>
+                
             </template>
         </Column>
     </DataTable>
@@ -91,6 +99,11 @@ function debouncer(fn, delay) {
 
 loadData()
 
+const onItemClick = ($event) => {
+      alert(1)
+      console.log($event);
+    };
+    
 function loadData() {
     let filters = []
     if (filter.value.selected_room_type && filter.value.selected_room_type.length > 0) {
@@ -142,16 +155,17 @@ onMounted(() => {
             x.forEach(d => {
                 houseKeepingStatus.value.push(
                     {
-                        label: d.name,
+                        labelx: d.name,
                         icon: d.icon,
                         command: (x) => {
 
-                            alert(1)
-                            db.updateDoc('Room', 'RM-0001', {
-                                housekeeping_status: 'Occ Dirty',
-                            })
-                                .then((doc) => console.log(doc))
-                                .catch((error) => console.error(error));
+ 
+
+                            // db.updateDoc('Room', 'RM-0001', {
+                            //     housekeeping_status: 'Occ Dirty',
+                            // })
+                            //     .then((doc) => console.log(doc))
+                            //     .catch((error) => console.error(error));
 
 
                             // toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });

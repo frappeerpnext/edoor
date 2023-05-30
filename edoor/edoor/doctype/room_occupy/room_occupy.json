@@ -16,7 +16,10 @@
   "room_type_id",
   "room_type",
   "type",
-  "property"
+  "property",
+  "adult",
+  "child",
+  "pax"
  ],
  "fields": [
   {
@@ -83,11 +86,26 @@
    "in_list_view": 1,
    "label": "Property",
    "options": "Business Branch"
+  },
+  {
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "label": "Adult"
+  },
+  {
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "label": "Child"
+  },
+  {
+   "fieldname": "pax",
+   "fieldtype": "Int",
+   "label": "Pax"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-26 15:42:07.737637",
+ "modified": "2023-05-27 16:24:16.879603",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

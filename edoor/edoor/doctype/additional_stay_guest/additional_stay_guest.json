@@ -8,8 +8,7 @@
  "field_order": [
   "guest",
   "photo",
-  "guest_name_en",
-  "guest_name_kh",
+  "guest_name",
   "phone_number_1",
   "phone_number_2",
   "email_address"
@@ -30,18 +29,6 @@
    "label": "Photo"
   },
   {
-   "fetch_from": "guest.customer_name_en",
-   "fieldname": "guest_name_en",
-   "fieldtype": "Data",
-   "label": "Guest Name En"
-  },
-  {
-   "fetch_from": "guest.customer_name_kh",
-   "fieldname": "guest_name_kh",
-   "fieldtype": "Data",
-   "label": "Guest Name Kh"
-  },
-  {
    "fetch_from": "guest.phone_number",
    "fieldname": "phone_number_1",
    "fieldtype": "Data",
@@ -58,12 +45,18 @@
    "fieldname": "email_address",
    "fieldtype": "Data",
    "label": "Email Address"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-05-26 16:07:31.174503",
+ "modified": "2023-05-27 16:43:48.587139",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Additional Stay Guest",

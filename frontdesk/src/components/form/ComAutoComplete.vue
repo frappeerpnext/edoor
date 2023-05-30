@@ -1,26 +1,29 @@
 <template>
-    <AutoComplete :class="isFull ? 'autocomplete-full-with' : ''" :data-value="value" v-model="selected" completeOnFocus :suggestions="options" optionLabel="label"
-        @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
-        :placeholder="placeholder">
-        <template #option="slotProps">
-            <template
-                v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
-                <div v-if="slotProps.option.description == addNewKey">
-                    <div class="font-bold text-blue-600"><i class="pi pi-plus"></i> {{ addNewTitle || 'Add New' }}</div>
+    <div class="relative">
+        <AutoComplete :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
+            v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
+            @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
+            :placeholder="placeholder">
+            <template #option="slotProps">
+                <template v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
+                    <div v-if="slotProps.option.description == addNewKey">
+                        <div class="font-bold text-blue-600"><i class="pi pi-plus"></i> {{ addNewTitle || 'Add New' }}</div>
+                    </div>
+                    <div v-if="slotProps.option.description == AdvancedSearchKey">
+                        <div class="font-bold text-blue-600"><i class="pi pi-search"></i> Advanced Search</div>
+                    </div>
+                </template>
+                <div v-else>
+                    <div v-if="slotProps.option.label">
+                        <div class="font-bold">{{ slotProps.option.label }}</div>
+                        <div class="text-sm" style="max-width: 250px; white-space: pre-line;"
+                            v-if="slotProps.option.description">{{ slotProps.option.description }}</div>
+                    </div>
                 </div>
-                <div v-if="slotProps.option.description == AdvancedSearchKey">
-                    <div class="font-bold text-blue-600"><i class="pi pi-search"></i> Advanced Search</div>
-                </div>
-            </template>
-            <div v-else>
-                <div v-if="slotProps.option.label">
-                    <div class="font-bold">{{ slotProps.option.label }}</div>
-                    <div class="text-sm" style="max-width: 250px; white-space: pre-line;"
-                        v-if="slotProps.option.description">{{ slotProps.option.description }}</div>
-                </div>
-            </div>
-        </template>
-    </AutoComplete>
+            </template> 
+        </AutoComplete>
+        <button v-if="!isHideClearButton && selected != ''" type="button" class="absolute right-0 top-0 bottom-0 px-3 py-2" @click="onClear"><i class="pi pi-times text-gray-400" style="font-size: 1rem"></i></button>
+    </div>
 </template>
 <script setup>
 import { ref, inject, computed, useToast, useDialog } from '@/plugin'
@@ -29,6 +32,10 @@ const props = defineProps({
     doctype: String,
     modelValue: [String, Number],
     filters: [Object, String],
+    isIconSearch: {
+        type: Boolean,
+        default: false
+    },
     isAddNew: {
         type: Boolean,
         default: false
@@ -37,7 +44,11 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    isFull:{
+    isFull: {
+        type: Boolean,
+        default: false
+    },
+    isHideClearButton: {
         type: Boolean,
         default: false
     },
@@ -133,6 +144,7 @@ async function getData(keyword) {
 }
 function onClear() {
     getData('')
+    selected.value = ''
     emit('onSelected', {})
     emit('update:modelValue', '')
 }
@@ -187,6 +199,4 @@ function onAdvancedSearch() {
 }
 
 </script>
-<style lang="">
-    
-</style>
+<style></style>

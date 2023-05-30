@@ -20,7 +20,8 @@
   "status_color",
   "housekeeping_icon",
   "room_type_alias",
-  "housekeeper"
+  "housekeeper",
+  "floor"
  ],
  "fields": [
   {
@@ -110,11 +111,18 @@
    "fieldtype": "Link",
    "label": "Housekeeper",
    "options": "Housekeeper"
+  },
+  {
+   "fieldname": "floor",
+   "fieldtype": "Link",
+   "label": "Floor",
+   "options": "Floor",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-25 17:51:21.236481",
+ "modified": "2023-05-30 11:34:18.150985",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

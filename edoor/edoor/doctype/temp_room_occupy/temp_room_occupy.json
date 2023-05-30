@@ -8,6 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "reservation",
+  "reservation_stay",
   "stay_room_id",
   "property",
   "room_type_id",
@@ -17,7 +19,10 @@
   "date",
   "type",
   "is_arrival",
-  "is_departure"
+  "is_departure",
+  "adult",
+  "child",
+  "pax"
  ],
  "fields": [
   {
@@ -89,11 +94,38 @@
    "fieldname": "is_departure",
    "fieldtype": "Check",
    "label": "Is Departure"
+  },
+  {
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "label": "Adult"
+  },
+  {
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "label": "Child"
+  },
+  {
+   "fieldname": "pax",
+   "fieldtype": "Int",
+   "label": "Pax"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Link",
+   "label": "Reservation",
+   "options": "Reservation"
+  },
+  {
+   "fieldname": "reservation_stay",
+   "fieldtype": "Link",
+   "label": "Reservation Stay",
+   "options": "Reservation Stay"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-26 17:29:04.774734",
+ "modified": "2023-05-27 16:26:39.097605",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

@@ -10,7 +10,6 @@ from dateutil.relativedelta import relativedelta
 
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None):
-    
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` limit 1",as_dict=1)
 
     working_date =  datetime.now()
@@ -329,7 +328,8 @@ def get_calendar_event_for_room_type_resource(start,end,property):
                     date, 
                     sum(if(type='Reservation',1,0)) as total_occupy,
                     sum(if(type='Block',1,0)) as total_block,
-                    sum(if(coalesce(room_id,'')='',1,0)) as total_unassign_room
+                    sum(if(coalesce(room_id,'')='',1,0)) as total_unassign_room,
+                    sum(pax) as pax
                 from 
                     `tabTemp Room Occupy` 
                 where 
@@ -372,6 +372,21 @@ def get_calendar_event_for_room_type_resource(start,end,property):
 
         #add event for Vacant Room 
         total_room = Enumerable(room_type_data).sum(lambda r:r.total_room)
+
+        future_arrival_data = get_future_arrival_data(
+                                property,
+                                future_dates[0].strftime('%Y-%m-%d'),
+                                future_dates[len(future_dates)-1].strftime('%Y-%m-%d')
+                            )
+        
+        future_departure_data = get_future_departure_data(
+                                property,
+                                future_dates[0].strftime('%Y-%m-%d'),
+                                future_dates[len(future_dates)-1].strftime('%Y-%m-%d')
+                            )
+        
+
+
         for x in future_dates:
                 
                 events.append(      
@@ -417,7 +432,92 @@ def get_calendar_event_for_room_type_resource(start,end,property):
                     "type":"out_of_order"
                 })
 
+                #append arrival data to event for future date
+                events.append(      
+                {
+                    "resourceId": "arrival_departure",
+                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title": Enumerable(future_arrival_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_room or 0) ,
+                    "color": "blue",
+                    "type":"arrival"
+                })
+                
+                #append depareture data to event for future date
+                events.append(      
+                {
+                    "resourceId": "arrival_departure",
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title": Enumerable(future_departure_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_room or 0) ,
+                    "color": "teal",
+                    "type":"departure"
+                })
+
+                #add event for total pax
+                events.append(      
+                {
+                    "resourceId": "pax",
+                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
+                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.pax or 0),
+                    "color": "green",
+                    "type":"pax"
+                })
+                
+      
+        
+
+
     return events
+
+def get_future_arrival_data(property,start,end):
+    #get arrival and departure event
+    sql = """
+            select 
+                arrival_date as date,
+                count(name) as total_room
+            from `tabReservation Stay` 
+            where 
+                is_active_reservation = 1 and 
+                property = '{}' and 
+                arrival_date between '{}' and '{}'  
+            group by
+                arrival_date
+
+        """
+    sql = sql.format(
+            property, 
+            start,
+            end
+        )
+    
+def get_future_departure_data(property,start,end):
+    #get arrival and departure event
+    sql = """
+            select 
+                departure_date as date,
+                count(name) as total_room
+            from `tabReservation Stay` 
+            where 
+                is_active_reservation = 1 and 
+                property = '{}' and 
+                departure_date between '{}' and '{}'  
+            group by
+                departure_date
+
+        """
+    sql = sql.format(
+            property, 
+            start,
+            end
+        )
+    
+ 
+
+    
+    return  frappe.db.sql(sql,as_dict=1)
+    
 
     
     

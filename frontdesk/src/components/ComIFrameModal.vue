@@ -13,7 +13,17 @@ onMounted(() => {
     if (!dialogRef) {
         alert("no dialog")
     } else {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + dialogRef.value.data.report_name + "&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+        let view = ""
+        let show_toolbar = 0
+       
+        if(!dialogRef.value.data.view){
+            url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + dialogRef.value.data.report_name + "&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0" 
+       
+        }else {
+            url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + dialogRef.value.data.report_name + "&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en"
+       
+        }
+
         const params = dialogRef.value.data.extra_params
         if (params) {
             params.forEach(p => {

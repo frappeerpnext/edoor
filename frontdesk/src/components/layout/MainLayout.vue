@@ -33,7 +33,7 @@
                                 <p title="Reservations">Reservations</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Guest Database" @onClick="onLink('guest-database')">
+                        <ComHeaderBarItemButton title="Guest Database" @onClick="onRoute('GuestDatabase')">
                             <template #icon>
                                 <img :src="iconEdoorGuestDatabase">
                             </template>
@@ -106,10 +106,10 @@
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Refresh</span>
                                     </button>
-                                    <button @click="onRegistration"
+                                    <button @click="onBlankGuestRegistration"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
-                                        <span class="ml-2">Registration</span>
+                                        <i class="pi pi-file" />
+                                        <span class="ml-2">Blank Guest Registration</span>
                                     </button>
                                     <button @click="onOpenCashierShift"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
@@ -177,6 +177,9 @@ const show = ref()
 const toast = useToast()
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting?.backend_port;
+import ComIFrameModal from "../../components/ComIFrameModal.vue";
+ 
+
 const toggle = (event) => {
     show.value.toggle(event);
 };
@@ -227,6 +230,28 @@ function onLogout() {
         location.replace('http://192.168.10.114:1216/app/edoor-frontdesk')
         // location.replace(serverUrl)
     }).catch((error) => toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 }));
+}
+
+
+function onBlankGuestRegistration(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Blank%20Guest%20Registration%20Card",
+            view:"print"
+            // extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }]
+        },
+        props: {
+            header: "Blank Guest Registration Card",
+            style: {
+                width: '80vw',
+            },
+
+            modal: true,
+            maximizable: true,
+        },
+    });
 }
 
 function onSearch() {
