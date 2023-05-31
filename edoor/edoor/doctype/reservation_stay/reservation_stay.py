@@ -63,6 +63,12 @@ class ReservationStay(Document):
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
 			#d.total_amount = (d.rate or  0 )* (d.room_nights or 1)
+		validate_guests = [x for x in self.additional_guests if x.guest == self.guest]
+		unique_list = list(set([x.guest for x in self.additional_guests]))
+		if len(unique_list) < len(self.additional_guests):
+			validate_guests = True
+		if validate_guests:
+			frappe.throw("Cannot select duplicate guest.")
 
 	def after_insert(self):
 		#generate_room_occupy_and_rate(self)

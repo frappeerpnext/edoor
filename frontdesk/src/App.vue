@@ -5,11 +5,12 @@
     <Toast />
     <ConfirmDialog></ConfirmDialog>
 
+
 </template>
 
 
 <script setup>
-import { ref, computed, onUnmounted} from "@/plugin"
+import { ref, computed, onUnmounted,onMounted} from "@/plugin"
 import MainLayout from './components/layout/MainLayout.vue';
 import Property from '@/views/user_property/Property.vue';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
@@ -61,6 +62,13 @@ window.addEventListener('message', actionClickHandler, false);
 
 onUnmounted(() => {
     window.removeEventListener('message', actionClickHandler, false);
+   
+})
+onMounted(() => {
+   const working_day =JSON.parse( localStorage.getItem("edoor_working_day"))
+   if (working_day.cashier_shift.name){
+    //alert("start cashier shift")
+   }
 })
 
 

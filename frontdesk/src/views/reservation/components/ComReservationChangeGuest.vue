@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="flex items-center mb-2">
-            <div class="grow pr-2">
+            <div class="grow">
                 <ComAutoComplete doctype="Customer" @onSelected="onSelected" isFull isIconSearch
                     placeholder="Search guest" />
             </div>
@@ -18,8 +18,7 @@
                 </div>
             </div>
         </div>
-        <div>
-            {{ dialogRef.data.reservation_stay }}
+        <div> 
             <ComReservationStayPanel title="Guest Information">
                 <template #content>
                     <div class="grid">
@@ -72,15 +71,17 @@
             </ComReservationStayPanel>
         </div>
         <div class="flex items-center justify-end pt-4">
+            <Button @click="handleMsg">Test</Button>
             <Button label="OK" @click="onOK"></Button>
         </div>
     </div>
 </template>
 <script setup>
-import { ref, inject, useToast, onMounted } from '@/plugin'
+import { ref, inject, useToast, onMounted, handleServerMessage } from '@/plugin'
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
-const frappe = inject('$frappe')
+
+const frappe = inject('$frappe') 
 const call = frappe.call()
 const db = frappe.db()
 const toast = useToast()
@@ -88,7 +89,9 @@ const dialogRef = inject('dialogRef')
 const genderList = ref(["Not Set", "Male", "Female"])
 let isApplyAllStays = ref(false)
 let isApplyMasterGuest = ref(false)
+
 const guest = ref({})
+ 
 function onSelected(r) {
     if(r.value){
         db.getDoc('Customer', r.value)
@@ -101,27 +104,27 @@ function onSelected(r) {
         guest.value = {}
     }
 }
-
 function onAdditionalSave(){
+ 
     if(!guest.value.name){
         guest.value.doctype = 'Customer'
     }
-    console.log(dialogRef.value.data.reservation_stay)
+     
     call.get("edoor.api.reservation.change_reservation_additional_guest", { 
         reservation_stay: dialogRef.value.data.reservation_stay.name,
         guest: guest.value,
     }).then((result) => {
         if (result) {
-            //dialogRef.value.close({ reservation_stay: result });
+            dialogRef.value.close({ reservation_stay: result });
         }
     }).catch((error) =>{
-        console.log(error)
+        toast.add({ severity: 'warn', summary: handleServerMessage(error), detail: '', life: 3000 });
     })
 }
 function onOK(){
     if(dialogRef.value.data.is_change_additional_guest){
         onAdditionalSave()
-    }else{
+    }else{ 
         onStayGuestSave()
     }
 }
@@ -141,6 +144,8 @@ function onStayGuestSave() {
             if (result) {
                 dialogRef.value.close({ guest: guest.value, is_guest_stay: (isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest), is_master_guest: isApplyMasterGuest.value });
             }
+        }).catch((error) =>{
+            toast.add({ severity: 'warn', summary: handleServerMessage(error), detail: '', life: 3000 });
         })
     } else {
         toast.add({ severity: 'error', summary: 'Cannot get reservation name / guest name', detail: '', life: 3000 });

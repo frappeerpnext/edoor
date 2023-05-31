@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "reference_number",
+  "internal_reference_number",
   "naming_series",
   "reservation_type",
   "property",
@@ -419,11 +420,18 @@
    "fieldname": "additional_guests_tab",
    "fieldtype": "Tab Break",
    "label": "Additional Guests"
+  },
+  {
+   "fetch_from": "reservation.internal_reference_number",
+   "fetch_if_empty": 1,
+   "fieldname": "internal_reference_number",
+   "fieldtype": "Data",
+   "label": "Internal Reference Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-27 15:07:56.738008",
+ "modified": "2023-05-30 17:08:58.350521",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

@@ -207,15 +207,19 @@ def change_reservation_additional_guest(guest,reservation_stay):
         doc_guest = frappe.get_doc(doc_guest).insert()
     
     doc_stay = frappe.get_doc('Reservation Stay', reservation_stay)
+    if doc_stay.guest == doc_guest['name']:
+        frappe.throw('This guest is already selected.')
     for i in doc_stay.additional_guests:
-        if i['guest'] == doc_guest['name']:
-            return {
-                'xx': i['guest']
-            }
+        if i.guest == doc_guest['name'] or i.guest == doc_stay.guest:
+            frappe.throw('This guest is already selected.')
+            # return {
+            #     'status': 406,
+            #     'message': 'This guest is already selected.'
+            # }
     
-    # doc_stay.append('additional_guests',{'guest':doc_guest['name']})
-    # doc_stay = doc_stay.save()
-    # frappe.db.commit()
+    doc_stay.append('additional_guests',{'guest':doc_guest['name']})
+    doc_stay = doc_stay.save()
+    frappe.db.commit()
     return {
         'result': doc_stay
     }
@@ -248,4 +252,16 @@ def get_reservation_guest(reservation=None, reservation_stay=None):
             select guest as name, guest_name from `tabAdditional Stay Guest` where parent='{1}' 
         """
     sql = sql.format((reservation or ''), (reservation_stay or ''))
+    return frappe.db.sql(sql, as_dict=1)
+
+@frappe.whitelist()
+def get_reservation_folio(reservation=None, reservation_stay=None):
+    sql = """
+            select 'all' as name , 'All Folio' as folio
+            union
+            select name, name as folio from `tabReservation Folio`
+            union 
+            select name, name as folio from `tabReservation Folio`
+        """
+    # sql = sql.format((reservation or ''), (reservation_stay or ''))
     return frappe.db.sql(sql, as_dict=1)

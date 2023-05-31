@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white p-2 h-full border-round-xl">
+    <div class="bg-white p-2 border-round-xl" :class="class">
         <div class="font-semibold text-lg px-1">
             {{ title }}
         </div>
@@ -10,7 +10,8 @@
 </template>
 <script setup>
 const props = defineProps({
-    title: String
+    title: String,
+    class: String
 })
 </script>
 <style scoped>

@@ -35,7 +35,9 @@
 .bg-card-info {
     background-color: var(--bg-card-info);
 }
-
+.p-1px{
+    padding: 2px;
+}
 .bg-border-color-teal {
     border-color: var(--bg-color-teal);
 }
@@ -163,14 +165,6 @@ button span {
 
 .progress-bar img {
     height: 30px;
-}
-
-.p-progressbar {
-    background: transparent !important;
-}
-
-.p-progressbar .p-progressbar-value {
-    background-color: #0f3f69 !important
 }
 
 .top-pro-bar-cus .progress-bar:hover,
@@ -497,4 +491,35 @@ span.p-button-icon.pi.pi-ellipsis-h {
 
 .p-inputnumber-buttons-stacked .p-button.p-inputnumber-button-up {
     border-bottom: 1px solid var(--btn-border-color) !important;
+}
+
+.link_line_action {
+    border: 1px dashed var(--bg-purple-cs);
+    border-radius: 10px;
+    padding: 0 5px;
+    color: var(--bg-purple-cs);
+    cursor: pointer;
+}
+
+.td_guest_cs hr {
+    border-color: var(--btn-border-color);
+}
+
+.badge-td-guest,
+.progress-perentage > .p-progressbar-value {
+    background-color: var(--bg-color-teal);
+    color: #fff;
+}
+.Arrival-bg .p-tabview-panel{
+    background: var(--bg-card-info);
+}
+.number_action_line{
+    margin-right: -7px;
+    padding: 0 8px;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
+.p-datatable .p-datatable-thead>tr>th{
+    font-weight: 600 !important;
 }

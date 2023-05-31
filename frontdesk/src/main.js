@@ -176,7 +176,6 @@ app.provide("$auth", auth);
 app.provide("$call", call);
 app.provide("$socket", socket)
 app.provide("$frappe", frappe);
-
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
 
@@ -186,7 +185,6 @@ app.provide("$moment", moment)
 app.provide("$gv", gv)
 // get global data
 const apiCall = frappe.call()
-
 
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {

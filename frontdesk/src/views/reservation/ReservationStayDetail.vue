@@ -1,10 +1,14 @@
 <template>   
     <div class="grid">
-        <div class="col p-0">
+        <div class="col mb-2">
             <div class="flex">
-        <ComTagReservation title="BK#:" :value="doc.reservation?.name" class="bg-black"></ComTagReservation>
-        <ComTagReservation title="RES#:" :value="doc.reservation_stay?.name"></ComTagReservation>
-        <ComTagReservation title="Rooms#:">
+            <span @click="OnViewReservation" >
+        <ComTagReservation  title="BK#:" :value="doc.reservation?.name" class="link_line_action">
+            <span class="link_line_action number_action_line inline-block">{{ doc.total_reservation_stay }}</span>
+        </ComTagReservation>
+            </span>
+        <ComTagReservation title="RES#:" :value="doc.reservation_stay?.name" class="bg-card-info p-1px" ></ComTagReservation>
+        <ComTagReservation title="Rooms#:" class="bg-card-info p-1px">
             <span v-if="doc.reservation_stay?.rooms.split(',').length > 3">
                     <span v-for="value_room_stay_status in doc.reservation_stay?.rooms.split(',').slice(0, 3)"
                         :key="value_room_stay_status">
@@ -18,17 +22,11 @@
                     {{ doc.reservation_stay?.rooms }}
                 </span>
         </ComTagReservation>
-        <span class="px-2 rounded-lg me-2 text-white" :style="{ background: doc.reservation_stay?.status_color }">{{
+        <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: doc.reservation_stay?.status_color }">{{
             doc.reservation_stay?.reservation_status }}</span>
-        <span class="px-2 rounded-lg me-2 text-white" :style="{ background: doc.reservation_stay?.status_color }">{{
+        <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: doc.reservation_stay?.status_color }">{{
             doc.reservation_stay?.reservation_type }}</span>
             </div>
-        </div>
-        <div class="text-right col p-0">
-            <div class="font-light" >Create by:{{ doc.reservation_stay?.owner }}</div>
-            <div class="font-light">Last Modify:{{ doc.reservation_stay?.modified }}</div>
-            <div class="font-light">Checkin by / date:{{ doc.reservation_stay?.modified }}</div>
-            <div class="font-light">Checkout by / date:{{ doc.reservation_stay?.modified }}</div>
         </div>
     </div>
     <TabView>
@@ -43,62 +41,27 @@
                             <ComReservationStayInfo :reservation-stay="doc.reservation_stay"/>
                         </div>
                         <div class="col-12">
-                            <ComReservationBusinessSourceAndRate :data="doc.reservation_stay" ></ComReservationBusinessSourceAndRate>
+                            <ComReservationBusinessSourceAndRate :data="doc.reservation" ></ComReservationBusinessSourceAndRate>
                         </div>
                         <div class="col-12">
-                    <ComReservationRoomStayList :reservation_stay="doc.reservation_stay" ></ComReservationRoomStayList>
+                            <ComReservationRoomStayList :reservation_stay="doc.reservation_stay" ></ComReservationRoomStayList>
                         </div>
+                    </div>
+                    <div class="col-12">
+            <div class="font-light" >Created by: {{ doc.reservation_stay?.owner }} {{ moment(doc.reservation.creation).format('h:mm:ss') }}</div>
+            <div class="font-light">Checked-in by: {{ doc.reservation_stay?.modified }}</div>
+            <div class="font-light">Checked-out by: {{ doc.reservation_stay?.modified }}</div>
+            <div class="font-light">Last Modified: {{ doc.reservation_stay?.modified }}</div>
                     </div>
                 </div>
                 <div class="col">
-                    <ComReservationStayDetailChargeSummary :data="doc.reservation_stay">
+                    <div class="grid">
+                    <ComReservationStayDetailChargeSummary :data="doc">
                     </ComReservationStayDetailChargeSummary>
+                    <ComArrivalAndDeparture></ComArrivalAndDeparture>
+                    </div>
                 </div>
             </div>
-            <ComFieldset nameLegend='Summary'>
-                ADR:{{ doc.reservation_stay?.adr_rate }} <br />
-                Room Nights:{{ doc.reservation_stay?.room_nights }}<br />
-                Total Room Rate:{{ doc.reservation_stay?.total_room_rate }}<br />
-                Room Charge:{{ doc.reservation_stay?.room_charge }}<br />
-                Room Discount:{{ doc.reservation_stay?.room_discount }}<br />
-                Room Tax:{{ doc.reservation_stay?.total_room_tax }}<br />
-                Extra Charge:{{ doc.reservation_stay?.extra_charge }}<br />
-                Extra Charge Discount :{{ doc.reservation_stay?.extra_charge_discount }}<br />
-                Extra Charge Tax:{{ doc.reservation_stay?.extra_charge_tax }}<br />
-                Total Extra Charge:{{ doc.reservation_stay?.total_extra_charge }}<br />
-                Total Payment:{{ doc.reservation_stay?.total_payment }}<br />
-                Balance:{{ doc.reservation_stay?.balance }}<br />
-            </ComFieldset>
-            <ComFieldset nameLegend='Room list'>
-                {{ doc.reservation_stay?.stays }}
-                <DataTable :value="doc.reservation_stay?.stays" tableStyle="min-width: 50rem">
-                    <Column field="room_number" header="Room Number"></Column>
-                    <Column field="start_date" header="Stay">
-                        <template #body="slotProps">
-                            {{ slotProps.data.start_date }} - {{ slotProps.data.end_date }}
-                        </template>
-                    </Column>
-                </DataTable>
-            </ComFieldset>
-            <ComFieldset nameLegend='Pickup'>
-                <!-- {{ doc.reservation_stay }} -->
-                Arrival Date : {{ doc.reservation_stay?.arrival_date }}<br />
-                Arrival Time :{{ doc.reservation_stay?.arrival_time }}<br />
-                Departure Date :{{ doc.reservation_stay?.departure_date }}<br />
-                Departure Time :{{ doc.reservation_stay?.departure_time }}<br />
-                Room Types :{{ doc.reservation_stay?.room_types }}<br />
-                Rooms :{{ doc.reservation_stay?.rooms }}<br />
-                Guest :{{ doc.reservation_stay?.guest }}<br />
-                Start Date :{{ doc.reservation_stay?.start_date }}<br />
-                End Date :{{ doc.reservation_stay?.end_date }}<br />
-                Guest :{{ doc.reservation_stay?.guest }}<br />
-                Room Chart:{{ doc.reservation_stay?.show_in_room_chart }}<br />
-                {{ doc.reservation_stay?.arrival_mode ?? " No arriva mode" }}
-            </ComFieldset>
-            <ComFieldset nameLegend=''>
-                {{ doc }}
-                {{ doc.reservation_stay?.stays }}
-            </ComFieldset>
         </TabPanel>
         <TabPanel header="Room Rate">
             {{ name }}
@@ -123,7 +86,7 @@
     <hr>
     <Button @click="onCheckIn">Check In</Button>
     <Button @click="OnViewReservation">View Reservation</Button>
-    <ComReservationStayPrintButton  :reservation_stay="name"/>
+    <ComReservationStayPrintButton  :reservation_stay="name" v-if="name"/>
 </template>
 <script setup>
 
@@ -142,6 +105,7 @@ import ComTagReservation from '@/views/reservation/components/ComTagReservation.
 import ComReservationBusinessSourceAndRate from '@/views/reservation/components/ComReservationBusinessSourceAndRate.vue';
 import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
+import ComArrivalAndDeparture from './components/ComArrivalAndDeparture.vue';
 
 const route = useRoute()
 const router = useRouter()

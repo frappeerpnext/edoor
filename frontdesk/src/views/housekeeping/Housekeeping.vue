@@ -2,17 +2,16 @@
     <h1>Housekeeping</h1>
     {{ selectedRooms }}
     {{ filter }}
-    
-    <ComSelect v-model="filter.selected_building" @onSelected="onSearch"
-                placeholder="Building" doctype="Building" />
+
+    <ComSelect v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
     <ComSelect :isMultipleSelect="true" isFilter v-model="filter.selected_room_type" optionLabel="room_type"
         optionValue="name" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
     <ComSelect :isMultipleSelect="true" isFilter v-model="filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
-        <ComSelect isFilter v-model="filter.selected_housekeeping_status" placeholder="Housekeeper"
-                doctype="Housekeeper" @onSelected="onSearch" />
-    
-    
+    <ComSelect isFilter v-model="filter.selected_housekeeping_status" placeholder="Housekeeper" doctype="Housekeeper"
+        @onSelected="onSearch" />
+
+
     <Button label=" Change Housekeeping Status" severity="warning" @click="onChangeHousekeepingStatus" />
 
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
@@ -23,8 +22,9 @@
 
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text />
-            <Button label="Yes" icon="pi pi-check" @click="visibleHousekeepingStatus = false" autofocus />
+            <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" />
+            <Button label="Yes" icon="pi pi-check" @click="onSaveChangeHousekeepingStatus" autofocus
+                :loading="submitLoading" />
         </template>
     </Dialog>
 
@@ -55,9 +55,9 @@
         <Column field="housekeeping_status" header="Status">
             <template #body="slotProps">
                 <SplitButton label="Change Status" :model="houseKeepingStatus" @onItemClick="onItemClick('xx')">
-                   
+
                 </SplitButton>
-                
+
             </template>
         </Column>
     </DataTable>
@@ -70,6 +70,7 @@ import Tag from 'primevue/tag';
 
 const frappe = inject("$frappe")
 const db = frappe.db()
+const call = frappe.call()
 
 const toast = useToast();
 
@@ -84,6 +85,7 @@ const onSearch = debouncer(() => {
 }, 500);
 const visibleHousekeepingStatus = ref(false);
 const visibleAssignHousekeeper = ref(false);
+const submitLoading = ref(false)
 
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -100,10 +102,10 @@ function debouncer(fn, delay) {
 loadData()
 
 const onItemClick = ($event) => {
-      alert(1)
-      console.log($event);
-    };
-    
+    alert(1)
+    console.log($event);
+};
+
 function loadData() {
     let filters = []
     if (filter.value.selected_room_type && filter.value.selected_room_type.length > 0) {
@@ -146,7 +148,25 @@ function AssingnHousekeeper() {
         visibleAssignHousekeeper.value = true;
     }
 }
+function onSaveChangeHousekeepingStatus() {
+    submitLoading.value = true;
+    const rooms = selectedRooms.value.map(r => r.name).join(",");
 
+
+    call.post("edoor.api.housekeeping.update_housekeeping_status", {
+        rooms: rooms,
+        status: filter.value.housekeeping_status_to_change
+    }).then((result) => {
+        visibleHousekeepingStatus.value = false
+        selectedRooms.value = []
+        toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
+        loadData()
+        submitLoading.value = false
+
+    }).catch((err) => {
+        submitLoading.value = false
+    })
+}
 onMounted(() => {
     db.getDocList('Housekeeping Status', {
         fields: ['name', "icon", "status_color"],
@@ -159,7 +179,7 @@ onMounted(() => {
                         icon: d.icon,
                         command: (x) => {
 
- 
+
 
                             // db.updateDoc('Room', 'RM-0001', {
                             //     housekeeping_status: 'Occ Dirty',

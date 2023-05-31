@@ -2,7 +2,7 @@
     <div v-if="data">
         <ComReservationStayPanel class="mb-2" titleClass="text-color-teal-edoor" title="Master Guest" v-if="data.master_guest?.name != data.guest?.name">
             <template #btn>
-                <Button icon="pi pi-ellipsis-h" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
+                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />
             </template>
             <template #content>
@@ -11,16 +11,16 @@
         </ComReservationStayPanel>
         <ComReservationStayPanel title="Stay Guests">
             <template #btn>
-                <Button icon="pi pi-ellipsis-h" style="font-size: 1.5rem" text rounded  aria-controls="menu_stay_guest" @click="onMenuStayGuest"/>
+                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded  aria-controls="menu_stay_guest" @click="onMenuStayGuest"/>
                 <Menu ref="menuStayGuest" id="menu_stay_guest" :model="menuStayGuestList" :popup="true" />
             </template>
             <template #content>
                 <ComCardProfileGuest :photo="data?.guest?.photo" :color-status="data?.reservation_stay?.status_color" :name="data?.guest?.customer_name_en" :phoneNumber2="data?.guest?.phone_number_2"  :phoneNumber1="data?.guest?.phone_number_1" :email="data?.guest?.email_address" ></ComCardProfileGuest>
-                <div class="border-t" v-if="data.reservation_stay && data.reservation_stay.additional_guests && data.reservation_stay.additional_guests.length > 0">
+                <div class="border-t mt-2" v-if="data.reservation_stay && data.reservation_stay.additional_guests && data.reservation_stay.additional_guests.length > 0">
                     <div class="py-2" v-for="(ad, index) in data.reservation_stay.additional_guests" :key="index">
                         <ComCardProfileGuest :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
                             <template #end>
-                                <Button icon="pi pi-ellipsis-h" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name)"/>
+                                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name)"/>
                             </template>
                         </ComCardProfileGuest>
                     </div>
@@ -31,7 +31,7 @@
     </div>
 </template>
 <script setup>
-import {ref, useDialog, inject, computed, useToast} from '@/plugin'
+import {ref, useDialog, inject, computed, useToast, useConfirm} from '@/plugin'
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
@@ -42,6 +42,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 const dialog = useDialog()
 const toast = useToast()
+const dialogConfirm = useConfirm()
 const frappe = inject('$frappe')
 const socket = inject("$socket")
 const db = frappe.db()
@@ -112,23 +113,32 @@ const onMenuAdditionalGuest = ($event, name) => {
 };
 
 function onDeleteAdditionalGuest(){
-    const additionalGuests = data.value.reservation_stay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
-    const reservationStayData = JSON.parse(JSON.stringify(data.value.reservation_stay))
-    reservationStayData.additional_guests = additionalGuests
-    db.updateDoc('Reservation Stay', reservationStayData.name, reservationStayData)
-        .then((doc) => {
-            data.value.reservation_stay = doc
-            toast.add({ severity: 'success', summary: 'Deleted Successful', detail: '', life: 3000 });
-        })
-        .catch((error) => {
-            toast.add({ severity: 'error', summary: 'Error', detail: JSON.stringify(error), life: 3000 });
-        });
-    }
+    dialogConfirm.require({
+        message: 'Do you want to delete this record?',
+        header: 'Delete Confirmation',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            const additionalGuests = data.value.reservation_stay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
+            const reservationStayData = JSON.parse(JSON.stringify(data.value.reservation_stay))
+            reservationStayData.additional_guests = additionalGuests
+            db.updateDoc('Reservation Stay', reservationStayData.name, reservationStayData)
+                .then((doc) => {
+                    data.value.reservation_stay = doc
+                    toast.add({ severity: 'success', summary: 'Deleted Successful', detail: '', life: 30000000 });
+                })
+                .catch((error) => {
+                    toast.add({ severity: 'error', summary: 'Error', detail: JSON.stringify(error), life: 3000 });
+                });
+        }
+    })
+    
+}
 
 function onAdvancedSearch(guest_type) { 
     dialog.open(ComReservationChangeGuest, {
         props: {
-            header: 'Select Guest',
+            header: `Select ${guest_type == 'master_guest' ? 'master guest' : (guest_type == 'stay_guest' ? 'stay guest' : (guest_type == 'additional_guest' ? 'Additional guest' : '')) }`,
             keyword: '',
             doctype: 'Customer',
             style: {

@@ -5,8 +5,10 @@ import frappe
 from frappe.model.document import Document
 
 class Room(Document):
-	def validate(self):
-		total_room = frappe.db.count ('Room', { 'property': self.property, "room_type_id":self.room_type_id })
+	def validate(self): 
+		if self.housekeeping_status:
+			self.status_color = frappe.db.get_value("Housekeeping Status", self.housekeeping_status, "status_color")
+
 
 	def after_insert(self):
 		#update total_rooms to room type availability

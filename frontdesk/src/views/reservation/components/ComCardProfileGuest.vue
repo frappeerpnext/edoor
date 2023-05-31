@@ -4,7 +4,7 @@
          <ComAvatar :image="photo" :colorStatus="colorStatus" />
       </div>
       <div class="flex-grow-1 overflow-hidden">
-         <div  v-tooltip.top="name" class="font-bold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor" >{{ name }}</div>
+         <div  v-tooltip.top="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor" >{{ name }}</div>
          <div v-tooltip.top="phoneNumber" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > {{ phoneNumber ?? "No phone number" }}</div>
          <div v-tooltip.top="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" >{{ email ?? "No email" }}</div>
       </div>

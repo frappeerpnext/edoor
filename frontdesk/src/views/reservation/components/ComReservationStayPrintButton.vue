@@ -3,8 +3,10 @@
 </template>
 <script setup>
 import { useToast } from "primevue/usetoast";
-import { ref, inject,useDialog } from "@/plugin";
+import { ref, inject, useDialog,onMounted } from "@/plugin";
 import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
+import ComPrintReservationStay from "./ComPrintReservationStay.vue";
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const dialog = useDialog();
 
 const toast = useToast();
@@ -21,10 +23,10 @@ items.value.push({
     label: "Guest Registration Card",
     icon: 'pi pi-user-edit',
     command: () => {
-            const dialogRef = dialog.open(ComPrintGuestRegistrationCard, {
+        const dialogRef = dialog.open(ComPrintGuestRegistrationCard, {
             data: {
-                reservation:props.reservation??"",
-                reservation_stay:props.reservation_stay??""
+                reservation: props.reservation ?? "",
+                reservation_stay: props.reservation_stay ?? ""
             },
             props: {
                 header: "Guest Registration Card",
@@ -38,9 +40,109 @@ items.value.push({
     }
 })
 
+//Confirmattion Voucher
+items.value.push({
+    label: "Confirmation Voucher",
+    icon: 'pi pi-check-circle',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation%20Stay",
+                name: props.reservation_stay,
+                report_name: "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
+                view: "print"
+            },
+            props: {
+                header: "Confirmation Voucher",
+                style: {
+                    width: '80vw',
+                },
+
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
+
+//Confirmattion Voucher
+items.value.push({
+    label: "Folio Summary Report",
+    icon: 'pi pi-print',
+    command: () => {
+        db.getDocList("Reservation Folio", {
+            filters: [["status", "=", "active"], ["reservation_stay", "=", props.reservation_stay]]
+        }).then((docs) => {
+
+            if (docs.length == 0) {
+                toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
+            } else {
+                dialog.open(ComPrintReservationStay, {
+                    data: {
+                        doctype: "Reservation%20Stay",
+                        name: props.reservation_stay,
+                        report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                        view: "print"
+                    },
+                    props: {
+                        header: "Folio Summary Report",
+                        style: {
+                            width: '80vw',
+                        },
+
+                        modal: true,
+                        maximizable: true,
+                    },
+                });
+            }
+        })
+
+    }
+})
+
+//Confirmattion Voucher
+items.value.push({
+    label: "Folio Detail Report",
+    icon: 'pi pi-print',
+    command: () => {
+        db.getDocList("Reservation Folio", {
+            filters: [["status", "=", "active"], ["reservation_stay", "=", props.reservation_stay]]
+        }).then((docs) => {
+
+            if (docs.length == 0) {
+                toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
+            } else {
+                dialog.open(ComPrintReservationStay, {
+                    data: {
+                        doctype: "Reservation%20Stay",
+                        name: props.reservation_stay,
+                        report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                        view: "print"
+                    },
+                    props: {
+                        header: "Folio Detail Report",
+                        style: {
+                            width: '80vw',
+                        },
+
+                        modal: true,
+                        maximizable: true,
+                    },
+                });
+            }
+        })
 
 
-if (props.reservation_stay) {
+    }
+})
+
+
+
+
+onMounted(() => {
+   
+    if (props.reservation_stay) {
+       
     db.getDocList('Print Format', {
         fields: [
             'name',
@@ -50,30 +152,42 @@ if (props.reservation_stay) {
 
     })
         .then((doc) => {
+            
             console.log(doc)
             doc.forEach(d => {
                 items.value.push({
                     label: d.title,
-                    name: "Pheakdey",
+                    name: d.name,
                     icon: 'pi pi-refresh',
                     command: (r) => {
-                        console.log(r)
-                        toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
+                        console.log(r.item)
+                        dialog.open(ComPrintReservationStay, {
+                            data: {
+                                doctype: "Reservation%20Stay",
+                                name: props.reservation_stay,
+                                report_name: r.item.name,
+                                view: "print"
+                            },
+                            props: {
+                                header: r.item.label,
+                                style: {
+                                    width: '80vw',
+                                },
+
+                                modal: true,
+                                maximizable: true,
+                            },
+                        });
                     }
                 })
             });
         })
-        .catch((error) => console.error(error));
+        .catch((error) =>{
+            
+        });
+        
 
-} else {
-    //get dynamic menu by reservation
+} 
 
-}
-
-
-
-// const save = () => {
-//     toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
-// };
-
+})
 </script>

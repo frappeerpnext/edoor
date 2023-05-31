@@ -3,19 +3,24 @@
         <div class="col">
             <div class="bg-card-info border-round-xl p-3 h-full">
                 <div class="">
-                    <div class="grid m-0">
-                        <div class="col-12 lg:col-6 py-0 pl-0 pr-2">
-                            <label>Reservation Date<span class="text-red-500">*</span></label><br />
-                            <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
-                                placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                    <div class="mb-2">
+                        <label>Reservation Date<span class="text-red-500">*</span></label><br />
+                        <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
+                            placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                    </div>
+                    <div class="grid pt-2">
+                        <div class="col-6">
+                            <label>Reference No</label><br />
+                            <InputText type="text" class="p-inputtext-sm w-full" placeholder="Reference Number"
+                                v-model="doc.reservation.reference_number" :maxlength="50" />
                         </div>
-                        <div class="col-12 lg:col-6 py-0 pl-2 pr-0">
+                        <div class="col-6">
                             <label>Internal Ref. No</label><br />
                             <InputText type="text" class="p-inputtext-sm w-full" placeholder="Internal Ref. Number"
                                 v-model="doc.reservation.internal_reference_number" :maxlength="50" />
                         </div>
                     </div>
-                    <div class="grid pt-2 m-0">
+                    <div class="grid m-0">
                         <div class="arr_wfit col px-0">
                             <label>Arrival<span class="text-red-500">*</span></label><br />
                             <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"

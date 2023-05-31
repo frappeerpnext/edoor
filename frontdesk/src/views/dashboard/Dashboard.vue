@@ -31,8 +31,7 @@
             <ComPanel title="Today's occupancy">
                 <div class="grid">
                     <div class="col-6 flex align-items-center justify-content-center">
-                        <ComdonutChart :value_doughnut=data.total_room_occupy :value_room_vacant=data.total_room_vacant
-                            :value_total_room=data.total_room></ComdonutChart>
+                        <ComRoomStatusDoughnut :data="data" />
                     </div>
                     <div class="col-5">
                         <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
@@ -68,7 +67,7 @@
             </ComPanel>
         </div>
         <div class="col-2">
-            <ComPanel title="Room Status">
+            <ComPanel title="Room Status" class="h-full">
                 <ComHousekeepingStatus />
             </ComPanel>
         </div>
@@ -78,9 +77,6 @@
         <TabView class="tabview-custom">
             <TabPanel>
                 <template #header>
-                    <!-- <span class="pr-1">
-                        <Checkbox v-model="checked" :binary="true" />
-                    </span> -->
                     <span>Arrivals</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival }}</span>
                 </template>
@@ -129,7 +125,6 @@
 <script setup>
 import ComKPI from './components/ComKPI.vue';
 import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
-import ComdonutChart from './components/ComDonutChart.vue';
 import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
 
@@ -142,6 +137,7 @@ import { useDialog } from 'primevue/usedialog';
 import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
 import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
+import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
 const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")

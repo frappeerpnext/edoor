@@ -32,18 +32,22 @@
         <div style="max-width: 100%;">
             <div>  
                 <div :class="showSummary ? 'flex gap-2' : ''">
-                    <div v-if="showSummary" style="width: 250px">
-                        <ComPanel title="Guest Today" class="mb-3 pb-3">
-                            <div>
-                                <ComDonutFrontdesk/>
-                            </div>
-                            <div class="mt-3">
-                                <ComTodaySummary/>
-                            </div>
-                        </ComPanel>
-                        <ComPanel title="Room Status" class="pb-3">
-                            <ComHousekeepingStatus/>
-                        </ComPanel>
+                    <div v-if="showSummary" class="relative" style="width:250px">
+                        <div class="fixed" style="width:250px">
+                            <div class="w-full">
+                                <ComPanel title="Guest Today" class="mb-3 pb-3">
+                                    <div>
+                                        <ComDonutFrontdesk/>
+                                    </div>
+                                    <div class="mt-3">
+                                        <ComTodaySummary/>
+                                    </div>
+                                </ComPanel>
+                                <ComPanel title="Room Status" class="pb-3">
+                                    <ComHousekeepingStatus/>
+                                </ComPanel>
+                            </div> 
+                        </div>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
@@ -601,6 +605,6 @@ onUnmounted(() => {
 }
 
 .chart-show-summary {
-    width: calc(100vw - 225px);
+    width: calc(100% - 250px);
 }
 </style>

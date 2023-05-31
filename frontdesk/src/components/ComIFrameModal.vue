@@ -1,5 +1,5 @@
 <template>
-    <iframe style="height: 500px;" width="100%" :src="url"></iframe>
+    <iframe style="height: 1024px;" width="100%" :src="url"></iframe>
 </template>
 <script setup>
 import { ref, onMounted, inject } from "@/plugin"
