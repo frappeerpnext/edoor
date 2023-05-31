@@ -31,13 +31,19 @@
         </div>
         <div style="max-width: 100%;">
             <div>  
-                <div :class="showSummary ? 'flex' : ''">
-                    <div v-if="showSummary" style="width: 225px">
-                        <div class="bg-white p-2">
-                            <div class="font-semibold">Today Guest</div>
-                            <ComTodaySummary/>
-                        </div>
-                        <ComHousekeepingStatus/>
+                <div :class="showSummary ? 'flex gap-2' : ''">
+                    <div v-if="showSummary" style="width: 250px">
+                        <ComPanel title="Guest Today" class="mb-3 pb-3">
+                            <div>
+                                <ComDonutFrontdesk/>
+                            </div>
+                            <div class="mt-3">
+                                <ComTodaySummary/>
+                            </div>
+                        </ComPanel>
+                        <ComPanel title="Room Status" class="pb-3">
+                            <ComHousekeepingStatus/>
+                        </ComPanel>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
@@ -86,8 +92,10 @@ import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
-import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue';
+import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
+import ComDonutFrontdesk from '@/views/frontdesk/components/ComDonutFrontdesk.vue'
+
 const socket = inject("$socket");
 const frappe = inject('$frappe')
 const call = frappe.call();
