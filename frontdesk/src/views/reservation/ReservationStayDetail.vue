@@ -48,7 +48,7 @@
                         </div>
                     </div>
                     <div class="col-12">
-            <div class="font-light" >Created by: {{ doc.reservation_stay?.owner }} {{ moment(doc.reservation.creation).format('h:mm:ss') }}</div>
+            <div class="font-light" >Created by: {{ doc.reservation_stay?.owner }} </div>
             <div class="font-light">Checked-in by: {{ doc.reservation_stay?.modified }}</div>
             <div class="font-light">Checked-out by: {{ doc.reservation_stay?.modified }}</div>
             <div class="font-light">Last Modified: {{ doc.reservation_stay?.modified }}</div>
