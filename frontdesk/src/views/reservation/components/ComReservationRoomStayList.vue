@@ -1,10 +1,19 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
         <template #content>
-            <div class="room-stay-list">
+            <div class="room-stay-list text-center">
             <DataTable class="p-datatable-sm" :value="reservation_stay?.stays"  tableStyle="min-width: 50rem">
-                    <Column field="start_date" header="Arrival"></Column>
-                    <Column field="end_date" header="Departure"></Column>
+                    <Column field="start_date" header="Arrival" >
+                        <template #body="{ data }">
+                            {{ moment(data.start_date).format('DD-MM-yyyy') }}
+                        </template>
+                    </Column>
+                    <Column field="end_date" header="Departure">
+                        <template #body="{ data }">
+                            {{ moment(data.end_date).format('DD-MM-yyyy') }}
+                        </template>
+                    </Column>
+                    <Column field="room_nights" header="Nights"></Column>
                     <Column field="room_type" header="Room Type"></Column>
                     <Column field="room_number" header="Room Name"></Column>
                     <Column  header="">
@@ -17,7 +26,7 @@
             </DataTable>
             </div>
             <div class="flex justify-end mt-4">
-                <Button >Add Room Charge</Button>
+                <Button class="border-none" >Upgrade Room</Button>
             </div>
             
         </template>
@@ -25,6 +34,8 @@
 </template>
 <script setup>
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
+import {inject} from 'vue'
+const moment = inject('$moment')
 const props = defineProps({
     reservation_stay: Object
 })

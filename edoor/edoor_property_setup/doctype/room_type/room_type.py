@@ -9,6 +9,9 @@ class RoomType(Document):
 		pass
 	
 	def on_update(self):
+		sql = "update `tabRoom` set room_type_group = '{}' where room_type_id='{}'".format(self.room_type_group, self.name)
+		frappe.db.sql(sql)
+		
 		#add_room_type_availability()
 		frappe.enqueue("edoor.edoor_property_setup.doctype.room_type.room_type.add_room_type_availability", queue='long', self=self)
 

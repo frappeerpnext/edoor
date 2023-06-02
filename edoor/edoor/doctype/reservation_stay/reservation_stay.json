@@ -22,6 +22,7 @@
   "rooms",
   "guest",
   "guest_name",
+  "nationality",
   "guest_phone_number",
   "guest_email",
   "adult",
@@ -427,11 +428,17 @@
    "fieldname": "internal_reference_number",
    "fieldtype": "Data",
    "label": "Internal Reference Number"
+  },
+  {
+   "fetch_from": "guest.country",
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-30 17:08:58.350521",
+ "modified": "2023-06-01 09:42:39.883881",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

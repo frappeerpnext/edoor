@@ -11,6 +11,8 @@
   "disabled",
   "section_break_2",
   "property",
+  "building",
+  "floor",
   "naming_series",
   "room_type_id",
   "room_type",
@@ -21,7 +23,7 @@
   "housekeeping_icon",
   "room_type_alias",
   "housekeeper",
-  "floor"
+  "room_type_group"
  ],
  "fields": [
   {
@@ -118,11 +120,24 @@
    "label": "Floor",
    "options": "Floor",
    "reqd": 1
+  },
+  {
+   "fetch_from": "room_type_id.room_type_group",
+   "fieldname": "room_type_group",
+   "fieldtype": "Link",
+   "label": "Room Type Group",
+   "options": "Room Type Group"
+  },
+  {
+   "fieldname": "building",
+   "fieldtype": "Link",
+   "label": "Building",
+   "options": "Building"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-31 10:32:48.899811",
+ "modified": "2023-06-01 09:51:45.033012",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

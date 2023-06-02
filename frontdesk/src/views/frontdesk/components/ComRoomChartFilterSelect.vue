@@ -5,8 +5,10 @@
                 <slot name="date"></slot>
             </div>
             <div>
-                {{filter.room_type}}
-                <ComSelect placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" optionLabel="room_type" optionValue="name"></ComSelect>
+                <ComSelect placeholder="All Room Group" v-model="filter.room_type_group" doctype="Room Type Group" optionLabel="room_type_group" optionValue="name"></ComSelect>
+            </div>
+            <div>
+                <ComSelect placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
             </div>
             <div>
                 <ComSelect placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
@@ -24,7 +26,6 @@
                 </span>
             </div>
         </div>
-
     </div>
 </template>
 <script setup>

@@ -6,7 +6,8 @@
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
-                        <div class="ml-8">May 30 - Jun 16, 2023</div>
+                        <div class="ml-8" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
                 </div>
             </template>
@@ -19,7 +20,7 @@
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-between mb-3">
+        <div class="flex justify-between mb-3 filter-calen-fro">
             <ComRoomChartFilterSelect>
                 <template #date>
                     <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar showIcon />
@@ -30,21 +31,22 @@
             </div>
         </div>
         <div style="max-width: 100%;">
-            <div>  
+            <div id="fron__desk-fixed-top">  
                 <div :class="showSummary ? 'flex gap-2' : ''">
                     <div v-if="showSummary" class="relative" style="width:250px">
-                        <div class="fixed" style="width:250px">
+                        <div>
                             <div class="w-full">
-                                <ComPanel title="Guest Today" class="mb-3 pb-3">
+                                <ComPanel title="Today Guest" class="mb-3 pb-3">
                                     <div>
-                                        <ComDonutFrontdesk/>
-                                    </div>
-                                    <div class="mt-3">
                                         <ComTodaySummary/>
                                     </div>
                                 </ComPanel>
-                                <ComPanel title="Room Status" class="pb-3">
+                                <ComPanel title="Room Status" class="pb-3 mb-3 front-house__kep">
                                     <ComHousekeepingStatus/>
+                                </ComPanel>
+
+                                <ComPanel title="Reservation Status" class="pb-3">
+                                    <ReservationStatusLabel/>
                                 </ComPanel>
                             </div> 
                         </div>
@@ -73,7 +75,6 @@
                                     {{ event.title }}
                             </template>
                         </FullCalendar>
-                        <ReservationStatusLabel/>
                     </div>
                 </div>
             </div>
@@ -98,7 +99,7 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
-import ComDonutFrontdesk from '@/views/frontdesk/components/ComDonutFrontdesk.vue'
+
 
 const socket = inject("$socket");
 const frappe = inject('$frappe')
@@ -107,8 +108,10 @@ const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
     view_type: '',
-    date: ''
+    date: '',
+    end_date: ''
 })
+const titleStartEndDate = reactive({})
 const fullCalendar = ref(null)
 
 const toast = useToast();
@@ -270,6 +273,7 @@ function getRoomChartlocationStorage() {
     if (localStorage.getItem('reservation_chart')) {
         const result = JSON.parse(localStorage.getItem('reservation_chart'))
         filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+        filter.end_date = result.end_date
         return result;
 
     } else {
@@ -285,6 +289,7 @@ function getRoomChartlocationStorage() {
         if (localStorage.getItem('reservation_chart')) {
             const result = JSON.parse(localStorage.getItem('reservation_chart'))
             filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+            filter.end_date = result.end_date
             return result
         }
 
@@ -308,12 +313,12 @@ function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', 
 
     localStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
     filter.date = moment(dataStorage.start_date).add(1, 'days').format("yyyy-MM-DD")
+    filter.end_date = dataStorage.end_date
     return dataStorage
 
 }
 
 function onFilterToday() {
-
     const startDate = moment(working_day.date_working_day).subtract(1, 'days').format("yyyy-MM-DD")
     const currentViewChart = setRoomChartlocationStorage(startDate, '', '', '')
     onFilter(currentViewChart.peroid)
@@ -454,29 +459,34 @@ function onView() {
 }
 function onFilter(key) {
     filter.peroid = key
+
     const cal = fullCalendar.value.getApi()
     const visibleRange = cal.currentData.options.visibleRange
-
+    console.log('start: ', visibleRange.start)
+    console.log('start: ', visibleRange.end)
     if (key == 'week') {
         const currentViewChart = setRoomChartlocationStorage('', '', '', key)
         visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
-        visibleRange.end = moment(currentViewChart.start_date).add(7, 'days').format("yyyy-MM-DD")
+        visibleRange.end = moment(currentViewChart.start_date).add(7, 'days').subtract(1, 'days').format("yyyy-MM-DD")
+
         const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
-        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
+        cal.changeView('resourceTimeline', { start: moment(setViewChart.start_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss'), end: moment(setViewChart.end_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss') });
     }
     else if (key == '14_days') {
         const currentViewChart = setRoomChartlocationStorage('', '', '', key)
         visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
-        visibleRange.end = moment(currentViewChart.start_date).add(14, 'days').format("yyyy-MM-DD")
+        visibleRange.end = moment(currentViewChart.start_date).add(14, 'days').subtract(1, 'days').format("yyyy-MM-DD")
         const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
-        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
+        cal.changeView('resourceTimeline', { start: moment(setViewChart.start_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss'), end: moment(setViewChart.end_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss') });
+        // cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
     else {
         var currentViewChart = getRoomChartlocationStorage()
         visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
-        visibleRange.end = moment(currentViewChart.start_date).add(1, 'months').format("yyyy-MM-DD")
-        const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', '')
-        cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
+        visibleRange.end = moment(currentViewChart.start_date).add(1, 'months').subtract(1, 'days').format("yyyy-MM-DD")
+        const setViewChart = setRoomChartlocationStorage(visibleRange.start, visibleRange.end, '', key)
+        cal.changeView('resourceTimeline', { start: moment(setViewChart.start_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss'), end: moment(setViewChart.end_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss') });
+        // cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
 }
 
@@ -581,6 +591,10 @@ onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
     socket.disconnect()
 })
+
+
+
+
 </script>
 <style>
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
@@ -606,5 +620,10 @@ onUnmounted(() => {
 
 .chart-show-summary {
     width: calc(100% - 250px);
+}
+
+.filter-calen-fro .p-inputtext.p-component {
+    width: 12rem;
+    height: 38px;
 }
 </style>

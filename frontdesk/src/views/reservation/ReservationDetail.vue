@@ -69,9 +69,6 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const name = ref("")
 const doc = ref({})
 
-
-
-
 onMounted(() => {
     if (!dialogRef) {
         alert("no dialog")

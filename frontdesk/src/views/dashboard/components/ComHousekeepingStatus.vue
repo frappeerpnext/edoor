@@ -1,13 +1,15 @@
 <template>
-    <Listbox :options="data" optionLabel="status" class="w-full h-full border-round-xl" @change="onViewRoomList">
-        <template #option="slotProps">
-            <ComDashboardRowStatus :value="slotProps.option.total" :badgeColor="slotProps.option.color"
-                :icon="slotProps.option.icon">
-                <template #content>{{ slotProps.option.status }}
-                </template>
-            </ComDashboardRowStatus>
-        </template>
-    </Listbox>
+    <div class="mx-1">
+        <Listbox :options="data" optionLabel="status" class="w-full h-full border-round-xl" @change="onViewRoomList">
+            <template #option="slotProps">
+                <ComDashboardRowStatus :value="slotProps.option.total" :badgeColor="slotProps.option.color"
+                    :icon="slotProps.option.icon">
+                    <template #content>{{ slotProps.option.status }}
+                    </template>
+                </ComDashboardRowStatus>
+            </template>
+        </Listbox>
+    </div>
 </template>
 <script setup>
 

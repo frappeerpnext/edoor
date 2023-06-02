@@ -11,6 +11,7 @@
     --bg-warning-color: #fd952c;
     --bg-warning-hover: #fa8b1d;
     --bg-og-color: #ff5b00;
+    --bg-og-color-hover: #f05502;
     --bg-danger-color: #e80000;
     --bg-amguest-color: #00cbd0;
     --bg-btn-green-color: #50ac58;
@@ -27,7 +28,10 @@
     --bg-color-teal: #14b8b1;
 
 }
-
+html {
+    margin-bottom: 22px;
+    overflow: hidden;
+}
 .border-gray-edoor-100 {
     border-color: var(--color-gray-100)
 }
@@ -35,9 +39,11 @@
 .bg-card-info {
     background-color: var(--bg-card-info);
 }
-.p-1px{
+
+.p-1px {
     padding: 2px;
 }
+
 .bg-border-color-teal {
     border-color: var(--bg-color-teal);
 }
@@ -127,9 +133,8 @@
     background-color: var(--bg-primary-color);
 }
 
-.wrap-page-content.px-2 {
-    position: relative;
-    top: 62.5px;
+.wrap-page-content {
+    padding-top: 85px;
 }
 
 .wrapper-foot-deco {
@@ -506,20 +511,44 @@ span.p-button-icon.pi.pi-ellipsis-h {
 }
 
 .badge-td-guest,
-.progress-perentage > .p-progressbar-value {
+.progress-perentage>.p-progressbar-value {
     background-color: var(--bg-color-teal);
     color: #fff;
 }
-.Arrival-bg .p-tabview-panel{
+
+.Arrival-bg .p-tabview-panel {
     background: var(--bg-card-info);
 }
-.number_action_line{
+
+.number_action_line {
     margin-right: -7px;
     padding: 0 8px;
     border-right: 0;
     border-top: 0;
     border-bottom: 0;
 }
-.p-datatable .p-datatable-thead>tr>th{
+
+.p-datatable .p-datatable-thead>tr>th {
     font-weight: 600 !important;
 }
+
+.icon-set-svg {
+    height: 20px;
+}
+
+/* Start Customize Full calenda css */
+
+.fc .fc-scrollgrid-section-header.fc-scrollgrid-section-sticky>* {
+    top: 62px !important;
+}
+.fc .fc-scrollgrid-section-footer.fc-scrollgrid-section-sticky>* {
+    bottom:20px !important;
+}
+.fc .fc-scrollgrid-section.fc-scrollgrid-section-body>* {
+    padding-bottom:21px !important;
+}
+.doughnut__chart_ds{
+    font-size: 3rem !important;
+    top: 57% !important;
+}
+/* END Full calenda css */

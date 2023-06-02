@@ -4,7 +4,7 @@
             {{ title }}
         </div>
         <div class="flex-none">
-            <div class="px-2 py-1 my-1 border-round-lg text-white " :class="class" >{{ value }}</div>
+            <div class="px-2 py-1 border-round-lg text-white " :class="class">{{ value }}</div>
         </div>
     </div>
 </template>

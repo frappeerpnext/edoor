@@ -5,7 +5,7 @@
             <div class="flex-grow px-1">
                 
             </div>
-            <div class="px-2 py-1 text-sm border-round-md badge-td-guest">
+            <div class="px-2 py-1 font-medium border-round-lg text-white badge-td-guest">
                 <slot></slot>
             </div>
         </div>

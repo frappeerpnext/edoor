@@ -1,9 +1,9 @@
 <template>
-    <SplitButton label="Print" icon="pi pi-print" :model="items" />
+    <SplitButton class="border-split-none" label="Print" icon="pi pi-print" :model="items" />
 </template>
 <script setup>
 import { useToast } from "primevue/usetoast";
-import { ref, inject, useDialog,onMounted } from "@/plugin";
+import { ref, inject, useDialog, onMounted } from "@/plugin";
 import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
 import ComPrintReservationStay from "./ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
@@ -140,54 +140,64 @@ items.value.push({
 
 
 onMounted(() => {
-   
+
     if (props.reservation_stay) {
-       
-    db.getDocList('Print Format', {
-        fields: [
-            'name',
-            'title'
-        ],
-        filters: [["show_in_reservation_stay_detail", "=", "1"]]
 
-    })
-        .then((doc) => {
-            
-            console.log(doc)
-            doc.forEach(d => {
-                items.value.push({
-                    label: d.title,
-                    name: d.name,
-                    icon: 'pi pi-refresh',
-                    command: (r) => {
-                        console.log(r.item)
-                        dialog.open(ComPrintReservationStay, {
-                            data: {
-                                doctype: "Reservation%20Stay",
-                                name: props.reservation_stay,
-                                report_name: r.item.name,
-                                view: "print"
-                            },
-                            props: {
-                                header: r.item.label,
-                                style: {
-                                    width: '80vw',
-                                },
+        db.getDocList('Print Format', {
+            fields: [
+                'name',
+                'title'
+            ],
+            filters: [["show_in_reservation_stay_detail", "=", "1"]]
 
-                                modal: true,
-                                maximizable: true,
-                            },
-                        });
-                    }
-                })
-            });
         })
-        .catch((error) =>{
-            
-        });
-        
+            .then((doc) => {
 
-} 
+                console.log(doc)
+                doc.forEach(d => {
+                    items.value.push({
+                        label: d.title,
+                        name: d.name,
+                        icon: 'pi pi-refresh',
+                        command: (r) => {
+                            console.log(r.item)
+                            dialog.open(ComPrintReservationStay, {
+                                data: {
+                                    doctype: "Reservation%20Stay",
+                                    name: props.reservation_stay,
+                                    report_name: r.item.name,
+                                    view: "print"
+                                },
+                                props: {
+                                    header: r.item.label,
+                                    style: {
+                                        width: '80vw',
+                                    },
+
+                                    modal: true,
+                                    maximizable: true,
+                                },
+                            });
+                        }
+                    })
+                });
+            })
+            .catch((error) => {
+
+            });
+
+
+    }
 
 })
 </script>
+<style>
+.border-split-none button {
+    border: 0 !important;
+}
+.p-button .p-badge{
+    line-height: 1.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+</style>

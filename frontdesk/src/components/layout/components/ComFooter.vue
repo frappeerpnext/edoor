@@ -1,9 +1,13 @@
 <template >
     <div class="d-bg-edoor wrapper-foot-deco fixed bottom-0 w-full items-center flex" style="z-index: 9899;">
-        <div class="flex justify-between  text-white px-2 w-full"
-            v-if="data.date_working_day && data.cashier_shift">
-            <p>System date: {{ moment(data.date_working_day).format("DD, MMM YYYY") }} | {{ data.cashier_shift?.shift_name
-            }} {{ moment(data.cashier?.creation).format("DD, MMM YYYY") }}</p>
+        <div class="flex justify-between  text-white px-2 w-full" v-if="data.date_working_day">
+            <p>Working Day #: {{ data.name }}, System date: {{ moment(data.date_working_day).format("DD-MMM-YYYY") }}
+
+                <template v-if="gv.cashier_shift">
+                    | {{ gv.cashier_shift?.shift_name }}, Shift #: {{ gv.cashier_shift?.name }},
+                    {{ moment(gv.cashier_shift?.creation).format("DD-MMM-YYYY hh:mm A") }}
+                </template>
+            </p>
             <p>Power by: eDoor Frontdesk</p>
         </div>
     </div>
@@ -13,6 +17,6 @@ import { inject } from 'vue'
 const moment = inject('$moment')
 
 const data = JSON.parse(localStorage.getItem("edoor_working_day"))
-
+const gv = inject("$gv")
 
 </script>

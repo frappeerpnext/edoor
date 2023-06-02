@@ -1,19 +1,23 @@
 <template>
-<div class="flex my-4 justify-end">
-    <div v-for="(d, index) in data" :key="index" >
-    <span class="px-4 me-2 ms-6" :style="{background:d.color}"></span>{{ d.name }}  
-    </div> 
-</div>
+    <div class="mx-1 my-4">
+        <div class="grid">
+            <div class="col-6" v-for="(d, index) in data" :key="index">
+                <span class="px-3 me-2" :style="{ background: d.color }"></span>{{ d.name }}
+            </div>
+        </div>
+    </div>
 </template>
 <script setup>
-import { ref, inject } from '@/plugin';
-const frappe= inject("$frappe")
-const db =frappe.db()
+import { ref, inject, getDocList } from '@/plugin';
 const data = ref([])
-    db.getDocList('Reservation Status',{
+    getDocList('Reservation Status', {
         fields: ['name', 'color'],
+        orderBy: {
+            field: 'sort_order',
+            order: 'asc',
+        },
     })
-    .then((docs) =>{
+    .then((docs) => {
         data.value = docs
     })
 </script>

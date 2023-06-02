@@ -10,13 +10,28 @@
 
 
 <script setup>
-import { ref, computed, onUnmounted,onMounted} from "@/plugin"
+import { ref, computed, onUnmounted,onMounted,useToast,inject} from "@/plugin"
 import MainLayout from './components/layout/MainLayout.vue';
 import Property from '@/views/user_property/Property.vue';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
+import OpenShift from "@/views/shift/OpenShift.vue"
 
 import { useDialog } from 'primevue/usedialog';
+const socket = inject("$socket");
+const gv = inject("$gv") 
+
+socket.on("UpdateCashierShift", (arg) => {
+     
+    if(JSON.parse(localStorage.getItem("edoor_property")).name == arg.business_branch ){
+        gv.cashier_shift = arg
+        alert("New cashier shift opened.")
+    }
+})
+
+
+
+const toast = useToast();
 const dialog = useDialog();
 
 const hasProperty = ref(false)
@@ -49,6 +64,8 @@ const actionClickHandler = async function (e) {
 
             } else if (data[0] == "view_reservation_stay_detail") {
                 showReservationDetail(data[1])
+            }else if(data[0]=="show_alert"){
+                toast.add({ severity: 'warn', summary: '', detail: data[1], life: 3000 })
             }
         }
 
@@ -66,8 +83,22 @@ onUnmounted(() => {
 })
 onMounted(() => {
    const working_day =JSON.parse( localStorage.getItem("edoor_working_day"))
-   if (working_day.cashier_shift.name){
-    //alert("start cashier shift")
+   if (!working_day.cashier_shift?.name){
+    const dialogRef = dialog.open(OpenShift, {
+        props: {
+            header: 'Open Shift',
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        },
+       
+    });
+
+   }else{
+        gv.cashier_shift = working_day.cashier_shift
    }
 })
 

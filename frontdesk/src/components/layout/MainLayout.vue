@@ -1,6 +1,7 @@
 <template>
     <div class="wrap-page">
-        <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading" mode="indeterminate">
+        <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
+            mode="indeterminate">
         </ProgressBar>
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
@@ -41,12 +42,12 @@
                                 <p title="Guest Database">Guest Database</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="House Keeping" icon="pi-users" @onClick="onRoute('Housekeeping')">
+                        <ComHeaderBarItemButton title="Housekeeping" icon="pi-users" @onClick="onRoute('Housekeeping')">
                             <template #icon>
                                 <img :src="iconEdoorHouseKeeping">
                             </template>
                             <template #defualt>
-                                <p title="House Keeping">House Keeping</p>
+                                <p title="Housekeeping">Housekeeping</p>
                             </template>
                         </ComHeaderBarItemButton>
                         <ComHeaderBarItemButton title="Guest Ledger" @onClick="onLink('guest-ledger')">
@@ -86,7 +87,7 @@
                         <div class="px-2 flex items-center">
                             <div>
                                 <Button icon="pi pi-search btn-search-top" text rounded severity="secondary"
-                                    aria-label="Setting" class="p-link text-white" @click="onSearch" />
+                                    aria-label="Search" class="p-link text-white" @click="onSearch" />
                             </div>
                             <div>
                                 <Button icon="pi pi-cog btn-setting-top" text rounded severity="secondary"
@@ -101,22 +102,18 @@
                                         <i class="pi pi-user" />
                                         <span class="ml-2">Change property</span>
                                     </button>
-                                    <button @click="onRefresh"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
-                                        <span class="ml-2">Refresh</span>
-                                    </button>
+
                                     <button @click="onBlankGuestRegistration"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-file" />
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
-                                    <button @click="onOpenCashierShift"
+                                    <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Open cashier shift</span>
                                     </button>
-                                    <button @click="onCloseCashierShift"
+                                    <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Close cashier shift</span>
@@ -164,7 +161,7 @@ import Search from '@/views/search/Search.vue';
 import Property from '@/views/user_property/Property.vue';
 import { useDialog } from 'primevue/usedialog';
 import ComFooter from '../../components/layout/components/ComFooter.vue';
-
+import OpenShift from "@/views/shift/OpenShift.vue"
 
 const dialog = useDialog();
 
@@ -178,7 +175,7 @@ const toast = useToast()
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting?.backend_port;
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
- 
+
 
 const toggle = (event) => {
     show.value.toggle(event);
@@ -186,10 +183,6 @@ const toggle = (event) => {
 
 function onUserProfile() {
     alert()
-}
-function onRefresh() {
-
-    window.location.reload();
 }
 
 //change property
@@ -233,13 +226,13 @@ function onLogout() {
 }
 
 
-function onBlankGuestRegistration(){
+function onBlankGuestRegistration() {
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
             report_name: "eDoor%20Blank%20Guest%20Registration%20Card",
-            view:"print"
+            view: "print"
             // extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }]
         },
         props: {
@@ -268,6 +261,24 @@ function onSearch() {
             modal: true
         },
     });
+}
+
+function onOpenCashierShift() {
+    const dialogRef = dialog.open(OpenShift, {
+        props: {
+            header: 'Open Shift',
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        },
+
+    });
+}
+function onCloseCashierShift() {
+    alert("close shift")
 }
 
 </script>

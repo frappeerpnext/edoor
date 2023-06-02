@@ -27,15 +27,18 @@ import { setConfig, frappeRequest } from './resource'
 setConfig('resourceFetcher', frappeRequest)
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
-
+import NumberFormat from 'number-format.js'
 
 const app = createApp(App);
 
 const auth = reactive(new Auth());
 const frappe = new FrappeApp()
+
 // inject
 import moment from "./utils/moment";
 import Gv from './providers/gv';
+import Housekeeping from './providers/housekeeping';
+import Reservation from './providers/reservation';
 
 // directive
 import BadgeDirective from 'primevue/badgedirective';
@@ -43,6 +46,7 @@ import BadgeDirective from 'primevue/badgedirective';
 // prime components //
 import Button from "primevue/button"
 import Menu from 'primevue/menu';
+import Skeleton from 'primevue/skeleton';
 import Avatar from 'primevue/avatar';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
@@ -84,6 +88,7 @@ import Chip from 'primevue/chip';
 import DialogService from 'primevue/dialogservice';
 import AutoComplete from 'primevue/autocomplete';
 import Calendar from 'primevue/calendar';
+import Chart from 'primevue/chart';
 // custom components //
 import ComAvatar from './components/form/ComAvatar.vue'
 import ComAutoComplete from './components/form/ComAutoComplete.vue'
@@ -91,7 +96,9 @@ import ComSelect from './components/form/ComSelect.vue'
 import ComPanel from './components/layout/components/ComPanel.vue'
 import ComHeader from './components/layout/components/ComHeader.vue'
 import ComFieldset from './components/layout/components/ComFieldset.vue'
-
+import ComDialogContent from './components/form/ComDialogContent.vue'
+import CurrencyFormat from './components/CurrencyFormat.vue'
+import ComChartDoughnut from './components/chart/ComChartDoughnut.vue'
 import socket from './utils/socketio';
 
 
@@ -141,7 +148,7 @@ app.component('Chip', Chip);
 app.component('Tooltip', Tooltip);
 app.component('AutoComplete', AutoComplete)
 app.component('Calendar', Calendar)
-
+app.component('Chart',Chart)
 // use custom components //
 app.component('ComAvatar', ComAvatar)
 app.component('ComPanel', ComPanel)
@@ -149,7 +156,10 @@ app.component('ComAutoComplete', ComAutoComplete)
 app.component('ComSelect', ComSelect)
 app.component('ComHeader', ComHeader)
 app.component('ComFieldset', ComFieldset)
-
+app.component('ComDialogContent', ComDialogContent)
+app.component('CurrencyFormat', CurrencyFormat)
+app.component('ComChartDoughnut', ComChartDoughnut)
+app.component('Skeleton', Skeleton)
 
 
 
@@ -176,13 +186,19 @@ app.provide("$auth", auth);
 app.provide("$call", call);
 app.provide("$socket", socket)
 app.provide("$frappe", frappe);
+app.provide("$numberFormat",NumberFormat)
+
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
 
 
 const gv = reactive(new Gv());
+const housekeeping = reactive(new Housekeeping());
+const reservation = reactive(new Reservation());
 app.provide("$moment", moment)
 app.provide("$gv", gv)
+app.provide("$housekeeping", housekeeping)
+app.provide("$reservation", reservation)
 // get global data
 const apiCall = frappe.call()
 
@@ -208,10 +224,13 @@ router.beforeEach(async (to, from, next) => {
 	}
 });
 
+ 
 apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
 }).then((r) => {
-	localStorage.setItem('edoor_user', JSON.stringify(r.message.user))
+	const data = r.message
+	localStorage.setItem('edoor_user', JSON.stringify( data.user))
+	localStorage.setItem("edoor_setting", JSON.stringify( data.edoor_setting))
 	if(r.message.property=="Invalid Property"){
 		localStorage.removeItem("edoor_property")
 	}

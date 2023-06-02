@@ -351,11 +351,13 @@
   background: #ffffff;
   font-weight: 700;
 }
-.p-autocomplete.w-full > input,
-.w-full > .p-autocomplete,
-.w-full > .p-autocomplete > input {
+
+.p-autocomplete.w-full>input,
+.w-full>.p-autocomplete,
+.w-full>.p-autocomplete>input {
   width: 100% !important;
 }
+
 .p-calendar.p-invalid.p-component>.p-inputtext {
   border-color: #e24c4c;
 }
@@ -1402,7 +1404,7 @@
 
 .p-listbox .p-listbox-list .p-listbox-item {
   margin: 0;
-  padding: 0.5rem .25rem 0;
+  padding: 0.5rem 0 0;
   border: 0 none;
   color: #495057;
   transition: box-shadow 0.2s;
@@ -5139,7 +5141,29 @@
   background: #ffffff;
   color: #495057;
   padding: 1rem;
+  overflow: hidden !important;
 }
+.p-dialog .p-dialog-content .wrap-dialog{
+  margin: -1rem;
+}
+
+/* .p-dialog-content .wrap-dialog,
+.p-dialog .p-dialog-content:has(.wrap-dialog) {
+  padding: 0rem;
+} */
+
+.p-dialog .p-dialog-content .wrap-dialog .wrap-dialog-content {
+  padding: 1rem;
+}
+
+.p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
+  max-height: calc(90vh - 118px) !important;
+}
+
+.p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
+  max-height: calc(100vh - 118px) !important;
+}
+
 
 .p-dialog .p-dialog-content:last-of-type {
   border-bottom-right-radius: 6px;

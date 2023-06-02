@@ -5,7 +5,7 @@
                                     <div class="flex mt-2 w-full ">
                                         <div class="col-6">
                                             <div class="grid">
-                                                <div class="col-fixed w-10rem">Business Sources</div>
+                                                <div class="col-fixed pl-0 w-10rem">Business Sources</div>
                                                 <div class="grow py-2 px-3 bg-white border-round-lg">
                                                     <div class="flex justify-content-between align-items-center">
                                                         <span class="link_line_action">{{ data?.business_source }}</span>

@@ -11,6 +11,11 @@
     </div>
     <Menu ref="show" id="overlay_menu_user" :popup="true" style="min-width: 180px;">
         <template #end>
+            <button @click="onRefresh"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Refresh</span>
+                                    </button>
             <button @click="onLogout"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="pi pi-sign-out !text-red-500" />
@@ -39,4 +44,10 @@ function onLogout() {
 const onClick = (event) => {
     show.value.toggle(event);
 };
+function onRefresh() {
+
+window.location.reload();
+}
+
+
 </script>

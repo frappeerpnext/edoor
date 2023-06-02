@@ -31,7 +31,7 @@
     </div>
 </template>
 <script setup>
-import {ref, useDialog, inject, computed, useToast, useConfirm} from '@/plugin'
+import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm} from '@/plugin'
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
@@ -41,7 +41,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:modelValue'])
 const dialog = useDialog()
-const toast = useToast()
 const dialogConfirm = useConfirm()
 const frappe = inject('$frappe')
 const socket = inject("$socket")
@@ -122,14 +121,9 @@ function onDeleteAdditionalGuest(){
             const additionalGuests = data.value.reservation_stay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
             const reservationStayData = JSON.parse(JSON.stringify(data.value.reservation_stay))
             reservationStayData.additional_guests = additionalGuests
-            db.updateDoc('Reservation Stay', reservationStayData.name, reservationStayData)
-                .then((doc) => {
-                    data.value.reservation_stay = doc
-                    toast.add({ severity: 'success', summary: 'Deleted Successful', detail: '', life: 30000000 });
-                })
-                .catch((error) => {
-                    toast.add({ severity: 'error', summary: 'Error', detail: JSON.stringify(error), life: 3000 });
-                });
+            updateDoc('Reservation Stay', reservationStayData.name, reservationStayData, 'Deleted successful').then((doc) => {
+                data.value.reservation_stay = doc
+            })
         }
     })
     
@@ -170,7 +164,7 @@ function onAdvancedSearch(guest_type) {
                     data.value.reservation_stay = r.data.reservation_stay
                 socket.emit("RefresheDoorDashboard", property.name);
                 emit('update:modelValue', data.value)
-                toast.add({ severity: 'success', summary: 'Updated Successful', detail: '', life: 3000 });
+                toaster('success', 'Updated Successful')
             }
         }
     });

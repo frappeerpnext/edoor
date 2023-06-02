@@ -30,8 +30,11 @@
         <div class="col">
             <ComPanel title="Today's occupancy">
                 <div class="grid">
-                    <div class="col-6 flex align-items-center justify-content-center">
-                        <ComRoomStatusDoughnut :data="data" />
+                    <div class="col-6 flex align-items-center justify-content-center mt-3">
+                        <ComChartDoughnut show-percentage="Occupied" :is-legend="false" :data="chartOccupancy"
+                            v-if="chartOccupancy.length > 0" />
+                        <Skeleton v-else shape="circle" size="18rem"></Skeleton>
+
                     </div>
                     <div class="col-5">
                         <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
@@ -50,21 +53,24 @@
             </ComPanel>
         </div>
         <div class="col">
-            <ComPanel title="Today's actions">
-                <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
-                    <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="data.arrival_remaining" title="Check-in remaining"
-                        class="primary-btn-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="data.departure" title="Departure" class="primary-btn-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="data.departure_remaining" title="Check-out remaining"
-                        class="primary-btn-edoor border-round-lg">
-                    </ComKPI>
-                    <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
-                    <ComKPI :value="15" title="Stayover" class="primary-btn-edoor border-round-lg"> </ComKPI>
-                </div>
-            </ComPanel>
+            <div class="bg-white h-full border-round-lg">
+                <ComPanel title="Today's actions">
+                    <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
+                        <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="data.arrival_remaining" title="Check-in remaining"
+                            class="primary-btn-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="data.departure" title="Departure" class="primary-btn-edoor border-round-lg">
+                        </ComKPI>
+                        <ComKPI :value="data.departure_remaining" title="Check-out remaining"
+                            class="primary-btn-edoor border-round-lg">
+                        </ComKPI>
+                        <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="15" title="Stayover" class="primary-btn-edoor border-round-lg"> </ComKPI>
+                    </div>
+                </ComPanel>
+            </div>
         </div>
         <div class="col-2">
             <ComPanel title="Room Status" class="h-full">
@@ -138,13 +144,13 @@ import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
 import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
+import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")
 const gv = inject("$gv")
 
 socket.on("RefresheDoorDashboard", (arg) => {
-    console.log(arg)
     toast.add({ severity: 'info', summary: 'Info', detail: "Dashboard is updated", life: 3000 })
 })
 
@@ -160,6 +166,7 @@ const selected_date = ref(null)
 const arrivalUrl = ref("");
 const departureUrl = ref("");
 const inhouseUrl = ref("");
+const chartOccupancy = ref([])
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
@@ -231,7 +238,10 @@ function getData() {
         .then((result) => {
 
             data.value = result.message
-
+            chartOccupancy.value = []
+            const documentStyle = getComputedStyle(document.body);
+            chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
+            chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
             if (!selected_date.value) {
                 date.value = moment(data.value.working_date).format("DD-MM-YYYY")
                 selected_date.value = data.value.working_date;

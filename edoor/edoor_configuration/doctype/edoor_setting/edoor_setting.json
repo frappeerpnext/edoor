@@ -7,16 +7,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "default_pos_profile",
   "room_block_status",
   "room_block_color"
  ],
  "fields": [
-  {
-   "fieldname": "default_pos_profile",
-   "fieldtype": "Data",
-   "label": "Default POS Profile"
-  },
   {
    "fieldname": "room_block_status",
    "fieldtype": "Link",
@@ -33,7 +27,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-05-26 15:52:00.332231",
+ "modified": "2023-06-01 14:58:23.617324",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

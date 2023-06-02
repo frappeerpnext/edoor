@@ -11,7 +11,6 @@ from dateutil.relativedelta import relativedelta
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` limit 1",as_dict=1)
-
     working_date =  datetime.now()
     if data:
         working_date = data[0]["date"]
@@ -82,10 +81,19 @@ def get_mtd_room_occupany(property):
 
 @frappe.whitelist()
 def get_edoor_setting(property = None):
-  
+    currency = frappe.db.get_default("currency")
+    housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
+    
+    
     epos_setting = frappe.get_doc('ePOS Settings')
+    
     edoor_setting = {
-        "backend_port":epos_setting.backend_port
+        "backend_port":epos_setting.backend_port,
+        "currency":{
+            "name":currency,
+            "precision":  frappe.db.get_default("currency_precision")
+        },
+        "housekeeping_status":housekeeping_status
     }
     
     user = get_logged_user()
@@ -100,8 +108,38 @@ def get_edoor_setting(property = None):
         if len(user["property"])==1:
              working_day = get_working_day(user["property"][0]["name"])
 
+    property = frappe.get_doc("Business Branch", property)
     
-    return {"user":get_logged_user(), "working_day": working_day,"edoor_setting":edoor_setting}
+    if  not property.default_pos_profile:
+        frappe.throw("Please assign default pos profile to your current property")
+
+
+    edoor_setting["property"] = {
+        "name":property.name,
+        "property_code":property.property_code,
+        "province":property.province,
+        "address_en":property.address_en,
+        "address_kh":property.address_kh,
+        "phone_number_1":property.phone_number_1,
+        "phone_number_2":property.phone_number_1,
+        "pos_profile":property.default_pos_profile
+    }
+
+    pos_profile = frappe.get_doc("POS Profile",property.default_pos_profile)
+    
+    edoor_setting["pos_profile"] = {
+        "name":pos_profile.name,
+        "stock_location":pos_profile.stock_location
+    }
+    pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
+    edoor_setting["payment_type"] = pos_config.payment_type
+    
+
+    return {
+        "user":get_logged_user(),
+        "working_day": working_day,
+        "edoor_setting":edoor_setting
+    }
 
 @frappe.whitelist()
 def get_logged_user():
@@ -127,8 +165,8 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 
 @frappe.whitelist()
 def get_working_day(property = ''):
-    working_day = frappe.db.sql("select  posting_date as date,name from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
-    data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{0}' ORDER BY creation desc limit 1".format(property),as_dict=1)
+    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
+    data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
     cashier_shift = None
     if data:
         cashier_shift = data[0]

@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "room_type_group",
   "naming_series",
   "property",
   "room_type",
@@ -64,11 +65,23 @@
    "fieldname": "sort_order",
    "fieldtype": "Int",
    "label": "Sort Order"
+  },
+  {
+   "fieldname": "room_type_group",
+   "fieldtype": "Link",
+   "label": "Room Type Group",
+   "options": "Room Type Group"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2023-05-25 11:10:44.376763",
+ "links": [
+  {
+   "group": "Rooms",
+   "link_doctype": "Room",
+   "link_fieldname": "room_type_id"
+  }
+ ],
+ "modified": "2023-06-01 09:49:04.542856",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",
