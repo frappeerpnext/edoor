@@ -54,7 +54,7 @@
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}">
-                                    <!-- <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
+                                    <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
                                         <table>
                                             <tbody>
@@ -71,8 +71,7 @@
                                     
                                         {{ event.title }}
                                         
-                                    </div> -->
-                                    {{ event.title }}
+                                    </div>
                             </template>
                         </FullCalendar>
                     </div>
@@ -80,11 +79,9 @@
             </div>
         </div>
     </div>
-    
   </template>
 <script setup>
 import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, computed } from '@/plugin'
-
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -99,8 +96,6 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
-
-
 const socket = inject("$socket");
 const frappe = inject('$frappe')
 const call = frappe.call();
@@ -185,6 +180,7 @@ const calendarOptions = reactive({
             console.log(error)
         });
     },
+    
     events: function (info, successCallback, failureCallback) {
 
         call.get('edoor.api.frontdesk.get_room_chart_calendar_event', {
@@ -199,6 +195,14 @@ const calendarOptions = reactive({
             .catch((error) => {
                 alert("load data fiale")
             });
+    },
+    eventContent: function(info) {
+        var resourceId = info.event._def.resourceIds[0];
+        var resource = info.view.calendar.getResourceById(resourceId);
+        console.log(info)
+        // var td = info.el.closest('td');
+        // td.setAttribute('data-resource-id', resourceId);
+ 
     },
     eventAllow: function (dropInfo, draggedEvent) {
         return false
@@ -222,17 +226,25 @@ const calendarOptions = reactive({
         return " "
     },
 
-    slotLabelDidMount: function (date) {
-        const d = moment(date.date).format("DD")
-        const day = moment(date.date).format("ddd")
-        if (moment(date.date).format("yyyy-MM-DD") == working_day.date_working_day) {
-            date.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(date.date).format("MMM") + "</span></div>"
+    slotLabelDidMount: function (info) {
+ 
+        // var resourceId = info.event._def.resourceIds[0];
+        // var resource = info.view.calendar.getResourceById(resourceId);
+        // var td = info.el.closest('td');
+        // td.setAttribute('data-resource-id', resourceId);
+        // console.log(resourceId)
+        // console.log(resource)
+
+        const d = moment(info.date).format("DD")
+        const day = moment(info.date).format("ddd")
+        if (moment(info.date).format("yyyy-MM-DD") == working_day.date_working_day) {
+            info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
         } else {
             if (day == "Sat" || day == "Sun") {
-                date.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(date.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
             }
             else {
-                date.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(date.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
             }
         }
     },
@@ -594,7 +606,9 @@ onUnmounted(() => {
 
 
 
-
+// document.addEventListener('mouseover', function(event) {
+//   console.log(event);
+// });
 </script>
 <style>
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
@@ -626,4 +640,9 @@ onUnmounted(() => {
     width: 12rem;
     height: 38px;
 }
+.fc-timeline-slot:hover {
+  background: #DBDBDB;
+  opacity: 0.4;
+}
+ 
 </style>

@@ -44,7 +44,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Arraval"
+                    <ComBoxStayInformation title="Arraval"                          
                         :value="moment(stay.reservationStay?.arrival_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.arrival_time"
@@ -72,8 +72,15 @@
 
                 <div class="flex mt-2 gap-2">
                    
-                    <ComChangePax/>
-                    <ComBoxStayInformation title="Children"
+               
+                    <ComBoxStayInformation
+                        @onClick="toggle($event, 'change_pax')"
+                        title="Adult"
+                        :value="stay.reservationStay?.adult" valueClass="col-2 color-purple-edoor"
+                        titleClass="w-6rem" class_action="link_line_action"></ComBoxStayInformation>
+                    <ComBoxStayInformation
+                        @onClick="toggle($event, 'change_pax')"
+                        title="Children"
                         :value="stay.reservationStay?.child" valueClass="col-2 color-purple-edoor"
                         titleClass="w-5rem" class_action="link_line_action"></ComBoxStayInformation>
                 </div>
@@ -83,8 +90,10 @@
      
 
     </ComReservationStayPanel>
- 
-   
+    
+    <OverlayPanel ref="op">
+            <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+    </OverlayPanel>
 </template>
 <script setup>
 import OverlayPanel from 'primevue/overlaypanel';
@@ -97,8 +106,19 @@ import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
 
 const moment = inject('$moment')
-const stay = inject('$reservation');
+const stay = inject('$reservation_stay');
 const gv = inject('$gv');
+const overLayName = ref("")
+const op = ref();
+
+const toggle = ($event, name) => {
+    overLayName.value = name
+    op.value.toggle($event);
+}
+const closeOverlay = ()=>{
+    op.value.hide();
+}
+
 
 
 

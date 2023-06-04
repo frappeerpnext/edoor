@@ -1,6 +1,6 @@
 import { inject } from "vue"
 import { FrappeApp } from 'frappe-js-sdk';
-
+import {toaster} from "../plugin/toast"
 const frappe = new FrappeApp();
 const db = frappe.db();
 
@@ -48,7 +48,7 @@ export default class Housekeeping {
 
 
 		db.getDocList('Room', {
-			fields: ['name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper",],
+			fields: ['name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper"],
 			filters: filters,
 			limit: 1000,
 		})
@@ -68,6 +68,7 @@ export default class Housekeeping {
 		  })
 		.then((doc) => { 
 			this.loadData()
+			toaster('success','Updated Successful')
 		})
 		.catch((error) => console.error(error));
 	}

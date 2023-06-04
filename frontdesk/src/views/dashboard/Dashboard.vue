@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3 py-2">
+    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3 py-3">
         <div class="text-start">
             <div class="font-bold">{{ property.name }}</div>
             <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
@@ -28,29 +28,31 @@
             <ComSystemDateKPI :data="data"></ComSystemDateKPI>
         </div>
         <div class="col">
-            <ComPanel title="Today's occupancy">
-                <div class="grid">
-                    <div class="col-6 flex align-items-center justify-content-center mt-3">
-                        <ComChartDoughnut show-percentage="Occupied" :is-legend="false" :data="chartOccupancy"
-                            v-if="chartOccupancy.length > 0" />
-                        <Skeleton v-else shape="circle" size="18rem"></Skeleton>
+            <div class="bg-white h-full border-round-lg">
+                <ComPanel title="Today's occupancy">
+                    <div class="grid">
+                        <div class="col-6 flex align-items-center justify-content-center mt-3">
+                            <ComChartDoughnut show-percentage="Occupied" :is-legend="false" :data="chartOccupancy"
+                                v-if="chartOccupancy.length > 0" />
+                            <Skeleton v-else shape="circle" size="18rem"></Skeleton>
 
-                    </div>
-                    <div class="col-5">
-                        <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
-                        </ComChartStatus>
-                        <ComChartStatus :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
-                        </ComChartStatus>
-                        <ComChartStatus :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
-                        </ComChartStatus>
-                        <!-- <ComHousekeepingStatus /> -->
-                        <div class="grid mt-3 text-center">
-                            <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
-                            <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
+                        </div>
+                        <div class="col-5">
+                            <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
+                            </ComChartStatus>
+                            <ComChartStatus :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
+                            </ComChartStatus>
+                            <ComChartStatus :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
+                            </ComChartStatus>
+                            <!-- <ComHousekeepingStatus /> -->
+                            <div class="grid mt-3 text-center">
+                                <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
+                                <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </ComPanel>
+                </ComPanel>
+            </div>
         </div>
         <div class="col">
             <div class="bg-white h-full border-round-lg">

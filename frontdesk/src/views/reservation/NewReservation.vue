@@ -64,10 +64,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="pt-2">
+                        <div class="pt-2 flex justify-end">
                             <div>
-                                <label>Total Pax</label><br>
-                                <div class="p-inputtext-pt text-center border-1 border-white h-12 w-10rem">{{
+                                <div class="text-center">
+                                    <label class="text-center">Total Pax</label><br>
+                                </div>
+                                <div class="p-inputtext-pt text-center border-1 border-white h-12 w-7rem">{{
                                     doc.reservation.adult }} / {{ doc.reservation.child }}</div>
                             </div>
                         </div>
@@ -207,7 +209,7 @@
                     </tbody>
                 </table>
             </div>
-            <Button @click="onAddRoom" icon="pi pi-plus" class="px-4 border-round-xl border-0" label="Add Room" /><br />
+            <Button @click="onAddRoom" icon="pi pi-plus" class="px-4 border-round-xl border-none" label="Add Room" /><br />
         </div>
         <!-- <hr class="my-3"> -->
         <div class="mt-3">

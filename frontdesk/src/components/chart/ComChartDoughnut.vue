@@ -1,9 +1,9 @@
 <template>
     <div class="relative">
-        <div v-if="showPercentage" class="absolute top-50 left-50 text-7xl" :class="class" style="transform: translate(-50%, -50%);">
+        <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
             <span :style="{ color: percentage.color }">{{ percentage.percent }}%</span>
         </div>
-        <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full" width="250" height="150" />
+        <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full" width="225" height="150" />
     </div>
 </template>
 <script setup>

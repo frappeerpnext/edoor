@@ -5,9 +5,11 @@
 </div> 
 </template>
 <script setup>
+import { inject } from '@/plugin'
     const props=defineProps({
         title:String,
         value:String,
         class:String
     })
+const rs = inject('$reservation_stay');   
 </script>

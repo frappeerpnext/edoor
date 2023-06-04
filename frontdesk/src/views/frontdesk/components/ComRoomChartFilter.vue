@@ -12,7 +12,7 @@
         <Button @click="onToday('today')" class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
         <Button @click="onPrevNext('next')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
     </div>
-</template>
+</template> 
 <script setup>
 import { ref } from 'vue'
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'

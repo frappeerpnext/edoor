@@ -135,6 +135,7 @@
             <div class="wrap-page-content px-2">
                 <router-view />
             </div>
+            <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
             <ComFooter />
         </div>
 
@@ -142,7 +143,7 @@
 </template>
 
 <script setup>
-import { ref, inject, useToast, useRouter } from '@/plugin'
+import { ref, inject, useToast, useRouter, useRoute } from '@/plugin'
 import ComAvatar from '../form/ComAvatar.vue';
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar';
@@ -166,6 +167,7 @@ import OpenShift from "@/views/shift/OpenShift.vue"
 const dialog = useDialog();
 
 const router = useRouter()
+const route = useRoute()
 const frappe = inject('$frappe')
 const gv = inject('$gv')
 const auth = frappe.auth()

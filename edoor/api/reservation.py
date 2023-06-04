@@ -125,7 +125,6 @@ def add_new_fit_reservation(doc):
 
 @frappe.whitelist(methods="POST")
 def check_in(reservation,reservation_stays=None):
-    
     #reservation_stays is list of stay in a reservation separate by comma
     #reservation_stays is apply then we skip check reservation 
     doc = frappe.get_doc("Reservation",reservation)
@@ -202,22 +201,25 @@ def change_reservation_guest( guest, reservation='',reservation_stay='', is_appl
 def change_reservation_additional_guest(guest,reservation_stay):
  
     doc_guest = json.loads(guest)
+    guest_name = ''
     if doc_guest.get("name") is None:
         doc_guest = json.loads(guest)
         doc_guest = frappe.get_doc(doc_guest).insert()
-    
+        guest_name = doc_guest.name
+    else:
+        guest_name = doc_guest['name']
     doc_stay = frappe.get_doc('Reservation Stay', reservation_stay)
-    if doc_stay.guest == doc_guest['name']:
+    if doc_stay.guest == guest_name:
         frappe.throw('This guest is already selected.')
     for i in doc_stay.additional_guests:
-        if i.guest == doc_guest['name'] or i.guest == doc_stay.guest:
+        if i.guest ==guest_name or i.guest == doc_stay.guest:
             frappe.throw('This guest is already selected.')
             # return {
             #     'status': 406,
             #     'message': 'This guest is already selected.'
             # }
     
-    doc_stay.append('additional_guests',{'guest':doc_guest['name']})
+    doc_stay.append('additional_guests',{'guest':guest_name})
     doc_stay = doc_stay.save()
     frappe.db.commit()
     return {

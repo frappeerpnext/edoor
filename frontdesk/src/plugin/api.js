@@ -3,14 +3,12 @@ import {inject, reactive} from 'vue'
 import {toaster} from './toast'
 import {handleServerMessage} from './handle-server-message'
 import { FrappeApp } from 'frappe-js-sdk';
-import { useConfirm } from "primevue/useconfirm";
 export function getDoc(doctype, name){
     const frappe = new FrappeApp()
     const db = frappe.db()
     return  new Promise((resolve, reject)=>{
         db.getDoc(doctype, name)
-        .then((doc) => {
-            console.log(doc)
+        .then((doc) => { 
             resolve(doc)
         })
         .catch((error) => {
@@ -43,7 +41,8 @@ export function updateDoc(doctype, name, data, message){
             toaster('success', `${message ? message : 'Update successful'}`)
         })
         .catch((error) => {
-            reject(error)
+            const message = handleServerMessage(error)
+            reject(message)
             toaster('error', 'Server Error');
         });
     })

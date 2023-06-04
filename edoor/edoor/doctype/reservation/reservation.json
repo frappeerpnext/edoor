@@ -10,40 +10,51 @@
  "field_order": [
   "property",
   "reservation_type",
-  "naming_series",
   "reference_number",
   "internal_reference_number",
+  "naming_series",
+  "column_break_6",
   "reservation_date",
   "arrival_date",
-  "departure_date",
   "arrival_time",
+  "departure_date",
   "departure_time",
+  "column_break_7",
+  "adult",
+  "child",
+  "pax",
+  "section_break_21",
+  "business_source",
+  "business_source_type",
+  "column_break_23",
+  "rate_type",
+  "guest_information_section",
   "guest",
   "guest_name",
   "guest_type",
+  "column_break_16",
   "phone_number",
   "phone_number_2",
   "email_address",
   "guest_photo",
-  "adult",
-  "child",
-  "pax",
-  "business_source_type",
-  "room_numbers",
-  "reservation_status",
-  "status_color",
-  "keyword",
-  "rate_type",
-  "business_source",
+  "section_break_25",
   "working_day",
   "working_date",
   "cashier_shift",
-  "note"
+  "note",
+  "hidden_section_section",
+  "keyword",
+  "status_color",
+  "reservation_status",
+  "room_numbers",
+  "summary_tab",
+  "total_reservation_stay"
  ],
  "fields": [
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Reservation Number",
    "options": "RS.YYYY.-.####"
   },
@@ -222,6 +233,7 @@
    "fetch_from": "guest.photo",
    "fieldname": "guest_photo",
    "fieldtype": "Attach Image",
+   "hidden": 1,
    "label": "Guest Photo"
   },
   {
@@ -229,6 +241,52 @@
    "fieldname": "phone_number_2",
    "fieldtype": "Data",
    "label": "Phone Number 2"
+  },
+  {
+   "fieldname": "total_reservation_stay",
+   "fieldtype": "Int",
+   "label": "Total Reservation Stay"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "guest_information_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Information"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_21",
+   "fieldtype": "Section Break",
+   "label": "Business Source & Rate Type"
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_25",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hidden_section_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Hidden Section"
+  },
+  {
+   "fieldname": "summary_tab",
+   "fieldtype": "Tab Break",
+   "label": "Summary"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -239,7 +297,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-05-26 17:17:19.819461",
+ "modified": "2023-06-03 16:32:49.190798",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
@@ -310,5 +368,6 @@
  "search_fields": "reference_number,guest,guest_name,phone_number,email_address",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

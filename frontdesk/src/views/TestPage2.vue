@@ -1,29 +1,25 @@
-<template >
-    <div id="xx">
-      <ComChartDoughnut :data="data"/>
-    
+<template>
+    <ComIcon icon="frontdesk"/>
+    <div class="card flex justify-content-center">
+        <Button type="button" icon="pi pi-image" label="Image" @click="toggle" />
+   <br/>
+    <Button type="button" icon="pi pi-image" label="Image" @click="toggle($event, 12)" />
+        <OverlayPanel ref="op">
+xxxx
+        </OverlayPanel>
     </div>
 </template>
-<script setup>
-import { ref, onMounted,watch } from "vue";
-import ComChartDoughnut from '../components/chart/ComChartDoughnut.vue';
-const data = [{label: 'a', value: 5, color: 'red'},{label: 'b', value: 12, color: 'green'}]
-const chartData = ref();
-const chartOptions = ref({
-    cutout: '70%',
-});
-const documentStyle = getComputedStyle(document.body);
-    chartData.value = {
-    datasets: [
-        {
-            data: [21, 12],
-            backgroundColor: [documentStyle.getPropertyValue('--bg-btn-green-color'), documentStyle.getPropertyValue('--bg-warning-color'), documentStyle.getPropertyValue('--green-500')],
-            hoverBackgroundColor: [documentStyle.getPropertyValue('--bg-btn-green-hover'), documentStyle.getPropertyValue('--bg-warning-hover'), documentStyle.getPropertyValue('--green-400')]
-        }
-    ],
-}
 
-</script> 
-<style>
- 
-</style>
+<script setup>
+import { ref, useRoute } from "@/plugin";
+
+const route = useRoute()
+alert(route.name)
+
+
+const op = ref();
+const toggle = ($event, num) => {
+    alert(num)
+    op.value.toggle($event);
+}
+</script>

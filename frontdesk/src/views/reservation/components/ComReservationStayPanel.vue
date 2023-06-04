@@ -13,9 +13,11 @@
 </div>
 </template>
 <script setup>
+
 const props = defineProps({
   titleClass: String,
   title: String,
   value: [String,Number]
 })
+ 
 </script>

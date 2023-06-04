@@ -10,7 +10,7 @@
                     <div class="flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="isApplyAllStays" :binary="true" inputId="checkapplyall" />
-                            <label for="checkapplyall"> Apply all stays ({{ dialogRef.data.total_reservation_stay }})</label>
+                            <label for="checkapplyall"> Apply all stays ({{ rs.total_reservation_stay }})</label>
                         </div>
                         <div class="flex align-items-center px-2" v-if="dialogRef.data.is_change_stay_guest">
                             <Checkbox v-model="isApplyMasterGuest" :binary="true" inputId="checkmasterguest" />
@@ -80,11 +80,13 @@ import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue'; 
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 const dialogRef = inject('dialogRef')
+const rs = inject('$reservation_stay');
 const genderList = ref(["Not Set", "Male", "Female"])
 let isApplyAllStays = ref(false)
 let isApplyMasterGuest = ref(false)
 let loading = ref(false)
 const guest = ref({})
+
  
 function onSelected(r) {
     
@@ -109,12 +111,12 @@ function onAdditionalSave(){
         guest.value.doctype = 'Customer'
     }
     getApi('reservation.change_reservation_additional_guest',{ 
-        reservation_stay: dialogRef.value.data.reservation_stay.name,
+        reservation_stay: rs.reservationStay.name,
         guest: guest.value,
     }).then((r) => {
-        if (r) {
-            loading.value = false
-            dialogRef.value.close({ reservation_stay: r.message.result });
+        if (r) { 
+            rs.reservationStay = r.message.result
+            dialogRef.value.close();
         }
     }).catch((err)=>{
         loading.value = false
@@ -132,13 +134,13 @@ function onOK(){
 }
 function onStayGuestSave() {
     loading.value = true
-    if (dialogRef.value.data.reservation.name) {
+    if (rs.reservationStay.name) {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'
         }
         getApi("reservation.change_reservation_guest", {
-            reservation: dialogRef.value.data.reservation.name,
-            reservation_stay: dialogRef.value.data.reservation_stay.name,
+            reservation: rs.reservation.name,
+            reservation_stay: rs.reservationStay.name,
             guest: guest.value,
             is_apply_all_stays: isApplyAllStays.value,
             is_apply_master_guest: isApplyMasterGuest.value,
@@ -146,7 +148,15 @@ function onStayGuestSave() {
         }).then((r)=>{
             if (r) {
                 loading.value = false
-                dialogRef.value.close({ guest: guest.value, is_guest_stay: (isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest), is_master_guest: isApplyMasterGuest.value });
+                if(isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest){
+                    // is_guest_stay
+                    rs.guest = guest.value
+                }
+                if(isApplyMasterGuest.value){
+                    // master guest
+                    rs.masterGuest = guest.value
+                }
+                dialogRef.value.close();
             }
         }).catch(()=>{
             loading.value = false

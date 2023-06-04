@@ -33,9 +33,9 @@ const props = defineProps({
   }
 })
 
-function onClick(){
+const  onClick=(event)=>{
  
-  emit("onClick")
+  emit("onClick",event)
 }
 
 </script>

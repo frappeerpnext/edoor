@@ -28,6 +28,7 @@ setConfig('resourceFetcher', frappeRequest)
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import NumberFormat from 'number-format.js'
+import axios from 'axios';
 
 const app = createApp(App);
 
@@ -39,6 +40,7 @@ import moment from "./utils/moment";
 import Gv from './providers/gv';
 import Housekeeping from './providers/housekeeping';
 import Reservation from './providers/reservation';
+import ReservationStay from './providers/reservation_stay';
 
 // directive
 import BadgeDirective from 'primevue/badgedirective';
@@ -97,8 +99,11 @@ import ComPanel from './components/layout/components/ComPanel.vue'
 import ComHeader from './components/layout/components/ComHeader.vue'
 import ComFieldset from './components/layout/components/ComFieldset.vue'
 import ComDialogContent from './components/form/ComDialogContent.vue'
+import ComOverlayPanelFooter from './components/form/ComOverlayPanelFooter.vue'
+import ComOverlayPanelContent from './components/form/ComOverlayPanelContent.vue'
 import CurrencyFormat from './components/CurrencyFormat.vue'
 import ComChartDoughnut from './components/chart/ComChartDoughnut.vue'
+import ComIcon from './components/ComIcon.vue'
 import socket from './utils/socketio';
 
 
@@ -149,6 +154,7 @@ app.component('Tooltip', Tooltip);
 app.component('AutoComplete', AutoComplete)
 app.component('Calendar', Calendar)
 app.component('Chart',Chart)
+app.component('Skeleton', Skeleton)
 // use custom components //
 app.component('ComAvatar', ComAvatar)
 app.component('ComPanel', ComPanel)
@@ -159,11 +165,15 @@ app.component('ComFieldset', ComFieldset)
 app.component('ComDialogContent', ComDialogContent)
 app.component('CurrencyFormat', CurrencyFormat)
 app.component('ComChartDoughnut', ComChartDoughnut)
-app.component('Skeleton', Skeleton)
+app.component('ComOverlayPanelFooter', ComOverlayPanelFooter)
+app.component('ComOverlayPanelContent', ComOverlayPanelContent)
+app.component('ComIcon', ComIcon)
+
 
 
 
 // Plugins
+app.use(frappe)
 app.use(router);
 app.use(resourcesPlugin);
 app.use(PrimeVue, {
@@ -195,10 +205,12 @@ app.directive('tooltip', Tooltip);
 const gv = reactive(new Gv());
 const housekeeping = reactive(new Housekeeping());
 const reservation = reactive(new Reservation());
+const reservation_stay = reactive(new ReservationStay());
 app.provide("$moment", moment)
 app.provide("$gv", gv)
 app.provide("$housekeeping", housekeeping)
 app.provide("$reservation", reservation)
+app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
 
@@ -223,6 +235,22 @@ router.beforeEach(async (to, from, next) => {
 		next();
 	}
 });
+
+
+
+
+//handle globally error
+axios.interceptors.response.use(
+	(response) => {
+		alert("xxxxxxxxx")
+	  return response;
+	},
+	(error) => {
+	  alert("it eror")
+	  return Promise.reject(error);
+	}
+  );
+
 
  
 apiCall.get('edoor.api.frontdesk.get_edoor_setting', {

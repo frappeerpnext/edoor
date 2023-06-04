@@ -121,7 +121,7 @@ html {
     border-color: var(--btn-border-color);
 }
 
-.bg-og-edoor {
+.bg-og-edoor,.btn-close,.btn-close:hover,.btn-close:active {
     background-color: var(--bg-og-color);
 }
 
@@ -134,7 +134,7 @@ html {
 }
 
 .wrap-page-content {
-    padding-top: 85px;
+    padding-top: 63px;
 }
 
 .wrapper-foot-deco {
@@ -550,5 +550,11 @@ span.p-button-icon.pi.pi-ellipsis-h {
 .doughnut__chart_ds{
     font-size: 3rem !important;
     top: 57% !important;
+}
+.p-listbox.p-focus{
+    box-shadow: none;
+}
+.btn-si__icon{
+    height: 10px
 }
 /* END Full calenda css */

@@ -57,7 +57,6 @@ if (hk.selectedRooms.length == 0) {
 } else {
     visibleHousekeepingStatus.value = true;
 }
-
 }
 
 function AssingnHousekeeper() {

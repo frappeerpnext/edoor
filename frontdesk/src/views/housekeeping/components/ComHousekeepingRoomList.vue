@@ -1,5 +1,5 @@
 <template> 
-<div>
+<div> 
     <DataTable 
         v-model:selection="hk.selectedRooms" 
         dataKey="name" 
@@ -16,7 +16,7 @@
 
         <Column field="housekeeper" header="Housekeeper">
             <template #body="slotProps">
-                <Button @click="onAssignHousekeeper(slotProps.data)" :label="slotProps.data.housekeeper" link size="small" icon="pi pi-pencil" iconPos="right"></Button>
+                <Button @click="onAssignHousekeeper($event,slotProps.data)" :label="slotProps.data.housekeeper" link size="small" icon="pi pi-pencil" iconPos="right"></Button>
             </template>
         </Column>
         <Column field="housekeeping_status" header="Status" class="text-left">
@@ -26,36 +26,32 @@
             </template>
         </Column>
     </DataTable>
-    <Dialog v-model:visible="visible" modal header="Assign Housekeeper" :style="{ width: '30vw' }">
-        <div class="p-2"> 
+    <OverlayPanel ref="opHousekeeper">
+        <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
-        </div>
-        <template #footer>
-            <Button label="No" icon="pi pi-times" @click="visible = false" text />
-            <Button label="Yes" icon="pi pi-check" autofocus @click="onSaveAssignHousekeeper"/>
-        </template>
-    </Dialog>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 </div>
 </template>
 <script setup>
 import { ref,inject,toaster } from '@/plugin';
-import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
-const visible = ref(false)
+import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue' 
 const loading = ref(false)
 const selected = ref({
     room: '',
     housekeeper: ''
 })
+const opHousekeeper = ref()
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
 const call = frappe.call()
 function onSelected(room,status){
     hk.updateRoomStatus(room,status)
 }
-function onAssignHousekeeper(r){
-    visible.value = true
-    selected.value.housekeeper = r.housekeeper
-    selected.value.room = r.name
+function onAssignHousekeeper($event, r){
+    selected.value.housekeeper = r.housekeeper || ''
+    selected.value.room = r.name || ''
+    opHousekeeper.value.toggle($event)
 }
 function onSaveAssignHousekeeper() {
     loading.value = true; 
@@ -65,8 +61,8 @@ function onSaveAssignHousekeeper() {
     }).then((result) => {
         toaster('success','Change housekeeping successfully')
         hk.loadData()
+        opHousekeeper.value.hide()
         loading.value = false
-        visible.value = false
     }).catch((err) => {
         loading.value = false
     })

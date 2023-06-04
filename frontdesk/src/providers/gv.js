@@ -1,5 +1,6 @@
  
 import NumberFormat from 'number-format.js'
+import moment from "../utils/moment.js";
 export default class Gv {
 	constructor() {
 		this.setting = {},

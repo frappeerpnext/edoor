@@ -15,9 +15,13 @@
                     <div class="flex gap-2">
                         <slot name="footer-right"></slot>
                         <Button class="border-none" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK"
-                            :loading="loading"></Button>
+                            :loading="loading">
+                            <img class="mr-2" style="height: 14px;"  :src="BtnOkIcon"/> Save
+                        </Button>
                         <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="onClose()" :label="titleButtonClose"
-                            :disabled="loading"  />
+                            :disabled="loading" >
+                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -25,6 +29,9 @@
     </div>
 </template>
 <script setup>
+import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
+import BtnOkIcon from '@/assets/svg/icon-save.svg' 
+
 const emit = defineEmits(['onOK', 'onClose'])
 const props = defineProps({
     loading: {

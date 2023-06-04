@@ -69,7 +69,10 @@
   "drop_off_driver",
   "drop_off_note",
   "additional_guests_tab",
-  "additional_guests"
+  "additional_guests",
+  "business_source_tab",
+  "business_source_type",
+  "business_source"
  ],
  "fields": [
   {
@@ -140,16 +143,12 @@
    "options": "Customer"
   },
   {
-   "fetch_from": "reservation.adult",
-   "fetch_if_empty": 1,
    "fieldname": "adult",
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Adult"
   },
   {
-   "fetch_from": "reservation.child",
-   "fetch_if_empty": 1,
    "fieldname": "child",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -434,11 +433,28 @@
    "fieldname": "nationality",
    "fieldtype": "Data",
    "label": "Nationality"
+  },
+  {
+   "fieldname": "business_source_tab",
+   "fieldtype": "Tab Break",
+   "label": "Business Source"
+  },
+  {
+   "fetch_from": "business_source.business_source_type",
+   "fieldname": "business_source_type",
+   "fieldtype": "Data",
+   "label": "Business Source Type"
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "label": "Business Source",
+   "options": "Business Source"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-01 09:42:39.883881",
+ "modified": "2023-06-03 11:34:25.828693",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
