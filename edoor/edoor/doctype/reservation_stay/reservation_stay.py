@@ -30,6 +30,7 @@ class ReservationStay(Document):
 		reservation = frappe.get_doc("Reservation",self.reservation)
 		self.adult = self.adult or 1
 		self.child = self.child or 0
+		
 
 
 
@@ -76,8 +77,23 @@ class ReservationStay(Document):
 
 
 	def on_update(self):
-		sql ="update `tabTemp Room Occupy` set adult={}, child={} , pax = {} where reservation_stay = '{}'".format(self.adult,self.child,self.pax,self.name)
-		frappe.db.sql(sql)
+		
+		if hasattr(self,"update_reservation") and self.update_reservation:
+			sql ="update `tabTemp Room Occupy` set adult={}, child={} , pax = {} where reservation_stay = '{}'".format(self.adult,self.child,self.pax,self.name)
+			frappe.db.sql(sql)
+
+			sql = "select sum(adult) as adult, sum(child) as child from `tabReservation Stay` where is_active_reservation =1 and reservation='{}'".format(self.reservation)
+			data = frappe.db.sql(sql,as_dict=1)
+
+			#update to reservation 
+			doc_reservation = frappe.get_doc("Reservation", self.reservation)
+			doc_reservation.adult = data[0][ "adult"]
+			doc_reservation.child = data[0][ "child"]
+			doc_reservation.update_reservation_stay = False
+			
+			doc_reservation.save()
+
+
 
 
 def generate_room_occupy_and_rate(self):		
