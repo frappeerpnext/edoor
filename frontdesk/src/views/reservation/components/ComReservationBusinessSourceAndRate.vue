@@ -32,6 +32,7 @@
 import {inject} from "@/plugin"
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
+
 const rs = inject("$reservation_stay")
 </script>
 <style scoped></style>

@@ -48,7 +48,8 @@
   "reservation_status",
   "room_numbers",
   "summary_tab",
-  "total_reservation_stay"
+  "total_reservation_stay",
+  "room_nights"
  ],
  "fields": [
   {
@@ -233,7 +234,6 @@
    "fetch_from": "guest.photo",
    "fieldname": "guest_photo",
    "fieldtype": "Attach Image",
-   "hidden": 1,
    "label": "Guest Photo"
   },
   {
@@ -287,6 +287,11 @@
    "fieldname": "summary_tab",
    "fieldtype": "Tab Break",
    "label": "Summary"
+  },
+  {
+   "fieldname": "room_nights",
+   "fieldtype": "Int",
+   "label": "Room Nights"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -297,7 +302,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-03 16:32:49.190798",
+ "modified": "2023-06-05 17:01:38.663625",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

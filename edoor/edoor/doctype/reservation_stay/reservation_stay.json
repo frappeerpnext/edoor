@@ -22,6 +22,7 @@
   "rooms",
   "guest",
   "guest_name",
+  "guest_email_address",
   "nationality",
   "guest_phone_number",
   "guest_email",
@@ -347,8 +348,9 @@
   },
   {
    "fieldname": "arrival_mode",
-   "fieldtype": "Data",
-   "label": "Arrival Mode"
+   "fieldtype": "Link",
+   "label": "Arrival Mode",
+   "options": "Transportation Mode"
   },
   {
    "fieldname": "arrival_flight_number",
@@ -357,13 +359,15 @@
   },
   {
    "fieldname": "pickup_location",
-   "fieldtype": "Data",
-   "label": "Pickup Location"
+   "fieldtype": "Link",
+   "label": "Pickup Location",
+   "options": "Transportation Company"
   },
   {
    "fieldname": "driver",
-   "fieldtype": "Data",
-   "label": "Pickup Driver"
+   "fieldtype": "Link",
+   "label": "Pickup Driver",
+   "options": "Drivers"
   },
   {
    "fieldname": "pickup_note",
@@ -387,8 +391,9 @@
   },
   {
    "fieldname": "departure_mode",
-   "fieldtype": "Data",
-   "label": "Departure Mode"
+   "fieldtype": "Link",
+   "label": "Departure Mode",
+   "options": "Transportation Mode"
   },
   {
    "fieldname": "departure_flight_number",
@@ -397,13 +402,15 @@
   },
   {
    "fieldname": "drop_off_location",
-   "fieldtype": "Data",
-   "label": "Drop Off Location"
+   "fieldtype": "Link",
+   "label": "Drop Off Location",
+   "options": "Transportation Company"
   },
   {
    "fieldname": "drop_off_driver",
-   "fieldtype": "Data",
-   "label": "Drop Off Driver"
+   "fieldtype": "Link",
+   "label": "Drop Off Driver",
+   "options": "Drivers"
   },
   {
    "fieldname": "drop_off_note",
@@ -450,11 +457,17 @@
    "fieldtype": "Link",
    "label": "Business Source",
    "options": "Business Source"
+  },
+  {
+   "fetch_from": "guest.email_address",
+   "fieldname": "guest_email_address",
+   "fieldtype": "Data",
+   "label": "Guest Email Address"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-03 11:34:25.828693",
+ "modified": "2023-06-06 10:50:02.489298",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

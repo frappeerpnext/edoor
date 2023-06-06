@@ -14,7 +14,7 @@
             <ComHousekeepingRoomKanbanView v-else/>
 
         </td>
-        <td style="vertical-align: top;"><ComHousekeepingRoomDetailPanel/></td>
+       
     </tr>
     </table>
 </template>
@@ -25,7 +25,6 @@ import ComHousekeepingFilter from "./components/ComHousekeepingFilter.vue";
 import ComHousekeepingActionButton from "./components/ComHousekeepingActionButton.vue";
 import ComHousekeepingStatistic from "./components/ComHousekeepingStatistic.vue";
 import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
-import ComHousekeepingRoomDetailPanel from "./components/ComHousekeepingRoomDetailPanel.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")

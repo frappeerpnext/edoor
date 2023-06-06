@@ -2,10 +2,12 @@
     <div>
        {{ hk.selectedRow }}
         <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
-        
-           
         </SplitButton>  
     </div>
+    
+    <Button label="Assign Housekeeper" severity="warning" @click="onChangeHousekeepingStatus" />
+    
+
 </template>
 
 <script setup>
@@ -58,7 +60,6 @@ function onSelected($event){
 
 }
 }
-
 
 function onUpdateStatus($event){ 
     alert(90)

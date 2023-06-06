@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @onOK="onSave" hideButtonClose>
+    <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -53,14 +53,17 @@
                                 <div class="pt-2">
                                     <label>Business Source<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
-                                        doctype="Business Source" class="auto__Com_Cus w-full" />
+                                        @onSelected="onBusinessSourceChange" doctype="Business Source"
+                                        class="auto__Com_Cus w-full" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2">
                                     <label>Rate Type<span class="text-red-500">*</span></label><br />
-                                    <ComAutoComplete v-model="doc.reservation.rate_type" placeholder="Rate Type"
-                                        doctype="Rate Type" class="auto__Com_Cus w-full" />
+                                    <ComSelect :clear="false" v-model="doc.reservation.rate_type" :default="true"
+                                        @onSelected="onRateTypeChange" placeholder="Rate Type" doctype="Rate Type"
+                                        class="auto__Com_Cus w-full" />
+
                                 </div>
                             </div>
                         </div>
@@ -70,7 +73,8 @@
                                     <label class="text-center">Total Pax</label><br>
                                 </div>
                                 <div class="p-inputtext-pt text-center border-1 border-white h-12 w-7rem">{{
-                                    doc.reservation.adult }} / {{ doc.reservation.child }}</div>
+                                    doc.reservation_stay.reduce((n, d) => n + d.adult, 0) }} / {{
+        doc.reservation_stay.reduce((n, d) => n + d.child, 0) }}</div>
                             </div>
                         </div>
                     </div>
@@ -172,24 +176,30 @@
                         <tr v-for="(  d, index  ) in   doc.reservation_stay  " :key="index">
                             <td class="pr-2">
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
-                                    optionLabel="room_type" placeholder="Select Room Type" class="w-full" />
+                                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type"
+                                    class="w-full" />
                             </td>
                             <td class="p-2">
                                 <Dropdown v-model="d.room_id"
-                                    :options="rooms.filter((r) => r.room_type_id == d.room_type_id)" optionValue="name"
-                                    optionLabel="room_number" placeholder="Select Room" showClear filter class="w-full" />
+                                    :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
+                                    optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
+                                    placeholder="Select Room" showClear filter class="w-full" />
                             </td>
-                            <td class="p-2 w-12rem">
-                                <InputText type="text" class="p-inputtext-sm w-full text-right" placeholder="Rate"
-                                    v-model="d.rate" />
+                            <td class="p-2 w-12rem text-right">
+                          
+                                    <span @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic "><span class="link_line_action"><CurrencyFormat :value="d.rate" /> </span></span>
+
+                               
+                               
+                  
                             </td>
                             <td class="p-2 w-5rem">
-                                <InputNumber v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="1"
-                                    :max="100" class="child-adults-txt" />
+                                <InputNumber v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
+                                    class="child-adults-txt" />
                             </td>
                             <td class="p-2 w-5rem">
-                                <InputNumber v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0"
-                                    :max="100" class="child-adults-txt" />
+                                <InputNumber v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                                    class="child-adults-txt" />
                             </td>
 
                             <td class="p-2 w-8rem">
@@ -198,31 +208,49 @@
                                 }}</div>
                             </td>
                             <td class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">{{
-                                    (doc.reservation.room_night ?? 0) *
-                                    (d.rate
-                                        ?? 0) }}</div>
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
+                                    <CurrencyFormat :value="(doc.reservation.room_night ?? 0) * (d.rate ?? 0)" />
+                                </div>
                             </td>
-                            <td v-if="index != 0" class="pl-2 text-end"><Button icon="pi pi-trash" @click="deleteResRoom"
-                                    class="tr-h__custom text-3xl h-12" aria-label="Filter" /></td>
+                            <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end"><Button icon="pi pi-trash"
+                                    @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12" aria-label="Filter" />
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            
             <Button @click="onAddRoom" icon="pi pi-plus" class="px-4 border-round-xl border-none" label="Add Room" /><br />
+           
         </div>
         <!-- <hr class="my-3"> -->
         <div class="mt-3">
             <div>
+
                 <label>Note</label><br />
                 <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30"
                     class="w-full border-round-xl" />
             </div>
         </div>
+        <OverlayPanel ref="op">
+            <h1>Change Rate</h1>
+            <Message>If you change room rate here. <br/>This room will stop automatically get rate from rate plan. <br/>
+            To use rate from Rate Plan, click on button Use Rate Plan
+            </Message>
+         
+                <InputNumber v-model="rate"    :min="0" 
+                                      />
+
+            <Button @click="onChangeRate">Change Rate</Button>
+            <Button @click="onUseRatePlan">Use Rate Plan</Button>
+        </OverlayPanel>
+
     </ComDialogContent>
 </template>
 <script setup>
 import Calendar from 'primevue/calendar';
+import OverlayPanel from 'primevue/overlaypanel';
+import Message from 'primevue/message';
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import { ref, inject, computed, onMounted } from "@/plugin"
 import { useToast } from "primevue/usetoast";
@@ -233,13 +261,22 @@ const db = frappe.db();
 const call = frappe.call();
 const moment = inject("$moment")
 const socket = inject("$socket")
-
-// const roomNightValue = ref(doc.reservation.room_night + "Nights")
+const isSaving = ref(false)
+const gv = inject("$gv")
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const room_types = ref([])
 const rooms = ref([])
 const working_day = ref({})
+const selectedStay = ref({})
+const rate = ref(0)
+const op = ref();
+const onOpenChangeRate = (event, stay) => {
+    selectedStay.value = stay
+    rate.value = JSON.parse(JSON.stringify(stay)).rate
+    op.value.toggle(event);
+}
+
 
 const doc = ref({
     reservation: {
@@ -256,7 +293,7 @@ const doc = ref({
         "doctype": "Customer",
         "gender": "Not Set"
     },
-    reservation_stay: [{ rate: 0, adult: 1, child: 0 },]
+    reservation_stay: [{ rate: 0, adult: 1, child: 0, is_manual_rate: false },]
 })
 
 const gender_list = ["Not Set", "Male", "Female"]
@@ -279,14 +316,20 @@ const onDateSelect = (date) => {
 
 
 const getRoomType = () => {
+
     call.get("edoor.api.reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(doc.value.reservation.reservation_date).format("yyyy-MM-DD"),
-        end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD")
+        end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD"),
+        rate_type: doc.value.reservation.rate_type,
+        business_source: doc.value.reservation.business_source
+
     })
         .then((result) => {
             room_types.value = result.message;
-            console.log(result)
+            updateRate()
+        }).catch((error) => {
+            gv.showErrorMessage(error)
         })
 }
 
@@ -300,7 +343,7 @@ const getRooms = () => {
         .then((result) => {
 
             rooms.value = result.message;
-            console.log("room", result)
+
         })
 }
 
@@ -312,7 +355,7 @@ function onSelectedCustomer(event) {
 }
 
 const onRoomNightChanged = (event) => {
-    console.log(event)
+
     doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(event, "Days").toDate()
     getRoomType()
     getRooms()
@@ -325,7 +368,11 @@ const onAddRoom = () => {
             // room_type: null,
             // room_id: "RM-0039",
             // room_number: null,
-            rate: 0
+
+            adult: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].adult,
+            child: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].child,
+            room_type_id: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].room_type_id,
+            rate: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].rate
 
         }
     )
@@ -333,8 +380,8 @@ const onAddRoom = () => {
 
 
 const onSave = () => {
+    isSaving.value = true
     const data = JSON.parse(JSON.stringify(doc.value))
-
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
     if (data.reservation.departure_date) data.reservation.departure_date = moment(data.reservation.departure_date).format("yyyy-MM-DD")
@@ -349,6 +396,7 @@ const onSave = () => {
             toast.add({ severity: 'success', summary: 'Add New Reservation', detail: "Add new reservation successfully", life: 3000 })
             socket.emit("RefresheDoorDashboard", property.name);
             dialogRef.value.close(result.message);
+            isSaving.value = false
 
 
         })
@@ -356,6 +404,7 @@ const onSave = () => {
 
             const errors = error.exception.split(":")
             toast.add({ severity: 'error', summary: errors[0], detail: error.exception.replace(errors[0] + ":", ""), life: 3000 })
+            isSaving.value = false
         });
 }
 
@@ -394,6 +443,84 @@ onMounted(() => {
 
     })
 });
+
+const OnSelectRoom = () => {
+    rooms.value.forEach(r => {
+        r.selected = 0
+    });
+
+    doc.value.reservation_stay.forEach(r => {
+        let room = rooms.value.find(x => x.name == r.room_id)
+        if (room) {
+            room.selected = 1
+        }
+    });
+
+}
+const onSelectRoomType = (stay) => {
+
+    stay.room_id = null
+    OnSelectRoom()
+    updateRate()
+}
+
+const onDeleteStay = (index) => {
+    doc.value.reservation_stay.splice(index, 1);
+}
+
+const updateRate = () => {
+    doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).forEach(s => {
+        const room_type = room_types.value.find(r => r.name == s.room_type_id)
+
+
+        if (room_type) {
+
+            s.rate = room_type.rate
+
+        }
+
+    });
+}
+
+const onBusinessSourceChange = (source) => {
+  
+    if (source) {
+        doc.value.reservation.business_source = source.value
+    }else {
+        doc.value.reservation.business_source =null
+    }
+
+    //check if stay have not manully rate update
+    if (doc.value.reservation_stay.filter(r => r.is_manual_rate == false).length > 0) {
+        getRoomType()
+    }
+
+}
+const onRateTypeChange = (rate_type) => {
+    if (rate_type) {
+        doc.value.reservation.rate_type = rate_type.value
+    }
+
+    //check if stay have not manully rate update
+    if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
+        getRoomType()
+    }
+}
+
+const onChangeRate = () => {
+ 
+    selectedStay.value.rate = rate.value
+    selectedStay.value.is_manual_rate = true
+    op.value.hide();
+}
+
+const onUseRatePlan = () => {
+
+    selectedStay.value.is_manual_rate = false;
+    updateRate()
+    op.value.hide();
+}
+
 
 
 </script>

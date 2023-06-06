@@ -77,10 +77,6 @@
 
                 </TabPanel>
 
-                <TabPanel header="Document">
-                    {{ doc }}
-                </TabPanel>
-
             </TabView>
 
 
@@ -228,5 +224,5 @@ const OnViewReservation = () => {
 }
 
 .min-whidth-modified {
-    line-height: 1.2;
+    line-height: 1.4;
 }</style>

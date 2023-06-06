@@ -13,7 +13,7 @@ const dialog = useDialog();
 function onClick() {
     const dialogRef = dialog.open(NewReservation, {
         props: {
-            header: 'New Reservation',
+            header: 'New FIT Reservation',
             style: {
                 width: '80vw',
             },

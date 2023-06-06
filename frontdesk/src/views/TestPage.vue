@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <ul>
     <li v-for="(n, index) in all_notes" :key="index">
       <div v-html="n.note"></div>
@@ -65,5 +65,28 @@ function DeleteNote(n) {
     .catch((error) => console.error(error));
 
 }
+
+</script> -->
+
+
+<template>
+  <div
+   class="card">
+      <div class="flex gap-2 justify-content-center">
+          <Button icon="pi pi-arrow-left" @click="visibleRight = true" />
+      </div>
+
+      <Sidebar v-model:visible="visibleRight" position="right">
+          
+          <p>hello world</p>
+      </Sidebar>
+
+  </div>
+</template>
+
+<script setup>
+
+import { ref } from "vue";
+const visibleRight = ref(false);
 
 </script>

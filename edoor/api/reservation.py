@@ -7,8 +7,12 @@ from frappe.utils.data import add_to_date
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms'])
+    master_guest = frappe.get_doc("Customer",reservation.guest)
     return {
-        "reservation":reservation
+        "reservation":reservation,
+        "reservation_stays":reservation_stays,
+        "master_guest": master_guest
     }
 
 
@@ -64,7 +68,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     return data
 
 @frappe.whitelist()
-def check_room_type_availability(property,start_date=None,end_date=None):
+def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None):
     end_date = add_to_date(end_date,days=-1)
     #get all room type and total room 
 
@@ -72,6 +76,7 @@ def check_room_type_availability(property,start_date=None,end_date=None):
     for t in room_type:
         sql = "select coalesce(count(  distinct room_id),0) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
         t["occupy"] = frappe.db.sql(sql,as_dict=1)[0]["total_room"]
+        t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
 
     return  [d for d in room_type if d['total_room'] - d["occupy"] > 0]
  
@@ -88,17 +93,27 @@ def add_new_fit_reservation(doc):
         doc["reservation"]["guest"] = guest.name
     else:
         guest = frappe.get_doc(doc["guest_info"]).save()
-
+    
+    #prevent code call on_pdate to reservation stay
+    doc["update_reservation_stay"] = False
     reservation = frappe.get_doc(doc["reservation"]).insert()
     
     #start insert insert reservation stay
-    for d in doc["reservation_stay"]:
+    i = 0
+    for   d in doc["reservation_stay"]:
+      
         room = None
         if   'room_id' in d.keys():
             room = d["room_id"]
+        #set virtural attribute field to update reservation after all stay is add to database
+        
+        update_reservation = False
+        if i ==len(doc["reservation_stay"])-1:
+            update_reservation = True
 
         stay = {
             "doctype":"Reservation Stay",
+            "update_reservation":update_reservation,
             "reservation":reservation.name,
             "reservation_status":"Reserved",
             "arrival_time":reservation.arrival_time,
@@ -116,9 +131,10 @@ def add_new_fit_reservation(doc):
                 }
             ]
         }
+
         frappe.get_doc(stay).insert()
-
-
+        
+        i=i+1
     frappe.db.commit()
     return reservation
 
@@ -145,6 +161,7 @@ def check_in(reservation,reservation_stays=None):
     else:
         stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
     
+
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
         if stay.reservation_status=="Inhouse":
@@ -267,3 +284,39 @@ def get_reservation_folio(reservation=None, reservation_stay=None):
         """
     # sql = sql.format((reservation or ''), (reservation_stay or ''))
     return frappe.db.sql(sql, as_dict=1)
+
+
+@frappe.whitelist()
+def get_room_rate(property, rate_type, room_type, business_source, date):
+    sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
+    season = frappe.db.sql (sql, as_dict=1)
+
+    room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
+    rate = 0
+   
+    if season and rate_type:
+        season_id = season[0]["name"]
+       
+        sql = """select 
+                    max(rate) as rate 
+                from `tabRate Plan` 
+                where 
+                    property='{}' and
+                    season = '{}' and 
+                    rate_type = '{}' 
+                """.format(property, season_id, rate_type)
+     
+        if business_source:
+            sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
+            data = frappe.db.sql(sql_with_business_source, as_dict=1)
+            rate = data[0]["rate"] or 0
+            
+        if rate ==0:
+            data = frappe.db.sql(sql, as_dict=1)
+            rate = data[0]["rate"] or 0
+            
+    if rate == 0:
+        rate = room_type_rate
+    return rate
+
+

@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2023-06-05 15:07:51.353422",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "property",
+  "season",
+  "start_date",
+  "end_date",
+  "column_break_5",
+  "rate_type",
+  "room_type_id",
+  "room_type",
+  "business_source",
+  "rate",
+  "section_break_11",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "season",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Season",
+   "options": "Season",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Rate Type",
+   "options": "Rate Type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type ID",
+   "options": "Room Type",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Business Source",
+   "options": "Business Source"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fetch_from": "season.start_date",
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fetch_from": "season.end_date",
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_11",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-06-05 15:13:46.149144",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Rate Plan",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

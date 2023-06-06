@@ -1,13 +1,13 @@
 <template>
-    <MultiSelect v-if="isMultipleSelect"  :showClear="clear" :style="{ 'min-width': width }"
-        v-model="selected" :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
+    <MultiSelect v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+        :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
         @update:modelValue="onUpdate" :placeholder="placeholder" />
-    <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }"
-        v-model="selected" :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
-        @update:modelValue="onUpdate" :placeholder="placeholder" />
+    <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
+        :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
+        :placeholder="placeholder" />
 </template>
 <script setup>
-import { useToast, ref, inject, reactive, computed, watch,onMounted } from '@/plugin'
+import { useToast, ref, inject, reactive, computed, watch, onMounted } from '@/plugin'
 const emit = defineEmits(['update:modelValue', 'onSelected', 'onSelectedValue'])
 const props = defineProps({
     doctype: String,
@@ -50,10 +50,14 @@ const props = defineProps({
         type: [String, Number, Boolean],
         default: null
     },
-    isMultipleSelect:{
+    isMultipleSelect: {
         type: Boolean,
         default: false
-    } 
+    },
+    default: {
+        type: Boolean,
+        default: false
+    }
 })
 const toast = useToast();
 const frappe = inject('$frappe')
@@ -69,22 +73,22 @@ let selected = computed({
         return newValue
     }
 })
- 
+
 onMounted(() => {
-    watch(()=>props.groupFilterValue,(newValue, oldValue)=>{
-        if(newValue != null){
-            if(props.isMultipleSelect && Array.isArray(newValue)){
+    watch(() => props.groupFilterValue, (newValue, oldValue) => {
+        if (newValue != null) {
+            if (props.isMultipleSelect && Array.isArray(newValue)) {
                 dataOptions.value = []
-                newValue.forEach(n=>{ 
+                newValue.forEach(n => {
                     dataOptions.value = dataOptions.value.concat(data.value.filter(r => r[props.groupFilterField] == n))
                 })
-                
+
             }
-            else{
+            else {
                 dataOptions.value = data.value.filter(r => r[props.groupFilterField] == newValue)
             }
-            
-        }else{
+
+        } else {
             dataOptions.value = data.value
         }
         onUpdate('')
@@ -102,12 +106,12 @@ if (typeof customs == 'string') {
     customs = props.extraFields.split(",")
 }
 if (props.doctype) {
-    
+
     if (props.optionLabel == '' && props.optionValue == '' && props.groupFilterField == '' && customs.length == 0) {
         onSearchLink()
     }
     else {
-        
+
         onDocList()
     }
 } else {
@@ -125,6 +129,12 @@ function onSearchLink() {
     call.get('frappe.desk.search.search_link', apiParams).then((result) => {
         data.value = result.results
         dataOptions.value = data.value
+        if (props.default && data.value && data.value.length > 0) {
+
+            selected.value = data.value[0]
+         
+        }
+
     })
         .catch((error) => {
             toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
@@ -149,27 +159,33 @@ function onDocList() {
     db.getDocList(props.doctype, { filters: props.filters, fields: fields, limit: 1000 }).then((r) => {
         data.value = r
         dataOptions.value = data.value
+        if (props.default && data.value && data.value.length > 0) {
+
+            selected.value = data.value[0]
+           
+        }
+
     }).catch((error) => {
         toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
         data.value = []
     });
 }
 function onUpdate(r) {
-    let result = null 
-    if(props.isMultipleSelect){
+    let result = null
+    if (props.isMultipleSelect) {
         result = []
-        if(r.length > 0){
-            r.forEach(n=>{
+        if (r.length > 0) {
+            r.forEach(n => {
                 result = result.concat(data.value.find(r => r[option.value] == n))
             })
-        }else{
+        } else {
             result = data.value.find(d => d[option.value] == r)
         }
-        
-    }else{
+
+    } else {
         result = data.value.find(d => d[option.value] == r)
     }
-    
+
     emit('onSelectedValue', r)
     emit('onSelected', result)
     emit('update:modelValue', r)

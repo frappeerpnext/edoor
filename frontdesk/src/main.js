@@ -95,9 +95,11 @@ import Chart from 'primevue/chart';
 import ComAvatar from './components/form/ComAvatar.vue'
 import ComAutoComplete from './components/form/ComAutoComplete.vue'
 import ComSelect from './components/form/ComSelect.vue'
+import ComAttachFile from './components/form/ComAttachFile.vue'
 import ComPanel from './components/layout/components/ComPanel.vue'
 import ComHeader from './components/layout/components/ComHeader.vue'
 import ComFieldset from './components/layout/components/ComFieldset.vue'
+import ComDocument from './components/layout/ComDocument.vue'
 import ComDialogContent from './components/form/ComDialogContent.vue'
 import ComOverlayPanelFooter from './components/form/ComOverlayPanelFooter.vue'
 import ComOverlayPanelContent from './components/form/ComOverlayPanelContent.vue'
@@ -168,6 +170,8 @@ app.component('ComChartDoughnut', ComChartDoughnut)
 app.component('ComOverlayPanelFooter', ComOverlayPanelFooter)
 app.component('ComOverlayPanelContent', ComOverlayPanelContent)
 app.component('ComIcon', ComIcon)
+app.component('ComAttachFile', ComAttachFile)
+app.component('ComDocument', ComDocument)
 
 
 

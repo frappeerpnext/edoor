@@ -6,6 +6,7 @@ from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date
+from py_linq import Enumerable
 class ReservationStay(Document):
 	def  validate(self):
 		if not self.reservation:
@@ -25,9 +26,16 @@ class ReservationStay(Document):
 				self.working_day = working_day["name"]
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
-				
-				
-		reservation = frappe.get_doc("Reservation",self.reservation)
+			
+		#validate select uniue guest in additional guest	
+		validate_guests = [x for x in self.additional_guests if x.guest == self.guest]
+		unique_list = list(set([x.guest for x in self.additional_guests]))
+		if len(unique_list) < len(self.additional_guests):
+			validate_guests = True
+		if validate_guests:
+			frappe.throw("Cannot select duplicate guest.")
+
+
 		self.adult = self.adult or 1
 		self.child = self.child or 0
 		
@@ -45,12 +53,7 @@ class ReservationStay(Document):
 			d.reservation_status = self.reservation_status
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
-
-		 
 			d.guest = self.guest
-			
-			 
-			
 			d.start_date = d.start_date or self.arrival_date
 			d.start_time = d.start_time or self.arrival_time
 			d.end_date = d.end_date or self.departure_date
@@ -59,17 +62,17 @@ class ReservationStay(Document):
 			d.child = self.child
 			d.reference_number = self.reference_number
 			d.pax = d.adult + d.child
-			
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
 			#d.total_amount = (d.rate or  0 )* (d.room_nights or 1)
-		validate_guests = [x for x in self.additional_guests if x.guest == self.guest]
-		unique_list = list(set([x.guest for x in self.additional_guests]))
-		if len(unique_list) < len(self.additional_guests):
-			validate_guests = True
-		if validate_guests:
-			frappe.throw("Cannot select duplicate guest.")
+
+
+		#update stay summayr
+		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
+		
+
+
 
 	def after_insert(self):
 		#generate_room_occupy_and_rate(self)
@@ -77,24 +80,48 @@ class ReservationStay(Document):
 
 
 	def on_update(self):
-		
-		if hasattr(self,"update_reservation") and self.update_reservation:
+		#will run this in queue
+		update_data_to_reservation(self)
+
+
+def update_data_to_reservation(self):
+	
+	if not hasattr(self,"update_reservation") or self.update_reservation:
 			sql ="update `tabTemp Room Occupy` set adult={}, child={} , pax = {} where reservation_stay = '{}'".format(self.adult,self.child,self.pax,self.name)
 			frappe.db.sql(sql)
 
-			sql = "select sum(adult) as adult, sum(child) as child from `tabReservation Stay` where is_active_reservation =1 and reservation='{}'".format(self.reservation)
+			sql = """select 
+						min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
+						max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
+						sum(if(is_active_reservation =1,1,0)) as total_stay,
+						sum(if(is_active_reservation =1,adult,0)) as adult, 
+						sum(if(is_active_reservation =1,child,0)) as child ,
+
+						sum(if(is_active_reservation=0 and reservation_stataus='Cancel',1,0)) as total_cancel,
+						sum(if(is_active_reservation=0 and reservation_stataus='No Show',1,0)) as total_no_show,
+						sum(if(is_active_reservation=0 and reservation_stataus='Void',1,0)) as total_void
+					where 
+
+						reservation='{}'
+					""".format(self.reservation)
+			
 			data = frappe.db.sql(sql,as_dict=1)
+
 
 			#update to reservation 
 			doc_reservation = frappe.get_doc("Reservation", self.reservation)
+			doc_reservation.total_reservation_stay = data[0][ "total_stay"]
+			doc_reservation.arrival_date = data[0]["arrival_date"]
+			doc_reservation.departure_date= data[0]["departure_date"]
+			
 			doc_reservation.adult = data[0][ "adult"]
 			doc_reservation.child = data[0][ "child"]
+			doc_reservation.room_nights= data[0][ "room_nights"]
+
+
 			doc_reservation.update_reservation_stay = False
 			
 			doc_reservation.save()
-
-
-
 
 def generate_room_occupy_and_rate(self):		
 	dates = get_date_range(self.arrival_date, self.departure_date)

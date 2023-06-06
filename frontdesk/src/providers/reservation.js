@@ -1,19 +1,24 @@
 
-import { FrappeApp } from 'frappe-js-sdk';
-const frappe = new FrappeApp();
-const db = frappe.db();
-
-
+import { getApi } from '@/plugin';
 export default class Reservation {
-	constructor() {
-		this.stay ={}
-		this.reservationStay = {}	
-		this.guest= {}	
-		this.masterGuest = {}	
-		this.reservation = {}	
+	constructor() {	
+		this.loading = false
+		this.reservationStays = []
+		this.reservation = {}
+		this.masterGuest = {}
 	}	
 
-	LoadReservationStay(name) {
-		
+	LoadReservation(name) {
+		this.loading = true
+		getApi("reservation.get_reservation_detail", {
+			name: name
+		}).then((result) => {
+			this.reservation = result.message.reservation
+			this.reservationStays = result.message.reservation_stays
+			this.masterGuest = result.message.master_guest
+			this.loading = false
+		}).catch((err)=>{
+			this.loading = false
+		})
 	}
 }

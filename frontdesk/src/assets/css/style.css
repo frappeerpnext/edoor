@@ -122,7 +122,7 @@ html {
 }
 
 .bg-og-edoor,.btn-close,.btn-close:hover,.btn-close:active {
-    background-color: var(--bg-og-color);
+    background-color: var(--bg-og-color) !important;
 }
 
 .primary-btn-edoor {

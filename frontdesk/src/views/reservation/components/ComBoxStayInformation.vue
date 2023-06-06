@@ -1,10 +1,7 @@
 
 <template>
   <span v-tooltip.top="tooltip" v-if="title !== null" class="flex items-center justify-end text-right" :class="titleClass">{{ title }}</span>
-  <span v-tooltip.top="value" class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass"
-    
-  >
- 
+  <span class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
     <span :class="class_action" @click="onClick" >
       <slot>
       
@@ -13,8 +10,6 @@
         <span v-if="isCurrency"><CurrencyFormat :value="value"/></span>
       <span v-else>{{ value }}</span>
 
-   
-      
     </span>
   </span>
 </template>
@@ -32,7 +27,7 @@ const props = defineProps({
     default: false
   }
 })
-
+ 
 const  onClick=(event)=>{
  
   emit("onClick",event)

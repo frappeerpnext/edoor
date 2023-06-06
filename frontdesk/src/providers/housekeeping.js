@@ -13,7 +13,6 @@ export default class Housekeeping {
 		this.selectredRow = {}
 		
 	}
- 
 
 	loadData() {
 		let filters = []
@@ -42,10 +41,6 @@ export default class Housekeeping {
 		if (this.filter.selected_housekeeper && this.filter.selected_housekeeper.length > 0) {
 			filters.push(["housekeeper", 'in', this.filter.selected_housekeeper])
 		}
-
-
-
-
 
 		db.getDocList('Room', {
 			fields: ['name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper"],

@@ -1,59 +1,81 @@
 <template>
-    <div class="flex ">
-        <ComTagReservation title="BK#:" :value="doc.reservation?.name"></ComTagReservation>
-        <ComTagReservation title="RES#:" :value="doc.reservation?.guest"></ComTagReservation>
-        <ComTagReservation title="Rooms#:">
-            <!-- <span v-if="doc.reservation?.rooms.split(',').length > 3">
-                <span v-for="value_room_stay_status in doc.reservation_stay?.rooms.split(',').slice(0, 3)"
-                    :key="value_room_stay_status">
-                    {{ value_room_stay_status }}
-                </span>
-                <span>
-                    {{ doc.reservation_stay?.rooms.split(",").length }}more
-                </span>
-            </span>
-            <span v-else>
-                {{ doc.reservation_stay?.rooms }}
-            </span> -->
-        </ComTagReservation>
-        <span class="px-2 rounded-lg me-2 text-white" :style="{ background: doc.reservation?.status_color }">{{
-            doc.reservation?.reservation_status }}</span>
-        <span class="px-2 rounded-lg me-2 text-white" :style="{ background: doc.reservation?.status_color }">{{
-            doc.reservation?.reservation_type }}</span>
-    </div>
-    <TabView>
-        <TabPanel header="General Information">
-            {{ doc }}
-        </TabPanel>
-        <TabPanel header="Room Rate" lazy>
+    <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
+        <div :class="[isPage, 'bg-white']">
+            <div class="grid">
+                <div class="col mb-2">
+                    <div class="flex">
+                        <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
+                            <span class="res__bagde ml-1">
+                                {{rs.reservationStays.length}}
+                            </span>
+                        </ComTagReservation>
+                        <span class="px-2 rounded-lg me-2 text-white p-1px"
+                            :style="{ background: rs.reservation?.status_color }">{{
+                                rs.reservation?.reservation_status }}</span>
+                        <span class="px-2 rounded-lg me-2 text-white p-1px"
+                            :style="{ background: rs.reservation?.status_color }">{{
+                                rs.reservation?.reservation_type }}</span>
+                    </div>
+                </div>
+            </div>
+            <TabView @update:activeIndex="onTab">
+                <TabPanel header="General Information">
+                    <div class="grid mt-3 ml-0 ms-0">
+                        <div class="col-8">
+                            <div class="grid">
+                                <div class="col-4">
+                                    <ComReservationDetailGuestInfo />
+                                </div>
+                                <div class="col-8">
+                                    <ComReservationInfo />
+                                </div>
+                                <div class="col-12">
+                                    <ComReservationDetailBusinessSourceAndRate />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="grid h-full">
+                                <ComReservationDetailChargeSummary/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <ComReservationDetailRoomList />
+                    </div>
+                </TabPanel>
+                <TabPanel header="Room Rate">
+                    <ComReservationRoomRate />
+                </TabPanel>
 
-        </TabPanel>
+                <TabPanel header="Folio">
 
-        <TabPanel header="Folio">
+                </TabPanel>
 
-        </TabPanel>
+                <TabPanel header="Document"> 
+                    <ComDocument v-if="tabIndex == 3" doctype="Reservation" :docname="name"/>
+                </TabPanel>
 
-        <TabPanel header="Document">
-
-        </TabPanel>
-        <TabPanel header="json data">
-            {{ doc.reservation }}
-        </TabPanel>
-
-
-    </TabView>
-
-    <hr>
-    <Button @click="onCheckIn">Check In</Button>
+            </TabView>
+        </div>
+    </ComDialogContent>
 </template>
 <script setup>
 import { inject, ref, onMounted, computed, useToast } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
+import ComReservationDetailGuestInfo from '@/views/reservation/components/ComReservationDetailGuestInfo.vue'
+import ComReservationInfo from '@/views/reservation/components/ComReservationInfo.vue'
+import ComReservationDetailBusinessSourceAndRate from '@/views/reservation/components/ComReservationDetailBusinessSourceAndRate.vue'
+import ComReservationDetailRoomList from '@/views/reservation/components/ComReservationDetailRoomList.vue'
+import ComReservationDetailChargeSummary from '@/views/reservation/components/ComReservationDetailChargeSummary.vue'
+import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
+
 
 
 
 const frappe = inject("$frappe")
+const rs = inject("$reservation")
 const call = frappe.call();
 
 const confirm = useConfirm()
@@ -67,27 +89,20 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 
 const name = ref("")
-const doc = ref({})
+const tabIndex = ref(0)
 
 onMounted(() => {
     if (!dialogRef) {
         alert("no dialog")
     } else {
         name.value = dialogRef.value.data.name;
-        getReservationDetail();
+        rs.LoadReservation(name.value);
 
     }
 });
-
-const getReservationDetail = () => {
-    alert(name.value)
-    call.get("edoor.api.reservation.get_reservation_detail", {
-        name: name.value
-    }).then((result) => {
-        doc.value = result.message
-    })
+function onTab($event){
+    tabIndex.value = $event
 }
-
 //check in
 const onCheckIn = () => {
     confirm.require({
@@ -113,6 +128,12 @@ const onCheckIn = () => {
         }
     });
 }
-
-
 </script>
+<style scoped>
+    .res__bagde{
+        border-radius: 0.5rem;
+        padding: 0 5px;
+        background: #cacaca;
+        margin-right: -5px;
+    }
+</style>

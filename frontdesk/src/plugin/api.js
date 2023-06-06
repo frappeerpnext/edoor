@@ -59,3 +59,33 @@ export function getApi(api, params = Object){
         })
     })
 }
+
+export function uploadFiles(files, fileArgs = Object){
+    const frappe = new FrappeApp()
+    const file = frappe.file();
+    console.log(fileArgs)
+    return new Promise((resolve, reject)=>{
+        let countFile = 0
+        files.forEach((r)=>{
+            file.uploadFile(
+                r,
+                fileArgs
+            )
+            .then((r) => {
+                if(r.data && r.data.message){
+                    countFile++
+                    if(countFile == files.length){
+                        toaster('success', 'Upload files successfull.')
+                        resolve(true)
+                    }
+                }
+                
+            })
+            .catch((error) =>{
+                handleServerMessage(error)
+                reject(error)
+            })
+        })
+    })
+    
+}

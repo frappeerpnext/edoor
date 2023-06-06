@@ -139,6 +139,7 @@ let roomChartResourceFilter = reactive({
 })
 
 socket.on("RefresheDoorDashboard", (arg) => {
+    
     if (arg == property.name) {
         onRefresh()
         toast.add({ severity: 'info', summary: 'Info', detail: "Reservation updated", life: 3000 })
@@ -196,12 +197,15 @@ const calendarOptions = reactive({
                 alert("load data fiale")
             });
     },
-    eventContent: function(info) {
+    eventContent: function(info, element, view) {
+ 
         var resourceId = info.event._def.resourceIds[0];
         var resource = info.view.calendar.getResourceById(resourceId);
-        console.log(info)
+ 
         // var td = info.el.closest('td');
         // td.setAttribute('data-resource-id', resourceId);
+
+        
  
     },
     eventAllow: function (dropInfo, draggedEvent) {
@@ -356,12 +360,18 @@ function onSelectedDate(event) {
     }
 
     if (event.resource._resource.extendedProps.type == "room") {
-
+        let room_type_id =  event.resource._resource.extendedProps.room_type_id ?? ""
+        
+        if(room_type_id==""){
+          
+            room_type_id = event.resource._resource.parentId;
+        }
+        
         const dialogRef = dialog.open(NewReservation, {
             data: {
                 arrival_date: event.start,
                 departure_date: event.end,
-                room_type_id: event.resource._resource.extendedProps.room_type_id,
+                room_type_id: room_type_id,
                 room_id: event.resource._resource.id
             },
             props: {
@@ -598,14 +608,19 @@ onMounted(() => {
     //   })
     onInitialDate()
 
+    const cellHeight = document.querySelector('.fc-timeline-lane-frame')
+        // console.log(cellHeight.offsetHeight)
+        //info.el.style.height = `${cellHeight}px`
+
+        // document.querySelector(".fc-timeline-event").style.height = `${cellHeight}px`;
+
 })
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
     socket.disconnect()
 })
 
-
-
+ 
 // document.addEventListener('mouseover', function(event) {
 //   console.log(event);
 // });

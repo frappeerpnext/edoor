@@ -1,5 +1,7 @@
 <template> 
+
 <div> 
+  
     <DataTable 
         v-model:selection="hk.selectedRooms" 
         dataKey="name" 
@@ -7,7 +9,9 @@
         @row-dblclick="onDblClick" 
         @row-click="onRowSelect"  
         tableStyle="min-width: 50rem"
-        paginator :rows="20" :rowsPerPageOptions="[20, 50,100]" 
+        paginator :rows="20" :rowsPerPageOptions="[20, 50,100]"
+         
+        
     >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="room_number" header="Room #"></Column>
@@ -31,11 +35,19 @@
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
         </ComOverlayPanelContent>
     </OverlayPanel>
+
+    <Sidebar v-model:visible="visibleRight" position="right">
+       <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
+
+    </Sidebar>
+
 </div>
 </template>
 <script setup>
+
 import { ref,inject,toaster } from '@/plugin';
-import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue' 
+import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
+import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue'; 
 const loading = ref(false)
 const selected = ref({
     room: '',
@@ -45,6 +57,8 @@ const opHousekeeper = ref()
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
 const call = frappe.call()
+const visibleRight = ref(false);
+
 function onSelected(room,status){
     hk.updateRoomStatus(room,status)
 }
@@ -69,6 +83,8 @@ function onSaveAssignHousekeeper() {
 }
 function onRowSelect(r){
     hk.selectedRow = r.data
+    visibleRight.value = true
+    
 }
 
 function onDblClick(r){

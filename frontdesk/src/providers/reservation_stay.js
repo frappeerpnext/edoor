@@ -4,7 +4,7 @@ const frappe = new FrappeApp();
 const db = frappe.db();
 
 
-export default class Reservation {
+export default class ReservationStay {
 	constructor() {
 		this.stay ={}
 		this.reservationStay = {}	

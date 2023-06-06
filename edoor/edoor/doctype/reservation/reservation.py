@@ -28,8 +28,12 @@ class Reservation(Document):
 
 
 	def on_update(self):
+		#will run this in queue
 		
-		if self.update_reservation_stay:
+		update_data_to_reservation_stay(self)		
+
+def update_data_to_reservation_stay(self):
+	if not hasattr(self,"update_reservation_stay") or self.update_reservation_stay:
 			
 			data = frappe.db.get_list("Reservation Stay",filters={"reservation":self.name})
 			for d in data:
@@ -37,8 +41,6 @@ class Reservation(Document):
 				doc.reservation_type=self.reservation_type
 				doc.update_reservation = False
 				doc.save()
-				
-
-			
+		
 
 
