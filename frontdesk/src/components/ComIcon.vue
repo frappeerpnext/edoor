@@ -5,6 +5,7 @@
     <img v-else-if="icon == 'iconBed'" :class="class" :src="iconBed"/>
     <img v-else-if="icon == 'checkin'" :class="class" :src="BtnCheckinIcon"/>
     <img v-else-if="icon == 'checkout'" :class="class" :src="BtnCheckoutIcon"/>
+    <img v-else-if="icon == 'BirthdayIcon'" :class="class" :src="BirthdayIcon"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -23,5 +24,6 @@ import frontdesk from '../assets/svg/icon-frontdesk.svg'
 import iconBed from '../assets/svg/icon-bed.svg'
 import BtnCheckinIcon from '@/assets/svg/icon-check-in.svg'
 import BtnCheckoutIcon from '@/assets/svg/icon-check-out.svg'
+import BirthdayIcon from '@/assets/svg/birthday-icon.svg'
 </script>
  

@@ -23,7 +23,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro">
             <ComRoomChartFilterSelect>
                 <template #date>
-                    <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar showIcon />
+                    <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-MM-yy" @date-select="onFilterDate" showButtonBar showIcon />
                 </template>
             </ComRoomChartFilterSelect>
             <div>
@@ -33,7 +33,7 @@
         <div style="max-width: 100%;">
             <div id="fron__desk-fixed-top">  
                 <div :class="showSummary ? 'flex gap-2' : ''">
-                    <div v-if="showSummary" class="relative" style="width:250px">
+                    <div v-if="showSummary" class="relative" style="width:280px">
                         <div>
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
@@ -58,8 +58,8 @@
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
                                         <table>
                                             <tbody>
-                                                <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
-                                                <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
+                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
+                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
                                             <tr><td><div>Guest: ${event.title}</div></td></tr>
                                             <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
                                             <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>

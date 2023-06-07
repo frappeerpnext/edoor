@@ -42,6 +42,22 @@ export function updateDoc(doctype, name, data, message){
         })
         .catch((error) => {
             const message = handleServerMessage(error)
+            reject(error)
+            toaster('error', 'Server Error');
+        });
+    })
+}
+export function deleteDoc(doctype, name, message){
+    const frappe = new FrappeApp()
+    const db = frappe.db()
+    return new Promise((resolve, reject)=>{
+        db.deleteDoc(doctype, name)
+        .then((doc) => {
+            resolve(doc.message)
+            toaster('success', `${message ? message : 'Deleted successful'}`)
+        })
+        .catch((error) => {
+            const message = handleServerMessage(error)
             reject(message)
             toaster('error', 'Server Error');
         });
@@ -59,7 +75,18 @@ export function getApi(api, params = Object){
         })
     })
 }
-
+export function postApi(params = Object){
+    const frappe = new FrappeApp()
+    const call = frappe.call()
+    return new Promise((resolve, reject)=>{
+        call.post(`edoor.api.${api}`, params).then((result) => {
+            resolve(result)
+        }).catch((error) =>{
+            handleServerMessage(error)
+            reject(error)
+        })
+    })
+}
 export function uploadFiles(files, fileArgs = Object){
     const frappe = new FrappeApp()
     const file = frappe.file();
@@ -89,3 +116,4 @@ export function uploadFiles(files, fileArgs = Object){
     })
     
 }
+

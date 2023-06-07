@@ -1,20 +1,22 @@
 <template>
     <ComOverlayPanelContent :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <h1>Change Business</h1>
+        <h1>Change Rate Type</h1>
        
-        <ComAutoComplete v-model="businessSource" placeholder="Business Source" doctype="Business Source"
+        <ComSelect v-model="ratetype" placeholder="Rate Type" doctype="Rate Type"
             class="auto__Com_Cus w-full" />
     </ComOverlayPanelContent>
 </template>     
 <script setup>
 import { ref, inject,updateDoc } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
+const frappe = inject('$frappe');
+const call = frappe.call();
 
 
 
 const emit = defineEmits(['onClose','onSave'])
 const props = defineProps({
-    businessSource: {
+    ratetype: {
         type: String,
         default: ''
     },
@@ -24,24 +26,16 @@ const props = defineProps({
     },
 
 })
+// const changrate={
+//     reservation_stay:''
+// }
 
-const businessSource = ref(props.businessSource)
+const ratetype = ref(props.ratetype)
 
 
 const isLoading = ref(false)
 
 function onSave() {
-
-    isLoading.value = true
-    updateDoc('Reservation', props.reservation, {
-        business_source: businessSource.value,
-    })
-    .then((doc) => {
-      
-        emit('onSave',doc)
-    })
-    .catch((error)=>{
-        isLoading.value = false      
-    })
+    //call.post('edoor.api.reservation.change_rate_type',)
 }
 </script>

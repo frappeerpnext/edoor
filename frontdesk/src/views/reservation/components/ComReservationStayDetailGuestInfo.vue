@@ -4,9 +4,10 @@
             <template #btn>
                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />
+               
             </template>
             <template #content>
-                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.masterGuest.name)"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber2="rs?.masterGuest.phone_number_2" :phoneNumber1="rs?.masterGuest.phone_number_1" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
+                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.masterGuest.name)" :dob="rs?.masterGuest?.date_of_birth"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber2="rs?.masterGuest.phone_number_2" :phoneNumber1="rs?.masterGuest.phone_number_1" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
             </template>
         </ComReservationStayPanel>
         <ComReservationStayPanel title="Stay Guests">
@@ -15,10 +16,10 @@
                 <Menu ref="menuStayGuest" id="menu_stay_guest" :model="menuStayGuestList" :popup="true" />
             </template>
             <template #content>
-                <ComCardProfileGuest @onClick="onViewGuestDetail(rs.guest.name)" :photo="rs?.guest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.guest?.customer_name_en" :phoneNumber2="rs?.guest?.phone_number_2"  :phoneNumber1="rs?.guest?.phone_number_1" :email="rs?.guest?.email_address" ></ComCardProfileGuest>
+                <ComCardProfileGuest @onClick="onViewGuestDetail(rs.guest.name)" :dob="rs?.guest?.date_of_birth" :photo="rs?.guest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.guest?.customer_name_en" :phoneNumber2="rs?.guest?.phone_number_2"  :phoneNumber1="rs?.guest?.phone_number_1" :email="rs?.guest?.email_address" ></ComCardProfileGuest>
                 <div class="border-t mt-2" v-if="rs.reservationStay && rs.reservationStay.additional_guests && rs.reservationStay.additional_guests.length > 0">
                     <div class="py-2" v-for="(ad, index) in rs.reservationStay.additional_guests" :key="index">
-                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
+                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
                             <template #end>
                                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name)"/>
                             </template>
@@ -53,6 +54,7 @@ const loading = ref(false)
 const menuMasterGuestList = ref([
     {
         label: 'Change guest',
+        icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
         }
@@ -65,12 +67,14 @@ const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
         label: 'Change guest',
+        icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
         label: 'Add additional guest',
+        icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
@@ -80,12 +84,15 @@ const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
 {
         label: 'Add additional guest',
+        icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
     },
     {
         label: 'Delete',
+        icon:'pi pi-fw  pi-trash',
+        class:'delete-text-color',
         command: ($event) =>{
             onDeleteAdditionalGuest()
         }

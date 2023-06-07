@@ -7,9 +7,9 @@
             <slot name="btn"></slot>
         </div>
     </div>
-        <div>
-            <slot name="content"></slot>
-        </div>
+    <div>
+        <slot name="content"></slot>
+    </div>
 </div>
 </template>
 <script setup>

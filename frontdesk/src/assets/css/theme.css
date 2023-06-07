@@ -5106,7 +5106,8 @@
 }
 
 .p-dialog .p-dialog-header .p-dialog-title {
-  font-weight: 700;
+  margin-left: 7px;
+  font-weight: 600;
   font-size: 1.25rem;
 }
 
@@ -6655,6 +6656,7 @@
 
 .p-toast {
   opacity: 0.9;
+  z-index: 9999 !important;
 }
 
 .p-toast .p-toast-message {

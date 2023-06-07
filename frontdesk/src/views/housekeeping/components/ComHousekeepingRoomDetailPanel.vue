@@ -1,12 +1,16 @@
 <template>
     <div>
        {{ hk.selectedRow }}
-        <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
+         <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
         </SplitButton>  
     </div>
-    
-    <Button label="Assign Housekeeper" severity="warning" @click="onChangeHousekeepingStatus" />
-    
+
+    <Button label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
+    <OverlayPanel ref="opHousekeeper">
+        <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
+            <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 
 </template>
 
@@ -18,11 +22,16 @@ const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)
 const visible = ref(false)
 const toast = useToast();
+const opHousekeeper = ref()
+const selected = ref({})
+
 const  submitLoading = ref(false)
 const items = ref([])
 const show = ref()
 const frappe = inject("$frappe")
 const db = frappe.db()
+const call = frappe.call()
+
 if(housekeeping_status.value.length > 0){
     housekeeping_status.value.forEach(h => {
         items.value.push({
@@ -34,9 +43,13 @@ if(housekeeping_status.value.length > 0){
          
     });
 }
+
+/// change housekeeping status
 const toggle = (event) => {
     show.value.toggle(event);
 };
+
+/// change housekeeping status
 function onSelected($event){
     if (!hk.selectedRow) {
     toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select roow to change housekeeping status", life: 3000 })
@@ -45,6 +58,7 @@ function onSelected($event){
         housekeeping_status: $event.status,
         status_color : $event.status_color,
     })
+
     .then((doc) =>{
         visible.value = false 
         hk.selectedRow.housekeeping_status = doc.housekeeping_status
@@ -57,17 +71,21 @@ function onSelected($event){
     .catch((error) => {
         submitLoading.value = false
     });
-
 }
 }
 
-function onUpdateStatus($event){ 
-    alert(90)
-    if (hk.selectedRoow.length == 0) {
-    toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select roow to change housekeeping status", life: 3000 })
-} else {
-    visible.value = true;
+// Housekeeper
+function onAssignHousekeeper($event){
+    opHousekeeper.value.toggle($event)
 }
+
+function onSaveAssignHousekeeper($event) {
+    alert(selected.value.housekeeper)
+    db.updateDoc('Room', hk.selectedRow.name, {
+        housekeeper:selected.value.housekeeper,
+    })
+    loading.value = true; 
+  
 }
 
 </script>

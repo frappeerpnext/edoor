@@ -14,12 +14,11 @@
                     </div>
                     <div class="flex gap-2">
                         <slot name="footer-right"></slot>
-                        <Button class="border-none" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK"
-                            :loading="loading">
-                            <img class="mr-2" style="height: 14px;"  :src="BtnOkIcon"/> Save
+                        <Button class="border-none" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
+                            <span v-if="!loading"><img class="mr-2 inline" style="height: 14px;" :src="BtnOkIcon" v-if="!loading"/>Save</span>
+                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> Save</span>
                         </Button>
-                        <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="onClose()" :label="titleButtonClose"
-                            :disabled="loading" >
+                        <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
                             <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
                         </Button>
                     </div>
@@ -67,7 +66,7 @@ function onOK() {
   
     emit('onOK')
 }
-function onClose() {
+function close() {
     emit('onClose')
 }
 </script>

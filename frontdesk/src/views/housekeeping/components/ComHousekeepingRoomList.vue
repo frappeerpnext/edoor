@@ -10,23 +10,16 @@
         @row-click="onRowSelect"  
         tableStyle="min-width: 50rem"
         paginator :rows="20" :rowsPerPageOptions="[20, 50,100]"
-         
-        
     >
         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
         <Column field="room_number" header="Room #"></Column>
         <Column field="room_type" header="Room Type"></Column>
         <Column field="room_type" header="Room Type"></Column>
 
+
         <Column field="housekeeper" header="Housekeeper">
             <template #body="slotProps">
                 <Button @click="onAssignHousekeeper($event,slotProps.data)" :label="slotProps.data.housekeeper" link size="small" icon="pi pi-pencil" iconPos="right"></Button>
-            </template>
-        </Column>
-        <Column field="housekeeping_status" header="Status" class="text-left">
-            <template #body="slotProps">
-                <!-- <Tag :value="slotProps.data.housekeeping_status" :style="{ background: slotProps.data.status_color }"></Tag>  -->
-                <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data"/>
             </template>
         </Column>
     </DataTable>
@@ -36,6 +29,15 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
 
+
+    <Column field="housekeeping_status" header="Status" class="text-left">
+ 
+            <template #body="slotProps">
+                <!-- <Tag :value="slotProps.data.housekeeping_status" :style="{ background: slotProps.data.status_color }"></Tag>  -->
+                <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data"/>
+            </template>
+        </Column>
+
     <Sidebar v-model:visible="visibleRight" position="right">
        <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
 
@@ -43,6 +45,7 @@
 
 </div>
 </template>
+
 <script setup>
 
 import { ref,inject,toaster } from '@/plugin';
@@ -67,6 +70,7 @@ function onAssignHousekeeper($event, r){
     selected.value.room = r.name || ''
     opHousekeeper.value.toggle($event)
 }
+
 function onSaveAssignHousekeeper() {
     loading.value = true; 
     call.post("edoor.api.housekeeping.update_housekeeper", {
@@ -81,6 +85,7 @@ function onSaveAssignHousekeeper() {
         loading.value = false
     })
 }
+
 function onRowSelect(r){
     hk.selectedRow = r.data
     visibleRight.value = true

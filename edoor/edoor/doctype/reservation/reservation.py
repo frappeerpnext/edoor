@@ -22,8 +22,6 @@ class Reservation(Document):
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
-				
-
 		self.pax = (self.adult or 1) + (self.child or 0)
 
 

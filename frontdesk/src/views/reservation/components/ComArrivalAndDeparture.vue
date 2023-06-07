@@ -1,13 +1,16 @@
 <template>
-  <div class="col-12" v-if="rs.reservationStay.require_pickup || rs.reservationStay.required_drop_off ">
+  <div class="col-12" v-if="rs.reservationStay.require_pickup || rs.reservationStay.required_drop_off  ">
     <ComReservationStayPanel title="Arrival & Departure Mode" >
       <template #btn>
-                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded />
+                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" aria-haspopup="true" aria-controls="manu_arriaval_departure" text rounded @click="onMenuArriavalDeparture" />
+                <Menu :model="items" ref="ManuArriavalDeparture" id="manu_arriaval_departure" :popup="true" />
       </template>
       <template #content>
         <div  class="mt-2 Arrival-bg">
-          <TabView>
-            <TabPanel  header="Arrival">
+         
+          <TabView :activeIndex="(rs.reservationStay.reservation_status=='In-House'?1:0)">
+            <TabPanel  header="Arrival" >
+              <div v-if="rs.reservationStay.require_pickup" class="">
               <div class="flex mt-4 gap-2">
                 <ComBoxStayInformation title="Arrival Mode" :value="rs.reservationStay?.arrival_mode" valueClass="col-7 " titleClass="grow">
                 </ComBoxStayInformation>
@@ -20,11 +23,13 @@
               </div>
               <div class="flex mt-2 gap-2">
                 <ComBoxStayInformation title="Require Pickup" :value="moment(rs.reservationStay?.pickup_time  ,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
-                  <Button icon="pi pi-check" class="border-none" aria-label="Filter" />
                 </ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.driver" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+              </div>
+              <div class="flex mt-2 gap-2">
+                <ComBoxStayInformation title="Phone Number" :value="rs.reservationStay?.pickup_driver_phone_number" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
               </div>
               <div class="flex flex-col mt-2 gap-2">
                 <div>Note</div>
@@ -32,9 +37,13 @@
                   {{ rs.reservationStay?.pickup_note }}
                 </div>
               </div>
-              
+            </div>
+            <div v-else class="flex justify-center mt-3">
+                <Button @click="OnSetupForm()" class="font-semibold bg-blue-400 text-xl border-none" iconClass="text-2xl me-2" icon="pi pi-car" label="Setup Arrival Mode"  />
+            </div>
             </TabPanel>
             <TabPanel header="Departure">
+              <div v-if="rs.reservationStay.required_drop_off">
               <div class="flex mt-4 gap-2">
                 <ComBoxStayInformation title="Departure Mode" :value="rs.reservationStay?.departure_mode" valueClass="col-7 " titleClass="grow">
                 </ComBoxStayInformation>
@@ -47,11 +56,13 @@
               </div>
               <div class="flex mt-2 gap-2">
                 <ComBoxStayInformation title="Require Departure" :value="moment(rs.reservationStay?.drop_off_time,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
-                  <Button icon="pi pi-check" class="border-none" aria-label="Filter" />
                 </ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.drop_off_driver" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.drop_off_driver_name" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+              </div>
+              <div class="flex mt-2 gap-2">
+                <ComBoxStayInformation title="Phone number" :value="rs.reservationStay?.drop_off_driver_phone_number  " valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
               </div>
               <div class="flex flex-col mt-2 gap-2">
                 <div>Note</div>
@@ -59,6 +70,10 @@
                   {{ rs.reservationStay?.drop_off_note }}
                 </div>
               </div>
+            </div>
+            <div v-else class="flex justify-center mt-3">
+                <Button @click="OnSetupForm()" class="font-semibold bg-blue-400 text-xl border-none" iconClass="text-2xl me-2" icon="pi pi-car" label="Setup Departure Mode"  />
+            </div>
             </TabPanel>
           </TabView>
         </div>
@@ -83,17 +98,22 @@
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import { useDialog } from 'primevue/usedialog';
+import { ref } from "vue";
 const dialog = useDialog();
 import ComFormSetupArrivalAndDeparture from './ComFormSetupArrivalAndDeparture.vue';
 import { inject } from 'vue'
 const rs = inject('$reservation_stay');
 const moment = inject('$moment')
+const ManuArriavalDeparture = ref()
 const props = defineProps({
   reservationStay: {
     type: Object,
     default: {}
   }
 })
+const onMenuArriavalDeparture = (event) => {
+  ManuArriavalDeparture.value.toggle(event);
+};
 function OnSetupForm() {
     dialog.open(ComFormSetupArrivalAndDeparture, {
         props: {
@@ -109,15 +129,25 @@ function OnSetupForm() {
         },
     });
 }
+const items = ref([
+    { label: 
+      'Edit'
+      ,icon: 'pi pi-fw pi-pencil' 
+      ,command: () =>{
+        OnSetupForm()
+      }
+  },
+]);
 </script>
 <style scoped>
   .h-min-note{
     min-height: 8rem;
     max-height: 8rem;
   }
-  .p-button-icon-only{
-    height: 1.7rem;
-    width: 1.7rem;
+
+  .p-button-icon-only  {
+    height: 20px;
+    width: 20px;
     margin: auto -3px;
     margin-right: 5px;
   }

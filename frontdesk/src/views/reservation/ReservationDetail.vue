@@ -18,10 +18,10 @@
                     </div>
                 </div>
             </div>
-            <TabView @update:activeIndex="onTab">
+            <TabView lazy>
                 <TabPanel header="General Information">
                     <div class="grid mt-3 ml-0 ms-0">
-                        <div class="col-8">
+                        <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
                                     <ComReservationDetailGuestInfo />
@@ -29,18 +29,18 @@
                                 <div class="col-8">
                                     <ComReservationInfo />
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12 pb-0">
                                     <ComReservationDetailBusinessSourceAndRate />
                                 </div>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="grid h-full">
+                            <div class="h-full">
                                 <ComReservationDetailChargeSummary/>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
+                    <div class="pt-2">
                         <ComReservationDetailRoomList />
                     </div>
                 </TabPanel>
@@ -53,7 +53,7 @@
                 </TabPanel>
 
                 <TabPanel header="Document"> 
-                    <ComDocument v-if="tabIndex == 3" doctype="Reservation" :docname="name"/>
+                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name"/>
                 </TabPanel>
 
             </TabView>
@@ -89,7 +89,6 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 
 const name = ref("")
-const tabIndex = ref(0)
 
 onMounted(() => {
     if (!dialogRef) {
@@ -100,8 +99,8 @@ onMounted(() => {
 
     }
 });
-function onTab($event){
-    tabIndex.value = $event
+function onClose(){ 
+    dialogRef.value.close()
 }
 //check in
 const onCheckIn = () => {
@@ -134,6 +133,7 @@ const onCheckIn = () => {
         border-radius: 0.5rem;
         padding: 0 5px;
         background: #cacaca;
-        margin-right: -5px;
+        position: relative;
+        right: -3px;
     }
 </style>

@@ -45,7 +45,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title="Arraval"                          
-                        :value="moment(stay.reservationStay?.arrival_date).format('DD-MM-yyyy')"
+                        :value="gv.dateFormat(stay.reservationStay?.arrival_date)"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.arrival_time"
                         valueClass="col " class_action="link_line_action" ></ComBoxStayInformation>
@@ -56,7 +56,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title="Departure"
-                        :value="moment(stay.reservationStay?.departure_date).format('DD-MM-yyyy')"
+                        :value="gv.dateFormat(stay.reservationStay?.departure_date)"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.departure_time"
                         valueClass="col color-purple-edoor" class_action="link_line_action" ></ComBoxStayInformation>
@@ -92,6 +92,7 @@
     </ComReservationStayPanel>
     
     <OverlayPanel ref="op">
+
             <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
     </OverlayPanel>
 </template>
@@ -104,6 +105,7 @@ import { ref } from "vue";
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
+
 
 const moment = inject('$moment')
 const stay = inject('$reservation_stay');

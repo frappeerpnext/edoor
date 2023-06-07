@@ -60,6 +60,8 @@
   "arrival_flight_number",
   "pickup_location",
   "driver",
+  "pickup_driver_name",
+  "pickup_driver_phone_number",
   "pickup_note",
   "column_break_51",
   "required_drop_off",
@@ -68,6 +70,8 @@
   "departure_flight_number",
   "drop_off_location",
   "drop_off_driver",
+  "drop_off_driver_name",
+  "drop_off_driver_phone_number",
   "drop_off_note",
   "additional_guests_tab",
   "additional_guests",
@@ -453,6 +457,7 @@
    "label": "Business Source Type"
   },
   {
+   "fetch_from": "reservation.business_source",
    "fieldname": "business_source",
    "fieldtype": "Link",
    "label": "Business Source",
@@ -463,11 +468,35 @@
    "fieldname": "guest_email_address",
    "fieldtype": "Data",
    "label": "Guest Email Address"
+  },
+  {
+   "fetch_from": "driver.driver_name",
+   "fieldname": "pickup_driver_name",
+   "fieldtype": "Data",
+   "label": "Driver Name"
+  },
+  {
+   "fetch_from": "driver.phone_number",
+   "fieldname": "pickup_driver_phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fetch_from": "drop_off_driver.driver_name",
+   "fieldname": "drop_off_driver_name",
+   "fieldtype": "Data",
+   "label": "Driver  Name"
+  },
+  {
+   "fetch_from": "drop_off_driver.phone_number",
+   "fieldname": "drop_off_driver_phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-06 10:50:02.489298",
+ "modified": "2023-06-07 09:39:24.570906",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

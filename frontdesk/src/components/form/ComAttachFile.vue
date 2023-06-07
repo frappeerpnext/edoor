@@ -59,7 +59,7 @@ import { ref, inject, uploadFiles, toaster } from "@/plugin";
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import BtnOkIcon from '@/assets/svg/icon-save.svg' 
 import FileUpload from 'primevue/fileupload';
-const emit = defineEmits('onSuccess')
+const emit = defineEmits(['onSuccess','onClose'])
 const dialogRef = inject("dialogRef");
 
 const files = ref()
@@ -99,6 +99,9 @@ const onSelectedFiles = (event) => {
 }; 
 function onClear(){
     files.value = []
+}
+function onClose(){
+    emit('onClose')
 }
 function onUpload(){
     const fileArgs = ref({

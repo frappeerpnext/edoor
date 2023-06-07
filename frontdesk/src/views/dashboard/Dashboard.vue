@@ -9,8 +9,7 @@
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
             <Button label="Tomorrow" class="w-48 h-12 btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 h-12 das-calendar" @date-select="onDateSelect" dateFormat="dd-MM-yy"
-                showIcon showButtonBar />
+            <Calendar v-model="date" class="w-48 h-12 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </div>
         <div class="text-end flex justify-end">
             <div class="mr-2">
@@ -209,9 +208,9 @@ function onShowTodayData() {
 function onShowTommorowData() {
     const today = moment(data.value.working_date);
     tomorrow.value = today.add(1, 'days');
-    tomorrow.value = tomorrow.value.format("YYYY-MM-DD")
-    selected_date.value = tomorrow.value
-    date.value = tomorrow.value.format("DD-MM-YYYY")
+    tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
+    selected_date.value = tomorrow.value 
+    date.value = moment(tomorrow.value).format("DD-MM-YYYY") 
     arrivalUrl.value = getArrivalUrl();
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();

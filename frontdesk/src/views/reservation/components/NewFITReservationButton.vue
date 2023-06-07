@@ -43,7 +43,7 @@ function onViewReservationDetail(name) {
         props: {
             header: 'Reservation Detail',
             style: {
-                width: '50vw',
+                width: '80vw',
             },
             breakpoints: {
                 '960px': '75vw',

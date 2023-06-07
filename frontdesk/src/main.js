@@ -101,11 +101,13 @@ import ComHeader from './components/layout/components/ComHeader.vue'
 import ComFieldset from './components/layout/components/ComFieldset.vue'
 import ComDocument from './components/layout/ComDocument.vue'
 import ComDialogContent from './components/form/ComDialogContent.vue'
+import ComInputTime from './components/form/ComInputTime.vue'
 import ComOverlayPanelFooter from './components/form/ComOverlayPanelFooter.vue'
 import ComOverlayPanelContent from './components/form/ComOverlayPanelContent.vue'
 import CurrencyFormat from './components/CurrencyFormat.vue'
 import ComChartDoughnut from './components/chart/ComChartDoughnut.vue'
 import ComIcon from './components/ComIcon.vue'
+import ComPlaceholder from './components/layout/components/ComPlaceholder.vue'
 import socket from './utils/socketio';
 
 
@@ -172,6 +174,8 @@ app.component('ComOverlayPanelContent', ComOverlayPanelContent)
 app.component('ComIcon', ComIcon)
 app.component('ComAttachFile', ComAttachFile)
 app.component('ComDocument', ComDocument)
+app.component('ComInputTime',ComInputTime)
+app.component('ComPlaceholder',ComPlaceholder)
 
 
 

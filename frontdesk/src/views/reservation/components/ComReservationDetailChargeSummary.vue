@@ -1,5 +1,5 @@
 <template lang="">
-    <div class="col-12">
+    <div class="h-full">
         <ComReservationStayPanel title="Charge Summary" style="height:100%">
             <template #content>
                 <div class="flex mb-2 mt-2 gap-2">

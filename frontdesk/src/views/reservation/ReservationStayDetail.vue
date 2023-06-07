@@ -38,10 +38,10 @@
                     </div>
                 </div>
             </div>
-            <TabView>
+            <TabView lazy>
                 <TabPanel header="General Information">
                     <div class="grid mt-3 ml-0 ms-0">
-                        <div class="col-8">
+                        <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
                                     <ComReservationStayDetailGuestInfo />
@@ -74,7 +74,7 @@
                 </TabPanel>
 
                 <TabPanel header="Document">
-
+                    <ComDocument doctype="Reservation Stay" :docname="name"/>
                 </TabPanel>
 
             </TabView>
@@ -212,7 +212,6 @@ const onCheckIn = () => {
 }
 
 const OnViewReservation = () => {
-
     dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
 }
 

@@ -3,16 +3,12 @@
         <template #content>
             <div class="room-stay-list text-center">
             <DataTable class="p-datatable-sm" :value="rs.reservationStay?.stays"  tableStyle="min-width: 50rem">
-                    <Column field="start_date" header="Arrival" >
+                    <Column field="start_date" header="Stay Date" >
                         <template #body="{ data }">
-                            {{ moment(data.start_date).format('DD-MM-yyyy') }}
+                            {{ moment(data.start_date).format('DD-MM-yyyy') }} to {{ moment(data.end_date).format('DD-MM-yyyy') }}
                         </template>
                     </Column>
-                    <Column field="end_date" header="Departure">
-                        <template #body="{ data }">
-                            {{ moment(data.end_date).format('DD-MM-yyyy') }}
-                        </template>
-                    </Column>
+                   
                     <Column field="room_nights" header="Nights"></Column>
                     <Column field="room_type" header="Room Type"></Column>
                     <Column field="room_number" header="Room Name"></Column>

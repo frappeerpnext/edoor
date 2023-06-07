@@ -49,7 +49,17 @@
   "room_numbers",
   "summary_tab",
   "total_reservation_stay",
-  "room_nights"
+  "total_checked_in",
+  "column_break_42",
+  "total_active_reservation_stay",
+  "total_checked_out",
+  "column_break_44",
+  "room_nights",
+  "section_break_44",
+  "total_room_rate",
+  "column_break_48",
+  "total_adr_rate",
+  "column_break_52"
  ],
  "fields": [
   {
@@ -292,6 +302,51 @@
    "fieldname": "room_nights",
    "fieldtype": "Int",
    "label": "Room Nights"
+  },
+  {
+   "fieldname": "column_break_42",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_active_reservation_stay",
+   "fieldtype": "Int",
+   "label": "Total Active Reservation Stay"
+  },
+  {
+   "fieldname": "section_break_44",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_checked_in",
+   "fieldtype": "Int",
+   "label": "Total Checked In"
+  },
+  {
+   "fieldname": "total_checked_out",
+   "fieldtype": "Int",
+   "label": "Total Checked Out"
+  },
+  {
+   "fieldname": "column_break_44",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_48",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_room_rate",
+   "fieldtype": "Currency",
+   "label": "Total Room Rate"
+  },
+  {
+   "fieldname": "total_adr_rate",
+   "fieldtype": "Currency",
+   "label": "Total Adr Rate"
+  },
+  {
+   "fieldname": "column_break_52",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -302,7 +357,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-05 17:01:38.663625",
+ "modified": "2023-06-06 14:32:05.166698",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

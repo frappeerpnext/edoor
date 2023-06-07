@@ -7,7 +7,7 @@ from frappe.utils.data import add_to_date
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
-    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms'])
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','guest','total_charge','balance','total_payment','reservation_status','status_color','guest_name','pax','child','adult','adr_rate', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms'])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     return {
         "reservation":reservation,
@@ -224,7 +224,8 @@ def change_reservation_additional_guest(guest,reservation_stay):
         doc_guest = frappe.get_doc(doc_guest).insert()
         guest_name = doc_guest.name
     else:
-        guest_name = doc_guest['name']
+        guest_info = frappe.get_doc(doc_guest).save()
+        guest_name = guest_info.name
     doc_stay = frappe.get_doc('Reservation Stay', reservation_stay)
     if doc_stay.guest == guest_name:
         frappe.throw('This guest is already selected.')
@@ -320,3 +321,6 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
     return rate
 
 
+@frappe.whitelist(methods="POST")
+def change_rate_type(reservation=None, reservation_stay=None, rate_type = None, apply_to_all_stay = None):
+    return "sucess"

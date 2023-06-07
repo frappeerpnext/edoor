@@ -2,7 +2,7 @@
     <div class="flex">
         <Button class="border-y-none border-left-none border-noround-right" @click="onView()">
             <img  v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
-            <img  v-else class="icon-set-svg" :src="iconChangeRoom"/>
+            <img  v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
         </Button>
         <div class="mr-2 relative">
             <Button type="button" class="h-full border-none border-noround-left" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
@@ -16,6 +16,7 @@
 <script setup>
 import { ref } from 'vue'
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
+import iconChangeRoomOrderlist from '@/assets/svg/icon-bed.svg'
 import iconChangeRoom from '@/assets/svg/change-room-icon.svg'
 
 const iconChangeRoomStatus = ref({
