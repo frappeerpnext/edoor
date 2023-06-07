@@ -61,10 +61,14 @@ const actionClickHandler = async function (e) {
             if (data[0] == "view_guest_detail") {
 
                 showGuestDetail(data[1])
-
             } else if (data[0] == "view_reservation_stay_detail") {
                 showReservationDetail(data[1])
-            }else if(data[0]=="show_alert"){
+
+            } else if (data[0] == "view_reservation_detail") {
+                showReservationDetail(data[1])
+                
+            }
+            else if(data[0]=="show_alert"){
                 toast.add({ severity: 'warn', summary: '', detail: data[1], life: 3000 })
             }
         }
@@ -135,17 +139,10 @@ function showReservationDetail(name) {
         props: {
             header: 'Reservation Detail',
             style: {
-                width: '50vw',
+                width: '80vw',
             },
             maximizable: true,
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
             modal: true
-        },
-        onClose: (options) => {
-            console.log(options)
         }
     });
 }

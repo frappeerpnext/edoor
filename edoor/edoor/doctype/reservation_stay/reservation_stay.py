@@ -70,6 +70,9 @@ class ReservationStay(Document):
 
 		#update stay summayr
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
+		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.rate * x.room_nights)
+
+		self.adr_rate =self.total_room_rate /  (self.room_nights or 1)
 		
 
 
@@ -93,13 +96,24 @@ def update_data_to_reservation(self):
 			sql = """select 
 						min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
 						max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
-						sum(if(is_active_reservation =1,1,0)) as total_stay,
+						count(name) as total_stay,
+						sum(if(is_active_reservation =1,1,0)) as total_active_stay, 
 						sum(if(is_active_reservation =1,adult,0)) as adult, 
 						sum(if(is_active_reservation =1,child,0)) as child ,
+						
+						sum(if(is_active_reservation=1 and reservation_status='In-House',1,0)) as total_checked_in,
+						sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
+						sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
+						sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
+						sum(if(is_active_reservation=0 and reservation_status='Void',1,0)) as total_void,
+						
+						sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
+						sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
+						sum(if(is_active_reservation=1,adr_rate,0)) as total_adr_rate
 
-						sum(if(is_active_reservation=0 and reservation_stataus='Cancel',1,0)) as total_cancel,
-						sum(if(is_active_reservation=0 and reservation_stataus='No Show',1,0)) as total_no_show,
-						sum(if(is_active_reservation=0 and reservation_stataus='Void',1,0)) as total_void
+						
+
+					from `tabReservation Stay`
 					where 
 
 						reservation='{}'
@@ -111,12 +125,24 @@ def update_data_to_reservation(self):
 			#update to reservation 
 			doc_reservation = frappe.get_doc("Reservation", self.reservation)
 			doc_reservation.total_reservation_stay = data[0][ "total_stay"]
+			doc_reservation.total_active_reservation_stay = data[0][ "total_active_stay"]
 			doc_reservation.arrival_date = data[0]["arrival_date"]
 			doc_reservation.departure_date= data[0]["departure_date"]
 			
-			doc_reservation.adult = data[0][ "adult"]
+			doc_reservation.adult = data[
+				0][ "adult"]
 			doc_reservation.child = data[0][ "child"]
-			doc_reservation.room_nights= data[0][ "room_nights"]
+
+			doc_reservation.room_nights= data[0]["room_nights"]
+			doc_reservation.total_room_rate= data[0]["total_room_rate"]
+			doc_reservation.total_adr_rate= data[0]["total_adr_rate"]
+
+			doc_reservation.total_checked_in= data[0]["total_checked_in"]
+			doc_reservation.total_checked_out= data[0]["total_checked_out"]
+			doc_reservation.total_cancelled= data[0]["total_cancelled"]
+			doc_reservation.total_void= data[0]["total_void"]
+			doc_reservation.total_no_show= data[0]["total_no_show"]
+
 
 
 			doc_reservation.update_reservation_stay = False
