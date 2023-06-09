@@ -7,7 +7,7 @@
                         <div class="flex items-center gap-2 ">
                             <Checkbox inputId="isarrivalmode" v-model="stay.require_pickup" :binary="true" :trueValue="1"
                                 :falseValue="0" />
-                            <label for="isarrivalmode" class="text-lg font-semibold cursor-pointer">Require Pickup</label>
+                            <label for="isarrivalmode" class="text-lg font-semibold cursor-pointer">Request Pickup</label>
                         </div>
                     </div>
                     <div class="flex flex-wrap " v-bind:class="{'pointer-events-none opacity-60' : !stay.require_pickup}">
@@ -17,7 +17,7 @@
                             doctype="Transportation Mode" class="auto__Com_Cus w-full"  />
                     </div>
                     <div class="col-6">
-                        <ComInputTime v-model="stay.pickup_time" label="Pickup time" placeholder="Pickup time" />
+                        <ComInputTime v-model="stay.pickup_time" label="Pickup Time" placeholder="Pickup Time" />
                     </div>
                     <div class="col-6">
                         <label for="arrivel_num"> Arrival Flight Number</label>
@@ -50,7 +50,7 @@
                         <div class="flex items-center gap-2">
                             <Checkbox inputId="isdeparturemode" v-model="stay.required_drop_off" :binary="true"
                                 :trueValue="1" :falseValue="0" />
-                            <label for="isdeparturemode" class="text-lg font-semibold cursor-pointer">Required Drop Off</label>
+                            <label for="isdeparturemode" class="text-lg font-semibold cursor-pointer">Request Drop Off</label>
                         </div>
                     </div>
                     <div class="flex flex-wrap " v-bind:class="{'pointer-events-none opacity-60' : !stay.required_drop_off}">
@@ -60,7 +60,7 @@
                                 placeholder="Arrival Mode" doctype="Transportation Mode" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-6">
-                            <ComInputTime v-model="stay.drop_off_time" label="Drop Off time" placeholder="Drop Off time" />
+                            <ComInputTime v-model="stay.drop_off_time" label="Drop Off Time" placeholder="Drop Off Time" />
                         </div>
                         <div class="col-6">
                             <label for="departure_flight_number">Departure Flight Number</label>
@@ -104,8 +104,7 @@ function onSave() {
     isSaving.value = true;
     db.updateDoc("Reservation Stay", stay.value.name, stay.value)
         .then((doc) => {
-            // stay.value = JSON.parse(JSON.stringify(doc))
-            rs.reservationStay = doc
+            rs.reservationStay = JSON.parse(JSON.stringify(doc))
             toast.add({ severity: 'success', summary: 'Update Transportation Mode', detail: "Update transportation mode successfully", life: 3000 })
             dialogRef.value.close();
             isSaving.value = false;

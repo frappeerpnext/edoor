@@ -67,7 +67,7 @@ const data = ref([])
 let dataOptions = ref([])
 let selected = computed({
     get() {
-        return props.modelValue
+        return props.modelValue || null
     },
     set(newValue) {
         return newValue

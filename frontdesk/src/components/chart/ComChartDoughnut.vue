@@ -49,6 +49,7 @@ const chartData = computed(() => {
     let labels = []
     let values = []
     let backgroundColors = []
+    percentage.value.total = 0
     if (props.data.length > 0) {
         props.data.forEach((r) => {
             labels.push(r.label)

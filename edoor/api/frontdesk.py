@@ -83,6 +83,7 @@ def get_mtd_room_occupany(property):
 def get_edoor_setting(property = None):
     currency = frappe.db.get_default("currency")
     housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
+    reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
     
     epos_setting = frappe.get_doc('ePOS Settings')
@@ -93,7 +94,8 @@ def get_edoor_setting(property = None):
             "name":currency,
             "precision":  frappe.db.get_default("currency_precision")
         },
-        "housekeeping_status":housekeeping_status
+        "housekeeping_status":housekeeping_status,
+        'reservation_status':reservation_status
     }
     
     user = get_logged_user()

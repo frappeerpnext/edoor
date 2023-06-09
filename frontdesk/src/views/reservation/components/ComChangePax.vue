@@ -1,11 +1,11 @@
 <template>
-    <ComOverlayPanelContent :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <h1>Change Pax</h1>
+    <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
+        <div class="flex gap-2 my-3">
         <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
             class="child-adults-txt" />
         <InputNumber v-model="stay.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
             class="child-adults-txt" />
-
+        </div>
     </ComOverlayPanelContent>
 </template>     
 <script setup>

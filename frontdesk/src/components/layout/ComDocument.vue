@@ -7,7 +7,7 @@
                     <DataTable :value="data">
                         <Column field="file_url" header="File">
                             <template #body="slotProps"> 
-                                <ComAvatar size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" align="justify-start"/>
+                                <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" align="justify-start"/>
                             </template>
                         </Column>
                         <Column field="title" header="Title"></Column>

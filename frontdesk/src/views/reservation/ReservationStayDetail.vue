@@ -1,13 +1,14 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
-        <div :class="[isPage, 'bg-white']">
 
-            <div class="grid">
-                <div class="col mb-2">
-                    <div class="flex">
+        <div :class="[isPage, 'bg-white']">
+            <div class="flex mb-3 justify-between">
+                
+                <div class="flex items-center">
+                    <div>
                         <span @click="OnViewReservation">
-                            <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="link_line_action">
-                                <span class="link_line_action number_action_line inline-block">{{
+                            <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="link_line_action w-auto">
+                                <span class="number_action_line inline-block">{{
                                     rs.stay.total_reservation_stay
                                 }}</span>
                             </ComTagReservation>
@@ -28,13 +29,21 @@
                             <span v-else>
                                 {{ rs.reservationStay?.rooms }}
                             </span>
-                        </ComTagReservation>
-                        <span class="px-2 rounded-lg me-2 text-white p-1px"
-                            :style="{ background: rs.reservationStay?.status_color }">{{
-                                rs.reservationStay?.reservation_status }}</span>
+                        </ComTagReservation> 
+                        <ComReservationStatus v-if="rs.reservationStay && rs.reservationStay?.reservation_status" :status-name="rs.reservationStay?.reservation_status"/>
                         <span class="px-2 rounded-lg me-2 text-white p-1px"
                             :style="{ background: rs.reservationStay?.status_color }">{{
                                 rs.reservationStay?.reservation_type }}</span>
+                    </div>
+                </div>
+                <div class="flex">
+                    <Button  class="rounded-lg">
+                        <ComIcon icon="iconOpenBrower" style="height:18px;" ></ComIcon>
+                    </Button>
+                    <div class="ms-2" v-if=" rs.stay.total_reservation_stay > 1">
+                    <Button  icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>
+                    <Button  class="border-noround border-rl-ed"> {{ rs.stay.total_reservation_stay }}  </Button>
+                    <Button  class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
                     </div>
                 </div>
             </div>
@@ -54,6 +63,9 @@
                                 </div>
                                 <div class="col-12">
                                     <ComReservationRoomStayList />
+                                </div>
+                                <div class="col-12">
+                                    <ComCommentAndNotice v-if="rs.reservationStay && rs.reservationStay.name" doctype="Reservation Stay" :docname="rs.reservationStay.name"/>
                                 </div>
                             </div>
                         </div>
@@ -78,8 +90,6 @@
                 </TabPanel>
 
             </TabView>
-
-
         </div>
         <template #footer-left>
             <div class="flex flex-col gap-0 justify-around italic min-whidth-modified">
@@ -103,7 +113,7 @@
         </template>
         <template #footer-right>
             <Button @click="onCheckIn" class="bg-green-500"><ComIcon icon="checkin" style="height: 18px;" class="me-2"/>Check In</Button>
-            <Button @click="OnViewReservation">View Reservation <Badge style="font-weight: 600 !important" :value="rs?.stay?.total_reservation_stay"
+            <Button @click="OnViewReservation"><ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge style="font-weight: 600 !important" :value="rs?.stay?.total_reservation_stay"
                     severity="warning"></Badge></Button>
             <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
         </template>
@@ -127,6 +137,7 @@ import ComReservationBusinessSourceAndRate from '@/views/reservation/components/
 import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
 import ComArrivalAndDeparture from './components/ComArrivalAndDeparture.vue';
+import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
 
 const rs = inject('$reservation_stay');
 
@@ -220,6 +231,10 @@ const OnViewReservation = () => {
 <style scoped>
 .p-button {
     border: 0 !important;
+}
+.border-rl-ed{
+    border-right: 1px solid var(--btn-border-color) !important;
+    border-left: 1px solid var(--btn-border-color) !important;
 }
 
 .min-whidth-modified {

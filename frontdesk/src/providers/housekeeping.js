@@ -11,9 +11,10 @@ export default class Housekeeping {
 		this.filter = {}
 		this.selectedRooms = []
 		this.selectredRow = {}
+		this.reservationStay = {}
+		
 		
 	}
-
 	loadData() {
 		let filters = []
 		if (this.filter.selected_room_type && this.filter.selected_room_type.length > 0) {
@@ -43,7 +44,7 @@ export default class Housekeeping {
 		}
 
 		db.getDocList('Room', {
-			fields: ['name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper"],
+			fields: ['name','guest','guest_name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper","reservation_stay"],
 			filters: filters,
 			limit: 1000,
 		})
@@ -52,11 +53,11 @@ export default class Housekeeping {
 				this.room_list =  docs
 				console.log(this.room_list)
 			}
-			)
-			.catch((error) => console.error(error));
+		)
+		.catch((error) => console.error(error));
 
 	}
-
+	
 	updateRoomStatus(room_name, status_name){
 		db.updateDoc('Room', room_name, {
 			housekeeping_status: status_name,

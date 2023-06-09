@@ -32,7 +32,9 @@
   "rate",
   "room_nights",
   "total_amount",
-  "is_manual_rate"
+  "is_manual_rate",
+  "is_active_reservation",
+  "adr"
  ],
  "fields": [
   {
@@ -192,12 +194,23 @@
    "fieldname": "is_manual_rate",
    "fieldtype": "Check",
    "label": "Is Manual Rate"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active_reservation",
+   "fieldtype": "Check",
+   "label": "Is Active Reservation"
+  },
+  {
+   "fieldname": "adr",
+   "fieldtype": "Currency",
+   "label": "ADR"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-06-05 17:26:26.832924",
+ "modified": "2023-06-08 15:41:21.017088",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

@@ -54,7 +54,7 @@
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}">
-                                    <div class="group relative h-full p-1" v-tooltip.bottom="{ value: `
+                                    <div class="group relative h-full p-1" style="height: 36px" v-tooltip.bottom="{ value: `
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
                                         <table>
                                             <tbody>
@@ -181,7 +181,6 @@ const calendarOptions = reactive({
             console.log(error)
         });
     },
-    
     events: function (info, successCallback, failureCallback) {
 
         call.get('edoor.api.frontdesk.get_room_chart_calendar_event', {
@@ -271,7 +270,7 @@ const calendarOptions = reactive({
     }),
     eventMouseEnter: (($event) => {
         eventInfo.data = $event.event;
-        // showTooltip.value = true; 
+        // showTooltip.value = true;
     }),
     eventMouseLeave: (() => {
         showTooltip.value = !showTooltip.value;

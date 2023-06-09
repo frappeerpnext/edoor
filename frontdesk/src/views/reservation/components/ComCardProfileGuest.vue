@@ -6,20 +6,18 @@
       </div>
       <div class="flex-grow-1 overflow-hidden">
          <div @click="onClick"   v-tooltip.top="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>
-         <div v-tooltip.top="phoneNumber1" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > {{  phoneNumber1 ?? "No phone number" }}</div>
-         <div v-tooltip.top="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" >{{ email ?? "No email" }}</div>
+         <div v-tooltip.top="phoneNumber1" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" ><span v-html="phoneNumber1 ?? '<span class=\'font-italic text-gray-400\'>No phone number</span>'"></span></div>
+         <div v-tooltip.top="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > <span v-html="email ?? '<span class=\'font-italic text-gray-400\'>No email adress</span>'"></span></div>
       </div>
       <div class="flex-none" v-if="$slots.end">
          <slot name="end"></slot>
       </div>
    </div>
    <div class="grid gap-2 mt-2 ps-2">
-      <span v-if=" moment(dob).format('DD-MM') == moment().format('DD-MM')" class="bg-green-bt p-2 rounded-xl flex justify-center items-center w-2rem h-2rem">
+      <span v-tooltip.top="name + ' birthday at ' +moment(dob).format('DD-MM-yy')" v-if="dob && (moment(dob).format('DD-MM') == moment().format('DD-MM') || moment(dob).add(-1, 'day').format('DD-MM') == moment().format('DD-MM') )" class="bg-green-bt p-2 rounded-xl flex justify-center items-center w-2rem h-2rem">
          <ComIcon icon="BirthdayIcon" class="w-1rem"></ComIcon>
       </span>
-      <span v-badge.warning="2" class="bg-yellow-tran p-2 rounded-xl flex justify-center items-center w-2rem h-2rem p-overlay-badge cus-badge-a">
-         <i  class="pi pi-car" style="font-size: 1rem"></i>
-      </span>
+      <slot name="footer"></slot>
    </div>
 </div>
 </template>
@@ -53,12 +51,5 @@ const onClick=()=>{
 .bg-green-bt{
    background: #c1e9e1;
 }
-.bg-yellow-tran{
-   background: #f2e1ca;
-}
-.p-badge-no-gutter{
-font-size: 0.7rem;
-height: 1rem;
-line-height: 1rem;
-}
+
 </style>

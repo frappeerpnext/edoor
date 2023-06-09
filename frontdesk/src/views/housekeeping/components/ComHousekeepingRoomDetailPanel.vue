@@ -1,17 +1,21 @@
 <template>
     <div>
        {{ hk.selectedRow }}
-         <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
+      
+         <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" 
+         :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  
+         :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
         </SplitButton>  
     </div>
-
     <Button label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
     <OverlayPanel ref="opHousekeeper">
         <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
         </ComOverlayPanelContent>
     </OverlayPanel>
-
+    {{ hk.reservationStay }}
+    
+    
 </template>
 
 <script setup>
@@ -24,7 +28,6 @@ const visible = ref(false)
 const toast = useToast();
 const opHousekeeper = ref()
 const selected = ref({})
-
 const  submitLoading = ref(false)
 const items = ref([])
 const show = ref()
@@ -43,13 +46,10 @@ if(housekeeping_status.value.length > 0){
          
     });
 }
-
-/// change housekeeping status
+/// change housekeeping status in slidbar
 const toggle = (event) => {
     show.value.toggle(event);
 };
-
-/// change housekeeping status
 function onSelected($event){
     if (!hk.selectedRow) {
     toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select roow to change housekeeping status", life: 3000 })
@@ -73,19 +73,30 @@ function onSelected($event){
     });
 }
 }
-
-// Housekeeper
+// Change housekeeper in slidbar
 function onAssignHousekeeper($event){
     opHousekeeper.value.toggle($event)
 }
-
 function onSaveAssignHousekeeper($event) {
-    alert(selected.value.housekeeper)
+    if(!hk.selectedRow){
+        
+    }else{
     db.updateDoc('Room', hk.selectedRow.name, {
         housekeeper:selected.value.housekeeper,
     })
-    loading.value = true; 
-  
+    .then((doc) =>{
+        hk.selectedRow.housekeeper = doc.housekeeper
+        toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
+        hk.loadData()
+        submitLoading.value = false
+        opHousekeeper.value.hide()
+    })
+    .catch((error) => {
+        submitLoading.value = false
+    }); 
+    } 
 }
-
+function whatup($event){
+    alert("Hello ")
+}
 </script>

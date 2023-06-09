@@ -77,7 +77,9 @@
   "additional_guests",
   "business_source_tab",
   "business_source_type",
-  "business_source"
+  "business_source",
+  "note",
+  "housekeeping_note"
  ],
  "fields": [
   {
@@ -236,6 +238,7 @@
   },
   {
    "fetch_from": "reservation.rate_type",
+   "fetch_if_empty": 1,
    "fieldname": "rate_type",
    "fieldtype": "Link",
    "label": "Rate Type",
@@ -492,11 +495,21 @@
    "fieldname": "drop_off_driver_phone_number",
    "fieldtype": "Data",
    "label": "Phone Number"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "housekeeping_note",
+   "fieldtype": "Small Text",
+   "label": "Housekeeping Note"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-07 09:39:24.570906",
+ "modified": "2023-06-08 14:42:46.713455",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

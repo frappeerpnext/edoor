@@ -1,0 +1,20 @@
+<template lang="">
+    <span v-tooltip.top="(st.require_pickup && st.required_drop_off) ? 'Guests Request Pickup & Drop Off' : ((st.require_pickup) ? 'Guests Request Pickup' : ((st.required_drop_off) ? 'Guests Request Drop Off' : ''))" v-if="st && (st.require_pickup || st.required_drop_off)" v-badge.warning="st.require_pickup + st.required_drop_off" class="bg-yellow-tran p-2 rounded-xl flex justify-center items-center w-2rem h-2rem p-overlay-badge cs-badge-tran">
+        <i class="pi pi-car" style="font-size: 1rem"></i>
+    </span>
+</template>
+<script setup>
+import {inject,computed} from 'vue';
+const rs = inject('$reservation_stay')
+const st = computed(()=>{
+    if(rs){
+        return rs.reservationStay;
+    }
+    return false
+})
+</script>
+<style scoped>
+    .bg-yellow-tran{
+   background: #f2e1ca;
+}
+</style>

@@ -5,10 +5,12 @@ from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
-from frappe.utils import add_to_date
+from frappe.utils import add_to_date,today
 from py_linq import Enumerable
+
 class ReservationStay(Document):
 	def  validate(self):
+ 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
@@ -51,6 +53,7 @@ class ReservationStay(Document):
 		for d in self.stays:
 			d.property = self.property
 			d.reservation_status = self.reservation_status
+			d.is_active_reservation = self.is_active_reservation
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
 			d.guest = self.guest
@@ -65,6 +68,7 @@ class ReservationStay(Document):
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
+
 			#d.total_amount = (d.rate or  0 )* (d.room_nights or 1)
 
 
@@ -115,7 +119,6 @@ def update_data_to_reservation(self):
 
 					from `tabReservation Stay`
 					where 
-
 						reservation='{}'
 					""".format(self.reservation)
 			
@@ -129,8 +132,7 @@ def update_data_to_reservation(self):
 			doc_reservation.arrival_date = data[0]["arrival_date"]
 			doc_reservation.departure_date= data[0]["departure_date"]
 			
-			doc_reservation.adult = data[
-				0][ "adult"]
+			doc_reservation.adult = data[0][ "adult"]
 			doc_reservation.child = data[0][ "child"]
 
 			doc_reservation.room_nights= data[0]["room_nights"]
@@ -142,7 +144,6 @@ def update_data_to_reservation(self):
 			doc_reservation.total_cancelled= data[0]["total_cancelled"]
 			doc_reservation.total_void= data[0]["total_void"]
 			doc_reservation.total_no_show= data[0]["total_no_show"]
-
 
 
 			doc_reservation.update_reservation_stay = False
@@ -187,7 +188,6 @@ def generate_room_occupy_and_rate(self):
 				"pax":self.pax
 			}).insert()
 
-
 			#generate room to reservation room rate
 			frappe.get_doc({
 				"doctype":"Reservation Room Rate",
@@ -198,6 +198,7 @@ def generate_room_occupy_and_rate(self):
 				"date":d,
 				"rate":stay.rate,
 				"rate_type":self.rate_type,
+				"is_manual_rate":stay.is_manual_rate,
 				"property":self.property
 			}).insert()
 

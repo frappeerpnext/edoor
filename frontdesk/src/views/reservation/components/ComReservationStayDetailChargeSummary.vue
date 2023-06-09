@@ -57,7 +57,7 @@
               <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservationStay?.total_charge" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
           </div>
           <div class="text-right w-full mt-2 font-italic">This room charge paid by</div>
-          <div @click="onClick" class="text-right w-full color-purple-edoor text-md font-italic "><span class="link_line_action">{{ rs?.stay?.master_guest?.customer_name_en }}  </span></div>
+          <div @click="onClick" class="text-right w-full color-purple-edoor text-md font-italic "><span  v-tooltip.top="rs?.stay?.master_guest?.customer_name_en.length > 20 ? rs?.stay?.master_guest?.customer_name_en : ''" class="link_line_action overflow-hidden text-overflow-ellipsis">{{ rs?.stay?.master_guest?.customer_name_en }}  </span></div>
         </template>
     </ComReservationStayPanel>
     </div>

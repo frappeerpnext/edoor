@@ -26,6 +26,7 @@
     --bg-gray-10: #f0f0f0;
     --color-gray-100: #c4c4c4;
     --bg-color-teal: #14b8b1;
+    --table-even-cell-color: #f2f2f2;
 
 }
 html {
@@ -263,7 +264,7 @@ button.p-button.btn-date__t {
     top: 63px !important
 }
 
-button.p-button,
+button.p-button:not(.p-0),
 .btn-calendar__t input {
     font-size: 1.1rem !important;
     padding: 0.65rem 0.65rem !important;
@@ -504,6 +505,8 @@ span.p-button-icon.pi.pi-ellipsis-h {
     padding: 0 5px;
     color: var(--bg-purple-cs);
     cursor: pointer;
+    display: inline-block;
+width: 100%;
 }
 
 .td_guest_cs hr {
@@ -521,6 +524,9 @@ span.p-button-icon.pi.pi-ellipsis-h {
 }
 
 .number_action_line {
+    border: 1px dashed var(--bg-purple-cs);
+    border-radius: 10px;
+    color: var(--bg-purple-cs);
     margin-right: -7px;
     padding: 0 8px;
     border-right: 0;
@@ -558,3 +564,15 @@ span.p-button-icon.pi.pi-ellipsis-h {
     height: 10px
 }
 /* END Full calenda css */
+.cs-badge-tran .p-badge.p-badge-warning{
+    font-size: 0.7rem;
+    min-width: 1rem;
+    height: 1rem;
+    line-height: 1rem;
+}
+.ress__list .p-datatable-tbody tr:nth-child(even){
+    background: var(--table-even-cell-color) !important;
+}
+span.p-button-icon.pi.pi-ellipsis-v{
+    font-size: 1.5rem;
+}

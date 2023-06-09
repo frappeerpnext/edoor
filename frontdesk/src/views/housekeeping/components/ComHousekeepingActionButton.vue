@@ -7,7 +7,6 @@
     <div>
         <ComSelect isFilter v-model="selectedStatus" placeholder="Housekeeping Status"
             doctype="Housekeeping Status"  />
-
     </div>
     <template #footer>
         <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" />
@@ -15,8 +14,6 @@
             :loading="submitLoading" />
     </template>
 </Dialog>
-
-
 
 <Button label="Assign Housekeeper" severity="waring" @click="AssingnHousekeeper" />
 

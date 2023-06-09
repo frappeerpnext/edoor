@@ -34,7 +34,7 @@
 </OverlayPanel>
 
 <OverlayPanel ref="opRateType">
-            <ComChangeRateType :reservation="rs?.reservation?.name" :ratetype="rs?.reservationStay?.rate_type" @onClose="closeOverlay" />
+            <ComChangeRateType :reservation_stay="rs?.reservationStay?.name" :rate_type="rs?.reservationStay?.rate_type" @onClose="closeOverlay"   @onSave="onChangeRateType"/>
 </OverlayPanel>
 
 </template>
@@ -68,6 +68,10 @@
         opBusinessSource.value.hide();
     }
 
+    function onChangeRateType(doc){
+        rs.reservationStay = doc
+        opRateType.value.hide();
+    }
 
 
 </script>

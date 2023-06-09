@@ -54,6 +54,11 @@
   "total_active_reservation_stay",
   "total_checked_out",
   "column_break_44",
+  "reserved",
+  "column_break_47",
+  "total_no_show",
+  "total_cancelled",
+  "total_void",
   "room_nights",
   "section_break_44",
   "total_room_rate",
@@ -347,6 +352,34 @@
   {
    "fieldname": "column_break_52",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_47",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_no_show",
+   "fieldtype": "Int",
+   "label": "Total No Show"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_void",
+   "fieldtype": "Int",
+   "label": "Total Void"
+  },
+  {
+   "default": "0",
+   "fieldname": "reserved",
+   "fieldtype": "Int",
+   "label": "Reserved"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_cancelled",
+   "fieldtype": "Int",
+   "label": "Total Cancelled"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -357,7 +390,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-06 14:32:05.166698",
+ "modified": "2023-06-08 11:59:12.504630",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

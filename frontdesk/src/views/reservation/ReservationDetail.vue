@@ -42,6 +42,7 @@
                     </div>
                     <div class="pt-2">
                         <ComReservationDetailRoomList />
+                        <ComCommentAndNotice v-if="rs && rs.reservation" doctype="Reservation" :docname="rs.reservation.name"/>
                     </div>
                 </TabPanel>
                 <TabPanel header="Room Rate">
@@ -70,6 +71,7 @@ import ComReservationDetailBusinessSourceAndRate from '@/views/reservation/compo
 import ComReservationDetailRoomList from '@/views/reservation/components/ComReservationDetailRoomList.vue'
 import ComReservationDetailChargeSummary from '@/views/reservation/components/ComReservationDetailChargeSummary.vue'
 import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
+import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
 
 
 

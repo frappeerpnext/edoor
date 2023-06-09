@@ -4,7 +4,7 @@
           
             <div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation tooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay.reservationStay?.reservation_date)"
+                    <ComBoxStayInformation tooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
                         valueClass="grow"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">

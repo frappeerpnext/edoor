@@ -35,16 +35,30 @@ export function updateDoc(doctype, name, data, message){
     const frappe = new FrappeApp()
     const db = frappe.db()
     return new Promise((resolve, reject)=>{
-        db.updateDoc(doctype, name, data)
-        .then((doc) => {
-            resolve(doc)
-            toaster('success', `${message ? message : 'Update successful'}`)
-        })
-        .catch((error) => {
-            const message = handleServerMessage(error)
-            reject(error)
-            toaster('error', 'Server Error');
-        });
+        if(name){
+            db.updateDoc(doctype, name, data)
+            .then((doc) => {
+                resolve(doc)
+                toaster('success', `${message ? message : 'Update successful'}`)
+            })
+            .catch((error) => {
+                const message = handleServerMessage(error)
+                reject(error)
+                // toaster('error', 'Server Error');
+            });
+        }
+        else{
+            db.createDoc(doctype, data)
+            .then((doc) => {
+                resolve(doc)
+                toaster('success', `${message ? message : 'Update successful'}`)
+            })
+            .catch((error) => {
+                const message = handleServerMessage(error)
+                reject(error)
+                // toaster('error', 'Server Error');
+            });
+        }
     })
 }
 export function deleteDoc(doctype, name, message){
@@ -59,7 +73,7 @@ export function deleteDoc(doctype, name, message){
         .catch((error) => {
             const message = handleServerMessage(error)
             reject(message)
-            toaster('error', 'Server Error');
+            // toaster('error', 'Server Error');
         });
     })
 }

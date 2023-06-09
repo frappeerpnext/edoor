@@ -21,7 +21,7 @@
                     </Column>
             </DataTable>
             </div>
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mt-3">
                 <Button class="border-none" ><ComIcon icon="iconBed" class="me-2" /> Upgrade Room</Button>
             </div>
             

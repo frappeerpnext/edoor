@@ -22,7 +22,7 @@
                 <ComBoxStayInformation title="Location" :value="rs.reservationStay?.pickup_location" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation title="Require Pickup" :value="moment(rs.reservationStay?.pickup_time  ,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
+                <ComBoxStayInformation title="Pickup Time" :value="moment(rs.reservationStay?.pickup_time  ,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
                 </ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
@@ -39,7 +39,7 @@
               </div>
             </div>
             <div v-else class="flex justify-center mt-3">
-                <Button @click="OnSetupForm()" class="font-semibold bg-blue-400 text-xl border-none" iconClass="text-2xl me-2" icon="pi pi-car" label="Setup Arrival Mode"  />
+              <span @click="OnSetupForm()" class="link_line_action text-xl line-height-3 px-3 py-2 text-center bg-white"><i class="pi pi-car text-lg me-2"></i>Setup Arrival Mode</span>
             </div>
             </TabPanel>
             <TabPanel header="Departure">
@@ -55,7 +55,7 @@
                 <ComBoxStayInformation title="Location" :value="rs.reservationStay?.drop_off_location" valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation title="Require Departure" :value="moment(rs.reservationStay?.drop_off_time,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
+                <ComBoxStayInformation title="Drop Off Time" :value="moment(rs.reservationStay?.drop_off_time,'HH:mm:ss').format('h:mm a')" valueClass="col-7" titleClass="grow">
                 </ComBoxStayInformation>
               </div>
               <div class="flex mt-2 gap-2">
@@ -72,7 +72,7 @@
               </div>
             </div>
             <div v-else class="flex justify-center mt-3">
-                <Button @click="OnSetupForm()" class="font-semibold bg-blue-400 text-xl border-none" iconClass="text-2xl me-2" icon="pi pi-car" label="Setup Departure Mode"  />
+              <span @click="OnSetupForm()" class="link_line_action text-xl line-height-3 py-2 text-center px-3 bg-white"><i class="pi pi-car text-lg me-2"></i>Setup Departure Mode</span>
             </div>
             </TabPanel>
           </TabView>

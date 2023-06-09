@@ -118,6 +118,7 @@ def add_new_fit_reservation(doc):
             "reservation_status":"Reserved",
             "arrival_time":reservation.arrival_time,
             "departure_time":reservation.departure_time,
+            "note":reservation.note,
             "stays":[
                 {
                     "doctype":"Reservation Stay Room",
@@ -128,6 +129,7 @@ def add_new_fit_reservation(doc):
                     "reservation_status":"Reserved",
                     "start_time":reservation.arrival_time,
                     "end_time":reservation.departure_time,
+                    "is_manual_rate":d["is_manual_rate"]
                 }
             ]
         }
@@ -323,4 +325,37 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
 
 @frappe.whitelist(methods="POST")
 def change_rate_type(reservation=None, reservation_stay=None, rate_type = None, apply_to_all_stay = None):
-    return "sucess"
+    if reservation:
+        return "sucess"
+    else:
+        #udpate to reservation room rate
+
+        stay = frappe.get_doc("Reservation Stay", reservation_stay)
+        stay.rate_type = rate_type
+        #disable update to reservation when update stay
+        stay.update_reservation = False
+        
+
+        stay.save()
+        
+        frappe.db.commit()
+        return stay
+
+
+@frappe.whitelist()
+def get_current_room_reservation(room_id):
+
+    sql = "select parent from `tabReservation Stay Room` where room_id='{}' and '{}' between start_date and end_date and is_active_reservation=1"
+    sql = sql.format(room_id,frappe.utils.today() )
+    data = frappe.db.sql(sql, as_dict=1)
+
+@frappe.whitelist()
+def get_reservation_comment_note(doctype, docname):
+    sql = """
+        SELECT `name`, creation, reference_doctype, reference_name,`owner`, content, 'Notice' AS note_type FROM `tabFrontdesk Note` WHERE reference_doctype ='{0}' AND reference_name = '{1}'
+        UNION
+        SELECT `name`, creation, reference_doctype, reference_name,comment_by AS owner, content, 'Comment' AS note_type FROM `tabComment` WHERE comment_type = 'Comment' AND reference_doctype ='{0}' AND reference_name = '{1}'
+    """
+    sql = sql.format(doctype, docname)
+    data = frappe.db.sql(sql, as_dict=1)
+    return data

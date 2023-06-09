@@ -1,56 +1,63 @@
-<template> 
+<template>
+    <div>
+        <DataTable v-model:selection="hk.selectedRooms" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
+            @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
+            <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+            <Column field="room_number" header="Room #"></Column>
+            <Column field="room_type" header="Room Type"></Column>
+            <Column field="room_type" header="Room Type"></Column>
 
-<div> 
-  
-    <DataTable 
-        v-model:selection="hk.selectedRooms" 
-        dataKey="name" 
-        :value="hk.room_list" 
-        @row-dblclick="onDblClick" 
-        @row-click="onRowSelect"  
-        tableStyle="min-width: 50rem"
-        paginator :rows="20" :rowsPerPageOptions="[20, 50,100]"
-    >
-        <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-        <Column field="room_number" header="Room #"></Column>
-        <Column field="room_type" header="Room Type"></Column>
-        <Column field="room_type" header="Room Type"></Column>
-
-
-        <Column field="housekeeper" header="Housekeeper">
-            <template #body="slotProps">
-                <Button @click="onAssignHousekeeper($event,slotProps.data)" :label="slotProps.data.housekeeper" link size="small" icon="pi pi-pencil" iconPos="right"></Button>
-            </template>
-        </Column>
-    </DataTable>
-    <OverlayPanel ref="opHousekeeper">
-        <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
-            <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
-        </ComOverlayPanelContent>
-    </OverlayPanel>
+            <Column field="guest_name" header="Guest Name">
+                <template #body="slotProps">
+                    <Button v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                        {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
+                    </Button>
+                </template>
+            </Column>
 
 
-    <Column field="housekeeping_status" header="Status" class="text-left">
- 
+            <Column field="housekeeper" header="Housekeeper">
+                <template #body="slotProps">
+                    <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
+                        size="small" icon="pi pi-pencil" iconPos="right"></Button>
+                </template>
+            </Column>
+        </DataTable>
+        <OverlayPanel ref="opHousekeeper">
+            <ComOverlayPanelContent :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
+                @onSave="onSaveAssignHousekeeper">
+                <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper"
+                    doctype="Housekeeper" />
+            </ComOverlayPanelContent>
+        </OverlayPanel>
+
+
+
+
+        <Column field="housekeeping_status" header="Status" class="text-left">
+
             <template #body="slotProps">
                 <!-- <Tag :value="slotProps.data.housekeeping_status" :style="{ background: slotProps.data.status_color }"></Tag>  -->
-                <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data"/>
+                <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data" />
             </template>
         </Column>
 
-    <Sidebar v-model:visible="visibleRight" position="right">
-       <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
+        <Sidebar v-model:visible="visibleRight" position="right">
+            <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
 
-    </Sidebar>
+        </Sidebar>
 
-</div>
+    </div>
 </template>
 
 <script setup>
 
-import { ref,inject,toaster } from '@/plugin';
+import { ref, inject, toaster } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
-import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue'; 
+import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
+import { useDialog } from 'primevue/usedialog';
+import GuestDetail from "@/views/guest/GuestDetail.vue"
+const dialog = useDialog();
 const loading = ref(false)
 const selected = ref({
     room: '',
@@ -61,23 +68,24 @@ const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
 const call = frappe.call()
 const visibleRight = ref(false);
+const db = frappe.db()
 
-function onSelected(room,status){
-    hk.updateRoomStatus(room,status)
+function onSelected(room, status) {
+    hk.updateRoomStatus(room, status)
 }
-function onAssignHousekeeper($event, r){
+function onAssignHousekeeper($event, r) {
     selected.value.housekeeper = r.housekeeper || ''
     selected.value.room = r.name || ''
     opHousekeeper.value.toggle($event)
 }
 
 function onSaveAssignHousekeeper() {
-    loading.value = true; 
+    loading.value = true;
     call.post("edoor.api.housekeeping.update_housekeeper", {
         rooms: selected.value.room,
         housekeeper: selected.value.housekeeper
     }).then((result) => {
-        toaster('success','Change housekeeping successfully')
+        toaster('success', 'Change housekeeping successfully')
         hk.loadData()
         opHousekeeper.value.hide()
         loading.value = false
@@ -86,14 +94,46 @@ function onSaveAssignHousekeeper() {
     })
 }
 
-function onRowSelect(r){
+function onRowSelect(r) {   
+    console.log(r)
     hk.selectedRow = r.data
     visibleRight.value = true
-    
+    if(hk.selectedRow.reservation_stay){
+        db.getDoc('Reservation Stay', hk.selectedRow.reservation_stay)
+        .then((doc) => {
+            hk.reservationStay = doc
+        })
+        .catch((error) => console.error(error));
+    }
+    else{
+        hk.reservationStay = {} 
+    }
+
 }
 
-function onDblClick(r){
-    alert("you double click on row: " + r.data.room_number) 
+function onDblClick(r) {
+    alert("you double click on row: " + r.data.room_number)
+}
+function onViewCustomerDetail(name) {
+    const dialogRef = dialog.open(GuestDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Guest Detail',
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true
+        },
+        onClose: (options) => {
+            console.log(options)
+        }
+    });
 }
 
 </script>

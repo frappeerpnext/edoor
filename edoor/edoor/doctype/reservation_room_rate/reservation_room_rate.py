@@ -1,12 +1,20 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+
+from edoor.api.reservation import get_room_rate
 import frappe
 from frappe.model.document import Document
 
 class ReservationRoomRate(Document):
 	def validate(self):
+		
 		self.rate =float( self.rate or 0)
+		if not self.is_manual_rate:
+			#get_room_rate(property, rate_type, room_type, business_source, date):
+			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:
+				self.rate = get_room_rate(self.property, self.rate_type, self.room_type,self.business_source,self.date)	
+
 		self.discount = self.discount or 0
 		
 		if self.discount_type=="Percent":

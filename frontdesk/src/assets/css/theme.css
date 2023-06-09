@@ -7300,3 +7300,14 @@
 .button.p-button {
   border-radius: .5rem !important;
 }
+span.p-inputnumber.p-component.p-inputwrapper.p-inputwrapper-filled.p-inputnumber-buttons-stacked {
+  max-height: 3rem;
+}
+span.p-column-title {
+  font-size: 13px;
+  font-weight: 600 !important;
+}
+.report-list tbody tr:first-child td{
+  font-size: 13px;
+  font-weight: 600 !important;
+}
