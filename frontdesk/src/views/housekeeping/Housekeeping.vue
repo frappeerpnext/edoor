@@ -32,6 +32,9 @@
             <ComHousekeepingRoomList v-if="hk.view_type=='table'"/>
             <ComHousekeepingRoomKanbanView v-else/>
         </div>
+        <!-- <div class="col-2">
+            detail
+        </div> -->
     </div>
     <table style="width:100%; border: solid 1px #ccc;">
     <!-- <tr>

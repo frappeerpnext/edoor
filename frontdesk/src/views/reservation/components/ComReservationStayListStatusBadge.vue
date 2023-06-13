@@ -1,6 +1,7 @@
 <template>
     <div v-if="setting.reservation_status && lists.length > 0" class="flex flex-wrap gap-3"> 
         <div v-for="(i, index) in lists" :key="index">
+            <!-- {{ i }} -->
             <div class="grow p-2 border-round-lg text-white border-none cursor-pointer" :style="[{ background: hexToRgbA(i.color, .3)}]">
                 <div class="flex justify-center align-items-center h-full" :style="[{ color: i.color}]">
                     <div>
@@ -59,7 +60,7 @@ if(setting && setting.reservation_status.length > 0 && rs && rs.reservation){
     
 }
 
-function hexToRgbA(hex, alpha){
+const hexToRgbA = (hex, alpha) => {
     let color;
     if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
         color= hex.substring(1).split('');

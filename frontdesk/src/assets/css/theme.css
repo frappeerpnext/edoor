@@ -1487,9 +1487,9 @@
 }
 
 .p-multiselect.p-multiselect-chip .p-multiselect-token {
-  padding: 0.375rem 0.75rem;
+  padding: 0.1rem 0.75rem;
   margin-right: 0.5rem;
-  background: #dee2e6;
+  background: var(--bg-tb-color);
   color: #495057;
   border-radius: 16px;
 }
@@ -5209,7 +5209,7 @@
 }
 
 .p-overlaypanel .p-overlaypanel-content {
-  padding: 1.25rem;
+  padding: 1rem 1rem;
 }
 
 .p-overlaypanel .p-overlaypanel-close {

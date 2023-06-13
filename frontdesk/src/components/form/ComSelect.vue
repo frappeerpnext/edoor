@@ -1,7 +1,7 @@
 <template>
-    <MultiSelect v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+    <MultiSelect display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
         :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
-        @update:modelValue="onUpdate" :placeholder="placeholder" />
+        @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
     <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
         :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
         :placeholder="placeholder" />
@@ -57,7 +57,8 @@ const props = defineProps({
     default: {
         type: Boolean,
         default: false
-    }
+    },
+    maxSelectLabel: Number
 })
 const toast = useToast();
 const frappe = inject('$frappe')

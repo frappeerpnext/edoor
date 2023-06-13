@@ -2,7 +2,7 @@
     <div>
         <div class="grid">
             <div class="col-12">
-                <div class="w-full">
+                <div class="w-full"> 
                     <div v-if="note" class="link_line_action_res_note px-3">
                         <div class="pt-2 pb-3 text-color-black" >
                             <div class="">
@@ -11,8 +11,7 @@
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onReseravationNote($event, 'note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Create by:</span><span class="text-500 font-italic"> Adminstrator 09-06-2023 12:30 AM,</span>
-                                    <span class="font-italic"> Last Modified:</span><span class="text-500 font-italic"> Adminstrator 09-06-2023 12:30 AM</span>
+                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ reservation_note.note_by }} {{ gv.datetimeFormat(reservation_note.modified) }}</span>
                                 </div>
                             </div>
                             <hr class="my-2">
@@ -37,8 +36,7 @@
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onReseravationNote($event, 'housekeeping_note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Create by:</span><span class="text-500 font-italic"> Adminstrator 09-06-2023 12:30 AM,</span>
-                                    <span class="font-italic"> Last Modified:</span><span class="text-500 font-italic"> Adminstrator 09-06-2023 12:30 AM</span>
+                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ housekeeping.note_by }} {{ gv.datetimeFormat(housekeeping.note_modified) }}</span>
                                 </div>
                             </div>
                             <hr class="my-2">
@@ -91,9 +89,19 @@ const props = defineProps({
 })
 const reservation = inject('$reservation')
 const reservation_stay = inject('$reservation_stay')
+const gv = inject('$gv')
 const saving = ref(false)
 const op = ref()
 const housekeeping_note = ref('')
+const housekeeping = ref({
+    note_by: '',
+    note_modified: ''
+})
+const reservation_note = ref({
+    note_by: '',
+    note_modified: ''
+})
+
 const note = ref('')
 const reservationName = ref('')
 const docname = ref('')
@@ -106,7 +114,11 @@ const dataUpdate = ref({
     is_apply_reseration: false,
     updating: 'note',
     note: '',
-    housekeeping_note: ''
+    note_by: '',
+    note_modified: '',
+    housekeeping_note: '',
+    
+
 })
 
 function onReseravationNote($event, updating) {
@@ -146,7 +158,13 @@ onMounted(() => {
 function updateDisplayNote() {
     if (props.doctype == 'Reservation Stay') {
         note.value = reservation_stay?.reservationStay?.note || ''
+        reservation_note.value.note_by = reservation_stay?.reservationStay?.note_by || ''
+        reservation_note.value.note_modified = reservation_stay?.reservationStay?.note_modified || ''
+
         housekeeping_note.value = reservation_stay?.reservationStay?.housekeeping_note || ''
+        housekeeping.value.note_by = reservation_stay?.reservationStay?.housekeeping_note_by || ''
+        housekeeping.value.note_modified = reservation_stay?.reservationStay?.housekeeping_note_modified || ''
+
         reservationName.value = reservation_stay.reservation.name || ''
         docname.value = reservation_stay.reservationStay.name || ''
         totalStay.value = reservation_stay.total_reservation_stay || 0

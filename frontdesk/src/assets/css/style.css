@@ -647,9 +647,20 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .filtr-rmm-list .p-multiselect-label.p-placeholder {
     padding: 0.5rem !important;
 } 
-.filtr-rmm-list.p-multiselect{
-    border: 0 !important;
+.filtr-rmm-list .p-multiselect{
+    border-radius: .5rem;
+    background: #fff !important;
 }
-.filtr-rmm-list .p-multiselect.p-multiselect-chip .p-multiselect-token{
-    padding: 0.1rem 0.75rem !important;
+.hkpanel .p-sidebar-mask.p-sidebar-right.p-component-overlay.p-component-overlay-enter.p-sidebar-visible {
+    pointer-events: none !important;
 }
+.rte_message .p-message{
+    margin: 0;
+}
+/* .fc .fc-timeline-event-harness, .fc .fc-timeline-more-link{
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+}
+.fc .fc-timeline-lane-frame{
+    height: 34px !important;
+} */

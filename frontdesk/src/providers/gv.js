@@ -43,5 +43,7 @@ export default class Gv {
 	dateFormat(date) {
 		return moment(date).format("DD-MM-YYYY")
 	}
-	
+	datetimeFormat(datetime) {
+		return moment(datetime).format("DD-MM-yy h:mm:ss A")
+	}
 }

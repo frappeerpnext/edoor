@@ -5,14 +5,14 @@
                 <div class="flex justify-end">
                     <div>
                         <div class="card flex justify-content-center">
-                            <MultiSelect v-model="selecteds" display="chip" :options="rs.reservationStays" optionLabel="reservation_status" placeholder="Select Status"
-                                :maxSelectedLabels="3" class="w-full md:w-20rem bg-white border-round-lg filtr-rmm-list"/>
+                            <div class="filtr-rmm-list">
+                                <ComSelect placeholder="filter by status" v-model="selectStatus" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="room-stay-list ress__list text-center mt-4">
-                    {{selecteds}}
-                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="rs.reservationStays" tableStyle="min-width: 50rem">
+                <div class="room-stay-list ress__list text-center mt-3">
+                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="arrival_date" header="Arrival"></Column>
                         <Column field="departure_date" header="Departure"></Column>
@@ -93,13 +93,13 @@
                         </Button>
                         <Button class="border-none" label="Edit Booking" icon="pi pi-file-edit" />
                     </div>
-                </div>
+                </div>  
             </ComPlaceholder>
         </template>
     </ComReservationStayPanel>
 </template>
 <script setup>
-import {inject,ref} from '@/plugin'
+import {inject,ref,onMounted} from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
@@ -110,6 +110,11 @@ import AddRoomIcon from '@/assets/svg/icon-add-plus-sign.svg'
 const moment = inject('$moment')
 const rs = inject("$reservation")
 const selecteds = ref([])
+const roomList = ref(JSON.parse(JSON.stringify(rs.reservationStays)))
+console.log(roomList.value)
+const selectStatus = ref()
+
+const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 
 const items = [
     {
@@ -127,6 +132,28 @@ const items = [
         }
     },
 ];
+
+function onFilterSelectStatus(r){
+    getRoomList(r)
+}
+
+function getRoomList(filter){
+    if(filter && filter.length > 0){
+        var list = []
+        filter.forEach(f => {
+            const data = rs.reservationStays.filter(r=>r.reservation_status == f.name)
+            if(data.length > 0){
+                data.forEach((d)=>{
+                    list.push(d)
+                })
+            }
+            
+        });
+        roomList.value = list;
+    }else{
+        roomList.value = rs.reservationStays
+    }
+}
  
 </script>
 <style scoped>

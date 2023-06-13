@@ -6,7 +6,7 @@
             <Column field="room_number" header="Room #"></Column>
             <Column header="Status">
                 <template #body="{ data }">
-                    <span class="py-1 px-3 rounded-xl text-white" :style="{ background: data.status_color }">
+                    <span class="py-1 px-3 rounded-xl text-white white-space-nowrap " :style="{ background: data.status_color }">
                         {{ data.housekeeping_status }}
                     </span> 
                 </template>
@@ -15,7 +15,7 @@
 
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
-                    <Button v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                    <Button class="color-purple-edoor" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
                     </Button>
                 </template>
@@ -46,11 +46,11 @@
                 <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data" />
             </template>
         </Column>
-        <Sidebar v-model:visible="visibleRight" position="right">
+        <div class="hkpanel">
+        <Sidebar :dismissable="false" v-model:visible="visibleRight" position="right">
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
-
         </Sidebar>
-
+        </div>
     </div>
 </template>
 
@@ -97,7 +97,6 @@ function onSaveAssignHousekeeper() {
         loading.value = false
     })
 }
-
 function onRowSelect(r) {   
     console.log(r)
     hk.selectedRow = r.data
@@ -139,5 +138,9 @@ function onViewCustomerDetail(name) {
         }
     });
 }
-
 </script>
+<style scoped>
+.p-sidebar-mask.p-component-overlay{
+    pointer-events:none !important;
+}
+</style>

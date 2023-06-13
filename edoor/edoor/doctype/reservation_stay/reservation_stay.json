@@ -88,10 +88,16 @@
   "business_source_tab",
   "business_source_type",
   "business_source",
-  "note",
-  "housekeeping_note",
   "is_master",
-  "room_type_alias"
+  "room_type_alias",
+  "notice_tab",
+  "note_by",
+  "note_modified",
+  "note",
+  "column_break_87",
+  "housekeeping_note_by",
+  "housekeeping_note_modified",
+  "housekeeping_note"
  ],
  "fields": [
   {
@@ -576,11 +582,42 @@
    "fieldname": "room_type_alias",
    "fieldtype": "Data",
    "label": "Room Type Alias"
+  },
+  {
+   "fieldname": "notice_tab",
+   "fieldtype": "Tab Break",
+   "label": "Notice"
+  },
+  {
+   "fieldname": "note_by",
+   "fieldtype": "Link",
+   "label": "Note By",
+   "options": "User"
+  },
+  {
+   "fieldname": "note_modified",
+   "fieldtype": "Datetime",
+   "label": "Note Modified"
+  },
+  {
+   "fieldname": "column_break_87",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "housekeeping_note_by",
+   "fieldtype": "Link",
+   "label": "Housekeeping Note By",
+   "options": "User"
+  },
+  {
+   "fieldname": "housekeeping_note_modified",
+   "fieldtype": "Datetime",
+   "label": "Housekeeping Note Modified"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-12 14:20:34.637027",
+ "modified": "2023-06-13 11:31:06.673203",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

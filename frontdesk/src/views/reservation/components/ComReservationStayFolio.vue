@@ -1,9 +1,11 @@
 <template>
     <Button @click="onAddCharge">Add Charge</Button>
-    <Button>Add Payment</Button>
 
-    <Button v-for="(item, index) in data" :key="index" @click="onClick(item.name)">{{ item.name }}</Button>
+    <Button>Add Payment</Button>
+    <Button :severity="item.name == selectedFolioNumber ? 'warning' : 'primary'" v-for="(item, index) in data" :key="index"
+        @click="onClick(item.name)">{{ item.name }} master: {{ item.is_master }}</Button>
     <DataTable :value="folioTransactionDetail" tableStyle="min-width: 50rem">
+        <Column field="name" header="Name "></Column>
         <Column field="posting_date" header="Posting Date">
             <template #body="slotProps">
                 <span>{{ moment(slotProps.folioTransactionDetail?.posting_date).format("DD/MM/YYYY") }}</span>
@@ -27,28 +29,40 @@ const data = ref([])
 const folioTransactionDetail = ref([])
 const db = frappe.db();
 const dialog = useDialog();
+const selectedFolioNumber = ref("")
 
 db.getDocList('Reservation Folio', {
+    fields: ["name", "is_master"],
     filters: [['reservation_stay', '=', rs.reservationStay?.name]],
 })
     .then((doc) => {
         data.value = doc
+        const masterFolio = doc.find(r => r.is_master == 1)
+        if (masterFolio == undefined) {
+            if (doc.length > 0) {
+                onClick(doc[0].name)
+            }
+        } else {
+            onClick(masterFolio.name)
+        }
+
     })
     .catch((error) => console.error(error));
 
 
 
 function onClick(name) {
-
+    selectedFolioNumber.value = name
     db.getDocList('Folio Transaction', {
 
-        fields: ['posting_date'],
-        fields: ['cashier_shift'],
-        fields: ['account_code'],
-        fields: ['account_name'],
-        fields: ['type'],
-        fields: ['amount'],
-
+        fields: [
+            'name',
+            'posting_date',
+            'cashier_shift',
+            'account_code',
+            'account_name',
+            'type',
+            'amount'],
         filters: [
             ['folio_number', '=', name]
         ]
@@ -60,8 +74,10 @@ function onClick(name) {
 }
 
 function onAddCharge() {
-
     const dialogRef = dialog.open(ComAddFolioTransaction, {
+        data: {
+            folio_number: selectedFolioNumber.value
+        },
         props: {
             header: 'Add Change',
             style: {

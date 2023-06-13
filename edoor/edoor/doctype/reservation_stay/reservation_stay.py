@@ -5,9 +5,10 @@ from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
-from frappe.utils import add_to_date,today
+from frappe.utils import add_to_date,today,now
 from py_linq import Enumerable
 from edoor.api.utils import update_reservation
+ 
 class ReservationStay(Document):
 	def  validate(self):
  
@@ -83,15 +84,21 @@ class ReservationStay(Document):
 
 
 		#update note & housekeeping note
-		
 		if self.is_new():
-			frappe.throw(str('new'))
+			if self.note:
+				self = update_note(self=self)
+			if self.housekeeping_note:
+				self = update_housekeeping_note(self=self)
 		else:
 			if self.note:
 				note = frappe.db.get_value('Reservation Stay', self.name,'note')
-				frappe.throw(str(frappe.user))
-				#if self.note != note:
-					#self.note_by = frappe.user
+				if self.note != note:
+					self = update_note(self=self)
+				
+			if self.housekeeping_note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
+				if self.housekeeping_note != note:
+					self = update_housekeeping_note(self=self)
 
 	def after_insert(self):
 		generate_room_rate(self)
@@ -101,6 +108,16 @@ class ReservationStay(Document):
 	def on_update(self):
 		if  hasattr(self,"update_reservation_stay") and self.update_reservation_stay:
 			update_reservation(self.reservation)
+
+def update_note(self):
+	self.note_by = frappe.session.user
+	self.note_modified = now()
+	return self
+
+def update_housekeeping_note(self):
+	self.housekeeping_note_by = frappe.session.user
+	self.housekeeping_note_modified = now()
+	return self
 
 def generate_room_occupy(self):		
 	dates = get_date_range(self.arrival_date, self.departure_date)

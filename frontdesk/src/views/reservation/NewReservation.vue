@@ -229,9 +229,11 @@
         </div>
         <OverlayPanel ref="op">
             <label>Change Rate</label>
-            <Message>If you change room rate here. <br/>This room will stop automatically get rate from rate plan. <br/>
-            To use rate from Rate Plan, click on button Update New Rate
-            </Message>
+            <div class="rte_message">
+                <Message>If you change room rate here. <br/>This room will stop automatically get rate from rate plan. <br/>
+                To use rate from Rate Plan, click on reverse button
+                </Message>
+            </div>
             <div class="flex gap-2 mt-3">
                 <div class="ch__rate_nres relative border-round-lg overflow-hidden">
                     <div @click="onUseRatePlan" v-tooltip.top="'Reverse to Rate Plan'" class="cursor-pointer absolute h-full w-3rem border-y-1 border-round-y border-round-left border-left-1" style="background: var(--bg-input-field);border-color: #a0bde0;">
@@ -245,7 +247,6 @@
                     <Button @click="onChangeRate" icon="pi pi-file-edit" label="Update New Rate" class="border-none cursor-pointer"/>
                 </div>
             </div>
-            <!-- <Button @click="onUseRatePlan">Use Rate Plan</Button> -->
         </OverlayPanel>
 
     </ComDialogContent>

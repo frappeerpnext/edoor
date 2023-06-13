@@ -15,6 +15,7 @@
                 doctype="Room Type"></ComSelect>
     <ComSelect :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
+        {{ hk.filter.selected_housekeeping_status }}
     <ComSelect isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
         @onSelected="onSearch" />
 </template>

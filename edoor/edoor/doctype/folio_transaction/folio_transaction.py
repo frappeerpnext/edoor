@@ -3,10 +3,30 @@
 
 import frappe
 from frappe.model.document import Document
-
+from edoor.api.frontdesk import get_working_day
 class FolioTransaction(Document):
 	def validate(self):
-		frappe.throw(self.rate_include_tax)
+		
+
+		#validate working day 
+		if self.is_new():
+			working_day = get_working_day(self.property)
+			if not working_day["name"]:
+				frappe.throw("Please start working")
+			
+			if not working_day["cashier_shift"]["name"]:
+				frappe.throw("Please start cashier shift")
+			
+
+			self.working_day = working_day["name"]
+			self.working_date = working_day["date_working_day"]
+			self.cashier_shift = working_day["cashier_shift"]["name"]
+		
+		self.discount = self.discount if self.discount >0 else 0
+
+		if self.discount_type =="Percent" and self.discount>100:
+			frappe.throw("Discount percent cannot greater than 100%")
+
 		self.input_amount =float( self.input_amount or 0)
 		self.quantity=float( self.quantity or 1)
  
@@ -18,6 +38,8 @@ class FolioTransaction(Document):
 			 
 		else:
 			self.discount_amount = self.discount or 0 
+
+	
 
 		if self.tax_rule:
 
@@ -49,7 +71,9 @@ class FolioTransaction(Document):
 			self.tax_3_amount = self.taxable_amount_3 * tax_rule.tax_3_rate / 100
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 			
-
+		if self.discount_amount> self.amount:
+			frappe.throw("Discount amount cannot greater than amount")
+		
 		self.bank_fee = self.bank_fee or 0
 		self.bank_fee_amount = self.amount * self.bank_fee / 100
 		

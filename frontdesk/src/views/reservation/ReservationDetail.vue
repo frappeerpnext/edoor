@@ -20,9 +20,9 @@
                             </div>
                         </div>
                         <div>
-                            <Button @click="onRoute" v-if="!isPage"  class="rounded-lg border-none">
-                                <ComIcon icon="iconOpenBrower" style="height:18px;" ></ComIcon>
-                            </Button>
+                            <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="h-3rem rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link>
+                                <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                     <div class="pt-2">
-                        <ComReservationDetailRoomList />
+                        <ComReservationDetailRoomList v-if="!rs.loading"/>
                     </div>
                     <div class="pt-3">
                         <div class="border-round-xl">
@@ -78,10 +78,15 @@
 
             </TabView>
         </div>
+        <template #footer-left>
+            <Button @click="onAuditTrail">
+                <i class="pi pi-history me-2"></i>Audit Trail
+            </Button>
+        </template>
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted, computed, useToast, useRoute,onUnmounted } from '@/plugin'
+import { inject, ref, onMounted, computed, useToast, useRoute,onUnmounted ,useDialog} from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 import ComReservationDetailGuestInfo from '@/views/reservation/components/ComReservationDetailGuestInfo.vue'
@@ -92,6 +97,7 @@ import ComReservationDetailChargeSummary from '@/views/reservation/components/Co
 import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
 import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
 import ComReservationNote from './components/ComReservationNote.vue';
+import ComAuditTrail from '../../components/layout/components/ComAuditTrail.vue';
 
 const route = useRoute()
 const frappe = inject("$frappe")
@@ -105,6 +111,7 @@ const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const name = ref("")
+const dialog = useDialog()
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
 })
@@ -129,6 +136,29 @@ function onRoute(){
 }
 function onClose(){ 
     dialogRef.value.close()
+}
+function onAuditTrail() {
+    const dialogRef = dialog.open(ComAuditTrail, {
+        data: {
+            doctype: 'Reservation',
+            docname: name.value
+        },
+        props: {
+            header: 'Audit Trail',
+            style: {
+                width: '75vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+            //
+        }
+    });
 }
 //check in
 const onCheckIn = () => {

@@ -37,15 +37,14 @@
                 </div>
 
                 <div class="flex gap-2">
+                        
                     <Button>Is Master Room {{ rs.reservationStay.is_master }}</Button>
-                    <span @click="onRefresh" v-tooltip.top="'Refresh'" :loading="rs?.loading" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center">
-                        <icon class="pi pi-refresh font-semibold text-lg" style="color:var(--bg-purple-cs);"></icon>
-                    </span>
-                    <span @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center">
+                    <button @click="onRefresh" v-tooltip.top="'Refresh'" :loading="rs?.loading" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link><icon class="pi pi-refresh font-semibold text-lg" style="color:var(--bg-purple-cs);"></icon></button>
+                    <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link>
                         <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
-                    </span>
+                    </button>
                     <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
-                    <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
+                    <Button  v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
                             :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
                             class="border-noround-right border-y-none border-left-none">
                     </Button>
@@ -97,36 +96,34 @@
                                         <div>
                                              <span class="italic">Created by: </span> 
                                              <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                                {{ rs.reservationStay?.owner }} {{gv.datetimeFormat(rs.reservation?.creation) }}
                                              </span> 
                                         </div>
                                         <div>
                                              <span class="italic">Last Modified: </span>
                                              <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservationStay?.modified).format('DD-MM-yyyy h:mm a') }}
+                                                {{ rs.reservationStay?.modified_by }} {{ gv.datetimeFormat(rs.reservation?.modified) }}
                                              </span>
                                         </div>
                                         <div>
                                             <span class="italic">Checked-out by: </span>
                                             <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                                {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
                                             </span>
                                         </div>
                                         <div>
                                             <span class="italic">Checked-in by: </span>
                                             <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                                {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
                                             </span>
                                         </div>
                                     </div>
                             </div>
+
                         </div>
                     </div>
                 </TabPanel>
+
                 <TabPanel header="Room Rate">
                     <ComReservationStayRoomRate />
                 </TabPanel>
@@ -148,7 +145,7 @@
                 <i class="pi pi-history me-2"></i>Audit Trail
             </Button>
             <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
-            <Button @click="OnViewReservation">
+            <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
                     style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
                 </Badge>
@@ -159,7 +156,7 @@
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
             </Button>
             <Button @click="onCheckIn" class="bg-red-400">
-                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check Out
+                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
             </Button>
         </template>
 
@@ -202,6 +199,7 @@ const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+const gv = inject('$gv');
 
 const name = ref("")
 

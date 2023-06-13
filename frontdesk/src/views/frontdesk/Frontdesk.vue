@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
-                        <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
+                        <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full" @eventAfterAllRender="onEventAfterAllRender">
                             <template v-slot:eventContent="{event}">
                                     <div class="group relative h-full p-1" style="height: 36px" v-tooltip.bottom="{ value: `
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
@@ -81,7 +81,7 @@
 <script setup>
 import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, computed } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
-import FullCalendar from '@fullcalendar/vue3'
+import FullCalendar, { compareByFieldSpec } from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
@@ -542,6 +542,9 @@ const onRefresh = () => {
 //     const cal = fullCalendar.value.getApi()
 //     cal.setOption('resourceOrder', '-sort_order')
 //   }
+function onEventAfterAllRender(){
+    alert()
+}
 function showReservationStayDetail(name) {
 
     const dialogRef = dialog.open(ReservationStayDetail, {
@@ -608,19 +611,27 @@ onMounted(() => {
     //   })
     onInitialDate()
 
-    const cellHeight = document.querySelector('.fc-timeline-lane-frame')
+ 
+    // var fcResource = document.getElementsByClassName('fc-resource')
+    var list = document.getElementsByClassName("fc-resource")
+    console.log(list[0])
+    // for (var i = 0; i < fcResource.length; i++) {
+    //     var me = fcResource[i];
+    //     console.log(me.offsetTop);
+    // }
         // console.log(cellHeight.offsetHeight)
         //info.el.style.height = `${cellHeight}px`
 
         // document.querySelector(".fc-timeline-event").style.height = `${cellHeight}px`;
-
+ 
 })
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
     socket.disconnect()
 })
 
- 
+
+
 // document.addEventListener('mouseover', function(event) {
 //   console.log(event);
 // });
