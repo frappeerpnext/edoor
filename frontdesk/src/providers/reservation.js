@@ -21,4 +21,10 @@ export default class Reservation {
 			this.loading = false
 		})
 	}
+	clear(){
+		this.loading = false
+		this.reservationStays = []
+		this.reservation = {}
+		this.masterGuest = {}
+	}
 }

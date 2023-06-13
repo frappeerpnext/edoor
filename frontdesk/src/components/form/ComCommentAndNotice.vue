@@ -1,59 +1,63 @@
 <template lang="">
     <div>
-        <ComReservationStayPanel class="mb-2" title="Notice & Comment">
-            <template #content>
                 <div class="mb-4">
-                    <label for="text--note">{{data.note_type}}</label><br/>
-                    <Textarea id="text--note" v-model="data.content" rows="3" class="w-full" />
-                    <div class="flex gap-2 justify-between items-center"> 
-                        <div>
-                            <div class="flex gap-2 align-items-center">
+                    <label for="text--note" class="text-lg line-height-1 font-semibold">{{data.note_type}}</label><br/>
+                    <Textarea class="w-full my-2" id="text--note" v-model="data.content" rows="3" />
+                    <div class="flex gap-5 justify-end items-center mt-2"> 
+                            <div class="flex gap-5 align-items-center">
                                 <div>
                                     <RadioButton v-model="data.note_type" inputId="note" name="noteType" value="Notice" />
-                                    <label for="note" class="ml-2"> Notice </label>
+                                    <label for="note" class="cursor-pointer ml-1"> Notice </label>
                                 </div>
                                 <div>
                                     <RadioButton v-model="data.note_type" inputId="comment" name="noteType" value="Comment" />
-                                    <label for="comment" class="ml-2"> Comment </label>
+                                    <label for="comment" class="cursor-pointer ml-1"> Comment </label>
                                 </div>
                             </div>
-                        </div>
-                        <Button class="border-none" icon="pi pi-save" :loading="saving" @click="onSave" label="Save"></Button>
+                            <div>
+                                <Button class="border-none" :loading="saving" @click="onSave">
+                                    <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">
+                                    <label for="comment" class="font-normal ml-1"> Add {{data.note_type}} </label>
+                                </Button>
+                            </div>
                     </div>
                 </div>
                 <ComPlaceholder :loading="loading" :is-not-empty="list.length > 0">
-                    <div v-for="(i, index) in list" :key="index" class="mb-2 p-2 bg-white rounded-sm">
-                        <div class="text-right">
-                            <Button text icon="pi pi-file-edit" @click="onAddEdit($event,i)"></Button>
-                            <Button text icon="pi pi-trash" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
-                        </div>
-                        <div>
-                            {{i.name}} / {{i.note_type}} / {{i.owner}} / {{i.creation}}
-                            <div>
-                                {{i.content}}
+                    <div v-for="(i, index) in list" :key="index" class="mb-3 p-3 rounded-xl shadow-card-edoor" :class="(i.note_type == 'Notice') ? 'bg-yellow-notice-bg text-yellow-700' : 'bg-commnet-cart' ">
+                        <div class="flex justify-between">
+                            <div class="flex items-center">
+                               <i :class="(i.note_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i>
+                               <div class="ms-1 text-sm">
+                                <span class="font-italic">{{i.note_type}} by:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.creation).format("DD-MM-yy h:ss a") }}, </span>
+                                <span class="font-italic">Last Modified:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.Modified).format("DD-MM-yy h:ss a") }}</span>
+                                </div>  
+                            </div>
+                            <div class="gap-2 flex">
+                                <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onAddEdit($event,i)"></Button>
+                                <Button text icon="pi pi-trash" class="w-1rem h-1rem" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
                             </div>
                         </div>
-                        
+                        <div class="break-words py-1">
+                                {{i.content}}
+                        </div>
                     </div>
                 </ComPlaceholder>
-            </template>
-        </ComReservationStayPanel>
         <OverlayPanel ref="op">
             <ComOverlayPanelContent :loading="saving" @onSave="onSave" @onCancel="onClose">
-                <div>
                     <div>
                         <label for="textnote">{{data.note_type}}</label><br/>
                         <Textarea id="textnote" v-model="data.content" rows="5" cols="30" />
                     </div>
-                </div>
             </ComOverlayPanelContent>
         </OverlayPanel>
     </div>
 </template>
 <script setup>
-    import {ref, updateDoc, getApi,useConfirm, onMounted, deleteDoc} from '@/plugin'
+    import iconPlusSign from '@/assets/svg/icon-add-plus-sign.svg'
+    import {ref, inject, toaster, getApi,useConfirm, onMounted, deleteDoc,createUpdateDoc} from '@/plugin'
     import Enumerable from 'linq'
     import ComReservationStayPanel from '../../views/reservation/components/ComReservationStayPanel.vue';
+    const moment = inject("$moment");
     const props = defineProps({
         doctype: String,
         docname: String
@@ -80,6 +84,9 @@
         }).then((r)=>{
             if(r.message && r.message.length > 0)
                 list.value = Enumerable.from(r.message).orderByDescending("$.creation").toArray()
+            else
+                list.value = []
+            
             loading.value = false
         }).catch((err)=>{
             loading.value = false
@@ -108,13 +115,17 @@
         }
     }
     function onSaveNote(doctype){
+        if(!data.value.content){
+            toaster('warn','Please input text.')
+            return
+        }
         saving.value = true
-        const name = op.value.data?.name;
         data.value.reference_doctype = props.doctype
         data.value.reference_name = props.docname
         data.value.comment_type = 'Comment'
         data.value.comment_by = currentUser.name
-        updateDoc(doctype,name,data.value).then((r)=>{
+        data.value.name = op.value.data?.name || ''
+        createUpdateDoc(doctype,data.value).then((r)=>{
             saving.value = false
             data.value = {
                 note_type: 'Notice',
@@ -146,6 +157,8 @@
         })
     }
 </script>
-<style lang="">
-    
+<style scoped>
+    .bg-yellow-notice-bg{
+        background-color: #faf6e9;
+    }
 </style>

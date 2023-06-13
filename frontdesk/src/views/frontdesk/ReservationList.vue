@@ -8,46 +8,48 @@
                 <NewFITReservationButton />
             </template>
         </ComHeader>
-        <div>
+        <div class="mb-3">
+            <div class="flex flex-wrap gap-2">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search" />
+                    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                </span>
 
-            <span class="p-input-icon-left">
-                <i class="pi pi-search" />
-                <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-            </span>
+                <ComSelect optionLabel="business_source_type" optionValue="name"
+                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
+                    doctype="Business Source Type" />
 
-            <ComSelect optionLabel="business_source_type" optionValue="name" v-model="filter.selected_business_source_type"
-                @onSelected="onSearch" placeholder="Business Source Type" doctype="Business Source Type" />
+                <ComSelect isFilter groupFilterField="business_source_type"
+                    :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
+                    optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
+                    placeholder="Business Source" doctype="Business Source" />
 
-            <ComSelect isFilter groupFilterField="business_source_type"
-                :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source" optionValue="name"
-                v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source"
-                doctype="Business Source" />
+                <ComSelect optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
+                    @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
 
-            <ComSelect optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
-                @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
+                <ComSelect optionLabel="building" optionValue="name" v-model="filter.selected_building"
+                    @onSelected="onSearch" placeholder="Building" doctype="Building" />
 
-            <ComSelect optionLabel="building" optionValue="name" v-model="filter.selected_building" @onSelected="onSearch"
-                placeholder="Building" doctype="Building" />
+                <ComSelect isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
+                    @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
 
-            <ComSelect isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
-                @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
+                <ComSelect isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
+                    optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
+                    @onSelected="onSearch" placeholder="Room Name" doctype="Room"></ComSelect>
 
-            <ComSelect isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
-                optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number" @onSelected="onSearch"
-                placeholder="Room Name" doctype="Room"></ComSelect>
+                <ComSelect v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
+                    optionValue="value" placeholder="Search Date Type" :clear="false"
+                    @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
 
-            <ComSelect v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label" optionValue="value"
-                placeholder="Seach Date Type" :clear="false" @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-
-            <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy" v-model="filter.date_range"
-                selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
+                <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
+                    v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                    placeholder="Select Date Range" />
+            </div>
         </div>
-
-        <hr />
         <DataTable :value="data" tableStyle="min-width: 50rem">
             <Column field="name" header="Document Number">
                 <template #body="slotProps">
-                    <Button @click="onViewReservationDetail(slotProps.data.name)" link>
+                    <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
                         {{ slotProps.data.name }}
                     </Button>
                 </template>
@@ -55,7 +57,7 @@
             <Column field="reference_number" header="Ref. #"></Column>
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
-                    <Button @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                    <Button class="p-0 link_line_action1" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
                     </Button>
                 </template>
@@ -64,12 +66,12 @@
             <Column field="room_numbers" header="Room No"></Column>
             <Column field="arrival_date" header="Arrival">
                 <template #body="slotProps">
-                    {{ moment(slotProps.data.arrival_date).format("DD/MM/YYYY") }}
+                    <span>{{ moment(slotProps.data.arrival_date).format("DD/MM/YYYY") }}</span>
                 </template>
             </Column>
             <Column field="departure_date" header="Departure">
                 <template #body="slotProps">
-                    {{ moment(slotProps.data.departure_date).format("DD/MM/YYYY") }}
+                    <span>{{ moment(slotProps.data.departure_date).format("DD/MM/YYYY") }}</span>
                 </template>
             </Column>
             <Column field="guest_type" header="Guest Type"></Column>
@@ -215,7 +217,9 @@ function onViewReservationDetail(name) {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             console.log(options)
@@ -239,7 +243,9 @@ function onViewCustomerDetail(name) {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             console.log(options)

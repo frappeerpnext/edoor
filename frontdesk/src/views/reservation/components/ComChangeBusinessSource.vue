@@ -1,6 +1,6 @@
 <template>
-    <ComOverlayPanelContent title="change Business" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div class="my-3">
+    <ComOverlayPanelContent title="Change Business Source" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
+        <div class="my-2">
         <ComAutoComplete v-model="businessSource" placeholder="Business Source" doctype="Business Source"
             class="auto__Com_Cus w-full" />
         </div>

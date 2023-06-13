@@ -15,14 +15,15 @@
             </template>
             <div v-else>
                 <div class="p-6 text-center" :class="classColor">
-                    <div><i class="pi" :class="icon" :style="{ 'font-size': iconSize }"></i></div>
-                    <div class="text-sm italic">{{ text }}</div>
+                    <div><img :src="iconNoData" style="width: 150px; margin: 0 auto;"></div>
+                    <div class="mt-2 text-sm italic">{{ text }}</div>
                 </div>
             </div>
         </template>
     </template>
 </template>
 <script setup>
+import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
 const props = defineProps({
     isNotEmpty: Boolean,
     isPlaceholder: Boolean,
@@ -36,7 +37,7 @@ const props = defineProps({
     },
     text: {
         type: String,
-        default: 'Empty Data'
+        default: 'Data Empty'
     },
     loading: {
         type: Boolean,

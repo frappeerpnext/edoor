@@ -2,9 +2,18 @@
     <div :class="isDialog ? 'wrap-dialog' : 'bg-white p-2'">
         <div :class="isDialog ? 'wrap-dialog-content overflow-auto' : ''">
             <slot name="default"></slot>
+            <div v-if="loading">
+                <div  class="overlay-loading-dialog">
+                <span class="is-loading-page text-white flex justify-center flex-col">
+                    <i  class="pi pi-spin pi-spinner w-4rem h-4rem" style="font-size:4rem"></i>
+                    <span class="text-sm mt-1">loading....</span>
+                </span>
+                </div>    
+            </div>
         </div>
-        <div v-if="!hideFooter" class="border-t border-gray-200 py-2 px-4">
+        <div v-if="!hideFooter" class="border-t border-gray-200 p-2">
             <div>
+                <slot name="footer-top"></slot>
                 <div class="flex justify-between items-center">
                     <div class="flex gap-2">
                         <slot name="footer-left"></slot>
@@ -14,12 +23,13 @@
                     </div>
                     <div class="flex gap-2">
                         <slot name="footer-right"></slot>
+                        
+                        <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
+                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
+                        </Button>
                         <Button class="border-none" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
                             <span v-if="!loading"><img class="mr-2 inline" style="height: 14px;" :src="BtnOkIcon" v-if="!loading"/>Save</span>
                             <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> Save</span>
-                        </Button>
-                        <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
-                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
                         </Button>
                     </div>
                 </div>
@@ -74,4 +84,20 @@ function close() {
     .bg-og-edoor:hover , .bg-og-edoor:active{
         background-color: var(--bg-og-color);
     }
+    .is-loading-page{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 11;
+    transform: translate(-50%,-50%);
+}
+.overlay-loading-dialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.4);
+    width: 100%;
+    height: 100%;
+}
 </style>

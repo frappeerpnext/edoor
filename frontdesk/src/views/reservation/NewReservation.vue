@@ -141,31 +141,31 @@
                 </div>
             </div>
         </div>
-        <div class="bg-card-info border-round-xl mt-3 p-3 add-room-reserv">
+        <div class="bg-card-info border-round-xl mt-2 p-3 add-room-reserv">
             <div class="n__re-custom">
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th>
-                                <div class="font-medium text-left">Room Type<span class="text-red-500">*</span></div>
+                            <th class="text-left">
+                                <label>Room Type<span class="text-red-500">*</span></label>
+                            </th>
+                            <th class="text-left">
+                                <label class="px-2">Room Name<span class="text-red-500">*</span></label>
+                            </th>
+                            <th class="text-right">
+                                <label class="px-2">Rate<span class="text-red-500">*</span></label>
                             </th>
                             <th>
-                                <div class="font-medium text-left px-2">Room Name<span class="text-red-500">*</span></div>
+                                <label class="text-center px-2">Adults<span class="text-red-500">*</span></label>
                             </th>
                             <th>
-                                <div class="font-medium text-right px-2">Rate<span class="text-red-500">*</span></div>
+                                <label class="text-center px-2">Children</label>
                             </th>
                             <th>
-                                <div class="font-medium text-center px-2">Adults<span class="text-red-500">*</span></div>
+                                <label class="text-center px-2">Total Nights</label>
                             </th>
-                            <th>
-                                <div class="font-medium text-center px-2">Children</div>
-                            </th>
-                            <th>
-                                <div class="font-medium text-center px-2">Total Nights</div>
-                            </th>
-                            <th>
-                                <div class="font-medium text-right px-2">Amount</div>
+                            <th class="text-right">
+                                <label class="px-2">Amount</label>
                             </th>
 
                         </tr>
@@ -186,12 +186,9 @@
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
                             <td class="p-2 w-12rem text-right">
-                          
-                                    <span @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic "><span class="link_line_action"><CurrencyFormat :value="d.rate" /> </span></span>
-
-                               
-                               
-                  
+                                <span @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic ">
+                                    <span class="link_line_action"><CurrencyFormat :value="d.rate" /></span>
+                                </span>
                             </td>
                             <td class="p-2 w-5rem">
                                 <InputNumber v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
@@ -219,30 +216,36 @@
                     </tbody>
                 </table>
             </div>
-            
-            <Button @click="onAddRoom" icon="pi pi-plus" class="px-4 border-round-xl border-none" label="Add Room" /><br />
-           
+            <Button @click="onAddRoom" class="px-4 border-round-xl border-none mt-2" >
+                <img :src="IconAddRoom" class="btn-add_comNote__icon me-1"/> Add Room
+            </Button><br />
         </div>
-        <!-- <hr class="my-3"> -->
         <div class="mt-3">
             <div>
-
                 <label>Note</label><br />
                 <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30"
                     class="w-full border-round-xl" />
             </div>
         </div>
         <OverlayPanel ref="op">
-            <h1>Change Rate</h1>
+            <label>Change Rate</label>
             <Message>If you change room rate here. <br/>This room will stop automatically get rate from rate plan. <br/>
-            To use rate from Rate Plan, click on button Use Rate Plan
+            To use rate from Rate Plan, click on button Update New Rate
             </Message>
-         
-                <InputNumber v-model="rate"    :min="0" 
-                                      />
-
-            <Button @click="onChangeRate">Change Rate</Button>
-            <Button @click="onUseRatePlan">Use Rate Plan</Button>
+            <div class="flex gap-2 mt-3">
+                <div class="ch__rate_nres relative border-round-lg overflow-hidden">
+                    <div @click="onUseRatePlan" v-tooltip.top="'Reverse to Rate Plan'" class="cursor-pointer absolute h-full w-3rem border-y-1 border-round-y border-round-left border-left-1" style="background: var(--bg-input-field);border-color: #a0bde0;">
+                        <div class="translate-y-2/4 text-center">
+                            <i class="pi pi-replay text-xl text-dark font-bold"></i>
+                        </div>
+                    </div>    
+                    <InputNumber class="text-right" v-model="rate" :min="0" />
+                </div>
+                <div>
+                    <Button @click="onChangeRate" icon="pi pi-file-edit" label="Update New Rate" class="border-none cursor-pointer"/>
+                </div>
+            </div>
+            <!-- <Button @click="onUseRatePlan">Use Rate Plan</Button> -->
         </OverlayPanel>
 
     </ComDialogContent>
@@ -252,6 +255,8 @@ import Calendar from 'primevue/calendar';
 import OverlayPanel from 'primevue/overlaypanel';
 import Message from 'primevue/message';
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
+import IconAddRoom from '@/assets/svg/icon-add-plus-sign.svg';
+
 import { ref, inject, computed, onMounted } from "@/plugin"
 import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
@@ -323,7 +328,6 @@ const getRoomType = () => {
         end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD"),
         rate_type: doc.value.reservation.rate_type,
         business_source: doc.value.reservation.business_source
-
     })
         .then((result) => {
             room_types.value = result.message;
@@ -521,6 +525,16 @@ const onUseRatePlan = () => {
     op.value.hide();
 }
 
-
-
 </script>
+<style>
+.ch__rate_nres input{
+    text-align: right !important;
+    font-size: 1.1rem;
+    height: 3rem;
+}
+.p-button.p-component .p-button-icon{
+    font-weight: 600;
+    font-size: 1.25rem;
+    
+}
+</style>

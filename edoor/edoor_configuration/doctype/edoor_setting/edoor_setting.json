@@ -8,7 +8,8 @@
  "engine": "InnoDB",
  "field_order": [
   "room_block_status",
-  "room_block_color"
+  "room_block_color",
+  "room_revenue_code"
  ],
  "fields": [
   {
@@ -22,12 +23,18 @@
    "fieldname": "room_block_color",
    "fieldtype": "Color",
    "label": "Room Block Color"
+  },
+  {
+   "fieldname": "room_revenue_code",
+   "fieldtype": "Link",
+   "label": "Room Revenue Code",
+   "options": "Account Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-01 14:58:23.617324",
+ "modified": "2023-06-12 15:08:56.536053",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

@@ -1,6 +1,6 @@
 <template>
-    {{ shift }}
     <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift"  doctype="Shift Type" placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time"/>
+    
     <table>
         <tr>
             <td>Type</td>

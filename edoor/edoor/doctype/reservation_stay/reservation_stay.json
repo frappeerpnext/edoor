@@ -39,17 +39,27 @@
   "working_day",
   "working_date",
   "cashier_shift",
-  "adr_rate",
+  "adr",
   "room_nights",
+  "room_rate_section",
+  "room_rate",
+  "room_rate_discount",
+  "room_rate_tax_1_amount",
+  "room_rate_tax_2_amount",
+  "room_rate_tax_3_amount",
+  "total_room_rate_tax",
   "total_room_rate",
+  "room_charge_and_payment_section",
   "room_charge",
-  "room_discount",
-  "total_room_tax",
+  "room_charge_discount",
+  "room_charge_tax",
   "total_room_charge",
+  "column_break_47",
   "extra_charge",
   "extra_charge_discount",
   "extra_charge_tax",
   "total_extra_charge",
+  "column_break_52",
   "total_charge",
   "total_payment",
   "balance",
@@ -79,7 +89,9 @@
   "business_source_type",
   "business_source",
   "note",
-  "housekeeping_note"
+  "housekeeping_note",
+  "is_master",
+  "room_type_alias"
  ],
  "fields": [
   {
@@ -268,11 +280,6 @@
    "label": "Status Color"
   },
   {
-   "fieldname": "adr_rate",
-   "fieldtype": "Currency",
-   "label": "ADR Rate"
-  },
-  {
    "fieldname": "room_nights",
    "fieldtype": "Int",
    "label": "Room Nights"
@@ -286,21 +293,6 @@
    "fieldname": "room_charge",
    "fieldtype": "Currency",
    "label": "Room Charge"
-  },
-  {
-   "fieldname": "room_discount",
-   "fieldtype": "Currency",
-   "label": "Room Discount"
-  },
-  {
-   "fieldname": "total_room_tax",
-   "fieldtype": "Currency",
-   "label": "Total Room Tax"
-  },
-  {
-   "fieldname": "total_room_charge",
-   "fieldtype": "Currency",
-   "label": "Total Room Charge"
   },
   {
    "fieldname": "extra_charge",
@@ -505,11 +497,90 @@
    "fieldname": "housekeeping_note",
    "fieldtype": "Small Text",
    "label": "Housekeeping Note"
+  },
+  {
+   "fieldname": "adr",
+   "fieldtype": "Currency",
+   "label": "ADR"
+  },
+  {
+   "fieldname": "room_rate_section",
+   "fieldtype": "Section Break",
+   "label": "Room Rate"
+  },
+  {
+   "fieldname": "room_rate",
+   "fieldtype": "Currency",
+   "label": "Room Rate"
+  },
+  {
+   "fieldname": "room_charge_and_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Room Charge And Payment"
+  },
+  {
+   "fieldname": "room_rate_discount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Discount"
+  },
+  {
+   "fieldname": "room_rate_tax_1_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 1 Amount"
+  },
+  {
+   "fieldname": "room_rate_tax_2_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 2 Amount"
+  },
+  {
+   "fieldname": "room_rate_tax_3_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 3 Amount"
+  },
+  {
+   "fieldname": "total_room_rate_tax",
+   "fieldtype": "Currency",
+   "label": "Total Room Rate Tax"
+  },
+  {
+   "fieldname": "room_charge_discount",
+   "fieldtype": "Currency",
+   "label": "Room Charge Discount"
+  },
+  {
+   "fieldname": "room_charge_tax",
+   "fieldtype": "Currency",
+   "label": "Room Charge Tax"
+  },
+  {
+   "fieldname": "total_room_charge",
+   "fieldtype": "Currency",
+   "label": "Total Room Charge"
+  },
+  {
+   "fieldname": "column_break_47",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_52",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_master",
+   "fieldtype": "Check",
+   "label": "Is Master"
+  },
+  {
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-08 14:42:46.713455",
+ "modified": "2023-06-12 14:20:34.637027",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

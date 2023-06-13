@@ -47,6 +47,7 @@ const onViewRoomList = (status) => {
 
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             // const data = options.data;

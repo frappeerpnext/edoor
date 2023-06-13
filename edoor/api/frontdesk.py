@@ -5,7 +5,13 @@ import datetime
 import random
 from datetime import datetime
 from py_linq import Enumerable
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta 
+
+@frappe.whitelist()
+def get_meta(doctype=None):
+    data =  frappe.get_meta(doctype)
+    return data
+
 # Get the current date
 
 @frappe.whitelist()

@@ -57,7 +57,7 @@ const loading = ref(false)
 
 const menuMasterGuestList = ref([
     {
-        label: 'Change guest',
+        label: 'Change Guest',
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
@@ -70,14 +70,14 @@ const menuMasterGuestList = ref([
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
-        label: 'Change guest',
+        label: 'Change Guest',
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
-        label: 'Add additional guest',
+        label: 'Add Additional Guest',
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
@@ -87,7 +87,7 @@ const menuStayGuestList = ref([
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
 {
-        label: 'Add additional guest',
+        label: 'Add Additional Guest',
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
@@ -139,7 +139,7 @@ function onAdvancedSearch(guest_type) {
     
     dialog.open(ComReservationChangeGuest, {
         props: {
-            header: `Select ${guest_type == 'master_guest' ? 'master guest' : (guest_type == 'stay_guest' ? 'stay guest' : (guest_type == 'additional_guest' ? 'Additional guest' : '')) }`,
+            header: `${guest_type == 'master_guest' ? 'Change Master Guest' : (guest_type == 'stay_guest' ? 'Change Stay Guest' : (guest_type == 'additional_guest' ? 'Add Additional Guest' : '')) }`,
             keyword: '',
             doctype: 'Customer',
             style: {
@@ -149,7 +149,8 @@ function onAdvancedSearch(guest_type) {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            closeOnEscape: false
         },
         data:{
             guest_type: guest_type,

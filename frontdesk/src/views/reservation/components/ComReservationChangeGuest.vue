@@ -1,16 +1,16 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
         <div>
-            <div class="flex items-center mb-2">
-                <div class="grow">
+            <div class="flex flex-col items-center mb-2">
+                <div class="col-12">
                     <ComAutoComplete doctype="Customer" @onSelected="onSelected" isFull isIconSearch
                         placeholder="Search guest" />
                 </div>
-                <div class="flex-none" v-if="!dialogRef.data.is_change_additional_guest">
+                <div class="col-12" v-if="!dialogRef.data.is_change_additional_guest">
                     <div class="flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="isApplyAllStays" :binary="true" inputId="checkapplyall" />
-                            <label for="checkapplyall"> Apply all stays ({{ rs.total_reservation_stay }})</label>
+                            <label for="checkapplyall"> Apply all stays ({{ rs.reservationStayNames.length}})</label>
                         </div>
                         <div class="flex align-items-center px-2" v-if="dialogRef.data.is_change_stay_guest">
                             <Checkbox v-model="isApplyMasterGuest" :binary="true" inputId="checkmasterguest" />

@@ -51,6 +51,7 @@ function onViewReservationDetail(name) {
             },
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             console.log(options)

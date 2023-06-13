@@ -81,13 +81,14 @@
     </ComReservationStayPanel>
   </div>
   <div class="col" v-else>
-  <div class="w-auto mt-4 ">
+  <div class="w-auto">
     <button class="w-full bg-orange-100 rounded-xl" @click="OnSetupForm">
-      <div class="flex relative px-5  py-4">
-        <span class="w-9rem" >
+      <div class="flex relative p-2">
+        <span  class="link_line_action text-xl line-height-3 py-2 text-center px-3 bg-white"><i class="pi pi-car text-lg me-2"></i>Setup Transportation</span>
+        <!-- <span class="w-9rem" >
           <img class="icon-svg-setup-tran" src="../../../assets/svg/icon-transportation-mode.svg">
         </span>
-        <span class="text-2xl">Setup Transportation</span>
+        <span class="text-2xl">Setup Transportation</span> -->
       </div>
     </button>
   </div>

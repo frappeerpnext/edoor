@@ -8,6 +8,8 @@
     <img v-else-if="icon == 'BirthdayIcon'" :class="class" :src="BirthdayIcon"/>
     <img v-else-if="icon == 'ViewDetailIcon'" :class="class" :src="ViewDetailIcon"/>
     <img v-else-if="icon == 'iconOpenBrower'" :class="class" :src="iconOpenBrower"/>
+    <img v-else-if="icon == 'iconNote'" :class="class" :src="iconNote"/>
+    <img v-else-if="icon == 'iconNoteBlue'" :class="class" :src="iconNoteBlue"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -29,5 +31,8 @@ import BtnCheckoutIcon from '@/assets/svg/icon-check-out.svg'
 import BirthdayIcon from '@/assets/svg/birthday-icon.svg'
 import ViewDetailIcon from '@/assets/svg/change-room-icon.svg'
 import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
+import iconNote from '@/assets/svg/icon-note-paper-pen.svg'
+import iconNoteBlue from '@/assets/svg/icon-note-paper-pen-blue.svg'
+
 </script>
  

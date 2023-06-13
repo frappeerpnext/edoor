@@ -6,9 +6,9 @@
         <div>
             <slot name="center"></slot>
         </div>
-        <div class="flex">
+        <div class="flex gap-2">
             <slot name="end"></slot>
-            <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon"></Button>
+            <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon border-none"></Button>
         </div>
     </div>
 </template>

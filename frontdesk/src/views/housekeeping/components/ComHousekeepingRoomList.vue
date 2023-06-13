@@ -4,7 +4,13 @@
             @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column field="room_number" header="Room #"></Column>
-            <Column field="room_type" header="Room Type"></Column>
+            <Column header="Status">
+                <template #body="{ data }">
+                    <span class="py-1 px-3 rounded-xl text-white" :style="{ background: data.status_color }">
+                        {{ data.housekeeping_status }}
+                    </span> 
+                </template>
+            </Column>
             <Column field="room_type" header="Room Type"></Column>
 
             <Column field="guest_name" header="Guest Name">
@@ -14,8 +20,7 @@
                     </Button>
                 </template>
             </Column>
-
-
+            <Column field="room_type" header="Reservation Status"></Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
                     <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
@@ -41,7 +46,6 @@
                 <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data" />
             </template>
         </Column>
-
         <Sidebar v-model:visible="visibleRight" position="right">
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
 

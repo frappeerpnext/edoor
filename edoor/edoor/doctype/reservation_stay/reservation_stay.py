@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date,today
 from py_linq import Enumerable
-
+from edoor.api.utils import update_reservation
 class ReservationStay(Document):
 	def  validate(self):
  
@@ -28,7 +28,7 @@ class ReservationStay(Document):
 				self.working_day = working_day["name"]
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
-			
+		
 		#validate select uniue guest in additional guest	
 		validate_guests = [x for x in self.additional_guests if x.guest == self.guest]
 		unique_list = list(set([x.guest for x in self.additional_guests]))
@@ -49,6 +49,7 @@ class ReservationStay(Document):
 		if self.stays:
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays])
 			self.room_types = ','.join([d.room_type for d in self.stays])
+			self.room_type_alias = ','.join([d.room_type_alias for d in self.stays])
 
 		for d in self.stays:
 			d.property = self.property
@@ -59,98 +60,49 @@ class ReservationStay(Document):
 			d.guest = self.guest
 			d.start_date = d.start_date or self.arrival_date
 			d.start_time = d.start_time or self.arrival_time
-			d.end_date = d.end_date or self.departure_date
 			d.end_time = d.end_time or self.departure_time
-			d.adult = self.adult 
-			d.child = self.child
+			d.nd_date = d.end_date or self.departure_date
+			d.adult = self.adult or 1
+			d.child = self.child or 0
 			d.reference_number = self.reference_number
-			d.pax = d.adult + d.child
+			d.pax = d.adult  + d.child
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
-
-			#d.total_amount = (d.rate or  0 )* (d.room_nights or 1)
-
-
-		#update stay summayr
+			
+		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
-		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.rate * x.room_nights)
+		self.room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
+		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount or 0)
+		self.room_rate_tax_1_amount= Enumerable(self.stays).sum(lambda x: x.tax_1_amount or 0)
+		self.room_rate_tax_2_amount= Enumerable(self.stays).sum(lambda x: x.tax_2_amount or 0)
+		self.room_rate_tax_3_amount= Enumerable(self.stays).sum(lambda x: x.tax_3_amount or 0)
+		self.total_room_rate_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
+		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
+		self.adr = Enumerable(self.stays).sum(lambda x: (x.total_rate or 0)) / self.room_nights
 
-		self.adr_rate =self.total_room_rate /  (self.room_nights or 1)
+
+		#update note & housekeeping note
 		
-
-
+		if self.is_new():
+			frappe.throw(str('new'))
+		else:
+			if self.note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'note')
+				frappe.throw(str(frappe.user))
+				#if self.note != note:
+					#self.note_by = frappe.user
 
 	def after_insert(self):
+		generate_room_rate(self)
 		#generate_room_occupy_and_rate(self)
-		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy_and_rate", queue='short', self=self)
-
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self=self)
 
 	def on_update(self):
-		#will run this in queue
-		update_data_to_reservation(self)
+		if  hasattr(self,"update_reservation_stay") and self.update_reservation_stay:
+			update_reservation(self.reservation)
 
-
-def update_data_to_reservation(self):
-	
-	if not hasattr(self,"update_reservation") or self.update_reservation:
-			sql ="update `tabTemp Room Occupy` set adult={}, child={} , pax = {} where reservation_stay = '{}'".format(self.adult,self.child,self.pax,self.name)
-			frappe.db.sql(sql)
-
-			sql = """select 
-						min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
-						max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
-						count(name) as total_stay,
-						sum(if(is_active_reservation =1,1,0)) as total_active_stay, 
-						sum(if(is_active_reservation =1,adult,0)) as adult, 
-						sum(if(is_active_reservation =1,child,0)) as child ,
-						
-						sum(if(is_active_reservation=1 and reservation_status='In-House',1,0)) as total_checked_in,
-						sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
-						sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
-						sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
-						sum(if(is_active_reservation=0 and reservation_status='Void',1,0)) as total_void,
-						
-						sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
-						sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
-						sum(if(is_active_reservation=1,adr_rate,0)) as total_adr_rate
-
-						
-
-					from `tabReservation Stay`
-					where 
-						reservation='{}'
-					""".format(self.reservation)
-			
-			data = frappe.db.sql(sql,as_dict=1)
-
-
-			#update to reservation 
-			doc_reservation = frappe.get_doc("Reservation", self.reservation)
-			doc_reservation.total_reservation_stay = data[0][ "total_stay"]
-			doc_reservation.total_active_reservation_stay = data[0][ "total_active_stay"]
-			doc_reservation.arrival_date = data[0]["arrival_date"]
-			doc_reservation.departure_date= data[0]["departure_date"]
-			
-			doc_reservation.adult = data[0][ "adult"]
-			doc_reservation.child = data[0][ "child"]
-
-			doc_reservation.room_nights= data[0]["room_nights"]
-			doc_reservation.total_room_rate= data[0]["total_room_rate"]
-			doc_reservation.total_adr_rate= data[0]["total_adr_rate"]
-
-			doc_reservation.total_checked_in= data[0]["total_checked_in"]
-			doc_reservation.total_checked_out= data[0]["total_checked_out"]
-			doc_reservation.total_cancelled= data[0]["total_cancelled"]
-			doc_reservation.total_void= data[0]["total_void"]
-			doc_reservation.total_no_show= data[0]["total_no_show"]
-
-
-			doc_reservation.update_reservation_stay = False
-			
-			doc_reservation.save()
-
-def generate_room_occupy_and_rate(self):		
+def generate_room_occupy(self):		
 	dates = get_date_range(self.arrival_date, self.departure_date)
 	for stay in self.stays: 
 		for d in dates:
@@ -188,11 +140,18 @@ def generate_room_occupy_and_rate(self):
 				"pax":self.pax
 			}).insert()
 
+ 
+
+def generate_room_rate(self):		
+	dates = get_date_range(self.arrival_date, self.departure_date)
+	for stay in self.stays: 
+		for d in dates:
 			#generate room to reservation room rate
 			frappe.get_doc({
 				"doctype":"Reservation Room Rate",
 				"reservation":self.reservation,
 				"reservation_stay":self.name,
+				"stay_room_id":stay.name,
 				"room_type_id":stay.room_type_id,
 				"room_id":stay.room_id,
 				"date":d,
@@ -202,8 +161,6 @@ def generate_room_occupy_and_rate(self):
 				"property":self.property
 			}).insert()
 
-	
-				 
 
 
 		

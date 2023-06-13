@@ -11,6 +11,7 @@
   "property",
   "reservation",
   "reservation_stay",
+  "stay_room_id",
   "business_source",
   "room_type_id",
   "room_type",
@@ -19,6 +20,7 @@
   "rate_type",
   "date",
   "rate",
+  "total_rate",
   "tax_rule",
   "discount_type",
   "discount",
@@ -187,11 +189,21 @@
    "fieldtype": "Link",
    "label": "Business Source",
    "options": "Business Source"
+  },
+  {
+   "fieldname": "stay_room_id",
+   "fieldtype": "Data",
+   "label": "Stay Room ID"
+  },
+  {
+   "fieldname": "total_rate",
+   "fieldtype": "Currency",
+   "label": "Total Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-08 16:17:14.462342",
+ "modified": "2023-06-10 09:41:33.484140",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

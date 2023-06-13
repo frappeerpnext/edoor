@@ -2,25 +2,34 @@
     <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
         <div :class="[isPage, 'bg-white']">
             <div class="grid">
-                <div class="col mb-2">
-                    <div class="flex">
-                        <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
-                            <span class="res__bagde ml-1">
-                                {{rs.reservationStays.length}}
-                            </span>
-                        </ComTagReservation>
-                        <span class="px-2 rounded-lg me-2 text-white p-1px"
-                            :style="{ background: rs.reservation?.status_color }">{{
-                                rs.reservation?.reservation_status }}</span>
-                        <span class="px-2 rounded-lg me-2 text-white p-1px"
-                            :style="{ background: rs.reservation?.status_color }">{{
-                                rs.reservation?.reservation_type }}</span>
+                <div :class="isPage ? 'col py-3' : 'col pt-0'">
+                    <div class="flex justify-between">
+                        <div class="flex align-items-center">
+                            <div class="flex">
+                                <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
+                                    <span class="res__bagde ml-1">
+                                        {{rs.reservationStays.length}}
+                                    </span>
+                                </ComTagReservation>
+                                <span class="px-2 rounded-lg me-2 text-white p-1px"
+                                    :style="{ background: rs.reservation?.status_color }">{{
+                                        rs.reservation?.reservation_status }}</span>
+                                <span class="px-2 rounded-lg me-2 text-white p-1px"
+                                    :style="{ background: rs.reservation?.status_color }">{{
+                                        rs.reservation?.reservation_type }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <Button @click="onRoute" v-if="!isPage"  class="rounded-lg border-none">
+                                <ComIcon icon="iconOpenBrower" style="height:18px;" ></ComIcon>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
             <TabView lazy>
                 <TabPanel header="General Information">
-                    <div class="grid mt-3 ml-0 ms-0">
+                    <div class="grid mt-2 ml-0 ms-0">
                         <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
@@ -42,7 +51,17 @@
                     </div>
                     <div class="pt-2">
                         <ComReservationDetailRoomList />
-                        <ComCommentAndNotice v-if="rs && rs.reservation" doctype="Reservation" :docname="rs.reservation.name"/>
+                    </div>
+                    <div class="pt-3">
+                        <div class="border-round-xl">
+                            <ComReservationNote v-if="rs.reservation && rs.reservation.name" doctype="Reservation"/>
+                        </div>
+                    </div>
+                    <hr class="my-3"/>
+                    <div>
+                        <div class="border-round-xl">
+                            <ComCommentAndNotice v-if="rs && rs.reservation && rs.reservation.name" doctype="Reservation" :docname="rs.reservation.name"/>
+                        </div>
                     </div>
                 </TabPanel>
                 <TabPanel header="Room Rate">
@@ -62,7 +81,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted, computed, useToast } from '@/plugin'
+import { inject, ref, onMounted, computed, useToast, useRoute,onUnmounted } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 import ComReservationDetailGuestInfo from '@/views/reservation/components/ComReservationDetailGuestInfo.vue'
@@ -72,35 +91,42 @@ import ComReservationDetailRoomList from '@/views/reservation/components/ComRese
 import ComReservationDetailChargeSummary from '@/views/reservation/components/ComReservationDetailChargeSummary.vue'
 import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
 import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
+import ComReservationNote from './components/ComReservationNote.vue';
 
-
-
-
+const route = useRoute()
 const frappe = inject("$frappe")
 const rs = inject("$reservation")
 const call = frappe.call();
-
 const confirm = useConfirm()
 const toast = useToast()
 const socket = inject("$socket")
-
 const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-
 const name = ref("")
+const isPage = computed(() => {
+    return route.name == 'ReservationDetail'
+})
+
 
 onMounted(() => {
     if (!dialogRef) {
-        alert("no dialog")
+        if (route.params.name) {
+            name.value = route.params.name
+            rs.LoadReservation(name.value);
+        } else {
+            alert("Go back to reserveatin list")
+        }
     } else {
         name.value = dialogRef.value.data.name;
         rs.LoadReservation(name.value);
 
     }
 });
+function onRoute(){
+    window.open('reservation-detail/' + name.value, '_blank')
+}
 function onClose(){ 
     dialogRef.value.close()
 }
@@ -129,6 +155,10 @@ const onCheckIn = () => {
         }
     });
 }
+
+onUnmounted(() => {
+    rs.clear()
+})
 </script>
 <style scoped>
     .res__bagde{

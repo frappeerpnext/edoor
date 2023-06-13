@@ -26,7 +26,7 @@
     </div>
 </template>
 <script setup>
-import { ref, inject, computed, useToast, useDialog } from '@/plugin'
+import { ref, inject, computed, useToast, useDialog, getDoc } from '@/plugin'
 import Search from './ComAdvancedSearch.vue';
 const props = defineProps({
     doctype: String,
@@ -37,6 +37,10 @@ const props = defineProps({
         default: false
     },
     isAddNew: {
+        type: Boolean,
+        default: false
+    },
+    isSelectData: {
         type: Boolean,
         default: false
     },
@@ -108,7 +112,10 @@ const onSelected = (event) => {
     }
     else {
         value.value = event.value.value
-        emit('onSelected', event.value)
+        if(props.isSelectData)
+            getSelectedData(event.value.value)
+        else
+            emit('onSelected', event.value)
         emit('update:modelValue', event.value.value)
     }
 
@@ -187,15 +194,27 @@ function onAdvancedSearch() {
         },
         onClose(options) {
             value.value = (options.data)
-            console.log(value)
-            emit('onSelected', {
-                "value": options.data,
-                "label": value.value,
-                "description": ''
-            })
+            if(props.isSelectData){
+                getSelectedData(options.data)
+            }else{
+                emit('onSelected', {
+                    "value": options.data,
+                    "label": value.value,
+                    "description": ''
+                })
+            }
+            
             emit('update:modelValue', options.data)
         }
     });
+}
+
+function getSelectedData(name){
+    getDoc(props.doctype, name).then((r)=>{
+        if(r){
+            emit('onSelected',r)
+        }
+    })
 }
 
 </script>

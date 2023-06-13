@@ -25,20 +25,6 @@ class Reservation(Document):
 		self.pax = (self.adult or 1) + (self.child or 0)
 
 
-	def on_update(self):
-		#will run this in queue
-		
-		update_data_to_reservation_stay(self)		
 
-def update_data_to_reservation_stay(self):
-	if not hasattr(self,"update_reservation_stay") or self.update_reservation_stay:
-			
-			data = frappe.db.get_list("Reservation Stay",filters={"reservation":self.name})
-			for d in data:
-				doc = frappe.get_doc("Reservation Stay",d)
-				doc.reservation_type=self.reservation_type
-				doc.update_reservation = False
-				doc.save()
-		
 
 

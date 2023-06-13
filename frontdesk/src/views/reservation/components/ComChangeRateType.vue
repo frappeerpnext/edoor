@@ -1,24 +1,28 @@
 <template>
-    <ComOverlayPanelContent title="Change Rate Type" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div class="my-3">
+    <ComOverlayPanelContent style="min-width:15rem;" title="Change Rate Type" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
+        <div class="my-2" style="min-width:10rem;">
         <ComSelect v-model="rateType" placeholder="Rate Type" doctype="Rate Type"
             class="auto__Com_Cus w-full" />
-        <br>
-        <Checkbox v-model="applyToAllStay" :binary="true"/>
-        <span>Apply to all stay</span><br>
-        <Checkbox v-model="regenerateNewRate" :binary="true"/>
-        <span>Regenerate New Rate</span>
+        <div class="flex gap-2 flex-col mt-3">
+            <div class="flex gap-2">
+        <Checkbox inputId="apply-all" v-model="applyToAllStay" :binary="true"/>
+        <label for="apply-all" class="cursor-pointer">Apply to All Stay</label>       
+            </div>
+            <div class="flex gap-2">
+        <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true"/>
+        <label for="apply-all-stay" class="cursor-pointer">Regenerate New Rate</label>     
+            </div>
         <Message severity="warn" v-if="regenerateNewRate">Generate new rate will be affect only active reservation and future stay</Message>
+        </div>
         </div>
     </ComOverlayPanelContent>
 </template>     
 <script setup>
-import { ref, inject,updateDoc,useToast } from "@/plugin"
+import { ref, inject,useToast,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
-const frappe = inject('$frappe');
-const call = frappe.call();
+
 const toast = useToast()
 
 const emit = defineEmits(['onClose','onSave'])
@@ -41,21 +45,22 @@ const props = defineProps({
 const rateType = ref(props.rate_type);
 const applyToAllStay = ref(false);
 const regenerateNewRate = ref(false);
-
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const isLoading = ref(false)
 
 function onSave() {
     isLoading.value = true  
-    call
-    .post('edoor.api.reservation.change_rate_type',{
+ 
+    postApi('reservation.change_rate_type',{
+        property:property.name,
         reservation_stay : props.reservation_stay,
+        reservation: props.reservation,
         rate_type : rateType.value,
         apply_to_all_stay : applyToAllStay.value,
         regenerate_new_rate : regenerateNewRate.value
     })
     .then((result) => {
         emit('onSave',result.message)
-        toast.add({ severity: 'success', summary: 'Change Rate Type', detail: "Change rate type successfully", life: 3000 })
     })
     .catch((error) => {
         isLoading.value = false      

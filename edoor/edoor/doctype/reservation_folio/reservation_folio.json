@@ -15,7 +15,12 @@
   "working_date",
   "reservation",
   "reservation_stay",
-  "status"
+  "property",
+  "status",
+  "is_master",
+  "total_debit",
+  "total_credit",
+  "balance"
  ],
  "fields": [
   {
@@ -48,6 +53,7 @@
    "label": "Posting Date"
   },
   {
+   "fetch_from": "reservation_stay.reservation",
    "fieldname": "reservation",
    "fieldtype": "Link",
    "label": "Reservation",
@@ -56,6 +62,7 @@
   {
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Reservation Stay",
    "options": "Reservation Stay"
   },
@@ -65,11 +72,45 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Active\nCancel"
+  },
+  {
+   "fetch_from": "reservation_stay.property",
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_master",
+   "fieldtype": "Check",
+   "label": "Is Master"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2023-05-30 19:37:29.441656",
+ "links": [
+  {
+   "group": "Folio Transaction",
+   "link_doctype": "Folio Transaction",
+   "link_fieldname": "folio_number"
+  }
+ ],
+ "modified": "2023-06-12 11:10:23.024606",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

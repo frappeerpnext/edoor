@@ -1,9 +1,13 @@
 <template>
 <div>
-    <div style="min-width: 250px;">
+    <div :style="{minWidth: width}">
         <span class="font-semibold text-lg mb-3">{{ title }}</span>
-        <slot></slot>
-        <ComOverlayPanelFooter v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel"></ComOverlayPanelFooter>
+        <slot name="default"></slot>
+        <ComOverlayPanelFooter v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
+            <template #footer-right>
+                <slot name="footer-right"></slot>
+            </template>
+        </ComOverlayPanelFooter>
     </div>
 </div>
 </template>
@@ -18,7 +22,11 @@
             type: Boolean,
             defualt: false
         },
-        title:String
+        title:String,
+        width:{
+            type: String,
+            defualt: '250px'
+        }
     })
     function onClickSave(){
         emit('onSave')

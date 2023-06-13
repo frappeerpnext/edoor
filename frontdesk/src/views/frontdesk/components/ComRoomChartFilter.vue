@@ -6,7 +6,7 @@
         </Button>
         <div class="mr-2 relative">
             <Button type="button" class="h-full border-none border-noround-left" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
-            <Menu ref="menu" id="peroid_menu" :model="items" :popup="true" />
+            <Menu ref="menu" id="peroid_menu" :overlayVisible="false" :focused="false" :model="items" :popup="true" />
         </div>
         <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>
         <Button @click="onToday('today')" class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>

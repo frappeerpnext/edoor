@@ -1,16 +1,14 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
-
+    <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
+        <div :class="(rs.loading ? 'opacity-10 bg-black' : '' )">
         <div :class="[isPage, 'bg-white']">
             <div class="flex mb-3 justify-between">
-                
                 <div class="flex items-center">
                     <div>
                         <span @click="OnViewReservation">
-                            <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="link_line_action w-auto">
-                                <span class="number_action_line inline-block">{{
-                                    rs.stay.total_reservation_stay
-                                }}</span>
+                            <ComTagReservation title="BK#:" :value="rs?.reservation?.name" class="link_line_action w-auto">
+                                <span class="number_action_line inline-block">
+                                    {{ rs?.reservationStayNames.length }} </span>
                             </ComTagReservation>
                         </span>
                         <ComTagReservation title="RES#:" :value="rs.reservationStay?.name" class="bg-card-info p-1px">
@@ -29,21 +27,32 @@
                             <span v-else>
                                 {{ rs.reservationStay?.rooms }}
                             </span>
-                        </ComTagReservation> 
-                        <ComReservationStatus v-if="rs.reservationStay && rs.reservationStay?.reservation_status" :status-name="rs.reservationStay?.reservation_status"/>
+                        </ComTagReservation>
+                        <ComReservationStatus v-if="rs.reservationStay && rs.reservationStay?.reservation_status"
+                            :status-name="rs.reservationStay?.reservation_status" />
                         <span class="px-2 rounded-lg me-2 text-white p-1px"
                             :style="{ background: rs.reservationStay?.status_color }">{{
                                 rs.reservationStay?.reservation_type }}</span>
                     </div>
                 </div>
-                <div class="flex">
-                    <Button  class="rounded-lg">
-                        <ComIcon icon="iconOpenBrower" style="height:18px;" ></ComIcon>
+
+                <div class="flex gap-2">
+                    <Button>Is Master Room {{ rs.reservationStay.is_master }}</Button>
+                    <span @click="onRefresh" v-tooltip.top="'Refresh'" :loading="rs?.loading" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center">
+                        <icon class="pi pi-refresh font-semibold text-lg" style="color:var(--bg-purple-cs);"></icon>
+                    </span>
+                    <span @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center">
+                        <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
+                    </span>
+                    <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
+                    <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
+                            :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
+                            class="border-noround-right border-y-none border-left-none">
                     </Button>
-                    <div class="ms-2" v-if=" rs.stay.total_reservation_stay > 1">
-                    <Button  icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>
-                    <Button  class="border-noround border-rl-ed"> {{ rs.stay.total_reservation_stay }}  </Button>
-                    <Button  class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+                    <Button class="border-noround border-rl-ed">{{(rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1}} / {{ rs?.reservationStayNames.length }} </Button>
+                    <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
+            :disabled="rs?.canNavigateNext(name) || rs.loading" class="border-noround-left border-y-none border-right-none"
+                            icon="pi pi-angle-double-right"></Button>
                     </div>
                 </div>
             </div>
@@ -65,7 +74,15 @@
                                     <ComReservationRoomStayList />
                                 </div>
                                 <div class="col-12">
-                                    <ComCommentAndNotice v-if="rs.reservationStay && rs.reservationStay.name" doctype="Reservation Stay" :docname="rs.reservationStay.name"/>
+                                    <ComReservationNote v-if="rs.reservationStay && rs.reservationStay.name"
+                                        doctype="Reservation Stay" />
+                                </div>
+                                <div class="col-12">
+                                    <hr>
+                                </div>
+                                <div class="col-12">
+                                    <ComCommentAndNotice v-if="rs.reservationStay && rs.reservationStay.name"
+                                        doctype="Reservation Stay" :docname="rs.reservationStay.name" />
                                 </div>
                             </div>
                         </div>
@@ -73,6 +90,39 @@
                             <div class="grid">
                                 <ComReservationStayDetailChargeSummary @onViewReservation="OnViewReservation()" />
                                 <ComArrivalAndDeparture />
+                            </div>
+                            <hr class="mt-2">
+                            <div class="mt-3">
+                                    <div class="line-height-1 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                                        <div>
+                                             <span class="italic">Created by: </span> 
+                                             <span class="text-500 font-italic">
+                                                {{ rs.reservationStay?.owner }} {{
+                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                             </span> 
+                                        </div>
+                                        <div>
+                                             <span class="italic">Last Modified: </span>
+                                             <span class="text-500 font-italic">
+                                                {{ rs.reservationStay?.owner }} {{
+                            moment(rs.reservationStay?.modified).format('DD-MM-yyyy h:mm a') }}
+                                             </span>
+                                        </div>
+                                        <div>
+                                            <span class="italic">Checked-out by: </span>
+                                            <span class="text-500 font-italic">
+                                                {{ rs.reservationStay?.owner }} {{
+                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="italic">Checked-in by: </span>
+                                            <span class="text-500 font-italic">
+                                                {{ rs.reservationStay?.owner }} {{
+                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
+                                            </span>
+                                        </div>
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -82,46 +132,42 @@
                 </TabPanel>
 
                 <TabPanel header="Folio">
-
+                   <ComReservationStayFolio/>
                 </TabPanel>
 
                 <TabPanel header="Document">
-                    <ComDocument doctype="Reservation Stay" :docname="name"/>
+                    <ComDocument doctype="Reservation Stay" :docname="name" />
                 </TabPanel>
 
             </TabView>
         </div>
+    </div>
         <template #footer-left>
-            <div class="flex flex-col gap-0 justify-around italic min-whidth-modified">
-                <div class="xl:col-12 col-10 p-0 font-light text-sm">
-                    <div class="col p-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                        <span class="font-semibold">Created by: </span>{{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
-                        <span class="font-semibold">Last Modified: </span> {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservationStay?.modified).format('DD-MM-yyyy h:mm a') }}
-                    </div>
-                </div>
-                <div class="xl:col-12 col-10 p-0 font-light text-sm">
-                    <div class="col p-0 white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                        <span class="font-semibold">Checked-out by: </span> {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
-                        <span class="font-semibold">Checked-in by: </span> {{ rs.reservationStay?.owner }} {{
-                            moment(rs.reservation?.creation).format('DD-MM-yyyy h:mm a') }}
-                    </div>
-                </div>
-            </div>
+            <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="more_options_items" />
+            <Button @click="onAuditTrail">
+                <i class="pi pi-history me-2"></i>Audit Trail
+            </Button>
+            <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
+            <Button @click="OnViewReservation">
+                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
+                    style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
+                </Badge>
+            </Button>
         </template>
         <template #footer-right>
-            <Button @click="onCheckIn" class="bg-green-500"><ComIcon icon="checkin" style="height: 18px;" class="me-2"/>Check In</Button>
-            <Button @click="OnViewReservation"><ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge style="font-weight: 600 !important" :value="rs?.stay?.total_reservation_stay"
-                    severity="warning"></Badge></Button>
-            <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
+            <Button @click="onCheckIn" class="bg-green-500">
+                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
+            </Button>
+            <Button @click="onCheckIn" class="bg-red-400">
+                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check Out
+            </Button>
         </template>
+
     </ComDialogContent>
 </template>
 <script setup>
 
-import { inject, ref, onMounted, computed, useToast, useRoute, useRouter } from '@/plugin'
+import { inject, ref, onMounted, computed, useToast, useRoute, useRouter, onUnmounted, useDialog } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
@@ -138,9 +184,12 @@ import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
 import ComArrivalAndDeparture from './components/ComArrivalAndDeparture.vue';
 import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
+import ComReservationNote from './components/ComReservationNote.vue';
+import ComAuditTrail from '../../components/layout/components/ComAuditTrail.vue';
+import ComReservationStayFolio from '@/views/reservation/components/ComReservationStayFolio.vue';
 
 const rs = inject('$reservation_stay');
-
+const dialog = useDialog()
 const route = useRoute()
 const router = useRouter()
 const frappe = inject("$frappe")
@@ -153,19 +202,22 @@ const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+
 const name = ref("")
 
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
+const onRefresh = () => {
+    rs.getReservationDetail(name.value)
+}
 onMounted(() => {
 
     if (!dialogRef) {
         if (route.params.name) {
             name.value = route.params.name
-
-            getReservationDetail();
+            rs.getReservationDetail(name.value);
         } else {
             alert("Go back to reserveatin list")
         }
@@ -173,28 +225,36 @@ onMounted(() => {
     } else {
 
         name.value = dialogRef.value.data.name;
-        getReservationDetail();
+        rs.getReservationDetail(name.value);
     }
 
 
 });
+
+function onNavigateStay(isNext) {
+
+    const stay_name = rs.getStayName(name.value, isNext)
+
+    if (stay_name) {
+
+        if (isPage.value) {
+
+            router.push({ name: 'ReservationStayDetail', params: { name: stay_name } })
+        }
+        name.value = stay_name
+        rs.getReservationDetail(stay_name)
+    }
+
+
+}
+
+function onRoute() {
+    window.open('stay-detail/' + name.value, '_blank')
+}
 const onClose = () => {
     dialogRef.value.close()
 }
-const getReservationDetail = () => {
 
-    call.get("edoor.api.reservation.get_reservation_stay_detail", {
-        name: name.value
-    }).then((result) => {
-
-        rs.stay = result.message
-        rs.total_reservation_stay = result.message.total_reservation_stay
-        rs.reservation = result.message.reservation
-        rs.reservationStay = result.message.reservation_stay
-        rs.guest = result.message.guest
-        rs.masterGuest = result.message.master_guest
-    })
-}
 
 //check in
 const onCheckIn = () => {
@@ -226,17 +286,66 @@ const OnViewReservation = () => {
     dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
 }
 
+onUnmounted(() => {
 
+    rs.reservation = {}
+    rs.reservationStay = {}
+    rs.guest = {}
+    rs.masterGuest = {}
+
+})
+
+
+function onAuditTrail() {
+    const dialogRef = dialog.open(ComAuditTrail, {
+        data: {
+            doctype: 'Reservation Stay',
+            docname: name.value
+        },
+        props: {
+            header: 'Audit Trail',
+            style: {
+                width: '75vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+            //
+        }
+    });
+}
+// More Options items
+const more_options_items = ref([])
+more_options_items.value.push({
+    label: "Options 1",
+    icon: 'pi pi-user-edit',
+})
+more_options_items.value.push({
+    label: "Options 2",
+    icon: 'pi pi-user-edit',
+})
+more_options_items.value.push({
+    label: "Options 3",
+    icon: 'pi pi-user-edit',
+})
 </script>
 <style scoped>
 .p-button {
     border: 0 !important;
 }
-.border-rl-ed{
+
+.border-rl-ed {
     border-right: 1px solid var(--btn-border-color) !important;
     border-left: 1px solid var(--btn-border-color) !important;
 }
 
 .min-whidth-modified {
     line-height: 1.4;
-}</style>
+}
+
+</style>

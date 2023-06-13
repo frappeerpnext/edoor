@@ -95,7 +95,6 @@ function onLoad(){
         })
     }
     dataFilter.push(['attached_to_name','=',props.docname])
-    console.log(dataFilter)
     getDocList('File', {
         fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype'],
         orFilters: dataFilter,
@@ -111,8 +110,7 @@ function onLoad(){
     })
 }
 
-function onDetail(data){ 
-    console.log(data)
+function onDetail(data){
     if(data.attached_to_doctype == 'Reservation Stay'){
         showReservationStayDetail(data.attached_to_name)
     }

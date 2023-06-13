@@ -108,7 +108,7 @@ import CurrencyFormat from './components/CurrencyFormat.vue'
 import ComChartDoughnut from './components/chart/ComChartDoughnut.vue'
 import ComIcon from './components/ComIcon.vue'
 import ComPlaceholder from './components/layout/components/ComPlaceholder.vue'
-import ComReservationStatus from './components/label/ComReservationStatus.vue'
+import ComReservationStatus from './components/label/ComReservationStatus.vue' 
 import socket from './utils/socketio';
 
 
@@ -178,8 +178,7 @@ app.component('ComDocument', ComDocument)
 app.component('ComInputTime',ComInputTime)
 app.component('ComPlaceholder',ComPlaceholder)
 app.component('ComReservationStatus',ComReservationStatus)
-
-
+ 
 
 
 // Plugins

@@ -68,9 +68,7 @@
                                             </tbody>
                                         </table>
                                     </div>`, escape: true, class: 'event-tooltip' }">
-                                    
                                         {{ event.title }}
-                                        
                                     </div>
                             </template>
                         </FullCalendar>
@@ -384,6 +382,7 @@ function onSelectedDate(event) {
                 },
                 modal: true,
                 maximizable: true,
+                closeOnEscape: false
             },
             onClose: (options) => {
                 const data = options.data;
@@ -555,7 +554,8 @@ function showReservationStayDetail(name) {
                 width: '80vw',
             },
             maximizable: true,
-            modal: true
+            modal: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;
@@ -582,7 +582,8 @@ function showReservationDetail(name) {
                 width: '80vw',
             },
             maximizable: true,
-            modal: true
+            modal: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;
@@ -650,10 +651,6 @@ onUnmounted(() => {
     width: calc(100% - 250px);
 }
 
-.filter-calen-fro .p-inputtext.p-component {
-    width: 12rem;
-    height: 38px;
-}
 .fc-timeline-slot:hover {
   background: #DBDBDB;
   opacity: 0.4;

@@ -26,20 +26,15 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
-                        <div v-if="rs.reservation?.rooms && rs.reservation?.rooms.split(',').length > 3">
-                            <span
-                                v-for="value_room_stay in rs.reservation?.rooms.split(',').slice(0, 3)"
-                                :key="value_room_stay" class="rounded-xl px-2 me-1 bg-gray-edoor">
-                                {{ value_room_stay }}
+                        <div v-if="rs && rs?.reservationStays">
+                            <span v-for="(i, index) in rs.reservationStays.slice(0, 2)"
+                                :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor">
+                                    <span>{{ i?.rooms }}</span>
                             </span>
-                            <span class="rounded-xl px-2 bg-purple-cs link_line_action">
-                                {{ rs.reservation?.rooms.split(",").length }}
-                                more
+                            <span v-if="rs.reservationStays.length > 2">
+                                ... <span class="">more</span>
                             </span>
                         </div>
-                        <span class="bg-gray-edoor rounded-xl px-2" v-else>
-                            {{ rs.reservation?.rooms }}
-                        </span>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">

@@ -1,6 +1,6 @@
 <template>
     <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div class="flex gap-2 my-3">
+        <div class="flex gap-2 my-2">
         <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
             class="child-adults-txt" />
         <InputNumber v-model="stay.child" inputId="stacked-buttons" showButtons :min="0" :max="100"

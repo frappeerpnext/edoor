@@ -6,7 +6,7 @@
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />
             </template>
             <template #content>
-                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.reservation?.name)"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservation?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber2="rs?.masterGuest.phone_number" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
+                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.reservation?.name)" :dob="rs.masterGuest.date_of_birth"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservation?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber1="rs?.masterGuest.phone_number" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
             </template>
         </ComReservationStayPanel>
     </div>
@@ -16,13 +16,11 @@ import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm} from '@
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
+
+
+
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
-
 const rs = inject('$reservation');
-
-
-
 const dialog = useDialog()
 const dialogConfirm = useConfirm()
 const frappe = inject('$frappe')
@@ -33,7 +31,8 @@ const loading = ref(false)
 
 const menuMasterGuestList = ref([
     {
-        label: 'Change guest',
+        label: 'Change Guest',
+        icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
         }
@@ -45,13 +44,13 @@ const menuMasterGuestList = ref([
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
-        label: 'Change guest',
+        label: 'Change Guest',
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
-        label: 'Add additional guest',
+        label: 'Add Additional Guest',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
@@ -60,7 +59,7 @@ const menuStayGuestList = ref([
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
 {
-        label: 'Add additional guest',
+        label: 'Add Additional Guest',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
@@ -119,7 +118,8 @@ function onAdvancedSearch(guest_type) {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            closeOnEscape: false
         },
         data:{
             guest_type: guest_type,

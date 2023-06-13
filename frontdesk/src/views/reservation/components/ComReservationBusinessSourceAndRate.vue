@@ -2,7 +2,7 @@
 <ComReservationStayPanel title="Business Source & Rate">
     
                                 <template #content>
-                                    {{rs?.reservation.name}} - {{rs?.reservationStay.name}}
+                                   
                                 <div class="flex">
                                     <div class="flex mt-2 w-full ">
                                         <div class="col-6">
@@ -34,7 +34,7 @@
 </OverlayPanel>
 
 <OverlayPanel ref="opRateType">
-            <ComChangeRateType :reservation_stay="rs?.reservationStay?.name" :rate_type="rs?.reservationStay?.rate_type" @onClose="closeOverlay"   @onSave="onChangeRateType"/>
+            <ComChangeRateType :reservation="rs?.reservation?.name" :reservation_stay="rs?.reservationStay?.name" :rate_type="rs?.reservationStay?.rate_type" @onClose="closeOverlay"   @onSave="onChangeRateType"/>
 </OverlayPanel>
 
 </template>

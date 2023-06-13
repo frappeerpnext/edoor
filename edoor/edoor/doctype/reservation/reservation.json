@@ -42,6 +42,7 @@
   "working_date",
   "cashier_shift",
   "note",
+  "housekeeping_note",
   "hidden_section_section",
   "keyword",
   "status_color",
@@ -64,7 +65,11 @@
   "total_room_rate",
   "column_break_48",
   "total_adr_rate",
-  "column_break_52"
+  "column_break_52",
+  "total_amount",
+  "balance",
+  "payment",
+  "room_type_alias"
  ],
  "fields": [
   {
@@ -380,6 +385,31 @@
    "fieldname": "total_cancelled",
    "fieldtype": "Int",
    "label": "Total Cancelled"
+  },
+  {
+   "fieldname": "housekeeping_note",
+   "fieldtype": "Small Text",
+   "label": "Housekeeping Note"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "label": "Total Amount"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
+  },
+  {
+   "fieldname": "payment",
+   "fieldtype": "Currency",
+   "label": "Payment"
+  },
+  {
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -390,7 +420,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-08 11:59:12.504630",
+ "modified": "2023-06-12 14:22:03.923092",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

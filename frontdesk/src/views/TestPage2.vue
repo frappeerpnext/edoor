@@ -1,20 +1,35 @@
 <template>
-    <div v-if="result">
-        {{ result }}
-        <ComInputTime v-model="result.drop_off_time" label="Drop Time"/>
-        <Button label="Save" @click="onChange()"></Button>
+
+    <div> 
+        <Button @click="onAuditTrail"> Audit Trail</Button>
     </div>
 </template>
 <script setup>
-import {ref, updateDoc, getDoc } from '@/plugin'
-import ComInputTime from '../components/form/ComInputTime.vue';
-const time = ref('12:00:00.000000')
-const result = ref()
-function onChange(){
-    updateDoc('Reservation Stay','ST2023-0162', result.value)
+import {ref, updateDoc, getDoc, useDialog } from '@/plugin'
+import ComAuditTrail from '../components/layout/components/ComAuditTrail.vue';
+const dialog = useDialog()
+ 
+function onAuditTrail(){
+    const dialogRef = dialog.open(ComAuditTrail, {
+        data: {
+            doctype: 'Reservation Stay',
+            docname: 'ST2023-0245'
+        },
+        props: {
+            header: 'Audit Trail',
+            style: {
+                width: '75vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+            //
+        }
+    });
 }
-
-getDoc('Reservation Stay','ST2023-0162').then((r)=>{
-    result.value = r
-})
 </script> 

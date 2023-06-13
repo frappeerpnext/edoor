@@ -35,8 +35,24 @@ export function updateDoc(doctype, name, data, message){
     const frappe = new FrappeApp()
     const db = frappe.db()
     return new Promise((resolve, reject)=>{
-        if(name){
-            db.updateDoc(doctype, name, data)
+        db.updateDoc(doctype, name, data)
+        .then((doc) => {
+            resolve(doc)
+            toaster('success', `${message ? message : 'Update successful'}`)
+        })
+        .catch((error) => {
+            const message = handleServerMessage(error)
+            reject(error)
+            // toaster('error', 'Server Error');
+        });
+    })
+}
+export function createUpdateDoc(doctype, data, message){
+    const frappe = new FrappeApp()
+    const db = frappe.db()
+    return new Promise((resolve, reject)=>{
+        if(data.name){
+            db.updateDoc(doctype, data.name, data)
             .then((doc) => {
                 resolve(doc)
                 toaster('success', `${message ? message : 'Update successful'}`)
@@ -89,11 +105,12 @@ export function getApi(api, params = Object){
         })
     })
 }
-export function postApi(params = Object){
+export function postApi(api, params = Object, message){
     const frappe = new FrappeApp()
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
         call.post(`edoor.api.${api}`, params).then((result) => {
+            toaster('success', `${message ? message : 'Update successful'}`)
             resolve(result)
         }).catch((error) =>{
             handleServerMessage(error)
