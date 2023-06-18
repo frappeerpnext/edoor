@@ -1,20 +1,27 @@
 <template>
-<div>
-    <div :style="{minWidth: width}">
-        <span class="font-semibold text-lg mb-3">{{ title }}</span>
-        <slot name="default"></slot>
-        <ComOverlayPanelFooter v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
-            <template #footer-right>
-                <slot name="footer-right"></slot>
-            </template>
-        </ComOverlayPanelFooter>
+    <div>
+        <div :style="{minWidth: width}">
+            <span class="font-semibold text-lg mb-3">{{ title }}</span>
+            <slot name="default"></slot>
+            <ComOverlayPanelFooter :hideButtonOK="hideButtonOK" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
+                <template #footer-right>
+                    <slot name="footer-right"></slot>
+                </template>
+                <template #af-cancel-position>
+                    <slot name="af-cancel-position"></slot>
+                </template>
+            </ComOverlayPanelFooter>
+        </div>
     </div>
-</div>
 </template>
 <script setup>
     const emit = defineEmits(['onSave', 'onCancel'])
     const props = defineProps({
         hideFooter: {
+            type: Boolean,
+            default: false
+        },
+        hideButtonOK: {
             type: Boolean,
             default: false
         },
@@ -28,10 +35,10 @@
             defualt: '250px'
         }
     })
-    function onClickSave(){
+    const onClickSave = () => {
         emit('onSave')
     }
-    function onClickCancel(){
+    const onClickCancel = () => {
         emit('onCancel')
     }
 </script>

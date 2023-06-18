@@ -47,7 +47,7 @@
             </template>
         </Column>
         <div class="hkpanel">
-        <Sidebar :dismissable="false" v-model:visible="visibleRight" position="right">
+        <Sidebar :dismissable="false" v-model:visible="visibleRight" position="right"  :maskStyle="{ pointerEvents: 'none' }">
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
         </Sidebar>
         </div>
@@ -143,4 +143,5 @@ function onViewCustomerDetail(name) {
 .p-sidebar-mask.p-component-overlay{
     pointer-events:none !important;
 }
+
 </style>

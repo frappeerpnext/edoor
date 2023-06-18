@@ -21,6 +21,8 @@ export default class Gv {
 			{text:"frappe.exceptions.ValidationError:",value:""},
 			{text:"frappe.exceptions.MandatoryError:",value:"Value required for "},
 			{text:"ValueError:",value:"Invalid data input. "},
+			{text:"frappe.exceptions.PermissionError: ",value:""},
+			
 			{text:"_",value:" "},
 		]
 		let message=exception

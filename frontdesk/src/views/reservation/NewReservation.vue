@@ -82,7 +82,7 @@
             </div>
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
-                    <h1 class="text-lg line-height-4 font-bold mb-3">Guest Information</h1>
+                    <h1 class="text-lg line-height-4 font-bold mb-2">Guest Information</h1>
                     <div>
                         <div class="w-full n__re-custom">
                             <label>Return Guest</label>
@@ -150,13 +150,13 @@
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left">
-                                <label class="px-2">Room Name<span class="text-red-500">*</span></label>
+                                <label class="px-2">Room Name</label>
                             </th>
                             <th class="text-right">
-                                <label class="px-2">Rate<span class="text-red-500">*</span></label>
+                                <label class="px-2">Rate</label>
                             </th>
                             <th>
-                                <label class="text-center px-2">Adults<span class="text-red-500">*</span></label>
+                                <label class="text-center px-2">Adults</label>
                             </th>
                             <th>
                                 <label class="text-center px-2">Children</label>
@@ -216,9 +216,16 @@
                     </tbody>
                 </table>
             </div>
-            <Button @click="onAddRoom" class="px-4 border-round-xl border-none mt-2" >
-                <img :src="IconAddRoom" class="btn-add_comNote__icon me-1"/> Add Room
-            </Button><br />
+            <div class="flex justify-between">
+                <div>
+                    <Button @click="onAddRoom" class="px-4 border-round-xl border-none mt-2" >
+                        <img :src="IconAddRoom" class="btn-add_comNote__icon me-1"/> Add Room
+                    </Button>
+                </div>
+                <div class="flex align-items-center h-100">
+                    <Checkbox class="mr-2" v-model="checked" :binary="true" /><span>Paid by Company</span>
+                </div>
+            </div>
         </div>
         <div class="mt-3">
             <div>
@@ -228,36 +235,14 @@
             </div>
         </div>
         <OverlayPanel ref="op">
-            <label>Change Rate</label>
-            <div class="rte_message">
-                <Message>If you change room rate here. <br/>This room will stop automatically get rate from rate plan. <br/>
-                To use rate from Rate Plan, click on reverse button
-                </Message>
-            </div>
-            <div class="flex gap-2 mt-3">
-                <div class="ch__rate_nres relative border-round-lg overflow-hidden">
-                    <div @click="onUseRatePlan" v-tooltip.top="'Reverse to Rate Plan'" class="cursor-pointer absolute h-full w-3rem border-y-1 border-round-y border-round-left border-left-1" style="background: var(--bg-input-field);border-color: #a0bde0;">
-                        <div class="translate-y-2/4 text-center">
-                            <i class="pi pi-replay text-xl text-dark font-bold"></i>
-                        </div>
-                    </div>    
-                    <InputNumber class="text-right" v-model="rate" :min="0" />
-                </div>
-                <div>
-                    <Button @click="onChangeRate" icon="pi pi-file-edit" label="Update New Rate" class="border-none cursor-pointer"/>
-                </div>
-            </div>
+            <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
         </OverlayPanel>
-
     </ComDialogContent>
 </template>
 <script setup>
-import Calendar from 'primevue/calendar';
-import OverlayPanel from 'primevue/overlaypanel';
-import Message from 'primevue/message';
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign.svg';
-
+import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import { ref, inject, computed, onMounted } from "@/plugin"
 import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
@@ -348,7 +333,7 @@ const getRooms = () => {
         .then((result) => {
 
             rooms.value = result.message;
-
+            console.log(rooms.value)
         })
 }
 
@@ -426,8 +411,7 @@ onMounted(() => {
 
             getRoomType()
             getRooms()
-        } else {
-            console.log(dialogRef.value.data)
+        } else { 
             if (dialogRef.value.data?.arrival_date) {
                 doc.value.reservation.arrival_date = dialogRef.value.data.arrival_date
                 doc.value.reservation.departure_date = dialogRef.value.data.departure_date
@@ -525,7 +509,9 @@ const onUseRatePlan = () => {
     updateRate()
     op.value.hide();
 }
-
+function onClose(){
+    op.value.hide()
+}
 </script>
 <style>
 .ch__rate_nres input{
@@ -536,6 +522,6 @@ const onUseRatePlan = () => {
 .p-button.p-component .p-button-icon{
     font-weight: 600;
     font-size: 1.25rem;
-    
 }
+
 </style>

@@ -171,10 +171,16 @@ function updateDisplayNote() {
     }
     else if (props.doctype == 'Reservation') {
         note.value = reservation?.reservation?.note || ''
+        reservation_note.value.note_by = reservation?.reservation?.note_by || ''
+        reservation_note.value.note_modified = reservation?.reservation?.note_modified || ''
+
         housekeeping_note.value = reservation?.reservation?.housekeeping_note || ''
+        housekeeping.value.note_by = reservation?.reservation?.housekeeping_note_by || ''
+        housekeeping.value.note_modified = reservation?.reservation?.housekeeping_note_modified || ''
+
         docname.value = reservation.reservation.name || ''
         reservationName.value = reservation.reservation.name || ''
-        totalStay.value = reservation_stay.total_reservation_stay || 0
+        totalStay.value = reservation.total_reservation_stay || 0
     }
     onClose()
 }

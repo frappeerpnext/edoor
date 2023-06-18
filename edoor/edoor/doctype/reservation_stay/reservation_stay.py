@@ -30,8 +30,9 @@ class ReservationStay(Document):
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 		
-		#validate select uniue guest in additional guest	
-		validate_guests = [x for x in self.additional_guests if x.guest == self.guest]
+		#validate select uniue guest in additional guest
+		master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
+		validate_guests = [x for x in self.additional_guests if x.guest == self.guest or x.guest == master_guest]
 		unique_list = list(set([x.guest for x in self.additional_guests]))
 		if len(unique_list) < len(self.additional_guests):
 			validate_guests = True
@@ -82,6 +83,8 @@ class ReservationStay(Document):
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
 		self.adr = Enumerable(self.stays).sum(lambda x: (x.total_rate or 0)) / self.room_nights
 
+
+		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
 
 		#update note & housekeeping note
 		if self.is_new():

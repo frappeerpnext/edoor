@@ -50,6 +50,8 @@
   "total_room_rate_tax",
   "total_room_rate",
   "room_charge_and_payment_section",
+  "total_debit",
+  "total_credit",
   "room_charge",
   "room_charge_discount",
   "room_charge_tax",
@@ -97,7 +99,9 @@
   "column_break_87",
   "housekeeping_note_by",
   "housekeeping_note_modified",
-  "housekeeping_note"
+  "housekeeping_note",
+  "pay_by_company",
+  "summary_data"
  ],
  "fields": [
   {
@@ -613,11 +617,33 @@
    "fieldname": "housekeeping_note_modified",
    "fieldtype": "Datetime",
    "label": "Housekeeping Note Modified"
+  },
+  {
+   "default": "0",
+   "fieldname": "pay_by_company",
+   "fieldtype": "Check",
+   "label": "Pay by Company"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "summary_data",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Summary Data"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-13 11:31:06.673203",
+ "modified": "2023-06-17 17:22:31.459442",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

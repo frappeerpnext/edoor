@@ -14,7 +14,7 @@
         <Button @click="hk.view_type ='kanban'">View as Kanban</Button>
     </div>
     
-    <div class="grid gap-2">
+    <div class="grid gap-3">
         <div class="col-12">
             <div class="flex justify-between">
                 <div class="flex gap-3">
@@ -25,7 +25,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="showSummary" class="col-2 bg-white rounded-xl">
+        <div v-if="showSummary" class="col-2 p-0 rounded-xl">
             <ComHousekeepingStatistic/>        
         </div>
         <div class="col bg-white rounded-xl">

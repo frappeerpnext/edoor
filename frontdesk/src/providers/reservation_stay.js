@@ -15,11 +15,12 @@ export default class ReservationStay {
 		this.masterGuest = ref({})
 		this.reservation = ref({})
 		this.reservationStayNames = ref([])
+		this.stay_summary = ref([])
 	}
 
 
 	getReservationDetail = async (name) => {
-
+ 
 		this.loading.value = true
 
 		call.get("edoor.api.reservation.get_reservation_stay_detail", {
@@ -31,6 +32,12 @@ export default class ReservationStay {
 			this.reservationStayNames.value = result.message.reservation_stay_names
 			this.guest.value = result.message.guest
 			this.masterGuest.value = result.message.master_guest
+			if (result.message.reservation_stay.summary_data){
+				this.stay_summary.value = JSON.parse(result.message.reservation_stay.summary_data)
+			}else {
+				this.stay_summary.value = []
+			}
+			
 			this.loading.value = false
 
 		}).catch((error) => {
@@ -63,6 +70,15 @@ export default class ReservationStay {
 
 
 
-
+	clear(){
+		this.loading = ref(false)
+		this.stay = {}
+		this.reservationStay.value = ref({})
+		this.guest = ref({})
+		this.masterGuest.value = ref({})
+		this.reservation.value = ref({})
+		this.reservationStayNames.value = ref([])
+		this.stay_summary.value = ref([])
+	}
 
 }

@@ -16,8 +16,7 @@ import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm} from '@
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
-
-
+import ComAddGuest from '../../guest/components/ComAddGuest.vue';
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const rs = inject('$reservation');
@@ -35,6 +34,13 @@ const menuMasterGuestList = ref([
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
+        }
+    },
+    {
+        label: 'Edit Guest',
+        icon:'pi pi-fw pi-user-edit',
+        command: () =>{
+            onEditGuest('master_guest')
         }
     }
 ])
@@ -141,6 +147,31 @@ function onAdvancedSearch(guest_type) {
 
 const onViewGuestDetail =(name)=>{
     window.postMessage('view_guest_detail|' + name, '*');
+}
+
+function onEditGuest() {
+        dialog.open(ComAddGuest, {
+        props: {
+            header: `Edit Guest`,
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        data:{
+            name: rs.masterGuest.name,
+        },
+        onClose: (options) => {
+            if(options.data){
+                rs.masterGuest = options.data
+            }
+        }
+    }); 
 }
 
 </script>

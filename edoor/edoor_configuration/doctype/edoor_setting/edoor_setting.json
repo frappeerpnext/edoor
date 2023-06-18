@@ -9,7 +9,11 @@
  "field_order": [
   "room_block_status",
   "room_block_color",
-  "room_revenue_code"
+  "room_revenue_code",
+  "room_revenue_group_account_code",
+  "room_discount_group_account_code",
+  "room_tax_group_account_code",
+  "folio_transaction_stype_credit_debit"
  ],
  "fields": [
   {
@@ -29,12 +33,36 @@
    "fieldtype": "Link",
    "label": "Room Revenue Code",
    "options": "Account Code"
+  },
+  {
+   "fieldname": "room_discount_group_account_code",
+   "fieldtype": "Link",
+   "label": "Account Code of Room Discount Group",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "room_tax_group_account_code",
+   "fieldtype": "Link",
+   "label": "Account Code of Room Tax Group",
+   "options": "Account Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "folio_transaction_stype_credit_debit",
+   "fieldtype": "Check",
+   "label": "View folio transaction style as credit and debit"
+  },
+  {
+   "fieldname": "room_revenue_group_account_code",
+   "fieldtype": "Link",
+   "label": "Account Code of Room Revenue Group",
+   "options": "Account Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-12 15:08:56.536053",
+ "modified": "2023-06-15 18:27:58.923808",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

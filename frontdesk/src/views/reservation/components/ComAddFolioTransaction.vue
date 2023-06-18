@@ -1,6 +1,7 @@
 <template>
+     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
     {{ doc }}
-    <Button @click="onSave"> Save</Button>
+     
     <div class="flex mt-2 gap-2">
         <span>Ref#.</span>
         <InputText type="text" v-model="doc.reference_number" />
@@ -16,7 +17,7 @@
     </div>
     <div>
         <span>Rate Include Tax</span>
-        <ComSelect v-model="account_code.rate_include_tax" :options="['Yes','No']" :clear="false"/>
+        <ComSelect v-model="doc.rate_include_tax" :options="['Yes','No']" :clear="false"/>
     </div>
     <div class="flex mt-2 gap-2">
         <span>Input Amount</span>
@@ -39,23 +40,27 @@
         </div>
         <div v-if="account_code.allow_tax">
             <span>Tax</span>
-            <div v-if="tax_rule.tax_1_rate>0">
-                <div>{{ tax_rule.tax_1_name }} - {{ tax_rule.tax_1_rate }} % : {{ tax_1_amount }}</div>
-                <div>{{ tax_rule.tax_2_name }} - {{ tax_rule.tax_2_rate }} % : {{ tax_2_amount }}</div>
-                <div>{{ tax_rule.tax_3_name }} - {{ tax_rule.tax_3_rate }} % : {{ tax_3_amount }}</div> 
+            <div v-if="tax_rule && tax_rule.tax_1_rate>0">
+                <div>{{ tax_rule.tax_1_name }} - {{ tax_rule.tax_1_rate }} % :  {{ tax_1_amount }}</div>
             </div>
+            <div v-if="tax_rule && tax_rule.tax_2_rate>0">
+                <div>{{ tax_rule.tax_2_name }} - {{ tax_rule.tax_2_rate }} % :  {{ tax_2_amount }}</div>
+            </div>
+            <div v-if="tax_rule && tax_rule.tax_3_rate>0">
+                <div>{{ tax_rule.tax_3_name }} - {{ tax_rule.tax_3_rate }} % :  {{ tax_3_amount }}</div> 
+            </div>
+        </div>
+        <div v-if="tax_rule && ( tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate>0)">
+            <span>Total Tax: {{ total_tax }}</span>
         </div>
         <div v-if="account_code.allow_bank_fee">
             Bank Fee
         </div>
         <div>
-            <span>Total : {{ total_tax }}</span>
-        </div>
-        <div>
             <span>Total : {{ total_amount }}</span>
         </div>
 
-   
+    </ComDialogContent>
 </template>
 <script setup>
 import { ref, inject,getDoc,computed,onMounted } from "@/plugin"
@@ -63,18 +68,29 @@ import Calendar from 'primevue/calendar';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 
-
+const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
-
-const doc = ref({
-    discount_type:"Percent"
-});
+const isSaving = ref(false)
 const account_code = ref({
-    rate_include_tax:"Yes"
+    rate_include_tax:"Yes",
+    tax_rule : '',
+    allow_discount : 1,
+    allow_tax : 1,
+    allow_bank_fee : 1,
 });
+const doc = ref({
+    discount_type:"Percent",
+    taxable_amount_1 : 0,
+    taxable_amount_2 : 0,
+    taxable_amount_3 : 0,
+    input_amount : 0,
+    account_code : '',
+    discount : 0,
+});
+
 const tax_rule = computed(()=>{
     if(account_code.value?.tax_rule){
         return JSON.parse(account_code.value.tax_rule_data)
@@ -87,24 +103,31 @@ const discount_amount = computed(()=>{
     if(doc.value.discount_type == "Percent"){
         return (doc.value.input_amount || 0) * (doc.value.discount/100 || 0)
     }else {
-        return doc.value.discount
+        return doc.value.discsount
     }
     
 });
+
 const tax_1_amount = computed(()=>{
-   return 0
-    // doc.value.taxable_amount_1 = doc.value.input_amount * ((tax_rule.value.percentage_of_price_to_calculate_tax_1 || 100)/100);
-    // if (tax_rule.value.calculate_tax_1_after_discount == 0 &&  account_code.value.rate_include_tax == 'Yes') {
-    //     doc.value.taxable_amount_1 = doc.value.taxable_amount_1; 
-    // }
-    // else {doc.value.taxable_amount_1 = doc.value.taxable_amount_1 - discount_amount.value}
-    // return (doc.value.taxable_amount_1 || 0) * (tax_rule.value.tax_1_rate / 100 || 0)
+    return 0
+//     if (tax_rule){ 
+//     doc.value.taxable_amount_1 = doc.value.input_amount * ((tax_rule.value.percentage_of_price_to_calculate_tax_1 || 100)/100);
+	 
+//     if (tax_rule.value.calculate_tax_1_after_discount == 0 &&  account_code.value) {
+//         doc.value.taxable_amount_1 = doc.value.taxable_amount_1
+//     }else {
+//         doc.value.taxable_amount_1 = doc.value.taxable_amount_1 - discount_amount.value
+//     }
+//     return doc.value.taxable_amount_1 * tax_rule.value.tax_1_rate / 100
+// }else {
+//     return 0
+// }
 });
 const tax_2_amount = computed(()=>{
-   return 0
+    return 0
     // doc.value.taxable_amount_2 = doc.value.input_amount * ((tax_rule.value.percentage_of_price_to_calculate_tax_2 || 100)/100) 
 
-    // if (tax_rule.value.calculate_tax_2_after_discount == 0 &&  account_code.value.rate_include_tax == 'Yes') {
+    // if (tax_rule.value.calculate_tax_2_after_discount == 0 &&  account_code.value) {
     //     doc.value.taxable_amount_2 = doc.value.taxable_amount_2
     // }else {doc.value.taxable_amount_2 = doc.value.taxable_amount_2 - discount_amount.value} 
 
@@ -115,10 +138,10 @@ const tax_2_amount = computed(()=>{
 	// return doc.value.taxable_amount_2 * tax_rule.value.tax_2_rate / 100
 });
 const tax_3_amount = computed(()=>{
-   return
+return 0
     // doc.value.taxable_amount_3 = doc.value.input_amount * ((tax_rule.value.percentage_of_price_to_calculate_tax_3 || 100)/100)
 	 
-    // if (tax_rule.value.calculate_tax_3_after_discount == 0 &&  account_code.value.rate_include_tax == 'Yes') {
+    // if (tax_rule.value.calculate_tax_3_after_discount == 0 &&  account_code.value) {
     //     doc.value.taxable_amount_3 = doc.value.taxable_amount_3
     // }else {doc.value.taxable_amount_3 = doc.value.taxable_amount_3 - discount_amount.value}
 	  
@@ -147,6 +170,17 @@ function onSelectAccountCode(data) {
         .then((d) =>{ 
              account_code.value = d
              doc.value.rate_include_tax = d.rate_include_tax
+             doc.value.bank_fee = (d.bank_fee || 0)
+             if (d.tax_rule){
+                const tax_rule =  JSON.parse(account_code.value.tax_rule_data)
+                if(tax_rule){ 
+                    doc.tax_1_rate = tax_rule.tax_1_rate
+                    doc.tax_2_rate = tax_rule.tax_2_rate
+                    doc.tax_3_rate = tax_rule.tax_3_rate
+                }
+             }
+             
+
         })
         .catch((error) => {
 
@@ -154,26 +188,45 @@ function onSelectAccountCode(data) {
 
 }
 function onSave() {
+    isSaving.value = true
     const data = JSON.parse(JSON.stringify(doc.value))
-
-
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
-
-    db.createDoc("Folio Transaction", { data })
+    if(data.name){
+        db.updateDoc("Folio Transaction",data.name, { data })
         .then((doc) => {
-            alert("success")
+            isSaving.value = false;
+            dialogRef.value.close(doc);
+            
         }).catch((err) => {
-            alert("error")
+            gv.showErrorMessage(err)
+            isSaving.value = false;
         })
+    }else{
+        db.createDoc("Folio Transaction", { data })
+        .then((doc) => {
+            isSaving.value = false;
+            dialogRef.value.close(doc);
+            
+        }).catch((err) => {
+            gv.showErrorMessage(err)
+            isSaving.value = false;
+        })
+    }
+    
 }
 
 onMounted(() => {
 
-
-
     doc.value.folio_number = dialogRef.value.data.folio_number;
- 
 
+    if(dialogRef.value.data.folio_transaction_number){
+       db.getDoc("Folio Transaction",dialogRef.value.data.folio_transaction_number)
+       .then((result)=>{
+        doc.value = result
+       })
+    }else{
+        alert("use is want to add data")
+    }
 
 
 });

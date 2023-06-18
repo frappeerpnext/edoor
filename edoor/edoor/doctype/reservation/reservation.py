@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-
+from frappe.utils import now
 class Reservation(Document):
 	def validate(self):
 		if self.departure_date<=self.arrival_date:
@@ -23,6 +23,31 @@ class Reservation(Document):
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 		self.pax = (self.adult or 1) + (self.child or 0)
+		#update note & housekeeping note
+		if self.is_new():
+			if self.note:
+				self = update_note(self=self)
+			if self.housekeeping_note:
+				self = update_housekeeping_note(self=self)
+		else:
+			if self.note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'note')
+				if self.note != note:
+					self = update_note(self=self)
+				
+			if self.housekeeping_note:
+				note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
+				if self.housekeeping_note != note:
+					self = update_housekeeping_note(self=self)
+def update_note(self):
+	self.note_by = frappe.session.user
+	self.note_modified = now()
+	return self
+
+def update_housekeeping_note(self):
+	self.housekeeping_note_by = frappe.session.user
+	self.housekeeping_note_modified = now()
+	return self
 
 
 

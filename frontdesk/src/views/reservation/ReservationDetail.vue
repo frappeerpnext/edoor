@@ -1,12 +1,13 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
-        <div :class="[isPage, 'bg-white']">
+        <div :class="[isPage, 'bg-white']"> 
             <div class="grid">
                 <div :class="isPage ? 'col py-3' : 'col pt-0'">
                     <div class="flex justify-between">
                         <div class="flex align-items-center">
                             <div class="flex">
-                                <ComTagReservation title="BK#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
+                                
+                                <ComTagReservation title="RS#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
                                     <span class="res__bagde ml-1">
                                         {{rs.reservationStays.length}}
                                     </span>

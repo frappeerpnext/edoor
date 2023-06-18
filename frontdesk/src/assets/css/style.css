@@ -31,6 +31,7 @@
     --bg-input-field: #e9ecef;
     --bg-yellow-op-10:#faf6e9;
     --bg-purple-cs-50:#4338ca75;
+    --bg-tb-sec-color:#eff2f7;
 
 }
 html {
@@ -576,6 +577,16 @@ span.p-button-icon.pi.pi-ellipsis-h {
 .btn-si__icon{
     height: 10px
 }
+.fc .fc-timeline-overlap-enabled .fc-timeline-lane-frame .fc-timeline-events{
+    padding-bottom: 0 !important;
+}
+.fc-timeline-event-harness{
+    top: 2px !important;
+}
+.fc-event[href], .fc-event.fc-event-draggable{
+    border-radius: 1.5rem !important;
+    height: 31px;
+}
 /* END Full calenda css */
 .cs-badge-tran .p-badge.p-badge-warning{
     font-size: 0.7rem;
@@ -584,7 +595,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     line-height: 1rem;
 }
 .ress__list .p-datatable-tbody tr:nth-child(even){
-    background: var(--table-even-cell-color) !important;
+    background: var(--bg-tb-sec-color) !important;
 }
 span.p-button-icon.pi.pi-ellipsis-v{
     font-size: 1.5rem;
@@ -625,12 +636,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .res__state__center span{
     margin-right: 0 !important;
 }
-.split__btn_none_icon .p-button-icon-left, .split__btn_none_icon .p-button-icon-right{
-    display: none;
-}
-.fc-event[href], .fc-event.fc-event-draggable{
-    border-radius: 1.5rem !important;
-}
+
 .fc-event-title-container{
     text-align: center;
 }
@@ -657,10 +663,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .rte_message .p-message{
     margin: 0;
 }
-/* .fc .fc-timeline-event-harness, .fc .fc-timeline-more-link{
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+.isMaster-guest tbody tr:first-child td{
+    background: rgba(0, 128, 0, .1)
 }
-.fc .fc-timeline-lane-frame{
-    height: 34px !important;
-} */
+

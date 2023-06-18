@@ -52,7 +52,7 @@
                         </div>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
-                        <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full" @eventAfterAllRender="onEventAfterAllRender">
+                        <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}">
                                     <div class="group relative h-full p-1" style="height: 36px" v-tooltip.bottom="{ value: `
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
@@ -542,9 +542,7 @@ const onRefresh = () => {
 //     const cal = fullCalendar.value.getApi()
 //     cal.setOption('resourceOrder', '-sort_order')
 //   }
-function onEventAfterAllRender(){
-    alert()
-}
+ 
 function showReservationStayDetail(name) {
 
     const dialogRef = dialog.open(ReservationStayDetail, {

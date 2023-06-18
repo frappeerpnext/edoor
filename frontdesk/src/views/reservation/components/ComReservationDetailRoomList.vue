@@ -6,12 +6,12 @@
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
-                                <ComSelect placeholder="filter by status" v-model="selectStatus" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
+                                <ComSelect placeholder="Filter by Status" v-model="selectStatus" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="room-stay-list ress__list text-center mt-3">
+                <div class="room-stay-list ress__list text-center mt-3 isMaster-guest">
                     <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="arrival_date" header="Arrival"></Column>
@@ -87,7 +87,7 @@
                 <hr class="mt-3"/>
                 <div class="pt-3">
                     <div class="flex justify-end gap-2"> 
-                        <SplitButton class="split__btn_none_icon" label="More Options" @click="moreOptions" :model="items" />
+                        <SplitButton class="split__btn_none_icon" icon="pi pi-list" label="More Options" @click="moreOptions" :model="items" />
                         <Button class="border-none">
                             <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
                         </Button>

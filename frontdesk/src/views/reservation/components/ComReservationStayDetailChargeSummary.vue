@@ -45,19 +45,20 @@
     </ComReservationStayPanel>
     </div>
     <div class="col-12">
-    <ComReservationStayPanel title="Charge Summary">
+    <ComReservationStayPanel title="Room Rate Summary">
         <template #content>
             <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Room Charge" :value="rs?.reservationStay?.room_rate" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
+              <ComBoxStayInformation isCurrency title="Room Rate" :value="rs?.reservationStay?.room_rate" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
             </div>
           <div class="flex mt-2 gap-2">
               <ComBoxStayInformation isCurrency title="Discount" :value="rs?.reservationStay?.room_rate_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
           </div>
           <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total TAX" :value="rs?.reservationStay?.total_room_rate_tax" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
+              <ComBoxStayInformation isCurrency title="Total TAX" :value="rs?.reservationStay?.total_room_rate_tax" valueClass="col-6 text-right" titleClass="grow" >
+              </ComBoxStayInformation>
           </div>
           <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservationStay?.total_room_rate" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
+              <ComBoxStayInformation isCurrency title="Total Room Rate" :value="rs?.reservationStay?.total_room_rate" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
           </div>
           <div class="text-right w-full mt-2 font-italic">This room charge paid by</div>
 

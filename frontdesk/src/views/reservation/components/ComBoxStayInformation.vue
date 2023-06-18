@@ -1,24 +1,29 @@
 
 <template>
-  <span v-tooltip.top="tooltip" v-if="title !== null" class="flex items-center justify-end text-right" :class="titleClass">{{ title }}</span>
-  <span class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
-    <span :class="class_action" @click="onClick" >
-      <slot></slot>
-      <span v-if="isCurrency"><CurrencyFormat :value="value"/></span>
-      <span v-else>{{ value }}</span>
-
+  <span v-tooltip.top="titleTooltip" v-if="title !== null" class="flex items-center justify-end text-right white-space-nowrap" :class="titleClass">{{ title }}</span>
+  <div class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
+    <span v-tooltip.top="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action':''" @click="onClick" >
+        <span v-if="isAction && !isSlot">
+          <i v-if="!value && value != 0" class="pi pi-pencil"></i>
+          {{ value || value == 0 ? value : '...' }}
+        </span>
+        <span v-else-if="isCurrency"><CurrencyFormat :value="value"/></span>
+        <span v-else-if="value">{{ value }} </span>
+        <slot></slot>
     </span>
-  </span>
+  </div>
 </template>
 <script setup>
 const emit = defineEmits(['onClick'])
 const props = defineProps({
   titleClass:{type: String , default: 'w-6rem'},
+  valueTooltip:{type: String , default: null  },
   title: {type: String , default: null},
-  class_action: {type: String , default: null},
+  isAction:{   type: Boolean,default: false},
   value: [String, Number],
+  isSlot: {type: Boolean,default: false},
   valueClass: String,
-  tooltip:String,
+  titleTooltip:String,
   isCurrency: {
     type: Boolean,
     default: false
@@ -33,6 +38,7 @@ const  onClick=(event)=>{
 </script>
 <style scoped>
 .box-input{
-  min-height: 33px;
+  min-height: 35px;
+  max-height: 35px;
 }
 </style>

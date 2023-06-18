@@ -1,9 +1,15 @@
 <template>
-
+<div>
     <ComSelect v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
+</div>
+<div>
     <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" />
+</div>
+<div>
     <ComSelect v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
-    <ComSelect :isMultipleSelect="true" 
+</div>
+<div>
+    <ComSelect class="h-auto" :isMultipleSelect="true" 
                 isFilter
                 groupFilterField="room_type_group"
                 :groupFilterValue="hk.filter.selected_room_type_group"  
@@ -13,11 +19,16 @@
                 @onSelected="onSearch" 
                 placeholder="Room Type" 
                 doctype="Room Type"></ComSelect>
+</div>
+<div>
     <ComSelect :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
-        {{ hk.filter.selected_housekeeping_status }}
+</div>
+<div>
     <ComSelect isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
         @onSelected="onSearch" />
+</div>  
+    
 </template>
 <script setup>
 import { ref,inject } from '@/plugin';

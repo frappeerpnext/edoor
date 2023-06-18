@@ -25,7 +25,7 @@
                     <div class="py-2" v-for="(ad, index) in rs.reservationStay.additional_guests" :key="index">
                         <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
                             <template #end>
-                                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name)"/>
+                                <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name,ad.guest)"/>
                             </template>
                             
                         </ComCardProfileGuest>
@@ -37,11 +37,12 @@
     </div>
 </template>
 <script setup>
-import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm} from '@/plugin'
+import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm, getDoc} from '@/plugin'
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
 import ComReservationStayTransportationLabel from './ComReservationStayTransportationLabel.vue'
+import ComAddGuest from '../../guest/components/ComAddGuest.vue';
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 
@@ -54,13 +55,20 @@ const socket = inject("$socket")
 const db = frappe.db()
 const menuMasterGuest = ref()
 const loading = ref(false)
-
+const selectGuestName = ref()
 const menuMasterGuestList = ref([
     {
         label: 'Change Guest',
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
+        }
+    },
+    {
+        label: 'Edit Guest',
+        icon:'pi pi-fw pi-user-edit',
+        command: () =>{
+            onEditGuest('master_guest')
         }
     }
 ])
@@ -70,6 +78,13 @@ const menuMasterGuestList = ref([
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
+        label: 'Add Additional Guest',
+        icon:'pi pi-fw pi-user-plus',
+        command: () =>{
+            onAdvancedSearch('additional_guest')
+        }
+    },
+    {
         label: 'Change Guest',
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
@@ -77,20 +92,27 @@ const menuStayGuestList = ref([
         }
     },
     {
-        label: 'Add Additional Guest',
-        icon:'pi pi-fw pi-user-plus',
+        label: 'Edit Guest',
+        icon:'pi pi-fw pi-user-edit',
         command: () =>{
-            onAdvancedSearch('additional_guest')
+            onEditGuest('stay_guest')
         }
     }
 ])
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
-{
+    {
         label: 'Add Additional Guest',
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
+        }
+    },
+    {
+        label: 'Edit Guest',
+        icon:'pi pi-fw pi-user-edit',
+        command: () =>{
+            onEditGuest()
         }
     },
     {
@@ -104,15 +126,17 @@ const menuAdditionalGuestList = ref([
 ])
 
 const onMenuMasterGuest = (event) => {
+    selectGuestName.value = rs.masterGuest.name
     menuMasterGuest.value.toggle(event);
 };
 
 const onMenuStayGuest = (event) => {
+    selectGuestName.value = rs.guest.name
     menuStayGuest.value.toggle(event);
 };
 
-const onMenuAdditionalGuest = ($event, name) => {
- 
+const onMenuAdditionalGuest = ($event, name,guest_name) => {
+    selectGuestName.value = guest_name
     menuAdditionalGuest.value.additional_guest_name = name
     menuAdditionalGuest.value.toggle($event); 
 };
@@ -159,9 +183,7 @@ function onAdvancedSearch(guest_type) {
             is_change_additional_guest: guest_type == 'additional_guest',
         },
         onClose(r) {
-            if(r.data){
-                loading.value = true
-
+            if(r.data){ 
                 socket.emit("RefresheDoorDashboard", property.name);
             
                 toaster('success', 'Updated Successful')
@@ -169,7 +191,46 @@ function onAdvancedSearch(guest_type) {
         }
     });
 }
-
+function onEditGuest(guest_type) { 
+    if(selectGuestName.value){
+        dialog.open(ComAddGuest, {
+        props: {
+            header: `Edit Guest`,
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        data:{
+            name: selectGuestName.value,
+        },
+        onClose: (options) => {
+            if(options.data){
+                if(guest_type == 'master_guest'){
+                    rs.masterGuest = options.data
+                }
+                else if(guest_type == 'stay_guest'){
+                    rs.guest = options.data
+                }else{
+                    alert(rs.reservationStay.name)
+                    getDoc('Reservation Stay', rs.reservationStay.name).then((r)=>{
+                        rs.reservationStay = r
+                    })
+                }
+            }
+            
+            
+        }
+    });
+    }
+    
+}
+ 
 const onViewGuestDetail =(name)=>{
     window.postMessage('view_guest_detail|' + name, '*');
 }

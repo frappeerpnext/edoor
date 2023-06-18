@@ -10,35 +10,91 @@
                     </Column>
                    
                     <Column field="room_nights" header="Nights"></Column>
-                    <Column field="room_type_alias" header="Room Type">
+                    <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">
-                        <span v-tooltip.top="data.room_type">
-                            {{ data.room_type_alias }}
-                        </span>
+                        <div>
+                            <span v-tooltip.top="data.room_type">
+                              {{ data.room_type_alias }}  
+                            </span>/<span  v-if="data.room_number">
+                                 {{data.room_number}}
+                            </span>
+                             <span class="link_line_action w-auto" v-else>
+                                <i class="pi pi-pencil"></i>
+                                Assign Room
+                             </span>
+                        </div>
                         </template>
                     </Column>
-                    <Column field="room_number" header="Room Name"></Column>
-                    <Column  header="">
-                        <template #body="slotProps" class="flex justify-end h-full" >
-                            <div class="text-end">
-                                <Button icon="pi pi-ellipsis-h" class="w-2rem h-2rem " text rounded  />
-                            </div>
+                    <Column class="text-right res__room-list-right" header="ADR">
+                        <template #body="{data}">
+                            <span class="text-end">
+                                <CurrencyFormat :value="data.adr" /> 
+                            </span>
                         </template>
+                    </Column>
+                    <Column class="text-right res__room-list-right" header="Tax">
+                        <template #body="{data}">
+                            <span class="text-end">
+                                <CurrencyFormat :value="data.total_tax" /> 
+                            </span>
+                        </template>
+                    </Column>
+                    <Column class="text-right res__room-list-right" header="Total Charge">
+                        <template #body="{ data }">
+                            <span class="text-end">
+                                
+                            <CurrencyFormat :value="data.total_amount"/>
+                            </span>
+                        </template>
+                    </Column>
+                    <Column header="">
+                            <template #body="slotProps">
+                                <ComReservationStayMoreButton class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                            </template>
                     </Column>
             </DataTable>
             </div>
             <div class="flex justify-end mt-3">
-                <Button class="border-none" ><ComIcon icon="iconBed" class="me-2" /> Upgrade Room</Button>
+                <Button class="border-none" @click="onUpgradeRoom"><ComIcon icon="iconBed" class="me-2" /> Upgrade Room</Button>
             </div>
-            
         </template>
     </ComReservationStayPanel>
 </template>
 <script setup>
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import {inject} from 'vue'
+import ComReservationStayMoreButton from '../components/ComReservationStayRoomListMoreOption.vue'
+import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
+import {inject,ref,useDialog} from '@/plugin'
 const moment = inject('$moment')
+const selecteds = ref([])
 const rs = inject("$reservation_stay")
+const dialog = useDialog()
+function onUpgradeRoom() { 
+
+        dialog.open(ComReservationStayUpgradeRoom, {
+        data: {
+            rs: rs
+        },
+        props: {
+            header: `Upgrate Room`,
+            style: {
+                width: '70vw',
+            },
+            
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            //
+        }
+    });
+}
+    
+
 </script>
 <style scoped>
     .p-datatable > .p-datatable-wrapper {

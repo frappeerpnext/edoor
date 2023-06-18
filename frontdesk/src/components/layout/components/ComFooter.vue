@@ -1,5 +1,5 @@
 <template >
-    <div class="d-bg-edoor wrapper-foot-deco fixed bottom-0 w-full items-center flex" style="z-index: 9899;">
+    <div class="d-bg-edoor wrapper-foot-deco fixed bottom-0 w-full items-center flex" style="z-index: 12;">
         <div class="flex justify-between  text-white px-2 w-full" v-if="data.date_working_day">
             <p>Working Day #: {{ data.name }}, System date: {{ moment(data.date_working_day).format("DD-MMM-YYYY") }}
 

@@ -91,6 +91,7 @@ import DialogService from 'primevue/dialogservice';
 import AutoComplete from 'primevue/autocomplete';
 import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
+import Message from 'primevue/message';
 // custom components //
 import ComAvatar from './components/form/ComAvatar.vue'
 import ComAutoComplete from './components/form/ComAutoComplete.vue'
@@ -108,7 +109,9 @@ import CurrencyFormat from './components/CurrencyFormat.vue'
 import ComChartDoughnut from './components/chart/ComChartDoughnut.vue'
 import ComIcon from './components/ComIcon.vue'
 import ComPlaceholder from './components/layout/components/ComPlaceholder.vue'
-import ComReservationStatus from './components/label/ComReservationStatus.vue' 
+import ComReservationStatus from './components/label/ComReservationStatus.vue'
+import ComUploadProfile from './components/form/ComUploadProfile.vue'
+import ComSelectRoomTypeAvailability from '@/views/reservation/components/form/ComSelectRoomTypeAvailability.vue'
 import socket from './utils/socketio';
 
 
@@ -160,6 +163,7 @@ app.component('AutoComplete', AutoComplete)
 app.component('Calendar', Calendar)
 app.component('Chart',Chart)
 app.component('Skeleton', Skeleton)
+app.component('Message', Message)
 // use custom components //
 app.component('ComAvatar', ComAvatar)
 app.component('ComPanel', ComPanel)
@@ -178,7 +182,8 @@ app.component('ComDocument', ComDocument)
 app.component('ComInputTime',ComInputTime)
 app.component('ComPlaceholder',ComPlaceholder)
 app.component('ComReservationStatus',ComReservationStatus)
- 
+app.component('ComUploadProfile', ComUploadProfile) 
+app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability) 
 
 
 // Plugins

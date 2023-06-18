@@ -27,6 +27,12 @@
   "amount",
   "quantity",
   "parent_reference",
+  "stay_information_section",
+  "room_type",
+  "room_type_name",
+  "column_break_23",
+  "room_id",
+  "room_number",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -38,8 +44,11 @@
   "tax_rule",
   "tax_rule_data",
   "column_break_22",
+  "tax_1_rate",
   "taxable_amount_1",
+  "tax_2_rate",
   "taxable_amount_2",
+  "tax_3_rate",
   "taxable_amount_3",
   "column_break_26",
   "tax_1_amount",
@@ -52,7 +61,17 @@
   "bank_fee_amount",
   "section_break_31",
   "total_amount",
-  "note"
+  "note",
+  "city_ledger_tab",
+  "require_city_ledger_account",
+  "column_break_57",
+  "city_leger",
+  "city_ledger_name",
+  "other_tab",
+  "account_category",
+  "account_category_name",
+  "account_group",
+  "account_group_name"
  ],
  "fields": [
   {
@@ -301,7 +320,7 @@
   },
   {
    "fieldname": "bank_fee",
-   "fieldtype": "Percent",
+   "fieldtype": "Float",
    "label": "Bank Fee"
   },
   {
@@ -312,11 +331,118 @@
    "fieldname": "bank_fee_amount",
    "fieldtype": "Currency",
    "label": "Bank Fee Amount"
+  },
+  {
+   "fieldname": "stay_information_section",
+   "fieldtype": "Section Break",
+   "label": "Stay Information"
+  },
+  {
+   "fieldname": "room_type",
+   "fieldtype": "Link",
+   "label": "Room Type",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type.room_type",
+   "fieldname": "room_type_name",
+   "fieldtype": "Data",
+   "label": "Room Type Name"
+  },
+  {
+   "fieldname": "column_break_23",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "room_id",
+   "fieldtype": "Link",
+   "label": "Room ID",
+   "options": "Room"
+  },
+  {
+   "fetch_from": "room_id.room_number",
+   "fieldname": "room_number",
+   "fieldtype": "Data",
+   "label": "Room Number"
+  },
+  {
+   "fieldname": "tax_1_rate",
+   "fieldtype": "Float",
+   "label": "Tax 1 Rate"
+  },
+  {
+   "fieldname": "tax_2_rate",
+   "fieldtype": "Float",
+   "label": "Tax 2 Rate"
+  },
+  {
+   "fieldname": "tax_3_rate",
+   "fieldtype": "Float",
+   "label": "Tax 3 Rate"
+  },
+  {
+   "fieldname": "other_tab",
+   "fieldtype": "Tab Break",
+   "label": "Other"
+  },
+  {
+   "fetch_from": "account_code.parent_account_code",
+   "fieldname": "account_category",
+   "fieldtype": "Link",
+   "label": "account_category",
+   "options": "Account Code"
+  },
+  {
+   "fetch_from": "account_category.parent_account_code",
+   "fieldname": "account_group",
+   "fieldtype": "Link",
+   "label": "account_group",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "city_ledger_tab",
+   "fieldtype": "Tab Break",
+   "label": "City Ledger"
+  },
+  {
+   "default": "0",
+   "fetch_from": "account_code.require_city_ledger_account",
+   "fieldname": "require_city_ledger_account",
+   "fieldtype": "Check",
+   "label": "Require City Ledger Account"
+  },
+  {
+   "fieldname": "column_break_57",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city_leger",
+   "fieldtype": "Link",
+   "label": "City Leger",
+   "options": "City Ledger"
+  },
+  {
+   "fetch_from": "city_leger.city_ledger_name",
+   "fieldname": "city_ledger_name",
+   "fieldtype": "Data",
+   "label": "City Ledger Name"
+  },
+  {
+   "fetch_from": "account_category.account_name",
+   "fieldname": "account_category_name",
+   "fieldtype": "Data",
+   "label": "Account Category Name"
+  },
+  {
+   "fetch_from": "account_group.account_name",
+   "fieldname": "account_group_name",
+   "fieldtype": "Data",
+   "label": "Account Group Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-13 16:16:11.998103",
+ "modified": "2023-06-17 16:59:19.697738",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

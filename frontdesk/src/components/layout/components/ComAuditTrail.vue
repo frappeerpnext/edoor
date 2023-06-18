@@ -33,7 +33,6 @@
     const current_user = JSON.parse(localStorage.getItem('edoor_user')).name
     const visible = ref(false)
     const selected = ref({})
-    
     onMounted(async () => {
         if(dialogRef.value.data){
             await onGetMeta(dialogRef.value?.data?.doctype)

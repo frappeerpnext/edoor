@@ -6,7 +6,7 @@
         <div class="flex gap-2 flex-col mt-3">
             <div class="flex gap-2">
         <Checkbox inputId="apply-all" v-model="applyToAllStay" :binary="true"/>
-        <label for="apply-all" class="cursor-pointer">Apply to All Stay</label>       
+        <label for="apply-all" class="cursor-pointer">Apply to All Stay ({{ rs?.reservationStayNames.length }})</label>       
             </div>
             <div class="flex gap-2">
         <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true"/>
@@ -22,7 +22,7 @@ import { ref, inject,useToast,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
-
+const rs = inject('$reservation_stay');
 const toast = useToast()
 
 const emit = defineEmits(['onClose','onSave'])

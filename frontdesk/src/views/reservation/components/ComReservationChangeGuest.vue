@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
-        <div>
+        <div> 
             <div class="flex flex-col items-center mb-2">
                 <div class="col-12">
                     <ComAutoComplete doctype="Customer" @onSelected="onSelected" isFull isIconSearch
@@ -134,6 +134,7 @@ function onOK(){
 }
 function onStayGuestSave() {
     loading.value = true
+    console.log(rs)
     if (rs.reservationStay.name) {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'

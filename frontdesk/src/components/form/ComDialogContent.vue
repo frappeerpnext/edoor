@@ -6,7 +6,7 @@
                 <div  class="overlay-loading-dialog">
                 <span class="is-loading-page text-white flex justify-center flex-col">
                     <i  class="pi pi-spin pi-spinner w-4rem h-4rem" style="font-size:4rem"></i>
-                    <span class="text-sm mt-1">loading....</span>
+                    <span class="text-sm mt-1">Loading....</span>
                 </span>
                 </div>    
             </div>

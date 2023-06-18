@@ -75,7 +75,7 @@
                         </div>
                         <div class="col-6">
                             <label>Drop Off Driver</label>
-                            <ComAutoComplete :clear="false" v-model="stay.drop_off_driver" placeholder="Drop Off Driver"
+                            <ComAutoComplete :clear="false" v-model="stay.drop_off_driver" isAddNew @onAddNew="onAddDriver" placeholder="Drop Off Driver"
                                 doctype="Drivers" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-12">
@@ -115,6 +115,8 @@ function onSave() {
         })
 
 }
-
+function onAddDriver(){
+    alert('form add driver')
+}
 </script>
 <style ></style>

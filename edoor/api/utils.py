@@ -1,5 +1,7 @@
 import datetime
 import frappe
+from py_linq import Enumerable
+import json
 
 def update_keyword(doc, method=None, *args, **kwargs):
     
@@ -110,13 +112,40 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
         stay_room_id = '{}'
     """
 
+    sql_folio = """
+       select  
+            account_category_name as label,
+            abs(sum(amount * if(type='Debit',1,-1))) as amount ,
+            sum(if(type='Debit',amount,0)) as debit,
+            sum(if(type='Credit',amount,0)) as credit
+        from `tabFolio Transaction` 
+        where
+            reservation_stay = '{}'
+        group by account_category_name
+    """.format(
+            doc.name
+        )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+
+    
+    doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
+    doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
+    #REMOVE credit and debit from dict
+    for  d in folio_data:
+        del d["credit"]
+        del d["debit"]
+    doc.summary_data  = json.dumps(folio_data)
+
     for stay in doc.stays:
         sql = sql.format(stay.name)
-        
+            
         data = frappe.db.sql(sql,as_dict=1)
- 
+
         if data:
             d = data[0]
+            
             stay.rate =  d["rate"]
             stay.total_rate =  d["total_rate"]
             stay.adr =  d["adr"]
@@ -127,7 +156,6 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
             stay.total_tax =d["total_tax"] or  0
             stay.total_amount =d["total_amount"] or  0
 
- 
     doc.save()
     if run_commit:
         frappe.db.commit()

@@ -69,7 +69,11 @@
   "total_amount",
   "balance",
   "payment",
-  "room_type_alias"
+  "room_type_alias",
+  "note_by",
+  "note_modified",
+  "housekeeping_note_by",
+  "housekeeping_note_modified"
  ],
  "fields": [
   {
@@ -410,6 +414,26 @@
    "fieldname": "room_type_alias",
    "fieldtype": "Data",
    "label": "Room Type Alias"
+  },
+  {
+   "fieldname": "note_by",
+   "fieldtype": "Data",
+   "label": "Note By"
+  },
+  {
+   "fieldname": "note_modified",
+   "fieldtype": "Datetime",
+   "label": "Note Modified"
+  },
+  {
+   "fieldname": "housekeeping_note_by",
+   "fieldtype": "Data",
+   "label": "Housekeeping Note By"
+  },
+  {
+   "fieldname": "housekeeping_note_modified",
+   "fieldtype": "Datetime",
+   "label": "Housekeeping Note Modified"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -420,7 +444,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-12 14:22:03.923092",
+ "modified": "2023-06-14 09:13:06.782675",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

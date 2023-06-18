@@ -105,6 +105,7 @@ const onSelected = (event) => {
         //selected.value = ''
         //console.log(keyword.value)
         // alert(keyword.value)
+        emit("onAddNew")
     }
     if (event.value.description == AdvancedSearchKey) {
         selected.value = ''

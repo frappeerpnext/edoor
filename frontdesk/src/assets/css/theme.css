@@ -863,7 +863,7 @@
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.p-dropdown {
+.p-dropdown  {
   background: #ffffff;
   border: 1px solid var(--btn-border-color);
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
@@ -1461,9 +1461,9 @@
 
 .p-multiselect {
   background: #ffffff;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--btn-border-color);
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-  border-radius: 0;
+  border-radius: .5rem;
 }
 
 .p-multiselect:not(.p-disabled):hover {
@@ -3263,7 +3263,7 @@
   padding: .5rem .5rem;
 }
 .p-datatable .p-datatable-tbody>tr:nth-child(even){
-  background-color: var(--bg-tb-sec-color);
+  background-color: var(--bg-tb-sec-color) !important;
 }
 
 .p-datatable .p-datatable-tbody>tr>td .p-row-toggler,

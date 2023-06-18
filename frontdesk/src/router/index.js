@@ -22,10 +22,6 @@ const routes = [
   { path: "/edoor/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout' } },
   { path: "/edoor/frontdesk/guest-database", name: "GuestDatabase", component:GuestList, meta: { layout: 'main_layout' } },
 
-
-
-
-  { path: "/edoor/frontdesk/test", name: "Test", component: TestPage, meta: { layout: 'main_layout' } },
   { path: "/edoor/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   ...authRoutes,
 ];

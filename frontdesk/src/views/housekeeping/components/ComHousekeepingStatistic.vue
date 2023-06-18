@@ -1,8 +1,13 @@
 <template>
        <div>
-              <ComDonutFrontdesk/>
-              <ComHousekeepingTodaySummary/>
-              <ComHousekeepingStatus />
+              <ComPanel title="Today Statistic" class=" pb-3">
+                <ComDonutFrontdesk/> 
+                <ComHousekeepingTodaySummary/>   
+              </ComPanel>
+              <ComPanel title="Housekeeping Statistic" class="mt-3 pb-3">
+                 <ComHousekeepingStatus />       
+              </ComPanel>
+                  
        </div>
 </template>
 <script setup>

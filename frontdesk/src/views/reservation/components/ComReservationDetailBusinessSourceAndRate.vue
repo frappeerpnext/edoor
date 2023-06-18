@@ -8,7 +8,7 @@
                         <div class="col-fixed pl-0 w-10rem">Business Sources</div>
                         <div class="grow py-2 px-3 bg-white border-round-lg">
                             <div class="flex justify-content-between align-items-center"> 
-                                <span class="link_line_action">{{ rs?.reservation?.business_source }}</span>
+                                <span class="link_line_action" @click="onOpenChangeBusinessSource">{{ rs?.reservation?.business_source }}</span>
                             </div>
                         </div>
                     </div>
@@ -18,7 +18,7 @@
                         <div class="col-fixed w-10rem text-right">Rate Type</div>
                         <div class="grow py-2 px-3 bg-white border-round-lg">
                             <div class="flex justify-content-between align-items-center">
-                                <span class="link_line_action">{{ rs?.reservation?.rate_type }}</span>
+                                <span class="link_line_action" @click="onOpenChangeRateType">{{ rs?.reservation?.rate_type }}</span>
                             </div>
                         </div>
                     </div>
@@ -29,9 +29,19 @@
     </ComReservationStayPanel>
     </template>
     <script setup>
-    import {inject} from "@/plugin"
+    import {inject, ref} from "@/plugin"
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import ComBoxStayInformation from './ComBoxStayInformation.vue';
     const rs = inject("$reservation")
+
+    const opBusinessSource = ref();
+    const opRateType = ref();
+
+    // function onOpenChangeBusinessSource(event) {
+    //     opBusinessSource.value.toggle(event);
+    // }
+    // function onOpenChangeRateType(event) {
+    //     console.log(event)
+    //     opRateType.value.toggle(event);
+    // }
     </script>
-    <style scoped></style>
