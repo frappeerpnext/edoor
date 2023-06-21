@@ -1,4 +1,3 @@
-import {toaster} from './toast'
 export function handleServerMessage(m){
     console.log(m) 
     const dictionary = [
@@ -18,16 +17,17 @@ export function handleServerMessage(m){
             }
             if(arrException[0]){
                 if(arrException[0] == 'frappe.exceptions.ValidationError')
-                    toaster('warn',arrException[1])
+                    window.postMessage('show_error|' + arrException[1], '*')
+
                 else{
                     const msg = dictionary.find((r)=>r.exception == arrException[0])
                     if(msg.text)
-                        toaster('warn',msg.text)
+                        window.postMessage('show_error|' + msg.text, '*')
                 }
                     
             }
         }
-    }else{
-        toaster('error',message.httpStatusText)
+    }else{ 
+        window.postMessage('show_error|' + message.httpStatusText, '*')
     }
 }

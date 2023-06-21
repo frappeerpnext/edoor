@@ -35,6 +35,8 @@ const app = createApp(App);
 const auth = reactive(new Auth());
 const frappe = new FrappeApp()
 
+ 
+
 // inject
 import moment from "./utils/moment";
 import Gv from './providers/gv';
@@ -111,6 +113,7 @@ import ComIcon from './components/ComIcon.vue'
 import ComPlaceholder from './components/layout/components/ComPlaceholder.vue'
 import ComReservationStatus from './components/label/ComReservationStatus.vue'
 import ComUploadProfile from './components/form/ComUploadProfile.vue'
+import ComColorPicker from './components/form/ComColorPicker.vue'
 import ComSelectRoomTypeAvailability from '@/views/reservation/components/form/ComSelectRoomTypeAvailability.vue'
 import socket from './utils/socketio';
 
@@ -183,7 +186,8 @@ app.component('ComInputTime',ComInputTime)
 app.component('ComPlaceholder',ComPlaceholder)
 app.component('ComReservationStatus',ComReservationStatus)
 app.component('ComUploadProfile', ComUploadProfile) 
-app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability) 
+app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability)
+app.component('ComColorPicker', ComColorPicker)
 
 
 // Plugins
@@ -204,6 +208,8 @@ app.use(DialogService);
 app.use(resourceManager);
 app.use(ConfirmationService);
 
+
+
 // Global Properties,
 // components can inject this
 app.provide("$auth", auth);
@@ -211,6 +217,8 @@ app.provide("$call", call);
 app.provide("$socket", socket)
 app.provide("$frappe", frappe);
 app.provide("$numberFormat",NumberFormat)
+ 
+
 
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
@@ -253,19 +261,7 @@ router.beforeEach(async (to, from, next) => {
 
 
 
-//handle globally error
-axios.interceptors.response.use(
-	(response) => {
-		alert("xxxxxxxxx")
-	  return response;
-	},
-	(error) => {
-	  alert("it eror")
-	  return Promise.reject(error);
-	}
-  );
-
-
+ 
  
 apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null

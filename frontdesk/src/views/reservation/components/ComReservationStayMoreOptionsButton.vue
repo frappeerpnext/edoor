@@ -2,7 +2,6 @@
     <div>
         <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" />
     </div>
-  
 </template>
 <script setup>
 import { inject ,ref } from "@/plugin";
@@ -10,7 +9,7 @@ import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.v
 const emit = defineEmits('onAuditTrail')
 const items=ref([])
 items.value.push({
-    label: "Edit Trail",
+    label: "Audit Trail",
     icon: 'pi pi-history',
     command: () => {
     emit('onAuditTrail')

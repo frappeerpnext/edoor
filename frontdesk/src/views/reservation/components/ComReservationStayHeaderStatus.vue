@@ -12,19 +12,17 @@
             </ComTagReservation>
             <ComTagReservation title="ROOMS#:" class="bg-card-info p-1px"
                 v-if="rs.reservationStay">
-                {{ rs.reservationStay?.length }}
-                <span v-if="rs.reservationStay.rooms && rs.reservationStay?.length > 2">
-                    <span v-for="(i, index)  in rs.reservationStay?.rooms.slice(0, 2)"
+                <div class="inline" v-if="rs?.reservationStay?.rooms">
+                    <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)"
                     :key="index">
-                        {{ rs.reservationStay?.room_type_alias }}{{ (i) ? '/' + i : '' }}
-                    </span>
-                    <span>
-                        {{ rs.reservationStay?.rooms.length }}More
-                    </span>
-                </span>
-                <span v-else>
-                    {{ rs.reservationStay?.room_type_alias }}{{ ( rs.reservationStay?.rooms) ? '/' +  rs.reservationStay?.rooms : '' }}
-                </span>
+                        <span v-if="index != 0"> , </span>
+                        <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' + i.room_number : '' }}
+                    </div>
+                    <div v-if="rs.reservationStay?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + obj.room_number  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="bg-gray-400 rounded-xl px-2 cursor-pointer ms-2 inline">
+                                    {{ rs.reservationStay?.stays.length - 3 }}
+                                    Mores
+                    </div> 
+                </div>
             </ComTagReservation>
             <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay.is_master" class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px"> 
                 <ComIcon style="height: 14px;" icon="iconCrown"/>

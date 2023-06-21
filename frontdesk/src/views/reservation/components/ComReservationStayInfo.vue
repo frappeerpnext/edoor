@@ -2,12 +2,12 @@
     <ComReservationStayPanel title="Stay Information">
         <template #btn>
             <div class="flex items-center">
-                <span> Res Color </span>
-               <button @click="" class="w-2rem ms-2 h-2rem bg-blue-500 rounded-lg" link></button> 
+                <span> Res Color </span> 
+                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
             </div>
         </template>
         <template #content>
-            <div class="">
+            <div class=""> 
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title-class="col-2 pr-0" titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
                         valueClass="grow"></ComBoxStayInformation>
@@ -56,20 +56,17 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title-class="col-2 pr-0" title="Rooms" valueClass="grow">
-                        <div v-if="stay.reservationStay?.rooms && stay.reservationStay?.rooms.split(',').length > 3">
-                            <span
-                                v-for="value_room_stay in stay.reservationStay?.rooms.split(',').slice(0, 3)"
-                                :key="value_room_stay" class="rounded-xl px-2 me-1 bg-gray-edoor">
-                                {{ value_room_stay }}
-                            </span>
-                            <span class="rounded-xl px-2 bg-purple-cs link_line_action">
-                                {{ stay.reservationStay?.rooms.split(",").length }}
-                                more
-                            </span>
+                        <div v-if="stay.reservationStay?.stays">
+                            <div 
+                            v-for="(i, index)  in stay?.reservationStay.stays?.slice(0, 3)"
+                                :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
+                                <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' + i.room_number + ' ' : '' }}                               
+                            </div>
+                            <div v-if="stay.reservationStay?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${stay?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + obj.room_number  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
+                                    {{ stay.reservationStay?.stays.length - 3 }}
+                                    Mores
+                            </div> 
                         </div>
-                        <span class="bg-gray-edoor rounded-xl px-2" v-else>
-                            {{ stay.reservationStay?.room_type_alias }}{{ (stay.reservationStay?.rooms) ? '/'+stay.reservationStay?.rooms : '' }}
-                        </span>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -113,13 +110,9 @@
                 </div>
             </div>
         </template>
-
-     
-
     </ComReservationStayPanel>
-    
     <OverlayPanel ref="op">
-
+            <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
             <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
     </OverlayPanel>
 </template>
@@ -127,17 +120,17 @@
 import OverlayPanel from 'primevue/overlaypanel';
 import {inject} from '@/plugin'
 import { ref } from "vue";
-
+import ColorPicker from 'primevue/colorpicker';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
-
+import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
 const moment = inject('$moment')
 const stay = inject('$reservation_stay');
 const gv = inject('$gv');
 const overLayName = ref("")
 const op = ref();
-
+const color = ref()
 const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);
@@ -151,5 +144,7 @@ const closeOverlay = ()=>{
 
 </script>
 <style scoped>
-
+.p-tooltip{
+    max-width: 25rem !important;
+}
 </style>

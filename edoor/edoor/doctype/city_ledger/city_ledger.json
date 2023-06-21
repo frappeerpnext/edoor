@@ -87,7 +87,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-16 08:32:23.020708",
+ "modified": "2023-06-19 18:07:56.856869",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",
@@ -107,6 +107,7 @@
    "write": 1
   }
  ],
+ "search_fields": "city_ledger_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

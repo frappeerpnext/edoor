@@ -2414,6 +2414,11 @@ vm2@^3.9.17:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"
 
+vue-color-kit@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/vue-color-kit/-/vue-color-kit-1.0.5.tgz#4524be982078d4916756e480d2c9324717169738"
+  integrity sha512-PUQzqdpI7672YYuoHdTLENHldieVMis0u9g2n7NAxiLGdiaqCD/QaYtbDOvtASpN5oSIfKxQgPV+i45MOlkKnw==
+
 vue-debounce@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/vue-debounce/-/vue-debounce-4.0.0.tgz#3f584dabc08a841a0182ab68d19f77f70a416fcc"

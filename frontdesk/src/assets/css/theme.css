@@ -4967,8 +4967,13 @@
 }
 
 .p-tabview .p-tabview-nav li:not(.p-highlight):hover .p-tabview-nav-link {
-  background-color: var(--bg-mango-color) !important;
-  color: #ffffff !important;
+/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,d9e0e6+100 */
+background: #ffffff !important; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffffff 0%, #d9e0e6 100%) !important; /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ffffff 0%,#d9e0e6 100%) !important; /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ffffff 0%,#d9e0e6 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d9e0e6',GradientType=0 ) !important; /* IE6-9 */
+
 }
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
@@ -7250,7 +7255,14 @@
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
-  background-color: var(--bg-tb-color);
+  /* background-color: var(--bg-tb-color); */
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,d1e1ee+100 */
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffffff 0%, #d1e1ee 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ffffff 0%,#d1e1ee 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ffffff 0%,#d1e1ee 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d1e1ee',GradientType=0 ); /* IE6-9 */
+
   font-weight: 500;
   height: 100%;
 }

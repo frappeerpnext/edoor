@@ -1,6 +1,4 @@
 
-import {inject, reactive} from 'vue'
-import {toaster} from './toast'
 import {handleServerMessage} from './handle-server-message'
 import { FrappeApp } from 'frappe-js-sdk';
 export function getDoc(doctype, name){
@@ -27,7 +25,7 @@ export function getDocList(doctype, option){
         })
         .catch((error) => {
             reject(error)
-            toaster('error', 'Server Error');
+            window.postMessage('show_error|' + 'Server Error', '*')
         });
     })
 }
@@ -38,12 +36,11 @@ export function updateDoc(doctype, name, data, message){
         db.updateDoc(doctype, name, data)
         .then((doc) => {
             resolve(doc)
-            toaster('success', `${message ? message : 'Update successful'}`)
+            window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
         })
         .catch((error) => {
             const message = handleServerMessage(error)
-            reject(error)
-            // toaster('error', 'Server Error');
+            reject(error) 
         });
     })
 }
@@ -54,25 +51,24 @@ export function createUpdateDoc(doctype, data, message){
         if(data.name){
             db.updateDoc(doctype, data.name, data)
             .then((doc) => {
-                resolve(doc)
-                toaster('success', `${message ? message : 'Update successful'}`)
+                resolve(doc) 
+                window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
             })
             .catch((error) => {
                 const message = handleServerMessage(error)
-                reject(error)
-                // toaster('error', 'Server Error');
+                reject(error) 
             });
         }
         else{
             db.createDoc(doctype, data)
             .then((doc) => {
                 resolve(doc)
-                toaster('success', `${message ? message : 'Update successful'}`)
+                window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                
             })
             .catch((error) => {
                 const message = handleServerMessage(error)
-                reject(error)
-                // toaster('error', 'Server Error');
+                reject(error) 
             });
         }
     })
@@ -84,12 +80,11 @@ export function deleteDoc(doctype, name, message){
         db.deleteDoc(doctype, name)
         .then((doc) => {
             resolve(doc.message)
-            toaster('success', `${message ? message : 'Deleted successful'}`)
+            window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
         })
         .catch((error) => {
             const message = handleServerMessage(error)
-            reject(message)
-            // toaster('error', 'Server Error');
+            reject(message) 
         });
     })
 }
@@ -109,8 +104,8 @@ export function postApi(api, params = Object, message){
     const frappe = new FrappeApp()
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
-        call.post(`edoor.api.${api}`, params).then((result) => {
-            toaster('success', `${message ? message : 'Update successful'}`)
+        call.post(`edoor.api.${api}`, params).then((result) => { 
+            window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
             resolve(result)
         }).catch((error) =>{
             handleServerMessage(error)
@@ -133,7 +128,7 @@ export function uploadFiles(files, fileArgs = Object){
                 if(r.data && r.data.message){
                     countFile++
                     if(countFile == files.length){
-                        toaster('success', 'Upload files successfull.')
+                        window.postMessage('show_success|' + 'Upload files successfull.', '*')
                         resolve(true)
                     }
                 }

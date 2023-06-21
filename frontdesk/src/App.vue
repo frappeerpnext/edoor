@@ -50,8 +50,30 @@ if (localStorage.getItem("edoor_property") == null) {
 } else {
     hasProperty.value = true
 }
+
+
+window.addEventListener("unhandledrejection", function (error) {
+    let exception = error.reason.exception || error.reason.message
+    const replace_text = [
+        {text:"frappe.exceptions.ValidationError:",value:""},
+        {text:"frappe.exceptions.MandatoryError:",value:"Value required for "},
+        {text:"ValueError:",value:"Invalid data input. "},
+        {text:"frappe.exceptions.PermissionError: ",value:""},
+        {text:"_",value:" "},
+    ]
+    let message=exception
+    if(exception){
+        replace_text.forEach(t => {
+            message =message.replaceAll(t.text,t.value) 	
+
+        });
+        
+    }
+    toast.add({ severity: 'warn', summary: '', detail: message, life: 3000 })
+});
+
  
-const actionClickHandler = async function (e) {
+const actionClickHandler = async function (e) { 
     if (e.isTrusted && typeof (e.data) == 'string') {
 
         const data = e.data.split("|")
@@ -70,6 +92,12 @@ const actionClickHandler = async function (e) {
             }
             else if(data[0]=="show_alert"){
                 toast.add({ severity: 'warn', summary: '', detail: data[1], life: 3000 })
+            }
+            else if(data[0]=="show_error"){
+                toast.add({ severity: 'warn', summary: '', detail: data[1], life: 3000 })
+            }
+            else if(data[0]=="show_success"){
+                toast.add({ severity: 'success', summary: '', detail: data[1], life: 3000 })
             }
         }
 

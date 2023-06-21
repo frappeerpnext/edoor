@@ -105,7 +105,9 @@ app_license = "MIT"
 doc_events = {
 	"*": {
 		"on_update": [
-            "edoor.api.utils.update_keyword"
+            "edoor.api.utils.update_keyword",
+            "edoor.api.utils.update_fetch_from_field",
+
 		],
 		# "on_cancel": "method",
 		# "on_trash": "method"

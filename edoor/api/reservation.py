@@ -1,9 +1,16 @@
 import json
-
+from py_linq import Enumerable
+import re
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import update_reservation_stay,update_reservation
 import frappe
 from frappe.utils.data import add_to_date
+
+
+@frappe.whitelist()
+def test():
+    data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
+    return data
 
 @frappe.whitelist()
 def get_reservation_detail(name):
@@ -39,6 +46,13 @@ def get_reservation_stay_detail(name):
         "master_guest":master_guest,
         "reservation_stay_names":reservation_stay_names
     }
+
+@frappe.whitelist()
+def get_folio_detail(name):
+    
+    doc = frappe.get_doc("Folio Transaction",name)
+    account_code = frappe.get_doc("Account Code", doc.account_code)
+    return {"doc":doc, "account_code": account_code}
 
 @frappe.whitelist()
 def check_room_availability(property,room_type_id=None,start_date=None,end_date=None):
@@ -160,7 +174,6 @@ def add_new_fit_reservation(doc):
     #pending todo
     frappe.db.commit()
     return reservation
-
 
 @frappe.whitelist(methods="POST")
 def check_in(reservation,reservation_stays=None):
@@ -448,7 +461,77 @@ def get_audit_trail(doctype, docname):
         SELECT `name`,'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
         UNION
         SELECT `name`,'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
+        UNION
+        SELECT `name`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay = '{1}'
     """
     sql = sql.format(doctype, docname)
     data = frappe.db.sql(sql, as_dict=1)
     return data
+
+@frappe.whitelist()
+def get_audit_test(doctype, docname):
+    sql = """
+        SELECT `name`,'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE ref_doctype = '{0}' AND docname = '{1}'
+        UNION
+        SELECT `name`,'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
+        UNION
+        SELECT `name`,'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
+        UNION
+        SELECT `name`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay = '{1}'
+    """
+    sql = sql.format(doctype, docname)
+    data = frappe.db.sql(sql, as_dict=1)
+
+    meta = frappe.get_meta(doctype)
+    def get_label(key):
+        if(meta.fields and len(meta.fields) > 0):
+            field = Enumerable(meta.fields).single_or_default(lambda r:r.fieldname == key)
+            if field:
+                return field.label
+            return ''
+    def get_text(t):
+        tag = re.compile(r'<[^>]+>')
+        text = tag.sub('',str(t))
+        text = text if len(text) <= 20 else text.rstrip(text[-20]) + '...'
+        return "<b>{}</b>".format(text)
+
+    result = []
+    for record in data:
+        prefix = 'You' if record.owner == frappe.session.user else record.owner
+        if(record.type == 'Version'):
+            content = json.loads(record.content)
+            
+            if(len(content['added']) > 0):
+                addeds = []
+                description = ''
+                for add in content['added']:
+                    pro_list = []
+                    for key, value in add[1].items():
+                        pro_list.append({'property': key, 'value': value})
+                    property = get_label(add[0])
+                    description = description + property + ', '
+                    addeds.append({'property':property, 'value': pro_list})
+                record['added'] = addeds
+                record['description'] = "{0} added rows for {1}".format(prefix, description)
+            elif len(content['changed']) > 0:
+                pro_list = []
+                description = ''
+                count_result = 0
+                for c in content['changed']:
+                    meta_key = Enumerable(meta.fields).single_or_default(lambda r:r.fieldname == c[0])
+                    if meta_key.fieldtype != 'JSON' and meta_key.fieldtype != 'Code' and meta_key.fieldtype != 'HTML' and not meta_key.hidden:
+                        count_result = count_result + 1
+                        pro_list.append({
+                            'property': meta_key.label,
+                            'original_value': c[1],
+                            'new_value': c[2],
+                        })
+                        if count_result <= 3:
+                            description = description + "{0} from {1} to {2}, ".format(meta_key.label, get_text(c[1]), get_text(c[2]))
+                    return pro_list
+                    c['changed'] = json.dumps(json.loads(pro_list))
+                    # c['description'] = "{0} changed the value of {1}".format(prefix, description.rstrip(description[-2]))
+                    return c
+    return 1
+
+

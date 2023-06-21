@@ -218,8 +218,9 @@
             </div>
             <div class="flex justify-between">
                 <div>
-                    <Button @click="onAddRoom" class="px-4 border-round-xl border-none mt-2" >
-                        <img :src="IconAddRoom" class="btn-add_comNote__icon me-1"/> Add Room
+                    <Button @click="onAddRoom" class="px-4 mt-2 conten-btn" >
+                        <img :src="IconAddRoom" class="btn-add_comNote__icon  me-1"/>
+                         Add Room
                     </Button>
                 </div>
                 <div class="flex align-items-center h-100">
@@ -241,7 +242,7 @@
 </template>
 <script setup>
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
-import IconAddRoom from '@/assets/svg/icon-add-plus-sign.svg';
+import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import { ref, inject, computed, onMounted } from "@/plugin"
 import { useToast } from "primevue/usetoast";

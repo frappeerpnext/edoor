@@ -38,7 +38,9 @@ export default class Gv {
 		
 		
 	}
-
+	toast(type = 'alert', message){
+		window.postMessage(`show_${type == 'warn' ? 'alert' : type}|` + message, '*')
+	}
 	numberFormat(value){
 		return NumberFormat('#,##0.#0',value)
 	}
@@ -47,5 +49,8 @@ export default class Gv {
 	}
 	datetimeFormat(datetime) {
 		return moment(datetime).format("DD-MM-yy h:mm:ss A")
+	}
+	dateApiFormat(date){
+		return moment(date).format("yyyy-MM-DD")
 	}
 }

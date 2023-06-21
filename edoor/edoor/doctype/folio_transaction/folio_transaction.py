@@ -4,10 +4,14 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_reservation_stay,update_reservation
+from edoor.api.utils import update_reservation_folio, update_reservation_stay,update_reservation
 
 class FolioTransaction(Document):
 	def validate(self):
+		if self.require_city_ledger_account==1:
+			if not self.city_ledger:
+				frappe.throw("Please select city ledger account")
+				
 		#validate working day 
 		if self.is_new():
 			working_day = get_working_day(self.property)
@@ -105,10 +109,14 @@ class FolioTransaction(Document):
 		#bank fee
 		add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
 
+		#update folio transaction to reservation folio
+		update_reservation_folio(self.folio_number, None, False)
 		#update to reservation stay and reservation
 		if not self.parent_reference:
+			# frappe.enqueue("path to method", queue='short', self=self)
 			update_reservation_stay(self.reservation_stay,None, False)
 
+		
 
 	def on_trash(self):
 		pass
@@ -117,6 +125,8 @@ class FolioTransaction(Document):
 		#frappe.throw("You cannot delete me")
 	def after_delete(self):
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
+		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
+
 
 		
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):

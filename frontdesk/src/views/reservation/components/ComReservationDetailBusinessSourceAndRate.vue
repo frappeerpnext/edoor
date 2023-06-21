@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <ComReservationStayPanel title="Business Source & Rate">
         <template #content>
         <div class="flex">
@@ -27,21 +27,47 @@
         </div>
     </template>
     </ComReservationStayPanel>
+    <OverlayPanel ref="opBusinessSource">
+        <ComChangeBusinessSource :reservation="rs?.reservation?.name" :businessSource="rs?.reservation?.business_source" @onClose="closeOverlay" @onSave="onChangeBusinessSource"/>
+    </OverlayPanel>
+
+    <OverlayPanel ref="opRateType">
+        <ComChangeRateType :reservation="rs?.reservation?.name" :rate_type="rs?.reservation?.rate_type" @onClose="closeOverlay" @onSave="onChangeRateType"/>
+    </OverlayPanel>
+
     </template>
     <script setup>
     import {inject, ref} from "@/plugin"
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import ComBoxStayInformation from './ComBoxStayInformation.vue';
+    import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
+    import ComChangeRateType from "./ComChangeRateType.vue";
     const rs = inject("$reservation")
 
     const opBusinessSource = ref();
     const opRateType = ref();
 
-    // function onOpenChangeBusinessSource(event) {
-    //     opBusinessSource.value.toggle(event);
-    // }
-    // function onOpenChangeRateType(event) {
-    //     console.log(event)
-    //     opRateType.value.toggle(event);
-    // }
+    const onOpenChangeBusinessSource = (event) => {
+        opBusinessSource.value.toggle(event);
+    }
+    const onOpenChangeRateType = (event) => {
+        console.log(event)
+        opRateType.value.toggle(event);
+    }
+
+    const closeOverlay = () => {
+        opBusinessSource.value.hide();
+        opRateType.value.hide();
+    }
+    const onChangeBusinessSource = (doc) => {
+        rs.reservation = doc
+        rs.reservation.business_source = doc.business_source
+
+        opBusinessSource.value.hide();
+    }
+
+    const onChangeRateType = (doc) => {
+        rs.reservation = doc
+        opRateType.value.hide();
+    }
     </script>

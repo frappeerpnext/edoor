@@ -8,62 +8,64 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "reference_number",
-  "internal_reference_number",
-  "naming_series",
-  "reservation_type",
   "property",
+  "working_day",
+  "working_date",
+  "cashier_shift",
+  "column_break_3",
+  "naming_series",
+  "reference_number",
+  "reservation_color",
+  "internal_reference_number",
   "reservation",
+  "reservation_type",
+  "column_break_7",
   "arrival_date",
   "arrival_time",
   "departure_date",
   "departure_time",
+  "column_break_12",
+  "room_nights",
   "room_types",
+  "room_type_alias",
   "rooms",
+  "guest_information_section",
   "guest",
   "guest_name",
-  "guest_email_address",
-  "nationality",
   "guest_phone_number",
   "guest_email",
+  "column_break_21",
+  "nationality",
   "adult",
   "child",
   "pax",
   "reservation_status",
   "status_color",
   "is_active_reservation",
+  "business_source_tab",
+  "business_source_type",
+  "column_break_36",
+  "business_source",
   "rooms_section",
   "stays",
   "keyword",
-  "rate_type",
-  "working_day",
-  "working_date",
-  "cashier_shift",
-  "adr",
-  "room_nights",
   "room_rate_section",
+  "rate_type",
   "room_rate",
   "room_rate_discount",
+  "column_break_43",
   "room_rate_tax_1_amount",
   "room_rate_tax_2_amount",
   "room_rate_tax_3_amount",
   "total_room_rate_tax",
+  "column_break_46",
+  "adr",
   "total_room_rate",
   "room_charge_and_payment_section",
   "total_debit",
+  "column_break_5100",
   "total_credit",
-  "room_charge",
-  "room_charge_discount",
-  "room_charge_tax",
-  "total_room_charge",
-  "column_break_47",
-  "extra_charge",
-  "extra_charge_discount",
-  "extra_charge_tax",
-  "total_extra_charge",
-  "column_break_52",
-  "total_charge",
-  "total_payment",
+  "column_break_53",
   "balance",
   "pickup_and_drop_off_tab",
   "require_pickup",
@@ -87,11 +89,7 @@
   "drop_off_note",
   "additional_guests_tab",
   "additional_guests",
-  "business_source_tab",
-  "business_source_type",
-  "business_source",
   "is_master",
-  "room_type_alias",
   "notice_tab",
   "note_by",
   "note_modified",
@@ -154,13 +152,15 @@
    "fieldname": "room_types",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Room Types"
+   "label": "Room Types",
+   "length": 500
   },
   {
    "fieldname": "rooms",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Rooms"
+   "label": "Rooms",
+   "length": 500
   },
   {
    "fetch_from": "reservation.guest",
@@ -193,6 +193,7 @@
   {
    "fieldname": "reservation_status",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Reservation Status",
    "options": "Reservation Status"
   },
@@ -207,13 +208,13 @@
    "fetch_from": "guest.phone_number",
    "fieldname": "guest_phone_number",
    "fieldtype": "Data",
-   "label": "Guest Phone Number"
+   "label": "Phone Number"
   },
   {
    "fetch_from": "guest.email_address",
    "fieldname": "guest_email",
    "fieldtype": "Data",
-   "label": "Guest Email"
+   "label": "Email Address"
   },
   {
    "fetch_from": "reservation.property",
@@ -227,6 +228,7 @@
    "fetch_from": "reservation_status.is_active_reservation",
    "fieldname": "is_active_reservation",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Active Reservation"
   },
   {
@@ -256,6 +258,7 @@
   {
    "fieldname": "keyword",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Keyword"
   },
   {
@@ -287,6 +290,7 @@
    "fetch_from": "reservation_status.color",
    "fieldname": "status_color",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Status Color"
   },
   {
@@ -298,41 +302,6 @@
    "fieldname": "total_room_rate",
    "fieldtype": "Currency",
    "label": "Total Room Rate"
-  },
-  {
-   "fieldname": "room_charge",
-   "fieldtype": "Currency",
-   "label": "Room Charge"
-  },
-  {
-   "fieldname": "extra_charge",
-   "fieldtype": "Currency",
-   "label": "Extra Charge"
-  },
-  {
-   "fieldname": "extra_charge_discount",
-   "fieldtype": "Currency",
-   "label": "Extra Charge Discount"
-  },
-  {
-   "fieldname": "extra_charge_tax",
-   "fieldtype": "Currency",
-   "label": "Extra Charge Tax"
-  },
-  {
-   "fieldname": "total_extra_charge",
-   "fieldtype": "Currency",
-   "label": "Total Extra Charge"
-  },
-  {
-   "fieldname": "total_charge",
-   "fieldtype": "Currency",
-   "label": "Total Charge"
-  },
-  {
-   "fieldname": "total_payment",
-   "fieldtype": "Currency",
-   "label": "Total Payment"
   },
   {
    "fieldname": "balance",
@@ -452,7 +421,7 @@
   },
   {
    "fieldname": "business_source_tab",
-   "fieldtype": "Tab Break",
+   "fieldtype": "Section Break",
    "label": "Business Source"
   },
   {
@@ -467,12 +436,6 @@
    "fieldtype": "Link",
    "label": "Business Source",
    "options": "Business Source"
-  },
-  {
-   "fetch_from": "guest.email_address",
-   "fieldname": "guest_email_address",
-   "fieldtype": "Data",
-   "label": "Guest Email Address"
   },
   {
    "fetch_from": "driver.driver_name",
@@ -515,8 +478,8 @@
   },
   {
    "fieldname": "room_rate_section",
-   "fieldtype": "Section Break",
-   "label": "Room Rate"
+   "fieldtype": "Tab Break",
+   "label": "Room Rate & Summary"
   },
   {
    "fieldname": "room_rate",
@@ -552,29 +515,6 @@
    "fieldname": "total_room_rate_tax",
    "fieldtype": "Currency",
    "label": "Total Room Rate Tax"
-  },
-  {
-   "fieldname": "room_charge_discount",
-   "fieldtype": "Currency",
-   "label": "Room Charge Discount"
-  },
-  {
-   "fieldname": "room_charge_tax",
-   "fieldtype": "Currency",
-   "label": "Room Charge Tax"
-  },
-  {
-   "fieldname": "total_room_charge",
-   "fieldtype": "Currency",
-   "label": "Total Room Charge"
-  },
-  {
-   "fieldname": "column_break_47",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "column_break_52",
-   "fieldtype": "Column Break"
   },
   {
    "default": "0",
@@ -639,11 +579,57 @@
    "fieldtype": "JSON",
    "hidden": 1,
    "label": "Summary Data"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "guest_information_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Information"
+  },
+  {
+   "fieldname": "column_break_21",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_43",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_46",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_5100",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_53",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_36",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reservation_color",
+   "fieldtype": "Color",
+   "label": "Reservation Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-17 17:22:31.459442",
+ "modified": "2023-06-20 16:02:52.529587",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

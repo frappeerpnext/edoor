@@ -1,8 +1,8 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
         <template #content>
-            <div class="room-stay-list text-center">
-            <DataTable class="p-datatable-sm mt-2" :value="rs.reservationStay?.stays"  tableStyle="min-width: 50rem">
+            <div id="room_stay" class="room-stay-list text-center">
+            <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column field="start_date" header="Stay Date" >
                         <template #body="{ data }">
                             {{ moment(data.start_date).format('DD-MM-yyyy') }} to {{ moment(data.end_date).format('DD-MM-yyyy') }}
@@ -55,7 +55,7 @@
             </DataTable>
             </div>
             <div class="flex justify-end mt-3">
-                <Button class="border-none" @click="onUpgradeRoom"><ComIcon icon="iconBed" class="me-2" /> Upgrade Room</Button>
+                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon icon="iconBedPurple" class="me-2" /> Upgrade Room</Button>
             </div>
         </template>
     </ComReservationStayPanel>
@@ -64,11 +64,15 @@
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayRoomListMoreOption.vue'
 import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
-import {inject,ref,useDialog} from '@/plugin'
+import {inject,ref,useDialog,computed} from '@/plugin'
+import Enumerable from 'linq'
 const moment = inject('$moment')
 const selecteds = ref([])
 const rs = inject("$reservation_stay")
 const dialog = useDialog()
+const rooms = computed(()=>{
+    return Enumerable.from(rs.reservationStay?.stays).orderBy("$.creation").toArray()
+})
 function onUpgradeRoom() { 
 
         dialog.open(ComReservationStayUpgradeRoom, {

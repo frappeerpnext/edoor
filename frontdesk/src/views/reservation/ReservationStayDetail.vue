@@ -27,7 +27,6 @@
                         <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
-                                  {{rs.stay_summary}}
                                     <ComReservationStayDetailGuestInfo />
                                 </div>
                                 <div class="col-8">
@@ -77,52 +76,51 @@
         </div>
     </div>
     <hr class="mt-2">
-                            <div class="mt-2 -mb-2">
-                                    <div class="line-height-1 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                                        <div>
-                                             <span class="italic">Created by: </span> 
-                                             <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{gv.datetimeFormat(rs.reservation?.creation) }}
-                                             </span> 
-                                             <span class="italic"> Last Modified: </span>
-                                             <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.modified_by }} {{ gv.datetimeFormat(rs.reservation?.modified) }}
-                                             </span>
-                                        </div>
-                                        <div>
-                                            <span class="italic">Checked-out by: </span>
-                                            <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
-                                            </span>
-                                            <span class="italic"> Checked-in by: </span>
-                                            <span class="text-500 font-italic">
-                                                {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                            </div>
+    <div class="mt-2 -mb-2">
+            <div class="line-height-1 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                <div>
+                        <span class="italic">Created by: </span> 
+                        <span class="text-500 font-italic">
+                        {{ rs.reservationStay?.owner }} {{gv.datetimeFormat(rs.reservation?.creation) }}
+                        </span> 
+                        <span class="italic"> Last Modified: </span>
+                        <span class="text-500 font-italic">
+                        {{ rs.reservationStay?.modified_by }} {{ gv.datetimeFormat(rs.reservation?.modified) }}
+                        </span>
+                </div>
+                <div>
+                    <span class="italic">Checked-out by: </span>
+                    <span class="text-500 font-italic">
+                        {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
+                    </span>
+                    <span class="italic"> Checked-in by: </span>
+                    <span class="text-500 font-italic">
+                        {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
+                    </span>
+                </div>
+            </div>
+    </div>
+    <template #footer-left>
+        <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()"  />
+        <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="more_options_items" /> -->
+        <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
+        <Button class="border-none" @click="OnViewReservation">
+            <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
+                style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
+            </Badge>
+        </Button>
+        <button @click="onTest">Test don't remove</button>
+    </template>
+    <template #footer-right>        
+        <Button v-if="rs.reservation.working_date == rs.reservation.arrival_date" @click="onCheckIn" class="bg-green-500">
+            <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
+        </Button>
+        <Button v-if="rs.reservation.working_date >= moment(rs.reservation.departure_date).add(-1,'day').format('YYYY-MM-DD') " @click="onCheckIn" class="bg-red-400">
+            <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
+        </Button>
+    </template>
 
-        <template #footer-left>
-            <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()"  />
-            <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="more_options_items" /> -->
-            <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
-            <Button class="border-none" @click="OnViewReservation">
-                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
-                    style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
-                </Badge>
-            </Button>
-        </template>
-        <template #footer-right>
-            
-            <Button v-if="rs.reservation.working_date == rs.reservation.arrival_date" @click="onCheckIn" class="bg-green-500">
-                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
-            </Button>
-            <Button v-if="rs.reservation.working_date >= moment(rs.reservation.departure_date).add(-1,'day').format('YYYY-MM-DD') " @click="onCheckIn" class="bg-red-400">
-                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
-            </Button>
-        </template>
-
-    </ComDialogContent>
+</ComDialogContent>
 </template>
 <script setup>
 
@@ -148,6 +146,7 @@ import ComAuditTrail from '../../components/layout/components/ComAuditTrail.vue'
 import ComReservationStayFolio from '@/views/reservation/components/ComReservationStayFolio.vue';
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
+import TestPage2 from '../TestPage2.vue';
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
 const route = useRoute()
@@ -280,6 +279,32 @@ function onAuditTrail() {
         }
     });
 }
+
+function onTest() {
+    const dialogRef = dialog.open(TestPage2, {
+        data: {
+            doctype: 'Reservation Stay',
+            docname: name.value
+        },
+        props: {
+            header: 'Audit Trail',
+            style: {
+                width: '75vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+            //
+        }
+    });
+}
+
+
 </script>
 <style scoped>
 .p-button {

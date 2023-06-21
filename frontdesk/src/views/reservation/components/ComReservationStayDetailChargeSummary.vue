@@ -4,43 +4,21 @@
       <template #content>
         <div class="flex mb-2 mt-2 gap-2">
             <div class="grow p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                <div class="text-500 uppercase text-sm">Amount</div>
-                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_charge"></CurrencyFormat></div>
+                <div class="text-500 uppercase text-sm">Total Debit</div>
+                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_debit"></CurrencyFormat></div>
             </div>
             <div class="col-4 p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                <div class="text-500 uppercase text-sm">Paid</div>
-                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_payment"></CurrencyFormat></div>
+                <div class="text-500 uppercase text-sm">Total Credit</div>
+                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_credit"></CurrencyFormat></div>
             </div>
             <div class="grow p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                 <div class="text-500 uppercase text-sm">Balance</div>
                 <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservationStay?.balance"></CurrencyFormat></div>
             </div>
         </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Room Charge" :value="rs?.reservationStay?.room_charge"  valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
+          <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
+              <ComBoxStayInformation isCurrency v-if="items.amount > 0" :title="items?.label" :value="items?.amount"  valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
           </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Discount" :value="rs?.reservationStay?.room_charge_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total TAX" :value="rs?.reservationStay?.room_charge_tax" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservationStay?.total_room_charge" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Extra Charge" :value="rs?.reservationStay?.extra_charge" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Extra Charge Discount" :value="rs?.reservationStay?.extra_charge_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Extra Charge TAX" :value="rs?.reservationStay?.extra_charge_tax" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-          </div>
-          <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total" :value="rs?.reservationStay?.total_extra_charge" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
-          </div>
-    
       </template>
     </ComReservationStayPanel>
     </div>

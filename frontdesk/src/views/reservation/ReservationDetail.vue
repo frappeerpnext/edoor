@@ -80,7 +80,7 @@
             </TabView>
         </div>
         <template #footer-left>
-            <Button @click="onAuditTrail">
+            <Button class="border-none" @click="onAuditTrail">
                 <i class="pi pi-history me-2"></i>Audit Trail
             </Button>
         </template>
@@ -155,6 +155,7 @@ function onAuditTrail() {
             },
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             //

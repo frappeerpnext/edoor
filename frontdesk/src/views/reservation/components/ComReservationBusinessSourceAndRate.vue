@@ -28,11 +28,11 @@
     </template>
 </ComReservationStayPanel>
 <OverlayPanel ref="opBusinessSource">
-            <ComChangeBusinessSource :reservation="rs?.reservation?.name" :businessSource="rs?.reservationStay?.business_source" @onClose="closeOverlay" @onSave="onChangeBusinessSource"/>
+    <ComChangeBusinessSource :reservation="rs?.reservation?.name" :businessSource="rs?.reservationStay?.business_source" @onClose="closeOverlay" @onSave="onChangeBusinessSource"/>
 </OverlayPanel>
 
 <OverlayPanel ref="opRateType">
-            <ComChangeRateType :reservation="rs?.reservation?.name" :reservation_stay="rs?.reservationStay?.name" :rate_type="rs?.reservationStay?.rate_type" @onClose="closeOverlay"   @onSave="onChangeRateType"/>
+    <ComChangeRateType :reservation="rs?.reservation?.name" :reservation_stay="rs?.reservationStay?.name" :rate_type="rs?.reservationStay?.rate_type" @onClose="closeOverlay"   @onSave="onChangeRateType"/>
 </OverlayPanel>
 
 </template>

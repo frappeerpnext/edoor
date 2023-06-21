@@ -1,10 +1,30 @@
 import datetime
 import frappe
-from py_linq import Enumerable
 import json
+from py_linq import Enumerable
+
+def update_fetch_from_field(doc, method=None, *args, **kwargs):
+    skip_doctypes = ["DocType","Temp Product Menu"]
+
+    if not doc.doctype in skip_doctypes:
+        #we need to run this in queue process 
+        #for development we run casue need to track any error occure
+        #get all doctype and link field reload to current doc.doctype field that 
+        sql = "select parent,options,fieldname from `tabDocField` where options='{}'".format(doc.doctype)
+        link_fiels = frappe.db.sql(sql, as_dict=1)
+        # doctype =  set(d['parent'] for d in link_fiels)
+        for d in link_fiels:
+            sql = "select fieldname,options,fetch_from from `tabDocField` where  fetch_from <> '' and fetch_if_empty = 0 and parent='{}' and fetch_from like '{}.%'".format(d.parent, d["fieldname"])
+            fetch_fields = frappe.db.sql(sql, as_dict=1)
+            for  f in fetch_fields:
+                sql = "update `tab{}` set {}='{}' where {}='{}'".format(d["parent"],f["fieldname"],doc.get(f["fetch_from"].split(".")[1]),f["fetch_from"].split(".")[0], doc.name)
+                frappe.db.sql(sql)
+                #frappe.msgprint(sql)
+
+
+ 
 
 def update_keyword(doc, method=None, *args, **kwargs):
-    
     meta = frappe.get_meta(doc.doctype)
     if meta.has_field("keyword"):
         fields = []
@@ -62,8 +82,27 @@ def update_reservation(name, run_commit = True):
     
     data = frappe.db.sql(sql,as_dict=1)
 
-    #update to reservation 
+    #get folio summary
+    sql_folio = """
+        select  
+            sum(if(type='Debit',amount,0)) as debit,
+            sum(if(type='Credit',amount,0)) as credit
+        from `tabFolio Transaction` 
+        where
+            reservation = '{}'
+    """.format(
+        doc.name
+    )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+
+
+    doc.total_debit = folio_data[0]["debit"]
+    doc.total_credit= folio_data[0]["credit"]
     
+
+    #update to reservation
     doc.total_reservation_stay = data[0][ "total_stay"]
     doc.total_active_reservation_stay = data[0][ "total_active_stay"]
     doc.arrival_date = data[0]["arrival_date"]
@@ -87,6 +126,30 @@ def update_reservation(name, run_commit = True):
         frappe.db.commit()
     return doc
 
+@frappe.whitelist()
+def update_reservation_folio(name=None, doc=None,run_commit=True):
+    if name:
+        doc = frappe.get_doc("Reservation Folio",name)
+    sql_folio = """
+        select 
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                folio_number = '{}'
+        """.format(
+                doc.name
+            )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+    doc.total_debit =  folio_data[0]["debit"]
+    doc.total_credit=folio_data[0]["credit"]
+    doc.save()
+    if run_commit:
+        frappe.db.commit()
+        
+    return doc
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True):
@@ -140,7 +203,6 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
 
     for stay in doc.stays:
         sql = sql.format(stay.name)
-            
         data = frappe.db.sql(sql,as_dict=1)
 
         if data:
@@ -155,13 +217,26 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
             stay.tax_3_amount =d["tax_3_amount"] or  0
             stay.total_tax =d["total_tax"] or  0
             stay.total_amount =d["total_amount"] or  0
-
     doc.save()
     if run_commit:
         frappe.db.commit()
     return doc
 
 
+def update_reservation_color(self=None):
+    is_reservation_stay = hasattr(self, 'reservation')
+    stays = []
+    if is_reservation_stay:
+        rs = frappe.get_doc('Reservation', self.reservation)
+        rs.reservation_color = self.reservation_color
+        if rs.total_active_reservation_stay > 1:
+            stays = frappe.db.get_list('Reservation Stay', filters={'reservation':self.reservation, 'name': ['!=', self.name]})
+        rs.save()
+        frappe.db.commit()
+    else:
+        stays = frappe.db.get_list('Reservation Stay', filters={'reservation':self.name})
+    for t in stays:
+        frappe.db.set_value('Reservation Stay', t.name, 'reservation_color', self.reservation_color)
 
 
 

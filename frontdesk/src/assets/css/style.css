@@ -30,8 +30,9 @@
     --table-even-cell-color: #f2f2f2;
     --bg-input-field: #e9ecef;
     --bg-yellow-op-10:#faf6e9;
-    --bg-purple-cs-50:#4338ca75;
+    --bg-purple-cs-50:#4338ca;
     --bg-tb-sec-color:#eff2f7;
+    --bg-btn-dialog-inside: #f7f6ff;
 
 }
 html {
@@ -281,7 +282,7 @@ button.p-button.btn-date__t {
 button.p-button:not(.p-0),
 .btn-calendar__t input {
     font-size: 1.1rem !important;
-    padding: 0.65rem 0.65rem !important;
+    padding: 0.65rem 0.65rem;
     font-weight: var(--primary-font-weight) !important;
 }
 
@@ -311,7 +312,14 @@ button.p-button.btn-date__t:hover {
 }
 
 .p-tabview-nav-content .p-tabview-nav {
-    background-color: var(--bg-tb-color);
+    /* background-color: var(--bg-tb-color); */
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,eaf0f5+100 */
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffffff 0%, #eaf0f5 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ffffff 0%,#eaf0f5 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ffffff 0%,#eaf0f5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eaf0f5',GradientType=0 ); /* IE6-9 */
+
 }
 
 .p-tabview-nav-content {
@@ -600,9 +608,6 @@ span.p-button-icon.pi.pi-ellipsis-h {
 span.p-button-icon.pi.pi-ellipsis-v{
     font-size: 1.5rem;
 }
-.p-splitbutton .p-splitbutton-defaultbutton, .p-splitbutton .p-splitbutton-menubutton{
-    border:0;
-}
 .shadow-card-edoor{
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px 0px;
 }
@@ -666,4 +671,104 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .isMaster-guest tbody tr:first-child td{
     background: rgba(0, 128, 0, .1)
 }
-
+.p-avatar img{
+    object-fit: cover;
+}
+.conten-btn, .spl__btn_cs.sp button, .conten-btn.tl{
+    padding: 0.35rem .65rem 0.45rem !important;
+    background: var(--bg-btn-dialog-inside);
+    border-color:var(--bg-purple-cs);
+    color: var(--bg-purple-cs);
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+.spl__btn_cs.sp button{
+    border: 1px solid;
+}
+.conten-btn:enabled:hover, 
+.conten-btn:enabled:active,
+.btn-add-folio:enabled:hover,
+.btn-add-folio:enabled:active, 
+.spl__btn_cs.sp button:enabled:hover,
+.conten-btn.tl:enabled:hover
+{
+    background: #dfddff;
+    color: var(--bg-purple-cs);
+    border-color:#7269d2;
+}
+.btn-add-folio{
+    border-color: var(--bg-purple-cs);
+    background: transparent;
+    padding: 0.4rem !important;
+}
+.p-splitbutton .p-splitbutton-defaultbutton, .p-splitbutton .p-splitbutton-menubutton{
+    border:0;
+}
+.dialog_btn_transform.p-splitbutton button:first-child{
+    border: 1px solid var(--bg-purple-cs);
+}
+.dialog_btn_transform.p-splitbutton button:last-child{
+    border: 1px solid var(--bg-purple-cs);
+    border-left: 0;
+    
+}
+.dialog_btn_transform button.p-button.p-component.p-splitbutton-defaultbutton{
+    border-right: 1px solid var(--bg-purple-cs) !important;
+}
+.res-stay-folio-btn-site-bg{
+    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,eaf0f5+100 */
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(left,  #ffffff 0%, #eaf0f5 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(left,  #ffffff 0%,#eaf0f5 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to right,  #ffffff 0%,#eaf0f5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eaf0f5',GradientType=1 ); /* IE6-9 */
+}
+.res-stay-folio-btn-site-bg button.btn-folio-name{
+    border-radius: 0;
+    background: transparent;
+    color: var(--bg-purple-cs);
+    border: 1px solid #CECFD0;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+}
+.res-stay-folio-btn-site-bg button.btn-folio-name:enabled:hover {
+    background: #d1e1ee;
+    color: #ec864b;
+    border-color: var(--btn-border-color);
+}
+.res-stay-folio-btn-site-bg button.btn-folio-name:not(:last-child) {
+    border-bottom: none; /* Prevent double borders */
+}
+.res-stay-folio-btn-site-bg .p-button-folio-active.btn-folio-name{
+    background: #ffffff;
+    color: #ec864b;
+    border-right: 1px solid #FFF;
+}
+.res-stay-folio-btn-site-bg .p-button-folio-active.btn-folio-name:enabled:hover{
+    color: #ec864b;
+    background-color: white;
+    border-color: #CECFD0;
+    border-right: 1px solid #FFF;
+}
+.res-stay-folio-divider{
+    width:1px;height: 100%;/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,cecfd0+100 */
+    background: #ffffff; /* Old browsers */
+    background: -moz-linear-gradient(left,  #ffffff 0%, #cecfd0 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left,  #ffffff 0%,#cecfd0 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right,  #ffffff 0%,#cecfd0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#cecfd0',GradientType=1 ); /* IE6-9 */
+}
+.conten-btn.sp{ 
+    height: 34px;
+}
+.spl__btn_cs.sp button:last-child{
+    border-left-color: rgba(67, 56, 202, .3) !important;
+}
+.p-timeline-event-opposite{
+    flex: inherit !important;
+}
+/* .p-timeline-event-opposite{
+    min-width: 100px;
+} */

@@ -62,6 +62,12 @@
   "section_break_31",
   "total_amount",
   "note",
+  "payment_information_section",
+  "credit_card_number",
+  "card_holder_name",
+  "column_break_58",
+  "bank_name",
+  "credit_expired_date",
   "city_ledger_tab",
   "require_city_ledger_account",
   "column_break_57",
@@ -133,12 +139,12 @@
    "label": "Amount"
   },
   {
-   "default": "Credit",
    "fetch_from": "account_code.type",
+   "fetch_if_empty": 1,
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Credit\nDebit"
+   "options": "\nCredit\nDebit"
   },
   {
    "fieldname": "reference_number",
@@ -207,7 +213,6 @@
    "label": "Tax Rule Data"
   },
   {
-   "fetch_from": "account_code.rate_include_tax",
    "fieldname": "column_break_22",
    "fieldtype": "Column Break"
   },
@@ -419,6 +424,7 @@
    "fieldname": "city_leger",
    "fieldtype": "Link",
    "label": "City Leger",
+   "mandatory_depends_on": "eval:doc.require_city_ledger_account ==1",
    "options": "City Ledger"
   },
   {
@@ -438,11 +444,40 @@
    "fieldname": "account_group_name",
    "fieldtype": "Data",
    "label": "Account Group Name"
+  },
+  {
+   "fieldname": "payment_information_section",
+   "fieldtype": "Tab Break",
+   "label": "Payment Information"
+  },
+  {
+   "fieldname": "credit_card_number",
+   "fieldtype": "Data",
+   "label": "Credit Card Number"
+  },
+  {
+   "fieldname": "card_holder_name",
+   "fieldtype": "Data",
+   "label": "Card Holder Name"
+  },
+  {
+   "fieldname": "column_break_58",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "credit_expired_date",
+   "fieldtype": "Date",
+   "label": "Credit Expired Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-17 16:59:19.697738",
+ "modified": "2023-06-19 23:17:18.751365",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

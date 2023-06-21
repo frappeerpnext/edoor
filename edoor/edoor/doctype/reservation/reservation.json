@@ -13,6 +13,7 @@
   "reference_number",
   "internal_reference_number",
   "naming_series",
+  "reservation_color",
   "column_break_6",
   "reservation_date",
   "arrival_date",
@@ -434,6 +435,11 @@
    "fieldname": "housekeeping_note_modified",
    "fieldtype": "Datetime",
    "label": "Housekeeping Note Modified"
+  },
+  {
+   "fieldname": "reservation_color",
+   "fieldtype": "Color",
+   "label": "Reservation Color"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -444,7 +450,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-14 09:13:06.782675",
+ "modified": "2023-06-20 15:00:57.038053",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

@@ -1,5 +1,11 @@
 <template>
     <ComReservationStayPanel title="Stay Information">
+        <template #btn>
+            <div class="flex items-center">
+                <span> Res Color </span> 
+                <button :style="{background:rs?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
+            </div>
+        </template>
         <template #content>
             <div>
                 <div class="flex mt-2 gap-2">
@@ -15,8 +21,26 @@
                         titleClass="w-4rem"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation :isAction="true" titleTooltip="Group Name & Group Code" title="Group"
-                        :value="rs.reservation?.reservation" valueClass="grow">
+                    <ComBoxStayInformation title="Group"  valueClass="grow">
+                        <span class="link_line_action" v-if="!rs.reservation?.reference_number && !rs.reservation?.internal_reference_number">
+                            <i class="pi pi-pencil"></i>
+                            ...
+                        </span>
+                        <div v-else class="flex gap-2">
+                            <span v-if="rs.reservation?.reference_number" class="link_line_action grow" >{{ rs.reservation?.reference_number }}</span>
+                            <span v-else class="link_line_action grow" >
+                                <i class="pi pi-pencil"></i>
+                                ...
+                            </span>
+                            <span>/</span>
+                            <span v-if="rs.reservation?.internal_reference_number" class="link_line_action grow" >
+                                {{ rs.reservation?.internal_reference_number }}
+                            </span>
+                            <span v-else class="link_line_action grow" >
+                                <i class="pi pi-pencil"></i>
+                            ...  
+                            </span>
+                        </div>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -25,8 +49,13 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
+                    <ComBoxStayInformation titleTooltip="Reservation Stay Number" title="Res Stay. No"
+                        :value="rs.reservationStay?.name" valueClass="grow">
+                    </ComBoxStayInformation>
+                </div>
+                <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
-                        <div v-if="rs && rs?.reservationStays">
+                        <!-- <div v-if="rs && rs?.reservationStays">
                             <span v-for="(i, index) in rs.reservationStays.slice(0, 2)"
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor">
                                     <span v-tooltip.top="i?.room_types">{{ i?.room_type_alias }}/{{ i?.rooms }}</span>
@@ -34,25 +63,37 @@
                             <span v-if="rs.reservationStays.length > 2">
                                 ... <span class="">more</span>
                             </span>
+                        </div> -->
+                        <div v-if="rs && rs?.reservationStays">
+                            <div 
+                            v-for="(i, index)  in rs?.reservationStays[0]?.room_type_alias?.split(',').slice(0, 3)"
+                                :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
+                               {{ i }}/{{ rs?.reservationStays[0]?.rooms?.split(',')[index] }}
+                            </div>
+                            <div v-if="rs?.reservationStays[0]?.room_type_alias?.split(',').length>3"
+                                 class="rounded-xl px-2 bg-purple-cs w-auto inline">
+                                    {{ rs?.reservationStays[0]?.room_type_alias?.split(',').length - 3 }}
+                                    Mores
+                            </div> 
                         </div>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Arrival"                    
+                    <ComBoxStayInformation :isAction="true" title="Arrival"                    
                         :value="moment(rs.reservation?.arrival_date).format('DD-MM-yyyy')"
-                        valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
+                        valueClass="col-4 " ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="rs.reservation?.arrival_time"
-                        valueClass="col " class_action="link_line_action" ></ComBoxStayInformation>
+                        valueClass="col " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.arrival_date).format('dddd')"
                         valueClass="col">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Departure"
+                    <ComBoxStayInformation :isAction="true" title="Departure"
                         :value="moment(rs.reservation?.departure_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="rs.reservation?.departure_time"
+                    <ComBoxStayInformation :isAction="true" :value="rs.reservation?.departure_time"
                         valueClass="col" class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.departure_date).format('dddd')"
@@ -65,28 +106,34 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation 
+                        @onClick="toggle($event, 'change_pax')"
+                        :isAction="true"
                         title="Adult"
-                        :value="rs?.reservation?.adult ? rs?.reservation?.adult : '0' " valueClass="col-2"
-                        titleClass="w-6rem">
+                        :value="rs?.reservation?.adult" valueClass="col-2"
+                        >
                     </ComBoxStayInformation>
                     <ComBoxStayInformation
+                        @onClick="toggle($event, 'change_pax')"
+                        :isAction="true"
                         title="Children"
-                        :value="rs?.reservation?.child ? rs?.reservation?.child : '0' " valueClass="col-2"
+                        :value="rs?.reservation?.child" valueClass="col-2"
                         titleClass="w-5rem"></ComBoxStayInformation>
                 </div>
             </div>
         </template>
-
     </ComReservationStayPanel>
+    <OverlayPanel ref="op">
+        <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
+        <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+    </OverlayPanel>
 </template>
 <script setup>
 import OverlayPanel from 'primevue/overlaypanel';
 import {inject} from '@/plugin'
 import { ref } from "vue";
-
-
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
+import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
 import ComChangePax from './ComChangePax.vue';
 
 const moment = inject('$moment')

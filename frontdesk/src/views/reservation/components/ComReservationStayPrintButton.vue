@@ -201,7 +201,7 @@ onMounted(() => {
     height: 1.5rem;
     font-weight:600;
 }
-button.p-button.p-component.p-splitbutton-defaultbutton {
+.p-splitbutton:not(.spl__btn_cs.sp) button.p-button.p-component.p-splitbutton-defaultbutton {
     border-right: 1px solid var(--btn-border-color) !important;
 }
 </style>

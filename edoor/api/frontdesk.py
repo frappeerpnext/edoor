@@ -91,17 +91,24 @@ def get_edoor_setting(property = None):
     housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
-    
+    edoor_setting_doc = frappe.get_doc("eDoor Setting")
+  
+ 
+
     epos_setting = frappe.get_doc('ePOS Settings')
     
-    edoor_setting = {
+    
+    edoor_setting  =  {
+        "folio_transaction_stype_credit_debit":edoor_setting_doc.folio_transaction_stype_credit_debit,
+        "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
+        "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "backend_port":epos_setting.backend_port,
         "currency":{
             "name":currency,
             "precision":  frappe.db.get_default("currency_precision")
         },
         "housekeeping_status":housekeeping_status,
-        'reservation_status':reservation_status
+        'reservation_status':reservation_status,
     }
     
     user = get_logged_user()
@@ -141,6 +148,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name"])
     
 
     return {
@@ -159,7 +167,8 @@ def get_logged_user():
         "role":data.role_profile_name,
         "phone_number":data.phone,
         "photo":data.user_image,
-        "property":property
+        "property":property,
+        "roles":set(d.role for d in data.roles)
     }
 
 @frappe.whitelist()
@@ -274,6 +283,7 @@ def get_room_chart_calendar_event(property, start=None,end=None):
             pax,
             reference_number,
             reservation,
+            reservation_color,
             parent as reservation_stay,
             'stay' as type,
             1 as editable

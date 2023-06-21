@@ -1,21 +1,45 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose">
         <ComPlaceholder :loading="loading" :is-not-empty="true">
-            {{ data.length }}
-            <div v-for="(i, index) in data" :key="index" class="border border-blue-500 p-4 mb-2">
-                <div><b>{{ i.type }}</b> /{{ i.owner }} / {{ i.comment_type }} / <Timeago :long="true" :datetime="i.creation" /></div>
-                <div v-if="i.type == 'Version'" class="content">
+        <Timeline :value="data">
+            <template #marker="slotProps">
+                <div class="surface-ground w-2rem h-2rem flex align-items-center justify-center border-circle border-1" style="background: var(--bg-btn-dialog-inside);">
+                    <span v-if="slotProps.item.type == 'Version'">
+                        <i class="pi pi-pencil"></i>
+                    </span>
+                    <span v-else-if="slotProps.item.type == 'Frontdesk Note'">
+                        <i class="pi pi-bookmark"></i>
+                    </span>
+                    <span v-else-if="slotProps.item.type == 'Comment'">
+                        <i class="pi pi-upload" v-if="slotProps.item.comment_type == 'Attachment'"></i>
+                        <i class="pi pi-comment" v-else-if="slotProps.item.comment_type == 'Comment'"></i>
+                    </span>
+                    
+                </div>
+            </template>
+            <template #content="slotProps">
+                <div v-if="slotProps.item.type == 'Version'" class="content">
                     <div>
-                        <Button class="p-0" link @click="onDetail(i)">
-                            <div class="hover:underline text-gray-700" v-html="i.description"></div>
+                        <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
+                            <div class="hover:underline text-gray-700" v-html="slotProps.item.description"></div>
                         </Button>
                     </div>
+                    <small class="p-text-secondary">
+                        <Timeago :long="true" :datetime="slotProps.item.creation" />
+                    </small>
                 </div>
-                <div  v-else>
-                    <div v-html="i.content" class="content break-words"></div>
+                <div v-else>
+                    <div class="flex gap-1">
+                        <div>{{slotProps.item.owner == current_user ? 'You' : slotProps.item.owner}}</div>
+                        <div v-html="slotProps.item.content" class="content break-words"></div>
+                    </div>
+                    <small class="p-text-secondary">
+                        <Timeago :long="true" :datetime="slotProps.item.creation" />
+                    </small>
                 </div>
-            </div>
-        </ComPlaceholder>
+            </template>
+        </Timeline>
+    </ComPlaceholder>
     </ComDialogContent>
     <Dialog v-model:visible="visible" modal header="Audit Trail Detail" :style="{ width: '50vw' }">
         <ComAuditTrailDetail :data="selected" @onClose="onCloseDetail"/>
@@ -73,10 +97,10 @@
                             var description = ''
                             var count_result = 0
                             content.changed.forEach((c)=>{
-                                count_result++
-                                if(c[0] != 'keyword'){
-                                    var label = meta.value.fields.find((r)=>r.fieldname == c[0]) //getLabel(c[0])
-                                    label = label?.label
+                                const metakey = meta.value.fields.find((r)=>r.fieldname == c[0])
+                                if(metakey.fieldtype != 'JSON' && metakey.fieldtype != 'Code' && metakey.fieldtype != 'HTML' && !metakey.hidden){
+                                    count_result++
+                                    var label = metakey?.label
                                     var original_value = c[1]//valueChangeFormat({value: c[1]})
                                     const new_value = c[2] //valueChangeFormat({value: c[2]})
                                     pro_list.push({
@@ -87,7 +111,7 @@
                                     if(count_result <= 3){
                                         description = description + `${label} from  ${getText(original_value)} to ${getText(new_value)}, `
                                     }
-                                }
+                                } 
                             })
                             x['changed'] = pro_list,
                             x['description'] = `${ prefix } changed the value of ${description.slice(0, -2)}`
@@ -227,6 +251,24 @@
     })
   
 </script>
-<style lang="">
-    
+<style scoped>
+@media screen and (max-width: 960px) {
+    ::v-deep(.customized-timeline) {
+        .p-timeline-event:nth-child(even) {
+            flex-direction: row !important;
+
+            .p-timeline-event-content {
+                text-align: left !important;
+            }
+        }
+
+        .p-timeline-event-opposite {
+            flex: 0;
+        }
+
+        .p-card {
+            margin-top: 1rem;
+        }
+    }
+}
 </style>

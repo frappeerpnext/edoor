@@ -9,7 +9,6 @@
                 <ComAuditTrailDetailAddRemoveRow :data="data.removed" type="removed" />
             </div>
         </div>
-        {{ data }}
         <div class="changed" v-if="data?.changed">
             <h2>Values Changed</h2>
             <table class="w-full">

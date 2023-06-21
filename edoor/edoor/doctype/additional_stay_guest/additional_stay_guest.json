@@ -32,31 +32,35 @@
    "fetch_from": "guest.phone_number",
    "fieldname": "phone_number_1",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Phone Number 1"
   },
   {
    "fetch_from": "guest.phone_number_2",
    "fieldname": "phone_number_2",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Phone Number 2"
   },
   {
    "fetch_from": "guest.email_address",
    "fieldname": "email_address",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Email Address"
   },
   {
    "fetch_from": "guest.customer_name_en",
    "fieldname": "guest_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Guest Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-05-27 16:43:48.587139",
+ "modified": "2023-06-20 12:51:26.816589",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Additional Stay Guest",

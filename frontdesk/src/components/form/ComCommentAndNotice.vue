@@ -16,9 +16,8 @@
                                 
                             </div>
                             <div>
-                                <Button class="border-none" :loading="saving" @click="onCreate">
-                                    <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">
-                                    <label for="comment" class="font-normal ml-1"> Add {{create.note_type}} </label>
+                                <Button class="dialog_btn_transform conten-btn" :loading="saving" @click="onCreate">
+                                    <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{create.note_type}}
                                 </Button>
                             </div>
                     </div>
@@ -53,11 +52,12 @@
     </div>
 </template>
 <script setup>
-    import iconPlusSign from '@/assets/svg/icon-add-plus-sign.svg'
+    import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
     import {ref, inject, toaster, getApi,useConfirm, onMounted, deleteDoc,createUpdateDoc} from '@/plugin'
     import Enumerable from 'linq'
     import ComReservationStayPanel from '../../views/reservation/components/ComReservationStayPanel.vue';
     const moment = inject("$moment");
+    const gv = inject("$gv");
     const props = defineProps({
         doctype: String,
         docname: String
@@ -127,7 +127,7 @@
     }
     function onSaveNote(doctype, data){
         if(!data.content){
-            toaster('warn','Please input text.')
+            gv.toast('warn','Please input text.')
             return
         }
         saving.value = true

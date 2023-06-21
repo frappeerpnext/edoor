@@ -13,7 +13,9 @@
   "room_revenue_group_account_code",
   "room_discount_group_account_code",
   "room_tax_group_account_code",
-  "folio_transaction_stype_credit_debit"
+  "folio_transaction_stype_credit_debit",
+  "allow_user_to_add_back_date_transaction",
+  "role_for_back_date_transaction"
  ],
  "fields": [
   {
@@ -24,6 +26,7 @@
   },
   {
    "fetch_from": "room_block_status.status_color",
+   "fetch_if_empty": 1,
    "fieldname": "room_block_color",
    "fieldtype": "Color",
    "label": "Room Block Color"
@@ -57,12 +60,24 @@
    "fieldtype": "Link",
    "label": "Account Code of Room Revenue Group",
    "options": "Account Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_user_to_add_back_date_transaction",
+   "fieldtype": "Check",
+   "label": "Allow user to add back date transaction"
+  },
+  {
+   "fieldname": "role_for_back_date_transaction",
+   "fieldtype": "Link",
+   "label": "Role for back date transaction",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-15 18:27:58.923808",
+ "modified": "2023-06-19 23:34:51.276227",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

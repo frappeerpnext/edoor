@@ -16,7 +16,7 @@
 <script setup>
 const emit = defineEmits(['onClick'])
 const props = defineProps({
-  titleClass:{type: String , default: 'w-6rem'},
+  titleClass:{type: String , default: 'col-2'},
   valueTooltip:{type: String , default: null  },
   title: {type: String , default: null},
   isAction:{   type: Boolean,default: false},

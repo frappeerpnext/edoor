@@ -16,26 +16,8 @@
                         <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
                     </div>
                 </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Room Charge" :value="rs?.reservation?.room_charge"  valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Discount" :value="rs?.reservation?.room_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total TAX" :value="rs?.reservation?.total_room_tax" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total Room Charge" :value="rs?.reservation?.total_charge" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Extra Charge" :value="rs?.reservation?.extra_charge" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Extra Charge TAX" :value="rs?.reservation?.extra_charge_tax" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total" :value="rs?.reservation?.total_payment" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold" ></ComBoxStayInformation>
+                <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
+                    <ComBoxStayInformation isCurrency v-if="items.amount > 0" :title="items?.label" :value="items?.amount"  valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
                 </div>
 
             </template>

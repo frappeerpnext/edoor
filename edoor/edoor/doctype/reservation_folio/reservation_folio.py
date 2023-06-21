@@ -5,4 +5,5 @@
 from frappe.model.document import Document
 
 class ReservationFolio(Document):
-	pass
+	def validate(self):
+		self.balance = (self.total_debit or 0) -( self.total_credit or 0)

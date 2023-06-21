@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now
 from py_linq import Enumerable
-from edoor.api.utils import update_reservation
+from edoor.api.utils import update_reservation, update_reservation_color
  
 class ReservationStay(Document):
 	def  validate(self):
@@ -111,6 +111,10 @@ class ReservationStay(Document):
 	def on_update(self):
 		if  hasattr(self,"update_reservation_stay") and self.update_reservation_stay:
 			update_reservation(self.reservation)
+			update_reservation_color(self)
+		# update color
+		#if self.color:
+			##
 
 def update_note(self):
 	self.note_by = frappe.session.user
@@ -180,8 +184,3 @@ def generate_room_rate(self):
 				"is_manual_rate":stay.is_manual_rate,
 				"property":self.property
 			}).insert()
-
-
-
-		
-

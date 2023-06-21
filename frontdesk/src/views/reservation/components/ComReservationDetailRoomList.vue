@@ -14,14 +14,20 @@
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest">
                     <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="arrival_date" header="Arrival"></Column>
-                        <Column field="departure_date" header="Departure"></Column>
-                        <Column header="Room Type">
+                        <Column header="Stay Date">
                             <template #body="slotProps">
-                                <div v-tooltip.top="slotProps.data.room_types">{{slotProps.data.room_type_alias}}</div>
+                                <div><span v-tooltip.top="'Arrival Date'">{{slotProps.data.arrival_date}}</span> to <span v-tooltip.top="'Departure Date'">{{slotProps.data.departure_date}}</span></div>                               
                             </template>
                         </Column>
-                        <Column field="rooms" header="Room"></Column>
+                        <Column header="Room Type">
+                            <template #body="slotProps">
+                                <div><span v-tooltip.top="slotProps.data.room_types">
+                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="">
+                                        {{i}}
+                                    </div>
+                                    {{slotProps.data.room_type_alias}}</span>/<span v-tooltip.top="slotProps.data.rooms">{{slotProps.data.rooms}}</span></div>
+                            </template>
+                        </Column>
                         <Column header="Guest Name">
                             <template #body="slotProps">
                                 <div v-tooltip.top="slotProps.data.guest_name" v-if="slotProps.data.guest_name.length > 15" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap w-12rem">{{slotProps.data.guest_name}}</div>
@@ -87,11 +93,11 @@
                 <hr class="mt-3"/>
                 <div class="pt-3">
                     <div class="flex justify-end gap-2"> 
-                        <SplitButton class="split__btn_none_icon" icon="pi pi-list" label="More Options" @click="moreOptions" :model="items" />
-                        <Button class="border-none">
+                        <SplitButton class="spl__btn_cs sp" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
+                        <Button class="border-1 conten-btn sp">
                             <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
                         </Button>
-                        <Button class="border-none" label="Edit Booking" icon="pi pi-file-edit" />
+                        <Button class="border-1 conten-btn sp" label="Edit Booking" icon="pi pi-file-edit" />
                     </div>
                 </div>  
             </ComPlaceholder>
@@ -104,7 +110,7 @@ import ComReservationStayPanel from '@/views/reservation/components/ComReservati
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
-import AddRoomIcon from '@/assets/svg/icon-add-plus-sign.svg'
+import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 
 
 const moment = inject('$moment')

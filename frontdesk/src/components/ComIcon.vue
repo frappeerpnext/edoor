@@ -11,6 +11,7 @@
     <img v-else-if="icon == 'iconNote'" :class="class" :src="iconNote"/>
     <img v-else-if="icon == 'iconNoteBlue'" :class="class" :src="iconNoteBlue"/>
     <img v-else-if="icon == 'iconCrown'" :class="class" :src="iconCrown"/>
+    <img v-else-if="icon == 'iconBedPurple'" :class="class" :src="iconBedPurple"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -35,6 +36,7 @@ import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
 import iconNote from '@/assets/svg/icon-note-paper-pen.svg'
 import iconNoteBlue from '@/assets/svg/icon-note-paper-pen-blue.svg'
 import iconCrown from '@/assets/svg/icon-crown.svg'
+import iconBedPurple from '../assets/svg/icon-room-purple.svg'
 
 
 </script>
