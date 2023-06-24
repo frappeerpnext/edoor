@@ -9,11 +9,11 @@
         <template #content>
             <div class=""> 
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
+                    <ComBoxStayInformation titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
                         valueClass="grow"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
+                    <ComBoxStayInformation titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
                         :value="stay.reservationStay?.reference_number" :isAction="true" valueClass="col-4">
                     </ComBoxStayInformation>
                     <ComBoxStayInformation titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
@@ -22,7 +22,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0"  titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
+                    <ComBoxStayInformation  titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
                         <span class="link_line_action" v-if="!stay.reservationStay?.reference_number && !stay.reservationStay?.internal_reference_number">
                             <i class="pi pi-pencil"></i>
                             ...
@@ -45,17 +45,17 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" titleTooltip="Reservation Number" title="Res. No"
+                    <ComBoxStayInformation  titleTooltip="Reservation Number" title="Res. No"
                         :value="stay.reservationStay?.reservation" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" titleTooltip="Reservation Stay Number" title="Res Stay. No"
+                    <ComBoxStayInformation titleTooltip="Reservation Stay Number" title="Res Stay. No"
                         :value="stay.reservationStay?.name" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" title="Rooms" valueClass="grow">
+                    <ComBoxStayInformation title="Rooms" valueClass="grow">
                         <div v-if="stay.reservationStay?.stays">
                             <div 
                             v-for="(i, index)  in stay?.reservationStay.stays?.slice(0, 3)"
@@ -70,7 +70,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" title="Arrival"                          
+                    <ComBoxStayInformation title="Arrival"                          
                         :value="gv.dateFormat(stay.reservationStay?.arrival_date)"
                         valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.arrival_time"
@@ -81,7 +81,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2 pr-0" title="Departure"
+                    <ComBoxStayInformation title="Departure"
                         :value="gv.dateFormat(stay.reservationStay?.departure_date)"
                         valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.departure_time"
@@ -101,7 +101,7 @@
                         @onClick="toggle($event, 'change_pax')"
                         title="Adult"
                         :value="stay.reservationStay?.adult" valueClass="col-2 color-purple-edoor"
-                        titleClass="col-2 pr-0" :isAction="true"></ComBoxStayInformation>
+                         :isAction="true"></ComBoxStayInformation>
                     <ComBoxStayInformation
                         @onClick="toggle($event, 'change_pax')"
                         title="Children"

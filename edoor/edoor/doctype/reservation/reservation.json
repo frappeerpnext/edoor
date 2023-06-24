@@ -1,4 +1,5 @@
 {
+ "_comments": "[{\"comment\": \"<div class=\\\"ql-editor read-mode\\\"><p>ccccc</p></div>\", \"by\": \"Administrator\", \"name\": \"ffc295d78b\"}]",
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
@@ -9,10 +10,14 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
+  "working_day",
+  "working_date",
+  "cashier_shift",
+  "column_break_777",
+  "naming_series",
   "reservation_type",
   "reference_number",
   "internal_reference_number",
-  "naming_series",
   "reservation_color",
   "column_break_6",
   "reservation_date",
@@ -21,9 +26,9 @@
   "departure_date",
   "departure_time",
   "column_break_7",
-  "adult",
-  "child",
-  "pax",
+  "room_types",
+  "room_type_alias",
+  "room_numbers",
   "section_break_21",
   "business_source",
   "business_source_type",
@@ -38,42 +43,60 @@
   "phone_number_2",
   "email_address",
   "guest_photo",
+  "column_break_33",
+  "adult",
+  "child",
+  "pax",
   "section_break_25",
-  "working_day",
-  "working_date",
-  "cashier_shift",
   "note",
+  "column_break_41",
   "housekeeping_note",
+  "summary_tab",
+  "total_reservation_stay",
+  "column_break_42",
+  "reserved",
+  "column_break_44",
+  "total_checked_in",
+  "column_break_47",
+  "total_checked_out",
+  "section_break_55",
+  "total_active_reservation_stay",
+  "column_break_57",
+  "total_cancelled",
+  "column_break_59",
+  "total_no_show",
+  "column_break_61",
+  "total_void",
+  "section_break_63",
+  "room_nights",
+  "section_break_44",
+  "column_break_48",
+  "column_break_52",
+  "room_rate_summary_section",
+  "room_rate",
+  "room_rate_discount",
+  "column_break_67",
+  "room_rate_tax_1_amount",
+  "room_rate_tax_2_amount",
+  "room_rate_tax_3_amount",
+  "total_room_rate_tax",
+  "column_break_72",
+  "adr",
+  "total_room_rate",
+  "room_charge_and_payment_section",
+  "total_debit",
+  "column_break_77",
+  "total_credit",
+  "column_break_79",
+  "balance",
   "hidden_section_section",
   "keyword",
   "status_color",
   "reservation_status",
-  "room_numbers",
-  "summary_tab",
-  "total_reservation_stay",
-  "total_checked_in",
-  "column_break_42",
-  "total_active_reservation_stay",
-  "total_checked_out",
-  "column_break_44",
-  "reserved",
-  "column_break_47",
-  "total_no_show",
-  "total_cancelled",
-  "total_void",
-  "room_nights",
-  "section_break_44",
-  "total_room_rate",
-  "column_break_48",
-  "total_adr_rate",
-  "column_break_52",
-  "total_amount",
-  "balance",
-  "payment",
-  "room_type_alias",
+  "column_break_73",
   "note_by",
-  "note_modified",
   "housekeeping_note_by",
+  "note_modified",
   "housekeeping_note_modified"
  ],
  "fields": [
@@ -259,6 +282,7 @@
    "fetch_from": "guest.photo",
    "fieldname": "guest_photo",
    "fieldtype": "Attach Image",
+   "hidden": 1,
    "label": "Guest Photo"
   },
   {
@@ -304,8 +328,7 @@
   },
   {
    "fieldname": "hidden_section_section",
-   "fieldtype": "Section Break",
-   "hidden": 1,
+   "fieldtype": "Tab Break",
    "label": "Hidden Section"
   },
   {
@@ -355,11 +378,6 @@
    "label": "Total Room Rate"
   },
   {
-   "fieldname": "total_adr_rate",
-   "fieldtype": "Currency",
-   "label": "Total Adr Rate"
-  },
-  {
    "fieldname": "column_break_52",
    "fieldtype": "Column Break"
   },
@@ -397,19 +415,9 @@
    "label": "Housekeeping Note"
   },
   {
-   "fieldname": "total_amount",
-   "fieldtype": "Currency",
-   "label": "Total Amount"
-  },
-  {
    "fieldname": "balance",
    "fieldtype": "Currency",
    "label": "Balance"
-  },
-  {
-   "fieldname": "payment",
-   "fieldtype": "Currency",
-   "label": "Payment"
   },
   {
    "fieldname": "room_type_alias",
@@ -440,6 +448,119 @@
    "fieldname": "reservation_color",
    "fieldtype": "Color",
    "label": "Reservation Color"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "column_break_777",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_33",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "room_types",
+   "fieldtype": "Data",
+   "label": "Room Types",
+   "length": 500
+  },
+  {
+   "fieldname": "column_break_41",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_55",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_57",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_59",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_61",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_63",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_73",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "room_rate_summary_section",
+   "fieldtype": "Section Break",
+   "label": "Room Rate Summary"
+  },
+  {
+   "fieldname": "room_rate_discount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Discount"
+  },
+  {
+   "fieldname": "column_break_67",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "room_rate_tax_1_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 1 Amount"
+  },
+  {
+   "fieldname": "room_rate_tax_2_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 2 Amount"
+  },
+  {
+   "fieldname": "room_rate_tax_3_amount",
+   "fieldtype": "Currency",
+   "label": "Room Rate Tax 3 Amount"
+  },
+  {
+   "fieldname": "room_rate",
+   "fieldtype": "Currency",
+   "label": "Room Rate"
+  },
+  {
+   "fieldname": "column_break_72",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "adr",
+   "fieldtype": "Currency",
+   "label": "ADR"
+  },
+  {
+   "fieldname": "total_room_rate_tax",
+   "fieldtype": "Currency",
+   "label": "Total Room Rate Tax"
+  },
+  {
+   "fieldname": "room_charge_and_payment_section",
+   "fieldtype": "Section Break",
+   "label": "Room Charge and Payment"
+  },
+  {
+   "fieldname": "column_break_77",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_79",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -450,7 +571,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-20 15:00:57.038053",
+ "modified": "2023-06-22 13:19:01.734829",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

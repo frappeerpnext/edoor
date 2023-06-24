@@ -3,6 +3,7 @@
   <span v-tooltip.top="titleTooltip" v-if="title !== null" class="flex items-center justify-end text-right white-space-nowrap" :class="titleClass">{{ title }}</span>
   <div class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
     <span v-tooltip.top="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action':''" @click="onClick" >
+ 
         <span v-if="isAction && !isSlot">
           <i v-if="!value && value != 0" class="pi pi-pencil"></i>
           {{ value || value == 0 ? value : '...' }}
@@ -16,7 +17,7 @@
 <script setup>
 const emit = defineEmits(['onClick'])
 const props = defineProps({
-  titleClass:{type: String , default: 'col-2'},
+  titleClass:{type: String , default: 'col-2 mr-0'},
   valueTooltip:{type: String , default: null  },
   title: {type: String , default: null},
   isAction:{   type: Boolean,default: false},

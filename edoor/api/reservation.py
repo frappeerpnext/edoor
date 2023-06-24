@@ -1,16 +1,19 @@
+from datetime import datetime
 import json
+from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import update_reservation_stay,update_reservation
 import frappe
-from frappe.utils.data import add_to_date
+from frappe.utils.data import add_to_date, getdate
 
 
 @frappe.whitelist()
 def test():
     data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
     return data
+
 
 @frappe.whitelist()
 def get_reservation_detail(name):
@@ -98,7 +101,14 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
         t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
 
     return  [d for d in room_type if d['total_room'] - d["occupy"] > 0]
- 
+@frappe.whitelist()
+def check_room_occupy(property, room_id, start_date=None, end_date=None, reservation_stay=None):
+    end_date = add_to_date(end_date,days=-1)
+    except_stay = ""
+    if reservation_stay:
+        except_stay = " AND reservation_stay <> '{}'".format(reservation_stay)
+    room_occupy = frappe.db.sql("SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property))
+    return room_occupy[0][0]
 
 
 @frappe.whitelist()
@@ -268,10 +278,6 @@ def change_reservation_additional_guest(guest,reservation_stay):
     for i in doc_stay.additional_guests:
         if i.guest ==guest_name or i.guest == doc_stay.guest:
             frappe.throw('This guest is already selected.')
-            # return {
-            #     'status': 406,
-            #     'message': 'This guest is already selected.'
-            # }
     
     doc_stay.append('additional_guests',{'guest':guest_name})
     doc_stay = doc_stay.save()
@@ -303,15 +309,21 @@ def get_reservation_guest(reservation=None, reservation_stay=None):
 
 @frappe.whitelist()
 def get_reservation_folio(reservation=None, reservation_stay=None):
-    sql = """
-            select 'all' as name , 'All Folio' as folio
-            union
-            select name, name as folio from `tabReservation Folio`
-            union 
-            select name, name as folio from `tabReservation Folio`
-        """
-    # sql = sql.format((reservation or ''), (reservation_stay or ''))
-    return frappe.db.sql(sql, as_dict=1)
+    if reservation:
+        sql = """
+                #select 'all' as name , 'All Folio' as folio
+                #union
+                select name, name as folio from `tabReservation Folio` where reservation='{}'
+            """.format(reservation)
+        return frappe.db.sql(sql, as_dict=1)
+    else:
+        sql = """
+                #select 'all' as name , 'All Folio' as folio
+                #union
+                select name, name as folio from `tabReservation Folio` where reservation_stay='{}'
+            """.format(reservation_stay)
+        return frappe.db.sql(sql, as_dict=1)
+
 
 
 @frappe.whitelist()
@@ -422,6 +434,34 @@ def get_reservation_comment_note(doctype, docname):
     sql = sql.format(doctype, docname)
     data = frappe.db.sql(sql, as_dict=1)
     return data
+@frappe.whitelist(methods="POST")
+def change_stay(data):
+    room_occupy = check_room_occupy(property=data['property'],room_id=data['room_id'],start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
+    if room_occupy:
+        frappe.throw("Room not avaible")
+    else:
+        doc = frappe.get_doc("Reservation Stay",data['parent'])
+        doc.update_reservation_stay = True
+        doc.update_room_occupy = True
+        stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
+
+        for s in stays:
+            if s.name == data['name']:
+                s.start_date = data['start_date']
+                s.end_date = data['end_date']
+            # change last stay room for start date
+            index = stays.index(s) + 1
+            if len(stays) > index and stays[index]:
+                stays[index].start_date = s.end_date       
+        
+        doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
+        doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+        doc.save()
+        frappe.db.commit()
+        # if doc:
+        #    change_room_occupy(data)
+            #frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self=data)
+        return doc
 
 @frappe.whitelist(methods="POST")
 def update_note(data):
@@ -452,34 +492,42 @@ def update_note(data):
 
     frappe.db.commit()
     return doc
-    
-@frappe.whitelist()
-def get_audit_trail(doctype, docname):
-    sql = """
-        SELECT `name`,'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE ref_doctype = '{0}' AND docname = '{1}'
-        UNION
-        SELECT `name`,'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
-        UNION
-        SELECT `name`,'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
-        UNION
-        SELECT `name`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay = '{1}'
-    """
-    sql = sql.format(doctype, docname)
-    data = frappe.db.sql(sql, as_dict=1)
-    return data
 
 @frappe.whitelist()
-def get_audit_test(doctype, docname):
+def get_audit_trail(doctype, docname):
+    # stay room rate
+    stay_room_rates = []
+    meta_room_rate = None
+    stay_names = "'{}'".format(docname)
+    if doctype == 'Reservation':
+        reservation_stays = frappe.db.get_list('Reservation Stay', filters={'reservation': docname})
+        for r in reservation_stays:
+            stay_names = stay_names + ",'{}'".format(r.name)
+            room_rate = frappe.db.get_list('Reservation Room Rate',fields=['name', 'reservation','reservation_stay'], filters={'reservation_stay': r.name})
+            stay_room_rates = stay_room_rates + room_rate
+    else:
+        room_rate = frappe.db.get_list('Reservation Room Rate',fields=['name', 'reservation','reservation_stay'], filters={'reservation_stay': docname})
+        stay_room_rates = stay_room_rates + room_rate
+    sql_room_rate = ""
+    if len(stay_room_rates) > 0:
+        meta_room_rate = frappe.get_meta("Reservation Room Rate")
+        for rr in stay_room_rates:
+            sql_room_rate = sql_room_rate + "'{}',".format(rr.name)
+    if sql_room_rate:
+        sql_room_rate = ",{}".format(sql_room_rate[:-1])
     sql = """
-        SELECT `name`,'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE ref_doctype = '{0}' AND docname = '{1}'
+        SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname IN({0}{1})
         UNION
-        SELECT `name`,'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
+        SELECT `name`,reference_name AS `docname`,reference_doctype AS `doctype`, 'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_name IN({0})
         UNION
-        SELECT `name`,'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_doctype = '{0}' AND reference_name = '{1}'
+        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_name IN({0})
         UNION
-        SELECT `name`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay = '{1}'
+        SELECT `name`,reservation_stay AS `docname`, '' AS `doctype`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay IN({0})
+        UNION
+        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, 'Deleted Folio' AS comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`, CONCAT(reservation,'|',reservation_stay,'|',reservation_folio,'|',folio_number,'|',deleted_document,'|',reason) AS `content` FROM `tabComment` WHERE comment_type = 'Deleted' AND reservation_stay IN({0})
     """
-    sql = sql.format(doctype, docname)
+
+    sql = sql.format(stay_names,sql_room_rate)
     data = frappe.db.sql(sql, as_dict=1)
 
     meta = frappe.get_meta(doctype)
@@ -494,13 +542,18 @@ def get_audit_test(doctype, docname):
         text = tag.sub('',str(t))
         text = text if len(text) <= 20 else text.rstrip(text[-20]) + '...'
         return "<b>{}</b>".format(text)
-
+    def get_option(key):
+        if(meta.fields and len(meta.fields) > 0):
+            field = Enumerable(meta.fields).single_or_default(lambda r:r.fieldname == key)
+            if field:
+                return field.options
+            return ''
+        
     result = []
     for record in data:
         prefix = 'You' if record.owner == frappe.session.user else record.owner
         if(record.type == 'Version'):
             content = json.loads(record.content)
-            
             if(len(content['added']) > 0):
                 addeds = []
                 description = ''
@@ -517,9 +570,16 @@ def get_audit_test(doctype, docname):
                 pro_list = []
                 description = ''
                 count_result = 0
+                changed_other_doc = ''
+                meta_fields = []
+                if record['doctype'] == 'Reservation Room Rate':
+                    changed_other_doc = " in <b>#{}</b>".format(record['doctype'])
+                    meta_fields = meta_room_rate.fields
+                else:
+                    meta_fields = meta.fields
                 for c in content['changed']:
-                    meta_key = Enumerable(meta.fields).single_or_default(lambda r:r.fieldname == c[0])
-                    if meta_key.fieldtype != 'JSON' and meta_key.fieldtype != 'Code' and meta_key.fieldtype != 'HTML' and not meta_key.hidden:
+                    meta_key = Enumerable(meta_fields).single_or_default(lambda r:r.fieldname == c[0])
+                    if hasattr(meta_key,'fieldtype') and (meta_key.fieldtype != 'JSON' and meta_key.fieldtype != 'Code' and meta_key.fieldtype != 'HTML') and not meta_key.hidden:
                         count_result = count_result + 1
                         pro_list.append({
                             'property': meta_key.label,
@@ -528,10 +588,131 @@ def get_audit_test(doctype, docname):
                         })
                         if count_result <= 3:
                             description = description + "{0} from {1} to {2}, ".format(meta_key.label, get_text(c[1]), get_text(c[2]))
-                    return pro_list
-                    c['changed'] = json.dumps(json.loads(pro_list))
-                    # c['description'] = "{0} changed the value of {1}".format(prefix, description.rstrip(description[-2]))
-                    return c
-    return 1
+
+                record['changed'] = pro_list 
+                record['description'] = "{0} changed the value of {1}{2}".format(prefix, description[:-2],changed_other_doc)
+            elif len(content['row_changed']) > 0:
+                pro_list = []
+                for r in content['row_changed']:
+                    pro_list.append({
+                        'property': r[0],
+                        'index': r[1],
+                        'name': r[2],
+                        'feilds': r[3]
+                    })
+                
+                groups = Enumerable(pro_list).distinct(lambda x: x['property'])
+                group_list = [] 
+                for g in groups: 
+                    group_list.append({
+                        'property': g['property'],
+                        'rows': Enumerable(pro_list).where(lambda x: x['property'] == g['property'])
+                    })
+                description = "{} changed the values for ".format(prefix)
+                for g in group_list:
+                    description = description + "{} in row ".format(get_label(g['property']))
+                    for r in g['rows']:
+                        description = description + "#{}, ".format(r['index'])
+                record['row_changed'] = group_list
+                record['description'] = description[:-2]
+            elif len(content['removed']) > 0:
+                description = prefix + " removed rows for "
+                
+                for r in content['removed']:
+                    pro_list = []
+                    description = description + "{}, ".format(get_label(r[0]))
+                    objs = []
+                    for key, value in r[1].items():
+                        objs.append({'property': key, 'value': value})
+                    pro_list.append({
+                        'property': get_label(r[0]),
+                        'options': get_option(r[0]),
+                        'value': objs
+                    })
+                record['removed'] = pro_list
+                record['description'] = description.rstrip(description[-2]) if len(description) > 2 else description
+            result.append(record)
+        else:
+            result.append(record)
+    return result
 
 
+@frappe.whitelist()
+def get_folio_transaction(folio_number):
+    show_account_code = frappe.db.get_default("show_account_code_in_folio_transaction") ==1
+    
+    data = frappe.db.sql("select * from `tabFolio Transaction` where folio_number='{}' and coalesce(parent_reference,'')=''".format(folio_number),as_dict=1)
+
+    balance = 0
+    folio_transactions = []
+    for d in data:
+        if  d.bank_fee_amount > 0:
+            balance = balance + d.bank_fee_amount
+            folio_transactions.append({ 
+                "name":d["name"],
+                "room_number":d.room_number,
+                "account_name": "{}-{}".format(d.bank_fee_account, d.bank_fee_description)  if show_account_code else d.bank_fee_description,
+                "quantity": d["quantity"],
+                "note":d["note"],
+                "posting_date": d["posting_date"],
+                "debit": d.bank_fee_amount,
+                "credit": 0,
+                "balance":balance,
+                "owner":d["owner"],
+                "modified_by":d["modified_by"],
+                "creation":d.creation,
+
+            })
+
+
+        balance = balance + (d.amount * (1 if d.type=="Debit" else -1))
+        folio_transactions.append({ 
+            "name":d["name"],
+            "room_number":d.room_number,
+            "account_name": "{}-{}".format(d.account_code, d.account_name)  if show_account_code else d.account_name,
+            "quantity": d["quantity"],
+            "note":d["note"],
+            "posting_date": d["posting_date"],
+            "debit": d["amount"]  if d["type"] == 'Debit' else 0,
+            "credit": d["amount"]  if d["type"] == 'Credit' else 0,
+            "balance":balance,
+            "owner":d["owner"],
+            "modified_by":d["modified_by"],
+            "creation":d.creation,
+
+        })
+
+        if  d.discount_amount > 0:
+            balance = balance - d.discount_amount
+            folio_transactions.append({
+                "account_name": "{}-{}".format(d.discount_account, d.discount_description)  if show_account_code else d.discount_description,
+                "credit":d.discount_amount,
+                "balance":balance
+            })
+        
+        if  d.tax_1_amount > 0:
+            balance = balance + d.tax_1_amount
+            folio_transactions.append({
+                "account_name": "{}-{}".format(d.tax_1_account, d.tax_1_description)  if show_account_code else d.tax_1_description,
+                "debit":d.tax_1_amount,
+                "balance":balance
+            })
+
+        if  d.tax_2_amount > 0:
+            balance = balance + d.tax_2_amount
+            folio_transactions.append({
+                "account_name": " {}-{}".format(d.tax_2_account, d.tax_2_description)  if show_account_code else d.tax_2_description,
+                "debit":d.tax_2_amount,
+                "balance":balance
+            })
+
+        if  d.tax_3_amount > 0:
+            balance = balance + d.tax_3_amount
+            folio_transactions.append({
+                "account_name": "{}-{}".format(d.tax_3_account, d.tax_3_description)  if show_account_code else d.tax_3_description,
+                "debit":d.tax_3_amount,
+                "balance":balance
+            })
+        
+        
+    return folio_transactions

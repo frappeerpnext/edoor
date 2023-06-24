@@ -1,6 +1,7 @@
 <template>
-    <Button @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon h-12 border-none">
-        <img class="mr-2" :src="iconEdoorNewReservation">New reservataion</Button>
+    <Button v-tooltip.left="'New Reservataion'" @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon border-none">
+        <img :src="iconEdoorNewReservation">
+    </Button>
 </template>
 <script setup>
 import iconEdoorNewReservation from '../../../assets/svg/icon-add-reservation.svg'

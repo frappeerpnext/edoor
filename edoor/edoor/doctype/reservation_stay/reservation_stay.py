@@ -60,6 +60,11 @@ class ReservationStay(Document):
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
 			d.guest = self.guest
+			d.guest_name = self.guest_name
+			d.email = self.guest_email
+			d.phone_number = self.guest_phone_number
+			 
+
 			d.start_date = d.start_date or self.arrival_date
 			d.start_time = d.start_time or self.arrival_time
 			d.end_time = d.end_time or self.departure_time
@@ -74,14 +79,14 @@ class ReservationStay(Document):
 			
 		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
-		self.room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
+		self.room_rate= Enumerable(self.stays).min(lambda x: x.rate or 0)
 		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount or 0)
 		self.room_rate_tax_1_amount= Enumerable(self.stays).sum(lambda x: x.tax_1_amount or 0)
 		self.room_rate_tax_2_amount= Enumerable(self.stays).sum(lambda x: x.tax_2_amount or 0)
 		self.room_rate_tax_3_amount= Enumerable(self.stays).sum(lambda x: x.tax_3_amount or 0)
 		self.total_room_rate_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
-		self.adr = Enumerable(self.stays).sum(lambda x: (x.total_rate or 0)) / self.room_nights
+		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
 
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
@@ -112,9 +117,8 @@ class ReservationStay(Document):
 		if  hasattr(self,"update_reservation_stay") and self.update_reservation_stay:
 			update_reservation(self.reservation)
 			update_reservation_color(self)
-		# update color
-		#if self.color:
-			##
+		if hasattr(self, "update_room_occupy") and self.update_room_occupy:
+			change_room_occupy(self)
 
 def update_note(self):
 	self.note_by = frappe.session.user
@@ -164,8 +168,6 @@ def generate_room_occupy(self):
 				"pax":self.pax
 			}).insert()
 
- 
-
 def generate_room_rate(self):		
 	dates = get_date_range(self.arrival_date, self.departure_date)
 	for stay in self.stays: 
@@ -183,4 +185,52 @@ def generate_room_rate(self):
 				"rate_type":self.rate_type,
 				"is_manual_rate":stay.is_manual_rate,
 				"property":self.property
+			}).insert()
+
+def change_room_occupy(self):
+	self.update_room_occupy = False
+	sql = "WHERE reservation_stay = '{0}'".format(self.name)
+	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
+	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
+	frappe.db.commit()
+	doc = frappe.get_doc('Reservation Stay', self.name)
+	generate_stay_room_occupy(self=doc)
+
+def generate_stay_room_occupy(self):
+	self.update_room_occupy = False
+	for stay in self.stays:
+		dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date)
+		for d in dates:
+			#generate room to temp room occupy
+			frappe.get_doc({
+				"doctype":"Temp Room Occupy",
+				"reservation":self.reservation,
+				"reservation_stay":self.name,
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"type":"Reservation",
+				"property":self.property,
+				"stay_room_id":stay.name,
+				"adult":self.adult,
+				"child":self.child,
+				"pax":self.pax
+
+			}).insert()
+
+
+			#generate room to room occupy
+			frappe.get_doc({
+				"doctype":"Room Occupy",
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"type":"Reservation",
+				"property":self.property,
+				"stay_room_id":stay.name,
+				"reservation":self.reservation,
+				"reservation_stay":self.name,
+				"adult":self.adult,
+				"child":self.child,
+				"pax":self.pax
 			}).insert()

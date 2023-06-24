@@ -28,8 +28,8 @@
                             <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
                         </Button>
                         <Button class="border-none" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
-                            <span v-if="!loading"><img class="mr-2 inline" style="height: 14px;" :src="BtnOkIcon" v-if="!loading"/>Save</span>
-                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> Save</span>
+                            <span v-if="!loading"><img class="mr-2 inline" style="height: 14px;" :src="BtnOkIcon" v-if="!loading && !hideIcon"/>{{titleButtonOK}}</span>
+                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> {{titleButtonOK}}</span>
                         </Button>
                     </div>
                 </div>
@@ -70,6 +70,10 @@ const props = defineProps({
     isDialog: {
         type: Boolean,
         default: true
+    },
+    hideIcon: {
+        type: Boolean,
+        default:false
     }
 })
 function onOK() {

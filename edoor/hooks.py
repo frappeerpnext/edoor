@@ -103,11 +103,15 @@ app_license = "MIT"
 # Hook on document methods and events
 
 doc_events = {
+    "Comment":{
+        "on_update":[
+            "edoor.api.utils.update_deleted_document"
+		]
+	},
 	"*": {
 		"on_update": [
             "edoor.api.utils.update_keyword",
-            "edoor.api.utils.update_fetch_from_field",
-
+            "edoor.api.utils.update_fetch_from_field"
 		],
 		# "on_cancel": "method",
 		# "on_trash": "method"

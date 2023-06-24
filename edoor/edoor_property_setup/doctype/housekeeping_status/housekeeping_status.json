@@ -42,7 +42,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-22 09:17:39.425755",
+ "modified": "2023-06-22 18:16:36.731010",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",
@@ -60,6 +60,15 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1
   }
  ],
  "quick_entry": 1,

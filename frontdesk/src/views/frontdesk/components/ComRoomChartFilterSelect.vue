@@ -22,7 +22,7 @@
             <div>
                 <span class="p-input-icon-left">
                     <i class="pi pi-search" />
-                    <InputText v-model="value1" placeholder="Guest Name" />
+                    <InputText class="btn-set__h" v-model="value1" placeholder="Guest Name" />
                 </span>
             </div>
         </div>

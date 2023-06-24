@@ -1,8 +1,7 @@
 <template>
     <div>
-        {{ data }}
         <div class="at-update-row">
-            <table>
+            <table class="w-full">
                 <thead>
                     <tr>
                         <th>Property</th>
@@ -14,8 +13,8 @@
                         <td>
                             {{ i.property }}
                         </td>
-                        <td> 
-                            <table  :class="type == 'added' ? 'bg-green-400' : 'bg-red-400'">
+                        <td class="nth-2_td"> 
+                            <table class="w-full" :style="type == 'added' ? 'background:var(--green-100)' : 'background:var(--red-100)'" style="border:0">
                                 <tr v-for="(i, index) in i.value" :key="index">
                                     <td>{{ i.property }}</td>
                                     <td>{{ i.value }}</td>
@@ -34,6 +33,43 @@
         data: Array
     })
 </script>
-<style lang="">
-    
+<style scoped>
+.at-update-row table tbody tr td.nth-2_td{
+    padding: 0;
+}
+td.nth-2_td table tr:first-child td{
+    border-top: none;
+}
+td.nth-2_td table tr td:first-child{
+    border-left: 0;
+}
+.h-title{
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+table {
+    border-collapse: collapse;
+    border: 1px solid rgba(204, 204, 204, 0.3);
+    width: 100%;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+}
+th {
+    border-top: 1px solid rgba(204, 204, 204, 0.3);
+    border-bottom: 2px solid rgba(204, 204, 204, 0.3);
+    border-left: 1px solid rgba(204, 204, 204, 0.3);
+    font-weight: normal;
+}
+td{
+    border-top: 1px solid rgba(204, 204, 204, 0.3);
+    border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+    border-left: 1px solid rgba(204, 204, 204, 0.3);
+    vertical-align: baseline;
+}
+tr:last-of-type td {
+    border-bottom: none;
+}
 </style>

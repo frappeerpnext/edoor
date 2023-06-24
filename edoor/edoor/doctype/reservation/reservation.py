@@ -23,6 +23,7 @@ class Reservation(Document):
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 		self.pax = (self.adult or 1) + (self.child or 0)
+		self.balance = (self.total_debit or 0) - (self.total_credit or 0) 
 		#update note & housekeeping note
 		if self.is_new():
 			if self.note:

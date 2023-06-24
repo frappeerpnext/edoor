@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-    <div>
+    <div class="">
         <ComReservationStayPanel class="mb-4" title="Last Stay Room">
             <template #content>
                 {{stays}}
@@ -88,7 +88,7 @@
                     <tbody>
                         <tr>
                             <td> 
-                                {{gv.dateFormat(moment(lastStay.end_date).add(1,'days'))}}
+                                {{gv.dateFormat(moment(lastStay.end_date))}}
                             </td>
                             <td> 
                                 <Calendar v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
@@ -135,6 +135,7 @@
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
+    
     const lastStayMaxEndDate = new Date(lastStay.value.end_date)
     const room_types = ref([])
     const rooms = ref([])
@@ -157,12 +158,14 @@
     })
  
     function onUpdateDateNewRoom(newValue){
-        newRoom.value.start_date = new Date(moment(newValue.end_date).add(1,'days'))
-        newRoom.value.end_date = new Date(moment(newValue.end_date).add(2,'days'))
+        newRoom.value.start_date = moment(newValue.end_date).toDate() 
+        if(!newRoom.value.end_date || moment(newRoom.value.start_date).isSame(newRoom.value.end_date) || moment(newRoom.value.start_date).isAfter(newRoom.value.end_date)){
+            newRoom.value.end_date = moment(newRoom.value.start_date).add(1,'days').toDate()
+        }
         newRoom.value.room_nights = moment(newRoom.value.end_date).diff(moment(newRoom.value.start_date), 'days')
     }
     function onNight(newValue){
-        newRoom.value.end_date = new Date(moment(newRoom.value.start_date).add(newValue,'days'))
+        newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
     }
     function onEndDate(newValue){
         newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date), 'days')
@@ -217,6 +220,8 @@
             return i
         })
         data.reservationStay.stays.push(newData)
+        data.reservationStay.update_room_occupy = true
+        data.reservationStay.update_reservation_stay = true
         updateDoc('Reservation Stay', data.reservationStay.name,data.reservationStay).then((r)=>{
             loading.value = false
             rs.getReservationDetail(data.reservationStay.name)

@@ -15,20 +15,5 @@ const data = ref([])
 
  
 
-// db.getDocList('Reservation Room Rate',{
-//     limit:100,
-//     fields:["*"],
-//     filters:[["reservation_stay","=",props.reservation_stay]]
-// })
-//   .then((docs) => 
-  
-//   {
-//     data.value = docs
-//   }
-  
-//   )
-//   .catch((error) => console.error(error));
-
-
 
 </script>

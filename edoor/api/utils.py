@@ -37,7 +37,52 @@ def update_keyword(doc, method=None, *args, **kwargs):
             sql = sql.format(doc.doctype, " , ' ',".join(fields), doc.name )
 
             frappe.db.sql(sql)
-     
+
+def update_deleted_document(doc, method=None, *args, **kwargs):
+    if doc.comment_type == 'Deleted' and (doc.reference_doctype == "Folio Transaction" or doc.reference_doctype == "Reservation Folio"):
+        docname = doc.subject.replace((doc.reference_doctype + ' '), '')
+        sql = "SELECT `name`,`data` FROM `tabDeleted Document` WHERE deleted_name = '{}'".format(docname)
+        deleted = frappe.db.sql(sql, as_dict=1)
+
+        if(deleted):
+            data = json.loads(deleted[0]['data'])
+            deleted_note = ""
+          
+            if "deleted_note" in data:
+                
+                deleted_note = data['deleted_note'] or ""
+            
+            
+         
+            reservation_folio = data['name']
+            if doc.reference_doctype == "Folio Transaction":
+                reservation_folio = data['folio_number']
+            sql = """UPDATE `tabComment` 
+                    SET  
+                        reservation = '{0}', 
+                        reservation_stay = '{1}', 
+                        reservation_folio = '{2}', 
+                        folio_number = '{3}',
+                        deleted_document = '{4}',
+                        reason = '{5}',
+                        subject= concat(subject, ', Reason: ', '{5}' )
+                    WHERE 
+                        `name` = '{6}'
+                    """.format(
+                            data['reservation'],
+                            data['reservation_stay'],
+                            reservation_folio,
+                            data['name'],
+                            deleted[0]['name'],
+                            deleted_note,
+                            doc.name)
+            frappe.db.sql(sql)
+
+def check_field(doc, key):
+    if key in doc.keys():
+        if  doc[key].strip():
+            return True
+    return False 
 
 def get_date_range(start_date, end_date, exlude_last_date=True):
     # Create an empty list to store the generated dates.
@@ -52,9 +97,10 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
     # Return the generated dates.
     return dates
 @frappe.whitelist()
-def update_reservation(name, run_commit = True):
-    doc = frappe.get_doc("Reservation",name)
-
+def update_reservation(name,doc=None, run_commit = True):
+    if name:
+        doc = frappe.get_doc("Reservation",name)
+    
     sql = """select 
                 min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
                 max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
@@ -63,7 +109,7 @@ def update_reservation(name, run_commit = True):
                 sum(if(is_active_reservation =1,adult,0)) as adult, 
                 sum(if(is_active_reservation =1,child,0)) as child ,
                 
-                sum(if(is_active_reservation=1 and reservation_status='In-House',1,0)) as total_checked_in,
+                sum(if(is_active_reservation=1 and reservation_status='In-house',1,0)) as total_checked_in,
                 sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
                 sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
                 sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
@@ -71,9 +117,13 @@ def update_reservation(name, run_commit = True):
                 
                 sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
                 sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
-                sum(if(is_active_reservation=1,adr_rate,0)) as total_adr_rate
-
-                
+                avg(if(is_active_reservation=1,adr,0)) as adr,
+                min(if(is_active_reservation=1,room_rate,0)) as room_rate,
+                sum(if(is_active_reservation=1,room_rate_discount,0)) as room_rate_discount,
+                sum(if(is_active_reservation=1,room_rate_tax_1_amount,0)) as room_rate_tax_1_amount,
+                sum(if(is_active_reservation=1,room_rate_tax_2_amount,0)) as room_rate_tax_2_amount,
+                sum(if(is_active_reservation=1,room_rate_tax_3_amount,0)) as room_rate_tax_3_amount,
+                sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax
 
             from `tabReservation Stay`
             where 
@@ -113,8 +163,14 @@ def update_reservation(name, run_commit = True):
 
     doc.room_nights= data[0]["room_nights"]
     doc.total_room_rate= data[0]["total_room_rate"]
-    doc.total_adr_rate= data[0]["total_adr_rate"]
-
+    doc.room_rate= data[0]["room_rate"]
+    doc.adr= data[0]["adr"]
+    doc.room_rate_discount= data[0]["room_rate_discount"]
+    doc.room_rate_tax_1_amount= data[0]["room_rate_tax_1_amount"]
+    doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]
+    doc.room_rate_tax_3_amount= data[0]["room_rate_tax_3_amount"]
+    doc.total_room_rate_tax= data[0]["total_room_rate_tax"]
+     
     doc.total_checked_in= data[0]["total_checked_in"]
     doc.total_checked_out= data[0]["total_checked_out"]
     doc.total_cancelled= data[0]["total_cancelled"]
@@ -207,7 +263,6 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
 
         if data:
             d = data[0]
-            
             stay.rate =  d["rate"]
             stay.total_rate =  d["total_rate"]
             stay.adr =  d["adr"]
@@ -239,6 +294,57 @@ def update_reservation_color(self=None):
         frappe.db.set_value('Reservation Stay', t.name, 'reservation_color', self.reservation_color)
 
 
+
+
+
+@frappe.whitelist()
+def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
+
+	t1_r = (tax_1_rate or 0) / 100
+	t2_r = (tax_2_rate or 0)  / 100
+	t3_r = (tax_3_rate or 0)  / 100
+	#frappe.throw("{}-{}-{}-{}-{}".format(amount,disc,t1_r,t2_r,t3_r))
+
+	tax_1_amount = 0
+	tax_2_amount = 0
+	tax_3_amount = 0
+	price = 0
+
+	t1_af_disc = tax_rule.calculate_tax_1_after_discount
+	t2_af_disc = tax_rule.calculate_tax_2_after_discount
+	t2_af_add_t1 = tax_rule.calculate_tax_2_after_adding_tax_1
+	t3_af_disc	= tax_rule.calculate_tax_3_after_discount
+	t3_af_add_t1 =  tax_rule.calculate_tax_3_after_adding_tax_1
+	t3_af_add_t2 =   tax_rule.calculate_tax_3_after_adding_tax_2
+
+
+	tax_rate_con = 0
+
+
+	tax_rate_con = (1 + t1_r + t2_r 
+						+ (t1_r * t2_af_add_t1 * t2_r) 
+						+ t3_r + (t1_r * t3_af_add_t1 * t3_r) 
+						+ (t2_r * t3_af_add_t2 * t3_r)
+						+ (t1_r * t2_af_add_t1 * t2_r * t3_af_add_t2 * t3_r))
+
+
+ 
+	tax_rate_con = tax_rate_con or 0
+
+
+	price = amount /  tax_rate_con
+
+
+	return  price
+
+@frappe.whitelist(methods="DELETE")
+def delete_doc(doctype, name, note):
+    doc = frappe.get_doc(doctype,name)
+    if hasattr(doc,"deleted_note"):
+        frappe.db.sql("update `tab{}` set deleted_note = '{}' where name='{}'".format(doctype,note or "",name))
+    frappe.delete_doc(doctype,name)
+
+    
 
 @frappe.whitelist()
 def clear_reservation():

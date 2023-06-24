@@ -1,11 +1,11 @@
 <template lang="">
     <div class="flex">
         <Button class="border-y-none border-left-none border-noround-right" @click="onView()">
-            <img  v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
-            <img  v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
+            <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
+            <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
         </Button>
         <div class="mr-2 relative">
-            <Button type="button" class="h-full border-none border-noround-left" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
+            <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
             <Menu ref="menu" id="peroid_menu" :overlayVisible="false" :focused="false" :model="items" :popup="true" />
         </div>
         <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>

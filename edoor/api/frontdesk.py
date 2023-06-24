@@ -87,7 +87,7 @@ def get_mtd_room_occupany(property):
 
 @frappe.whitelist()
 def get_edoor_setting(property = None):
-    currency = frappe.db.get_default("currency")
+    currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
@@ -104,8 +104,10 @@ def get_edoor_setting(property = None):
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "backend_port":epos_setting.backend_port,
         "currency":{
-            "name":currency,
-            "precision":  frappe.db.get_default("currency_precision")
+            "name":currency.name,
+            "locale":currency.locale,
+            "precision":  currency.currency_precision,
+            "symbol": currency.symbol
         },
         "housekeeping_status":housekeeping_status,
         'reservation_status':reservation_status,

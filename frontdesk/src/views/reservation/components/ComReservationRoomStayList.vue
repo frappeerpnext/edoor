@@ -42,15 +42,14 @@
                     <Column class="text-right res__room-list-right" header="Total Charge">
                         <template #body="{ data }">
                             <span class="text-end">
-                                
                             <CurrencyFormat :value="data.total_amount"/>
                             </span>
                         </template>
                     </Column>
                     <Column header="">
-                            <template #body="slotProps">
-                                <ComReservationStayMoreButton class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
-                            </template>
+                        <template #body="slotProps">
+                            <ComReservationStayRoomListMoreOption class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                        </template>
                     </Column>
             </DataTable>
             </div>
@@ -62,7 +61,7 @@
 </template>
 <script setup>
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import ComReservationStayMoreButton from '../components/ComReservationStayRoomListMoreOption.vue'
+import ComReservationStayRoomListMoreOption from '../components/ComReservationStayRoomListMoreOption.vue'
 import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
 import {inject,ref,useDialog,computed} from '@/plugin'
 import Enumerable from 'linq'
@@ -80,7 +79,7 @@ function onUpgradeRoom() {
             rs: rs
         },
         props: {
-            header: `Upgrate Room`,
+            header: `Upgrade Room`,
             style: {
                 width: '70vw',
             },

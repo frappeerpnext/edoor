@@ -23,7 +23,7 @@
             </div>
             <TabView lazy>
                 <TabPanel header="General Information">
-                    <div class="grid mt-3 ml-0 ms-0">
+                    <div class="grid mt-2 ml-0 ms-0">
                         <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
@@ -35,7 +35,7 @@
                                 <div class="col-12">
                                     <ComReservationBusinessSourceAndRate />
                                 </div>
-                                <div class="col-12">
+                                <div class="col-12"> 
                                     <ComReservationRoomStayList />
                                 </div>
                                 <div class="col-12">
@@ -273,6 +273,7 @@ function onAuditTrail() {
             },
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
         onClose: (options) => {
             //

@@ -8,34 +8,47 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "date",
   "property",
   "reservation",
   "reservation_stay",
   "stay_room_id",
   "business_source",
+  "column_break_7",
   "room_type_id",
   "room_type",
   "room_id",
   "room_number",
+  "column_break_12",
   "rate_type",
-  "date",
+  "is_manual_rate",
+  "input_rate",
   "rate",
-  "total_rate",
-  "tax_rule",
+  "discount_section",
   "discount_type",
+  "column_break_18",
   "discount",
+  "column_break_20",
   "discount_amount",
+  "tax_section",
+  "tax_rule",
+  "tax_1_rate",
+  "tax_2_rate",
+  "tax_3_rate",
+  "rate_include_tax",
   "tax_rule_data",
+  "column_break_27",
   "taxable_amount_1",
   "taxable_amount_2",
   "taxable_amount_3",
+  "column_break_30",
   "tax_1_amount",
   "tax_2_amount",
   "tax_3_amount",
   "total_tax",
-  "total_amount",
-  "note",
-  "is_manual_rate"
+  "section_break_25",
+  "total_rate",
+  "note"
  ],
  "fields": [
   {
@@ -121,8 +134,10 @@
    "label": "Discount Amount"
   },
   {
+   "fetch_from": "tax_rule.tax_rule_data",
    "fieldname": "tax_rule_data",
    "fieldtype": "JSON",
+   "hidden": 1,
    "label": "Tax Rule Data"
   },
   {
@@ -156,12 +171,6 @@
    "label": "Tax 3 Amount"
   },
   {
-   "fieldname": "total_amount",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Total Amount"
-  },
-  {
    "fieldname": "note",
    "fieldtype": "Small Text",
    "label": "Note"
@@ -193,17 +202,84 @@
   {
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stay Room ID"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_section",
+   "fieldtype": "Section Break",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "section_break_25",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_27",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_18",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_1_rate",
+   "fieldtype": "Float",
+   "label": "Tax 1 Rate"
+  },
+  {
+   "fieldname": "tax_2_rate",
+   "fieldtype": "Float",
+   "label": "Tax 2 Rate"
+  },
+  {
+   "fieldname": "tax_3_rate",
+   "fieldtype": "Float",
+   "label": "Tax 3 Rate"
+  },
+  {
+   "fieldname": "input_rate",
+   "fieldtype": "Currency",
+   "label": "Input Rate"
+  },
+  {
+   "default": "Yes",
+   "fieldname": "rate_include_tax",
+   "fieldtype": "Select",
+   "label": "Rate Include Tax",
+   "options": "Yes\nNo"
   },
   {
    "fieldname": "total_rate",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Total Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-10 09:41:33.484140",
+ "modified": "2023-06-24 09:27:56.291587",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",
@@ -221,9 +297,55 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

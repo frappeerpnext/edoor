@@ -1,5 +1,5 @@
 <template>
- 
+   
     <Dropdown v-model="selected_folio" :options="folios" optionLabel="folio" optionValue="name"
         placeholder="Select Folio" class="w-full md:w-14rem" @change="refreshReport" />
     <iframe id="report-view" style="height: 1024px;" width="100%" :src="url"></iframe>
@@ -35,10 +35,10 @@ onMounted(() => {
         alert("no dialog")
     } else {
         const params = dialogRef.value.data
-        reservation_stay.value = params.name
+        reservation_stay.value = params.reservation_stay
         report_name.value = params.report_name
 
-
+       
         call.get('edoor.api.reservation.get_reservation_folio', {
             reservation: params.reservation,
             reservation_stay: params.reservation_stay
@@ -47,11 +47,12 @@ onMounted(() => {
                 
                 folios.value = result.message
                 if (!params.name) {
-
+                   
                         selected_folio.value = folios.value[0].name
 
                 } else {
                     selected_folio.name = params.name
+                    alert(555)
                 }
                 refreshReport()
             })

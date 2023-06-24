@@ -2,8 +2,10 @@
     <div>
                 <div class="mb-4">
                     <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.note_type}}</label><br/>
-                    <Textarea class="w-full my-2" id="text--note" v-model="create.content" rows="3" />
-                    <div class="flex gap-5 justify-end items-center mt-2"> 
+                    <div class="h-6rem mb-4">
+                    <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
+                    </div>
+                    <div class="flex gap-5 justify-end items-center mt-1"> 
                             <div class="flex gap-5 align-items-center">
                                 <div>
                                     <RadioButton v-model="create.note_type" inputId="comment" name="noteType" value="Comment" />

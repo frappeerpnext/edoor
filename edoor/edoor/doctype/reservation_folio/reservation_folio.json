@@ -9,18 +9,35 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "property",
   "posting_date",
   "working_day",
   "cashier_shift",
   "working_date",
+  "column_break_6",
   "reservation",
   "reservation_stay",
-  "property",
+  "column_break_10",
+  "room_types",
+  "rooms",
   "status",
   "is_master",
+  "guest_information_section",
+  "guest",
+  "guest_name",
+  "column_break_17",
+  "phone_number",
+  "email",
+  "photo",
+  "summary_section",
   "total_debit",
+  "column_break_24",
   "total_credit",
-  "balance"
+  "column_break_26",
+  "balance",
+  "section_break_28",
+  "note",
+  "deleted_note"
  ],
  "fields": [
   {
@@ -64,7 +81,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Reservation Stay",
-   "options": "Reservation Stay"
+   "options": "Reservation Stay",
+   "reqd": 1
   },
   {
    "default": "Open",
@@ -100,6 +118,96 @@
    "fieldname": "balance",
    "fieldtype": "Currency",
    "label": "Balance"
+  },
+  {
+   "fieldname": "guest_information_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Information"
+  },
+  {
+   "fetch_from": "reservation_stay.guest",
+   "fetch_if_empty": 1,
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest.phone_number",
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fetch_from": "guest.email_address",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fetch_from": "guest.photo",
+   "fieldname": "photo",
+   "fieldtype": "Data",
+   "label": "Photo"
+  },
+  {
+   "fetch_from": "reservation_stay.room_types",
+   "fieldname": "room_types",
+   "fieldtype": "Data",
+   "label": "Room Types",
+   "length": 500
+  },
+  {
+   "fetch_from": "reservation_stay.rooms",
+   "fieldname": "rooms",
+   "fieldtype": "Data",
+   "label": "Rooms",
+   "length": 500
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "summary_section",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_26",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_28",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  },
+  {
+   "fieldname": "deleted_note",
+   "fieldtype": "Small Text",
+   "label": "Deleted Note"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -110,7 +218,7 @@
    "link_fieldname": "folio_number"
   }
  ],
- "modified": "2023-06-20 17:44:31.142684",
+ "modified": "2023-06-23 14:34:34.436842",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",
@@ -126,6 +234,41 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
    "share": 1,
    "write": 1
   }

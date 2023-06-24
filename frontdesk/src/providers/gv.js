@@ -53,4 +53,43 @@ export default class Gv {
 	dateApiFormat(date){
 		return moment(date).format("yyyy-MM-DD")
 	}
+
+	getRateBeforeTax(amount, tax_rule, tax_1_rate, tax_2_rate, tax_3_rate){
+		amount=amount || 0
+	 
+		const t1_r = (tax_1_rate || 0) / 100
+		const t2_r = (tax_2_rate ||  0)  / 100
+		const t3_r = (tax_3_rate || 0)  / 100
+		
+		let tax_1_amount = 0
+		let tax_2_amount = 0
+		let tax_3_amount = 0
+		let price = 0
+
+		let t1_af_disc = tax_rule.calculate_tax_1_after_discount
+		let t2_af_disc = tax_rule.calculate_tax_2_after_discount
+		let t2_af_add_t1 = tax_rule.calculate_tax_2_after_adding_tax_1
+		let t3_af_disc	= tax_rule.calculate_tax_3_after_discount
+		let t3_af_add_t1 =  tax_rule.calculate_tax_3_after_adding_tax_1
+		let t3_af_add_t2 =   tax_rule.calculate_tax_3_after_adding_tax_2
+
+
+		let tax_rate_con = 0
+ 
+
+		tax_rate_con = (1 + t1_r + t2_r 
+							+ (t1_r * t2_af_add_t1 * t2_r) 
+							+ t3_r + (t1_r * t3_af_add_t1 * t3_r) 
+							+ (t2_r * t3_af_add_t2 * t3_r)
+							+ (t1_r * t2_af_add_t1 * t2_r * t3_af_add_t2 * t3_r))
+
+
+    
+		tax_rate_con = tax_rate_con || 0
+
+		price = amount /  tax_rate_con
+		 
+		return  price
+	 
+	}
 }

@@ -15,7 +15,8 @@
   "room_tax_group_account_code",
   "folio_transaction_stype_credit_debit",
   "allow_user_to_add_back_date_transaction",
-  "role_for_back_date_transaction"
+  "role_for_back_date_transaction",
+  "show_account_code_in_folio_transaction"
  ],
  "fields": [
   {
@@ -72,12 +73,18 @@
    "fieldtype": "Link",
    "label": "Role for back date transaction",
    "options": "Role"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_account_code_in_folio_transaction",
+   "fieldtype": "Check",
+   "label": "Show Account Code In Folio Transaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-19 23:34:51.276227",
+ "modified": "2023-06-24 12:16:18.727928",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

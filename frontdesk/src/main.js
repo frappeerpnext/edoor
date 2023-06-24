@@ -114,7 +114,9 @@ import ComPlaceholder from './components/layout/components/ComPlaceholder.vue'
 import ComReservationStatus from './components/label/ComReservationStatus.vue'
 import ComUploadProfile from './components/form/ComUploadProfile.vue'
 import ComColorPicker from './components/form/ComColorPicker.vue'
+import ComInputCurrency from './components/form/ComInputCurrency.vue'
 import ComSelectRoomTypeAvailability from '@/views/reservation/components/form/ComSelectRoomTypeAvailability.vue'
+import ComNote from './components/form/ComNote.vue'
 import socket from './utils/socketio';
 
 
@@ -187,8 +189,9 @@ app.component('ComPlaceholder',ComPlaceholder)
 app.component('ComReservationStatus',ComReservationStatus)
 app.component('ComUploadProfile', ComUploadProfile) 
 app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability)
+app.component('ComNote',ComNote)
 app.component('ComColorPicker', ComColorPicker)
-
+app.component('ComInputCurrency',ComInputCurrency)
 
 // Plugins
 app.use(frappe)

@@ -1,7 +1,7 @@
 <template>
     <div> 
         <div class="flex items-center justify-end">
-            <div class="res_btn_st">
+            <div class="res_btn_st"> 
                 <Button :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
             </div>
             <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">

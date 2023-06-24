@@ -14,8 +14,8 @@
             <template #end>
                 <div class="flex gap-2 justify-content-end">
                     <NewFITReservationButton/>
-                    <Button label="New group booking" class="btn-date__tt btn-inner-set-icon border-none">
-                        <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
+                    <Button v-tooltip.left="'New Group Booking'" @click="groupReservation" label="New group booking" class="btn-date__tt btn-inner-set-icon border-none cursor-pointer">
+                        <img :src="iconEdoorAddGroupBooking">
                     </Button>
                 </div>
             </template>
@@ -23,7 +23,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro">
             <ComRoomChartFilterSelect>
                 <template #date>
-                    <Calendar panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-MM-yy" @date-select="onFilterDate" showButtonBar showIcon />
+                    <Calendar class="btn-set__h" panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-MM-yy" @date-select="onFilterDate" showButtonBar showIcon />
                 </template>
             </ComRoomChartFilterSelect>
             <div>

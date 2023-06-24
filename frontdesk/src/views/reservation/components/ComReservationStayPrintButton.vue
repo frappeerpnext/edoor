@@ -65,13 +65,13 @@ items.value.push({
     }
 })
 
-//Confirmattion Voucher
+//Folio Summary Report
 items.value.push({
     label: "Folio Summary Report",
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
-            filters: [["status", "=", "active"], ["reservation_stay", "=", props.reservation_stay]]
+            filters: [["reservation_stay", "=", props.reservation_stay]]
         }).then((docs) => {
 
             if (docs.length == 0) {
@@ -80,7 +80,7 @@ items.value.push({
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        name: props.reservation_stay,
+                        reservation_stay: props.reservation_stay,
                         report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
                         view: "print"
                     },
@@ -100,13 +100,13 @@ items.value.push({
     }
 })
 
-//Confirmattion Voucher
+//folio detail report
 items.value.push({
     label: "Folio Detail Report",
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
-            filters: [["status", "=", "active"], ["reservation_stay", "=", props.reservation_stay]]
+            filters: [ ["reservation_stay", "=", props.reservation_stay]]
         }).then((docs) => {
 
             if (docs.length == 0) {
@@ -115,7 +115,7 @@ items.value.push({
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        name: props.reservation_stay,
+                        reservation_stay: props.reservation_stay,
                         report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
                         view: "print"
                     },

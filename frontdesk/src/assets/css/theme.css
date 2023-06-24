@@ -1270,7 +1270,7 @@
   font-size: 1rem;
   color: #495057;
   background: #ffffff;
-  padding: 0.65625rem 0.65625rem;
+  padding: 0.6rem 0.65rem;
   border: 1px solid var(--btn-border-color);
   transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   appearance: none;
@@ -1294,7 +1294,7 @@
 
 .p-inputtext.p-inputtext-sm {
   font-size: 1rem;
-  padding: 0.65625rem 0.65625rem;
+  padding: 0.6rem 0.65rem;
 }
 
 .p-inputtext.p-inputtext-lg {
@@ -1366,8 +1366,7 @@
 
 .p-inputtext-sm .p-inputtext {
   font-size: 1rem;
-  padding: 0.65625rem 0.65625rem;
-  /* height: 3rem; */
+  padding: 0.6rem 0.65rem;
 }
 
 .p-inputtext-lg .p-inputtext {
@@ -4967,13 +4966,12 @@
 }
 
 .p-tabview .p-tabview-nav li:not(.p-highlight):hover .p-tabview-nav-link {
-/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,d9e0e6+100 */
-background: #ffffff !important; /* Old browsers */
-background: -moz-linear-gradient(top,  #ffffff 0%, #d9e0e6 100%) !important; /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  #ffffff 0%,#d9e0e6 100%) !important; /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  #ffffff 0%,#d9e0e6 100%) !important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#d9e0e6',GradientType=0 ) !important; /* IE6-9 */
-
+/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,c7d2fe+100 */
+background: #ffffff!important; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffffff 0%, #c7d2fe 100%)!important; /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #ffffff 0%,#c7d2fe 100%)!important; /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #ffffff 0%,#c7d2fe 100%)!important; /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#c7d2fe',GradientType=0 )!important; /* IE6-9 */
 }
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
@@ -5004,6 +5002,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   border-left: 1px solid var(--btn-border-color);
   border-right: 1px solid var(--btn-border-color);
   margin: 0 0 -2px 0;
+  padding-top: 0.7rem;
 }
 
 .p-tabview .p-tabview-nav-btn.p-link {

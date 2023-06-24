@@ -53,6 +53,7 @@ if (localStorage.getItem("edoor_property") == null) {
 
 
 window.addEventListener("unhandledrejection", function (error) {
+     
     let exception = error.reason.exception || error.reason.message
     const replace_text = [
         {text:"frappe.exceptions.ValidationError:",value:""},
@@ -65,12 +66,12 @@ window.addEventListener("unhandledrejection", function (error) {
     if(exception){
         replace_text.forEach(t => {
             message =message.replaceAll(t.text,t.value) 	
-
         });
         
     }
     toast.add({ severity: 'warn', summary: '', detail: message, life: 3000 })
 });
+
 
  
 const actionClickHandler = async function (e) { 

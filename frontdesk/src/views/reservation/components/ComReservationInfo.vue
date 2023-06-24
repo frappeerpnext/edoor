@@ -3,7 +3,7 @@
         <template #btn>
             <div class="flex items-center">
                 <span> Res Color </span> 
-                <button :style="{background:rs?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
+                <button :style="{background:rs?.reservation?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
             </div>
         </template>
         <template #content>
@@ -53,24 +53,20 @@
                         :value="rs.reservationStay?.name" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
+
                 <div class="flex mt-2 gap-2">
+                   
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
-                        <!-- <div v-if="rs && rs?.reservationStays">
-                            <span v-for="(i, index) in rs.reservationStays.slice(0, 2)"
-                                :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor">
-                                    <span v-tooltip.top="i?.room_types">{{ i?.room_type_alias }}/{{ i?.rooms }}</span>
-                            </span>
-                            <span v-if="rs.reservationStays.length > 2">
-                                ... <span class="">more</span>
-                            </span>
-                        </div> -->
                         <div v-if="rs && rs?.reservationStays">
                             <div 
                             v-for="(i, index)  in rs?.reservationStays[0]?.room_type_alias?.split(',').slice(0, 3)"
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                               {{ i }}/{{ rs?.reservationStays[0]?.rooms?.split(',')[index] }}
+                                <span v-tooltip.top="rs?.reservationStays[0]?.room_types?.split(',')[index]">{{ i }}</span>/{{ rs?.reservationStays[0]?.rooms?.split(',')[index] }}
                             </div>
                             <div v-if="rs?.reservationStays[0]?.room_type_alias?.split(',').length>3"
+                                v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs?.reservationStays?.map(stay => {
+                                return stay.room_types.split(',').slice(3).map((type, i) => `${type}/${(stay.rooms.split(',').slice(3))[i]}`).join('\n')
+                                  })}</div>` , escape: true, class: 'max-w-30rem' }"
                                  class="rounded-xl px-2 bg-purple-cs w-auto inline">
                                     {{ rs?.reservationStays[0]?.room_type_alias?.split(',').length - 3 }}
                                     Mores
@@ -123,7 +119,7 @@
         </template>
     </ComReservationStayPanel>
     <OverlayPanel ref="op">
-        <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
+        <ComReservationChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
         <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
     </OverlayPanel>
 </template>
@@ -133,7 +129,7 @@ import {inject} from '@/plugin'
 import { ref } from "vue";
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
-import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
+import ComReservationChangeColorReservation from './ComReservationChangeColorReservation.vue';
 import ComChangePax from './ComChangePax.vue';
 
 const moment = inject('$moment')
@@ -141,7 +137,6 @@ const rs = inject('$reservation');
 const gv = inject('$gv');
 const overLayName = ref("")
 const op = ref();
-
 const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);

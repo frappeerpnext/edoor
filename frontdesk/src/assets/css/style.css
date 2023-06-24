@@ -24,6 +24,7 @@
     --bg-comment:#f6f8f9;
     --trash-can-bg: #e6e6e6;
     --bg-purple-cs: #4338ca;
+    --border-purple-color: #7269d2;
     --bg-gray-10: #f0f0f0;
     --color-gray-100: #c4c4c4;
     --bg-color-teal: #14b8b1;
@@ -33,6 +34,8 @@
     --bg-purple-cs-50:#4338ca;
     --bg-tb-sec-color:#eff2f7;
     --bg-btn-dialog-inside: #f7f6ff;
+    --red-100: #FFECEC;
+    --green-100: #E9F6DE;
 
 }
 html {
@@ -279,11 +282,11 @@ button.p-button.btn-date__t {
     top: 63px !important
 }
 
-button.p-button:not(.p-0),
+button.p-button:not(.p-0):not(.btn-choose__pro),
 .btn-calendar__t input {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
     padding: 0.65rem 0.65rem;
-    font-weight: var(--primary-font-weight) !important;
+    font-weight: 400 !important;
 }
 
 button.p-button.btn-date__t.active {
@@ -390,6 +393,7 @@ label {
 .n__re-custom button.p-button {
     padding-top: unset !important;
     padding-bottom: unset !important;
+    height: 37px;
 }
 
 
@@ -593,7 +597,12 @@ span.p-button-icon.pi.pi-ellipsis-h {
 }
 .fc-event[href], .fc-event.fc-event-draggable{
     border-radius: 1.5rem !important;
-    height: 31px;
+    height: 2.5rem;
+}
+@-moz-document url-prefix() {
+    .fc-event[href], .fc-event.fc-event-draggable{
+        height: 2.4rem;
+    }
 }
 /* END Full calenda css */
 .cs-badge-tran .p-badge.p-badge-warning{
@@ -621,7 +630,6 @@ span.p-button-icon.pi.pi-ellipsis-v{
 }
 .filter-calen-fro .p-inputtext.p-component {
     width: 12rem;
-    height: 39px;
 }
 .shadow-charge-total{
     box-shadow: rgba(255, 255, 255, 1) 0px 1px 0px 0px !important;
@@ -675,7 +683,8 @@ span.p-button-icon.pi.pi-ellipsis-v{
     object-fit: cover;
 }
 .conten-btn, .spl__btn_cs.sp button, .conten-btn.tl{
-    padding: 0.35rem .65rem 0.45rem !important;
+    padding: 0.45rem .65rem 0.45rem !important;
+    line-height: 1.5;
     background: var(--bg-btn-dialog-inside);
     border-color:var(--bg-purple-cs);
     color: var(--bg-purple-cs);
@@ -695,7 +704,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
 {
     background: #dfddff;
     color: var(--bg-purple-cs);
-    border-color:#7269d2;
+    border-color:var(--border-purple-color);
 }
 .btn-add-folio{
     border-color: var(--bg-purple-cs);
@@ -729,39 +738,54 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     background: transparent;
     color: var(--bg-purple-cs);
     border: 1px solid #CECFD0;
+    padding: 0.36rem 0.45rem 0.45rem !important;
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     transition: all 0.3s;
 }
 .res-stay-folio-btn-site-bg button.btn-folio-name:enabled:hover {
-    background: #d1e1ee;
-    color: #ec864b;
-    border-color: var(--btn-border-color);
+    background: #dfddff;
+    color: var(--bg-purple-cs);
+    border-color:#CECFD0;
 }
 .res-stay-folio-btn-site-bg button.btn-folio-name:not(:last-child) {
     border-bottom: none; /* Prevent double borders */
 }
 .res-stay-folio-btn-site-bg .p-button-folio-active.btn-folio-name{
     background: #ffffff;
-    color: #ec864b;
+    color: var(--bg-og-color-hover);
     border-right: 1px solid #FFF;
 }
 .res-stay-folio-btn-site-bg .p-button-folio-active.btn-folio-name:enabled:hover{
-    color: #ec864b;
+    color: var(--bg-og-color-hover);
     background-color: white;
     border-color: #CECFD0;
     border-right: 1px solid #FFF;
 }
 .res-stay-folio-divider{
-    width:1px;height: 100%;/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,cecfd0+100 */
+    margin-left: -1px;
+    width:1px;
     background: #ffffff; /* Old browsers */
     background: -moz-linear-gradient(left,  #ffffff 0%, #cecfd0 100%); /* FF3.6-15 */
     background: -webkit-linear-gradient(left,  #ffffff 0%,#cecfd0 100%); /* Chrome10-25,Safari5.1-6 */
     background: linear-gradient(to right,  #ffffff 0%,#cecfd0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#cecfd0',GradientType=1 ); /* IE6-9 */
 }
-.conten-btn.sp{ 
-    height: 34px;
+.min-h-folio-cus{
+    min-height: 30rem;
+}
+.folio-is-mater-icon{
+    margin-top: -4px;
+}
+.folio-remark{
+    background: #ebebeb;
+    padding: 0 6px;
+    border-radius: 10px;
+}
+.folio-remark.cus{
+    background: #FFF;
+    border:1px solid #ebebeb;
+    padding-left: 3px;
 }
 .spl__btn_cs.sp button:last-child{
     border-left-color: rgba(67, 56, 202, .3) !important;
@@ -769,6 +793,20 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-timeline-event-opposite{
     flex: inherit !important;
 }
-/* .p-timeline-event-opposite{
-    min-width: 100px;
-} */
+.filter-calen-fro .mr-2.relative{
+    height: 36px;
+}
+.btn-set__h input, 
+.btn-set__h button,
+.btn-set__h,
+.p-calendar.p-component input,
+.p-inputnumber.p-component input,
+.p-inputnumber.p-component .p-inputnumber-button-group{
+    height: 37px;
+}
+.p-tieredmenu.p-component.p-tieredmenu-overlay.p-input-filled{
+    min-width: 216px !important;  
+}
+.p-tieredmenu .p-menuitem>.p-menuitem-content .p-menuitem-link{
+    padding: 0.75rem 0.75rem;
+}

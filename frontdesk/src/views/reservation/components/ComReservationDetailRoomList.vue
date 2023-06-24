@@ -1,5 +1,6 @@
 <template lang="">
     <ComReservationStayPanel title="Reservation Room List">
+        
         <template #content> 
             <ComPlaceholder :loading="rs.loading" :isNotEmpty="true">
                 <div class="flex justify-end">
@@ -19,13 +20,28 @@
                                 <div><span v-tooltip.top="'Arrival Date'">{{slotProps.data.arrival_date}}</span> to <span v-tooltip.top="'Departure Date'">{{slotProps.data.departure_date}}</span></div>                               
                             </template>
                         </Column>
-                        <Column header="Room Type">
+                        <Column header="Room">
+                            
                             <template #body="slotProps">
-                                <div><span v-tooltip.top="slotProps.data.room_types">
-                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="">
-                                        {{i}}
+                                <div v-if="slotProps.data.room_type_alias.split(',').length > 3">
+                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
+                                        {{(index != 0) ? ',' : ''}}
+                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/{{ slotProps.data.rooms.split(',')[index] }}
                                     </div>
-                                    {{slotProps.data.room_type_alias}}</span>/<span v-tooltip.top="slotProps.data.rooms">{{slotProps.data.rooms}}</span></div>
+                                    <div
+                                        v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${roomList?.map(stay => {
+                                        return stay.room_types.split(',').slice(3).map((type, i) => `${type}/${(stay.rooms.split(',').slice(3))[i]}`).join('\n')
+                                          })}</div>` , escape: true, class: 'max-w-30rem' }"
+                                        class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1">
+                                        {{slotProps.data.room_type_alias.split(',').length - 3}} Mores
+                                    </div>
+                                </div>
+                                <div v-else class="inline">
+                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
+                                        {{(index != 0) ? ',' : ''}}
+                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/{{ slotProps.data.rooms.split(',')[index] }}
+                                    </div>
+                                </div>
                             </template>
                         </Column>
                         <Column header="Guest Name">

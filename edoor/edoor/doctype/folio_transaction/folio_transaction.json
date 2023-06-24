@@ -19,17 +19,18 @@
   "working_day",
   "cashier_shift",
   "working_date",
+  "parent_reference",
   "column_break_8",
   "account_code",
   "account_name",
   "type",
   "input_amount",
-  "amount",
   "quantity",
-  "parent_reference",
+  "price",
+  "amount",
   "stay_information_section",
+  "room_type_id",
   "room_type",
-  "room_type_name",
   "column_break_23",
   "room_id",
   "room_number",
@@ -77,7 +78,28 @@
   "account_category",
   "account_category_name",
   "account_group",
-  "account_group_name"
+  "account_group_name",
+  "deleted_note",
+  "descriptions_tab",
+  "discount_account",
+  "check_75",
+  "discount_description",
+  "section_break_77",
+  "tax_1_account",
+  "column_break_79",
+  "tax_1_description",
+  "section_break_81",
+  "tax_2_account",
+  "column_break_83",
+  "tax_2_description",
+  "section_break_85",
+  "tax_3_account",
+  "column_break_87",
+  "tax_3_description",
+  "section_break_89",
+  "bank_fee_account",
+  "column_break_91",
+  "bank_fee_description"
  ],
  "fields": [
   {
@@ -210,6 +232,7 @@
    "fetch_if_empty": 1,
    "fieldname": "tax_rule_data",
    "fieldtype": "JSON",
+   "hidden": 1,
    "label": "Tax Rule Data"
   },
   {
@@ -343,18 +366,6 @@
    "label": "Stay Information"
   },
   {
-   "fieldname": "room_type",
-   "fieldtype": "Link",
-   "label": "Room Type",
-   "options": "Room Type"
-  },
-  {
-   "fetch_from": "room_type.room_type",
-   "fieldname": "room_type_name",
-   "fieldtype": "Data",
-   "label": "Room Type Name"
-  },
-  {
    "fieldname": "column_break_23",
    "fieldtype": "Column Break"
   },
@@ -471,13 +482,132 @@
   },
   {
    "fieldname": "credit_expired_date",
-   "fieldtype": "Date",
+   "fieldtype": "Data",
    "label": "Credit Expired Date"
+  },
+  {
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fieldname": "deleted_note",
+   "fieldtype": "Small Text",
+   "label": "Deleted Note"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "price",
+   "fieldtype": "Currency",
+   "label": "Price"
+  },
+  {
+   "fieldname": "descriptions_tab",
+   "fieldtype": "Tab Break",
+   "label": "Descriptions"
+  },
+  {
+   "fieldname": "discount_description",
+   "fieldtype": "Data",
+   "label": "Discount Description"
+  },
+  {
+   "fieldname": "discount_account",
+   "fieldtype": "Link",
+   "label": "Discount Account",
+   "options": "Account Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "check_75",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_77",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_1_account",
+   "fieldtype": "Link",
+   "label": "Tax 1 Account",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "column_break_79",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_1_description",
+   "fieldtype": "Data",
+   "label": "Tax 1 Description"
+  },
+  {
+   "fieldname": "section_break_81",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_2_account",
+   "fieldtype": "Link",
+   "label": "Tax 2 Account",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "column_break_83",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_2_description",
+   "fieldtype": "Data",
+   "label": "Tax 2 Description"
+  },
+  {
+   "fieldname": "section_break_85",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "tax_3_account",
+   "fieldtype": "Link",
+   "label": "Tax 3 Account",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "column_break_87",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_3_description",
+   "fieldtype": "Data",
+   "label": "Tax 3 Description"
+  },
+  {
+   "fieldname": "section_break_89",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "bank_fee_account",
+   "fieldtype": "Link",
+   "label": "Bank Fee Account",
+   "options": "Account Code"
+  },
+  {
+   "fieldname": "column_break_91",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_fee_description",
+   "fieldtype": "Data",
+   "label": "Bank Fee Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-19 23:17:18.751365",
+ "modified": "2023-06-23 18:07:58.396590",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -495,9 +625,45 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
   }
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

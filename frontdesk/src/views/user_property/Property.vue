@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent :isDialog="false">
+    <ComDialogContent :isDialog="false" hideFooter>
         <div class="pro__wrapper_dialog dialog_change_pro px-5" v-if="isModal">
             <div class="grid grid-rows-4 grid-flow-col gap-4 pt-2">
                 <template v-for="(p, index) in current_user.property.filter(r => r.name != current_property?.name)"
