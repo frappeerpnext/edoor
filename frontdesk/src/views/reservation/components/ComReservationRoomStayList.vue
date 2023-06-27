@@ -18,7 +18,7 @@
                             </span>/<span  v-if="data.room_number">
                                  {{data.room_number}}
                             </span>
-                             <span class="link_line_action w-auto" v-else>
+                             <span @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
                                 <i class="pi pi-pencil"></i>
                                 Assign Room
                              </span>
@@ -48,12 +48,14 @@
                     </Column>
                     <Column header="">
                         <template #body="slotProps">
-                            <ComReservationStayRoomListMoreOption class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                            <template v-if="canNotUpgradeRoom">
+                                <ComReservationStayRoomListMoreOption class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                            </template>
                         </template>
                     </Column>
             </DataTable>
             </div>
-            <div class="flex justify-end mt-3">
+            <div class="flex justify-end mt-3" v-if="canNotUpgradeRoom">
                 <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon icon="iconBedPurple" class="me-2" /> Upgrade Room</Button>
             </div>
         </template>
@@ -63,6 +65,7 @@
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationStayRoomListMoreOption from '../components/ComReservationStayRoomListMoreOption.vue'
 import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
+import ComReservationStayAssignRoom from './ComReservationStayAssignRoom.vue';
 import {inject,ref,useDialog,computed} from '@/plugin'
 import Enumerable from 'linq'
 const moment = inject('$moment')
@@ -71,6 +74,9 @@ const rs = inject("$reservation_stay")
 const dialog = useDialog()
 const rooms = computed(()=>{
     return Enumerable.from(rs.reservationStay?.stays).orderBy("$.creation").toArray()
+})
+const canNotUpgradeRoom = computed(()=>{
+    return !rs.reservationStatusDelete.find(r=>r == rs.reservationStay.reservation_status)
 })
 function onUpgradeRoom() { 
 
@@ -97,7 +103,29 @@ function onUpgradeRoom() {
     });
 }
     
-
+function onAssignRoom(data){
+    dialog.open(ComReservationStayAssignRoom, {
+        data: {
+            stay_room: data
+        },
+        props: {
+            header: `Assign Room`,
+            style: {
+                width: '70vw',
+            },
+            
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            //
+        }
+    })
+}
 </script>
 <style scoped>
     .p-datatable > .p-datatable-wrapper {

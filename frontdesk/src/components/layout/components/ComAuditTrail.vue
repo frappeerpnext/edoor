@@ -150,28 +150,31 @@
     onUnmounted(() => {
         data.value = []
     })
+
+
+    // @media screen and (max-width: 960px) {
+    //     ::v-deep(.customized-timeline) {
+    //         .p-timeline-event:nth-child(even) {
+    //             flex-direction: row !important;
+
+    //             .p-timeline-event-content {
+    //                 text-align: left !important;
+    //             }
+    //         }
+
+    //         .p-timeline-event-opposite {
+    //             flex: 0;
+    //         }
+
+    //         .p-card {
+    //             margin-top: 1rem;
+    //         }
+    //     }
+    // }
   
 </script>
 <style scoped>
-@media screen and (max-width: 960px) {
-    ::v-deep(.customized-timeline) {
-        .p-timeline-event:nth-child(even) {
-            flex-direction: row !important;
 
-            .p-timeline-event-content {
-                text-align: left !important;
-            }
-        }
-
-        .p-timeline-event-opposite {
-            flex: 0;
-        }
-
-        .p-card {
-            margin-top: 1rem;
-        }
-    }
-}
 .cmmt-section, .ntd-section{
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }

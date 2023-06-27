@@ -4,43 +4,42 @@
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
             <div class="n__re-custom">
-                {{ maxDate }}
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="text-left">
+                            <th class="text-left pe-2">
                                 <label>Start Date<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>End Date<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-center">
+                            <th class="text-center px-2">
                                 <label class="text-center">Nights</label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left ps-2">
                                 <label>Room Name<span class="text-red-500">*</span></label>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td> 
-                                <Calendar v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'Checked In'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                            <td class="pe-2"> 
+                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'Checked In'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
-                            <td>
-                                <Calendar v-model="stay.end_date" :min-date="minDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
+                            <td class="px-2">
+                                <Calendar class="w-full" showIcon v-model="stay.end_date" :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
                             </td>
-                            <td class="text-center"> 
-                                <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="child-adults-txt" />
+                            <td class="text-center px-2 w-5rem">
+                                <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />
                             </td>
-                            <td> 
-                                {{ stay.room_type }}
+                            <td class="px-2"> 
+                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex white-space-nowrap">{{ stay.room_type }}</span>
                             </td>
-                            <td>
-                                {{ stay.room_number }}
+                            <td class="ps-2">
+                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex">{{ stay.room_number }}</span>
                             </td> 
                         </tr>
                     </tbody>
@@ -61,7 +60,8 @@
     const moment = inject('$moment')
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
-    const loading = ref(false)
+    const loading = ref(false) 
+    const maxNight = ref(null) 
     const stay = ref(JSON.parse(JSON.stringify(dialogRef.value.data.item)))
     stay.value.start_date = moment(stay.value.start_date).toDate()
     stay.value.end_date = moment(stay.value.end_date).toDate()
@@ -74,12 +74,14 @@
     })
     const maxDate = computed(()=>{
         const data = Enumerable.from(rs.reservationStay.stays).orderBy("$.start_date").toArray()
-        console.log(data)
-        console.log(stay.value.name)
-        const ex = [{name:'1'},{name:'2'},{name:'3'}]
-        const index = ex.indexOf(p => p.name === '2')
-        return index
+        const index = data.findIndex(p => p.name == stay.value.name)
+        if(data[index + 1]){ 
+            maxNight.value = moment(data[index + 1].end_date).diff(moment(stay.value.start_date), 'days') - 1
+            return moment(data[index + 1].end_date).subtract(1, "days").toDate()
+        }
+        return null
     })
+    
     function onStartDate(newValue){
         if(moment(newValue).isSame(stay.value.end_date) || moment(newValue).isAfter(stay.value.end_date)){
             stay.value.end_date = moment(stay.value.end_date).add(1,'days').toDate()
@@ -97,6 +99,11 @@
     }
     function onSave(){
         loading.value = true
+        if(moment(stay.value.start_date).isSame(stay.value.end_date)){
+            gv.toast('warn','Start date cannot same end date.')
+            loading.value = false
+            return
+        }
         var newData = JSON.parse(JSON.stringify(stay.value))
         newData.start_date = gv.dateApiFormat(newData.start_date)
         newData.end_date = gv.dateApiFormat(newData.end_date)

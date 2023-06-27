@@ -1,24 +1,40 @@
 <template>
-    <ComDialogContent @onOK="onOk"   hideButtonClose titleButtonOK="Ok" :hideIcon="true">
-    <h1>Reason:</h1>
-    <Textarea v-model="note" rows="3" cols="50" placeholder="Please enter reason"/>
+    <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
+        <label for="reason-text" class="mb-1 font-medium block">Reason</label>
+        <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason"/>
     </ComDialogContent>
 
 </template>
 <script setup>
 import { inject, ref } from "@/plugin"
 import { useToast } from "primevue/usetoast";
-
 import Textarea from 'primevue/textarea';
 const dialogRef = inject("dialogRef");
 const toast = useToast();
+const emit = defineEmits('ok')
+const props = defineProps({
+    loading: Boolean,
+    value:{
+        type:String,
+        default:''
+    },
+    autoClose: {
+        type: Boolean,
+        default: true
+    }
+})
+const note = ref(props.value)
 
-const note = ref("")
 function onOk(){
     if(note.value){
-        dialogRef.value.close(note.value);
+        if(props.autoClose){
+            dialogRef.value.close(note.value);
+        }
+        else{
+            emit('ok', note.value)
+        }
     }else{
-        toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please enter note", life: 3000 })
+        toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
     }
     
 }

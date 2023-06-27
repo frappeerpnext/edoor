@@ -1,17 +1,19 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        <div class="grid justify-between">
-            <!-- {{ amount }}
-            {{ doc }} -->
-            <div class="col-7">
+        <div class="grid justify-between override-input-text-width">
+            <!-- {{ amount }} -->
+            <!-- {{ doc }} -->
+            <!-- {{ tax_rule }} -->
+
+            <div class="col">
                 <div class="grid">
                     <div class="col-6">
-                            <label for="ref">Ref#.</label>
+                            <label for="ref">Ref. No</label>
                             <InputText id="ref" class="w-full" type="text" v-model="doc.reference_number" />
                     </div>
                     <div class="col-6">
                     <label for="posting_date">Posting Date</label>
-                        <Calendar v-model="doc.posting_date" :minDate="min_date"
+                        <Calendar inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
                             :maxDate="moment(working_day?.date_working_day).toDate()" class="w-full" dateFormat="dd-mm-yy" showIcon
                             showButtonBar />
                     </div>
@@ -22,101 +24,93 @@
                             :filters="{ 'account_group': account_group }" />
                         
                     </div>
-                  
                     <div class="col-6">
                     <label for="input_amount">Amount</label>
-                    <InputNumber class="w-full" id="input_amount" v-model="doc.input_amount" 
+                    <InputNumber inputClass="w-full" class="w-full" inputId="input_amount" v-model="doc.input_amount" 
                         mode="currency"
                         currency="USD" 
                         locale="en-US"
                         ref="input_amount" />
                     </div>
-                    <div v-if="doc.account_name" class="col-12 ">
-                        <div class="bg-yellow-200 border-l-4 border-yellow-400 p-2">
+                    <div v-if="doc.account_name" class="col-12 -mt-2">
+                        <div class="bg-green-100 border-l-4 border-green-400 p-2">
                             {{ doc.account_name }}
                         </div>
-                        <hr class="mt-2">
                     </div>
                     <!-- Quantity -->
-                    <div v-if="account_code.allow_enter_quantity" class="col-6">
+                    <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
                         <label for="quantity">Quantity</label>
                         <InputNumber class="w-full" v-model="doc.quantity" />
                     </div>
                     <!-- /Quantity -->
-                    <!-- Bank -->
-                    <div v-if="account_code.show_payment_information" class="col-12">
-                        <label for="credit_card_number">Credit Card Number</label>
-                        <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
-             
-                        <label for="bank_name">Bank Name</label>
-                        <InputText class="w-full" type="text" v-model="doc.bank_name" />
-                  
-                        <label for="card_holder_name">Card Holder Name</label>
-                        <InputText class="w-full" type="text" v-model="doc.card_holder_name" />
-                    
-                        <label for="credit_expired_date">Credit Expired Date</label>
-                        <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar />
-                    </div>
-                    <!-- /Bank -->
-                    <!-- Bank Fee -->
-                        <div v-if="account_code.allow_bank_fee" class="col-12 mt-2">
-                            <label >Bank Fee</label>
-                            <InputNumber class="w-full" v-model="doc.bank_fee" suffix="%" :readonly="!account_code.allow_user_to_change_bank_fee" />
-                            <div class="flex mt-2 justify-end">
-                                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Bank Fee Amount"
-                                    :value="bank_fee_amount"
-                                    valueClass="max-h-3rem h-3rem leading-8 col-4 bg-gray-edoor-10 pr-0 text-right" />
-                            </div>
-                         </div>
-                    <!-- /Bank Fee -->
                     <!-- Discount -->
-                    <div v-if="account_code.allow_discount" class="col-12" >
-                        <span class="text-lg font-semibold">Discount</span>
+                    <div v-if="account_code.allow_discount && doc?.account_code" class="col-12" >
                         <div class="grid gap-0">
-                            <div class="col-6">
+                            <div class="col-12 md:col-6 lg:col-4">
                                 <label for="dis_type">Discount Type</label>
-                                <ComSelect class="w-full" id="dis_type" v-model="doc.discount_type"
-                                    :options="['Percent', 'Amount']" :clear="false" />
-                            </div>
-                            <div class="col-6">
-                                <label>Discount</label>
                                 <div class="w-full">
-                                <InputNumber class="w-full" v-model="doc.discount" inputId="minmaxfraction"
+                                <ComSelect class="w-full min-w-full" id="dis_type" v-model="doc.discount_type"
+                                    :options="['Percent', 'Amount']" :clear="false" />
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6 lg:col-4">
+                                <label for="minmaxfraction">Discount</label>
+                                <div class="w-full">
+                                <InputNumber inputClass="w-full" v-model="doc.discount" inputId="minmaxfraction"
                                     :minFractionDigits="2" :maxFractionDigits="10" />
                                 </div>
                             </div>
-                        </div>
-                        <div class="flex mt-2 justify-end">
-                            <ComBoxStayInformation is-currency="true" title-class="col-6 " title="Discount Amount"
-                                :value="discount_amount"
-                                valueClass="max-h-3rem h-3rem leading-8 col-4  bg-gray-edoor-10 ms-2 text-right" />
+                            <div class="col-12 md:col-6 lg:col-4">
+                                <label for="minmaxfraction">Total Discount</label>
+                                <div class="w-full">
+                                <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                                    <CurrencyFormat :value="discount_amount"/>
+                                </div>    
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <!-- /Discount -->
+                <!-- City Ledger -->
+                    <div v-if="doc.require_city_ledger_account == 1 && doc?.account_code" class="col-12">
+                        <div class="grid">
+                            <div class="col-12">
+                                <label>City Ledger Account</label>
+                                <ComAutoComplete v-model="doc.city_ledger" placeholder="Select City Ledger Account" doctype="City Ledger"
+                                class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
+                            </div>
+                            <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
+                                <div class="bg-green-100 border-l-4 border-green-400 p-2">
+                                    {{ doc.city_ledger_name }}
+                                </div>
+                            </div>
+                        </div>   
+                    </div>
+                <!-- /City Ledger -->
                 </div>
             </div>
             <!-- end input -->
-            <div class="col-5">
-            <div class="flex flex-col">
-            <div class="col-12">
+            <div v-if="((tax_rule && account_code.allow_tax) || (account_code.show_payment_information) || (account_code.allow_bank_fee)) && doc?.account_code" class="col-5">
+                <div class="grid h-full">
                 <!-- tax -->
-                <div v-if="tax_rule && account_code.allow_tax">
+                <div v-if="tax_rule && account_code.allow_tax" class="col-12 mt-auto">
                     <div class="flex flex-col">
-                    <span class="text-lg font-semibold">Tax</span>
                     <div class="flex justify-end text-end">
-                            <span class="col-6 font-medium">Rate Include Tax</span> 
-                            <Checkbox  class="col-6 px-3" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes"
+                            <label for="include-tax" class="col-6 font-medium cursor-pointer">Rate Include Tax</label> 
+                            <Checkbox input-id="include-tax"  class="col-6 px-3" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes"
                                 falseValue="No" />
                     </div>
                     </div>
                     <!-- Tax - 1 -->
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_1_rate > 0">
-                        <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
+                        <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
                         :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)"
-                            valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                            valueClass="max-h-3rem leading-8 col-6 h-edoor-35 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
                             <template #prefix>
+                                <div>
                                 <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                    <Checkbox v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+                                    <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+                                </div>
                                 </div>
                             </template>
                             <template #default>
@@ -129,12 +123,14 @@
                     <!-- /Tax - 1 -->
                     <!-- Tax - 2 -->
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_2_rate > 0">
-                    <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
-                    :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_1_amount || 0)"
-                        valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                    <ComBoxBetwenConten inputIdFor="tax-2" is-currency="true" title-class="col-6 font-medium"
+                    :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
+                        valueClass="max-h-3rem leading-8 col-6 h-10 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
                         <template #prefix>
+                            <div>
                             <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox @input="onUseTax2Change" v-model="use_tax.use_tax_2" :binary="true" />
+                                <Checkbox inputId="tax-2"  @input="onUseTax2Change" v-model="use_tax.use_tax_2" :binary="true" />
+                            </div>
                             </div>
                         </template>
                         <template #default>
@@ -147,12 +143,14 @@
                     <!-- /Tax - 2 -->
                     <!-- Tax - 3 -->
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_3_rate > 0">
-                    <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
-                    :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_1_amount || 0)"
-                        valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                    <ComBoxBetwenConten inputIdFor="tax-3" is-currency="true" title-class="col-6 font-medium"
+                    :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
+                        valueClass="max-h-3rem leading-8 col-6 h-10 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
                         <template #prefix>
+                            <div>
                             <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox @input="onUseTax3Change" v-model="use_tax.use_tax_3" :binary="true" />
+                                <Checkbox inputId="tax-3"  @input="onUseTax3Change" v-model="use_tax.use_tax_3" :binary="true" />
+                            </div>
                             </div>
                         </template>
                         <template #default>
@@ -167,43 +165,77 @@
                     <div v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0)"
                         class="flex justify-end mt-2">
                         <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
-                            valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
+                            valueClass="max-h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
                     </div>
                     <!-- /Total tax -->
                 </div>
                 <!-- /tax -->
+                <!-- Bank -->
+                <div v-if="account_code.show_payment_information" class="col-12">
+                    <div class="grid">
+                        <div class="col-12">
+                            <label for="credit_card_number">Credit Card Number</label>
+                            <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
+                        </div>
+                        <div class="col-12">
+                            <label for="bank_name">Bank Name</label>
+                            <InputText class="w-full" type="text" v-model="doc.bank_name" />
+                        </div>
+                        <div class="col-6">
+                            <label for="card_holder_name">Card Holder Name</label>
+                            <InputText class="w-full" type="text" v-model="doc.card_holder_name" />
+                        </div>
+                        <div class="col-6">
+                            <label for="credit_expired_date">Credit Expired Date</label>
+                            <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar />
+                        </div>
+                    </div>
+                </div>
+                <!-- /Bank -->
                 <!-- Bank Fee -->
-                <!-- <div v-if="account_code.allow_bank_fee" class=" mt-2">
-                    <div class="col-12">
-                    <InputNumber class="w-full" v-model="doc.bank_fee" suffix="%" :readonly="!account_code.allow_user_to_change_bank_fee" />
-                    </div>
-                    <div class="flex">
-                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Bank Fee Amount"
-                        :value="bank_fee_amount"
-                        valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
-                    </div>
-                </div> -->
+                    <div v-if="account_code.allow_bank_fee" class="col-12">
+                        <div class="grid">
+                            <div class="col-6">
+                                <label >Bank Fee</label>
+                                <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%" :readonly="!account_code.allow_user_to_change_bank_fee" />
+                            </div>
+                            <div class="col-6">
+                                <label >Bank Fee Amount</label>
+                                <div style="height: 36.5px;" class="w-full rounded-lg max-h-3rem leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                                    <CurrencyFormat :value="bank_fee_amount"/>
+                                </div>   
+                            </div>  
+                        </div>
+                     </div>
                 <!-- /Bank Fee -->
-                <!-- Total Amount -->
-                <div class="flex justify-end mt-2">
-                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
-                        valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
                 </div>
-                <!-- /Total Amount -->
             </div>
-                <!-- City Ledger -->
-                <div v-if="doc.require_city_ledger_account == 1">
-                    <ComAutoComplete v-model="doc.city_ledger" placeholder="Select City Ledger Account" doctype="City Ledger"
-                        class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
-                    {{ doc.city_ledger_name }}
+            <!-- Total Amount -->
+            <div class="col-12 mb-1">
+                <hr>
+            </div>
+            <div class="col-12">
+            <div class="flex justify-end w-full">
+                <div class="col-4 p-0">
+                    <div class="flex justify-end">
+                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Before Tax" :value="amount"
+                            valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
+                    </div>
                 </div>
-                <!-- /City Ledger -->
+                <div class="col-4 p-0">
+                    <div class="flex justify-end">
+                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
+                            valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
+                    </div>
                 </div>
-            </div>    
+            </div>
+            </div>
+            <!-- /Total Amount -->    
             <!-- note -->
             <div class="col-12">
-                <label for="Note">Note</label>
-                <Textarea class="w-full" v-model="doc.note" autoResize rows="3" />
+                <div class="grid justify-center px-2 mt-2">
+                    <Textarea class="w-full" placeholder="Note" v-model="doc.note" autoResize rows="2" />
+                </div>
             </div>
             <!-- /note -->
         </div>
@@ -254,6 +286,7 @@ function onUseTax3Change(value) {
     doc.value.tax_3_rate = value ? tax_rule.value.tax_3_rate : 0
 
 }
+
 
 const tax_rule = computed(() => {
     if (account_code.value?.tax_rule) {
@@ -396,6 +429,9 @@ function onSelectAccountCode(data) {
             if (d.use_folio_balance_as_default_amount == 1) {
                 doc.value.input_amount = balance.value
             }
+            if (d.price>0 && !doc.value.name) {
+                doc.value.input_amount =d.price
+            }
 
 
         })
@@ -424,6 +460,7 @@ function onSelectCityLedger(data) {
 }
 function onSave() {
     isSaving.value = true
+    
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
     if (data.name) {
@@ -445,9 +482,10 @@ function onSave() {
                 isSaving.value = false;
                 dialogRef.value.close(doc);
 
-            }).catch((err) => {
-                gv.showErrorMessage(err)
+            }).catch((error) => {
                 isSaving.value = false;
+                throw new Error( error.exception || error.message)
+               
             })
     }
 
@@ -482,3 +520,8 @@ onMounted(() => {
 
 
 </script>
+<style scoped>
+.h-edoor-35{
+    height: 36.5px !important;
+}
+</style>

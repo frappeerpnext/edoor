@@ -5,19 +5,19 @@
             <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
         </div>
         <div class="text-center">
-            <Button label="Today" class="w-48 h-12 btn-date__t border-noround-right border-none"
+            <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
-            <Button label="Tomorrow" class="w-48 h-12 btn-date__t border-noround border-x-none border-none"
+            <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 h-12 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+            <Calendar v-model="date" class="w-48 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </div>
         <div class="text-end flex justify-end">
             <div class="mr-2">
                 <NewFITReservationButton />
             </div>
             <div>
-                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon h-12 border-none">
-                    <img class="mr-2" :src="iconEdoorAddGroupBooking">New group booking
+                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon border-none">
+                    <img v-tooltip.left="'New group booking'" :src="iconEdoorAddGroupBooking">
                 </Button>
             </div>
         </div>
@@ -45,8 +45,8 @@
                             </ComChartStatus>
                             <!-- <ComHousekeepingStatus /> -->
                             <div class="grid mt-3 text-center">
-                                <ComShowCancelOcc title="Canceled" :value="0"></ComShowCancelOcc>
-                                <ComShowCancelOcc title="No-show" :value="0"></ComShowCancelOcc>
+                                <ComShowCancelOcc title="Canceled" :value="data.total_cancelled"></ComShowCancelOcc>
+                                <ComShowCancelOcc title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
                             </div>
                         </div>
                     </div>

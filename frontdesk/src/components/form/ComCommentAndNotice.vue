@@ -156,7 +156,10 @@
             message: 'Do you want to delete this record?',
             header: 'Delete Confirmation',
             icon: 'pi pi-info-circle',
-            acceptClass: 'p-button-danger',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
             accept: () => {
                 deleting.value = true
                 deleteDoc(selected.note_type == 'Comment' ? 'Comment' : 'Frontdesk Note', selected.name).then((doc) => {

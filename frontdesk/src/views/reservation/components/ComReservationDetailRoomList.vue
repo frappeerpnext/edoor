@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest">
-                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" tableStyle="min-width: 50rem">
+                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column header="Stay Date">
                             <template #body="slotProps">
@@ -77,7 +77,7 @@
                         </Column>
                         <Column header="">
                             <template #body="slotProps">
-                                <ComReservationStayMoreButton class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                                <ComReservationStayMoreButton class="p-0" @onSelected="onSelected" @onClickDetail="showReservationStayDetail" :data="slotProps.data"/>
                             </template>
                         </Column>
                     </DataTable>
@@ -108,7 +108,7 @@
                 </div>
                 <hr class="mt-3"/>
                 <div class="pt-3">
-                    <div class="flex justify-end gap-2"> 
+                    <div class="flex justify-end gap-2">  
                         <SplitButton class="spl__btn_cs sp" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
                         <Button class="border-1 conten-btn sp">
                             <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
@@ -121,19 +121,19 @@
     </ComReservationStayPanel>
 </template>
 <script setup>
-import {inject,ref,onMounted} from '@/plugin'
+import {inject,ref,onMounted,useDialog} from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
 import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
-
+import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 
 const moment = inject('$moment')
 const rs = inject("$reservation")
 const selecteds = ref([])
 const roomList = ref(JSON.parse(JSON.stringify(rs.reservationStays)))
-console.log(roomList.value)
+const dialog = useDialog()
 const selectStatus = ref()
 
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
@@ -153,6 +153,32 @@ const items = [
             toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
         }
     },
+    {
+        label: 'Group No Show',
+    }, 
+    {
+        label: 'Group Cancel',
+    },{
+        label: 'Group Void',
+    },
+    {
+        label: 'Group Check-In',
+    },
+    {
+        label: 'Group Check Out',
+    },
+    {
+        label: 'Group Build To Company',
+    },
+    {
+        label: 'Group Build To Master Group ',
+    },
+    {
+        label: 'Group Build To Guest',
+    },
+    {
+        label: 'Group Build To Room and Tax to Company, Extra to Guest',
+    }
 ];
 
 function onFilterSelectStatus(r){
@@ -175,6 +201,34 @@ function getRoomList(filter){
     }else{
         roomList.value = rs.reservationStays
     }
+}
+function showReservationStayDetail(selected) {
+    let stayName = selected
+    if(selected.data && selected.data.name){
+        stayName = selected.data.name
+    }
+    const dialogRef = dialog.open(ReservationStayDetail, {
+        data: {
+            name: stayName
+        },
+        props: {
+            header: 'Reservation Stay Detail',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            // const data = options.data;
+            // if (data) {
+            //     if (data.action = "view_reservation_detail") {
+            //         showReservationDetail(data.reservation)
+            //     }
+            // }
+        }
+    });
 }
  
 </script>

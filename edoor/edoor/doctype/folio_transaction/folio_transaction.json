@@ -75,11 +75,15 @@
   "city_leger",
   "city_ledger_name",
   "other_tab",
-  "account_category",
-  "account_category_name",
+  "parent_account_code",
+  "parent_account_name",
   "account_group",
   "account_group_name",
   "deleted_note",
+  "column_break_73",
+  "account_category",
+  "account_category_sort_order",
+  "allow_enter_quantity",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -112,6 +116,7 @@
   {
    "fieldname": "folio_number",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Folio Number",
    "options": "Reservation Folio"
   },
@@ -144,6 +149,7 @@
    "fieldname": "account_code",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Account Code",
    "options": "Account Code",
    "reqd": 1
@@ -402,14 +408,14 @@
    "label": "Other"
   },
   {
-   "fetch_from": "account_code.parent_account_code",
+   "fetch_from": "account_code.account_category",
    "fieldname": "account_category",
    "fieldtype": "Link",
-   "label": "account_category",
-   "options": "Account Code"
+   "label": "Account Category",
+   "options": "Account Category"
   },
   {
-   "fetch_from": "account_category.parent_account_code",
+   "fetch_from": "parent_account_code.parent_account_code",
    "fieldname": "account_group",
    "fieldtype": "Link",
    "label": "account_group",
@@ -443,12 +449,6 @@
    "fieldname": "city_ledger_name",
    "fieldtype": "Data",
    "label": "City Ledger Name"
-  },
-  {
-   "fetch_from": "account_category.account_name",
-   "fieldname": "account_category_name",
-   "fieldtype": "Data",
-   "label": "Account Category Name"
   },
   {
    "fetch_from": "account_group.account_name",
@@ -494,6 +494,7 @@
   {
    "fieldname": "deleted_note",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "Deleted Note"
   },
   {
@@ -603,11 +604,41 @@
    "fieldname": "bank_fee_description",
    "fieldtype": "Data",
    "label": "Bank Fee Description"
+  },
+  {
+   "fetch_from": "account_code.parent_account_code",
+   "fieldname": "parent_account_code",
+   "fieldtype": "Link",
+   "label": "Parent Account Code",
+   "options": "Account Code"
+  },
+  {
+   "fetch_from": "parent_account_code.account_name",
+   "fieldname": "parent_account_name",
+   "fieldtype": "Data",
+   "label": "Parent Account Name"
+  },
+  {
+   "fieldname": "column_break_73",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "account_category.sort_order",
+   "fieldname": "account_category_sort_order",
+   "fieldtype": "Int",
+   "label": "Account Category Sort Order"
+  },
+  {
+   "default": "0",
+   "fetch_from": "account_code.allow_enter_quantity",
+   "fieldname": "allow_enter_quantity",
+   "fieldtype": "Check",
+   "label": "Allow Enter Quantity"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-23 18:07:58.396590",
+ "modified": "2023-06-26 17:35:42.268637",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

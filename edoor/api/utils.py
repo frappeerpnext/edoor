@@ -305,15 +305,11 @@ def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
 	t3_r = (tax_3_rate or 0)  / 100
 	#frappe.throw("{}-{}-{}-{}-{}".format(amount,disc,t1_r,t2_r,t3_r))
 
-	tax_1_amount = 0
-	tax_2_amount = 0
-	tax_3_amount = 0
+
 	price = 0
 
-	t1_af_disc = tax_rule.calculate_tax_1_after_discount
-	t2_af_disc = tax_rule.calculate_tax_2_after_discount
 	t2_af_add_t1 = tax_rule.calculate_tax_2_after_adding_tax_1
-	t3_af_disc	= tax_rule.calculate_tax_3_after_discount
+
 	t3_af_add_t1 =  tax_rule.calculate_tax_3_after_adding_tax_1
 	t3_af_add_t2 =   tax_rule.calculate_tax_3_after_adding_tax_2
 

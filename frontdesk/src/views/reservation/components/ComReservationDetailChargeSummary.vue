@@ -30,10 +30,10 @@
                         </ComBoxStayInformation>
                         <OverlayPanel ref="opTax">
                         <div class="table-order-tax">
-                        <table class='border-1'>
-                                <tr v-if="rs?.reservation?.room_rate_tax_1_amount" class='border-1' ><td class='p-2'>Tax-1 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_1_amount"/> </td></tr>
-                                <tr v-if="rs?.reservation?.room_rate_tax_2_amount" class='border-1 '><td class='p-2'>Tax-2 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_2_amount"/> </td></tr>
-                                <tr v-if="rs?.reservation?.room_rate_tax_3_amount" class='border-1 '><td class='p-2'>Tax-3 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_3_amount"/> </td></tr>
+                        <table>
+                                <tr v-if="rs?.reservation?.room_rate_tax_1_amount" ><td class='p-2'>Tax-1 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_1_amount"/> </td></tr>
+                                <tr v-if="rs?.reservation?.room_rate_tax_2_amount" class='border-top-1 '><td class='p-2'>Tax-2 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_2_amount"/> </td></tr>
+                                <tr v-if="rs?.reservation?.room_rate_tax_3_amount" class='border-top-1 '><td class='p-2'>Tax-3 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_3_amount"/> </td></tr>
                         </table>    
                         </div>
                         </OverlayPanel>

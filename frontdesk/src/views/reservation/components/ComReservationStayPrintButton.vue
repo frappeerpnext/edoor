@@ -12,7 +12,8 @@ const dialog = useDialog();
 const toast = useToast();
 const props = defineProps({
     reservation: String,
-    reservation_stay: String
+    reservation_stay: String,
+    folio_number:String
 })
 const frappe = inject("$frappe")
 const db = frappe.db();
@@ -26,7 +27,8 @@ items.value.push({
         const dialogRef = dialog.open(ComPrintGuestRegistrationCard, {
             data: {
                 reservation: props.reservation ?? "",
-                reservation_stay: props.reservation_stay ?? ""
+                reservation_stay: props.reservation_stay ?? "",
+               
             },
             props: {
                 header: "Guest Registration Card",
@@ -50,7 +52,7 @@ items.value.push({
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
                 report_name: "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
-                view: "print"
+                view: "print" 
             },
             props: {
                 header: "Confirmation Voucher",
@@ -81,6 +83,7 @@ items.value.push({
                     data: {
                         doctype: "Reservation%20Stay",
                         reservation_stay: props.reservation_stay,
+                        folio_number:props.folio_number,
                         report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
                         view: "print"
                     },
@@ -116,6 +119,7 @@ items.value.push({
                     data: {
                         doctype: "Reservation%20Stay",
                         reservation_stay: props.reservation_stay,
+                        folio_number:props.folio_number,
                         report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
                         view: "print"
                     },

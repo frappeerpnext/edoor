@@ -1,53 +1,56 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
-        <ComReservationStayPanel class="mb-4" title="Last Stay Room">
+        <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
             <template #content>
-                {{stays}}
             <div class="n__re-custom">
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="text-left">
+                            <th class="text-left pe-2 w-14rem">
                                 <label>Start Date</label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>End Date</label>
                             </th> 
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>Room</label>
                             </th>
-                            <th class="text-right">
-                                <label>Rate<span class="text-red-500">*</span></label>
+                            <th class="text-right px-2">
+                                <label>Rate</label>
                             </th> 
-                            <th>
-                                <label class="text-center">Nights</label>
+                            <th class="px-2 w-8rem text-center">
+                                <label>Nights</label>
                             </th>
-                            <th class="text-right">
+                            <th class="text-right ps-2">
                                 <label>Amount</label>
                             </th>
 
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td> 
-                                {{gv.dateFormat(lastStay.start_date)}}
+                        <tr v-if="lastStay">
+                            <td class="pe-2 flex"> 
+                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full white-space-nowrap">{{gv.dateFormat(lastStay.start_date)}}</span>
                             </td>
-                            <td>
-                                <Calendar v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
+                            <td class="px-2 w-14rem"> 
+                                <Calendar class="w-14rem" showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
-                            <td>
-                                {{ lastStay.room_type_alias }} / {{ lastStay.room_number}}
+                            <td class="px-2 text-left">
+                                <div class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex"><span v-tooltip.top="lastStay?.room_type">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number">{{ lastStay.room_number}}</span></div>
                             </td>
-                            <td class="text-right">
-                                <CurrencyFormat :value="lastStay.rate" />
+                            <td class="text-right px-2">
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end white-space-nowrap">
+                                    <CurrencyFormat :value="lastStay.rate" />
+                                </span>
                             </td> 
-                            <td class="text-center"> 
-                                {{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}
+                            <td class="text-right px-2"> 
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-center">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
                             </td>
-                            <td class="text-right">
-                                <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
+                            <td class="text-right ps-2">
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end white-space-nowrap">
+                                    <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
+                                </span>
                             </td>
                         </tr>
                     </tbody>
@@ -61,25 +64,25 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="text-left">
+                            <th class="text-left pe-2 w-12rem">
                                 <label>Start Date<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2 w-14rem">
                                 <label>End Date<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-center">
-                                <label class="text-center">Nights</label>
-                            </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
-                                <label>Room Name<span class="text-red-500">*</span></label>
+                            <th class="text-left px-2">
+                                <label>Room Name</label>
                             </th>
-                            <th class="text-right">
+                            <th class="text-center px-2 w-5rem">
+                                <label class="text-center">Nights</label>
+                            </th>
+                            <th class="text-right px-2">
                                 <label>Rate<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-right">
+                            <th class="text-right ps-2">
                                 <label>Amount</label>
                             </th>
 
@@ -87,28 +90,35 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td> 
-                                {{gv.dateFormat(moment(lastStay.end_date))}}
+                            <td class="pe-2 w-12rem"> 
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
-                            <td> 
-                                <Calendar v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
+                            <td class="px-2 w-14rem"> 
+
+                                <Calendar showIcon v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
-                            <td class="text-center"> 
-                                <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="child-adults-txt" />
-                            </td>
-                            <td> 
+                            <td class="px-2 w-16rem"> 
                                 <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :start-date="newRoom.start_date" :end-date="newRoom.end_date"/>
                             </td>
-                            <td>
-                                <ComSelectRoomAvailability v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
+                            <td class="px-2 w-8rem">
+                                <ComSelectRoomAvailability showClear v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
                             </td>
-                            <td class="p-2 w-12rem text-right">
-                                <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                    <span class="link_line_action"><CurrencyFormat :value="newRoom.rate" /></span>
+                            <td class="text-center px-2 w-5rem"> 
+                                <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
+                            </td>
+                            <td class="text-right px-2 w-10rem">
+                                <span class="white-space-nowrap">
+                                    <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
+                                        <span class="link_line_action">
+                                            <CurrencyFormat :value="newRoom.rate" />
+                                        </span>
+                                    </span>
                                 </span>
                             </td>
-                            <td class="text-right">
-                                <CurrencyFormat :value="(newRoom.room_nights   ?? 0) * (newRoom.rate ?? 0)" />
+                            <td class="text-right ps-2 w-10rem">
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">
+                                    <CurrencyFormat :value="(newRoom.room_nights   ?? 0) * (newRoom.rate ?? 0)" />
+                                </span>
                             </td>
                         </tr>
                     </tbody>
@@ -135,7 +145,7 @@
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
-    
+    lastStay.value.end_date = new Date(lastStay.value.end_date)
     const lastStayMaxEndDate = new Date(lastStay.value.end_date)
     const room_types = ref([])
     const rooms = ref([])
@@ -202,11 +212,6 @@
             loading.value = false
             return
         }
-        else if(!newRoom.value.room_id){
-            window.postMessage('show_alert|' + 'Please select room', '*')
-            loading.value = false
-            return
-        }
  
         const data = JSON.parse(JSON.stringify(rs))
         var newData = JSON.parse(JSON.stringify(newRoom.value))
@@ -239,6 +244,8 @@
         })
 });
 </script>
-<style lang="">
-    
+<style scoped>
+    .box-input{
+        padding: .6rem .65rem;
+    }
 </style>

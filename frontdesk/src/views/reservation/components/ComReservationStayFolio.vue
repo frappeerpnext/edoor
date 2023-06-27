@@ -1,8 +1,7 @@
 <template>
-    <div class="grid mt-3 min-h-folio-cus" v-if="rs.folios?.length > 0">
+    <div class="flex mt-3 min-h-folio-cus" v-if="rs.folios?.length > 0">
         <ComResevationStayFolioList />
-        <div class="col py-0">
-            
+        <div class="col py-0 overflow-x-auto">
             <ComReservationStayFolioAction />
             <ComReservationStayFolioTransactionDebitCreditStyle v-if="setting.folio_transaction_stype_credit_debit == 1" />
             <ComReservationStayFolioTransactionSimpleListStyle v-else />
@@ -60,7 +59,7 @@ function onAddCreatNewFolio() {
             reservation_stay: rs.reservationStay,
         },
         props: {
-            header: 'Creat New Folio ',
+            header: 'Create New Folio ',
             style: {
                 width: '50vw',
             },
@@ -74,7 +73,7 @@ function onAddCreatNewFolio() {
                 rs.onLoadReservationFolios(data.name)
                
             }
-            toast.add({ severity: 'success', summary: "Creat New Folio", detail: "Creat New Folio successfully", life: 3000 })
+            toast.add({ severity: 'success', summary: "Create New Folio", detail: "Create New Folio successfully", life: 3000 })
         }
     })
 }

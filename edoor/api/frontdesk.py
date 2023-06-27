@@ -32,21 +32,40 @@ def get_dashboard_data(property = None,date = None):
         total_room = data[0]["total"] or 0
 
     #get total room occupy
-     
-    
-
+    total_room_occupy = 0
+    unassign_room = 0
+    room_operation = frappe.db.sql("SELECT sum(if(room_id <> '' AND room_id IS NOT NULL, 1, 0)) AS `total_room_occupy`, SUM(if(room_id IS NULL OR room_id = '', 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}';".format(date,property), as_dict=1)
+ 
+    if room_operation:
+        unassign_room = room_operation[0]["unassign_room"]
+        total_room_occupy = room_operation[0]["total_room_occupy"]
+    # get reservation stay
+    stay_sql = """SELECT 
+                    SUM(if(arrival_date = '{0}' AND reservation_status = 'No Show',1,0)) AS `total_no_show`, 
+                    SUM(if(arrival_date = '{0}' AND reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
+                    SUM(if(reservation_status = 'Reserved' AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
+                    SUM(if(reservation_status in('In-house','Check In') AND departure_date = '{0}',1,0)) AS `departure_remaining`,
+                    sum(if(arrival_date = '{0}', 1, 0)) AS `total_arrival`,
+                    SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND reservation_status NOT IN('No Show','Void','Cancelled'), 1, 0)) AS `pick_up`,
+                    sum(if(departure_date = '{0}', 1, 0)) AS `total_departure`,
+                    SUM(if(required_drop_off = 1 AND departure_date = '{0}' AND reservation_status NOT IN('No Show','Void','Cancelled'), 1, 0)) AS `drop_off` 
+                FROM `tabReservation Stay` WHERE property = '{1}';""".format(date,property)
+    stay = frappe.db.sql(stay_sql, as_dict=1)
+ 
     return {
         "working_date":working_date,
         "total_room":total_room,
-        "total_room_occupy":25,
-        "total_room_vacant": 10,
-        "arrival":10,
-        "arrival_remaining":5,
-        "departure":7,
-        "departure_remaining":8,
-        "pick_up":5,
-        "drop_off":5,
-         "unassign_room":10,
+        "total_room_occupy":total_room_occupy,
+        "total_room_vacant": total_room - total_room_occupy,
+        "arrival":stay[0]["total_arrival"],
+        "arrival_remaining": stay[0]["arrival_remaining"],
+        "departure":stay[0]["total_departure"],
+        "departure_remaining": stay[0]["departure_remaining"],
+        "pick_up":stay[0]["pick_up"],
+        "drop_off":stay[0]["drop_off"],
+        "unassign_room":unassign_room,
+        "total_no_show":stay[0]["total_no_show"],
+        "total_cancelled":stay[0]["total_cancelled"],
         "stay_over":8
         
     }
@@ -102,6 +121,7 @@ def get_edoor_setting(property = None):
         "folio_transaction_stype_credit_debit":edoor_setting_doc.folio_transaction_stype_credit_debit,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
+        "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
         "backend_port":epos_setting.backend_port,
         "currency":{
             "name":currency.name,
@@ -139,7 +159,8 @@ def get_edoor_setting(property = None):
         "address_kh":property.address_kh,
         "phone_number_1":property.phone_number_1,
         "phone_number_2":property.phone_number_1,
-        "pos_profile":property.default_pos_profile
+        "pos_profile":property.default_pos_profile,
+        "default_letter_head":property.default_letter_head
     }
 
     pos_profile = frappe.get_doc("POS Profile",property.default_pos_profile)
@@ -150,7 +171,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
-    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name"])
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon"], order_by="sort_order")
     
 
     return {

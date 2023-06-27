@@ -11,6 +11,8 @@
   "status",
   "status_color",
   "icon",
+  "is_block_room",
+  "show_in_room_availability",
   "sort_order"
  ],
  "fields": [
@@ -38,11 +40,23 @@
    "fieldname": "sort_order",
    "fieldtype": "Int",
    "label": "Sort Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_block_room",
+   "fieldtype": "Check",
+   "label": "Is Block Room"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_room_availability",
+   "fieldtype": "Check",
+   "label": "Show In Room Availability"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-22 18:16:36.731010",
+ "modified": "2023-06-26 12:19:29.351409",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",

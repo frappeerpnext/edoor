@@ -42,7 +42,8 @@
   "tax_2_amount",
   "tax_3_amount",
   "total_tax",
-  "total_amount"
+  "total_amount",
+  "deleted_note"
  ],
  "fields": [
   {
@@ -257,12 +258,17 @@
    "fieldname": "reservation_color",
    "fieldtype": "Color",
    "label": "Reservation Color"
+  },
+  {
+   "fieldname": "deleted_note",
+   "fieldtype": "Small Text",
+   "label": "Deleted Note"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-06-20 16:20:38.823573",
+ "modified": "2023-06-24 14:52:34.579831",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

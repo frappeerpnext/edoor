@@ -1,8 +1,13 @@
 <template>
     <div>
-        <Button label="Attach File" @click="onModal"></Button>
+        <div class="min-h-folio-cus mt-3">
+        <div class="flex justify-end mb-3">
+            <Button class="conten-btn" label="Upload Document" icon="pi pi-upload" @click="onModal"></Button>
+        </div>
         <div>
             <ComPlaceholder :loading="loading" :isNotEmpty="data.length > 0">
+                <template #default>
+                    
                 <div class="wrap-file-list">
                     <DataTable :value="data">
                         <Column field="file_url" header="File">
@@ -26,17 +31,18 @@
                         </Column>
                     </DataTable>
                 </div>
+                </template>
             </ComPlaceholder>
         </div>
         <OverlayPanel ref="opEdit">
             <ComOverlayPanelContent :loading="saving"  @onCancel="onEdit($event,{})" @onSave="onSave">
                 <div class="mb-2">
                     <label>Title</label><br />
-                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number" v-model="selected.title" />
+                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Title" v-model="selected.title" />
                 </div>
                 <div>
                     <label>Description</label>
-                    <Textarea v-model="selected.description" rows="5" placeholder="Note" cols="30" class="w-full border-round-xl" />
+                    <Textarea v-model="selected.description" rows="5" placeholder="Descrpition" cols="30" class="w-full border-round-xl" />
                 </div>
             </ComOverlayPanelContent>
         </OverlayPanel>
@@ -45,6 +51,7 @@
                 <ComAttachFile :docname="docname" :doctype="doctype" @onSuccess="onSuccess" @onClose="onModal(false)"/>
             </ComDialogContent>
         </Dialog>
+        </div>
     </div>
 </template>
 <script setup>
@@ -141,7 +148,10 @@ function onRemove(name){
         message: 'Do you want to delete this record?',
         header: 'Delete Confirmation',
         icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-danger',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             deleting.value = true
             deleteDoc('File', name).then((doc) => {

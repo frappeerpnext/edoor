@@ -41,6 +41,8 @@ def get_reservation_stay_detail(name):
     master_guest = guest
     if reservation.guest != reservation_stay.guest:
         master_guest = frappe.get_doc("Customer",reservation.guest)
+
+    
     return {
         "reservation":reservation,
         "total_reservation_stay": total_reservation_stay,
@@ -49,6 +51,35 @@ def get_reservation_stay_detail(name):
         "master_guest":master_guest,
         "reservation_stay_names":reservation_stay_names
     }
+@frappe.whitelist()
+def get_reservation_charge_summary(reservation = None, reservation_stay = None,folio_number = None):
+    search_field = "reservation"
+    search_value = reservation
+    if reservation_stay:
+        search_field = "reservation_stay"
+        search_value = reservation_stay
+    elif folio_number:
+        search_field = "folio_number"
+        search_value = folio_number
+
+    
+    sql = """
+        select 
+            account_category,
+            account_category_sort_order, 
+            sum(amount * if(type='Debit',1,-1)) as amount 
+        from `tabFolio Transaction` 
+        where 
+            {} = '{}' 
+        group by 
+            account_category 
+        order by account_category_sort_order
+     """.format(
+        search_field,
+        search_value
+    )
+     
+    return frappe.db.sql(sql, as_dict=1)
 
 @frappe.whitelist()
 def get_folio_detail(name):
@@ -90,14 +121,21 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     return data
 
 @frappe.whitelist()
-def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None):
+def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None, room_type_id=None):
     end_date = add_to_date(end_date,days=-1)
     #get all room type and total room 
 
     room_type = frappe.db.sql("select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}' group by room_type_id,room_type".format(property),as_dict=1)
     for t in room_type:
-        sql = "select coalesce(count(  distinct room_id),0) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
-        t["occupy"] = frappe.db.sql(sql,as_dict=1)[0]["total_room"]
+        # sql = "select coalesce(count(  distinct room_id),0) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
+        sql = "SELECT COUNT(name) as total_room_type, date from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}' GROUP BY date;".format(t["name"],start_date,end_date)
+        room_type_occupy = frappe.db.sql(sql,as_dict=1)
+
+        if room_type_occupy and room_type_id != t['name']:
+            is_not_availible = Enumerable(room_type_occupy).where(lambda x:x.total_room_type >= t['total_room'])
+            if is_not_availible:
+                t["occupy"] = t["total_room"]
+        # t["occupy"] = frappe.db.sql(sql,as_dict=1)[0]["total_room"]
         t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
 
     return  [d for d in room_type if d['total_room'] - d["occupy"] > 0]
@@ -452,17 +490,26 @@ def change_stay(data):
             # change last stay room for start date
             index = stays.index(s) + 1
             if len(stays) > index and stays[index]:
-                stays[index].start_date = s.end_date       
-        
-        doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
-        doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+                stays[index].start_date = s.end_date
         doc.save()
         frappe.db.commit()
-        # if doc:
-        #    change_room_occupy(data)
-            #frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self=data)
         return doc
 
+@frappe.whitelist(methods="DELETE")
+def delete_stay_room(parent,name, note):
+    stay = frappe.get_doc('Reservation Stay', parent)
+    deleted_row = None
+    for p in stay.stays:
+        if p.name == name:
+            p.deleted_note = note or ""
+            deleted_row = p
+    stay.save()
+    stay.remove(deleted_row)
+    stay.update_reservation_stay = True
+    stay.update_room_occupy = True
+    stay.save()
+    frappe.db.commit()
+    return stay
 @frappe.whitelist(methods="POST")
 def update_note(data):
     note = '' if data.get("note") is None else data['note']
@@ -492,6 +539,8 @@ def update_note(data):
 
     frappe.db.commit()
     return doc
+
+
 
 @frappe.whitelist()
 def get_audit_trail(doctype, docname):
@@ -648,6 +697,7 @@ def get_folio_transaction(folio_number):
     for d in data:
         if  d.bank_fee_amount > 0:
             balance = balance + d.bank_fee_amount
+          
             folio_transactions.append({ 
                 "name":d["name"],
                 "room_number":d.room_number,
@@ -687,6 +737,7 @@ def get_folio_transaction(folio_number):
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.discount_account, d.discount_description)  if show_account_code else d.discount_description,
                 "credit":d.discount_amount,
+                "debit":0,
                 "balance":balance
             })
         
@@ -695,6 +746,7 @@ def get_folio_transaction(folio_number):
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.tax_1_account, d.tax_1_description)  if show_account_code else d.tax_1_description,
                 "debit":d.tax_1_amount,
+                "credit":0,
                 "balance":balance
             })
 
@@ -703,6 +755,7 @@ def get_folio_transaction(folio_number):
             folio_transactions.append({
                 "account_name": " {}-{}".format(d.tax_2_account, d.tax_2_description)  if show_account_code else d.tax_2_description,
                 "debit":d.tax_2_amount,
+                "credit":0,
                 "balance":balance
             })
 
@@ -711,8 +764,41 @@ def get_folio_transaction(folio_number):
             folio_transactions.append({
                 "account_name": "{}-{}".format(d.tax_3_account, d.tax_3_description)  if show_account_code else d.tax_3_description,
                 "debit":d.tax_3_amount,
+                "credit":0,
                 "balance":balance
             })
         
         
     return folio_transactions
+
+
+@frappe.whitelist(methods="POST")
+def update_room_rate(room_rate_names= None,data=None):
+ 
+    if  len(room_rate_names) ==0:
+        room_rate_names.append(data["name"])
+    for d in room_rate_names:
+        doc = frappe.get_doc("Reservation Room Rate",d)
+        doc.is_manual_rate = 1
+        doc.rate_type = data["rate_type"]
+        doc.input_rate = data["input_rate"]
+        doc.discount_type = data["discount_type"] 
+        doc.discount = data["discount"] 
+        doc.tax_rule = data["tax_rule"]
+        doc.tax_1_rate = data["tax_1_rate"]
+        doc.tax_2_rate = data["tax_2_rate"]
+        doc.tax_3_rate = data["tax_3_rate"]
+        doc.rate_include_tax = data["rate_include_tax"]
+        doc.save()
+
+    #update to reservation stay
+    #using enqure process 
+    update_reservation_stay(name=data["reservation_stay"], run_commit=False)
+
+    frappe.db.commit()
+    #update to reservation
+    # #using enqure process  
+    return frappe.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":data["reservation_stay"]},limit_page_length=1000,order_by="date")
+        
+
+

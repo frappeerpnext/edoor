@@ -16,7 +16,11 @@
   "folio_transaction_stype_credit_debit",
   "allow_user_to_add_back_date_transaction",
   "role_for_back_date_transaction",
-  "show_account_code_in_folio_transaction"
+  "show_account_code_in_folio_transaction",
+  "housekeeping_status_tab",
+  "housekeeping_status_after_check_in",
+  "housekeeping_status_after_run_night_audit",
+  "house_keeping_status_after_check_out"
  ],
  "fields": [
   {
@@ -79,12 +83,35 @@
    "fieldname": "show_account_code_in_folio_transaction",
    "fieldtype": "Check",
    "label": "Show Account Code In Folio Transaction"
+  },
+  {
+   "fieldname": "housekeeping_status_tab",
+   "fieldtype": "Tab Break",
+   "label": "Housekeeping Status"
+  },
+  {
+   "fieldname": "housekeeping_status_after_check_in",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status after Check In",
+   "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "housekeeping_status_after_run_night_audit",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status after Run Night Audit",
+   "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "house_keeping_status_after_check_out",
+   "fieldtype": "Link",
+   "label": "House Keeping Status after Check Out",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-24 12:16:18.727928",
+ "modified": "2023-06-26 12:15:58.249560",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

@@ -1,8 +1,8 @@
-<template>
-    <Dropdown v-model="roomId" :options="options" optionValue="name" @change="onSelect($event)" optionLabel="room_number" placeholder="Select Room" class="w-full" />
+<template> 
+    <Dropdown v-model="roomId" :showClear="showClear" filter :options="options" optionValue="name" @change="onSelect($event)" optionLabel="room_number" placeholder="Select Room" class="w-full" />
 </template>
 <script setup>
-    import {ref,inject,computed,onMounted,getApi, watch} from '@/plugin'
+    import {ref,inject,computed,getApi, watch} from '@/plugin'
     const property = JSON.parse(localStorage.getItem("edoor_property"))
     const emit = defineEmits(['update:modelValue', 'onSelected'])
     const props = defineProps({
@@ -10,7 +10,11 @@
         startDate: String,
         endDate: String,
         roomType:String,
-        except:String
+        except:String,
+        showClear:{
+            type:Boolean,
+            default: false
+        }
     })
     const moment = inject('$moment')
     const gv = inject('$gv')

@@ -1,8 +1,15 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-
-        <ComSelect v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
-        <InputText class="w-full" type="text" v-model="doc.note" />
+        <div class="grid">
+            <div class="col">
+                <label>Stay Guest</label><br/>
+                <ComSelect class="mb-3 w-full" v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
+            </div>
+            <div class="col-8">
+                <label hidden>Note</label><br/>
+                <InputText placeholder="Note" class="w-full" type="text" v-model="doc.note" />
+            </div>
+        </div>
     </ComDialogContent>
 </template>
 <script setup>

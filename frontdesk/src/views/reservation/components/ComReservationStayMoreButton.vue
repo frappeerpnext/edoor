@@ -6,31 +6,90 @@
             </div>
             <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #end> 
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onClickDetail" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            View Reservation Stay
+                        </button>
+                        <button @click="onChangeStatus('No Show')" v-if="data.reservation_status == 'Reserved'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             No Show
                         </button>
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onChangeStatus('Cancelled')" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Cancel
+                        </button>
+                        <button @click="onChangeStatus('Void')" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Void
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Check-In
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Check Out
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Build To Company
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Build To Master Group 
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Build To Guest
+                        </button>
+                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            Build To Room and Tax to Company, Extra to Guest
                         </button>
                 </template>
             </Menu>
         </div>
     </div>
+    <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
 </template>
 <script setup>
-import {ref} from 'vue'
+import {ref, useDialog, updateDoc} from '@/plugin'
+import { renderScrollShim } from '@fullcalendar/core';
+
 const props = defineProps({
     data: Object,
     class: String
 })
-const emit = defineEmits('onSelected')
+const emit = defineEmits('onClickDetail')
+const rs = inject("$reservation")
+const dialog = useDialog()
 const show = ref()
+const loading = ref(false)
+const note = ref({
+    title: '',
+    show: false,
+    reservation_status:'' // No Show // Void // Cancel
+})
 const toggle = (event) => {
     show.value.toggle(event);
 };
-function onSelected(room,status){
+function onClickDetail(){
     show.value.hide()
-    emit('onSelected',room,status)
+    emit('onClickDetail',props.data.name)
+}
+function onChangeStatus(status){
+    note.value.title = `${status} : ${props.data.name}`
+    note.value.show = true
+    note.value.reservation_status = status
+}
+function onCloseNote(){
+    note.value.title = ''
+    note.value.show = false
+    note.value.reservation_status = ''
+}
+function onSaveNote(text_note){
+    loading.value = true
+    const data = JSON.parse(JSON.stringify(props.data))
+    data.reservation_status = note.value.reservation_status
+    data.reservation_status_note = text_note
+    data.update_room_occupy = true
+    updateDoc('Reservation Stay', data.name, data).then((r)=>{
+        console.log(r)
+        // rs.LoadReservation(r)
+        loading.value = false
+    }).catch(()=>{
+        loading.value = false
+    })
 }
 </script>
 <style>

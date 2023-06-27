@@ -116,7 +116,9 @@ import ComUploadProfile from './components/form/ComUploadProfile.vue'
 import ComColorPicker from './components/form/ComColorPicker.vue'
 import ComInputCurrency from './components/form/ComInputCurrency.vue'
 import ComSelectRoomTypeAvailability from '@/views/reservation/components/form/ComSelectRoomTypeAvailability.vue'
+import ComSelectRoomAvailability from '@/views/reservation/components/form/ComSelectRoomAvailability.vue'
 import ComNote from './components/form/ComNote.vue'
+import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
 
 
@@ -189,7 +191,9 @@ app.component('ComPlaceholder',ComPlaceholder)
 app.component('ComReservationStatus',ComReservationStatus)
 app.component('ComUploadProfile', ComUploadProfile) 
 app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability)
+app.component('ComSelectRoomAvailability', ComSelectRoomAvailability)
 app.component('ComNote',ComNote)
+app.component('ComDialogNote',ComDialogNote)
 app.component('ComColorPicker', ComColorPicker)
 app.component('ComInputCurrency',ComInputCurrency)
 
@@ -241,6 +245,7 @@ const apiCall = frappe.call()
 
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {
+	document.title = (to.meta.title || '') + ' | eDoor Frontdesk'
 	if (to.matched.some((record) => !record.meta.isLoginPage)) {
 		// this route requires auth, check if logged in
 		// if not, redirect to login page.

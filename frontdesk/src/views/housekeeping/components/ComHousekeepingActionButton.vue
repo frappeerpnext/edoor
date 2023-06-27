@@ -4,7 +4,7 @@
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
         :style="{ width: '30vw' }">
         <div>
-            <ComSelect isFilter v-model="selectedStatus" placeholder="Housekeeping Status" doctype="Housekeeping Status" />
+            <ComSelect isFilter v-model="selectedStatus" placeholder="Housekeeping Status" doctype="Housekeeping Status" :filters="{is_block_room:0}" />
         </div>
         <template #footer>
             <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" />

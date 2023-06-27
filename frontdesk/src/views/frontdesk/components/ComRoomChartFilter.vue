@@ -4,7 +4,7 @@
             <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
             <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
         </Button>
-        <div class="mr-2 relative">
+        <div class="mr-2 relative h-full">
             <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
             <Menu ref="menu" id="peroid_menu" :overlayVisible="false" :focused="false" :model="items" :popup="true" />
         </div>

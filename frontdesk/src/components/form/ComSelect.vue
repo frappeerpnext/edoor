@@ -4,7 +4,7 @@
         @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
     <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
         :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
-        :placeholder="placeholder" >
+        :placeholder="placeholder">
 </Dropdown>
 </template>
 <script setup>

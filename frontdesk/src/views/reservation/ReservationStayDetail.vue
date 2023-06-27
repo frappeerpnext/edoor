@@ -5,8 +5,8 @@
             <div class="flex mb-3 justify-between">
                 <ComReservationStayHeaderStatus />
                 <div class="flex gap-2">
-                    <button @click="onRefresh" v-tooltip.top="'Refresh'" :loading="rs?.loading" class="rounded-lg w-3rem h-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link><icon class="pi pi-refresh font-semibold text-lg" style="color:var(--bg-purple-cs);"></icon></button>
-                    <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="rounded-lg w-3rem h-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link>
+                    <button @click="onRefresh" v-tooltip.top="'Refresh'" :loading="rs?.loading" class="rounded-lg conten-btn flex" link><icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);"></icon></button>
+                    <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn "  link>
                         <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                     </button>
                     <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
@@ -103,7 +103,7 @@
     <template #footer-left>
         <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()"  />
         <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="more_options_items" /> -->
-        <ComReservationStayPrintButton :reservation_stay="name" v-if="name" />
+        <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
         <Button class="border-none" @click="OnViewReservation">
             <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
                 style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
@@ -170,14 +170,19 @@ const isPage = computed(() => {
 })
 
 const onRefresh = () => {
-    rs.getReservationDetail(name.value)
+     rs.getReservationDetail(name.value)
+     rs.getChargeSummary(name.value)
+
 }
 onMounted(() => {
-
+ 
     if (!dialogRef) {
         if (route.params.name) {
             name.value = route.params.name
+           
             rs.getReservationDetail(name.value);
+           
+            rs.getChargeSummary(name.value)
         } else {
             alert("Go back to reserveatin list")
         }
@@ -186,6 +191,7 @@ onMounted(() => {
 
         name.value = dialogRef.value.data.name;
         rs.getReservationDetail(name.value);
+        rs.getChargeSummary(name.value)
     }
 
 
@@ -267,17 +273,11 @@ function onAuditTrail() {
             style: {
                 width: '75vw',
             },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
             modal: true,
             maximizable: true,
             closeOnEscape: false
         },
-        onClose: (options) => {
-            //
-        }
+       
     });
 }
 
@@ -299,9 +299,6 @@ function onTest() {
             modal: true,
             maximizable: true,
         },
-        onClose: (options) => {
-            //
-        }
     });
 }
 

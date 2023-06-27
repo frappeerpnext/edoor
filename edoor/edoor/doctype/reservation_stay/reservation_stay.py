@@ -1,6 +1,7 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+from datetime import datetime
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range
 import frappe
@@ -192,9 +193,13 @@ def change_room_occupy(self):
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
-	frappe.db.commit()
-	doc = frappe.get_doc('Reservation Stay', self.name)
-	generate_stay_room_occupy(self=doc)
+	if not self.reservation_status in ['Void','No Show','Cancelled']:
+		doc = frappe.get_doc('Reservation Stay', self.name)
+		doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
+		doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+		doc.save()
+		frappe.db.commit()
+		generate_stay_room_occupy(self=doc)
 
 def generate_stay_room_occupy(self):
 	self.update_room_occupy = False

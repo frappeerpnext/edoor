@@ -9,6 +9,9 @@ from frappe.utils import fmt_money
 
 class FolioTransaction(Document):
 	def validate(self):
+		if not self.input_amount:
+			frappe.throw("Please enter amount")
+
 		if self.require_city_ledger_account==1:
 			if not self.city_ledger:
 				frappe.throw("Please select city ledger account")
@@ -73,7 +76,6 @@ class FolioTransaction(Document):
 		self.bank_fee_account = account_doc.bank_fee_account
 
 		if self.tax_rule:
-			
 			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
 			self.tax_1_account = tax_rule.tax_1_account
 			self.tax_2_account = tax_rule.tax_2_account
@@ -81,25 +83,25 @@ class FolioTransaction(Document):
 
 			if self.rate_include_tax== "Yes":
 				price = get_base_rate(self.input_amount - self.discount_amount ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
-				
-				self.amount = price * self.quantity + (self.discount_amount or 0)
+				self.price = price
+				self.amount = (price * self.quantity ) 
 			else:
-				self.amount = self.price * self.quantity + (self.discount_amount or 0)
+				self.amount = ( self.price * self.quantity)  
 			
 			#tax 1
 			self.taxable_amount_1 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
 			
-			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0  else self.taxable_amount_1 - self.discount_amount
+			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 or self.rate_include_tax == 'Yes'  else self.taxable_amount_1 - self.discount_amount
 
 			self.tax_1_amount = self.taxable_amount_1 * tax_rule.tax_1_rate / 100
 			#tax 2
 			self.taxable_amount_2 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
-			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0   else self.taxable_amount_2 - self.discount_amount
+			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  or self.rate_include_tax == 'Yes' else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
 			self.tax_2_amount = self.taxable_amount_2 * tax_rule.tax_2_rate / 100
 			#tax 3
 			self.taxable_amount_3 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
-			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  else self.taxable_amount_3 - self.discount_amount
+			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  or self.rate_include_tax == 'Yes' else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
 			self.tax_3_amount = self.taxable_amount_3 * tax_rule.tax_3_rate / 100

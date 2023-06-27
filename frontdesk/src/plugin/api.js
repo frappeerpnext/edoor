@@ -113,6 +113,19 @@ export function postApi(api, params = Object, message){
         })
     })
 }
+export function deleteApi(api, params = Object, message){
+    const frappe = new FrappeApp()
+    const call = frappe.call()
+    return new Promise((resolve, reject)=>{
+        call.delete(`edoor.api.${api}`, params).then((result) => {
+            window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
+            resolve(result)
+        }).catch((error) =>{
+            handleServerMessage(error)
+            reject(error)
+        })
+    })
+}
 export function uploadFiles(files, fileArgs = Object){
     const frappe = new FrappeApp()
     const file = frappe.file();

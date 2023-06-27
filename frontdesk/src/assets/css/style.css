@@ -285,7 +285,7 @@ button.p-button.btn-date__t {
 button.p-button:not(.p-0):not(.btn-choose__pro),
 .btn-calendar__t input {
     font-size: 1rem !important;
-    padding: 0.65rem 0.65rem;
+    padding: 0.6rem 0.65rem;
     font-weight: 400 !important;
 }
 
@@ -393,7 +393,7 @@ label {
 .n__re-custom button.p-button {
     padding-top: unset !important;
     padding-bottom: unset !important;
-    height: 37px;
+    height: 36.5px;
 }
 
 
@@ -766,10 +766,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     margin-left: -1px;
     width:1px;
     background: #ffffff; /* Old browsers */
-    background: -moz-linear-gradient(left,  #ffffff 0%, #cecfd0 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(left,  #ffffff 0%,#cecfd0 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to right,  #ffffff 0%,#cecfd0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#cecfd0',GradientType=1 ); /* IE6-9 */
+    background: -moz-linear-gradient(left,  #ffffff 0%, #7d7d7d 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left,  #ffffff 0%,#7d7d7d 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right,  #ffffff 0%,#7d7d7d 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#7d7d7d',GradientType=1 ); /* IE6-9 */
 }
 .min-h-folio-cus{
     min-height: 30rem;
@@ -802,11 +802,31 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-calendar.p-component input,
 .p-inputnumber.p-component input,
 .p-inputnumber.p-component .p-inputnumber-button-group{
-    height: 37px;
+    height: 36.5px;
 }
-.p-tieredmenu.p-component.p-tieredmenu-overlay.p-input-filled{
+.das-calendar.p-calendar.p-component input{
+    height: unset !important;
+}
+.p-tieredmenu.p-component.p-tieredmenu-overlay.p-input-filled,
+.p-menu.p-component.p-menu-overlay.p-input-filled{
     min-width: 216px !important;  
 }
 .p-tieredmenu .p-menuitem>.p-menuitem-content .p-menuitem-link{
     padding: 0.75rem 0.75rem;
+}
+.nig_in-put input{
+    width: 4rem;
+}
+.bd{
+    border: 1px solid var(--bg-btn-sec-color);
+}
+.btn-ok_ss i{
+    font-size: 1.25rem;
+}
+.p-confirm-dialog .p-dialog-content{
+    background: #e9e9ff;
+    border: solid #696cff;
+    border-width: 0 0 0 6px;
+    color: #696cff;
+    margin: 1rem 1rem;
 }

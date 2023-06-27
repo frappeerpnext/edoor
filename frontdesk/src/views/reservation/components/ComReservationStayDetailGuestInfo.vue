@@ -146,7 +146,10 @@ function onDeleteAdditionalGuest(){
         message: 'Do you want to delete this record?',
         header: 'Delete Confirmation',
         icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-danger',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             const additionalGuests = rs.reservationStay.additional_guests.filter(r=>r.name != menuAdditionalGuest.value.additional_guest_name)
             const reservationStayData = JSON.parse(JSON.stringify(rs.reservationStay))

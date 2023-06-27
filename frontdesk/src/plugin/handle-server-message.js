@@ -1,8 +1,9 @@
 export function handleServerMessage(m){
-    console.log(m) 
+
     const dictionary = [
         {exception: 'frappe.exceptions.MandatoryError', text: 'Invalid input'},
-        {exception: 'frappe.exceptions.TimestampMismatchError', text: 'Please refresh to get the latest document.'}
+        {exception: 'frappe.exceptions.TimestampMismatchError', text: 'Please refresh to get the latest document.'},
+        {exception: 'frappe.exceptions.LinkExistsError', text: 'Cannot delete because it has relative data.'}
     ]
     const message = JSON.parse(JSON.stringify(m))
     if(message.httpStatus == 417){

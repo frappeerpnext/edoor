@@ -53,7 +53,6 @@ export default class Gv {
 	dateApiFormat(date){
 		return moment(date).format("yyyy-MM-DD")
 	}
-
 	getRateBeforeTax(amount, tax_rule, tax_1_rate, tax_2_rate, tax_3_rate){
 		amount=amount || 0
 	 

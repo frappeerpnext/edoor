@@ -81,9 +81,10 @@
 <script setup>
 import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, computed } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
-import FullCalendar, { compareByFieldSpec } from '@fullcalendar/vue3'
-import interactionPlugin from '@fullcalendar/interaction'
+import FullCalendar from '@fullcalendar/vue3'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import interactionPlugin from '@fullcalendar/interaction'
+
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
 import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
@@ -597,6 +598,9 @@ function showReservationDetail(name) {
 
 onMounted(() => {
 
+
+
+    
     // call.get("edoor.api.frontdesk.get_working_day", {
     //       property: property.name
     //   }).then((result) => {
