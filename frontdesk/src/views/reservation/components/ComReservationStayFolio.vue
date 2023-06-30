@@ -69,11 +69,11 @@ function onAddCreatNewFolio() {
         onClose: (options) => {
             const data = options.data;
             if (data != undefined) {
-                
-                rs.onLoadReservationFolios(data.name)
-               
+                rs.onLoadReservationFolios(data.name).then(() => {
+                    rs.onLoadReservationFolios(data.name)
+                })
+
             }
-            toast.add({ severity: 'success', summary: "Create New Folio", detail: "Create New Folio successfully", life: 3000 })
         }
     })
 }

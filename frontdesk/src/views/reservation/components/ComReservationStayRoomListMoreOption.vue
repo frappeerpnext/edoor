@@ -100,8 +100,8 @@ function onUnassignRoom(){
  
             data.stays.filter(r=>{
                 if(r.name == props.data.name){
-                    r.room_id = ''
-                    r.room_number = ''
+                    r.room_id = null
+                    r.room_number = null
                 }
                 return r
             })

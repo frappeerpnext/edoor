@@ -1,7 +1,9 @@
 
 <template>
-    <label :for="inputIdFor" v-tooltip.top="titleTooltip" v-if="title !== null" class="cursor-pointer flex items-center justify-end text-right white-space-nowrap" :class="titleClass">{{ title }}</label>
-    <div class="flex justify-between items-center box-input py-3 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
+  <span  v-tooltip.top="titleTooltip" v-if="title !== null" class=" flex items-center justify-end text-right white-space-nowrap" :class="titleClass" >
+    <label class="cursor-pointer" :for="inputIdFor"><span>{{ title }}</span></label>
+  </span>
+    <div class="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-between items-center box-input py-3 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
         <slot name="prefix"></slot>
         <slot name="default"></slot>
     </div>
@@ -31,9 +33,5 @@
   
   </script>
   <style scoped>
-  .box-input{
-    height: 38.5px !important;
-    max-height: 38.5px !important;
-  }
   </style>
   

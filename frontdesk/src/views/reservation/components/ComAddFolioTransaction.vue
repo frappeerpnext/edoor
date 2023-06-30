@@ -1,10 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width">
-            <!-- {{ amount }} -->
-            <!-- {{ doc }} -->
-            <!-- {{ tax_rule }} -->
-
             <div class="col">
                 <div class="grid">
                     <div class="col-6">
@@ -105,10 +101,10 @@
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_1_rate > 0">
                         <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
                         :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)"
-                            valueClass="max-h-3rem leading-8 col-6 h-edoor-35 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                            >
                             <template #prefix>
                                 <div>
-                                <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
+                                <div v-if="tax_rule && account_code.allow_user_to_change_tax " class="flex items-center">
                                     <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
                                 </div>
                                 </div>
@@ -125,11 +121,11 @@
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_2_rate > 0">
                     <ComBoxBetwenConten inputIdFor="tax-2" is-currency="true" title-class="col-6 font-medium"
                     :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
-                        valueClass="max-h-3rem leading-8 col-6 h-10 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                        >
                         <template #prefix>
                             <div>
                             <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox inputId="tax-2"  @input="onUseTax2Change" v-model="use_tax.use_tax_2" :binary="true" />
+                                <Checkbox inputId="tax-2"  v-model="use_tax.use_tax_2" @input="onUseTax2Change" :binary="true" />
                             </div>
                             </div>
                         </template>
@@ -145,11 +141,11 @@
                     <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_3_rate > 0">
                     <ComBoxBetwenConten inputIdFor="tax-3" is-currency="true" title-class="col-6 font-medium"
                     :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
-                        valueClass="max-h-3rem leading-8 col-6 h-10 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
+                        >
                         <template #prefix>
                             <div>
                             <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox inputId="tax-3"  @input="onUseTax3Change" v-model="use_tax.use_tax_3" :binary="true" />
+                                <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change" :binary="true" />
                             </div>
                             </div>
                         </template>
@@ -216,9 +212,9 @@
             </div>
             <div class="col-12">
             <div class="flex justify-end w-full">
-                <div class="col-4 p-0">
+                <div v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0) && doc?.account_code " class="col-4 p-0">
                     <div class="flex justify-end">
-                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Before Tax" :value="amount"
+                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Rate Before Tax" :value="amount"
                             valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
                     </div>
                 </div>
@@ -243,7 +239,7 @@
 </template>
 <script setup>
 
-import { ref, inject, getDoc, computed, onMounted, nextTick,useToast } from "@/plugin"
+import { ref, inject, getDoc, computed, onMounted, nextTick,useToast,createUpdateDoc } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
@@ -271,10 +267,7 @@ const emit = defineEmits(['onSave'])
 const toast = useToast()
 
 function onUseTax1Change(value) {
-
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
-
-
 }
 function onUseTax2Change(value) {
 
@@ -362,7 +355,7 @@ const tax_2_amount = computed(() => {
             doc.value.taxable_amount_2 = doc.value.taxable_amount_2
         } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 - discount_amount.value }
 
-        if (tax_rule.value.calculate_tax_2_after_adding_tax_1 == 0) {
+        if (tax_rule.value.calculate_tax_2_after_adding_tax_1 == 0 || tax_1_amount == 0) {
             doc.value.taxable_amount_2 = doc.value.taxable_amount_2
         } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 + tax_1_amount.value }
 
@@ -379,11 +372,11 @@ const tax_3_amount = computed(() => {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 - discount_amount.value }
 
-        if (tax_rule.value.calculate_tax_3_after_adding_tax_1 == 0) {
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_1 == 0 || tax_1_amount == 0) {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_1_amount.value }
 
-        if (tax_rule.value.calculate_tax_3_after_adding_tax_2 == 0) {
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_2 == 0 || tax_2_amount == 0) {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_2_amount.value }
 
@@ -417,9 +410,9 @@ function onSelectAccountCode(data) {
             if (d.tax_rule) {
                 const tax_rule = JSON.parse(account_code.value.tax_rule_data)
                 if (tax_rule) {
-                    doc.value.tax_1_rate = tax_rule.tax_1_rate
-                    doc.value.tax_2_rate = tax_rule.tax_2_rate
-                    doc.value.tax_3_rate = tax_rule.tax_3_rate
+                    doc.value.tax_1_rate = tax_rule.tax_1_rate 
+                    doc.value.tax_2_rate = tax_rule.tax_2_rate 
+                    doc.value.tax_3_rate = tax_rule.tax_3_rate 
                     use_tax.value.use_tax_1 = doc.value.tax_1_rate > 0
                     use_tax.value.use_tax_2 = doc.value.tax_2_rate > 0
                     use_tax.value.use_tax_3 = doc.value.tax_3_rate > 0
@@ -440,6 +433,7 @@ function onSelectAccountCode(data) {
         });
     }else{
         doc.value.account_name = ''
+        doc.rate_include_tax = 'No'
     }
 }
 function onSelectCityLedger(data) {
@@ -463,40 +457,28 @@ function onSave() {
     
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
-    if (data.name) {
-        db.updateDoc("Folio Transaction", data.name, { data })
+    
+    createUpdateDoc("Folio Transaction", { data })
             .then((doc) => {
-                toast.add({ severity: 'success', summary: 'Add Folio', detail: "Update Success", life: 3000 })
-                isSaving.value = false;
-                dialogRef.value.close(doc);
-                
-            }).catch((err) => {
-                console.log(err);
-                gv.showErrorMessage(err)
-                isSaving.value = false;
-            })
-    } else {
-        db.createDoc("Folio Transaction", { data })
-            .then((doc) => {
-                toast.add({ severity: 'success', summary: 'Add Folio', detail: "Update Success", life: 3000 })
-                isSaving.value = false;
+            isSaving.value = false;
                 dialogRef.value.close(doc);
 
-            }).catch((error) => {
+            }).catch((err) => {
+            
                 isSaving.value = false;
-                throw new Error( error.exception || error.message)
-               
             })
-    }
+   
 
 }
 
 onMounted(() => {
     
     doc.value.folio_number = dialogRef.value.data.folio_number;
-    account_group.value = dialogRef.value.data.account_group
+
     balance.value = dialogRef.value.data.balance
+    
     if (dialogRef.value.data.folio_transaction_number) {
+        //when use edit folio transacitn
         isSaving.value = true
         call.get("edoor.api.reservation.get_folio_detail", {
             name: dialogRef.value.data.folio_transaction_number
@@ -504,16 +486,21 @@ onMounted(() => {
             .then((result) => {
                 doc.value = result.message.doc
                 account_code.value = result.message.account_code
+                account_group.value = doc.value.account_group
+                use_tax.value = {
+                    use_tax_1:doc.value.tax_1_rate > 0,
+                    use_tax_3:doc.value.tax_3_rate > 0,
+                    use_tax_2:doc.value.tax_2_rate > 0
+                }
                 isSaving.value = false
             }).catch(()=>{
                 isSaving.value = false
             })
     } else {
-
+        //when user want to add data 
+        account_group.value = dialogRef.value.data.account_group
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
     }
-
-
 });
 
  

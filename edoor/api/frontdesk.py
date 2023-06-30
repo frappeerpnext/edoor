@@ -104,7 +104,7 @@ def get_mtd_room_occupany(property):
 
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')

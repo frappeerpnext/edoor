@@ -9,6 +9,8 @@ from frappe.utils import fmt_money
 
 class FolioTransaction(Document):
 	def validate(self):
+	 
+		
 		if not self.input_amount:
 			frappe.throw("Please enter amount")
 
@@ -82,7 +84,7 @@ class FolioTransaction(Document):
 			self.tax_3_account = tax_rule.tax_3_account
 
 			if self.rate_include_tax== "Yes":
-				price = get_base_rate(self.input_amount - self.discount_amount ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
+				price = get_base_rate((self.input_amount )- (self.discount_amount/ self.quantity) ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
 				self.price = price
 				self.amount = (price * self.quantity ) 
 			else:
@@ -188,6 +190,7 @@ class FolioTransaction(Document):
 		#frappe.throw("You cannot delete me")
 	def after_delete(self):
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
+		update_reservation_folio(self.folio_number, None, False)
 		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 		frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
 

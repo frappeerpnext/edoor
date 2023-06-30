@@ -93,8 +93,7 @@
                             <td class="pe-2 w-12rem"> 
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
-                            <td class="px-2 w-14rem"> 
-
+                            <td class="px-2 w-14rem">
                                 <Calendar showIcon v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-16rem"> 
@@ -127,7 +126,7 @@
             </template>
         </ComReservationStayPanel>
         <OverlayPanel ref="op">
-            <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
+            <ComReservationStayChangeRate v-model="rate" @onClose="onCloseRate" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
         </OverlayPanel>
 
     </div>
@@ -186,8 +185,10 @@
         op.value.hide();
     }
     const onClose = () =>{
-        op.value.hide()
         dialogRef.value.close();
+    }
+    function onCloseRate(){
+        op.value.hide()
     }
     const onChangeRate = () => {
         newRoom.value.rate = rate.value
@@ -196,7 +197,6 @@
     }
 
     const onOpenChangeRate = (event) => {
-        console.log(newRoom.value)
         rate.value = JSON.parse(JSON.stringify(newRoom.value)).rate
         op.value.toggle(event);
     }

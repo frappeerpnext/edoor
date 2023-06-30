@@ -24,7 +24,7 @@
                             </div>
                     </div>
                 </div>
-                <ComPlaceholder :loading="loading" :is-not-empty="list.length > 0">
+                <ComPlaceholder text="There are no Comment and Notice yet" :loading="loading" :is-not-empty="list.length > 0">
                     <div v-for="(i, index) in list" :key="index" class="mb-3 p-3 rounded-xl shadow-card-edoor" :class="(i.note_type == 'Notice') ? 'bg-yellow-notice-bg text-yellow-700' : 'bg-commnet-cart' ">
                         <div class="flex justify-between">
                             <div class="flex items-center">
@@ -55,7 +55,7 @@
 </template>
 <script setup>
     import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
-    import {ref, inject, toaster, getApi,useConfirm, onMounted, deleteDoc,createUpdateDoc} from '@/plugin'
+    import {ref, inject, getApi,useConfirm, onMounted, deleteDoc,createUpdateDoc} from '@/plugin'
     import Enumerable from 'linq'
     import ComReservationStayPanel from '../../views/reservation/components/ComReservationStayPanel.vue';
     const moment = inject("$moment");

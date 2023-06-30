@@ -75,12 +75,13 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, toaster, getApi,getDoc } from '@/plugin'
+import { ref, inject, onMounted, getApi,getDoc } from '@/plugin'
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue'; 
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 const dialogRef = inject('dialogRef')
 const rs = inject('$reservation_stay');
+const gv = inject('$gv');
 const genderList = ref(["Not Set", "Male", "Female"])
 let isApplyAllStays = ref(false)
 let isApplyMasterGuest = ref(false)
@@ -163,7 +164,7 @@ function onStayGuestSave() {
             loading.value = false
         })
     } else {
-        toaster('error','Cannot get reservation name / guest name')
+        gv.toast('error','Cannot get reservation name / guest name')
         loading.value = false
     }
 

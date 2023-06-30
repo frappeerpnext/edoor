@@ -56,7 +56,7 @@
 
 <script setup>
 
-import { ref, inject, toaster } from '@/plugin';
+import { ref, inject } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import { useDialog } from 'primevue/usedialog';
@@ -69,6 +69,7 @@ const selected = ref({
 })
 const opHousekeeper = ref()
 const hk = inject("$housekeeping")
+const gv = inject("$gv")
 const frappe = inject("$frappe")
 const call = frappe.call()
 const visibleRight = ref(false);
@@ -89,7 +90,7 @@ function onSaveAssignHousekeeper() {
         rooms: selected.value.room,
         housekeeper: selected.value.housekeeper
     }).then((result) => {
-        toaster('success', 'Change housekeeping successfully')
+        gv.toast('success', 'Change housekeeping successfully')
         hk.loadData()
         opHousekeeper.value.hide()
         loading.value = false

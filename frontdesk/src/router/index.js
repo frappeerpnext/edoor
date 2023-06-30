@@ -12,17 +12,17 @@ import TestPage2 from "../views/TestPage2.vue";
 import authRoutes from './auth';
 
 const routes = [
-  { path: "/", redirect: '/edoor/frontdesk' }, 
-  { path: "/edoor/frontdesk", name: "Home", component: Home, meta: { layout: 'main_layout' } },
-  { path: "/edoor/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
-  { path: "/edoor/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Frontdesk' } },
-  { path: "/edoor/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
-  { path: "/edoor/frontdesk/housekeeping", name: "Housekeeping", component: Housekeeping, meta: { layout: 'main_layout', title: 'Housekeeping' } },
-  { path: "/edoor/frontdesk/stay-detail/:name?", name: "ReservationStayDetail", component:ReservationStayDetail, meta: { layout: 'main_layout', title: 'Reservation Stay Detail' } },
-  { path: "/edoor/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout', title: 'Reservation Detail' } },
-  { path: "/edoor/frontdesk/guest-database", name: "GuestDatabase", component:GuestList, meta: { layout: 'main_layout' } },
+  { path: "/", redirect: '/frontdesk' }, 
+  { path: "/frontdesk", name: "Home", component: Home, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
+  { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Frontdesk' } },
+  { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
+  { path: "/frontdesk/housekeeping", name: "Housekeeping", component: Housekeeping, meta: { layout: 'main_layout', title: 'Housekeeping' } },
+  { path: "/frontdesk/stay-detail/:name?", name: "ReservationStayDetail", component:ReservationStayDetail, meta: { layout: 'main_layout', title: 'Reservation Stay Detail' } },
+  { path: "/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout', title: 'Reservation Detail' } },
+  { path: "/frontdesk/guest-database", name: "GuestDatabase", component:GuestList, meta: { layout: 'main_layout' } },
 
-  { path: "/edoor/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   ...authRoutes,
 ];
 

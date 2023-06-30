@@ -228,7 +228,6 @@
    "fetch_from": "reservation_status.is_active_reservation",
    "fieldname": "is_active_reservation",
    "fieldtype": "Check",
-   "hidden": 1,
    "label": "Is Active Reservation"
   },
   {
@@ -640,7 +639,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-06-27 14:54:19.594281",
+ "modified": "2023-06-28 09:49:40.265079",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

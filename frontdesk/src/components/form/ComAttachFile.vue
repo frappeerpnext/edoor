@@ -55,13 +55,13 @@
 </template>
 
 <script setup>
-import { ref, inject, uploadFiles, toaster } from "@/plugin";
+import { ref, inject, uploadFiles } from "@/plugin";
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import BtnOkIcon from '@/assets/svg/icon-save.svg' 
 import FileUpload from 'primevue/fileupload';
 const emit = defineEmits(['onSuccess','onClose'])
 const dialogRef = inject("dialogRef");
-
+const gv = inject('$gv')
 const files = ref()
 const props = defineProps({
     modelValue: String,
@@ -124,7 +124,7 @@ function onUpload(){
             emit("onSuccess")
         })
     }else{
-        toaster('warn','Please choose files.')
+        gv.toast('warn','Please choose files.')
     }
     
 }

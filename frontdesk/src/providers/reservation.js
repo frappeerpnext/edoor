@@ -11,7 +11,7 @@ export default class Reservation {
 	LoadReservation(name) {
 		this.loading = true
 		getApi("reservation.get_reservation_detail", {
-			name: name
+			name: name || this.reservation?.name
 		}).then((result) => {
 			this.reservation = result.message.reservation
 			this.reservationStays = result.message.reservation_stays

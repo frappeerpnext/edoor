@@ -100,7 +100,7 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
 def update_reservation(name,doc=None, run_commit = True):
     if name:
         doc = frappe.get_doc("Reservation",name)
-    
+
     sql = """select 
                 min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
                 max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
@@ -218,13 +218,12 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
         select 
             min(rate) as rate,
             avg(rate) as adr,
-            sum(rate) as total_rate,
             sum(discount_amount) as discount_amount,
             sum(tax_1_amount) as tax_1_amount,
             sum(tax_2_amount) as tax_2_amount,
             sum(tax_3_amount) as tax_3_amount,
             sum(total_tax) as total_tax,
-            sum(total_amount) as total_amount
+            sum(total_rate) as total_amount
 
         from `tabReservation Room Rate`
         where
@@ -264,14 +263,14 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
         if data:
             d = data[0]
             stay.rate =  d["rate"]
-            stay.total_rate =  d["total_rate"]
+            stay.total_rate =  d["total_amount"] or  0
             stay.adr =  d["adr"]
-            stay.discount_amount  =d["discount_amount"] or 0
+            stay.discount_amount =d["discount_amount"] or 0
             stay.tax_1_amount =d["tax_1_amount"] or  0
             stay.tax_2_amount =d["tax_2_amount"] or  0
             stay.tax_3_amount =d["tax_3_amount"] or  0
             stay.total_tax =d["total_tax"] or  0
-            stay.total_amount =d["total_amount"] or  0
+        
     doc.save()
     if run_commit:
         frappe.db.commit()

@@ -1,7 +1,68 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
-       {{ use_tax }}
-        Stay Number: {{ stay?.name }} <br>
+       <!-- {{ use_tax }} -->
+       <div class="grid">
+        <div class="col-12">
+            <ComReservationStayPanel title="Stay Info">
+                <template #content>
+                    <div class="grid">
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Res Stay. No"
+                                :value="stay?.name" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Business Source"
+                                :value="stay?.Business_source" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Room"
+                                :value="stay?.room_types + '/' + stay?.rooms" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                    </div>
+                </template>
+            </ComReservationStayPanel>
+                </div>
+            <div class="col-12">
+            <ComReservationStayPanel title="Guest">
+                <template #content>
+                    <div class="grid">
+                        <div class="col-6">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Guest Code"
+                                :value="stay?.guest" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-6">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Guest Name"
+                                :value="stay?.guest_name" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Pax"
+                                :value="stay?.adult + '/' + stay?.child" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Phone Number"
+                                :value="stay?.guest_phone_number" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        <div class="col-4">
+                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Email"
+                                :value="stay?.guest?.email" valueClass="w-full">
+                            </ComBoxStayInformation>
+                        </div>
+                        
+                    </div>
+                </template>
+            </ComReservationStayPanel>
+            </div>
+       </div>
+       
+<!--       
+        Stay Number : {{ stay?.name }} <br>
         Room: {{ stay?.rooms }} <br>
         Room Type: {{ stay?.room_types }} <br>
         Guest code: {{ stay?.guest }} <br>
@@ -10,122 +71,146 @@
         phone: {{ stay?.guest_phone_number}} <br>
         email: {{ stay?.guest?.email }} <br>
         Pax: {{ stay?.adult }}/{{ stay?.child }}<br>
-    
-        <hr />
-
-        <label>Rate</label>
-        <InputNumber class="w-full" v-model="doc.input_rate" />
-
-        <div>
+        <hr /> -->
+    <div class="grid mt-3">  
+        <div class="col">
+            <div class="grid">
+        <div class="col-6">
             <label>Rate Type</label>
-            <ComSelect v-model="doc.rate_type" doctype="Rate Type" :clear="false" />
+            <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type" :clear="false" />
+        </div> 
+        <div class="col-6">
+        <label>Rate</label>
+        <InputNumber class="w-full" v-model="doc.input_rate" 
+            mode="currency"
+            currency="USD" 
+            locale="en-US"
+            ref="input_amount" />
         </div>
-        <div>
+        <div class="col-4">
             <label>Discount Type</label>
-            <ComSelect v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
+            <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
         </div>
-        <div>
+        <div class="col-4">
             <label>Discount</label>
-            <InputNumber class="w-full" v-model="doc.discount" />
+            <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.discount" :minFractionDigits="2" :maxFractionDigits="10"/>
         </div>
-        <div>
-            <CurrencyFormat :value="discount_amount" />
+        <div class="col-4 text-right">
+            <label >Amount Discount</label>
+            <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+            <CurrencyFormat  :value="discount_amount" />
+            </div>
         </div>
-        <div>
+
+        <div class="col-8">
             <label>Tax Rule</label>
-            <ComSelect v-model="doc.tax_rule" doctype="Tax Rule" :clear="false" />
+            <ComSelect class="w-full" v-model="doc.tax_rule" doctype="Tax Rule" :clear="false" />
         </div>
-        <div>
-            <label>Rate Incldue Tax</label>
-            <Checkbox v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
+        <div class="col-4 text-right">
+            <div class="grid justify-end">
+                <div class="col-12">
+                    <label >Rate Befor Tax</label>
+                    <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                    <CurrencyFormat  :value="rate" />
+                </div>
+                </div>
+            </div>
         </div>
-        <div>
-            <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Befor Tax" :value="rate"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between" />
+         </div>
         </div>
-        <div class="flex mt-2" v-if="doc">
-            <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
-                :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
-                <template #prefix>
-                    <div>
-                        <div class="flex items-center">
-                            <Checkbox v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+        <div class="col-5">
+            <div class="grid justify-end ">
+                <div class="col-12">
+            <div class="flex justify-end text-end">
+                <label for="rate_tax"  class="col-6 font-medium cursor-pointer">Rate Incldue Tax</label>
+                <div class="inline col-6 text-left px-3">
+                <Checkbox input-id="rate_tax" class="" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
+                </div>
+            </div>   
+            <div class="flex mt-2" v-if="doc">
+                <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
+                    :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)">
+                    <template #prefix>
+                        <div>
+                            <div class="flex items-center">
+                                <Checkbox input-id="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+                            </div>
                         </div>
-                    </div>
-                </template>
-                <template #default>
-                    <div>
-                        <CurrencyFormat :value="tax_1_amount" />
-                    </div>
-                </template>
-            </ComBoxBetwenConten>
-        </div>
+                    </template>
+                    <template #default>
+                        <div>
+                            <CurrencyFormat :value="tax_1_amount" />
+                        </div>
+                    </template>
+                </ComBoxBetwenConten>
+            </div>
         <!-- /Tax - 1 -->
         <!-- Tax - 2 -->
-        <div class="flex mt-2" v-if="doc">
-            <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
-                :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
-                <template #prefix>
-                    <div>
-                        <div class="flex items-center">
-                            <Checkbox @input="onUseTax2Change" v-model="use_tax.use_tax_2" :binary="true" />
+            <div class="flex mt-2" v-if="doc">
+                <ComBoxBetwenConten inputIdFor="tax-2" is-currency="true" title-class="col-6 font-medium"
+                    :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
+                   >
+                    <template #prefix>
+                        <div>
+                            <div class="flex items-center">
+                                <Checkbox input-id="tax-2" @input="onUseTax2Change" v-model="use_tax.use_tax_2" :binary="true" />
+                            </div>
                         </div>
-                    </div>
-                </template>
-                <template #default>
-                    <div>
-                        <CurrencyFormat :value="tax_2_amount" />
-                    </div>
-                </template>
-            </ComBoxBetwenConten>
-        </div>
-        <!-- /Tax - 2 -->s
+                    </template>
+                    <template #default>
+                        <div>
+                            <CurrencyFormat :value="tax_2_amount" />
+                        </div>
+                    </template>
+                </ComBoxBetwenConten>
+            </div>
+        <!-- /Tax - 2 -->
         <!-- Tax - 3 -->
-        <div class="flex mt-2" v-if="doc">
-            <ComBoxBetwenConten is-currency="true" title-class="col-6 font-medium"
-                :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between">
-                <template #prefix>
-                    <div>
-                        <div class="flex items-center">
-                            <Checkbox @input="onUseTax3Change" v-model="use_tax.use_tax_3" :binary="true" />
+            <div class="flex mt-2" v-if="doc">
+                <ComBoxBetwenConten inputIdFor="tax-3" is-currency="true" title-class="col-6 font-medium"
+                    :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
+                    valueClass="">
+                    <template #prefix>
+                        <div>
+                            <div class="flex items-center">
+                                <Checkbox input-id="tax-3" @input="onUseTax3Change" v-model="use_tax.use_tax_3" :binary="true" />
+                            </div>
                         </div>
-                    </div>
-                </template>
-                <template #default>
-                    <div>
-                        <CurrencyFormat :value="tax_3_amount" />
-                    </div>
-                </template>
-            </ComBoxBetwenConten>
+                    </template>
+                    <template #default>
+                        <div>
+                            <CurrencyFormat :value="tax_3_amount" />
+                        </div>
+                    </template>
+                </ComBoxBetwenConten>
+            </div>
+                <div class="flex mt-2">
+                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
+                        valueClass="leading-8 max-h-3rem col-6 bg-gray-edoor-10 text-right" />
+                </div>
+                <div class="flex mt-2">
+                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
+                        valueClass="leading-8 max-h-3rem col-6 bg-gray-edoor-10 text-right" />
+                </div>
+                 </div>
+            </div>
         </div>
-
-        <div>
-            <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between" />
-        </div>
-        <div>
-            <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
-                valueClass="leading-8 col-6 bg-gray-edoor-10 pr-0 text-right flex justify-space-between" />
-        </div>
-        <div>
-            <Textarea class="w-full" v-model="doc.note" />
+        <div class="col-12">
+            <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
         </div>
         <hr />
-        {{ doc }}
-
+        <!-- {{ doc }} -->
+    </div> 
     </ComDialogContent>
 </template>
 <script setup>
-
 import { ref, inject, computed, onMounted, useToast } from "@/plugin"
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 
 const gv = inject("$gv")
 const visible = ref(false)
@@ -175,12 +260,18 @@ const discount_amount = computed(() => {
 });
 const rate = computed(() => {
     if (tax_rule.value) {
+
         if (doc.value.rate_include_tax == "Yes") {
+            
             return gv.getRateBeforeTax((doc.value.input_rate || 0) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
 
-        } else {
-            return (doc.value.input_rate || 0)
+        } else if(discount_amount.value>0){
+                return (doc.value.input_rate || 0) - discount_amount.value
         }
+        else{
+                return (doc.value.input_rate || 0)
+            }
+            
     }
     return (doc.value.input_rate || 0) - discount_amount.value
 })
@@ -271,11 +362,12 @@ function onSave() {
 onMounted(() => {
     stay.value = dialogRef.value.data.reservation_stay
     if (dialogRef.value.data.selected_room_rate) {
-        doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rate) ) 
+        doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rate)) 
     } else if (dialogRef.value.data.selected_room_rates?.length > 0) {
         selectedRoomRates.value = dialogRef.value.data.selected_room_rates
-        doc.value =JSON.parse(JSON.stringify( dialogRef.value.data.selected_room_rates[0]))
-    }
+        doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rates[0]))
+
+    } 
     use_tax.value = {
         use_tax_1:doc.value.tax_1_rate > 0,
         use_tax_3:doc.value.tax_3_rate > 0,
@@ -287,3 +379,8 @@ onMounted(() => {
 
 
 </script>
+<style scoped>
+.h-edoor-35{
+    height: 36.5px;
+}
+</style>

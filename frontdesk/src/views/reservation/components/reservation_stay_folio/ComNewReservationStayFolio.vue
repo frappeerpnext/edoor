@@ -1,10 +1,11 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid">
-            <div class="col">
+            <div class="col" v-if="guests && doc">
                 <label>Stay Guest</label><br/>
                 <ComSelect class="mb-3 w-full" v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
             </div>
+            {{ doc.name }}
             <div class="col-8">
                 <label hidden>Note</label><br/>
                 <InputText placeholder="Note" class="w-full" type="text" v-model="doc.note" />
@@ -13,10 +14,11 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted, } from "@/plugin"
+import { inject, ref, onMounted,createUpdateDoc } from "@/plugin"
 const dialogRef = inject("dialogRef");
 const frappe = inject('$frappe');
 const db = frappe.db();
+const rs = inject("$reservation_stay")
 const isSaving = ref(false)
 const doc = ref({})
 const reservation_stay = ref({})
@@ -24,18 +26,27 @@ const guests = ref([])
 
 function onSave() {
 
-    isSaving.value = false;
-    db.createDoc('Reservation Folio', doc.value)
-        .then((doc) => {
-            dialogRef.value.close(doc)
-        })
+    isSaving.value = true; 
+    createUpdateDoc('Reservation Folio', {data: doc.value})
+    .then((doc) => {
+        dialogRef.value.close(doc)
+        isSaving.value = false
+    }).catch(()=>{
+        isSaving.value = false
+    })
 }
 
 
 onMounted(() => {
     reservation_stay.value = dialogRef.value.data.reservation_stay
-    doc.value.reservation_stay = reservation_stay.value.name
-    doc.value.guest = reservation_stay.value.guest
+    if(dialogRef.value.data.is_edit){
+        doc.value = rs.selectedFolio
+    }else{
+        doc.value.reservation_stay = reservation_stay.value.name
+        doc.value.guest = reservation_stay.value.guest
+    }
+    
+    
     let data = []
     guests.value.push({
         name: reservation_stay.value?.guest,

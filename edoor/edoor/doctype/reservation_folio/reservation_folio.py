@@ -23,6 +23,13 @@ class ReservationFolio(Document):
 			self.posting_date = self.working_date
 			self.cashier_shift = working_day["cashier_shift"]["name"]
 
+			#check total folio in current reservation stay if not have then set this folio as master folio
+			if self.reservation_stay:
+				if not frappe.db.exists("Reservation Folio",{"reservation_stay":self.reservation_stay}):
+					self.is_master = 1
+					
+
+
 
 		if self.balance > 0 and self.status == "Closed":
 			frappe.throw("Cannot close folio with balance is greater than 0")

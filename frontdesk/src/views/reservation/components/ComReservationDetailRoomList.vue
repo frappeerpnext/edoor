@@ -13,6 +13,7 @@
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest">
+                    {{roomList}}
                     <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column header="Stay Date">
@@ -72,7 +73,7 @@
                         </Column>
                         <Column field="reservation_status" class="res__state__center text-center" header="Status">
                             <template #body="slotProps">
-                                <ComReservationStatus class="border-round-3xl" :status-name="slotProps.data.reservation_status"/>
+                                <ComReservationStatus :class="`data-${slotProps.data.reservation_status}`" class="border-round-3xl" :status-name="slotProps.data.reservation_status"/>
                             </template>
                         </Column>
                         <Column header="">
@@ -110,7 +111,7 @@
                 <div class="pt-3">
                     <div class="flex justify-end gap-2">  
                         <SplitButton class="spl__btn_cs sp" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
-                        <Button class="border-1 conten-btn sp">
+                        <Button class="border-1 conten-btn sp" @click="onAddRoomMore">
                             <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
                         </Button>
                         <Button class="border-1 conten-btn sp" label="Edit Booking" icon="pi pi-file-edit" />
@@ -119,53 +120,74 @@
             </ComPlaceholder>
         </template>
     </ComReservationStayPanel>
+    <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/>
 </template>
 <script setup>
-import {inject,ref,onMounted,useDialog} from '@/plugin'
+import {inject,ref,onMounted,useDialog, postApi,useConfirm} from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
 import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
-
+import ComReservationStayAddMore from "./ComReservationStayAddMore.vue"
+const confirm = useConfirm()
 const moment = inject('$moment')
 const rs = inject("$reservation")
+const gv = inject("$gv")
 const selecteds = ref([])
 const roomList = ref(JSON.parse(JSON.stringify(rs.reservationStays)))
 const dialog = useDialog()
 const selectStatus = ref()
-
+const loading = ref(false)
+const note = ref({
+    title: '',
+    show: false,
+    reservation_status:'' // No Show // Void // Cancel
+})
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 
 const items = [
     {
-        label: 'Update',
-        icon: 'pi pi-refresh',
-        command: () => {
-            toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
-        }
-    },
-    {
-        label: 'Delete',
-        icon: 'pi pi-times',
-        command: () => {
-            toast.add({ severity: 'warn', summary: 'Delete', detail: 'Data Deleted', life: 3000 });
-        }
-    },
-    {
         label: 'Group No Show',
+        command: () => {
+            onChangeStatus('No Show')
+        }
     }, 
     {
         label: 'Group Cancel',
+        command: () => {
+            onChangeStatus('Cancelled')
+        }
     },{
         label: 'Group Void',
+        command: () => {
+            onChangeStatus('void')
+        }
     },
     {
         label: 'Group Check-In',
+        command: ()=>{
+            onGroupCheckIn(true)
+        }
+    },
+    {
+        label: 'Group Undo Check-In',
+        command: ()=>{
+            onGroupCheckIn(false)
+        }
     },
     {
         label: 'Group Check Out',
+        command: ()=>{
+            onGroupCheckOut(true)
+        }
+    },
+    {
+        label: 'Group Undo Check Out',
+        command: ()=>{
+            onGroupCheckOut(false)
+        }
     },
     {
         label: 'Group Build To Company',
@@ -201,6 +223,114 @@ function getRoomList(filter){
     }else{
         roomList.value = rs.reservationStays
     }
+}
+function onChangeStatus(reservation_status){
+    if(validateSelectReservation()){
+        note.value.title = `${reservation_status}`
+        note.value.show = true
+        note.value.reservation_status = reservation_status
+    }
+    
+}
+function validateSelectReservation(){
+    if(selecteds.value && selecteds.value.length > 0){
+        return true
+    }
+    else{
+        gv.toast('warn','Please select reservation stay.')
+        return false
+    }
+}
+function onSaveGroupStatus(txt){ 
+    const data = {
+        stays:selecteds.value,
+        status:note.value.reservation_status,
+        note:txt
+    }
+    console.log(data)
+    postApi('reservation.update_reservation_status',data).then((r)=>{
+        rs.LoadReservation(rs.reservation.name)
+    })
+}
+function onCloseNote(){
+    note.value.title = ''
+    note.value.show = false
+    note.value.reservation_status = ''
+}
+
+function onGroupCheckIn(is_not_undo= false){
+    const isSelect = validateSelectReservation()
+    if(isSelect){
+        confirm.require({
+        message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check in reservations?`,
+        header: 'Check In',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-success',
+        accept: () => {
+            const checkInList = selecteds.value.map((r)=>r.name).join(',')
+            postApi("reservation.check_in",{
+                reservation: rs.reservation.name,
+                reservation_stays: checkInList,
+                is_undo: !is_not_undo
+            }).then((result) => {
+                if(result){
+                    rs.LoadReservation()
+                }
+            }).catch((error) => {
+                //
+            })
+
+        }
+    });
+    }
+}
+
+function onGroupCheckOut(is_not_undo = false){
+    const isSelect = validateSelectReservation()
+    if(isSelect){
+        confirm.require({
+        message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check out reservations?`,
+        header: 'Check In',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-success',
+        accept: () => {
+            const checkList = selecteds.value.map((r)=>r.name).join(',')
+            postApi("reservation.check_out",{
+                reservation: rs.reservation.name,
+                reservation_stays: checkList,
+                is_undo: !is_not_undo
+            }).then((result) => {
+                if(result){
+                    rs.LoadReservation()
+                }
+            }).catch((error) => {
+                //
+            })
+
+        }
+    });
+    }
+}
+function onAddRoomMore(){
+    const dialogRef = dialog.open(ComReservationStayAddMore, {
+        props: {
+            header: 'Add more stay room',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            // const data = options.data;
+            // if (data) {
+            //     if (data.action = "view_reservation_detail") {
+            //         showReservationDetail(data.reservation)
+            //     }
+            // }
+        }
+    });
 }
 function showReservationStayDetail(selected) {
     let stayName = selected

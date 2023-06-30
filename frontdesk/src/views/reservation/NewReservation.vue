@@ -363,7 +363,8 @@ const onAddRoom = () => {
             adult: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].adult,
             child: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].child,
             room_type_id: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].room_type_id,
-            rate: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].rate
+            rate: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].rate,
+            is_manual_rate: false
 
         }
     )

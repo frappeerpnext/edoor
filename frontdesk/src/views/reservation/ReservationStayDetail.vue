@@ -77,7 +77,7 @@
     </div>
     <hr class="mt-2">
     <div class="mt-2 -mb-2">
-            <div class="line-height-1 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+            <div class="line-height-1 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                 <div>
                         <span class="italic">Created by: </span> 
                         <span class="text-500 font-italic">
@@ -109,13 +109,12 @@
                 style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
             </Badge>
         </Button>
-        <button @click="onTest">Test don't remove</button>
     </template>
     <template #footer-right>        
         <Button v-if="rs.reservation.working_date == rs.reservation.arrival_date" @click="onCheckIn" class="bg-green-500">
             <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
         </Button>
-        <Button v-if="rs.reservation.working_date >= moment(rs.reservation.departure_date).add(-1,'day').format('YYYY-MM-DD') " @click="onCheckIn" class="bg-red-400">
+        <Button v-if="rs.reservation.working_date >= moment(rs.reservation.departure_date).add(-1,'day').format('YYYY-MM-DD') " @click="onCheckOut" class="bg-red-400">
             <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
         </Button>
     </template>
@@ -246,6 +245,10 @@ const onCheckIn = () => {
 
         }
     });
+}
+
+const onCheckOut = () =>{
+    alert('check out')
 }
 
 const OnViewReservation = () => {

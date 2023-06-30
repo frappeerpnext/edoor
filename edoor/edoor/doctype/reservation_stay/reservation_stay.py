@@ -12,12 +12,11 @@ from edoor.api.utils import update_reservation, update_reservation_color
  
 class ReservationStay(Document):
 	def  validate(self):
- 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
 		if self.departure_date<=self.arrival_date:
-			frappe.throw("Departure date cannot less than or equal to arrival date")
+			frappe.throw("Departure date cannot less than or equal to arrival date : stay")
 
 		working_day = get_working_day(self.property)
 		if not working_day:
@@ -48,7 +47,6 @@ class ReservationStay(Document):
 
 
 		self.pax = self.adult + self.child
-
 		if self.stays:
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays])
 			self.room_types = ','.join([d.room_type for d in self.stays])
@@ -64,8 +62,6 @@ class ReservationStay(Document):
 			d.guest_name = self.guest_name
 			d.email = self.guest_email
 			d.phone_number = self.guest_phone_number
-			 
-
 			d.start_date = d.start_date or self.arrival_date
 			d.start_time = d.start_time or self.arrival_time
 			d.end_time = d.end_time or self.departure_time
@@ -81,7 +77,8 @@ class ReservationStay(Document):
 		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
 		self.room_rate= Enumerable(self.stays).min(lambda x: x.rate or 0)
-		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount or 0)
+		self.room_rate_discount= Enumerable(self.stays).sum(lambda x: x.discount_amount or 0)
+ 
 		self.room_rate_tax_1_amount= Enumerable(self.stays).sum(lambda x: x.tax_1_amount or 0)
 		self.room_rate_tax_2_amount= Enumerable(self.stays).sum(lambda x: x.tax_2_amount or 0)
 		self.room_rate_tax_3_amount= Enumerable(self.stays).sum(lambda x: x.tax_3_amount or 0)
@@ -178,6 +175,7 @@ def generate_room_rate(self):
 				"doctype":"Reservation Room Rate",
 				"reservation":self.reservation,
 				"reservation_stay":self.name,
+
 				"stay_room_id":stay.name,
 				"room_type_id":stay.room_type_id,
 				"room_id":stay.room_id,
@@ -193,6 +191,7 @@ def change_room_occupy(self):
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
+	frappe.db.commit()
 	if not self.reservation_status in ['Void','No Show','Cancelled']:
 		doc = frappe.get_doc('Reservation Stay', self.name)
 		doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())

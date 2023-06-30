@@ -21,7 +21,9 @@ export default class ReservationStay {
 		this.selectedFolio = ref({})
 		this.folioTransactions = ref([])
 		this.selectedFolioTransactions = ref([])
-		this.reservationStatusDelete = ['No Show','Void','Cancelled']
+		this.reservationStatusDelete = ['No Show', 'Void', 'Cancelled']
+		this.folio_summary = ref([])
+
 	}
 
 
@@ -46,6 +48,7 @@ export default class ReservationStay {
 		})
 
 	}
+
 	getChargeSummary = async (name) => {
 		this.loadingSummary = true
 		call.get("edoor.api.reservation.get_reservation_charge_summary", {
@@ -84,20 +87,29 @@ export default class ReservationStay {
 	}
 
 	totalCredit = computed(() => {
+		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+
 		if (this.folioTransactions.value) {
-
-			return this.folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
-
-
+			if (setting.folio_transaction_stype_credit_debit == 1) {
+				return this.folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
+			} else {
+				return this.folioTransactions.value.reduce((n, d) => n + (d.type == "Credit" ? Math.abs((d.amount || 0)) : 0), 0)
+			}
 		}
 		return 0
 
 	})
 
 	totalDebit = computed(() => {
-		if (this.folioTransactions.value) {
+		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 
-			return this.folioTransactions.value.reduce((n, d) => n + (d.debit || 0), 0)
+		if (this.folioTransactions.value) {
+			if (setting.folio_transaction_stype_credit_debit == 1) {
+				return this.folioTransactions.value.reduce((n, d) => n + (d.debit || 0), 0)
+			} else {
+				return Math.abs(this.folioTransactions.value.reduce((n, d) => n + (d.type == "Debit" ? (d.amount || 0) : 0), 0))
+			}
+
 
 
 		}
@@ -109,7 +121,7 @@ export default class ReservationStay {
 	onLoadReservationFolios() {
 		return new Promise((resolve, reject) => {
 			db.getDocList('Reservation Folio', {
-				fields: ["name", "status", "is_master", "rooms", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status","balance"],
+				fields: ["name", "status", "is_master", "rooms","note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance"],
 				filters: [['reservation_stay', '=', this.reservationStay?.name]],
 				limit: 1000
 			})
@@ -121,66 +133,86 @@ export default class ReservationStay {
 					reject(err)
 				})
 		});
-
-
-
 	}
+
 
 	onLoadFolioTransaction(data) {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 		if (data?.name) {
 			this.selectedFolio = data
-			 if (setting?.folio_transaction_stype_credit_debit == 1) {
+			if (setting?.folio_transaction_stype_credit_debit == 1) {
 				call.get('edoor.api.reservation.get_folio_transaction', {
 					folio_number: data.name
 				})
 					.then((result) => {
 
 						this.folioTransactions = result.message
-					})
-			}else{
-				db.getDocList("Folio Transaction",{
-					fields:[
-							"name",
-							'posting_date',
-							"parent_reference",
-							"type",
-							"account_code",
-							"account_name",
-							"quantity",
-							"input_amount",
-							"price",
-							"amount",
-							"discount_amount",
-							"total_tax",
-							"total_amount",
-							"bank_fee_amount",
-							"note",
-							"creation",
-							"owner",
-							"modified",
-							"modified_by",
-						],
-					filters:[["folio_number","=",data.name]],
-					limit:1000
-				}).then((result)=>{
+						this.selectedFolio.total_credit =this.folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
+						this.selectedFolio.total_debit =this.folioTransactions.value.reduce((n, d) => n + (d.debit || 0), 0)
+						this.selectedFolio.balance =this.selectedFolio.totalDebit -  this.selectedFolio.totalCredit 
+						
 					
-					const folio_transaction =  Enumerable.from(result).orderBy("$.posting_date").thenBy("name").toArray()
-					folio_transaction.forEach(r => {
-						r.total_amount = r.type=="Credit"?(r.total_amount - r.bank_fee_amount)  *-1:r.total_amount
-						r.amount = r.type=="Credit"?r.amount*-1:r.amount
-						r.price = r.type=="Credit"?(r.price + r.bank_fee_amount ) *-1:r.price
+							
+						
+						
+					})
+			} else {
+				db.getDocList("Folio Transaction", {
+					fields: [
+						"name",
+						'posting_date',
+						"parent_reference",
+						"type",
+						"account_code",
+						"account_name",
+						"quantity",
+						"input_amount",
+						"price",
+						"amount",
+						"discount_amount",
+						"total_tax",
+						"total_amount",
+						"bank_fee_amount",
+						"note",
+						"creation",
+						"owner",
+						"modified",
+						"modified_by",
+					],
+					filters: [["folio_number", "=", data.name]],
+					limit: 1000
+				}).then((result) => {
+
+					const folio_transaction = Enumerable.from(result).orderBy("$.posting_date").thenBy("name").toArray()
+					 folio_transaction.forEach(r => {
+						r.total_amount = r.type == "Credit" ? (r.total_amount - r.bank_fee_amount) * -1 : r.total_amount
+						r.amount = r.type == "Credit" ? r.amount * -1 : r.amount
+						r.price = r.type == "Credit" ? (r.price + r.bank_fee_amount) * -1 : r.price
 					});
 					this.folioTransactions = folio_transaction
-
-				})
 					
-				
+
+					
+				})
+
+
 			}
+			this.getFolioSummary(data.name)
 		}
+
 	}
 
- 
+	getFolioSummary(folio_number){
+		call.get("edoor.api.reservation.get_reservation_charge_summary", {
+			folio_number: folio_number
+		}).then((result) => {
+			this.folio_summary = result.message
+		}).
+		catch((error) => {
+			throw new Error(error.exception || error.message)
+		})
+}
+
 
 	clear() {
 		this.loading = ref(false)

@@ -29,6 +29,13 @@
             </iframe>
 
         </TabPanel>
+        <TabPanel header="Folio">
+            <iframe style="height:500px;width: 100%;"
+                :src="folioUrl">
+
+            </iframe>
+
+        </TabPanel>
     </TabView>
 </template>
 <script setup>
@@ -54,6 +61,10 @@ const posMiscSaleUrl =  computed(() => {
 })
 const noteUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Guest%20Note&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    return url
+})
+const folioUrl =  computed(() => {
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Folio%20Transaction&no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en"
     return url
 })
 

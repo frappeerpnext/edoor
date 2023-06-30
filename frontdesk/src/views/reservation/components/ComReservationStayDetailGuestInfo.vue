@@ -37,7 +37,7 @@
     </div>
 </template>
 <script setup>
-import {ref, useDialog, inject, computed, toaster,updateDoc, useConfirm, getDoc} from '@/plugin'
+import {ref, useDialog, inject, computed, updateDoc, useConfirm, getDoc} from '@/plugin'
 import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
@@ -47,6 +47,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 
 const rs = inject('$reservation_stay');
+const gv = inject('$gv');
 
 const dialog = useDialog()
 const dialogConfirm = useConfirm()
@@ -189,7 +190,7 @@ function onAdvancedSearch(guest_type) {
             if(r.data){ 
                 socket.emit("RefresheDoorDashboard", property.name);
             
-                toaster('success', 'Updated Successful')
+                gv.toast('success', 'Updated Successful')
             }
         }
     });

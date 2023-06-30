@@ -1,7 +1,16 @@
 <template>
   <div class="min-h-folio-cus mt-3">
 
-    <Button label="Edit Rate" class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()" />
+    <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
+      <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
+      Edit Rate 
+      <template v-if="selectedRoomRates.length>0">
+        ({{selectedRoomRates.length  }})
+      </template>
+      <template v-if="selectedRoomRates.length0">
+        ({{selectedRoomRates.length  }})
+      </template>
+    </Button>
  
     <DataTable v-model:selection="selectedRoomRates" :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
@@ -18,39 +27,32 @@
           {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }}
         </template>
       </Column>
-      
-      <Column field="rate_type" header="Rate Type"></Column>
-        <Column field="rate" header="Rate" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="rate_type" header="Rate Type">
+        <template #body="{ data }">
+          <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
+        </template>
+      </Column>
+      <Column field="rate" header="Rate" bodyStyle="text-align:right" headerStyle="text-align:right">
           <template #body="{ data }">
-            <Button class="p-0 link_line_action1" link>
-            
-              <CurrencyFormat :value="data.rate" />
-              
-            </Button>
+            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.rate" class="p-0 link_line_action1"/>
           </template>
       </Column>
 
       <Column field="discount_amount" header="Disount Amount" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
-          <Button class="p-0 link_line_action1" link @click="onEditRoomRate(data)">
-            <CurrencyFormat :value="data.discount_amount" />
-          </Button>
+          <CurrencyFormat @click="onEditRoomRate(data)" :value="data.discount_amount" class="p-0 link_line_action1"/>
         </template>
       </Column>
 
       <Column field="total_tax" header="Total Tax" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
-          <Button class="p-0 link_line_action1" link>
-            <CurrencyFormat :value="data.total_tax" />
-          </Button>
+          <CurrencyFormat @click="onEditRoomRate(data)" :value="data.total_tax" class="p-0 link_line_action1"/>
         </template>
       </Column>
 
       <Column field="total_amount" header="Total Amount" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
-          <Button class="p-0 link_line_action1" link>
             <CurrencyFormat :value="data.total_rate" />
-          </Button>
         </template>
       </Column>
       <ColumnGroup type="footer">
@@ -117,6 +119,7 @@ getDocList('Reservation Room Rate', {
     field: 'date',
     order: 'asc',
   },
+  limit:1000
 })
   .then((doc) => {
     data.value = doc
@@ -126,19 +129,18 @@ getDocList('Reservation Room Rate', {
  
 
 function onEditRoomRate(room_rate = null) {
- 
-  const dialogRef = dialog.open(ComEditReservationRoomRate, {
+  if(room_rate){
+    const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
         selected_room_rate:room_rate,
-        selected_room_rates:selectedRoomRates.value,
-        reservation_stay:rs.reservationStay
+        reservation_stay:rs.reservationStay,
         },
       props: {
         header: 'Edit Room Rate ',
         style: {
           width: '50vw',
         },
-
+        position: "top",
         modal: true
       },
       onClose: (options) => {
@@ -150,6 +152,32 @@ function onEditRoomRate(room_rate = null) {
     }
 
     })
+  }else if(selectedRoomRates.value.length>0){
+    const dialogRef = dialog.open(ComEditReservationRoomRate, {
+      data: {
+        selected_room_rates:selectedRoomRates.value,
+        reservation_stay:rs.reservationStay
+        },
+      props: {
+        header: 'Edit Room Rate ',
+        style: {
+          width: '50vw',
+        },
+        position: "top",
+        modal: true
+      },
+      onClose: (options) => {
+        const result = options.data;
+        
+        if(result){
+            data.value = result
+        }
+    }
+
+    })
+  } else if (selectedRoomRates.value.length == 0){
+    alert('Please Select Field to Edit First')
+  }
 
 }
 

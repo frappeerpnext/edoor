@@ -1,4 +1,7 @@
 <template>
+    {{ rs.selectedFolio }}
+<ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
+    
     <DataTable v-model:selection="rs.selectedFolioTransactions"
         :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem">
         <Column selectionMode="multiple" headerStyle="width: 3rem" />
@@ -38,14 +41,13 @@
             </template>
         </Column>
         
-        <Column field="total_amount" header="Toal Amount" class="text-right">
+        <Column field="total_amount" header="Total Amount" class="text-right">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps.data.total_amount" class="white-space-nowrap" />
             </template>
         </Column>
         
-
-        <Column field="note" header="Note">
+        <Column field="note" header="Note" style="min-width: 160px;">
             <template #body="slotProps">
                 <div v-if="slotProps.data.note" v-tooltip.top="slotProps.data.note">
                     {{ slotProps.data.note.slice(0, 20) + (slotProps.data.note.length > 20 ? '...' : '') }}
@@ -54,22 +56,26 @@
         </Column>
         <Column field="owner" header="Made By"></Column>
         <Column field="creation" header="Created"></Column>
-        <Column>
-            <template #body="slotProps">
-                <Button class="border-none" v-if="slotProps.data.name" @click="onViewFolioDetail(slotProps.data)">Detail</Button>
-            </template>
-        </Column>
         <Column header="">
             <template #body="slotProps">
-                <button @click="onEditFolioTransaction(slotProps.data)"
-                    v-if="!slotProps.data.parent_reference">Edit</button>
-
-            </template>
-        </Column>
-        <Column header="">
-            <template #body="slotProps">
-                <button @click="onDeleteFolioTransaction(slotProps.data)"
-                    v-if="!slotProps.data.parent_reference">Delete</button>
+                <div class="flex items-center justify-end">
+                    <div class="res_btn_st">
+                        <Button class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded icon="pi pi-ellipsis-v" @click="toggle"></Button>
+                    </div>
+                    <Menu :model="menus" :popup="true" ref="show" style="min-width: 180px;">
+                        <template #end>
+                            <button v-if="slotProps.data.name" @click="onViewFolioDetail(slotProps.data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                Detail
+                            </button>
+                            <button @click="onEditFolioTransaction(slotProps.data)" v-if="!slotProps.data.parent_reference" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                Edit
+                            </button>
+                            <button @click="onDeleteFolioTransaction(slotProps.data)" v-if="!slotProps.data.parent_reference" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                Delete
+                            </button>
+                        </template>
+                    </Menu>
+                </div>
             </template>
         </Column>
         <ColumnGroup type="footer">
@@ -77,7 +83,7 @@
                 <Column footer="Total:" :colspan="4" footerStyle="text-align:right" />
                 <Column footerStyle="text-align:right">
                     <template #footer>
-                        <!-- <CurrencyFormat :value="getTotal('quantity')" /> -->
+                     
                        {{ getTotal('quantity')}}
                     </template>
                 </Column>
@@ -119,47 +125,58 @@
                 <Column/>
                 <Column/>
                 <Column/>
-                <Column/>
-                <Column/>
+                <!-- <Column/>
+                <Column/> -->
                
             </Row>
         </ColumnGroup>
 
     </DataTable>
-    
-    <div class="w-full flex justify-content-end">
+    <div class="w-full flex justify-content-end my-2">
         <div class="w-30rem">
-            <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Total Credit" :value="totalCredit" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
+            <div v-for="(item, index) in rs.folio_summary" :key="index" class="flex mt-2 gap-2">
+                <ComBoxStayInformation isCurrency :title="item.account_category" :value="item.amount" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
             </div>
             <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Total Debit" :value="totalDebit" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
+                <ComBoxStayInformation isCurrency title="Total Debit" :value="rs.totalDebit" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
             </div>
             <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Balance" :value="(totalDebit - totalCredit)" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
+                <ComBoxStayInformation isCurrency title="Total Credit" :value="rs.totalCredit" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
+                
+            </div>
+            <div class="flex mt-2 gap-2">
+                <ComBoxStayInformation isCurrency title="Balance" :value="(rs.totalDebit - rs.totalCredit)" valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold"></ComBoxStayInformation>
             </div>
         </div>  
     </div>
+</ComPlaceholder>
 </template>
 <script setup>
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-
+import ComReservationStayMoreButton from '@/views/reservation/components/ComReservationStayMoreButton.vue'
 
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, computed, useToast } from '@/plugin';
+import { inject, ref, computed, useToast,deleteApi } from '@/plugin';
 import ComNote from '@/components/form/ComNote.vue'
+import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+
 const frappe = inject('$frappe');
 
 const setting = JSON.parse( localStorage.getItem("edoor_setting"))
 
 const call = frappe.call();
 const dialog = useDialog();
+const show = ref()
 const confirm = useConfirm();
 const rs = inject('$reservation_stay');
 const moment = inject("$moment")
 const toast = useToast();
+
+const toggle = (event) => {
+    show.value.toggle(event)
+}
 
 const getTotal = ref((column_name) => {
     if (rs.folioTransactions?.filter(r => (r.parent_reference || '') == '').length == 0) {
@@ -171,23 +188,24 @@ const getTotal = ref((column_name) => {
 
 
 function onEditFolioTransaction(data) {
+  
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             folio_transaction_number: data.name
         },
         props: {
-            header: 'Edit Transaction - ' + data.account_code + ' - ' + data.account_name,
+            header: 'Edit Folio Transaction - ' + data.name,
             style: {
                 width: '50vw',
             },
-
             modal: true
         },
         onClose: (options) => {
             const data = options.data;
-
             if (data) {
-                rs.onLoadFolioTransaction(rs.selectedFolio.name)
+                rs.onLoadReservationFolios()
+                rs.onLoadFolioTransaction(rs.selectedFolio)
+                
             }
 
         }
@@ -209,12 +227,12 @@ function onDeleteFolioTransaction(doc) {
 
             if (data != undefined) {
                 rs.loading = false;
-                call
-                    .delete('edoor.api.utils.delete_doc', { doctype: "Folio Transaction", name: doc.name, note: data })
+                deleteApi('utils.delete_doc', { doctype: "Folio Transaction", name: doc.name, note: data })
                     .then((result) => {
-                        rs.onLoadFolioTransaction(rs.selectedFolio.name)
+                        rs.onLoadReservationFolios()
+                        rs.onLoadFolioTransaction(rs.selectedFolio)
                         rs.loading = false;
-                        toast.add({ severity: 'success', summary: "Delete Folio Transaction", detail: "Delete Folio Transaction successfully", life: 3000 })
+                        
                     }
                     )
 
@@ -226,29 +244,22 @@ function onDeleteFolioTransaction(doc) {
 
 }
 
-
-const totalCredit = computed(() => {
-    if (rs.folioTransactions) {
-
-        return rs.folioTransactions?.filter(r => r.type == 'Credit').reduce((n, d) => n + (d.amount || 0), 0)
-
-
-    }
-    return 0
-
-})
-
-const totalDebit = computed(() => {
-    if (rs.folioTransactions) {
-
-        return rs.folioTransactions?.filter(r => r.type == 'Debit').reduce((n, d) => n + (d.amount || 0), 0)
-
-
-    }
-    return 0
-
-})
-
-
+const onViewFolioDetail = (doc) => {
+ 
+ const dialogRef = dialog.open(ComFolioTransactionDetail, {
+     data:{
+         folio_transaction_number:doc.name
+     },
+     props: {
+         header: 'Folio Transaction Detail - ' + doc.name ,
+         style: {
+             width: '50vw',
+         },
+         modal: true
+     },
+    
+ });
+  
+}
 
 </script>

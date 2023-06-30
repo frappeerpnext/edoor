@@ -124,8 +124,6 @@ import socket from './utils/socketio';
 
 
 
-
-
 // use components //
 app.component('Button', Button);
 app.component('Menu', Menu);

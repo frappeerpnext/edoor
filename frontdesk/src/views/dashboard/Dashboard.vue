@@ -16,8 +16,8 @@
                 <NewFITReservationButton />
             </div>
             <div>
-                <Button label="New group booking" class="btn-date__tt btn-inner-set-icon border-none">
-                    <img v-tooltip.left="'New group booking'" :src="iconEdoorAddGroupBooking">
+                <Button v-tooltip.left="'New Group Booking'" label="New Group Booking" class="btn-date__tt btn-inner-set-icon border-none">
+                    <img class="mr-2" :src="iconEdoorAddGroupBooking">New Group Booking
                 </Button>
             </div>
         </div>

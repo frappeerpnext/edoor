@@ -4,27 +4,26 @@
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
             <div class="n__re-custom">
-                {{ selectedStay }}
                 <table class="w-full">
                     <thead>
                         <tr>
                             <th class="text-left pe-2 w-12rem">
-                                <label>Start Date<span class="text-red-500">*</span></label>
+                                <label>Start Date</label>
                             </th>
                             <th class="text-left px-2 w-14rem">
-                                <label>End Date<span class="text-red-500">*</span></label>
+                                <label>End Date</label>
                             </th>
                             <th class="text-left px-2">
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Name<span class="text-red-500">*</span></label>
+                                <label>Room Name</label>
                             </th>
                             <th class="text-center px-2 w-5rem">
                                 <label class="text-center">Nights</label>
                             </th>
                             <th class="text-right px-2">
-                                <label>Rate<span class="text-red-500">*</span></label>
+                                <label>Rate</label>
                             </th>
                             <th class="text-right ps-2">
                                 <label>Amount</label>
@@ -70,7 +69,7 @@
             </template>
         </ComReservationStayPanel>
         <OverlayPanel ref="op">
-            <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
+            <ComReservationStayChangeRate v-model="rate" @onClose="onCloseRate" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
         </OverlayPanel>
 
     </div>
@@ -96,8 +95,10 @@
         op.value.hide();
     }
     const onClose = () =>{
-        op.value.hide()
         dialogRef.value.close();
+    }
+    function onCloseRate(){
+        op.value.hide()
     }
     const onChangeRate = () => {
         selectedStay.value.rate = rate.value
@@ -117,10 +118,6 @@
     function onSave(){
         if(!selectedStay.value.room_type_id){
             gv.toast('warn','Please select room type.')
-            return
-        }
-        else if(!selectedStay.value.room_id){
-            gv.toast('warn','Please select room.')
             return
         }
         loading.value = true

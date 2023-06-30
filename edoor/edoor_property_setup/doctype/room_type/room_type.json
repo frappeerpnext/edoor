@@ -59,7 +59,8 @@
   {
    "fieldname": "alias",
    "fieldtype": "Data",
-   "label": "Alias"
+   "label": "Alias",
+   "reqd": 1
   },
   {
    "fieldname": "sort_order",
@@ -81,7 +82,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2023-06-01 09:49:04.542856",
+ "modified": "2023-06-29 11:27:03.326672",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

@@ -1,6 +1,5 @@
 import { inject } from "vue"
-import { FrappeApp } from 'frappe-js-sdk';
-import {toaster} from "../plugin/toast"
+import { FrappeApp } from 'frappe-js-sdk'; 
 const frappe = new FrappeApp();
 const db = frappe.db();
 
@@ -63,8 +62,7 @@ updateRoomStatus(room_name, status_name){
 		housekeeping_status: status_name,
 		})
 	.then((doc) => { 
-		this.loadData()
-		toaster('success','Updated Successful')
+		this.loadData() 
 	})
 	.catch((error) => console.error(error));
 }

@@ -1,5 +1,5 @@
 <template>
- 
+    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
     <DataTable  v-model:selection="rs.selectedFolioTransactions"  :value="rs.folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass">
         <Column selectionMode="multiple" headerStyle="width: 3rem">
             
@@ -40,12 +40,16 @@
             </template>
         </Column>
     </DataTable>
+    <ul>
+        <li v-for="(item, index) in rs.folio_summary" :key="index">{{item.account_category}} => {{item.amount}}</li>
+    </ul>
+    
     total_debit
     <CurrencyFormat :value="rs.totalDebit" /> 
     total credit:
     <CurrencyFormat :value="rs.totalCredit" /> balance:
     <CurrencyFormat :value="(rs.totalDebit - rs.totalCredit)" />
- 
+</ComPlaceholder> 
 </template>
 <script setup>
 

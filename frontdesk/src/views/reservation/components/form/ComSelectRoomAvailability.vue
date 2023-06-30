@@ -16,6 +16,7 @@
             default: false
         }
     })
+    const isWatchWork = ref(false)
     const moment = inject('$moment')
     const gv = inject('$gv')
     const data = ref([])
@@ -30,8 +31,11 @@
     })
     let roomId = ref(props.modelValue)
     watch(()=> [props.startDate,props.endDate], ([newStartDate,newEndDate],[oldStartDate,oldEndDate])=>{
-        if(newStartDate != oldStartDate || newEndDate != oldEndDate)
+        if(newStartDate != oldStartDate || newEndDate != oldEndDate){
+            isWatchWork.value = true
             getRoom(newStartDate, newEndDate)
+        }
+           
     })
     const getRoom = (start_date,end_date) => { 
         getApi("reservation.check_room_availability", {
@@ -42,6 +46,9 @@
         .then((result) => { 
             data.value = result.message; 
         })
+    }
+    if(!isWatchWork.value && props.startDate && props.endDate){
+        getRoom(property.name, props.startDate, props.endDate, props.rateType,props.businessSource)
     }
     function onSelect(p){
         const selected = data.value.find((r)=>r.name == p.value)

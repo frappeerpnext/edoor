@@ -28,7 +28,7 @@
     <ComReservationStayPanel title="Room Rate Summary">
         <template #content>
             <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Room Rate" :value="rs?.reservationStay?.room_rate" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
+              <ComBoxStayInformation titleTooltip="Average Daily Rate" isCurrency title="ADR" :value="rs?.reservationStay?.adr" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
             </div>
           <div class="flex mt-2 gap-2">
               <ComBoxStayInformation isCurrency title="Discount" :value="rs?.reservationStay?.room_rate_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
@@ -40,9 +40,9 @@
               <OverlayPanel ref="opTax">
                 <div class="table-order-tax">
                 <table>
-                        <tr v-if="rs?.reservation?.room_rate_tax_1_amount" ><td class='p-2'>Tax-1 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_1_amount"/> </td></tr>
-                        <tr v-if="rs?.reservation?.room_rate_tax_2_amount" class='border-top-1 '><td class='p-2'>Tax-2 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_2_amount"/> </td></tr>
-                        <tr v-if="rs?.reservation?.room_rate_tax_3_amount" class='border-top-1 '><td class='p-2'>Tax-3 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_3_amount"/> </td></tr>
+                        <tr v-if="rs?.reservationStay?.room_rate_tax_1_amount" ><td class='p-2'>Tax-1 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservationStay?.room_rate_tax_1_amount"/> </td></tr>
+                        <tr v-if="rs?.reservationStay?.room_rate_tax_2_amount" class='border-top-1 '><td class='p-2'>Tax-2 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservationStay?.room_rate_tax_2_amount"/> </td></tr>
+                        <tr v-if="rs?.reservationStay?.room_rate_tax_3_amount" class='border-top-1 '><td class='p-2'>Tax-3 : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservationStay?.room_rate_tax_3_amount"/> </td></tr>
                 </table>    
                 </div>
                 </OverlayPanel>

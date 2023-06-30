@@ -194,6 +194,7 @@
    "label": "Is Manual Rate"
   },
   {
+   "fetch_from": "reservation.business_source",
    "fieldname": "business_source",
    "fieldtype": "Link",
    "label": "Business Source",
@@ -279,7 +280,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-24 14:21:38.532594",
+ "modified": "2023-06-29 10:27:08.781549",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

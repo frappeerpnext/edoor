@@ -830,3 +830,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     color: #696cff;
     margin: 1rem 1rem;
 }
+.fol-summary-tol .box-input{
+    width: 150px;
+}

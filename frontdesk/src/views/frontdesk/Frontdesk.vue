@@ -1,6 +1,6 @@
 <template lang="">
     <div>
-        <ComHeader>
+        <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
@@ -15,7 +15,7 @@
                 <div class="flex gap-2 justify-content-end">
                     <NewFITReservationButton/>
                     <Button v-tooltip.left="'New Group Booking'" @click="groupReservation" label="New group booking" class="btn-date__tt btn-inner-set-icon border-none cursor-pointer">
-                        <img :src="iconEdoorAddGroupBooking">
+                        <img class="mr-2" :src="iconEdoorAddGroupBooking">New Group Booking
                     </Button>
                 </div>
             </template>
@@ -80,8 +80,8 @@
   </template>
 <script setup>
 import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, computed } from '@/plugin'
-import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
+import '@fullcalendar/core/vdom' // solves problem with Vite
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin from '@fullcalendar/interaction'
 
@@ -107,6 +107,7 @@ const filter = reactive({
 })
 const titleStartEndDate = reactive({})
 const fullCalendar = ref(null)
+const gv = inject("$gv")
 
 const toast = useToast();
 const dialog = useDialog();
@@ -122,7 +123,6 @@ const showSummary = ref(true)
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
-
 
 let eventInfo = reactive({
     isShow: false,
@@ -154,7 +154,11 @@ function dateFormat(date) {
 }
 
 const calendarOptions = reactive({
-    plugins: [interactionPlugin, resourceTimelinePlugin],
+    plugins: [
+        interactionPlugin,
+        resourceTimelinePlugin
+        
+    ],
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     timeZone: 'UTC',
     initialView: 'resourceTimeline',
@@ -166,6 +170,9 @@ const calendarOptions = reactive({
     stickyHeaderDates: true,
     headerToolbar: false,
     refetchResourcesOnNavigate: true,
+    loading: function(loading) {
+        gv.loading = loading
+    },
     visibleRange: function (currentDate) {
         const startDate = initialDate.start
         const endDate = initialDate.end
@@ -538,11 +545,8 @@ const onRefresh = () => {
     const cal = fullCalendar.value.getApi()
     cal.refetchEvents()
     // cal.setOption({now:"2023-05-18"})
+ 
 }
-//   function onOrder(){
-//     const cal = fullCalendar.value.getApi()
-//     cal.setOption('resourceOrder', '-sort_order')
-//   }
  
 function showReservationStayDetail(name) {
 
@@ -557,7 +561,8 @@ function showReservationStayDetail(name) {
             },
             maximizable: true,
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position:"top"
         },
         onClose: (options) => {
             const data = options.data;

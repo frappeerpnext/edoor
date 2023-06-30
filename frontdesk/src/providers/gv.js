@@ -3,8 +3,8 @@ import NumberFormat from 'number-format.js'
 import moment from "../utils/moment.js";
 export default class Gv {
 	constructor() {
-		this.setting = {},
-		this.countries = [],
+		this.setting = {}
+		this.countries = []
 		this.loading = false 
 		this.cashier_shift={}		
 	}
@@ -14,26 +14,19 @@ export default class Gv {
 		console.log(frappe)
 	}
 	showErrorMessage(error){ 
-		let exception = error.exception
-		
-
-		const replace_text = [
-			{text:"frappe.exceptions.ValidationError:",value:""},
-			{text:"frappe.exceptions.MandatoryError:",value:"Value required for "},
-			{text:"ValueError:",value:"Invalid data input. "},
-			{text:"frappe.exceptions.PermissionError: ",value:""},
-			
-			{text:"_",value:" "},
-		]
-		let message=exception
-		if(exception){
-			replace_text.forEach(t => {
-				message =message.replaceAll(t.text,t.value) 	
-
+	 
+		const _server_messages = JSON.parse(error._server_messages)
+ 
+		if (_server_messages){
+			let messages = []
+			_server_messages.forEach(r => {
+				messages.push(JSON.parse(r).message)
 			});
 			
+			const message = messages.join("<br/>")
+			window.postMessage('show_alert|' + message, '*')
 		}
-		window.postMessage('show_alert|' + message, '*')
+		
 		
 		
 		
