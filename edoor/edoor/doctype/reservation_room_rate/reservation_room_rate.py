@@ -24,7 +24,7 @@ class ReservationRoomRate(Document):
 			self.discount_amount = self.discount or 0 
 		self.discount = self.discount or 0
 
-		if self.discount_amount> self.input_rate:
+		if (self.discount_amount or 0) > (self.input_rate or 0):
 			frappe.throw("Discount amount cannot greater than amount")
 
 
@@ -33,11 +33,11 @@ class ReservationRoomRate(Document):
 			self.tax_1_account = tax_rule.tax_1_account
 			self.tax_2_account = tax_rule.tax_2_account
 			self.tax_3_account = tax_rule.tax_3_account
-			if self.rate_include_tax== "Yes":
+			if self.rate_include_tax== "Yes" and (self.tax_1_rate + self.tax_2_rate + self.tax_3_rate) > 0:
 				
-				price = get_base_rate(self.input_rate - self.discount_amount ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
+				price = get_base_rate((self.input_rate or 0) - (self.discount_amount or 0),tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
 
-				self.rate = price
+				self.rate = price + (self.discount_amount or 0)
  
 			else:
 				self.rate = self.rate
@@ -45,17 +45,17 @@ class ReservationRoomRate(Document):
 			#tax 1
 			self.taxable_amount_1 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
 			
-			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 or self.rate_include_tax== "Yes"   else self.taxable_amount_1 - self.discount_amount
+			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 and self.rate_include_tax== "No"   else self.taxable_amount_1 - self.discount_amount
 
 			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
 			#tax 2
 			self.taxable_amount_2 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
-			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  or self.rate_include_tax== "Yes"  else self.taxable_amount_2 - self.discount_amount
+			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax== "No"  else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
 			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
 			#tax 3
 			self.taxable_amount_3 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
-			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0 or self.rate_include_tax== "Yes"  else self.taxable_amount_3 - self.discount_amount
+			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0 and  self.rate_include_tax== "No"  else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
 			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
@@ -75,7 +75,7 @@ class ReservationRoomRate(Document):
 			self.total_tax = 0
 
 		self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
-		self.total_rate = (self.rate or 0) - (0 if self.rate_include_tax =="Yes" else (self.discount_amount or 0)) + (self.total_tax or 0)  
+		self.total_rate = (self.rate or 0) - (self.discount_amount or 0) + self.total_tax
 
 
 

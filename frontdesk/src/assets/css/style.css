@@ -315,8 +315,6 @@ button.p-button.btn-date__t:hover {
 }
 
 .p-tabview-nav-content .p-tabview-nav {
-    /* background-color: var(--bg-tb-color); */
-    /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,eaf0f5+100 */
 background: #ffffff; /* Old browsers */
 background: -moz-linear-gradient(top,  #ffffff 0%, #eaf0f5 100%); /* FF3.6-15 */
 background: -webkit-linear-gradient(top,  #ffffff 0%,#eaf0f5 100%); /* Chrome10-25,Safari5.1-6 */
@@ -393,7 +391,6 @@ label {
 .n__re-custom button.p-button {
     padding-top: unset !important;
     padding-bottom: unset !important;
-    height: 36.5px;
 }
 
 
@@ -593,18 +590,36 @@ span.p-button-icon.pi.pi-ellipsis-h {
     padding-bottom: 0 !important;
 }
 .fc-timeline-event-harness{
-    top: 2px !important;
+    margin-top: 2px;
 }
+
 .fc-event[href], .fc-event.fc-event-draggable{
     border-radius: 1.5rem !important;
     height: 2.5rem;
 }
 @-moz-document url-prefix() {
     .fc-event[href], .fc-event.fc-event-draggable{
-        height: 2.4rem;
+        height: 2.5rem;
+    }
+    .btn-set__h input, 
+    .btn-set__h button,
+    .btn-set__h,
+    .p-calendar.p-component input,
+    .p-inputnumber.p-component input,
+    .p-inputnumber.p-component .p-inputnumber-button-group,
+    .p-autocomplete-input.p-inputtext.p-component,
+    .p-inputtext.p-component.p-inputtext-sm{
+        height: 37px;
+    }
+    .n__re-custom button.p-button {
+        padding-top: unset !important;
+        padding-bottom: unset !important;
+        height: 37px;
     }
 }
 /* END Full calenda css */
+
+
 .cs-badge-tran .p-badge.p-badge-warning{
     font-size: 0.7rem;
     min-width: 1rem;
@@ -772,7 +787,23 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#7d7d7d',GradientType=1 ); /* IE6-9 */
 }
 .min-h-folio-cus{
-    min-height: 30rem;
+    /* min-height: 30rem; */
+    min-height: calc(100vh - 247px);
+}
+.p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
+    padding-bottom: 61px;
+}
+
+.p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
+    max-height: calc(100vh - 89px) !important;
+}
+.p-dialog .footer-fixed{
+    background-color: #FFF;
+    height: 49px;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: 2;
 }
 .folio-is-mater-icon{
     margin-top: -4px;
@@ -796,14 +827,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .filter-calen-fro .mr-2.relative{
     height: 36px;
 }
-.btn-set__h input, 
-.btn-set__h button,
-.btn-set__h,
-.p-calendar.p-component input,
-.p-inputnumber.p-component input,
-.p-inputnumber.p-component .p-inputnumber-button-group{
-    height: 36.5px;
-}
+
 .das-calendar.p-calendar.p-component input{
     height: unset !important;
 }
@@ -832,4 +856,15 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 .fol-summary-tol .box-input{
     width: 150px;
+}
+
+.active_row_hk{
+    border: 2px solid #0088ff59 !important;
+    color:#0088ff !important;
+}
+
+.tax-info-btn{
+    height: 1.5rem !important;
+    width: 1.5rem !important;
+    padding: 9px  !important;
 }

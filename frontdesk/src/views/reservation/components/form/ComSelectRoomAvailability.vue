@@ -20,16 +20,35 @@
     const moment = inject('$moment')
     const gv = inject('$gv')
     const data = ref([])
+    let roomId = ref(props.modelValue)
     const options = computed(()=>{
+        const tempData = ref(data.value)
         if(props.roomType){
             if(props.except){
-                data.value = data.value.filter((r)=>r.name != props.except)
+                const excepts = props.except.split(',')
+                if(excepts.length > 0){
+                    excepts.forEach((ex)=>{
+                        tempData.value = tempData.value.filter((r)=>r.name != ex || r.name == roomId.value)
+                    })
+                    
+                }
             }
-            return data.value.filter((r)=>r.room_type_id == props.roomType) 
+            
+            return tempData.value.filter((r)=>r.room_type_id == props.roomType) 
         }
         return []
     })
-    let roomId = ref(props.modelValue)
+ 
+    watch(()=> [props.roomType], ([newValue],[oldValue])=>{
+        console.log(newValue)
+        console.log(oldValue)
+        if(newValue != oldValue){
+            roomId.value = null
+            emit('update:modelValue', null)
+            emit('onSelected', {})
+        }
+           
+    })
     watch(()=> [props.startDate,props.endDate], ([newStartDate,newEndDate],[oldStartDate,oldEndDate])=>{
         if(newStartDate != oldStartDate || newEndDate != oldEndDate){
             isWatchWork.value = true

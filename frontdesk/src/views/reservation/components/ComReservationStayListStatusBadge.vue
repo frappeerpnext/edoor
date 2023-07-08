@@ -21,7 +21,7 @@ if(setting && setting.reservation_status.length > 0 && rs && rs.reservation){
     setting.reservation_status.forEach(r => {
         let obj = {name: r.reservation_status, color: r.color, total: 0, sort: 0}
         if(r.reservation_status == 'Reserved'){
-            obj.total = rs.reservation.reserved
+            obj.total = rs.reservation.total_active_reservation_stay - (rs.reservation.total_checked_out + rs.reservation.total_checked_in)
             obj.sort = 1
             lists.value.push(obj)
         }

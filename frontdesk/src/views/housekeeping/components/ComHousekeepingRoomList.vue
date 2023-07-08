@@ -12,11 +12,11 @@
                 </template>
             </Column>
             <Column field="room_type" header="Room Type"></Column>
-
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
+                    
                     <Button class="color-purple-edoor" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
-                        {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
+                        <span class="link_line_action">{{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}</span>
                     </Button>
                 </template>
             </Column>
@@ -35,19 +35,14 @@
                     doctype="Housekeeper" />
             </ComOverlayPanelContent>
         </OverlayPanel>
-
-
-
-
         <Column field="housekeeping_status" header="Status" class="text-left">
-
             <template #body="slotProps">
                 <!-- <Tag :value="slotProps.data.housekeeping_status" :style="{ background: slotProps.data.status_color }"></Tag>  -->
                 <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data" />
             </template>
         </Column>
         <div class="hkpanel">
-        <Sidebar :dismissable="false" v-model:visible="visibleRight" position="right"  :maskStyle="{ pointerEvents: 'none' }">
+        <Sidebar :dismissable="false" class="top-20 -mt-1 w-3" v-model:visible="visibleRight" position="right" @hide="SidebarClose" >
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
         </Sidebar>
         </div>
@@ -98,10 +93,30 @@ function onSaveAssignHousekeeper() {
         loading.value = false
     })
 }
+
+function SidebarClose() {
+    const elements_row_hk = document.querySelectorAll('.active_row_hk');
+    elements_row_hk.forEach(elements_row_hk => {
+                elements_row_hk.classList.remove('active_row_hk');
+        });
+    }
 function onRowSelect(r) {   
-    console.log(r)
+    console.log(r)    
+    const elements_row_hk = document.querySelectorAll('.active_row_hk');
+    if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
+        visibleRight.value = false;
+        r.originalEvent.currentTarget.classList.remove('active_row_hk');
+    } else {
+        elements_row_hk.forEach(elements_row_hk => {
+            if (elements_row_hk !== r.originalEvent.currentTarget) {
+                elements_row_hk.classList.remove('active_row_hk');
+            }
+        });
+        visibleRight.value = true
+        r.originalEvent.currentTarget.classList.add('active_row_hk');
+    }
+
     hk.selectedRow = r.data
-    visibleRight.value = true
     if(hk.selectedRow.reservation_stay){
         db.getDoc('Reservation Stay', hk.selectedRow.reservation_stay)
         .then((doc) => {

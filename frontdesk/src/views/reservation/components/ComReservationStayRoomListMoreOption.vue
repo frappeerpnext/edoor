@@ -9,7 +9,7 @@
                         <button @click="onChangeStay" v-if="moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Change Stay
                         </button>
-                        <button @click="onUnassignRoom" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day) && data.room_id" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
                         </button>
                         <button @click="openNote = true" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
@@ -26,6 +26,7 @@ import {ref,inject, useDialog, deleteApi, useConfirm, updateDoc} from '@/plugin'
 import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
 import ComNote from '@/components/form/ComNote.vue';
 const rs = inject('$reservation_stay')
+const socket = inject('$socket')
 const moment = inject('$moment')
 const dialogConfirm = useConfirm()
 const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
@@ -60,6 +61,7 @@ function onDeleted(note){
             loading.value = false
             openNote.value = false
             rs.getReservationDetail(props.data.parent)
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
         }
     }).catch((r)=>{
         loading.value = false
@@ -109,6 +111,7 @@ function onUnassignRoom(){
             data.update_room_occupy = true
             updateDoc('Reservation Stay',data.name,data).then((r)=>{
                 rs.reservationStay = r
+                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 loading.value = false
             }).catch(()=>{
                 loading.value = false

@@ -11,6 +11,8 @@
  "field_order": [
   "reference_doctype",
   "reference_name",
+  "reservation",
+  "reservation_stay",
   "content"
  ],
  "fields": [
@@ -28,11 +30,21 @@
    "fieldname": "reference_doctype",
    "fieldtype": "Data",
    "label": "Reference Doctype"
+  },
+  {
+   "fieldname": "reservation",
+   "fieldtype": "Data",
+   "label": "Reservation"
+  },
+  {
+   "fieldname": "reservation_stay",
+   "fieldtype": "Data",
+   "label": "Reservation Stay"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-08 16:45:24.545683",
+ "modified": "2023-07-03 16:23:29.642153",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Frontdesk Note",

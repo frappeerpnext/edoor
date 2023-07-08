@@ -40,13 +40,23 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(selectedStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-16rem">  
-                                <ComSelectRoomTypeAvailability v-model="selectedStay.room_type_id" @onSelected="onSelectRoomType" :start-date="selectedStay.start_date" :end-date="selectedStay.end_date"/>
+                                <ComSelectRoomTypeAvailability 
+                                    v-model="selectedStay.room_type_id"
+                                    @onSelected="onSelectRoomType"
+                                    :rate-type="rs.reservationStay.rate_type"
+                                    :businessSource="rs.reservationStay.business_source"
+                                    :start-date="selectedStay.start_date"
+                                    :end-date="selectedStay.end_date"/>
                             </td>
                             <td class="px-2 w-8rem"> 
-                                <ComSelectRoomAvailability v-model="selectedStay.room_id" :start-date="selectedStay.start_date" :end-date="selectedStay.end_date" :roomType="selectedStay.room_type_id" />
+                                <ComSelectRoomAvailability 
+                                    v-model="selectedStay.room_id"
+                                    :start-date="selectedStay.start_date"
+                                    :end-date="selectedStay.end_date"
+                                    :roomType="selectedStay.room_type_id" />
                             </td>
                             <td class="text-center px-2 w-5rem"> 
-                                {{ selectedStay.room_nights }}
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
                             </td>
                             <td class="text-right px-2 w-10rem">
                                 <span class="white-space-nowrap">

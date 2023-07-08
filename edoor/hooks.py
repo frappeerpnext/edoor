@@ -108,6 +108,21 @@ doc_events = {
             "edoor.api.utils.update_deleted_document"
 		]
 	},
+    "Reservation Folio":{
+        "after_insert":[
+            "edoor.api.utils.update_insert_document"
+		]
+	},
+    "Folio Transaction":{
+        "after_insert":[
+            "edoor.api.utils.update_insert_document"
+		]
+	},
+    "Reservation Room Rate":{
+        "after_insert":[
+            "edoor.api.utils.update_insert_document"
+		]
+	},
 	"*": {
 		"on_update": [
             "edoor.api.utils.update_keyword",

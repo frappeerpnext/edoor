@@ -1,6 +1,10 @@
 <template>
-    <Button label=" Change Housekeeping Status" severity="warning" @click="onChangeHousekeepingStatus" />
-
+    <Button label=" Change Housekeeping Status" class="p-button p-component conten-btn " severity="warning" @click="onChangeHousekeepingStatus" >
+        Change Housekeeping Status 
+        <span v-if="hk.selectedRooms.length > 0">
+            ({{ hk.selectedRooms.length }}) 
+        </span>
+    </Button>
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
         :style="{ width: '30vw' }">
         <div>
@@ -13,7 +17,12 @@
         </template>
     </Dialog>
 
-    <Button label="Assign Housekeeper" severity="waring" @click="AssingnHousekeeper" />
+    <Button label="Assign Housekeeper" class="p-button p-component conten-btn border-r-orange-300" @click="AssingnHousekeeper" >
+        Assign Housekeeper
+        <span v-if="hk.selectedRooms.length > 0">
+            ({{ hk.selectedRooms.length }}) 
+        </span>
+    </Button>
 
     <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }">
         <div>

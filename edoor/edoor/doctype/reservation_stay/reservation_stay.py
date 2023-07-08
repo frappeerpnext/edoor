@@ -3,7 +3,7 @@
 
 from datetime import datetime
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import get_date_range
+from edoor.api.utils import get_date_range,get_room_rate, update_reservation_stay
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now
@@ -12,11 +12,12 @@ from edoor.api.utils import update_reservation, update_reservation_color
  
 class ReservationStay(Document):
 	def  validate(self):
+		
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
 		if self.departure_date<=self.arrival_date:
-			frappe.throw("Departure date cannot less than or equal to arrival date : stay")
+			frappe.throw("Departure date cannot less than or equal to arrival date")
 
 		working_day = get_working_day(self.property)
 		if not working_day:
@@ -29,6 +30,13 @@ class ReservationStay(Document):
 				self.working_day = working_day["name"]
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
+
+		#check reservation status if allow to edit
+		#check with old doc
+		if not self.is_new():
+			old_doc = frappe.get_doc("Reservation Stay", self.name)
+			if frappe.db.get_value("Reservation Status",old_doc.reservation_status, "allow_user_to_edit_information")==0:
+				frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
 		
 		#validate select uniue guest in additional guest
 		master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
@@ -46,7 +54,7 @@ class ReservationStay(Document):
 
 
 
-		self.pax = self.adult + self.child
+		self.pax = self.adult + self.child 	
 		if self.stays:
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays])
 			self.room_types = ','.join([d.room_type for d in self.stays])
@@ -108,15 +116,19 @@ class ReservationStay(Document):
 
 	def after_insert(self):
 		generate_room_rate(self)
-		#generate_room_occupy_and_rate(self)
-		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self=self)
-
+		generate_room_occupy(self)
+		update_reservation(name=self.reservation)
 	def on_update(self):
-		if  hasattr(self,"update_reservation_stay") and self.update_reservation_stay:
-			update_reservation(self.reservation)
-			update_reservation_color(self)
-		if hasattr(self, "update_room_occupy") and self.update_room_occupy:
+		# this block code has been lost
+		# this is comment note
+		if hasattr(self, 'update_reservation') and self.update_reservation:
+			update_reservation(name=self.reservation)
+		if hasattr(self, 'update_room_occupy') and self.update_room_occupy:
 			change_room_occupy(self)
+			generate_room_rate(self)
+		if hasattr(self, 'update_reservation_stay') and self.update_reservation_stay:
+			update_reservation_stay(name=self.name)
+
 
 def update_note(self):
 	self.note_by = frappe.session.user
@@ -166,32 +178,67 @@ def generate_room_occupy(self):
 				"pax":self.pax
 			}).insert()
 
-def generate_room_rate(self):		
-	dates = get_date_range(self.arrival_date, self.departure_date)
-	for stay in self.stays: 
+def generate_room_rate(self): 
+	date_avaliables = ""
+	self.update_room_rate = False
+	for stay in self.stays:
+		start_date = datetime.strptime(str(stay.start_date), '%Y-%m-%d')
+		end_date = datetime.strptime(str(stay.end_date), '%Y-%m-%d')
+		dates = get_date_range(start_date=start_date, end_date=end_date)
+ 
 		for d in dates:
-			#generate room to reservation room rate
-			frappe.get_doc({
-				"doctype":"Reservation Room Rate",
-				"reservation":self.reservation,
-				"reservation_stay":self.name,
-
-				"stay_room_id":stay.name,
-				"room_type_id":stay.room_type_id,
-				"room_id":stay.room_id,
-				"date":d,
-				"rate":stay.rate,
-				"rate_type":self.rate_type,
-				"is_manual_rate":stay.is_manual_rate,
-				"property":self.property
-			}).insert()
+			date_avaliables = date_avaliables + ("'{}',".format(d.strftime("%Y-%m-%d")))
+			# validate room old rate update only new rate
+			room_rate = frappe.db.count("Reservation Room Rate", filters={'reservation_stay':self.name,'date':d})
+			input_rate = stay.rate
+			is_manual_rate = stay.is_manual_rate
+			if hasattr(self, 'is_override_rate') and self.is_override_rate:
+				input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
+				is_manual_rate = False
+			if room_rate == 0:
+				#generate room to reservation room rate
+				frappe.get_doc({
+					"doctype":"Reservation Room Rate",
+					"reservation":self.reservation,
+					"reservation_stay":self.name,
+					"tax_rule":self.tax_rule,
+					"rate_include_tax":self.rate_include_tax or "No",
+					"tax_1_rate":self.tax_1_rate,
+					"tax_2_rate":self.tax_2_rate,
+					"tax_3_rate":self.tax_3_rate,
+					"stay_room_id":stay.name,
+					"room_type_id":stay.room_type_id,
+					"room_id":stay.room_id,
+					"date":d,
+					"input_rate": input_rate,
+					"rate_type":self.rate_type,
+					"is_manual_rate":is_manual_rate,
+					"property":self.property
+				}).insert()
+			else:
+				# avaliable room rate
+				old_room_rate = frappe.get_list("Reservation Room Rate", filters={'reservation_stay':self.name,'date':d})
+				old_rate = frappe.get_doc('Reservation Room Rate',old_room_rate[0].name)
+				old_rate.room_type_id = stay.room_type_id
+				old_rate.room_id = stay.room_id
+				old_rate.room_number = stay.room_number
+				old_rate.input_rate = stay.rate
+				old_rate.save()
+				frappe.db.commit()
+ 
+	# remove old rate
+	sql = "SELECT `name` FROM `tabReservation Room Rate` WHERE `date` NOT IN({}) AND reservation_stay = '{}'".format(date_avaliables[:-1], self.name)
+	deleted_old_rates = frappe.db.sql(sql,as_dict=1)
+	if len(deleted_old_rates) > 0:
+		for d in deleted_old_rates:
+			frappe.delete_doc('Reservation Room Rate', d.name)
 
 def change_room_occupy(self):
 	self.update_room_occupy = False
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
-	frappe.db.commit()
+	
 	if not self.reservation_status in ['Void','No Show','Cancelled']:
 		doc = frappe.get_doc('Reservation Stay', self.name)
 		doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())

@@ -21,7 +21,7 @@
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro">
-            <ComRoomChartFilterSelect>
+            <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
                 <template #date>
                     <Calendar class="btn-set__h" panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-MM-yy" @date-select="onFilterDate" showButtonBar showIcon />
                 </template>
@@ -38,7 +38,7 @@
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
                                     <div>
-                                        <ComTodaySummary/>
+                                        <ComTodaySummary :date="filter.date"/>
                                     </div>
                                 </ComPanel>
                                 <ComPanel title="Room Status" class="pb-3 mb-3 front-house__kep">
@@ -132,10 +132,10 @@ let eventInfo = reactive({
 })
 let roomChartResourceFilter = reactive({
     property: property.name,
-    room_type: "room_type",
-    building: "building",
     view_type: filter.view_type // room_type = true or room = false
 })
+
+let eventKeyword = ref()
 
 socket.on("RefresheDoorDashboard", (arg) => {
     
@@ -179,8 +179,8 @@ const calendarOptions = reactive({
         return { start: startDate, end: endDate };
     },
     resourceAreaColumns: resourceColumn(),
+     
     resources: function (info, successCallback, failureCallback) {
-
         call.get('edoor.api.frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
             successCallback(result.message)
         }).catch((error) => {
@@ -193,8 +193,7 @@ const calendarOptions = reactive({
             start: info.start,
             end: info.end,
             property: property.name,
-            room_type: "room_type",
-            building: "building"
+            keyword: eventKeyword.value,
         }).then((result) => {
             successCallback(result.message)
         })
@@ -590,7 +589,8 @@ function showReservationDetail(name) {
             },
             maximizable: true,
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position:"top"
         },
         onClose: (options) => {
             const data = options.data;
@@ -601,40 +601,41 @@ function showReservationDetail(name) {
     });
 }
 
+
+
+/// filter rescource
+function onFilterResource(f){
+    console.log(f)
+    roomChartResourceFilter = {
+        property: property.name,
+        room_type_group: f.room_type_group,
+        room_type: f.room_type,
+        building: f.building,
+        floor: f.floor,
+        room_number:f.room_number,
+        view_type: filter.view_type // room_type = true or room = false
+    }
+    const cal = fullCalendar.value.getApi()
+    cal.refetchResources()
+}
+// search event
+function onSearch(key){
+    eventKeyword.value = key 
+    onRefresh()
+    // cal.setOption({now:"2023-05-18"})
+ 
+}
+
 onMounted(() => {
-
-
-
-    
-    // call.get("edoor.api.frontdesk.get_working_day", {
-    //       property: property.name
-    //   }).then((result) => {
-
-    //     working_day.value = result.message
-    //     fullCalendar.value.getApi().gotoDate(working_day.value.date_working_day);
-    //     //fullCalendar.value.getApi().setOption("now",working_day.value.date_working_day);
-
-
-    //   })
+ 
     onInitialDate()
-
  
-    // var fcResource = document.getElementsByClassName('fc-resource')
+ 
     var list = document.getElementsByClassName("fc-resource")
-    console.log(list[0])
-    // for (var i = 0; i < fcResource.length; i++) {
-    //     var me = fcResource[i];
-    //     console.log(me.offsetTop);
-    // }
-        // console.log(cellHeight.offsetHeight)
-        //info.el.style.height = `${cellHeight}px`
-
-        // document.querySelector(".fc-timeline-event").style.height = `${cellHeight}px`;
- 
+    
 })
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
-    socket.disconnect()
 })
 
 

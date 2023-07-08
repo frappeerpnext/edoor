@@ -17,6 +17,7 @@
   "column_break_7",
   "room_type_id",
   "room_type",
+  "room_type_alias",
   "room_id",
   "room_number",
   "column_break_12",
@@ -276,11 +277,17 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Rate"
+  },
+  {
+   "fetch_from": "room_type_id.alias",
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-29 10:27:08.781549",
+ "modified": "2023-06-30 12:21:48.888119",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

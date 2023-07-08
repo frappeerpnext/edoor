@@ -29,8 +29,12 @@
                         </tbody>
                     </table>
                 </div>
+                <ComAuditTrailDetailChangedRow v-else-if="data.row_changed" :data="data"/>
                 <div v-if="list">
                     <ComAuditTrailDetailDeletedDoc :data="list"/>
+                </div>
+                <div v-if="data.comment_type == 'Created'" class="created">
+                    <ComAuditTrailDetailCreatedDoc :data="data"/>
                 </div>
             </div>
         </ComPlaceholder>
@@ -40,6 +44,8 @@
 import {ref, getDoc} from '@/plugin'
 import ComAuditTrailDetailAddRemoveRow from './ComAuditTrailDetailAddRemoveRow.vue';
 import ComAuditTrailDetailDeletedDoc from './ComAuditTrailDetailDeletedDoc.vue';
+import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
+import ComAuditTrailDetailChangedRow from './ComAuditTrailDetailChangedRow.vue';
 const emit = defineEmits('onClose')
 const props = defineProps({
     data: Object

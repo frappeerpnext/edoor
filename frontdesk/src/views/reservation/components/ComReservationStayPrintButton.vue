@@ -5,7 +5,7 @@
 import { useToast } from "primevue/usetoast";
 import { ref, inject, useDialog, onMounted } from "@/plugin";
 import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
-import ComPrintReservationStay from "./ComPrintReservationStay.vue";
+import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const dialog = useDialog();
 

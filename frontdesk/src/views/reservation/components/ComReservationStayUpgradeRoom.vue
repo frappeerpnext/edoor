@@ -97,7 +97,7 @@
                                 <Calendar showIcon v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-16rem"> 
-                                <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :start-date="newRoom.start_date" :end-date="newRoom.end_date"/>
+                                <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :businessSource="rs.reservationStay.business_source" :rate-type="rs.reservationStay.rate_type" :start-date="newRoom.start_date" :end-date="newRoom.end_date"/>
                             </td>
                             <td class="px-2 w-8rem">
                                 <ComSelectRoomAvailability showClear v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
@@ -142,6 +142,7 @@
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
+    const socket = inject('$socket')
     const dialogRef = inject('dialogRef'); 
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
     lastStay.value.end_date = new Date(lastStay.value.end_date)
@@ -182,6 +183,7 @@
 
     const onUseRatePlan = () => {
         newRoom.value.is_manual_rate = false;
+        newRoom.value.rate = newRoom.value.original_rate
         op.value.hide();
     }
     const onClose = () =>{
@@ -202,7 +204,9 @@
     }
 
     const onSelectRoomType = (r) => {
-        newRoom.value.rate = r.rate
+        if (!newRoom.value.is_manual_rate)
+            newRoom.value.rate = r.rate
+        newRoom.value.original_rate = r.rate
         rate.value = r.rate
     }
     function onSave(){
@@ -227,9 +231,11 @@
         data.reservationStay.stays.push(newData)
         data.reservationStay.update_room_occupy = true
         data.reservationStay.update_reservation_stay = true
+        data.reservationStay.update_reservation = true
         updateDoc('Reservation Stay', data.reservationStay.name,data.reservationStay).then((r)=>{
             loading.value = false
             rs.getReservationDetail(data.reservationStay.name)
+            socket.emit("RefreshReservationDetail", data.reservationStay.reservation);
             onClose()
         }).catch(()=>{
             loading.value= false

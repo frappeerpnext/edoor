@@ -9,7 +9,7 @@
     <ComSelect v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
 </div>
 <div>
-    <ComSelect class="h-auto" :isMultipleSelect="true" 
+    <ComSelect class="linelight-edor" :isMultipleSelect="true" 
                 isFilter
                 groupFilterField="room_type_group"
                 :groupFilterValue="hk.filter.selected_room_type_group"  
@@ -18,10 +18,11 @@
                 optionValue="name" 
                 @onSelected="onSearch" 
                 placeholder="Room Type" 
-                doctype="Room Type"></ComSelect>
+                doctype="Room Type"
+                ></ComSelect>
 </div>
 <div>
-    <ComSelect :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
+    <ComSelect class="linelight-edor" :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
 </div>
 <div>
@@ -57,3 +58,8 @@ function debouncer(fn, delay) {
 
 
 </script>
+<style scoped>
+.linelight-edor{
+    line-height: 1.2rem;
+}
+</style>

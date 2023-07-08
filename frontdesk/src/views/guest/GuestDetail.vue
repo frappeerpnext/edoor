@@ -64,9 +64,10 @@ const noteUrl =  computed(() => {
     return url
 })
 const folioUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Folio%20Transaction&no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en"
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Reservation%20Folio&no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
+
 
 onMounted(() => {
     if (!dialogRef) {

@@ -132,7 +132,6 @@ function onReseravationNote($event, updating) {
 }
 function onSave() {
     saving.value = true
-
     dataUpdate.value.reservation = (dataUpdate.value.is_apply_reseration || dataUpdate.value.is_apply_all_stays) ? reservationName.value : ''
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
@@ -167,7 +166,7 @@ function updateDisplayNote() {
 
         reservationName.value = reservation_stay.reservation.name || ''
         docname.value = reservation_stay.reservationStay.name || ''
-        totalStay.value = reservation_stay.total_reservation_stay || 0
+        totalStay.value = reservation_stay.reservation.total_active_reservation_stay || 0
     }
     else if (props.doctype == 'Reservation') {
         note.value = reservation?.reservation?.note || ''
@@ -180,7 +179,7 @@ function updateDisplayNote() {
 
         docname.value = reservation.reservation.name || ''
         reservationName.value = reservation.reservation.name || ''
-        totalStay.value = reservation.total_reservation_stay || 0
+        totalStay.value = reservation.reservation.total_active_reservation_stay || 0
     }
     onClose()
 }

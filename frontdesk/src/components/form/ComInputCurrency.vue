@@ -1,6 +1,8 @@
 <template>
     <div>
+    
         <InputNumber 
+            :class="[`text-${align}`, classCss]"
             @update:modelValue="onUpdate"
             v-model="value"
             :minFractionDigits="setting.currency.precision"
@@ -8,6 +10,7 @@
             :currency="setting.currency.name" 
             :locale="setting.currency.locale"
             :max="9999999999"
+            :disabled="disabled"
             />
     </div>
 </template>
@@ -16,7 +19,14 @@ import {ref, computed} from 'vue'
 const setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps({
-    modelValue: [String, Number]
+    modelValue: [String, Number],
+
+    align: {
+        type: String,
+        defualt: "right"
+    },
+    disabled :Boolean,
+    classCss: String
 })
 let value = computed({
     get(){
@@ -26,6 +36,7 @@ let value = computed({
         return newValue
     }
 })
+
 function onUpdate($event){
     emit('update:modelValue', $event)
 }

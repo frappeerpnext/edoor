@@ -5,14 +5,11 @@
       <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
       Edit Rate 
       <template v-if="selectedRoomRates.length>0">
-        ({{selectedRoomRates.length  }})
-      </template>
-      <template v-if="selectedRoomRates.length0">
-        ({{selectedRoomRates.length  }})
+        ({{ selectedRoomRates.length  }})
       </template>
     </Button>
  
-    <DataTable v-model:selection="selectedRoomRates" :value="data" tableStyle="min-width: 80rem" paginator :rows="20"
+    <DataTable v-model:selection="selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
@@ -24,7 +21,10 @@
 
       <Column field="room_number" header="Room">
         <template #body="slotProps">
-          {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }}
+          <div class="rounded-xl px-2 me-1 bg-gray-edoor inline"> 
+            <span v-tooltip.top="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
+          </div>
+          <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
         </template>
       </Column>
       <Column field="rate_type" header="Rate Type">
@@ -60,7 +60,7 @@
           <Column footer="Total:" :colspan="3" footerStyle="text-align:right" />
           <Column >
             <template #footer>
-              {{ data.length }} Room Night(s)
+              {{ rs?.room_rates?.length }} Room Night(s)
             </template>
           </Column>
           <Column footerStyle="text-align:right">
@@ -90,7 +90,7 @@
  
 </template>
 <script setup>
-import { inject, ref, getDocList, useDialog } from '@/plugin';
+import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
 import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 
 const rs = inject('$reservation_stay')
@@ -99,37 +99,20 @@ const selectedRoomRates = ref([])
 const moment = inject("$moment")
 const gv = inject('$gv')
 const dialog = useDialog();
-const visible = ref(false)
-
+const toast = useToast()
 
 const getTotal = ref((column_name) => {
-  if (data.value.length == 0) {
+  if (rs.room_rates.length == 0) {
     return 0
   } else {
-    return data.value.reduce((n, d) => n + d[column_name], 0)
+    return rs.room_rates.reduce((n, d) => n + d[column_name], 0)
   }
 });
 
-const doc = ref({})
-
-getDocList('Reservation Room Rate', {
-  filters: [['reservation_stay', '=', rs.reservationStay.name]],
-  fields: ["*"],
-  orderBy: {
-    field: 'date',
-    order: 'asc',
-  },
-  limit:1000
-})
-  .then((doc) => {
-    data.value = doc
-  })
-  .catch((error) => console.error(error));
-
- 
 
 function onEditRoomRate(room_rate = null) {
   if(room_rate){
+
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
         selected_room_rate:room_rate,
@@ -145,18 +128,21 @@ function onEditRoomRate(room_rate = null) {
       },
       onClose: (options) => {
         const result = options.data;
-        
         if(result){
-            data.value = result
+            rs.room_rates = result
+            rs.getReservationDetail(rs.reservationStay.name);
+           
         }
     }
 
     })
   }else if(selectedRoomRates.value.length>0){
+
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
         selected_room_rates:selectedRoomRates.value,
-        reservation_stay:rs.reservationStay
+        reservation_stay:rs.reservationStay,
+        
         },
       props: {
         header: 'Edit Room Rate ',
@@ -170,16 +156,27 @@ function onEditRoomRate(room_rate = null) {
         const result = options.data;
         
         if(result){
-            data.value = result
+          rs.room_rates = result
+          selectedRoomRates.value.length = 0
+          rs.getReservationDetail(rs.reservationStay.name);
+           
         }
     }
 
     })
   } else if (selectedRoomRates.value.length == 0){
-    alert('Please Select Field to Edit First')
+    toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
+    return 
   }
 
 }
+
+
+onMounted(() => {
+  
+  rs.getRoomRate(rs.reservationStay.name);
+ 
+});
 
 </script>
 <style>

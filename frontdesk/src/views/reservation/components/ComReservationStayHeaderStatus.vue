@@ -12,7 +12,7 @@
             </ComTagReservation>
             <ComTagReservation title="ROOMS#:" class="bg-card-info p-1px"
                 v-if="rs.reservationStay">
-                <div class="inline" v-if="rs?.reservationStay?.rooms">
+                <div class="inline" v-if="rs.reservationStay?.stays">
                     <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)"
                     :key="index">
                         <span v-if="index != 0"> , </span>
@@ -36,12 +36,19 @@
     </div>
 </template>
 <script setup>
-import { inject } from '@/plugin'
+import { inject,useRouter } from '@/plugin'
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 const rs = inject('$reservation_stay');
 const dialogRef = inject("dialogRef");
+const router = useRouter()
 const OnViewReservation = () => {
+   if(rs.is_page){
+    
+    router.push({ name: 'ReservationDetail', params: { name: rs.reservation.name } })
+   }else {
     dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+   }
+    
 }
 </script>
 

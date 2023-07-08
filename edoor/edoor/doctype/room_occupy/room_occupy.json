@@ -19,7 +19,8 @@
   "property",
   "adult",
   "child",
-  "pax"
+  "pax",
+  "data_keyword"
  ],
  "fields": [
   {
@@ -101,11 +102,17 @@
    "fieldname": "pax",
    "fieldtype": "Int",
    "label": "Pax"
+  },
+  {
+   "fieldname": "data_keyword",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Data Keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-27 16:24:16.879603",
+ "modified": "2023-07-03 14:32:30.161442",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

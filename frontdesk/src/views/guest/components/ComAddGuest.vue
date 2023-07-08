@@ -2,7 +2,7 @@
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
         <div class="mb-3">
             <div class="flex justify-center items-center">
-                <ComUploadProfile doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach"/>
+                <ComUploadProfile doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
             </div>
         </div>
         <ComReservationStayPanel class="mb-3" title="Guest Information">
@@ -24,15 +24,18 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth" dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
+                            dateFormat="dd-mm-yy" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Market Source</label><br />
-                        <ComAutoComplete v-model="guest.market_source" class="w-full" placeholder="Market Source" doctype="Market Source" />
+                        <ComAutoComplete v-model="guest.market_source" class="w-full" placeholder="Market Source"
+                            doctype="Market Source" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Market Segment</label><br />
-                        <ComAutoComplete v-model="guest.market_segment" class="w-full" placeholder="Market Segment" doctype="Market Segment" />
+                        <ComAutoComplete v-model="guest.market_segment" class="w-full" placeholder="Market Segment"
+                            doctype="Market Segment" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
@@ -43,8 +46,8 @@
                     </div>
                 </div>
             </template>
-        </ComReservationStayPanel> 
-        <ComReservationStayPanel  class="mb-3" title="Contact Information">
+        </ComReservationStayPanel>
+        <ComReservationStayPanel class="mb-3" title="Contact Information">
             <template #content>
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-2">
@@ -74,15 +77,18 @@
                 <div class="grid">
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label>Identity Type</label><br />
-                        <ComAutoComplete v-model="guest.identity_type" class="w-full" placeholder="Identity Type" doctype="Identity Type" />
+                        <ComAutoComplete v-model="guest.identity_type" class="w-full" placeholder="Identity Type"
+                            doctype="Identity Type" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label class="white-space-nowrap">ID/Passport Number</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number" v-model="guest.id_card_number" :maxlength="50" />
+                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                            v-model="guest.id_card_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date"
+                            dateFormat="dd-mm-yy" />
                     </div>
                 </div>
             </template>
@@ -92,11 +98,11 @@
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-1">
                         <label class="white-space-nowrap">Address</label><br />
-                        <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="guest.address" rows="4"/>
+                        <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="guest.address" rows="4" />
                     </div>
                     <div class="col-12 lg:col-6 pt-1">
                         <label class="white-space-nowrap">Note</label><br />
-                        <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="guest.note" rows="4"/>
+                        <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="guest.note" rows="4" />
                     </div>
                 </div>
             </template>
@@ -104,7 +110,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getApi,getDoc,createUpdateDoc } from '@/plugin'
+import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugin'
 import ComBoxStayInformation from '../../reservation/components/ComBoxStayInformation.vue';
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
@@ -115,47 +121,47 @@ const optionGender = ref()
 const moment = inject('$moment')
 
 function onLoad(r) {
-    loading.value = true 
+    loading.value = true
     getDoc('Customer', dialogRef.value.data.name)
-    .then((doc) => {
-        guest.value = doc
-        loading.value = false
-    })
-    .catch((error) => {
-        loading.value = false
-    });
- 
+        .then((doc) => {
+            guest.value = doc
+            loading.value = false
+        })
+        .catch((error) => {
+            loading.value = false
+        });
+
 }
- 
-function onClose(param = false){
+
+function onClose(param = false) {
     dialogRef.value.close(param)
 }
 
-function getMeta(){
+function getMeta() {
     getApi('frontdesk.get_meta', {
         doctype: 'Customer'
-    }).then((r)=>{
-        if( r.message){
-            const options = r.message.fields.find((r)=> r.fieldname == 'gender')
+    }).then((r) => {
+        if (r.message) {
+            const options = r.message.fields.find((r) => r.fieldname == 'gender')
             optionGender.value = options.options.split('\n')
             guest.value.gender = options.default
         }
     })
 }
 
-function onOK(){
+function onOK() {
     loading.value = true
     var data = JSON.parse(JSON.stringify(guest.value))
     data.date_of_birth = moment(guest.value.date_of_birth).format('yyyy-MM-DD')
     data.expired_date = moment(guest.value.expired_date).format('yyyy-MM-DD')
-    createUpdateDoc('Customer',data).then((r)=>{
-        if(r.name){
-            getDoc('Customer',r.name).then((g)=>{
+    createUpdateDoc('Customer', {data:data}).then((r) => {
+        if (r.name) {
+            getDoc('Customer', r.name).then((g) => {
                 onClose(g)
                 loading.value = false
             })
         }
-    }).catch((err)=>{
+    }).catch((err) => {
         loading.value = false
     })
 }
@@ -173,5 +179,4 @@ onMounted(() => {
 .autocomplete-full-with {
     width: 100%;
     display: block;
-}
-</style>
+}</style>

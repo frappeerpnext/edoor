@@ -35,11 +35,15 @@ def update_keyword(doc, method=None, *args, **kwargs):
         if fields:
             sql = "update `tab{0}` as a, `tab{0}` as b set a.keyword = concat({1}) where a.name = b.name and a.name='{2}'"
             sql = sql.format(doc.doctype, " , ' ',".join(fields), doc.name )
-
             frappe.db.sql(sql)
+            # update keyword for searching in room chart
+            if doc.doctype == 'Reservation Stay':
+                rs = frappe.get_doc('Reservation Stay', doc.name)
+                data_keyword = "update `tabRoom Occupy` set data_keyword = '{0}' where reservation_stay = '{1}'".format(rs.keyword, doc.name)
+                frappe.db.sql(data_keyword)
 
 def update_deleted_document(doc, method=None, *args, **kwargs):
-    if doc.comment_type == 'Deleted' and (doc.reference_doctype == "Folio Transaction" or doc.reference_doctype == "Reservation Folio"):
+    if doc.comment_type == 'Deleted' and (doc.reference_doctype == "Folio Transaction" or doc.reference_doctype == "Reservation Folio" or doc.reference_doctype == "Reservation Room Rate"):
         docname = doc.subject.replace((doc.reference_doctype + ' '), '')
         sql = "SELECT `name`,`data` FROM `tabDeleted Document` WHERE deleted_name = '{}'".format(docname)
         deleted = frappe.db.sql(sql, as_dict=1)
@@ -78,6 +82,18 @@ def update_deleted_document(doc, method=None, *args, **kwargs):
                             doc.name)
             frappe.db.sql(sql)
 
+def update_insert_document(doc, method=None, *args, **kwargs):
+    frappe.get_doc({
+        "doctype":"Comment",
+        "comment_type":'Created',
+        "reference_doctype":doc.doctype,
+        "reservation":doc.reservation,
+        "reservation_stay":doc.reservation_stay,
+        "folio_number":doc.name,
+        "content": frappe.as_json(doc)
+    }).insert()
+    frappe.db.commit()
+
 def check_field(doc, key):
     if key in doc.keys():
         if  doc[key].strip():
@@ -97,7 +113,7 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
     # Return the generated dates.
     return dates
 @frappe.whitelist()
-def update_reservation(name,doc=None, run_commit = True):
+def update_reservation(name=None,doc=None, run_commit = True):
     if name:
         doc = frappe.get_doc("Reservation",name)
 
@@ -145,6 +161,20 @@ def update_reservation(name,doc=None, run_commit = True):
     )
 
     folio_data = frappe.db.sql(sql_folio, as_dict=1)
+    
+    #get room_numbers, room_type , and room_type alias
+    sql_room_info = """
+                SELECT 
+                    GROUP_CONCAT(rooms) as rooms,
+                    GROUP_CONCAT(room_types) as room_types,
+                    GROUP_CONCAT(room_type_alias) as room_type_alias
+                    FROM `tabReservation Stay`
+                where 
+                    is_active_reservation = 1 and 
+                    reservation = '{}'
+    """.format(doc.name)
+    room_info_data =frappe.db.sql(sql_room_info, as_dict=1)
+
 
 
 
@@ -176,7 +206,15 @@ def update_reservation(name,doc=None, run_commit = True):
     doc.total_cancelled= data[0]["total_cancelled"]
     doc.total_void= data[0]["total_void"]
     doc.total_no_show= data[0]["total_no_show"]
+
+
+    #update room info
+    doc.room_types = room_info_data[0]["room_types"]
+    doc.room_numbers = room_info_data[0]["rooms"]
+    doc.room_type_alias = room_info_data[0]["room_type_alias"]
+
     doc.update_reservation_stay = False
+
     doc.save()
     if run_commit:
         frappe.db.commit()
@@ -211,24 +249,11 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 def update_reservation_stay(name=None, doc=None,run_commit=True):
     if name:
         doc = frappe.get_doc("Reservation Stay",name)
-                
-    doc.update_reservation = False
-    #1 update data to reservation stay room the rest will update from reservation stay validate event
-    sql = """
-        select 
-            min(rate) as rate,
-            avg(rate) as adr,
-            sum(discount_amount) as discount_amount,
-            sum(tax_1_amount) as tax_1_amount,
-            sum(tax_2_amount) as tax_2_amount,
-            sum(tax_3_amount) as tax_3_amount,
-            sum(total_tax) as total_tax,
-            sum(total_rate) as total_amount
+    if doc:
+        doc.update_reservation = False
 
-        from `tabReservation Room Rate`
-        where
-        stay_room_id = '{}'
-    """
+    #1 update data to reservation stay room the rest will update from reservation stay validate event
+  
 
     sql_folio = """
        select  
@@ -255,11 +280,25 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
         del d["credit"]
         del d["debit"]
     doc.summary_data  = json.dumps(folio_data)
-
     for stay in doc.stays:
-        sql = sql.format(stay.name)
-        data = frappe.db.sql(sql,as_dict=1)
+        sql = """
+            select 
+                min(rate) as rate,
+                avg(rate) as adr,
+                sum(discount_amount) as discount_amount,
+                sum(tax_1_amount) as tax_1_amount,
+                sum(tax_2_amount) as tax_2_amount,
+                sum(tax_3_amount) as tax_3_amount,
+                sum(total_tax) as total_tax,
+                sum(total_rate) as total_amount
 
+            from `tabReservation Room Rate`
+            where
+            stay_room_id = '{}'
+        """.format(stay.name)
+       
+        data = frappe.db.sql(sql,as_dict=1)
+        
         if data:
             d = data[0]
             stay.rate =  d["rate"]
@@ -270,7 +309,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
             stay.tax_2_amount =d["tax_2_amount"] or  0
             stay.tax_3_amount =d["tax_3_amount"] or  0
             stay.total_tax =d["total_tax"] or  0
-        
+  
+
     doc.save()
     if run_commit:
         frappe.db.commit()
@@ -292,7 +332,43 @@ def update_reservation_color(self=None):
     for t in stays:
         frappe.db.set_value('Reservation Stay', t.name, 'reservation_color', self.reservation_color)
 
+@frappe.whitelist()
+def get_room_rate(property, rate_type, room_type, business_source, date):
+    sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
+    season = frappe.db.sql (sql, as_dict=1)
 
+    room_type_rate  = frappe.get_value("Room Type", room_type,"rate")
+    rate = 0
+   
+    if season and rate_type:
+        season_id = season[0]["name"]
+       
+        sql = """select 
+                    max(rate) as rate 
+                from `tabRate Plan` 
+                where 
+                    property='{}' and
+                    season = '{}' and 
+                    rate_type = '{}' 
+                """.format(property, season_id, rate_type)
+     
+        if business_source:
+            sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
+            data = frappe.db.sql(sql_with_business_source, as_dict=1)
+            rate = data[0]["rate"] or 0
+            
+            
+        if rate ==0:
+            #check rate from rate that dont have business source
+            sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
+            data = frappe.db.sql(sql, as_dict=1)
+            rate = data[0]["rate"] or 0
+
+            
+    if rate == 0:
+        #if still rate = 0 the  get rate from room type
+        rate = room_type_rate
+    return rate
 
 
 
@@ -349,5 +425,7 @@ def clear_reservation():
     frappe.db.sql("delete from `tabReservation Room Rate`")
     frappe.db.sql("delete from `tabTemp Room Occupy`")
     frappe.db.sql("delete from `tabRoom Occupy`")
+    frappe.db.sql("delete from `tabFolio Transaction`")
+    frappe.db.sql("delete from `tabReservation Folio`")
     frappe.db.commit()
     return "done"

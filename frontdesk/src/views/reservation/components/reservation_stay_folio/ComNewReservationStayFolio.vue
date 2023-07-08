@@ -1,11 +1,12 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+      
         <div class="grid">
             <div class="col" v-if="guests && doc">
                 <label>Stay Guest</label><br/>
                 <ComSelect class="mb-3 w-full" v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
             </div>
-            {{ doc.name }}
+           
             <div class="col-8">
                 <label hidden>Note</label><br/>
                 <InputText placeholder="Note" class="w-full" type="text" v-model="doc.note" />

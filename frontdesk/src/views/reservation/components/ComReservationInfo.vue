@@ -48,11 +48,6 @@
                         :value="rs.reservation?.name" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation titleTooltip="Reservation Stay Number" title="Res Stay. No"
-                        :value="rs.reservationStay?.name" valueClass="grow">
-                    </ComBoxStayInformation>
-                </div>
 
                 <div class="flex mt-2 gap-2">
                    

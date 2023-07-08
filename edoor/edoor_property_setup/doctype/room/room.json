@@ -30,7 +30,8 @@
   "departure",
   "column_break_21",
   "guest",
-  "guest_name"
+  "guest_name",
+  "show_in_room_availability"
  ],
  "fields": [
   {
@@ -180,11 +181,18 @@
   {
    "fieldname": "column_break_21",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fetch_from": "housekeeping_status.show_in_room_availability",
+   "fieldname": "show_in_room_availability",
+   "fieldtype": "Check",
+   "label": "Show in Room Availability"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-08 11:30:44.277719",
+ "modified": "2023-07-03 14:57:03.860658",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div class="min-h-folio-cus mt-3">
+        <div class="mt-3" :class="{'min-h-folio-cus' : fill}">
         <div class="flex justify-end mb-3">
-            <Button class="conten-btn" label="Upload Document" icon="pi pi-upload" @click="onModal"></Button>
+            <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
         </div>
         <div>
-            <ComPlaceholder :loading="loading" :isNotEmpty="data.length > 0">
+            <ComPlaceholder text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
                 <template #default>
                     
                 <div class="wrap-file-list">
@@ -73,6 +73,10 @@ const props = defineProps({
     extraFilterFieldName: {
         type: String,
         default: 'name'
+    },
+    fill: {
+        type: Boolean,
+        default: true
     }
 })
 const visible = ref(false)
@@ -103,7 +107,7 @@ function onLoad(){
     }
     dataFilter.push(['attached_to_name','=',props.docname])
     getDocList('File', {
-        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype'],
+        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation"],
         orFilters: dataFilter,
         orderBy: {
             field: 'creation',

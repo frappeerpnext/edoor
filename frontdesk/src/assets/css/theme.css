@@ -5172,10 +5172,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
-  max-height: calc(100vh - 118px) !important;
+  max-height: calc(100vh - 89px) !important;
 }
-
-
 .p-dialog .p-dialog-content:last-of-type {
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
@@ -7323,4 +7321,9 @@ span.p-inputnumber.p-component.p-inputwrapper.p-inputwrapper-filled.p-inputnumbe
 span.p-column-title {
   font-size: 13px;
   font-weight: 600 !important;
+}
+.p-sidebar-mask.p-sidebar-right.p-component-overlay.p-component-overlay-enter.p-sidebar-visible {
+  pointer-events: none;
+  animation: none;
+  z-index: 9 !important;
 }

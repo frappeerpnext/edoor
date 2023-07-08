@@ -1,10 +1,12 @@
 import Enumerable from 'linq'
 import { FrappeApp } from 'frappe-js-sdk';
 import { ref, computed, useRouter } from '@/plugin';
+import moment from '@/utils/moment.js';
 const frappe = new FrappeApp();
 const db = frappe.db();
 const call = frappe.call();
 const router = useRouter()
+
 
 export default class ReservationStay {
 	constructor() {
@@ -23,12 +25,12 @@ export default class ReservationStay {
 		this.selectedFolioTransactions = ref([])
 		this.reservationStatusDelete = ['No Show', 'Void', 'Cancelled']
 		this.folio_summary = ref([])
+		this.room_rates = ref([])
+		this.is_page = false
 
 	}
 
-
 	getReservationDetail = async (name) => {
-
 		this.loading.value = true
 
 		call.get("edoor.api.reservation.get_reservation_stay_detail", {
@@ -46,8 +48,20 @@ export default class ReservationStay {
 		}).catch((error) => {
 			this.loading.value = false
 		})
+	}
+
+	getReservationStay(name) {
+
+
+		db.getDoc("Reservation Stay", name).
+			then((doc) => {
+				this.reservationStay = doc
+
+
+			})
 
 	}
+
 
 	getChargeSummary = async (name) => {
 		this.loadingSummary = true
@@ -118,11 +132,13 @@ export default class ReservationStay {
 	})
 
 
-	onLoadReservationFolios() {
+	onLoadReservationFolios(reservation_stay = null) {
+	
+		
 		return new Promise((resolve, reject) => {
 			db.getDocList('Reservation Folio', {
-				fields: ["name", "status", "is_master", "rooms","note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance"],
-				filters: [['reservation_stay', '=', this.reservationStay?.name]],
+				fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance"],
+				filters: [['reservation_stay', '=', reservation_stay ? reservation_stay : this.reservationStay?.name]],
 				limit: 1000
 			})
 				.then((doc) => {
@@ -139,22 +155,19 @@ export default class ReservationStay {
 	onLoadFolioTransaction(data) {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 		if (data?.name) {
-			this.selectedFolio = data
+
 			if (setting?.folio_transaction_stype_credit_debit == 1) {
 				call.get('edoor.api.reservation.get_folio_transaction', {
 					folio_number: data.name
 				})
 					.then((result) => {
-
 						this.folioTransactions = result.message
-						this.selectedFolio.total_credit =this.folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
-						this.selectedFolio.total_debit =this.folioTransactions.value.reduce((n, d) => n + (d.debit || 0), 0)
-						this.selectedFolio.balance =this.selectedFolio.totalDebit -  this.selectedFolio.totalCredit 
-						
-					
-							
-						
-						
+						// this.selectedFolio.total_credit =this.folioTransactions.reduce((n, d) => n + (d.credit || 0), 0)
+						// this.selectedFolio.total_debit =this.folioTransactions.reduce((n, d) => n + (d.debit || 0), 0)
+						// this.selectedFolio.balance =this.selectedFolio.total_debit -  this.selectedFolio.total_credit 
+
+						this.selectedFolio = data
+
 					})
 			} else {
 				db.getDocList("Folio Transaction", {
@@ -178,21 +191,23 @@ export default class ReservationStay {
 						"owner",
 						"modified",
 						"modified_by",
+						"show_print_preview",
+						"print_format"
 					],
 					filters: [["folio_number", "=", data.name]],
 					limit: 1000
 				}).then((result) => {
 
 					const folio_transaction = Enumerable.from(result).orderBy("$.posting_date").thenBy("name").toArray()
-					 folio_transaction.forEach(r => {
+					folio_transaction.forEach(r => {
 						r.total_amount = r.type == "Credit" ? (r.total_amount - r.bank_fee_amount) * -1 : r.total_amount
 						r.amount = r.type == "Credit" ? r.amount * -1 : r.amount
 						r.price = r.type == "Credit" ? (r.price + r.bank_fee_amount) * -1 : r.price
 					});
 					this.folioTransactions = folio_transaction
-					
+					this.selectedFolio = data
 
-					
+
 				})
 
 
@@ -202,18 +217,38 @@ export default class ReservationStay {
 
 	}
 
-	getFolioSummary(folio_number){
+	getFolioSummary(folio_number) {
 		call.get("edoor.api.reservation.get_reservation_charge_summary", {
 			folio_number: folio_number
 		}).then((result) => {
 			this.folio_summary = result.message
 		}).
-		catch((error) => {
-			throw new Error(error.exception || error.message)
+			catch((error) => {
+				throw new Error(error.exception || error.message)
+			})
+	}
+
+	getRoomRate(reservation_stay) {
+
+		db.getDocList('Reservation Room Rate', {
+			filters: [['reservation_stay', '=', reservation_stay]],
+			fields: ["*"],
+			orderBy: {
+				field: 'date',
+				order: 'asc',
+			},
+			limit: 1000
+		}).then((doc) => {
+			this.room_rates = doc
 		})
-}
 
+	}
 
+	canCheckIn() {
+		const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+		return this.reservationStay.reservation_status == 'Reserved' &&
+			this.reservationStay.arrival_date <= working_day.date_working_day
+	}
 	clear() {
 		this.loading = ref(false)
 		this.stay = {}

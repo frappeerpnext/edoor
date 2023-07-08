@@ -70,18 +70,14 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Arrival"                          
-                        :value="gv.dateFormat(stay.reservationStay?.arrival_date)"
-                        valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="stay.reservationStay?.arrival_time"
-                        valueClass="col " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation
-                        :value="moment(stay.reservationStay?.arrival_date).format('dddd')"
-                        valueClass="col">
-                    </ComBoxStayInformation>
+                    <ComBoxStayInformation @onClick="onChangeDate($event)" title="Arrival" :value="gv.dateFormat(stay.reservationStay?.arrival_date)" valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
+                    <ComBoxStayInformation :value="stay.reservationStay?.arrival_time" valueClass="col " :isAction="true" ></ComBoxStayInformation>
+                    <ComBoxStayInformation :value="moment(stay.reservationStay?.arrival_date).format('dddd')" valueClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Departure"
+                    <ComBoxStayInformation 
+                        title="Departure"
+                        @onClick="onChangeDate($event)"
                         :value="gv.dateFormat(stay.reservationStay?.departure_date)"
                         valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="stay.reservationStay?.departure_time"
@@ -113,7 +109,8 @@
     </ComReservationStayPanel>
     <OverlayPanel ref="op">
             <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
-            <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+            <ComChangePax v-else-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+            <ComReservationStayChangeArrivalDepartureDate v-else-if="overLayName == 'change_date'" @onClose="closeOverlay"/>
     </OverlayPanel>
 </template>
 <script setup>
@@ -125,6 +122,7 @@ import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
 import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
+import ComReservationStayChangeArrivalDepartureDate from './ComReservationStayChangeArrivalDepartureDate.vue';
 const moment = inject('$moment')
 const stay = inject('$reservation_stay');
 const gv = inject('$gv');
@@ -138,7 +136,13 @@ const toggle = ($event, name) => {
 const closeOverlay = ()=>{
     op.value.hide();
 }
-
+function onChangeDate($event){
+    if(stay.reservationStay.stays.length > 1){
+        gv.toast("warn","This reservation stay has multiple rooms. Please change in room stay.")
+        return
+    }
+    toggle($event, 'change_date')
+}
 
 
 

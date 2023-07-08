@@ -1,6 +1,6 @@
 <template lang="">
     <ComReservationStayPanel title="Reservation Room List">
-        
+
         <template #content> 
             <ComPlaceholder :loading="rs.loading" :isNotEmpty="true">
                 <div class="flex justify-end">
@@ -12,43 +12,57 @@
                         </div>
                     </div>
                 </div>
-                <div class="room-stay-list ress__list text-center mt-3 isMaster-guest">
-                    {{roomList}}
-                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" :value="roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
+                <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
+                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
+                        <Column field="name" header="Res Stay#">
+                        <template #body="slotProps">
+                            <button @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto">
+                                {{slotProps.data.name}}
+                            </button>
+                        </template>
+                        </column>
                         <Column header="Stay Date">
                             <template #body="slotProps">
-                                <div><span v-tooltip.top="'Arrival Date'">{{slotProps.data.arrival_date}}</span> to <span v-tooltip.top="'Departure Date'">{{slotProps.data.departure_date}}</span></div>                               
+                                <div>
+                                    <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
+                                        <span class="mx-2">
+                                            <i class="pi text-500 pi-arrow-right font-thin" style="font-size:8px;" />
+                                        </span>
+                                    <span v-tooltip.top="'Departure Date'">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
+                                </div>                               
                             </template>
                         </Column>
                         <Column header="Room">
-                            
                             <template #body="slotProps">
-                                <div v-if="slotProps.data.room_type_alias.split(',').length > 3">
+                                <div>
                                     <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
                                         {{(index != 0) ? ',' : ''}}
-                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/{{ slotProps.data.rooms.split(',')[index] }}
+                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/<span v-if="slotProps.data.rooms.split(',')[index] !== ''">
+                                        {{ slotProps.data.rooms.split(',')[index] }}  
+                                        </span>
+                                        <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
+                                                <i class="pi pi-pencil"></i>
+                                                <span v-if="slotProps.data.room_type_alias.split(',').length <= 1">
+                                                Assign Room
+                                                </span>
+                                        </button>
                                     </div>
-                                    <div
-                                        v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${roomList?.map(stay => {
-                                        return stay.room_types.split(',').slice(3).map((type, i) => `${type}/${(stay.rooms.split(',').slice(3))[i]}`).join('\n')
+                                    <div v-if="slotProps.data.room_type_alias.split(',').length > 3"
+                                        v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs.roomList?.map(stay => {
+                                        return stay.room_types.split(',').slice(3).map((type, index) => `${type}/${(stay.rooms.split(',').slice(3))[index]}`).join('\n')
                                           })}</div>` , escape: true, class: 'max-w-30rem' }"
-                                        class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1">
+                                        class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
                                         {{slotProps.data.room_type_alias.split(',').length - 3}} Mores
-                                    </div>
-                                </div>
-                                <div v-else class="inline">
-                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
-                                        {{(index != 0) ? ',' : ''}}
-                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/{{ slotProps.data.rooms.split(',')[index] }}
                                     </div>
                                 </div>
                             </template>
                         </Column>
                         <Column header="Guest Name">
                             <template #body="slotProps">
-                                <div v-tooltip.top="slotProps.data.guest_name" v-if="slotProps.data.guest_name.length > 15" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap w-12rem">{{slotProps.data.guest_name}}</div>
-                                <div v-else>{{slotProps.data.guest_name}}</div>
+                                <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest_name)" link>
+                                   {{slotProps.data.guest_name}}
+                                </Button>
                             </template>
                         </Column>
                         <Column header="Pax">
@@ -56,14 +70,19 @@
                                 <span v-tooltip.top="'Adults'">{{slotProps.data.adult}}</span>/<span v-tooltip.top="'Children'">{{slotProps.data.child}}</span>
                             </template>
                         </Column>
-                        <Column class="text-right res__room-list-right" header="Total Charge">
+                        <Column class="text-right res__room-list-right" header="Room Rate">
                             <template #body="slotProps">
-                                <CurrencyFormat :value="slotProps.data.total_charge"/>
+                                <CurrencyFormat :value="slotProps.data.total_room_rate"/>
                             </template>
                         </Column>
-                        <Column class="text-right res__room-list-right" header="Paid">
+                        <Column class="text-right res__room-list-right" header="Debit">
                             <template #body="slotProps">
-                                <CurrencyFormat :value="slotProps.data.total_payment"/>
+                                <CurrencyFormat :value="slotProps.data.total_debit"/>
+                            </template>
+                        </Column>
+                        <Column class="text-right res__room-list-right" header="Credit">
+                            <template #body="slotProps">
+                                <CurrencyFormat :value="slotProps.data.total_credit"/>
                             </template>
                         </Column>
                         <Column class="text-right res__room-list-right" header="Balance">
@@ -91,13 +110,13 @@
                     </div>
                     <div class="col py-0">
                         <div class="flex gap-2">
-                            <ComBoxStayInformation title="Total Amount" titleClass="grow white-space-nowrap w-16rem" valueClass="w-full text-right">
-                                <CurrencyFormat :value="rs.reservation.total_amount"/>
+                            <ComBoxStayInformation title="Total Debit" titleClass="grow white-space-nowrap w-16rem" valueClass="w-full text-right">
+                                <CurrencyFormat :value="rs.reservation.total_debit"/>
                             </ComBoxStayInformation>
                         </div>
                         <div class="flex mt-2 gap-2">
-                            <ComBoxStayInformation title="Paid" titleClass="grow w-16rem" valueClass="w-full text-right">
-                                <CurrencyFormat :value="rs.reservation.payment"/>
+                            <ComBoxStayInformation title="Total Credit" titleClass="grow w-16rem" valueClass="w-full text-right">
+                                <CurrencyFormat :value="rs.reservation.total_credit"/>
                             </ComBoxStayInformation>
                         </div>
                         <div class="flex mt-2 gap-2">
@@ -110,6 +129,7 @@
                 <hr class="mt-3"/>
                 <div class="pt-3">
                     <div class="flex justify-end gap-2">  
+                        <Button @click="onCheckIn"  >Check In</Button>
                         <SplitButton class="spl__btn_cs sp" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
                         <Button class="border-1 conten-btn sp" @click="onAddRoomMore">
                             <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
@@ -120,10 +140,11 @@
             </ComPlaceholder>
         </template>
     </ComReservationStayPanel>
+ 
     <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/>
 </template>
 <script setup>
-import {inject,ref,onMounted,useDialog, postApi,useConfirm} from '@/plugin'
+import {inject,ref,onMounted,useDialog, postApi,useConfirm,useToast} from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
@@ -131,20 +152,46 @@ import ComReservationStayListStatusBadge from '@/views/reservation/components/Co
 import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComReservationStayAddMore from "./ComReservationStayAddMore.vue"
+import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+import GuestDetail from "@/views/guest/GuestDetail.vue"
 const confirm = useConfirm()
 const moment = inject('$moment')
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const selecteds = ref([])
-const roomList = ref(JSON.parse(JSON.stringify(rs.reservationStays)))
 const dialog = useDialog()
 const selectStatus = ref()
 const loading = ref(false)
+const toast = useToast();
+const socket = inject("$socket")
+const frappe = inject("$frappe")
+const call = frappe.call()
 const note = ref({
     title: '',
     show: false,
     reservation_status:'' // No Show // Void // Cancel
 })
+function onViewCustomerDetail(name) {
+    const dialogRef = dialog.open(GuestDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Guest Detail',
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true
+        },
+        onClose: (options) => {
+            console.log(options)
+        }
+    });
+}
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 
 const items = [
@@ -204,26 +251,54 @@ const items = [
 ];
 
 function onFilterSelectStatus(r){
-    getRoomList(r)
+    rs.getRoomList(r)
 }
 
-function getRoomList(filter){
-    if(filter && filter.length > 0){
-        var list = []
-        filter.forEach(f => {
-            const data = rs.reservationStays.filter(r=>r.reservation_status == f.name)
-            if(data.length > 0){
-                data.forEach((d)=>{
-                    list.push(d)
-                })
-            }
-            
-        });
-        roomList.value = list;
-    }else{
-        roomList.value = rs.reservationStays
+function onCheckIn(){
+    if (selecteds.value.length==0){
+        toast.add({ severity: 'warn', summary: "Group Check In", detail:"Please select reservation stay to check in.", life: 3000 })
+        return
     }
+    const dialogRef = dialog.open(ComConfirmCheckIn, {
+        data:{
+            stays:selecteds.value
+        },
+        props: {
+            header: 'Confirm Check In',
+            style: {
+                width: '450px',
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            const result = options.data;
+
+            if (result) {
+                rs.loading = true
+
+                postApi("reservation.check_in", {
+                    reservation: rs.reservation.name,
+                    reservation_stays: selecteds.value.map(d => d["name"])
+                }).then((result) => {
+                    rs.loading = false
+                    rs.LoadReservation(rs.reservation.name);
+                    socket.emit("RefresheDoorDashboard", property.name);
+                    
+                
+
+                })
+                    .catch((err) => {
+                        rs.loading = false
+                    })
+                }
+        }
+
+
+    })
 }
+
+
 function onChangeStatus(reservation_status){
     if(validateSelectReservation()){
         note.value.title = `${reservation_status}`
@@ -243,47 +318,22 @@ function validateSelectReservation(){
 }
 function onSaveGroupStatus(txt){ 
     const data = {
+        reservation: rs.reservation.name,
         stays:selecteds.value,
         status:note.value.reservation_status,
         note:txt
-    }
-    console.log(data)
+    } 
     postApi('reservation.update_reservation_status',data).then((r)=>{
         rs.LoadReservation(rs.reservation.name)
     })
 }
+
 function onCloseNote(){
     note.value.title = ''
     note.value.show = false
     note.value.reservation_status = ''
 }
-
-function onGroupCheckIn(is_not_undo= false){
-    const isSelect = validateSelectReservation()
-    if(isSelect){
-        confirm.require({
-        message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check in reservations?`,
-        header: 'Check In',
-        icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-success',
-        accept: () => {
-            const checkInList = selecteds.value.map((r)=>r.name).join(',')
-            postApi("reservation.check_in",{
-                reservation: rs.reservation.name,
-                reservation_stays: checkInList,
-                is_undo: !is_not_undo
-            }).then((result) => {
-                if(result){
-                    rs.LoadReservation()
-                }
-            }).catch((error) => {
-                //
-            })
-
-        }
-    });
-    }
-}
+ 
 
 function onGroupCheckOut(is_not_undo = false){
     const isSelect = validateSelectReservation()
@@ -323,12 +373,10 @@ function onAddRoomMore(){
             closeOnEscape: false
         },
         onClose: (options) => {
-            // const data = options.data;
-            // if (data) {
-            //     if (data.action = "view_reservation_detail") {
-            //         showReservationDetail(data.reservation)
-            //     }
-            // }
+            const data = options.data;
+            if (data) {
+                rs.LoadReservation(data.name)
+            }
         }
     });
 }
@@ -348,16 +396,9 @@ function showReservationStayDetail(selected) {
             },
             maximizable: true,
             modal: true,
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            // const data = options.data;
-            // if (data) {
-            //     if (data.action = "view_reservation_detail") {
-            //         showReservationDetail(data.reservation)
-            //     }
-            // }
-        }
+            closeOnEscape: false,
+            position:"top"
+        }, 
     });
 }
  

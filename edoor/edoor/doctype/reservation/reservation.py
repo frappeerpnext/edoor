@@ -1,12 +1,14 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+from datetime import datetime
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
 from frappe.utils import now
 class Reservation(Document):
 	def validate(self):
+
 		if self.departure_date<=self.arrival_date:
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 

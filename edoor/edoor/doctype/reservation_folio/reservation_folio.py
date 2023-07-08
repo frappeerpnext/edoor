@@ -7,6 +7,11 @@ from frappe.model.document import Document
 
 class ReservationFolio(Document):
 	def validate(self):
+		#check reservation status if allow to edit
+		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+			frappe.throw("{} reservation is not allow to add or update information".format(self.reservation_status) )
+		
+
 		self.balance = (self.total_debit or 0) -( self.total_credit or 0)
 		#validate working day 
 		if self.is_new():
@@ -37,3 +42,8 @@ class ReservationFolio(Document):
 		if self.is_master==1:
 			#reset other is master = 0
 			frappe.db.sql("update `tabReservation Folio` set is_master=0 where is_master=1 and name<>'{}' and reservation_stay='{}'".format(self.name,self.reservation_stay))
+	def on_trash(self):
+		#check reservation status if allow to edit
+		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
+		

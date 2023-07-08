@@ -11,7 +11,7 @@
                 </div>    
             </div>
         </div>
-        <div v-if="!hideFooter" class="border-t border-gray-200 p-2">
+        <div v-if="!hideFooter" :class="is_page ? 'border-t border-gray-200 p-2 footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed'">
             <div>
                 <slot name="footer-top"></slot>
                 <div class="flex justify-between items-center">
@@ -80,8 +80,7 @@ const props = defineProps({
         default:false
     }
 })
-function onOK() {
-  
+function onOK() { 
     emit('onOK')
 }
 function close() {

@@ -1,15 +1,15 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage">
-        <div :class="[isPage, 'bg-white']"> 
+    <ComDialogContent hideButtonOK :hideButtonClose="isPage" @onClose="onClose" :isDialog="!isPage" :loading="rs.loading">
+        <div :class="[isPage, 'bg-white']">
             <div class="grid">
                 <div :class="isPage ? 'col py-3' : 'col pt-0'">
                     <div class="flex justify-between">
                         <div class="flex align-items-center">
                             <div class="flex">
-                                
+
                                 <ComTagReservation title="RS#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
                                     <span class="res__bagde ml-1">
-                                        {{rs.reservationStays.length}}
+                                        {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
                                 <span class="px-2 rounded-lg me-2 text-white p-1px"
@@ -20,8 +20,14 @@
                                         rs.reservation?.reservation_type }}</span>
                             </div>
                         </div>
-                        <div>
-                            <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage" class="h-3rem rounded-lg w-3rem border-purple-50-hover-edoor border-1 cursor-pointer flex justify-center items-center" link>
+                        <div class="flex gap-2">
+                            <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"
+                                class="rounded-lg conten-btn flex" link>
+                                <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
+                                </icon>
+                            </button>
+                            <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage"
+                                class="rounded-lg conten-btn " link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
                         </div>
@@ -34,34 +40,40 @@
                         <div class="col-8 pl-0">
                             <div class="grid">
                                 <div class="col-4">
-                                    <ComReservationDetailGuestInfo />
+                                    <div class="grid">
+                                        <div class="col-12">
+                                            <ComReservationDetailGuestInfo />
+                                        </div>
+                                        <div class="col-12">
+                                            <ComReservationDetailBusinessSourceAndRate />
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <div class="col-8">
+                                <div class="col-8 pb-0">
                                     <ComReservationInfo />
-                                </div>
-                                <div class="col-12 pb-0">
-                                    <ComReservationDetailBusinessSourceAndRate />
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
-                            <div class="h-full">
-                                <ComReservationDetailChargeSummary/>
+                        <div class="col-4 pb-0">
+                            <div class="grid">
+                                <ComReservationDetailChargeSummary />
                             </div>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <ComReservationDetailRoomList v-if="!rs.loading"/>
+                        <ComReservationDetailRoomList v-if="!rs.loading" />
                     </div>
                     <div class="pt-3">
                         <div class="border-round-xl">
-                            <ComReservationNote v-if="rs.reservation && rs.reservation.name" doctype="Reservation"/>
+                            <ComReservationNote v-if="rs.reservation && rs.reservation.name" doctype="Reservation" />
                         </div>
                     </div>
-                    <hr class="my-3"/>
+                    <hr class="my-3" />
                     <div>
                         <div class="border-round-xl">
-                            <ComCommentAndNotice v-if="rs && rs.reservation && rs.reservation.name" doctype="Reservation" :docname="rs.reservation.name"/>
+                            <ComCommentAndNotice v-if="rs && rs.reservation && rs.reservation.name" doctype="Reservation"
+                                :docname="rs.reservation.name" />
                         </div>
                     </div>
                 </TabPanel>
@@ -73,8 +85,8 @@
 
                 </TabPanel>
 
-                <TabPanel header="Document"> 
-                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name"/>
+                <TabPanel header="Document">
+                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
                 </TabPanel>
 
             </TabView>
@@ -87,7 +99,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted, computed, useToast, useRoute,onUnmounted ,useDialog} from '@/plugin'
+import { inject, ref, onMounted, computed, useToast, useRoute, onUnmounted, useDialog } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 import ComReservationDetailGuestInfo from '@/views/reservation/components/ComReservationDetailGuestInfo.vue'
@@ -118,24 +130,16 @@ const isPage = computed(() => {
 })
 
 
-onMounted(() => {
-    if (!dialogRef) {
-        if (route.params.name) {
-            name.value = route.params.name
-            rs.LoadReservation(name.value);
-        } else {
-            alert("Go back to reserveatin list")
-        }
-    } else {
-        name.value = dialogRef.value.data.name;
-        rs.LoadReservation(name.value);
+function onRefresh(showLoading = true) {
+    rs.LoadReservation(name.value, showLoading);
+    rs.getChargeSummary(name.value)
+}
 
-    }
-});
-function onRoute(){
+
+function onRoute() {
     window.open('reservation-detail/' + name.value, '_blank')
 }
-function onClose(){ 
+function onClose() {
     dialogRef.value.close()
 }
 function onAuditTrail() {
@@ -162,42 +166,41 @@ function onAuditTrail() {
         }
     });
 }
-//check in
-const onCheckIn = () => {
-    confirm.require({
-        message: 'Are you sure you want to Check In this reservation?',
-        header: 'Check In',
-        icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-success',
-        accept: () => {
-            call.post("edoor.api.reservation.check_in", {
-                reservation: doc.value.reservation.name
-            }).then((result) => {
 
-                socket.emit("RefresheDoorDashboard", property.name);
-                doc.value = result.message
-
-                toast.add({ severity: 'info', summary: 'Check In', detail: 'Check in successfully', life: 3000 });
-
-            }).catch((error) => {
-                const errors = error.exception.split(":")
-                toast.add({ severity: 'error', summary: errors[0], detail: error.exception.replace(errors[0] + ":", ""), life: 5000 })
-            })
+onMounted(() => {
+    socket.on("RefreshReservationDetail", (reservation) => {
+        if (reservation == name.value) {
+            onRefresh(false)
+            toast.add({ severity: 'info', summary: 'Info', detail: "Reservation detail updated", life: 3000 })
 
         }
-    });
-}
+    })
+
+
+    if (!dialogRef) {
+        if (route.params.name) {
+            name.value = route.params.name
+            onRefresh()
+        }
+    } else {
+        name.value = dialogRef.value.data.name;
+        onRefresh()
+
+    }
+});
 
 onUnmounted(() => {
     rs.clear()
+    socket.off("RefreshReservationDetail");
+
+
 })
 </script>
 <style scoped>
-    .res__bagde{
-        border-radius: 0.5rem;
-        padding: 0 5px;
-        background: #cacaca;
-        position: relative;
-        right: -3px;
-    }
-</style>
+.res__bagde {
+    border-radius: 0.5rem;
+    padding: 0 5px;
+    background: #cacaca;
+    position: relative;
+    right: -3px;
+}</style>

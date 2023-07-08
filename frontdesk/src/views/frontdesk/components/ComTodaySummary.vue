@@ -1,5 +1,5 @@
 <template>
-    <div> 
+    <div>
         <ComChartDoughnut :data="chartData" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
     </div>
     <div class="td_guest_cs px-1 mt-3">
@@ -20,29 +20,35 @@
     </div>
 </template>
 <script setup>
-import { ref, inject } from "@/plugin"
-import { useDialog } from 'primevue/usedialog';
+import { ref, getApi,watch, inject,onMounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
-import ComRoomStatusDoughnut from '@/views/dashboard/components/ComRoomStatusDoughnut.vue';
-import ComIFrameModal from "../../../components/ComIFrameModal.vue";
-
-
-const frappe = inject("$frappe")
-const call = frappe.call()
+const props = defineProps({
+    date: ""
+})
+const gv = inject("$gv")
 const data = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const gv = inject("$gv")
-const chartData = ref([])
-
-const dialog = useDialog();
-
-call.get('edoor.api.frontdesk.get_dashboard_data', {
-    property: JSON.parse(localStorage.getItem("edoor_property")).name,
-    date: working_day.date_working_day
-}).then((result) => {
-    data.value = result.message
-    const documentStyle = getComputedStyle(document.body);
-    chartData.value.push({label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color')})
-    chartData.value.push({label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color')})
+const chartData = ref([]) 
+watch(()=> [props.date], ([newValue])=>{
+    let filterDate = working_day.date_working_day
+    if (newValue){
+        filterDate = gv.dateApiFormat(newValue)
+    }
+    loadData(filterDate)
 })
+onMounted(() => {
+    loadData(working_day.date_working_day)
+})
+function loadData(date){
+    chartData.value = []
+    getApi('frontdesk.get_dashboard_data', {
+        property: JSON.parse(localStorage.getItem("edoor_property")).name,
+        date: date
+    }).then((result) => {
+        data.value = result.message
+        const documentStyle = getComputedStyle(document.body);
+        chartData.value.push({label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color')})
+        chartData.value.push({label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color')})
+    })
+}
 </script>

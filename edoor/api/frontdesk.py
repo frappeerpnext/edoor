@@ -54,9 +54,9 @@ def get_dashboard_data(property = None,date = None):
  
     return {
         "working_date":working_date,
-        "total_room":total_room,
-        "total_room_occupy":total_room_occupy,
-        "total_room_vacant": total_room - total_room_occupy,
+        "total_room":total_room or 0,
+        "total_room_occupy":total_room_occupy or 0,
+        "total_room_vacant": (total_room or 0) - (total_room_occupy or 0),
         "arrival":stay[0]["total_arrival"],
         "arrival_remaining": stay[0]["arrival_remaining"],
         "departure":stay[0]["total_departure"],
@@ -172,7 +172,11 @@ def get_edoor_setting(property = None):
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
     edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon"], order_by="sort_order")
-    
+    room_revenue_code = frappe.db.get_default("room_revenue_code")
+    if room_revenue_code:
+        account_code = frappe.get_doc("Account Code", room_revenue_code)
+        if account_code.tax_rule:
+            edoor_setting["room_tax"]  = frappe.get_doc("Tax Rule",account_code.tax_rule)
 
     return {
         "user":get_logged_user(),
@@ -191,7 +195,7 @@ def get_logged_user():
         "phone_number":data.phone,
         "photo":data.user_image,
         "property":property,
-        "roles":set(d.role for d in data.roles)
+        "roles":frappe.get_roles(frappe.session.user)
     }
 
 @frappe.whitelist()
@@ -223,10 +227,23 @@ def get_working_day(property = ''):
 
     
 @frappe.whitelist()
-def get_room_chart_resource(property = '', room_type = '', building = '', view_type='room_type'):
+def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
     resources = []
-
+    filters = ""
+    if room_number:
+        filters = filters + " AND `name` = '{}'".format(room_number)
+    if building:
+        filters = filters + " AND building = '{}'".format(building)
+    if floor:
+        filters = filters + " AND floor = '{}'".format(floor)
+    if room_type_group:
+        filters = filters + " AND room_type_group = '{}'".format(room_type_group)
     if view_type == 'room_type':
+        filter_room_type = ""
+        if room_type:
+            filter_room_type = filter_room_type + " AND name = '{}'".format(room_type)
+        if room_type_group:
+            filter_room_type = filter_room_type + " AND room_type_group = {}".format(room_type_group)
         sql = """
             select 
             name,
@@ -235,13 +252,13 @@ def get_room_chart_resource(property = '', room_type = '', building = '', view_t
             alias
             from 
                 `tabRoom Type` 
-            where property='{}'
+            where property='{0}'{1}
             
         """
-        sql=sql.format(property)
+        sql=sql.format(property,filter_room_type)
         room_types = frappe.db.sql(sql, as_dict=1)
         for t in room_types:
-            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{}' and disabled = 0 order by room_number".format(t["name"]),as_dict=1)
+            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and disabled = 0 {1} order by room_number".format(t["name"], filters),as_dict=1)
             resources.append({
                 "id":t["name"],
                 "title":t["room_type"],
@@ -251,7 +268,7 @@ def get_room_chart_resource(property = '', room_type = '', building = '', view_t
                 "children": rooms
             })
     else:
-        resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where disabled = 0 order by room_number",as_dict=1)
+        resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where disabled = 0 {0} {1} order by room_number".format(filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
     
     resources.append({
         "id": "vacant_room",
@@ -288,9 +305,7 @@ def get_room_chart_resource(property = '', room_type = '', building = '', view_t
 
 
 @frappe.whitelist()
-def get_room_chart_calendar_event(property, start=None,end=None):
-    
-
+def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
     events = []
     sql = """
         select 
@@ -316,18 +331,20 @@ def get_room_chart_calendar_event(property, start=None,end=None):
         where 
             show_in_room_chart = 1   and 
             name in (
-                select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' 
+                select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' {}
             ) and 
             property = '{}'
 
     """
     sql = sql.format(
             datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'), 
-            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d')
-            ,property)
+            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'),
+            "AND data_keyword LIKE '%{}%'".format(keyword) if keyword else "",
+            property)
   
-    
+ 
     data = frappe.db.sql(sql, as_dict=1)
+ 
     for d in data:
         d["editable"]  = d["editable"] ==1
     events = data

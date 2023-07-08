@@ -24,7 +24,7 @@
                             </div>
                     </div>
                 </div>
-                <ComPlaceholder text="There are no Comment and Notice yet" :loading="loading" :is-not-empty="list.length > 0">
+                <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
                     <div v-for="(i, index) in list" :key="index" class="mb-3 p-3 rounded-xl shadow-card-edoor" :class="(i.note_type == 'Notice') ? 'bg-yellow-notice-bg text-yellow-700' : 'bg-commnet-cart' ">
                         <div class="flex justify-between">
                             <div class="flex items-center">
@@ -62,7 +62,9 @@
     const gv = inject("$gv");
     const props = defineProps({
         doctype: String,
-        docname: String
+        docname: String,
+        reservationStay:String,
+        reservation:String
     })
     let op = ref() 
     const loading = ref(false)
@@ -113,7 +115,7 @@
         op.value.data = selected
         op.value.toggle($event)
     }
-    function onCreate(){ 
+    function onCreate(){
         if(create.value.note_type == 'Notice'){
             onSaveNote('Frontdesk Note', create.value)
         }else{
@@ -133,12 +135,18 @@
             return
         }
         saving.value = true
+        // for folio trancation
+        console.log(props)
+        if(props.doctype == 'Folio Transaction'){
+            data.reservation = props.reservation || ''
+            data.reservation_stay = props.reservationStay || ''
+        }
         data.reference_doctype = props.doctype
         data.reference_name = props.docname
         data.comment_type = 'Comment'
         data.comment_by = currentUser.name
-        data.name = op.value.data?.name || ''
-        createUpdateDoc(doctype,data).then((r)=>{
+        data.name = op.value.data?.name || '' 
+        createUpdateDoc(doctype,{data:data}).then((r)=>{
             saving.value = false
             create.value = {
                 note_type: 'Comment',

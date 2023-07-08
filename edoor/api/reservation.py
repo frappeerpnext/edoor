@@ -18,7 +18,7 @@ def test():
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
-    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','room_type_alias','guest','total_charge','balance','total_payment','reservation_status','status_color','guest_name','pax','child','adult','adr_rate', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms'])
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr_rate', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms'])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     return {
         "reservation":reservation,
@@ -92,6 +92,7 @@ def get_folio_detail(name):
 
 @frappe.whitelist()
 def check_room_availability(property,room_type_id=None,start_date=None,end_date=None):
+    working_day = get_working_day(property)
     end_date = add_to_date(end_date,days=-1)
     if not room_type_id:
         room_type_id = ''
@@ -116,6 +117,10 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
                     date between '{2}' and '{3}' 
             )   
     """
+    #check if arrival date is equal to current system date then check room availabityy is check with house keeping status
+    # concat where condition with show_in_room_availability = 1
+    if str(start_date) == str(working_day["date_working_day"]):
+        sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
 
     sql = sql.format(property,room_type_id,start_date, end_date)
      
@@ -126,21 +131,30 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
 def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None, room_type_id=None):
     end_date = add_to_date(end_date,days=-1)
     #get all room type and total room 
-
-    room_type = frappe.db.sql("select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}' group by room_type_id,room_type".format(property),as_dict=1)
+    sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}'  group by room_type_id,room_type".format(property)
+    if room_type_id:
+        sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}' and room_type_id = '{}'  group by room_type_id,room_type".format(property,room_type_id)
+    room_type = frappe.db.sql(sql_room_type,as_dict=1)
+    
     for t in room_type:
-        sql = "select coalesce(count(  distinct room_id),0) as total_room, SUM(if(room_id = '' OR room_id IS NULL, 1,0)) AS unassign_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
+        #get total room occupy from temp room occupy 
+        #we count stay_room_id because some reervation stay is not yet assign room
+        sql = "select count(room_type_id) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}' group by date order by count(room_type_id) desc limit 1".format(t["name"],start_date,end_date)
         room_type_occupy = frappe.db.sql(sql,as_dict=1)
-        if room_type_occupy and room_type_id != t['name']:
-            unassign_room = room_type_occupy[0]['unassign_room'] or 0
-            if unassign_room > 0:
-                t["occupy"] = room_type_occupy[0]["total_room"] + unassign_room
-            else:
-                t["occupy"] = room_type_occupy[0]["total_room"]
-            # t["occupy"] = frappe.db.sql(sql,as_dict=1)[0]["total_room"]
+        
+        if room_type_occupy:
+            t["occupy"] = room_type_occupy[0]["total_room"]
+        else:
+            t["occupy"] = 0
+
+        t["total_vacant_room"] = (t["total_room"] or 0) - ( t["occupy"] or 0)
+    
         t["rate"] = get_room_rate(property, rate_type, t["name"], business_source, start_date)
- 
-    return  [d for d in room_type if ((d['total_room'] or 0) - (d["occupy"] or 0) > 0)]
+
+    #return  [d for d in room_type if ((d['total_room'] or 0) - (d["occupy"] or 0) > 0)]
+    return  room_type
+
+
 @frappe.whitelist()
 def check_room_occupy(property, room_id, start_date=None, end_date=None, reservation_stay=None):
     end_date = add_to_date(end_date,days=-1)
@@ -151,20 +165,52 @@ def check_room_occupy(property, room_id, start_date=None, end_date=None, reserva
     return room_occupy[0][0]
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods="POST")
 def add_new_fit_reservation(doc):
     
-    doc = json.loads(doc)
-    #check if not have guest selected then create new guest
 
+
+    arrival_date = doc["reservation"]["arrival_date"]
+    working_day = get_working_day(doc["reservation"]["property"])
+    
+    if not working_day["cashier_shift"]:
+        frappe.throw("Please start cashier shift first") 
+
+ 
+    if frappe.utils.getdate(arrival_date) < working_day["date_working_day"]:
+        
+        if frappe.db.get_default("allow_user_to_add_back_date_transaction")==1:
+            backdate_role = frappe.db.get_default("role_for_back_date_transaction")
+            if backdate_role:
+                if not backdate_role in frappe.get_roles(frappe.session.user):
+                    frappe.throw("You don't have permission to add back date reservation")
+            else:
+                frappe.throw("You can not add reservation to past date")
+        else:
+            frappe.throw("You can not add reservation to past date")
+
+
+    
+    #validate stay with room number duplicate 
+    room_ids = [d["room_id"] for d in doc["reservation_stay"] if (d["room_id"] or '')!=""]
+    if len(room_ids) != len(set(room_ids)):
+        frappe.throw("You cannot select duplicate room number")
+
+    #check room avaliability
+    validate_room_type_availability(doc )
+    
+
+    
+    #check if not have guest selected then create new guest
     if not check_field(doc["reservation"],"guest"):
+        
         guest = frappe.get_doc(doc["guest_info"]).insert()
+      
         doc["reservation"]["guest"] = guest.name
     else:
         guest = frappe.get_doc(doc["guest_info"]).save()
     
     #prevent code call on_pdate to reservation stay
-    doc["update_reservation_stay"] = False
     reservation = frappe.get_doc(doc["reservation"]).insert()
     
     #start insert insert reservation stay
@@ -178,19 +224,23 @@ def add_new_fit_reservation(doc):
         if   'room_id' in d.keys():
             room = d["room_id"]
         #set virtural attribute field to update reservation after all stay is add to database
-        
-        update_reservation = False
-        if i ==len(doc["reservation_stay"])-1:
-            update_reservation = True
+
 
         stay = {
             "doctype":"Reservation Stay",
-            "update_reservation":update_reservation,
+            "update_reservation":False,
             "reservation":reservation.name,
             "reservation_status":"Reserved",
             "arrival_time":reservation.arrival_time,
             "departure_time":reservation.departure_time,
             "note":reservation.note,
+            "tax_rule":reservation.tax_rule,
+            "rate_include_tax":reservation.rate_include_tax or "No",
+            "tax_1_rate":reservation.tax_1_rate or 0,
+            "tax_2_rate":reservation.tax_2_rate or 0,
+            "tax_3_rate":reservation.tax_3_rate or 0,
+            "pay_by_company":doc["reservation"]["pay_by_company"],
+            "is_master":d["is_master"],
             "stays":[
                 {
                     "doctype":"Reservation Stay Room",
@@ -214,54 +264,254 @@ def add_new_fit_reservation(doc):
         stay_names.append(stay_doc.name)
 
         
-        i=i+1
 
     #update summary to reservation stay
     for s in stay_names:
         update_reservation_stay(s, run_commit=False)
 
     #udpate summary to reservation 
-    #pending todo
+    update_reservation(name=reservation.name, run_commit= False)
+ 
     frappe.db.commit()
     return reservation
 
+def validate_room_type_availability(doc):
+    room_type_ids = set([d["room_type_id"] for d in doc["reservation_stay"]])
+    for rt in room_type_ids:
+       
+        total_rooms = len( [d["room_type_id"] for d in doc["reservation_stay"] if d["room_type_id"] == rt])
+        available_room = check_room_type_availability(
+                    property=doc["reservation"]["property"],
+                    room_type_id=rt,
+                    start_date=doc["reservation"]["arrival_date"],
+                    end_date=doc["reservation"]["departure_date"],
+                )
+         
+        vacant_room = available_room[0]["total_vacant_room"]
+
+        if total_rooms>vacant_room:
+            frappe.throw("You don't have enought room for room type {}. Room available {}, but you book {}".format(available_room[0]["room_type"], 0 if vacant_room< 0 else vacant_room, total_rooms))
+        
+        
+
+@frappe.whitelist(methods="POST")
+def stay_add_more_rooms(reservation=None, data=None):
+    reservation = frappe.get_doc("Reservation", reservation)
+    for d in data:
+        if d['departure_date'] <= d['arrival_date']:
+            frappe.throw("Departure date cannot less than or equal to arrival date")
+        stay = {
+            "doctype":"Reservation Stay",
+            "reservation":reservation.name,
+            "update_reservation":True,
+            "update_room_occupy":True,
+            "reservation_status":"Reserved",
+            "arrival_time":reservation.arrival_time,
+            "departure_time":reservation.departure_time,
+            "note":reservation.note,
+            "child":d["child"],
+            "adult":d["adult"],
+            "stays": [{
+                "room_type_id": d["room_type_id"],
+                "room_id":d["room_id"] or None,
+                "rate":d["rate"] or 0,
+                "guest":reservation.guest,
+                "reservation_status":"Reserved",
+                "start_date":d["arrival_date"],
+                "end_date":d["departure_date"],
+                "child":d["child"],
+                "adult":d["adult"],
+                "start_time":reservation.arrival_time,
+                "end_time":reservation.departure_time,
+                "is_manual_rate":d["is_manual_rate"]
+            }]
+        }
+        frappe.get_doc(stay).insert()
+    frappe.db.commit()
+    return reservation
 @frappe.whitelist(methods="POST")
 def check_in(reservation,reservation_stays=None,is_undo = False):
-    #reservation_stays is list of stay in a reservation separate by comma
+    #reservation_stays is array
     #reservation_stays is apply then we skip check reservation 
+    #validate user permission check if user have role in check in role in edoor setting
+    #validate with working day and cashier shift
+    #validate with room is already assign room 
+    #after check in check if no folio then create 1 and mark as master
+    #add room charge to folio transaction
+    #check master room is already check in
+    #update check date and check in by in to reservation stay
+    check_in_role = frappe.db.get_default("check_in_role")
+ 
+    if not check_in_role in frappe.get_roles(frappe.session.user):
+        frappe.throw(frappe._("You don't have permission to perform this action"))
+    
+    
     doc = frappe.get_doc("Reservation",reservation)
     working_day = get_working_day(doc.property)
    
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
-    stays = []
+
     if not reservation:
         frappe.throw("There is no reservation to check in")
 
     if reservation_stays:
-        stays = reservation_stays.split(',')
+        stays = reservation_stays
     else:
         stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
-    
 
+    #check if master room is already check in
+    if not is_master_room_check_in(doc.name,reservation_stays):
+        frappe.throw("Please check in master room first")
+
+    housekeeping_status =  frappe.db.get_default("housekeeping_status_after_check_in")
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
+        #check if stay is not assign room then alert to user to asign room first
+        if Enumerable(stay.stays).where(lambda x: (x.room_id or "") =="").count()>=1:
+            frappe.throw("Please asign room to reservation stay #{}.".format(s))
+
         if stay.reservation_status in("In-house","Void","No Show","Cancelled","Checked In","Checked Out") and not is_undo:
             frappe.throw("Stay # {}. Room {}. This room is already {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
         if is_undo and not stay.reservation_status in("In-house","Checked In"):
             frappe.throw("Stay # {}. Room {}. This room is {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
       
-        if str(stay.arrival_date) != str(working_day["date_working_day"]):
+        if frappe.utils.getdate(stay.arrival_date) > working_day["date_working_day"]:
             frappe.throw("Stay # {}. Room {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
 
         stay.reservation_status = "In-house" if not is_undo else "Confirmed"
+        stay.checked_in_by = frappe.session.user
+        stay.checked_in_date = frappe.utils.now()
         stay.save()
+
+        #update room housekeeing status to occupy clean
+        room_id = stay.stays[0].room_id
+        room = frappe.get_doc("Room",room_id)
+        room.housekeeping_status = housekeeping_status
+        room.save()
+
+        #create folio 
+        master_folio = {}
+        if stay.is_master:
+            #check if folio is not create yet
+            if not frappe.db.exists("Reservation Folio",{"reservation_stay":stay.name}):
+                folio =create_folio(stay)
+                if folio:
+                    #get first rate from reservation room rate
+                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                    if (room_rates):
+                        for r  in room_rates:
+                            add_room_charge_to_folio(folio,r )
+                    else:
+                        frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+        else:
+            if not stay.pay_by_company:
+                folio = create_folio(stay)
+                if folio:
+                    #get first rate from reservation room rate
+                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                    if (room_rates):
+                        for r in room_rates:
+                            add_room_charge_to_folio(folio,r )
+                    else:
+                        frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+            else:
+                #add room rate to folio of master room
+                master_folio = get_master_folio(reservation)
+                if master_folio:
+                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                    if (room_rates):
+                        for r in room_rates:
+                            add_room_charge_to_folio(master_folio,r )
+                    else:
+                        frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+
+
 
     frappe.db.commit()
 
     return {
         "reservation":doc
     }
+
+
+def get_master_folio(reservation):
+    master_stay = frappe.db.get_list("Reservation Stay", filters={"reservation":reservation, "is_master":"1"})
+    if master_stay:
+        master_folio = frappe.db.get_list("Reservation Folio", fields=["*"], filters={"reservation_stay":master_stay[0].name, "is_master":1})
+        if master_folio:
+            return master_folio[0]
+    return None
+
+def create_folio(stay):
+    doc = frappe.get_doc({
+        "doctype":"Reservation Folio",
+        "reservation_stay":stay.name,
+        "guest":stay.guest
+    }).insert()
+    return doc
+
+def add_room_charge_to_folio(folio,rate):
+    account_code = frappe.get_doc("Account Code",frappe.db.get_default("room_revenue_code"))
+    doc = frappe.get_doc({
+        "doctype":"Folio Transaction",
+        "posting_date":rate.date,
+        "folio_number":folio.name,
+        "room_type_id":rate.room_type_id,
+        "room_id":rate.room_id,
+        "room_id":rate.room_id,
+        "input_amount":rate.input_rate,
+        "account_code":account_code.name,
+        "tax_rule":account_code.tax_rule,
+        "discount_type":rate.discount_type,
+        "discount":rate.discount,
+        "tax_1_rate":rate.tax_1_rate,
+        "tax_2_rate":rate.tax_2_rate,
+        "tax_3_rate":rate.tax_3_rate,
+        "rate_include_tax":rate.rate_include_tax
+    }).insert()
+
+
+def is_master_room_check_in(reservation,reservation_stays):
+
+    for s in reservation_stays:
+        if frappe.db.get_value("Reservation Stay",s,"is_master")==1:
+            return True
+        else:
+            if frappe.db.get_value("Reservation Stay",s,"pay_by_company") ==1:
+                return frappe.db.exists("Reservation Stay", {"reservation":reservation, "is_master":1,"reservation_status":"In-house"})
+    
+    return True 
+
+
+@frappe.whitelist(methods="POST")
+def mark_as_master_folio(reservation,reservation_stay):
+    doc = frappe.get_doc("Reservation Stay",reservation_stay)
+    working_day = get_working_day(doc.property)
+    if not working_day["cashier_shift"]:
+        frappe.throw("Please start cashier shift first")   
+
+    frappe.set_value("Reservation Stay",{"reservation":reservation,"is_master":1},"is_master",0)
+    
+    doc.is_master =1
+    doc.save()
+    #check if this reservation stay is already check in then and folio not exists
+    #create new folio and mark it as master folio
+    if doc.reservation_status =='In-house':
+        if not frappe.db.exists("Reservation Folio", {"reservation_stay":reservation_stay}):
+            frappe.get_doc(
+                {
+                    "doctype":"Reservation Folio",
+                    "guest":doc.guest,
+                    "reservation_stay":doc.name,
+                    "is_master":1
+                }
+            ).insert()
+    
+    frappe.db.commit()
+    return doc
+
+    
 
 @frappe.whitelist(methods="POST")
 def check_out(reservation,reservation_stays=None, is_undo=False):
@@ -398,7 +648,7 @@ def get_reservation_folio(reservation=None, reservation_stay=None):
 
 
 
-@frappe.whitelist()
+@frappe.whitelist(methods="POST")
 def get_room_rate(property, rate_type, room_type, business_source, date):
     sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)
     season = frappe.db.sql (sql, as_dict=1)
@@ -423,11 +673,16 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
             data = frappe.db.sql(sql_with_business_source, as_dict=1)
             rate = data[0]["rate"] or 0
             
+            
         if rate ==0:
+            #check rate from rate that dont have business source
+            sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
             data = frappe.db.sql(sql, as_dict=1)
             rate = data[0]["rate"] or 0
+
             
     if rate == 0:
+        #if still rate = 0 the  get rate from room type
         rate = room_type_rate
     return rate
 
@@ -440,6 +695,7 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
     #udpate to reservation room rate
     room_rates = []
     active_stays = []
+    stay = {}
     if reservation_stay:
         stay = frappe.get_doc("Reservation Stay", reservation_stay)
         if not stay.is_active_reservation:
@@ -449,17 +705,19 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
             frappe.throw("Reservation stay # {} is already checked out".format(reservation_stay))
         
         active_stays.append(reservation_stay)
-
+    else:
+        apply_to_all_stay = True
     if apply_to_all_stay:
         active_stays = frappe.get_all("Reservation Stay",filters={"is_active_reservation":1,"reservation":reservation}, page_length=10000,pluck='name')
+        
         
     room_rates = frappe.get_all("Reservation Room Rate",
                                 filters={
                                             "reservation_stay":['in',active_stays],
                                             "date":['>=',working_day["date_working_day"]]
                                 }, page_length=10000)
+   
     for r in room_rates:
-        
         doc = frappe.get_doc("Reservation Room Rate",r.name)
         doc.rate_type = rate_type
         doc.regenerate_rate = regenerate_new_rate
@@ -467,27 +725,19 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
 
     #update rate type to reservation stay
     for s in active_stays:
-        if s != stay.name:
-            doc = frappe.get_doc("Reservation Stay",s)
-            doc.rate_type = rate_type
-            doc.update_reservation = False
-            update_reservation_stay(doc=doc, run_commit = False)
-
-        
-    stay.rate_type = rate_type
+        doc = frappe.get_doc("Reservation Stay",s)
+        doc.rate_type = rate_type
+        doc.update_reservation = False
+        update_reservation_stay(doc=doc, run_commit = False)
     #disable update to reservation when update stay
-    stay_doc = update_reservation_stay(doc=stay, run_commit = False)
-     
-    #update rate type to reservation 
-    reservation_doc = update_reservation(name=reservation,run_commit=False)
-    
-
     frappe.db.commit()
-    if reservation_stay:
-        return stay_doc
-    else:
-        return reservation_doc
-
+    if reservation or apply_to_all_stay:
+        reservation_doc = frappe.get_doc("Reservation", reservation)
+        reservation_doc.rate_type = rate_type
+        reservation_doc.update_reservation = True
+        reservation_doc.save()
+        reservation_doc = update_reservation(name=reservation,run_commit=False)
+    return True
 
 @frappe.whitelist()
 def get_current_room_reservation(room_id):
@@ -509,15 +759,20 @@ def get_reservation_comment_note(doctype, docname):
 
 @frappe.whitelist(methods="POST")
 def change_stay(data):
-    room_occupy = check_room_occupy(property=data['property'],room_id=data['room_id'],start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
+    room_id = ""
+    if hasattr(data, 'room_id') and data["room_id"]:
+        room_id = data["room_id"]
+    room_occupy = check_room_occupy(property=data['property'],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
         doc = frappe.get_doc("Reservation Stay",data['parent'])
-        doc.update_reservation_stay = True
+        doc.update_reservation = True
         doc.update_room_occupy = True
+        doc.update_reservation_stay = True
+        doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
         stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
-
+        
         for s in stays:
             if s.name == data['name']:
                 s.start_date = data['start_date']
@@ -526,9 +781,26 @@ def change_stay(data):
             index = stays.index(s) + 1
             if len(stays) > index and stays[index]:
                 stays[index].start_date = s.end_date
+                if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
+                    frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
         doc.save()
         frappe.db.commit()
         return doc
+
+@frappe.whitelist(methods="POST")
+def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, departure_date=None):
+    doc = frappe.get_doc("Reservation Stay",reservation_stay)
+    # multiple says
+    if len(doc.stays) > 1:
+        frappe.throw("This reservation stay has multiple rooms. Please change in room stay.")
+    else:
+        doc.stays[0].start_date = arrival_date
+        doc.stays[0].end_date = departure_date
+    doc.update_reservation = True
+    doc.update_room_occupy = True
+    doc.save()
+    frappe.db.commit()
+    return doc
 
 @frappe.whitelist(methods="DELETE")
 def delete_stay_room(parent,name, note):
@@ -540,7 +812,7 @@ def delete_stay_room(parent,name, note):
             deleted_row = p
     stay.save()
     stay.remove(deleted_row)
-    stay.update_reservation_stay = True
+    stay.update_reservation = True
     stay.update_room_occupy = True
     stay.save()
     frappe.db.commit()
@@ -550,7 +822,6 @@ def delete_stay_room(parent,name, note):
 def update_note(data):
     note = '' if data.get("note") is None else data['note']
     housekeeping_note = '' if data.get("housekeeping_note") is None else data['housekeeping_note']
-
     doc = frappe.get_doc(data['doctype'], data['name'])
     doc.note = note
     doc.housekeeping_note = housekeeping_note
@@ -577,52 +848,63 @@ def update_note(data):
     return doc
 
 @frappe.whitelist(methods="POST")
-def update_reservation_status(stays, status, note):
+def update_reservation_status(reservation, stays, status, note):
     for s in stays:
+        if not s["reservation_status"] == "Reserved" or s["reservation_status"] == "Confirmed":
+            frappe.throw("Room Stay has status {}".format(s["reservation_status"].lower()))
         stay = frappe.get_doc('Reservation Stay', s['name'])
         stay.reservation_status = status
         stay.reservation_status_note = note
-        stay.update_reservation_stay = True
+        stay.is_active_reservation = False
         stay.update_room_occupy = True
         stay.save()
-    return True
+    frappe.db.commit()
+    update_reservation(reservation)
+    return stays
 @frappe.whitelist()
 def get_audit_trail(doctype, docname):
-    # stay room rate
-    stay_room_rates = []
-    meta_room_rate = None
-    stay_names = "'{}'".format(docname)
+    doc_meta = []
+    room_rate = ""
+    filter_name = ""
+    def get_other_doc(doctype=None, field=None, field_name=None):
+        separator = "', '"
+        data = frappe.db.get_list(doctype, filters={field: field_name})
+        sql_filters =  "'" + separator.join([r.name for r in data ]) + "'"
+        meta = frappe.get_meta(doctype=doctype)
+        doc_meta.append(meta)
+        return sql_filters
+    filters = ""
+    filter_folio_transactions = ""
+    filter_reservation_stay = ""
     if doctype == 'Reservation':
-        reservation_stays = frappe.db.get_list('Reservation Stay', filters={'reservation': docname})
-        for r in reservation_stays:
-            stay_names = stay_names + ",'{}'".format(r.name)
-            room_rate = frappe.db.get_list('Reservation Room Rate',fields=['name', 'reservation','reservation_stay'], filters={'reservation_stay': r.name})
-            stay_room_rates = stay_room_rates + room_rate
-    else:
-        room_rate = frappe.db.get_list('Reservation Room Rate',fields=['name', 'reservation','reservation_stay'], filters={'reservation_stay': docname})
-        stay_room_rates = stay_room_rates + room_rate
-    sql_room_rate = ""
-    if len(stay_room_rates) > 0:
-        meta_room_rate = frappe.get_meta("Reservation Room Rate")
-        for rr in stay_room_rates:
-            sql_room_rate = sql_room_rate + "'{}',".format(rr.name)
-    if sql_room_rate:
-        sql_room_rate = ",{}".format(sql_room_rate[:-1])
+        filter_name = 'reservation'
+        filter_reservation_stay = get_other_doc('Reservation Stay',filter_name, docname)
+        
+    elif doctype == 'Reservation Stay':
+        filter_name = 'reservation_stay'
+        filter_reservation_stay = "'{}'".format(docname)
+    
+    if filter_name:
+        filter_folio_transactions = get_other_doc('Folio Transaction',filter_name,docname)
+        room_rate = get_other_doc('Reservation Room Rate',filter_name,docname)
+    filters = (','.join(filter(None,[("'{}'".format(docname)),room_rate,filter_folio_transactions,filter_reservation_stay])))
+
     sql = """
-        SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname IN({0}{1})
+        SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname IN({0})
         UNION
         SELECT `name`,reference_name AS `docname`,reference_doctype AS `doctype`, 'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_name IN({0})
         UNION
         SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_name IN({0})
         UNION
-        SELECT `name`,reservation_stay AS `docname`, '' AS `doctype`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE reservation_stay IN({0})
+        SELECT `name`,reservation_stay AS `docname`, '' AS `doctype`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE `name` IN({2})
         UNION
-        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, 'Deleted Folio' AS comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`, CONCAT(reservation,'|',reservation_stay,'|',reservation_folio,'|',folio_number,'|',deleted_document,'|',reason) AS `content` FROM `tabComment` WHERE comment_type = 'Deleted' AND reservation_stay IN({0})
-    """
+        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, 'Deleted Folio' AS comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`, CONCAT(reservation,'|',reservation_stay,'|',reservation_folio,'|',folio_number,'|',deleted_document,'|',reason) AS `content` FROM `tabComment` WHERE comment_type = 'Deleted' AND reservation_stay IN({1})
+        UNION
+        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`,`content` FROM `tabComment` WHERE comment_type = 'Created' AND reservation_stay IN({1})
+    """ 
+    sql = sql.format(filters or "''",filter_reservation_stay or "''",filter_folio_transactions or "''")
 
-    sql = sql.format(stay_names,sql_room_rate)
     data = frappe.db.sql(sql, as_dict=1)
-
     meta = frappe.get_meta(doctype)
     def get_label(key):
         if(meta.fields and len(meta.fields) > 0):
@@ -641,7 +923,8 @@ def get_audit_trail(doctype, docname):
             if field:
                 return field.options
             return ''
-        
+    
+
     result = []
     for record in data:
         prefix = 'You' if record.owner == frappe.session.user else record.owner
@@ -665,9 +948,9 @@ def get_audit_trail(doctype, docname):
                 count_result = 0
                 changed_other_doc = ''
                 meta_fields = []
-                if record['doctype'] == 'Reservation Room Rate':
+                if not record['doctype'] == doctype:
                     changed_other_doc = " in <b>#{}</b>".format(record['doctype'])
-                    meta_fields = meta_room_rate.fields
+                    meta_fields = Enumerable(doc_meta).single_or_default(lambda r:r.name == record['doctype']).fields
                 else:
                     meta_fields = meta.fields
                 for c in content['changed']:
@@ -725,6 +1008,12 @@ def get_audit_trail(doctype, docname):
                 record['removed'] = pro_list
                 record['description'] = description.rstrip(description[-2]) if len(description) > 2 else description
             result.append(record)
+        elif record.type == 'Comment' and record.comment_type == 'Created':
+            content = json.loads(record.content) 
+            list_data = [{'property':k, 'value':v} for k,v in content.items()]
+            record['content'] = list_data
+            record['description'] = "{} created {} #<b>{}</b>".format(prefix, record.doctype.lower(), content['name'] or '')
+            result.append(record)
         else:
             result.append(record)
     return result
@@ -732,6 +1021,7 @@ def get_audit_trail(doctype, docname):
 
 @frappe.whitelist()
 def get_folio_transaction(folio_number):
+ 
     show_account_code = frappe.db.get_default("show_account_code_in_folio_transaction") ==1
     
     data = frappe.db.sql("select * from `tabFolio Transaction` where folio_number='{}' and coalesce(parent_reference,'')=''".format(folio_number),as_dict=1)
@@ -755,11 +1045,21 @@ def get_folio_transaction(folio_number):
                 "owner":d["owner"],
                 "modified_by":d["modified_by"],
                 "creation":d.creation,
+                "show_print_preview":d.show_print_preview,
+                "print_format":d.print_format
 
             })
 
 
-        balance = balance + (d.amount * (1 if d.type=="Debit" else -1))
+      
+        #this is main transaction
+        amount = d.amount
+         
+        # if d.rate_include_tax=="Yes":
+        #     amount =( amount - d.total_tax ) + d.discount_amount
+        
+        balance = balance + (amount * (1 if d.type=="Debit" else -1))        
+
         folio_transactions.append({ 
             "name":d["name"],
             "room_number":d.room_number,
@@ -767,12 +1067,14 @@ def get_folio_transaction(folio_number):
             "quantity": d["quantity"],
             "note":d["note"],
             "posting_date": d["posting_date"],
-            "debit": d["amount"]  if d["type"] == 'Debit' else 0,
-            "credit": d["amount"]  if d["type"] == 'Credit' else 0,
+            "debit": amount  if d["type"] == 'Debit' else 0,
+            "credit": amount  if d["type"] == 'Credit' else 0,
             "balance":balance,
             "owner":d["owner"],
             "modified_by":d["modified_by"],
             "creation":d.creation,
+            "show_print_preview":d.show_print_preview,
+            "print_format":d.print_format
 
         })
 
@@ -817,13 +1119,22 @@ def get_folio_transaction(folio_number):
 
 
 @frappe.whitelist(methods="POST")
-def update_room_rate(room_rate_names= None,data=None):
+def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
+    
+    #validate reservation status 
+    #reservation_stays is array string
+
+    if reservation_stays:
+        for s in reservation_stays:
+            status = frappe.db.get_value("Reservation Stay",s,"reservation_status")
+            if frappe.db.get_value("Reservation Status",status, "allow_user_to_edit_information")==0:
+                frappe.throw("Reservation Stay: {0} is {1}. {1} reservation is not allow to change information".format(s, status) )
  
     if  len(room_rate_names) ==0:
         room_rate_names.append(data["name"])
     for d in room_rate_names:
         doc = frappe.get_doc("Reservation Room Rate",d)
-        doc.is_manual_rate = 1
+        doc.is_manual_rate = data["is_manual_rate"]
         doc.rate_type = data["rate_type"]
         doc.input_rate = data["input_rate"]
         doc.discount_type = data["discount_type"] 
@@ -846,6 +1157,50 @@ def update_room_rate(room_rate_names= None,data=None):
     #update to reservation
     # #using enqure process  
     return frappe.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":data["reservation_stay"]},limit_page_length=1000,order_by="date")
+    
+
+ 
+@frappe.whitelist(methods="POST")
+def update_business_source(reservation, business_source, regenerate_rate,reservation_stay):
+    reservation_doc = frappe.get_doc("Reservation", reservation)
+    reservation_doc.business_source = business_source
+    reservation_doc.save()
+ 
+     
+    working_day = get_working_day(reservation_doc.property)
+
+    if regenerate_rate:
+        active_stays = frappe.get_all("Reservation Stay",filters={"is_active_reservation":1,"reservation":reservation}, page_length=10000,pluck='name')
         
+        room_rates = frappe.get_all("Reservation Room Rate",
+                                    filters={
+                                                "is_manual_rate":['=',0],
+                                                "reservation_stay":['in',active_stays],
+                                                "date":['>=',working_day["date_working_day"],
+                                                ]
+                                    }, page_length=10000)
+      
+        for r in room_rates:
+            doc = frappe.get_doc("Reservation Room Rate",r.name)
+            doc.regenerate_rate = regenerate_rate
+            doc.save()
 
-
+        for s in active_stays:
+            update_reservation_stay(name=s, run_commit = False)
+         
+        update_reservation(name=reservation, run_commit = False)
+    
+    frappe.db.commit()
+    if reservation_stay:
+        return frappe.get_doc("Reservation Stay", reservation_stay)
+    else:
+        return reservation_doc
+    
+@frappe.whitelist()
+def get_folio_transaction_detail(name):
+    folio_transaction = frappe.get_doc("Folio Transaction", name)
+    account_code = frappe.get_doc("Account Code", folio_transaction.account_code)
+    return {
+        "folio_transaction":folio_transaction,
+        "account_code":account_code
+    }

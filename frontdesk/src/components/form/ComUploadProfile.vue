@@ -96,7 +96,7 @@ const onSelectedFiles = (event) => {
         if(r.data && r.data.message){
             const result = r.data.message
             emit('update:modelValue', result.name)
-            //onUpdateDoctype( result.file_url)
+            onUpdateDoctype( result.file_url)
         }
     })
     .catch(e => console.error(e))
@@ -109,18 +109,18 @@ function onRemove(){
     emit('update:modelValue', false)
 }
 
-// function onUpdateDoctype(file_url){
-//     if(props.docname){
-//         const dataUpdate = {}
-//         dataUpdate[props.fieldname] = file_url
-//         updateDoc(props.doctype, props.docname, dataUpdate).then((r)=>{
-//             emit('update:modelValue', '')
-//         })
+function onUpdateDoctype(file_url){
+    if(props.docname){
+        const dataUpdate = {}
+        dataUpdate[props.fieldname] = file_url
+        updateDoc(props.doctype, props.docname, dataUpdate).then((r)=>{
+            emit('update:modelValue', '')
+        })
         
-//     }else{
-//         emit('update:modelValue', file_url)
-//     }
-// }
+    }else{
+        emit('update:modelValue', file_url)
+    }
+}
 </script>
 <style>
 .btn-upload-profile .p-fileupload,

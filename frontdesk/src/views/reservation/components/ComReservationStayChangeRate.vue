@@ -11,8 +11,8 @@
                     <div class="translate-y-2/4 text-center">
                         <i class="pi pi-replay text-xl text-dark font-bold"></i>
                     </div>
-                </div>    
-                <InputNumber class="text-right" v-model="rate" :min="0" @update:modelValue="onChange"/>
+                </div>
+                <InputNumber class="text-right" v-model="rate" :min="0"/>
             </div>
         </div>
         <template #footer-right>

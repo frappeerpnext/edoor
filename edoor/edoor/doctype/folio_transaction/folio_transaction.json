@@ -9,11 +9,13 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
+  "reference_type",
   "reference_number",
   "folio_number",
   "property",
   "reservation",
   "reservation_stay",
+  "reservation_status",
   "column_break_7",
   "posting_date",
   "working_day",
@@ -63,6 +65,8 @@
   "section_break_31",
   "total_amount",
   "note",
+  "note_by",
+  "note_modified",
   "payment_information_section",
   "credit_card_number",
   "card_holder_name",
@@ -84,6 +88,8 @@
   "account_category",
   "account_category_sort_order",
   "allow_enter_quantity",
+  "show_print_preview",
+  "print_format",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -634,11 +640,45 @@
    "fieldname": "allow_enter_quantity",
    "fieldtype": "Check",
    "label": "Allow Enter Quantity"
+  },
+  {
+   "default": "0",
+   "fetch_from": "account_code.show_print_preview",
+   "fieldname": "show_print_preview",
+   "fieldtype": "Check",
+   "label": "Show Print Preview"
+  },
+  {
+   "fetch_from": "account_code.print_format",
+   "fieldname": "print_format",
+   "fieldtype": "Data",
+   "label": "Print Format"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Data",
+   "label": "Reference Type"
+  },
+  {
+   "fetch_from": "reservation_stay.reservation_status",
+   "fieldname": "reservation_status",
+   "fieldtype": "Data",
+   "label": "Reservation Status"
+  },
+  {
+   "fieldname": "note_by",
+   "fieldtype": "Data",
+   "label": "Note By"
+  },
+  {
+   "fieldname": "note_modified",
+   "fieldtype": "Datetime",
+   "label": "Note Modified"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-26 17:35:42.268637",
+ "modified": "2023-07-03 17:07:14.233069",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

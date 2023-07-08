@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComReservationStayPanel class="mb-2" titleClass="text-color-teal-edoor" title="Master Guest">
+        <ComReservationStayPanel class="" titleClass="text-color-teal-edoor" title="Master Guest">
             <template #btn>
                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />

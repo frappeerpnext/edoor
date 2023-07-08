@@ -48,7 +48,7 @@ function onClick(){
     const reservation_field = ['*']
     if(props.dialogKey){
         if(props.dialogKey == 'arrival'){
-            alert(reservation_chart.start_date)
+   
             getReservationStay({
                 fields: reservation_field,
                 filters: [['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")]]

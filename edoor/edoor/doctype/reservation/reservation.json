@@ -97,7 +97,16 @@
   "note_by",
   "housekeeping_note_by",
   "note_modified",
-  "housekeeping_note_modified"
+  "housekeeping_note_modified",
+  "tax_section",
+  "tax_rule",
+  "rate_include_tax",
+  "tax_1_name",
+  "tax_1_rate",
+  "tax_2_name",
+  "tax_2_rate",
+  "tax_3_name",
+  "tax_3_rate"
  ],
  "fields": [
   {
@@ -561,6 +570,55 @@
   {
    "fieldname": "column_break_79",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "tax_rule",
+   "fieldtype": "Link",
+   "label": "Tax Rule",
+   "options": "Tax Rule"
+  },
+  {
+   "fetch_from": "tax_rule.tax_1_name",
+   "fieldname": "tax_1_name",
+   "fieldtype": "Data",
+   "label": "Tax 1 Name"
+  },
+  {
+   "fieldname": "tax_1_rate",
+   "fieldtype": "Float",
+   "label": "Tax 1 Rate"
+  },
+  {
+   "fetch_from": "tax_rule.tax_2_name",
+   "fieldname": "tax_2_name",
+   "fieldtype": "Data",
+   "label": "Tax 2 Name"
+  },
+  {
+   "fieldname": "tax_2_rate",
+   "fieldtype": "Float",
+   "label": "Tax 2 Rate"
+  },
+  {
+   "fetch_from": "tax_rule.tax_3_name",
+   "fieldname": "tax_3_name",
+   "fieldtype": "Data",
+   "label": "Tax 3 Name"
+  },
+  {
+   "fieldname": "tax_3_rate",
+   "fieldtype": "Float",
+   "label": "Tax 3 Rate"
+  },
+  {
+   "fieldname": "rate_include_tax",
+   "fieldtype": "Data",
+   "label": "Rate Include Tax"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -571,7 +629,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-06-22 13:19:01.734829",
+ "modified": "2023-07-01 03:40:57.840733",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

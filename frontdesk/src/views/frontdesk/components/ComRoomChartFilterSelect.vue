@@ -22,18 +22,29 @@
             <div>
                 <span class="p-input-icon-left">
                     <i class="pi pi-search" />
-                    <InputText class="btn-set__h" v-model="value1" placeholder="Guest Name" />
+                    <InputText class="btn-set__h" v-model="keyword" placeholder="Guest Name" v-debounce="onSearch"/>
                 </span>
             </div>
         </div>
     </div>
 </template>
-<script setup>
-import { reactive } from 'vue';
+<script setup> 
+import { reactive,watch,ref } from 'vue';
+const emit = defineEmits(["onFilterResource","onSearch"])
+const keyword = ref("")
 const filter = reactive({
-    room_type: null,
-    room_number: null
+    room_type: "",
+    room_number: "",
+    room_type_group: "",
+    building: "",
+    floor: ""
 })
+watch(filter, (newValue, oldValue) => {
+    emit("onFilterResource",newValue)
+})
+function onSearch(key){
+    emit("onSearch", key)
+}
 </script>
 <style lang="">
     

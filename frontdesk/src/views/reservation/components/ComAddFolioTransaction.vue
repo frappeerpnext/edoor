@@ -22,11 +22,7 @@
                     </div>
                     <div class="col-6">
                     <label for="input_amount">Amount</label>
-                    <InputNumber inputClass="w-full" class="w-full" inputId="input_amount" v-model="doc.input_amount" 
-                        mode="currency"
-                        currency="USD" 
-                        locale="en-US"
-                        ref="input_amount" />
+                    <ComInputCurrency classCss="w-full" v-model="doc.input_amount"/>
                     </div>
                     <div v-if="doc.account_name" class="col-12 -mt-2">
                         <div class="bg-green-100 border-l-4 border-green-400 p-2">
@@ -71,8 +67,8 @@
                     <div v-if="doc.require_city_ledger_account == 1 && doc?.account_code" class="col-12">
                         <div class="grid">
                             <div class="col-12">
-                                <label>City Ledger Account</label>
-                                <ComAutoComplete v-model="doc.city_ledger" placeholder="Select City Ledger Account" doctype="City Ledger"
+                                <label>City Ledger Name</label>
+                                <ComAutoComplete v-model="doc.city_ledger" placeholder="Select City Ledger Name" doctype="City Ledger"
                                 class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
                             </div>
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
@@ -104,9 +100,9 @@
                             >
                             <template #prefix>
                                 <div>
-                                <div v-if="tax_rule && account_code.allow_user_to_change_tax " class="flex items-center">
-                                    <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" />
-                                </div>
+                                    <div class="flex items-center">
+                                        <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax" />
+                                    </div>
                                 </div>
                             </template>
                             <template #default>
@@ -124,8 +120,8 @@
                         >
                         <template #prefix>
                             <div>
-                            <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox inputId="tax-2"  v-model="use_tax.use_tax_2" @input="onUseTax2Change" :binary="true" />
+                            <div class="flex items-center">
+                                <Checkbox inputId="tax-2"  v-model="use_tax.use_tax_2" @input="onUseTax2Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax"/>
                             </div>
                             </div>
                         </template>
@@ -144,8 +140,8 @@
                         >
                         <template #prefix>
                             <div>
-                            <div v-if="tax_rule && account_code.allow_user_to_change_tax" class="flex items-center">
-                                <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change" :binary="true" />
+                            <div class="flex items-center">
+                                <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax"/>
                             </div>
                             </div>
                         </template>
@@ -355,7 +351,7 @@ const tax_2_amount = computed(() => {
             doc.value.taxable_amount_2 = doc.value.taxable_amount_2
         } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 - discount_amount.value }
 
-        if (tax_rule.value.calculate_tax_2_after_adding_tax_1 == 0 || tax_1_amount == 0) {
+        if (tax_rule.value.calculate_tax_2_after_adding_tax_1 == 0 || tax_1_amount.value == 0) {
             doc.value.taxable_amount_2 = doc.value.taxable_amount_2
         } else { doc.value.taxable_amount_2 = doc.value.taxable_amount_2 + tax_1_amount.value }
 
@@ -372,11 +368,11 @@ const tax_3_amount = computed(() => {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 - discount_amount.value }
 
-        if (tax_rule.value.calculate_tax_3_after_adding_tax_1 == 0 || tax_1_amount == 0) {
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_1 == 0 || tax_1_amount.value == 0) {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_1_amount.value }
 
-        if (tax_rule.value.calculate_tax_3_after_adding_tax_2 == 0 || tax_2_amount == 0) {
+        if (tax_rule.value.calculate_tax_3_after_adding_tax_2 == 0 || tax_2_amount.value == 0) {
             doc.value.taxable_amount_3 = doc.value.taxable_amount_3
         } else { doc.value.taxable_amount_3 = doc.value.taxable_amount_3 + tax_2_amount.value }
 
@@ -407,6 +403,8 @@ function onSelectAccountCode(data) {
             doc.value.account_name = d.account_name
             doc.value.type = d.type
             doc.value.account_code = d.name
+            doc.value.show_print_preview = d.show_print_preview
+            doc.value.print_format= d.print_format
             if (d.tax_rule) {
                 const tax_rule = JSON.parse(account_code.value.tax_rule_data)
                 if (tax_rule) {
@@ -433,7 +431,10 @@ function onSelectAccountCode(data) {
         });
     }else{
         doc.value.account_name = ''
-        doc.rate_include_tax = 'No'
+        doc.value.rate_include_tax = 'No'
+        doc.value.input_amount = 0
+        total_amount.value = 0
+
     }
 }
 function onSelectCityLedger(data) {

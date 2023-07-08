@@ -53,6 +53,7 @@ const props = defineProps({
 })
 const emit = defineEmits('onClickDetail')
 const rs = inject("$reservation")
+const socket = inject("$socket")
 const dialog = useDialog()
 const show = ref()
 const loading = ref(false)
@@ -84,10 +85,11 @@ function onSaveNote(text_note){
     data.reservation_status = note.value.reservation_status
     data.reservation_status_note = text_note
     data.update_room_occupy = true
-    data.update_reservation_stay = true
+    data.update_reservation = true
     updateDoc('Reservation Stay', data.name, data).then((r)=>{
         if(r.reservation){
             rs.LoadReservation(r.reservation)
+            socket.emit("RefreshReservationDetail", r.reservation);
             loading.value = false
             onCloseNote()
         }

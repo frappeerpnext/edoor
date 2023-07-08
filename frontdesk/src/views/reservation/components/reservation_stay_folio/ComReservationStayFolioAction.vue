@@ -51,13 +51,9 @@
 
                 </template>
             </Menu>
-
         </div>
         <div>
-
-            <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="more_item_folio_stay" />
-
-
+            <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
         </div>
     </div>
     <ComDialogNote :header="`Delete Folio - ${rs.selectedFolio.name}`" :visible="openNote" :loading="loading"
@@ -71,8 +67,11 @@ import { useConfirm } from "primevue/useconfirm";
 import { inject, ref, computed, useToast, deleteApi } from '@/plugin';
 import ComNote from '@/components/form/ComNote.vue';
 import Menu from 'primevue/menu';
-import Gv from "../../../../providers/gv";
+
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
+import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
+const socket = inject("$socket")
 const dialog = useDialog();
 const confirm = useConfirm();
 const frappe = inject('$frappe');
@@ -91,35 +90,135 @@ const folio_menu = ref();
 
 const toggle = (event) => {
     folio_menu.value.toggle(event);
-};
-function onAddFolioTransaction(account_code) {
+}
 
-    const dialogRef = dialog.open(ComAddFolioTransaction, {
+
+const print_menus = ref([])
+//Folio Summary Report
+print_menus.value.push({
+    label: "Folio Summary Report",
+    icon: 'pi pi-print',
+    command: () => {
+
+        dialog.open(ComPrintReservationStay, {
+            data: {
+                doctype: "Reservation%20Stay",
+                reservation_stay: rs.reservationStay.name,
+                folio_number: rs.selectedFolio.name,
+                report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                view: "print"
+            },
+            props: {
+                header: "Folio Summary Report",
+                style: {
+                    width: '80vw',
+                },
+                modal: true,
+                maximizable: true,
+                position: top
+            },
+        });
+    }
+})
+
+//folio detail report
+print_menus.value.push({
+    label: "Folio Detail Report",
+    icon: 'pi pi-print',
+    command: () => {
+        dialog.open(ComPrintReservationStay, {
+            data: {
+                doctype: "Reservation%20Stay",
+                reservation_stay: rs.reservationStay.name,
+                folio_number: rs.selectedFolio.name,
+                report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                view: "print"
+            },
+            props: {
+                header: "Folio Summary Report",
+                style: {
+                    width: '80vw',
+                },
+                modal: true,
+                maximizable: true,
+                position: top
+            },
+        });
+    }
+
+
+})
+
+
+
+function onAddFolioTransaction(account_code) {
+    if (rs.selectedFolio.status == "Open") {
+        const dialogRef = dialog.open(ComAddFolioTransaction, {
+            data: {
+                folio_number: rs.selectedFolio.name,
+                account_group: account_code.name,
+                balance: rs.totalDebit - rs.totalCredit
+            },
+            props: {
+                header: 'Post ' + account_code.account_name + ' to Folio ' + rs.selectedFolio.name,
+                style: {
+                    width: '50vw',
+                },
+
+                modal: true,
+                position: "top"
+            },
+            onClose: (options) => {
+                const data = options.data;
+
+                if (data) {
+
+                    rs.onLoadReservationFolios()
+                    rs.onLoadFolioTransaction(rs.selectedFolio)
+                    rs.getChargeSummary(rs.reservationStay.name)
+                    setTimeout(function () {
+
+                        rs.getReservationStay(rs.reservationStay.name);
+                        //send websocket to update reservation detail
+                        socket.emit("RefreshReservationDetail", rs.reservation.name)
+                    }, 2000)
+                    if ((data.show_print_preview || 0) == 1) {
+                        if (data.print_format) {
+                            showPrintPreview(data)
+                        }
+                    }
+                }
+
+            }
+        })
+
+    } else {
+        toast.add({ severity: 'warn', summary: "", detail: "Folio is already closed.", life: 3000 })
+    }
+
+}
+
+function showPrintPreview(data) {
+
+    const dialogRef = dialog.open(ComIFrameModal, {
         data: {
-            folio_number: rs.selectedFolio.name,
-            account_group: account_code.name,
-            balance: rs.totalDebit - rs.totalCredit
+            doctype: "Folio Transaction",
+            name: data.name,
+            report_name: data.print_format,
+            show_letter_head:true
         },
         props: {
-            header: 'Post ' + account_code.account_name + ' to Folio ' + rs.selectedFolio.name,
+            header: 'Print Preview',
             style: {
-                width: '50vw',
+                width: '75vw',
             },
 
             modal: true,
             position: "top"
         },
-        onClose: (options) => {
-            const data = options.data;
-
-            if (data) {
-                rs.onLoadReservationFolios()
-                rs.onLoadFolioTransaction(rs.selectedFolio)
-            }
-
-        }
     })
 }
+
 function EditFolio(is_edit) {
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
         data: {
@@ -127,8 +226,7 @@ function EditFolio(is_edit) {
             is_edit: is_edit
         },
         props: {
-
-            header: 'Edit Folio',
+            header: 'Edit Folio  ' + rs.selectedFolio.name,
             style: {
                 width: '50vw',
             },
@@ -137,10 +235,8 @@ function EditFolio(is_edit) {
         onClose: (options) => {
             let data = options.data;
             if (data != undefined) {
-                rs.onLoadReservationFolios(data.name).then(() => {
-                    onClick(data)
-                })
-              
+                rs.onLoadReservationFolios(data.name)
+                socket.emit("RefreshReservationDetail", rs.reservation.name)
             }
         }
     })
@@ -190,7 +286,6 @@ function openFolio() {
                     toast.add({ severity: 'success', summary: 'Open Folio', detail: 'Open Folio successfully', life: 3000 });
 
                 })
-
         },
 
     })
@@ -213,12 +308,10 @@ function closeFolio() {
                 status: 'Closed',
             })
                 .then((doc) => {
-
                     rs.selectedFolio.status = doc.status;
                     toast.add({ severity: 'success', summary: 'Close Folio', detail: 'Close Folio successfully', life: 3000 });
 
                 })
-
         },
 
     });
@@ -227,7 +320,6 @@ function deleteFilio(note) {
     if (!rs.selectedFolio.name) {
         gv.toast('warn', 'Please select a Folio.')
     }
-
     loading.value = true
     deleteApi('utils.delete_doc', { doctype: "Reservation Folio", name: rs.selectedFolio.name, note: note }, "Delete Folio Successfully")
         .then((result) => {
@@ -239,8 +331,8 @@ function deleteFilio(note) {
                         defaultSelectFolio.value = rs.folios[0]
                     }
                     rs.onLoadFolioTransaction(defaultSelectFolio.value)
+                    socket.emit("RefreshReservationDetail", rs.reservation.name)
                 }
-
                 loading.value = false;
                 openNote.value = false
             })
@@ -248,34 +340,5 @@ function deleteFilio(note) {
             loading.value = false;
         })
 
-
-    // const dialogRef = dialog.open(ComNote, {
-    //     props: {
-    //         header: "Delete Folio - " + rs.selectedFolio.name,
-    //         style: {
-    //             width: '350',
-    //         },
-    //         modal: true
-    //     },
-    //     onClose: (options) => {
-    //         const data = options.data;
-    //         if (data != undefined) {
-    //             call.delete('edoor.api.utils.delete_doc', { doctype: "Reservation Folio", name: rs.selectedFolio.name, note: data })
-    //             .then((result) => {
-    //                 rs.onLoadReservationFolios().then(() => {
-    //                     if (rs.folios.length > 0) {
-    //                         rs.onLoadFolioTransaction(rs.folios[0].name)
-    //                     }
-
-    //                     rs.loading = false;
-    //                     toast.add({ severity: 'success', summary: "Delete Folio", detail: "Delete Folio successfully", life: 3000 })
-    //                 })
-    //             }).catch((error) => {
-    //                 rs.loading = false;
-    //             })
-
-    //         }
-    //     }
-    // })
 }
 </script>

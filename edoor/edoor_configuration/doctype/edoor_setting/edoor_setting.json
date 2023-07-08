@@ -10,17 +10,16 @@
   "room_block_status",
   "room_block_color",
   "room_revenue_code",
-  "room_revenue_group_account_code",
-  "room_discount_group_account_code",
-  "room_tax_group_account_code",
   "folio_transaction_stype_credit_debit",
   "allow_user_to_add_back_date_transaction",
-  "role_for_back_date_transaction",
   "show_account_code_in_folio_transaction",
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
   "housekeeping_status_after_run_night_audit",
-  "house_keeping_status_after_check_out"
+  "house_keeping_status_after_check_out",
+  "permission_and_role_tab",
+  "role_for_back_date_transaction",
+  "check_in_role"
  ],
  "fields": [
   {
@@ -43,28 +42,10 @@
    "options": "Account Code"
   },
   {
-   "fieldname": "room_discount_group_account_code",
-   "fieldtype": "Link",
-   "label": "Account Code of Room Discount Group",
-   "options": "Account Code"
-  },
-  {
-   "fieldname": "room_tax_group_account_code",
-   "fieldtype": "Link",
-   "label": "Account Code of Room Tax Group",
-   "options": "Account Code"
-  },
-  {
    "default": "0",
    "fieldname": "folio_transaction_stype_credit_debit",
    "fieldtype": "Check",
    "label": "View folio transaction style as credit and debit"
-  },
-  {
-   "fieldname": "room_revenue_group_account_code",
-   "fieldtype": "Link",
-   "label": "Account Code of Room Revenue Group",
-   "options": "Account Code"
   },
   {
    "default": "0",
@@ -106,12 +87,23 @@
    "fieldtype": "Link",
    "label": "House Keeping Status after Check Out",
    "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "permission_and_role_tab",
+   "fieldtype": "Tab Break",
+   "label": "Permission and Role"
+  },
+  {
+   "fieldname": "check_in_role",
+   "fieldtype": "Link",
+   "label": "Check In Role",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-06-26 12:15:58.249560",
+ "modified": "2023-07-06 11:25:03.905163",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

@@ -1,135 +1,94 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
-       <!-- {{ use_tax }} -->
-       <div class="grid">
-        <div class="col-12">
-            <ComReservationStayPanel title="Stay Info">
-                <template #content>
-                    <div class="grid">
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Res Stay. No"
-                                :value="stay?.name" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Business Source"
-                                :value="stay?.Business_source" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Room"
-                                :value="stay?.room_types + '/' + stay?.rooms" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
+       <div class="grid justify-between">
+        <div class="col-6">
+        <table>
+            <tbody>
+                <ComStayInfoNoBox  label="Res Stay. No" :value="stay?.name" />
+                <ComStayInfoNoBox  label="Business Source" :value="stay?.business_source" />
+                <ComStayInfoNoBox  label="Room" :value="stay?.room_type_alias + '/' + stay?.rooms" />
+                <ComStayInfoNoBox  label="Date" :value="moment(stay?.arrival_date).format('DD-MM-yyyy')"/>
+            </tbody>
+        </table> 
+        </div>
+        <div class="col-6">
+            <table>
+                <tbody>
+                <ComStayInfoNoBox  label="Guest" :value="stay?.guest_name +' ('+ stay?.guest+')' "/> 
+                <ComStayInfoNoBox  label="Pax" :value="stay?.adult + '/' + stay?.child" />
+                <ComStayInfoNoBox  label="Phone Number" :value="stay?.guest_phone_number" /> 
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr class="my-1">
+    <div class="grid">  
+        <div class="col-12 mt-2 -mb-3 p-0">
+            <div class="grid">
+                <div class="col-6">
+                    <div class="flex">
+                    <label for="manual_rate"  class="col-6 font-medium cursor-pointer">Use Manualy Update Rate</label>
+                    <div class="inline col-6 text-left px-3">
+                            <Checkbox input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1" :falseValue="0" :binary="true" @input="onUseManualRate"/>
                     </div>
-                </template>
-            </ComReservationStayPanel>
+                    </div>
                 </div>
-            <div class="col-12">
-            <ComReservationStayPanel title="Guest">
-                <template #content>
-                    <div class="grid">
-                        <div class="col-6">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Guest Code"
-                                :value="stay?.guest" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-6">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Guest Name"
-                                :value="stay?.guest_name" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Pax"
-                                :value="stay?.adult + '/' + stay?.child" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Phone Number"
-                                :value="stay?.guest_phone_number" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="col-4">
-                            <ComBoxStayInformation titleClass="p-0 justify-content-start" title="Email"
-                                :value="stay?.guest?.email" valueClass="w-full">
-                            </ComBoxStayInformation>
-                        </div>
-                        
-                    </div>
-                </template>
-            </ComReservationStayPanel>
             </div>
-       </div>
-       
-<!--       
-        Stay Number : {{ stay?.name }} <br>
-        Room: {{ stay?.rooms }} <br>
-        Room Type: {{ stay?.room_types }} <br>
-        Guest code: {{ stay?.guest }} <br>
-        Guest name: {{ stay?.guest_name }} <br>
-        Business Source: {{ stay?.Business_source }} <br>
-        phone: {{ stay?.guest_phone_number}} <br>
-        email: {{ stay?.guest?.email }} <br>
-        Pax: {{ stay?.adult }}/{{ stay?.child }}<br>
-        <hr /> -->
-    <div class="grid mt-3">  
+        </div>
         <div class="col">
             <div class="grid">
-        <div class="col-6">
-            <label>Rate Type</label>
-            <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type" :clear="false" />
-        </div> 
-        <div class="col-6">
-        <label>Rate</label>
-        <InputNumber class="w-full" v-model="doc.input_rate" 
-            mode="currency"
-            currency="USD" 
-            locale="en-US"
-            ref="input_amount" />
-        </div>
-        <div class="col-4">
-            <label>Discount Type</label>
-            <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
-        </div>
-        <div class="col-4">
-            <label>Discount</label>
-            <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.discount" :minFractionDigits="2" :maxFractionDigits="10"/>
-        </div>
-        <div class="col-4 text-right">
-            <label >Amount Discount</label>
-            <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
-            <CurrencyFormat  :value="discount_amount" />
-            </div>
-        </div>
+                <div class="col-6">
+                    <div>
+                        <label>Rate Type</label>
+                        <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type" @onSelected="onSelectRateType" :clear="false"/>
+                    </div>
+                </div> 
+                <div class="col-6">
+                    <label>Rate</label>                
+                        <ComInputCurrency classCss="w-full" v-model="doc.input_rate" :disabled="doc.is_manual_rate==0"/>
+                </div>
+                <div class="col-4">
+                        <label>Discount Type</label>
+                        <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
+                </div>
+                <div class="col-4">
+                        <label>Discount</label>
+                        <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.discount" :minFractionDigits="2" :maxFractionDigits="10"/>
+                </div>
+                <div class="col-4 text-right">
+                        <label >Amount Discount</label>
+                        <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                        <CurrencyFormat  :value="discount_amount" />
+                        </div>
+                </div>
 
-        <div class="col-8">
-            <label>Tax Rule</label>
-            <ComSelect class="w-full" v-model="doc.tax_rule" doctype="Tax Rule" :clear="false" />
-        </div>
-        <div class="col-4 text-right">
-            <div class="grid justify-end">
-                <div class="col-12">
-                    <label >Rate Befor Tax</label>
-                    <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
-                    <CurrencyFormat  :value="rate" />
-                </div>
+            <div class="col-12 text-right" v-if="tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
+                <div class="grid justify-end">
+                    <div class="col-4">
+                        <label>Rate Befor Tax</label>
+                        <div class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
+                        <CurrencyFormat  :value="rate" />
+                    </div>
+                    </div>
                 </div>
             </div>
-        </div>
-         </div>
+            <div class="col-12">
+                <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
+            </div>
+            </div>
         </div>
         <div class="col-5">
             <div class="grid justify-end ">
                 <div class="col-12">
-            <div class="flex justify-end text-end">
+            <div class="flex justify-end text-end" v-if="tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                 <label for="rate_tax"  class="col-6 font-medium cursor-pointer">Rate Incldue Tax</label>
                 <div class="inline col-6 text-left px-3">
                 <Checkbox input-id="rate_tax" class="" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
                 </div>
             </div>   
-            <div class="flex mt-2" v-if="doc">
+            <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_1_rate > 0">
                 <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
-                    :title="(tax_rule.tax_1_name || '') + '-' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)">
+                    :title="(tax_rule.tax_1_name || '') + ' ' + (tax_rule.tax_1_rate || 0) + '%'" :value="(tax_1_amount || 0)">
                     <template #prefix>
                         <div>
                             <div class="flex items-center">
@@ -146,9 +105,9 @@
             </div>
         <!-- /Tax - 1 -->
         <!-- Tax - 2 -->
-            <div class="flex mt-2" v-if="doc">
+            <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_2_rate > 0">
                 <ComBoxBetwenConten inputIdFor="tax-2" is-currency="true" title-class="col-6 font-medium"
-                    :title="(tax_rule.tax_2_name || '') + '-' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
+                    :title="(tax_rule.tax_2_name || '') + ' ' + (tax_rule.tax_2_rate || 0) + '%'" :value="(tax_2_amount || 0)"
                    >
                     <template #prefix>
                         <div>
@@ -166,9 +125,9 @@
             </div>
         <!-- /Tax - 2 -->
         <!-- Tax - 3 -->
-            <div class="flex mt-2" v-if="doc">
+            <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_3_rate > 0">
                 <ComBoxBetwenConten inputIdFor="tax-3" is-currency="true" title-class="col-6 font-medium"
-                    :title="(tax_rule.tax_3_name || '') + '-' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
+                    :title="(tax_rule.tax_3_name || '') + ' ' + (tax_rule.tax_3_rate || 0) + '%'" :value="(tax_3_amount || 0)"
                     valueClass="">
                     <template #prefix>
                         <div>
@@ -184,7 +143,7 @@
                     </template>
                 </ComBoxBetwenConten>
             </div>
-                <div class="flex mt-2">
+                <div class="flex mt-2" v-if="tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                     <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
                         valueClass="leading-8 max-h-3rem col-6 bg-gray-edoor-10 text-right" />
                 </div>
@@ -195,22 +154,22 @@
                  </div>
             </div>
         </div>
-        <div class="col-12">
+        <!-- <div class="col-12">
             <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
-        </div>
+        </div> -->
         <hr />
-        <!-- {{ doc }} -->
     </div> 
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, useToast } from "@/plugin"
+import { ref, inject, computed, onMounted, useToast, getDoc } from "@/plugin"
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+// import ComResvertionTableInfo from '@/views/reservation/components/ComResvertionTableInfo.vue';
 
 const gv = inject("$gv")
 const visible = ref(false)
@@ -218,11 +177,14 @@ const frappe = inject('$frappe');
 const call = frappe.call();
 
 const dialogRef = inject("dialogRef");
+const moment = inject("$moment")
 const isSaving = ref(false);
 const selectedRoomRates = ref([])
 const use_tax = ref({})
 const toast = useToast()
 const stay = ref({})
+const rate_plan = ref({})
+const room_types = ref([])
 const tax_rule = computed(() => {
     if (doc.value?.tax_rule_data) {
         return JSON.parse(doc.value?.tax_rule_data)
@@ -246,6 +208,7 @@ function onUseTax3Change(value) {
 
 }
 
+
 const doc = ref({
     discount_type: 'Percent',
 });
@@ -260,17 +223,13 @@ const discount_amount = computed(() => {
 });
 const rate = computed(() => {
     if (tax_rule.value) {
-
         if (doc.value.rate_include_tax == "Yes") {
             
             return gv.getRateBeforeTax((doc.value.input_rate || 0) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
-
-        } else if(discount_amount.value>0){
-                return (doc.value.input_rate || 0) - discount_amount.value
+        }else{
+            
+            return (doc.value.input_rate || 0)
         }
-        else{
-                return (doc.value.input_rate || 0)
-            }
             
     }
     return (doc.value.input_rate || 0) - discount_amount.value
@@ -340,12 +299,50 @@ const total_amount = computed(() => {
 });
 
 
+function onSelectRateType(selected){
+    if(doc.value.is_manual_rate == 0 && selected.value){
+        call
+            .post('edoor.api.reservation.get_room_rate',{
+                property: doc.value.property,
+                rate_type: selected.value,
+                room_type: doc.value.room_type_id, 
+                business_source: doc.value.business_source, 
+                date: doc.value.date
+            })
+            .then((result) => {
+               
+                doc.value.input_rate = result.message
+            })
+     }    
+    
+  
+}
+function onUseManualRate(){
+    if(doc.value.is_manual_rate == 0){
+        call
+            .post('edoor.api.reservation.get_room_rate',{
+                property: doc.value.property,
+                rate_type: doc.value.rate_type,
+                room_type: doc.value.room_type_id, 
+                business_source: doc.value.business_source, 
+                date: doc.value.date
+            })
+            .then((result) => {
+                doc.value.input_rate = result.message
+            })
+    }    
+    
+  
+}
+
 function onSave() {
     isSaving.value = true;
+   
     call
         .post('edoor.api.reservation.update_room_rate', {
             room_rate_names: selectedRoomRates.value.map(d => d["name"]),
             data: doc.value,
+            reservation_stays: Array.from(new Set( selectedRoomRates.value.map(d => d["reservation_stay"])))
         })
         .then((doc) => {
             toast.add({ severity: 'success', summary: 'Edit Room Rate', detail: "Update Success", life: 3000 })
@@ -361,13 +358,18 @@ function onSave() {
 }
 onMounted(() => {
     stay.value = dialogRef.value.data.reservation_stay
+    
     if (dialogRef.value.data.selected_room_rate) {
         doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rate)) 
+        
     } else if (dialogRef.value.data.selected_room_rates?.length > 0) {
         selectedRoomRates.value = dialogRef.value.data.selected_room_rates
         doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rates[0]))
-
+    
     } 
+    if(doc.value.is_manual_rate==0){
+
+    }
     use_tax.value = {
         use_tax_1:doc.value.tax_1_rate > 0,
         use_tax_3:doc.value.tax_3_rate > 0,

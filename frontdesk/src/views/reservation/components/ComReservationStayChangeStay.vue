@@ -27,7 +27,7 @@
                     <tbody>
                         <tr>
                             <td class="pe-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'Checked In'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2">
                                 <Calendar class="w-full" showIcon v-model="stay.end_date" :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
@@ -41,6 +41,18 @@
                             <td class="ps-2">
                                 <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex">{{ stay.room_number }}</span>
                             </td> 
+                        </tr>
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <td colspan="5">
+                                <div class="text-right pt-2">
+                                    <div>
+                                        <Checkbox class="mr-1" v-model="stay.is_override_rate" :binary="true" inputId="disabled" />
+                                        <label for="disabled"> Override Room Rate</label>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -59,6 +71,7 @@
     const rs = inject('$reservation_stay') 
     const moment = inject('$moment')
     const gv = inject('$gv')
+    const socket = inject('$socket')
     const dialogRef = inject('dialogRef'); 
     const loading = ref(false) 
     const maxNight = ref(null) 
@@ -111,6 +124,7 @@
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
             rs.getReservationDetail(rs.reservationStay.name)
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
             onClose(true)
         }).catch(()=>{
             loading.value= false

@@ -12,6 +12,7 @@
                     </span>
                     <span class="flex align-items-center justify-center h-full" v-else-if="slotProps?.item?.type == 'Comment'">
                         <i class="pi pi-upload" v-if="slotProps?.item?.comment_type == 'Attachment'"></i>
+                        <i class="pi pi-plus-circle" v-else-if="slotProps?.item?.comment_type == 'Created'"></i>
                         <i class="pi pi-comment" v-else-if="slotProps?.item?.comment_type == 'Comment'"></i>
                         <i class="pi pi-trash text-red-500" v-else-if="slotProps?.item?.comment_type == 'Attachment Removed' || slotProps?.item?.comment_type == 'Deleted Folio'"></i>
                     </span>
@@ -20,13 +21,13 @@
                     </span>
                 </div>
             </template>
-            <template #content="slotProps">
+            <template #content="slotProps"> 
                 <div v-if="slotProps?.item?.type == 'Version'" class="mb-3 content">
                     <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
                         <div class="hover:underline text-gray-700" v-html="slotProps?.item?.description"></div>
                     </Button>
                     <div class="text-500">
-                        <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                        <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                         <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
                         <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
                     </div>
@@ -36,7 +37,7 @@
                         <div class="flex gap-3 mb-1">
                             <div>{{slotProps?.item?.owner == current_user ? 'You commented' : slotProps?.item?.owner}}</div>
                             <div class="text-500">
-                                <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                                <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                                 <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
                                 <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
                             </div>
@@ -61,15 +62,23 @@
                             </div>
                         </Button>
                         <div class="text-500">
-                            <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                             <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Folio Transaction'" :value="slotProps?.item?.doctype"/>
                             <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
+                        </div>
+                    </div>
+                    <div v-else-if="slotProps?.item?.comment_type == 'Created'">
+                        <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
+                            <div class="hover:underline text-gray-700" v-html="slotProps?.item?.description"></div>
+                        </Button>
+                        <div class="text-500">
+                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                         </div>
                     </div>
                     <div v-else>
                         <div v-html="slotProps?.item?.content "></div>
                         <div class="text-500">
-                            <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                             <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
                             <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
                         </div>
@@ -80,7 +89,7 @@
                         <div class="flex gap-3 mb-1">
                             <div>{{slotProps?.item?.owner == current_user ? 'You noted' : slotProps?.item?.owner}}</div>
                             <div class="text-500">
-                                <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                                <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                                 <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
                                 <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
                             </div>
@@ -94,7 +103,7 @@
                         <div v-html="slotProps?.item?.content" class="content break-words"></div>
                     </div>
                     <div class="text-500">
-                        <Timeago :long="true" :datetime="slotProps?.item?.creation" />
+                        <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
                     </div>
                 </div>
             </template>
@@ -113,6 +122,7 @@
     import ComNoticeAuditTrail from './ComNoticeAuditTrail.vue';
     const dialogRef = inject("dialogRef");
     const data = ref([])
+    const gv = inject('$gv')
     const loading = ref(true)
     const current_user = JSON.parse(localStorage.getItem('edoor_user')).name
     const visible = ref(false)

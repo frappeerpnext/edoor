@@ -5,7 +5,15 @@
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column field="start_date" header="Stay Date" >
                         <template #body="{ data }">
-                            {{ moment(data.start_date).format('DD-MM-yyyy') }} to {{ moment(data.end_date).format('DD-MM-yyyy') }}
+                            <span v-tooltip.top="'Arrival Date'">
+                            {{gv.dateFormat(data.start_date) }}
+                            </span>
+                            <span class="mx-2">
+                            <i class="pi text-500 pi-arrow-right font-thin" style="font-size:8px;" />
+                            </span>
+                            <span v-tooltip.top="'Departure Date'">
+                            {{gv.dateFormat(data.end_date) }}
+                            </span> 
                         </template>
                     </Column>
                    
@@ -32,6 +40,15 @@
                             </span>
                         </template>
                     </Column>
+
+                    <Column class="text-right res__room-list-right" header="Discount">
+                        <template #body="{data}">
+                            <span class="text-end">
+                                <CurrencyFormat :value="data.discount_amount" /> 
+                            </span>
+                        </template>
+                    </Column>
+
                     <Column class="text-right res__room-list-right" header="Tax">
                         <template #body="{data}">
                             <span class="text-end">
@@ -42,7 +59,7 @@
                     <Column class="text-right res__room-list-right" header="Total Charge">
                         <template #body="{ data }">
                             <span class="text-end">
-                            <CurrencyFormat :value="data.total_amount"/>
+                            <CurrencyFormat :value="data.total_rate"/>
                             </span>
                         </template>
                     </Column>
@@ -70,6 +87,7 @@ import {inject,ref,useDialog,computed} from '@/plugin'
 import Enumerable from 'linq'
 const moment = inject('$moment')
 const selecteds = ref([])
+const gv = inject('$gv');
 const rs = inject("$reservation_stay")
 const dialog = useDialog()
 const rooms = computed(()=>{

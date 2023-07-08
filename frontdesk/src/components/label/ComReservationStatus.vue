@@ -4,12 +4,17 @@
     </span>
 </template>
 <script setup>
+import {computed} from 'vue'
 const props = defineProps({
     statusName: String,
     class: String
 })
 const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-const status = setting.reservation_status.find((r)=>r.name == props.statusName)
+
+const status = computed(()=>{
+    return setting.reservation_status.find((r)=>r.name == props.statusName)
+})
+
 </script>
 <style lang="">
     

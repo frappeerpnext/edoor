@@ -28,7 +28,7 @@ setConfig('resourceFetcher', frappeRequest)
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import NumberFormat from 'number-format.js'
-import axios from 'axios';
+import { vue3Debounce } from 'vue-debounce'
 
 const app = createApp(App);
 
@@ -120,6 +120,10 @@ import ComSelectRoomAvailability from '@/views/reservation/components/form/ComSe
 import ComNote from './components/form/ComNote.vue'
 import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
+import ComStayInfoNoBox from '@/views/reservation/components/ComStayInfoNoBox.vue'
+ 
+
+
 
 
 
@@ -194,6 +198,7 @@ app.component('ComNote',ComNote)
 app.component('ComDialogNote',ComDialogNote)
 app.component('ComColorPicker', ComColorPicker)
 app.component('ComInputCurrency',ComInputCurrency)
+app.component('ComStayInfoNoBox', ComStayInfoNoBox)
 
 // Plugins
 app.use(frappe)
@@ -214,6 +219,13 @@ app.use(resourceManager);
 app.use(ConfirmationService);
 
 
+ 
+
+// const dialogService = createDialogService();
+// app.component('Dialog', createDialog());
+// app.provide('dialogService', dialogService);
+
+// dialogService.position = 'top';
 
 // Global Properties,
 // components can inject this
@@ -227,7 +239,7 @@ app.provide("$numberFormat",NumberFormat)
 
 app.directive('badge', BadgeDirective);
 app.directive('tooltip', Tooltip);
-
+app.directive('debounce', vue3Debounce({ lock: true }))
 
 const gv = reactive(new Gv());
 const housekeeping = reactive(new Housekeeping());

@@ -100,7 +100,20 @@
   "housekeeping_note_modified",
   "housekeeping_note",
   "pay_by_company",
-  "summary_data"
+  "summary_data",
+  "tax_section",
+  "tax_rule",
+  "rate_include_tax",
+  "tax_1_name",
+  "tax_1_rate",
+  "tax_2_name",
+  "tax_2_rate",
+  "tax_3_name",
+  "tax_3_rate",
+  "checked_in_by",
+  "checked_in_date",
+  "checked_out_by",
+  "checked_out_date"
  ],
  "fields": [
   {
@@ -257,7 +270,6 @@
   {
    "fieldname": "keyword",
    "fieldtype": "Small Text",
-   "hidden": 1,
    "label": "Keyword"
   },
   {
@@ -576,7 +588,6 @@
   {
    "fieldname": "summary_data",
    "fieldtype": "JSON",
-   "hidden": 1,
    "label": "Summary Data"
   },
   {
@@ -629,6 +640,75 @@
    "fieldname": "reservation_status_note",
    "fieldtype": "Small Text",
    "label": "Reservation Status Note"
+  },
+  {
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "tax_rule",
+   "fieldtype": "Link",
+   "label": "Tax Rule",
+   "options": "Tax Rule"
+  },
+  {
+   "fetch_from": "tax_rule.tax_1_name",
+   "fieldname": "tax_1_name",
+   "fieldtype": "Data",
+   "label": "Tax 1 Name"
+  },
+  {
+   "fieldname": "tax_1_rate",
+   "fieldtype": "Float",
+   "label": "Tax 1 Rate"
+  },
+  {
+   "fetch_from": "tax_rule.tax_2_name",
+   "fieldname": "tax_2_name",
+   "fieldtype": "Data",
+   "label": "Tax 2 Name"
+  },
+  {
+   "fieldname": "tax_2_rate",
+   "fieldtype": "Float",
+   "label": "Tax 2 Rate"
+  },
+  {
+   "fetch_from": "tax_rule.tax_3_name",
+   "fieldname": "tax_3_name",
+   "fieldtype": "Data",
+   "label": "Tax 3 Name"
+  },
+  {
+   "fieldname": "tax_3_rate",
+   "fieldtype": "Float",
+   "label": "Tax 3 Rate"
+  },
+  {
+   "fieldname": "rate_include_tax",
+   "fieldtype": "Data",
+   "label": "Rate Include Tax"
+  },
+  {
+   "fieldname": "checked_in_by",
+   "fieldtype": "Data",
+   "label": "Checked In By"
+  },
+  {
+   "fieldname": "checked_in_date",
+   "fieldtype": "Datetime",
+   "label": "Checked In Date"
+  },
+  {
+   "fieldname": "checked_out_by",
+   "fieldtype": "Data",
+   "label": "Checked Out By"
+  },
+  {
+   "fieldname": "checked_out_date",
+   "fieldtype": "Datetime",
+   "label": "Checked Out Date"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -639,7 +719,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-06-28 09:49:40.265079",
+ "modified": "2023-07-07 11:25:01.726458",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

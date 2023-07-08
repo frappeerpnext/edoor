@@ -127,7 +127,7 @@ function OnSetupForm() {
                 '640px': '90vw'
             },
             modal: true
-        },
+        }
     });
 }
 const items = ref([

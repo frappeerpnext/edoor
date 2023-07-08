@@ -6,23 +6,32 @@ from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import update_reservation_folio, update_reservation_stay,update_reservation,get_base_rate
 from frappe.utils import fmt_money
+from frappe.utils.data import now
 
 class FolioTransaction(Document):
 	def validate(self):
-	 
 		
+		# when update note
+		if hasattr(self,"is_update_note") and self.is_update_note:
+			self.note_by = frappe.session.user
+			self.note_modified = now()
 		if not self.input_amount:
 			frappe.throw("Please enter amount")
 
 		if self.require_city_ledger_account==1:
 			if not self.city_ledger:
 				frappe.throw("Please select city ledger account")
-		 
-		#validate working day 
+
+		#check reservation status if allow to edit
+		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+			frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
+		
+		#validate working day  
 		if self.is_new():
 			working_day = get_working_day(self.property)
+			 
 			if not working_day["name"]:
-				frappe.throw("Please start working")
+				frappe.throw("Please start working day")
 			
 			if not working_day["cashier_shift"]["name"]:
 				frappe.throw("Please start cashier shift")
@@ -32,25 +41,27 @@ class FolioTransaction(Document):
 			self.working_date = working_day["date_working_day"]
 			self.cashier_shift = working_day["cashier_shift"]["name"]
 
-			#get room info
-			#1 get room from reservation room rate
-			room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
-		
-			if room_rate_data:
-				self.room_type_id =room_rate_data[0].room_type_id
-				self.room_id =room_rate_data[0].room_id 
-				self.room_number =room_rate_data[0].room_number 
-				self.room_type =room_rate_data[0].room_type
-			else:
-				#get first row of room rate
-				room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay}, limit_page_length=1)
+			if not self.room_id:
+				#get room info
+				#1 get room from reservation room rate
+				room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
+			
 				if room_rate_data:
 					self.room_type_id =room_rate_data[0].room_type_id
 					self.room_id =room_rate_data[0].room_id 
 					self.room_number =room_rate_data[0].room_number 
 					self.room_type =room_rate_data[0].room_type
-			#end update room type and room number
+				else:
+					#get first row of room rate
+					room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay}, limit_page_length=1)
+					if room_rate_data:
+						self.room_type_id =room_rate_data[0].room_type_id
+						self.room_id =room_rate_data[0].room_id 
+						self.room_number =room_rate_data[0].room_number 
+						self.room_type =room_rate_data[0].room_type
+				#end update room type and room number
 		
+
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 
 		if self.discount_type =="Percent" and self.discount>100:
@@ -85,28 +96,28 @@ class FolioTransaction(Document):
 
 			if self.rate_include_tax== "Yes":
 				price = get_base_rate((self.input_amount )- (self.discount_amount/ self.quantity) ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
-				self.price = price
-				self.amount = (price * self.quantity ) 
+				self.price = price + self.discount_amount
+				self.amount = (self.price * self.quantity ) 
 			else:
 				self.amount = ( self.price * self.quantity)  
 			
 			#tax 1
 			self.taxable_amount_1 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
 			
-			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 or self.rate_include_tax == 'Yes'  else self.taxable_amount_1 - self.discount_amount
-
-			self.tax_1_amount = self.taxable_amount_1 * tax_rule.tax_1_rate / 100
+			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 and self.rate_include_tax =='No'  else self.taxable_amount_1 - self.discount_amount
+		 
+			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
 			#tax 2
 			self.taxable_amount_2 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
-			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  or self.rate_include_tax == 'Yes' else self.taxable_amount_2 - self.discount_amount
+			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
-			self.tax_2_amount = self.taxable_amount_2 * tax_rule.tax_2_rate / 100
+			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
 			#tax 3
 			self.taxable_amount_3 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
-			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  or self.rate_include_tax == 'Yes' else self.taxable_amount_3 - self.discount_amount
+			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
-			self.tax_3_amount = self.taxable_amount_3 * tax_rule.tax_3_rate / 100
+			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		else:
 			 
@@ -132,8 +143,8 @@ class FolioTransaction(Document):
 		self.amount = (self.amount or 0) + (self.bank_fee_amount or 0)
 		
 		
-		self.total_amount = (self.amount or 0) - (0 if self.rate_include_tax =="Yes" else (self.discount_amount or 0)) + (self.total_tax or 0)  
-
+		self.total_amount = (self.amount or 0) - (self.discount_amount or 0) + (self.total_tax or 0)  
+	
 		if not self.parent_reference:
 			update_sub_account_description(self)
 
@@ -158,7 +169,7 @@ class FolioTransaction(Document):
 					self.discount_description = '{} - {}%'.format(account_name, self.discount)
 				else:
 					self.discount_description = '{}'.format(account_name)
-
+		
 		#tax 
 		if self.tax_rule:
 			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
@@ -167,24 +178,29 @@ class FolioTransaction(Document):
 			add_sub_account_to_folio_transaction(self,tax_rule.tax_3_account, self.tax_3_amount,"Tax breakdown from folio transaction: {}".format(self.name))
 			 		
 		add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
-		 
+		
 		
 
 		#update folio transaction to reservation folio
 		update_reservation_folio(self.folio_number, None, False)
+		
 		#update to reservation stay and reservation
-		if not self.parent_reference:
-	 
+		if not self.parent_reference:	 
 			update_reservation_stay(self.reservation_stay,None, False)
+			
 			update_reservation(self.reservation,None, False)
+			
 			# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 			# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
 	
-
 		
 
 	def on_trash(self):
-		pass
+		#check reservation status if allow to edit
+		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
+		
+
 		#use for validate record prevent user to delete record
 
 		#frappe.throw("You cannot delete me")
@@ -234,7 +250,7 @@ def update_sub_account_description(self):
 		else:
 			account_name = frappe.db.get_value("Account Code", self.bank_fee_account,"account_name")
 			self.bank_fee_description = '{} - {}% of {}'.format(account_name, self.bank_fee, fmt_money(amount=self.input_amount, currency=frappe.db.get_default("currency")))
-				
+		
 
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 	if account_code:

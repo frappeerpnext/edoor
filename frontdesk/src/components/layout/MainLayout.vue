@@ -132,7 +132,7 @@
             </div>
         </div>
         <div>
-            <div class="wrap-page-content px-2">
+            <div class="wrap-page-content -mb-2 px-2">
                 <router-view />
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>

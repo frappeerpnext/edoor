@@ -1,18 +1,40 @@
 <template>
     <div>
-       {{ hk.selectedRow }}
-      
-         <SplitButton :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" 
+       <!-- {{ hk.selectedRow }} -->
+       
+       <div class="">
+        <div class="line-height-1 absolute top-4">
+        <div class="text-2xl">Detail OF</div>
+        <div class="text-sm">{{hk.selectedRow?.room_type}} # {{hk.selectedRow?.room_number}}</div>
+        </div>
+        <hr class="mb-3">
+        <table>
+            <ComStayInfoNoBox  label="No" :value="hk.selectedRow?.name" /> 
+            <ComStayInfoNoBox  label="Guest" :value="hk.selectedRow?.guest" /> 
+            <ComStayInfoNoBox  label="Guest Name" :value="hk.selectedRow?.guest_name" /> 
+            <ComStayInfoNoBox  label="Room Type Id" :value="hk.selectedRow?.room_type_id" /> 
+            <ComStayInfoNoBox  label="Room Number" :value="hk.selectedRow?.room_number" /> 
+            <ComStayInfoNoBox  label="Housekeeper" :value="hk.selectedRow?.housekeeper" /> 
+            <ComStayInfoNoBox  label="Reservation Stay" :value="hk.selectedRow?.reservation_stay" /> 
+        </table>
+        </div>
+        <div class="grid mt-2">
+            <div class="col-6">
+         <SplitButton class="w-full" :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" 
          :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  
          :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" >
-        </SplitButton>  
-    </div>
-    <Button label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
+        </SplitButton>
+             </div> 
+             <div class="col-6">
+          <Button class="w-full" label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
     <OverlayPanel ref="opHousekeeper">
         <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
         </ComOverlayPanelContent>
-    </OverlayPanel>
+    </OverlayPanel>        
+             </div>
+        </div>
+    </div>
     {{ hk.reservationStay }}
     
     
@@ -21,6 +43,7 @@
 <script setup>
 import { inject, ref, useToast} from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue';
+import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 const hk = inject("$housekeeping")
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)

@@ -44,14 +44,11 @@ export function updateDoc(doctype, name, data, message){
         });
     })
 }
-export function createUpdateDoc(doctype, data, message){
+export function createUpdateDoc(doctype, data, message){ 
     const frappe = new FrappeApp()
-    const db = frappe.db()
-
-
+    const db = frappe.db() 
     return new Promise((resolve, reject)=>{
         if(data.data.name){
-        
             db.updateDoc(doctype, data.data.name, data)
             .then((doc) => {
                 resolve(doc) 
@@ -62,9 +59,8 @@ export function createUpdateDoc(doctype, data, message){
                 reject(error) 
             });
         }
-        else{
-          
-            db.createDoc(doctype, data)
+        else{ 
+            db.createDoc(doctype, data.data)
             .then((doc) => {
                 resolve(doc)
                 window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')

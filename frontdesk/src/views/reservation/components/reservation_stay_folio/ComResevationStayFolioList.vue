@@ -2,7 +2,7 @@
     <div class="col-fixed relative pl-0 pr-0 py-0" style="width: 250px;">
 
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
-            <div style="margin-bottom: 19px;">
+            <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
                 <div class="flex justify-content-between align-items-center p-2">
                     <span>Room Folio</span>
                     <Button class="btn-add-folio" @click="onAddCreatNewFolio" v-tooltip.top="'Create Folio'">
@@ -41,17 +41,26 @@
                 </template>
             </div>
 
-            <div class="flex flex-column bg-white  mt-3 fixed" style="width: 250px;bottom:48px;z-index: 1;">
+            <div :class="rs.is_page == true ? 'flex flex-column bg-white mt-3' : 'flex flex-column bg-white mt-3 fixed'" style="width: 250px;bottom:48px;z-index: 1;">
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
-                    <div class="pr-3"><label>Total</label></div>
+                    <div class="pr-3"><label>Total Debit</label></div>
                     <div><span>
-                            <CurrencyFormat value="100" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="rs.reservationStay.total_debit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
+                
+                <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2">
+                    <div class="pr-3"><label>Total Credit</label></div>
+                    <div><span>
+                            <CurrencyFormat :value="rs.reservationStay.total_credit" class="white-space-nowrap font-medium" />
+                        </span></div>
+                </div>
+
+
                 <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>Balance</label></div>
                     <div><span>
-                            <CurrencyFormat value="100" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="rs.reservationStay.balance" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
             </div>
@@ -98,10 +107,10 @@ function onAddCreatNewFolio() {
         onClose: (options) => {
             const data = options.data;
             if (data != undefined) {
-                rs.onLoadReservationFolios(data.name).then(() => {
+                rs.onLoadReservationFolios().then(() => {
                     onClick(data)
                 })
-                toast.add({ severity: 'success', summary: "Create New Folio", detail: "Create New Folio successfully", life: 3000 })
+              
             }
         }
     })
