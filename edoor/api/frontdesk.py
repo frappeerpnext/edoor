@@ -16,14 +16,15 @@ def get_meta(doctype=None):
 
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None):
-    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` limit 1",as_dict=1)
-    working_date =  datetime.now()
+    data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
+
+    working_date =  frappe.utils.today() 
     if data:
         working_date = data[0]["date"]
 
     if not date:
         date = working_date 
-
+    
     # get total_room
     sql = "select count(name) as total from `tabRoom` where property='{}'".format(property)
     data = frappe.db.sql(sql, as_dict=1)
@@ -34,21 +35,30 @@ def get_dashboard_data(property = None,date = None):
     #get total room occupy
     total_room_occupy = 0
     unassign_room = 0
-    room_operation = frappe.db.sql("SELECT sum(if(room_id <> '' AND room_id IS NOT NULL, 1, 0)) AS `total_room_occupy`, SUM(if(room_id IS NULL OR room_id = '', 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}';".format(date,property), as_dict=1)
- 
+    
+    #check if past date 
+    sql = ""
+    if frappe.utils.getdate(date)>=frappe.utils.getdate(working_date):
+        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='', 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+    else:
+        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='', 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+    
+    room_operation = frappe.db.sql(sql, as_dict=1)
+
     if room_operation:
         unassign_room = room_operation[0]["unassign_room"]
         total_room_occupy = room_operation[0]["total_room_occupy"]
+
     # get reservation stay
     stay_sql = """SELECT 
                     SUM(if(arrival_date = '{0}' AND reservation_status = 'No Show',1,0)) AS `total_no_show`, 
                     SUM(if(arrival_date = '{0}' AND reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Reserved' AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
                     SUM(if(reservation_status in('In-house','Check In') AND departure_date = '{0}',1,0)) AS `departure_remaining`,
-                    sum(if(arrival_date = '{0}', 1, 0)) AS `total_arrival`,
-                    SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND reservation_status NOT IN('No Show','Void','Cancelled'), 1, 0)) AS `pick_up`,
-                    sum(if(departure_date = '{0}', 1, 0)) AS `total_departure`,
-                    SUM(if(required_drop_off = 1 AND departure_date = '{0}' AND reservation_status NOT IN('No Show','Void','Cancelled'), 1, 0)) AS `drop_off` 
+                    sum(if(arrival_date = '{0}' and is_active_reservation = 1, 1, 0)) AS `total_arrival`,
+                    SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `pick_up`,
+                    sum(if(departure_date = '{0}'   and is_active_reservation = 1, 1, 0)) AS `total_departure`,
+                    SUM(if(required_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` 
                 FROM `tabReservation Stay` WHERE property = '{1}';""".format(date,property)
     stay = frappe.db.sql(stay_sql, as_dict=1)
  

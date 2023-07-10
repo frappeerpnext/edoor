@@ -159,24 +159,18 @@ function onMarkasPaybyMasterRoom(){
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            rs.loading = true
-            postApi("reservation.is_active_reservation", {
-                reservation_stay: rs.reservationStay.name
-            },
-                "Undo check in successfully"
-            ).then((doc) => {
-                rs.reservationStay = doc.message
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
-                socket.emit("RefresheDoorDashboard", doc.message.property)
-                rs.loading = false
-                setTimeout(() => {
-                    emit('onRefresh')
-                }, 1000);
-
-            }).catch((err) => {
-                rs.loading = false
+            
+            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                pay_by_company: 1,
             })
-
+                .then((doc) => {
+                    rs.folios.forEach(r => r.is_master = false);
+                    rs.reservationStay.pay_by_company = doc.pay_by_company;
+                    toast.add({
+                        severity: 'success', summary: 'Mark Folio as Master Folio',
+                        detail: 'Mark Folio as Master Folio Successfully', life: 3000
+                    });
+                })
         },
 
     });

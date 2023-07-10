@@ -1,6 +1,6 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
-    <DataTable  v-model:selection="rs.selectedFolioTransactions"  :value="rs.folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass"
+    <DataTable v-model:selection="rs.selectedFolioTransactions" @row-dblclick="onViewFolioDetail"  :value="rs.folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass"
     paginator  
             stateKey="folo_transaction_credit_debit_table_state"
             :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -42,13 +42,13 @@
                 <span v-if="slotProps.data.creation">{{ gv.datetimeFormat(slotProps.data.creation) }}</span>
             </template>
         </Column>
-        <Column header="">
+        <!-- <Column header="">
             <template #body="slotProps" >
                 <div v-if="slotProps.data.name"> 
                     <ComReservationStayFolioTransactionAction :is-edit="false" :data="slotProps.data"/>
                 </div>
             </template>
-        </Column>
+        </Column> -->
     </DataTable>
 
     <div class="w-full flex justify-content-end my-2">
@@ -76,16 +76,6 @@
             </div>
         </div>
     </div>
-
-
-    <!-- <ul>
-        <li v-for="(item, index) in rs.folio_summary" :key="index">{{item.account_category}} => {{item.amount}}</li>
-    </ul> -->
-    <!-- total_debit
-    <CurrencyFormat :value="rs.totalDebit" /> 
-    total credit:
-    <CurrencyFormat :value="rs.totalCredit" /> balance:
-    <CurrencyFormat :value="(rs.totalDebit - rs.totalCredit)" /> -->
 </ComPlaceholder> 
 </template>
 <script setup>
@@ -111,14 +101,13 @@ const rowStyleClass = (row) => {
     return row.name?"": "ui-helper-hidden";
 };
 
-const onViewFolioDetail = (doc) => {
- 
+const onViewFolioDetail = (doc) => { 
     const dialogRef = dialog.open(ComFolioTransactionDetail, {
         data:{
-            folio_transaction_number:doc.name
+            folio_transaction_number:doc.data.name
         },
         props: {
-            header: 'Folio Transaction Detail - ' + doc.name ,
+            header: 'Folio Transaction Detail - ' + doc.data.name ,
             style: {
                 width: '50vw',
             },

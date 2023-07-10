@@ -1,5 +1,5 @@
 <template>
-    <div class="flex py-2 align-items-center border-b border-color-edoor font-medium ">
+    <div class="flex py-2 align-items-center border-b border-color-edoor font-medium " @click="onClick">
         <div class="flex-grow">
             {{ title }}
         </div>
@@ -14,6 +14,10 @@ const props = defineProps({
     title: String,
     class: String
 })
+const emit = defineEmits(["onClick"])
+function onClick (){
+    emit("onClick")
+}
 </script>
 <style lang="">
     

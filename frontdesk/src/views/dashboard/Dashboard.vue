@@ -28,7 +28,7 @@
         </div>
         <div class="col">
             <div class="bg-white h-full border-round-lg">
-                <ComPanel title="Today's occupancy">
+                <ComPanel title="Occupancy">
                     <div class="grid">
                         <div class="col-6 flex align-items-center justify-content-center mt-3">
                             <ComChartDoughnut show-percentage="Occupied" :is-legend="false" :data="chartOccupancy"
@@ -37,16 +37,14 @@
 
                         </div>
                         <div class="col-5">
-                            <ComChartStatus :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor">
+                            <ComChartStatus @onClick="onViewRoomOccupy" :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor" ></ComChartStatus>
+                            <ComChartStatus @onClick="onViewVacantRoom" :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
                             </ComChartStatus>
-                            <ComChartStatus :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
+                            <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
                             </ComChartStatus>
-                            <ComChartStatus :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
-                            </ComChartStatus>
-                            <!-- <ComHousekeepingStatus /> -->
                             <div class="grid mt-3 text-center">
-                                <ComShowCancelOcc title="Canceled" :value="data.total_cancelled"></ComShowCancelOcc>
-                                <ComShowCancelOcc title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
+                                <ComShowCancelOcc @onClick="onViewCancelReservation" title="Cancelled" :value="data.total_cancelled"></ComShowCancelOcc>
+                                <ComShowCancelOcc  @onClick="onViewNoShowReservation" title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
                             </div>
                         </div>
                     </div>
@@ -55,7 +53,7 @@
         </div>
         <div class="col">
             <div class="bg-white h-full border-round-lg">
-                <ComPanel title="Today's actions">
+                <ComPanel title="Summary">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
                         <ComKPI :value="data.arrival" title="Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
                         <ComKPI :value="data.arrival_remaining" title="Check-in remaining"
@@ -67,6 +65,7 @@
                         </ComKPI>
                         <ComKPI :value="data.pick_up" title="Pickup" class="bg-warning-edoor border-round-lg"> </ComKPI>
                         <ComKPI :value="data.drop_off" title="Drop off" class="bg-og-edoor border-round-lg"> </ComKPI>
+                        <ComKPI :value="data.unassign_room" title="Unassign Room" class="bg-og-edoor border-round-lg"> </ComKPI>
                         <ComKPI :value="15" title="GIT Arrival" class="primary-btn-edoor border-round-lg"> </ComKPI>
                         <ComKPI :value="15" title="Stayover" class="primary-btn-edoor border-round-lg"> </ComKPI>
                     </div>
@@ -81,14 +80,14 @@
     </div>
 
     <div class="px-3 py-3 bg-white mt-2 border-round-xl tab-reserv-no">
-        <TabView class="tabview-custom">
+        <TabView class="tabview-custom" lazy>
             <TabPanel>
                 <template #header>
                     <span>Arrivals</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival }}</span>
                 </template>
-                <div class="mt-2">
-                    <iframe style="height: 500px;" width="100%" :src="arrivalUrl"></iframe>
+                <div class="mt-2" v-if="!gv.loading">
+                    <iframe @load="onIframeLoaded('iframeArrival')" id="iframeArrival" width="100%" :src="arrivalUrl" ></iframe>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -97,7 +96,7 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure }}</span>
                 </template>
                 <div class="mt-2">
-                    <iframe style="height: 500px;" width="100%" :src="departureUrl"></iframe>
+                    <iframe  @load="onIframeLoaded('iframeDeparture')" id="iframeDeparture" width="100%" :src="departureUrl"></iframe>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -107,7 +106,7 @@
                     }}</span>
                 </template>
                 <div class="mt-2">
-                    <iframe style="height: 500px;" width="100%" :src="inhouseUrl"></iframe>
+                    <iframe  @load="onIframeLoaded('iframeInhouse')" id="iframeInhouse" width="100%" :src="inhouseUrl"></iframe>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -117,7 +116,7 @@
                     }}</span>
                 </template>
                 <div class="mt-2">
-                    <iframe style="height: 500px;" width="100%" :src="inhouseUrl"></iframe>
+                    <iframe  @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="inhouseUrl"></iframe>
                 </div>
             </TabPanel>
         </TabView>
@@ -146,6 +145,9 @@ import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
+import ComIFrameModal from '@/components/ComIFrameModal.vue';
+
+
 const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")
@@ -155,9 +157,7 @@ socket.on("RefresheDoorDashboard", (arg) => {
     toast.add({ severity: 'info', summary: 'Info', detail: "Dashboard is updated", life: 3000 })
 })
 
-
-
-
+ 
 const dialog = useDialog();
 
 const api = inject('$frappe')
@@ -172,11 +172,132 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
+const checked = ref(false);
+
+
 function getArrivalUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format=eDoor%20Dashboard%20Arrival%20Guest&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     url = url + "&working_date=" + selected_date.value
     return url;
 }
+
+function onViewRoomOccupy(){
+   
+    const dialogRef = dialog.open(ComIFrameModal, {
+
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Room%20Occupy%20List",
+            view:"ui",
+            extra_params:[{key:"date", value:selected_date.value}]
+        },
+        props: {
+            header:"Room Occupy",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+function onViewVacantRoom(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Vacant%20Room",
+            view:"ui",
+            extra_params:[{key:"date", value:selected_date.value}]
+        },
+        props: {
+            header:"Vacant Room",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+
+function onViewRoomList(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Room%20List",
+            view:"ui",
+        },
+        props: {
+            header:"Room List",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+
+
+function onViewCancelReservation(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Cancel%20Reservation%20List",
+            view:"ui",
+            extra_params:[{key:"date", value:selected_date.value}]
+        },
+        props: {
+            header:"Cancelled Reservation List",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+
+
+function onViewNoShowReservation(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20No%20Show%20Reservation%20List",
+            view:"ui",
+            extra_params:[{key:"date", value:selected_date.value}]
+        },
+        props: {
+            header:"No Show Reservation List",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+
 
 function getDepartureUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
@@ -260,6 +381,12 @@ function getData() {
 
         });
 }
+ 
+function onIframeLoaded(id){
+ 
+    const iframe = document.getElementById(id);
+   iframe.height = iframe.contentWindow.document.body.scrollHeight;
 
-const checked = ref(false);
+}
+
 </script>

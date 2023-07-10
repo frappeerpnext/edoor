@@ -33,7 +33,7 @@ import FileUpload from 'primevue/fileupload';
 import profileImage from '@/assets/images/avatar-profile.png'
 
 
-const emit = defineEmits(['update:modelValue','getHasContent'])
+const emit = defineEmits(['update:modelValue','getFileName'])
 const frappe = inject('$frappe')
 const file = frappe.file();
 const files = ref([])
@@ -95,9 +95,7 @@ const onSelectedFiles = (event) => {
         console.log("File Upload complete",r)
         if(r.data && r.data.message){
             const result = r.data.message
-            emit('update:modelValue', result.name)
-            console.log(r)
-            emit('getHasContent', result.name)
+            emit('getFileName', result.name)
             onUpdateDoctype( result.file_url)
         }
     })

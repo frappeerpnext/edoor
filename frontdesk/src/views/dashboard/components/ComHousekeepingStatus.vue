@@ -37,24 +37,20 @@ const onViewRoomList = (status) => {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
             report_name: "eDoor%20Housekeeping%20Status",
-            extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }]
+            extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }],
+            view:"ui"
         },
         props: {
             header: status.value.status,
             style: {
                 width: '80vw',
             },
-
+            position:"top",
             modal: true,
             maximizable: true,
             closeOnEscape: false
         },
-        onClose: (options) => {
-            // const data = options.data;
-            // if (data != undefined) {
-
-            // }
-        }
+        
     });
 }
 

@@ -180,9 +180,12 @@ def add_new_fit_reservation(doc):
  
     if frappe.utils.getdate(arrival_date) < working_day["date_working_day"]:
         
-        if frappe.db.get_default("allow_user_to_add_back_date_transaction")==1:
+        if str(frappe.db.get_default("allow_user_to_add_back_date_transaction")) =="1":
+           
             backdate_role = frappe.db.get_default("role_for_back_date_transaction")
+            
             if backdate_role:
+                
                 if not backdate_role in frappe.get_roles(frappe.session.user):
                     frappe.throw("You don't have permission to add back date reservation")
             else:
@@ -486,6 +489,8 @@ def undo_check_in(reservation_stay):
 
     
     doc.reservation_status = 'Reserved'
+    doc.checked_in_by = None
+    doc.checked_in_date = None
     doc.save()
  
     #update housekeeping status to room

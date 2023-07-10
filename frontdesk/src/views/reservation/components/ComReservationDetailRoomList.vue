@@ -1,8 +1,7 @@
 <template lang="">
     <ComReservationStayPanel title="Reservation Room List">
-
         <template #content> 
-            <ComPlaceholder   :isNotEmpty="true">
+            <ComPlaceholder :isNotEmpty="true">
                 <div class="flex justify-end">
                     <div>
                         <div class="card flex justify-content-center">

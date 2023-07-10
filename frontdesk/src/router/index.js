@@ -13,7 +13,7 @@ import authRoutes from './auth';
 
 const routes = [
   { path: "/", redirect: '/frontdesk' }, 
-  { path: "/frontdesk", name: "Home", component: Home, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Frontdesk' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },

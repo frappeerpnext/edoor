@@ -116,7 +116,13 @@
   "checked_in_by",
   "checked_in_date",
   "checked_out_by",
-  "checked_out_date"
+  "checked_out_date",
+  "cancelled_by",
+  "cancelled_note",
+  "cancelled_date",
+  "no_show_by",
+  "no_show_date",
+  "no_show_note"
  ],
  "fields": [
   {
@@ -731,6 +737,36 @@
    "fieldname": "group_color",
    "fieldtype": "Color",
    "label": "Group Color"
+  },
+  {
+   "fieldname": "cancelled_by",
+   "fieldtype": "Data",
+   "label": "Cancelled By"
+  },
+  {
+   "fieldname": "cancelled_note",
+   "fieldtype": "Small Text",
+   "label": "Cancelled Note"
+  },
+  {
+   "fieldname": "cancelled_date",
+   "fieldtype": "Datetime",
+   "label": "Cancelled Date"
+  },
+  {
+   "fieldname": "no_show_by",
+   "fieldtype": "Data",
+   "label": "No Show By"
+  },
+  {
+   "fieldname": "no_show_date",
+   "fieldtype": "Datetime",
+   "label": "No Show Date"
+  },
+  {
+   "fieldname": "no_show_note",
+   "fieldtype": "Small Text",
+   "label": "No Show Note"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -741,7 +777,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-10 15:18:39.252079",
+ "modified": "2023-07-11 00:49:49.392556",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

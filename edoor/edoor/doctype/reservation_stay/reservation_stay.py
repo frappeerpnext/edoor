@@ -13,7 +13,7 @@ from edoor.api.utils import update_reservation, update_reservation_color
 class ReservationStay(Document):
 	def  validate(self):
 		
-		frappe.throw(get_url_to_form("Reservation Stay", self.name))
+		
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
@@ -33,6 +33,7 @@ class ReservationStay(Document):
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 		#check reservation status if allow to edit
+		reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
 		#check with old doc
 		if not self.is_new():
 			old_doc = frappe.get_doc("Reservation Stay", self.name)
@@ -72,6 +73,7 @@ class ReservationStay(Document):
 			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
+			d.show_in_room_chart = reservation_status.show_in_room_chart
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
 			d.group_code = self.group_code

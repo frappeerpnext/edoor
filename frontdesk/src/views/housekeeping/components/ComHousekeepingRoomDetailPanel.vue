@@ -6,7 +6,7 @@
         <div class="text-sm">{{hk.selectedRow?.room_type}} # {{hk.selectedRow?.room_number}}</div>
         </div>
         <hr class="mb-3">
-        <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room Detail</div>
+        <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room</div>
         <table>
             <ComStayInfoNoBox  label="Room No" :value="hk.selectedRow?.name" /> 
             <ComStayInfoNoBox  label="Room Type Id" :value="hk.selectedRow?.room_type_id" /> 
@@ -32,11 +32,13 @@
              </div>
         </div>
         <div v-if="hk && hk.reservationStay" >
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation Stay Detail</div>
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
         <table>
-            <ComStayInfoNoBox  label="Res Stay No" :value="hk?.reservationStay?.name" /> 
+            <ComStayInfoNoBox  label="Res No" :value="hk?.reservationStay?.reservation" />  
+            <ComStayInfoNoBox  label="Res Stay No" :value="hk?.reservationStay?.name" />
             <ComStayInfoNoBox  label="Status" :value="hk?.reservationStay?.reservation_status" /> 
             <ComStayInfoNoBox  label="Guest Name" :value="hk?.reservationStay?.guest_name" />
+            <ComStayInfoNoBox  label="Nationality" :value="hk?.reservationStay?.nationality" /> 
             <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
             <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />  
              

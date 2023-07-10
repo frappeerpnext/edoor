@@ -448,5 +448,6 @@ def clear_reservation():
     frappe.db.sql("delete from `tabRoom Occupy`")
     frappe.db.sql("delete from `tabFolio Transaction`")
     frappe.db.sql("delete from `tabReservation Folio`")
+    frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='' guest='' , guest_name=''")
     frappe.db.commit()
     return "done"
