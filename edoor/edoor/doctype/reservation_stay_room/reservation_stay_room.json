@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
+  "data_2",
   "room_type_id",
   "room_type",
   "room_type_alias",
@@ -42,7 +43,10 @@
   "tax_2_amount",
   "tax_3_amount",
   "total_tax",
-  "deleted_note"
+  "deleted_note",
+  "group_code",
+  "group_name",
+  "group_color"
  ],
  "fields": [
   {
@@ -173,8 +177,9 @@
   },
   {
    "fieldname": "reservation",
-   "fieldtype": "Data",
-   "label": "Reservation"
+   "fieldtype": "Link",
+   "label": "Reservation",
+   "options": "Reservation"
   },
   {
    "fieldname": "rate_type",
@@ -257,12 +262,34 @@
    "fieldname": "discount_amount",
    "fieldtype": "Currency",
    "label": "Discount Amount"
+  },
+  {
+   "fieldname": "data_2",
+   "fieldtype": "Data"
+  },
+  {
+   "fetch_from": "reservation.group_code",
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "Group Code"
+  },
+  {
+   "fetch_from": "reservation.group_name",
+   "fieldname": "group_name",
+   "fieldtype": "Data",
+   "label": "Group Name"
+  },
+  {
+   "fetch_from": "reservation.group_color",
+   "fieldname": "group_color",
+   "fieldtype": "Data",
+   "label": "Group Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-06-29 11:18:34.327107",
+ "modified": "2023-07-10 15:23:59.254531",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

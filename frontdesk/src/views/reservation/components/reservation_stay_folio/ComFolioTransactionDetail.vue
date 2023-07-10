@@ -107,7 +107,20 @@
                 <ComStayInfoNoBox v-else-if="doc?.reference_number" label="Ref. No" :value="doc?.reference_number"/>
                 <ComStayInfoNoBox label="Posted Date" :value="gv.datetimeFormat(doc?.posting_date)"/>
                 <ComStayInfoNoBox label="Created Date" :value="gv.datetimeFormat(doc?.creation)"/>
-                <ComStayInfoNoBox label="Made By" :value="doc?.modified_by"/>
+                <ComStayInfoNoBox label="Made By" :value="doc?.owner"/>
+                <ComStayInfoNoBox v-if="setting.folio_transaction_stype_credit_debit != 1" label="Last Modified" :value="doc?.modified_by +' '+ gv.datetimeFormat(doc?.modified)"/>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="col-6">
+            <h2 data-v-c02f7a3a="" class="h-title mb-2">Last Transaction Detail</h2>
+            <table>
+              <tbody>
+                <ComStayInfoNoBox label="Folio" :value="doc?.name"/>
+                <ComStayInfoNoBox label="Last Modified">
+                  <ComLastModifiedInfo v-if="doc.name" doctype="Folio Transaction" :docname="doc.name"/>
+                </ComStayInfoNoBox>
               </tbody>
             </table>
           </div>
@@ -115,6 +128,7 @@
       </div>
       <hr class="my-2">
       <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="false"/>
+
       <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
         <div class="pt-2 pb-3 text-color-black" >
             <div class="">
@@ -139,6 +153,7 @@
       <div class="mt-3"> 
         <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" :reservation="doc.reservation" :reservationStay="reservation_stay"/>
       </div>
+
     <template #footer-left v-if="setting.folio_transaction_stype_credit_debit != 1">
       <ComReservationStayFolioDetailActionMoreOptionsButton @onAuditTrail="onAuditTrail"/>
     </template>
@@ -151,7 +166,7 @@
               </div>
           </div>
       </ComOverlayPanelContent>
-  </OverlayPanel>
+    </OverlayPanel>
   </ComDialogContent>
 
   <OverlayPanel ref="op">
@@ -258,7 +273,8 @@ function onAuditTrail() {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: "top"
         },
         onClose: (options) => {
             //

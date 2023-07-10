@@ -1,6 +1,6 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
-
+from frappe.utils import get_url_to_form
 from datetime import datetime
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range,get_room_rate, update_reservation_stay
@@ -13,6 +13,7 @@ from edoor.api.utils import update_reservation, update_reservation_color
 class ReservationStay(Document):
 	def  validate(self):
 		
+		frappe.throw(get_url_to_form("Reservation Stay", self.name))
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
@@ -37,7 +38,14 @@ class ReservationStay(Document):
 			old_doc = frappe.get_doc("Reservation Stay", self.name)
 			if frappe.db.get_value("Reservation Status",old_doc.reservation_status, "allow_user_to_edit_information")==0:
 				frappe.throw("{} reservation is not allow to change information".format(old_doc.reservation_status) )
+
+			#check prevent unasign room
+			
+			if self.reservation_status != 'Reserved' and len([d for d in self.stays if (d.room_id or '') == ''])>0:
+				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
+
+			
 		#validate select uniue guest in additional guest
 		master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
 		validate_guests = [x for x in self.additional_guests if x.guest == self.guest or x.guest == master_guest]
@@ -66,6 +74,9 @@ class ReservationStay(Document):
 			d.is_active_reservation = self.is_active_reservation
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
+			d.group_code = self.group_code
+			d.group_name = self.group_name
+			d.group_color = self.group_color
 			d.guest = self.guest
 			d.guest_name = self.guest_name
 			d.email = self.guest_email

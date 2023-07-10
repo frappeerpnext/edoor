@@ -2,7 +2,7 @@
     <ComReservationStayPanel title="Reservation Room List">
 
         <template #content> 
-            <ComPlaceholder :loading="rs.loading" :isNotEmpty="true">
+            <ComPlaceholder   :isNotEmpty="true">
                 <div class="flex justify-end">
                     <div>
                         <div class="card flex justify-content-center">
@@ -103,28 +103,12 @@
                     </DataTable>
                 </div>
                 <div class="grid mt-3">
-                    <div class="col-8 pl-2 py-0">
+                    <div class="col-12 pl-2 py-0">
                         <div class="flex flex-column justify-between h-full">
                             <ComReservationStayListStatusBadge v-if="!(Object.entries(rs.reservation).length === 0)"/>
                         </div>
                     </div>
-                    <div class="col py-0">
-                        <div class="flex gap-2">
-                            <ComBoxStayInformation title="Total Debit" titleClass="grow white-space-nowrap w-16rem" valueClass="w-full text-right">
-                                <CurrencyFormat :value="rs.reservation.total_debit"/>
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="flex mt-2 gap-2">
-                            <ComBoxStayInformation title="Total Credit" titleClass="grow w-16rem" valueClass="w-full text-right">
-                                <CurrencyFormat :value="rs.reservation.total_credit"/>
-                            </ComBoxStayInformation>
-                        </div>
-                        <div class="flex mt-2 gap-2">
-                            <ComBoxStayInformation title="Balance" valueClass="text-right bg-gray-edoor-10 font-semibold w-full" titleClass="grow w-16rem font-semibold" >
-                                <CurrencyFormat :value="rs.reservation.balance"/>
-                            </ComBoxStayInformation>
-                        </div>
-                    </div>
+                   
                 </div>
                 <hr class="mt-3"/>
                 <div class="pt-3">

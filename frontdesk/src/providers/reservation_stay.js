@@ -30,8 +30,8 @@ export default class ReservationStay {
 
 	}
 
-	getReservationDetail = async (name) => {
-		this.loading.value = true
+	getReservationDetail = async (name, showLoading=true) => {
+		this.loading.value = showLoading
 
 		call.get("edoor.api.reservation.get_reservation_stay_detail", {
 			name: name
@@ -174,6 +174,7 @@ export default class ReservationStay {
 					fields: [
 						"name",
 						'posting_date',
+						"room_number",
 						"parent_reference",
 						"type",
 						"account_code",

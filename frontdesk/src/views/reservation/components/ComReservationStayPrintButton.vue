@@ -46,6 +46,10 @@ items.value.push({
 items.value.push({
     label: "Confirmation Voucher",
     icon: 'pi pi-check-circle',
+    acceptClass: 'border-none crfm-dialog',
+    rejectClass: 'hidden',
+    acceptIcon: 'pi pi-check-circle',
+    acceptLabel: 'Ok',
     command: () => {
         dialog.open(ComIFrameModal, {
             data: {
@@ -92,7 +96,7 @@ items.value.push({
                         style: {
                             width: '80vw',
                         },
-
+                        position:"top",
                         modal: true,
                         maximizable: true,
                     },
@@ -128,7 +132,7 @@ items.value.push({
                         style: {
                             width: '80vw',
                         },
-
+                        position:"top",
                         modal: true,
                         maximizable: true,
                     },
@@ -177,7 +181,7 @@ onMounted(() => {
                                     style: {
                                         width: '80vw',
                                     },
-
+                                    position:"top",
                                     modal: true,
                                     maximizable: true,
                                 },

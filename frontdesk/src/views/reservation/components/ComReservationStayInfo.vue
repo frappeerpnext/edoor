@@ -21,25 +21,25 @@
                         titleClass="w-5rem">
                     </ComBoxStayInformation>
                 </div>
-                <div class="flex mt-2 gap-2">
+                <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
                     <ComBoxStayInformation  titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
-                        <span class="link_line_action" v-if="!stay.reservationStay?.reference_number && !stay.reservationStay?.internal_reference_number">
+                        <span class="link_line_action" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code">
                             <i class="pi pi-pencil"></i>
                             ...
                         </span>
                         <div v-else class="flex gap-2">
-                            <span v-if="stay.reservationStay?.reference_number" class="link_line_action grow" >{{ stay.reservationStay?.reference_number }}</span>
+                            <span v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow" >{{ stay.reservationStay?.group_name }}</span>
                             <span v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </span>
                             <span>/</span>
-                            <span v-if="stay.reservationStay?.internal_reference_number" class="link_line_action grow" >
-                                {{ stay.reservationStay?.internal_reference_number }}
+                            <span v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow" >
+                                {{ stay.reservationStay?.group_code }}
                             </span>
                             <span v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
-                            ...  
+                                ...  
                             </span>
                         </div>
                     </ComBoxStayInformation>

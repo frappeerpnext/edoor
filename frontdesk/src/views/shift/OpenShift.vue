@@ -88,6 +88,10 @@ const toast = useToast();
         message: 'Are you sure you want to open shift with amount ' + total + "?",
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
           db.createDoc("Cashier Shift", shift.value)
           .then((doc)=>{

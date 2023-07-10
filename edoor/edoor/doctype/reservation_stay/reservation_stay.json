@@ -8,17 +8,20 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "reference_number",
   "property",
   "working_day",
   "working_date",
   "cashier_shift",
   "column_break_3",
   "naming_series",
-  "reference_number",
   "reservation_color",
   "internal_reference_number",
   "reservation",
   "reservation_type",
+  "group_code",
+  "group_name",
+  "group_color",
   "column_break_7",
   "arrival_date",
   "arrival_time",
@@ -634,6 +637,7 @@
   {
    "fieldname": "reservation_color",
    "fieldtype": "Color",
+   "hidden": 1,
    "label": "Reservation Color"
   },
   {
@@ -709,6 +713,24 @@
    "fieldname": "checked_out_date",
    "fieldtype": "Datetime",
    "label": "Checked Out Date"
+  },
+  {
+   "fetch_from": "reservation.group_name",
+   "fieldname": "group_name",
+   "fieldtype": "Data",
+   "label": "Group Name"
+  },
+  {
+   "fetch_from": "reservation.group_code",
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "Group Code"
+  },
+  {
+   "fetch_from": "reservation.group_color",
+   "fieldname": "group_color",
+   "fieldtype": "Color",
+   "label": "Group Color"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -719,7 +741,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-07 11:25:01.726458",
+ "modified": "2023-07-10 15:18:39.252079",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

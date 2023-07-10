@@ -109,7 +109,8 @@
   "section_break_89",
   "bank_fee_account",
   "column_break_91",
-  "bank_fee_description"
+  "bank_fee_description",
+  "is_auto_post"
  ],
  "fields": [
   {
@@ -674,11 +675,17 @@
    "fieldname": "note_modified",
    "fieldtype": "Datetime",
    "label": "Note Modified"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_auto_post",
+   "fieldtype": "Check",
+   "label": "Is Auto Post"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-03 17:07:14.233069",
+ "modified": "2023-07-08 18:32:43.049946",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

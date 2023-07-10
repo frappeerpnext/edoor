@@ -80,7 +80,7 @@
     stay.value.end_date = moment(stay.value.end_date).toDate()
     const minDate = computed(()=>{
         if(moment(stay.value.start_date).isSame(working_day.date_working_day) || moment(stay.value.start_date).isBefore(working_day.date_working_day)){
-            return new Date(moment(working_day.date_working_day))
+            return new Date(moment(working_day.date_working_day).add(1,'days'))
         }else{
             return new Date(moment(stay.value.start_date).add(1,'days'))
         }

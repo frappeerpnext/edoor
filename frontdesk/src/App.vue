@@ -52,25 +52,25 @@ if (localStorage.getItem("edoor_property") == null) {
 }
 
 
-window.addEventListener("unhandledrejection", function (error) {
+// window.addEventListener("unhandledrejection", function (error) {
      
-    let exception = error.reason.exception || error.reason.message
-    const replace_text = [
-        {text:"frappe.exceptions.ValidationError:",value:""},
-        {text:"frappe.exceptions.MandatoryError:",value:"Value required for "},
-        {text:"ValueError:",value:"Invalid data input. "},
-        {text:"frappe.exceptions.PermissionError: ",value:""},
-        {text:"_",value:" "},
-    ]
-    let message=exception
-    if(exception){
-        replace_text.forEach(t => {
-            message =message.replaceAll(t.text,t.value) 	
-        });
+//     let exception = error.reason.exception || error.reason.message
+//     const replace_text = [
+//         {text:"frappe.exceptions.ValidationError:",value:""},
+//         {text:"frappe.exceptions.MandatoryError:",value:"Value required for "},
+//         {text:"ValueError:",value:"Invalid data input. "},
+//         {text:"frappe.exceptions.PermissionError: ",value:""},
+//         {text:"_",value:" "},
+//     ]
+//     let message=exception
+//     if(exception){
+//         replace_text.forEach(t => {
+//             message =message.replaceAll(t.text,t.value) 	
+//         });
         
-    }
-    toast.add({ severity: 'warn', summary: '', detail: message, life: 3000 })
-});
+//     }
+//     toast.add({ severity: 'warn', summary: '', detail: message, life: 3000 })
+// });
 
 
  

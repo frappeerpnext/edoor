@@ -29,8 +29,12 @@
             </div>
             <ComReservationStatus v-if="rs.reservationStay && rs.reservationStay?.reservation_status"
                 :status-name="rs.reservationStay?.reservation_status" />
-            <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: rs.reservationStay?.status_color }">{{
-                rs.reservationStay?.reservation_type }}</span>
+            <span v-if="rs.reservationStay?.reservation_type == 'FIT'" class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                <i class="pi pi-user" style="font-size: 10px;"></i>
+                {{rs.reservationStay?.reservation_type }}</span>
+            <span v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                <i class="pi pi-users"></i>
+                {{rs.reservationStay?.reservation_type }}</span>
             
         </div>
     </div>

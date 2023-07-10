@@ -121,6 +121,7 @@ import ComNote from './components/form/ComNote.vue'
 import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
 import ComStayInfoNoBox from '@/views/reservation/components/ComStayInfoNoBox.vue'
+import ComLastModifiedInfo from './components/layout/components/ComLastModifiedInfo.vue'
  
 
 
@@ -199,6 +200,7 @@ app.component('ComDialogNote',ComDialogNote)
 app.component('ComColorPicker', ComColorPicker)
 app.component('ComInputCurrency',ComInputCurrency)
 app.component('ComStayInfoNoBox', ComStayInfoNoBox)
+app.component('ComLastModifiedInfo',ComLastModifiedInfo)
 
 // Plugins
 app.use(frappe)

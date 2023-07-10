@@ -125,6 +125,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
                 sum(if(is_active_reservation =1,adult,0)) as adult, 
                 sum(if(is_active_reservation =1,child,0)) as child ,
                 
+                sum(if(is_active_reservation=1 and reservation_status='Reserved',1,0)) as total_reserved,
                 sum(if(is_active_reservation=1 and reservation_status='In-house',1,0)) as total_checked_in,
                 sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
                 sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
@@ -183,8 +184,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
     
 
     #update to reservation
-    doc.total_reservation_stay = data[0][ "total_stay"]
-    doc.total_active_reservation_stay = data[0][ "total_active_stay"]
+
     doc.arrival_date = data[0]["arrival_date"]
     doc.departure_date= data[0]["departure_date"]
     
@@ -200,7 +200,11 @@ def update_reservation(name=None,doc=None, run_commit = True):
     doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]
     doc.room_rate_tax_3_amount= data[0]["room_rate_tax_3_amount"]
     doc.total_room_rate_tax= data[0]["total_room_rate_tax"]
-     
+    
+    doc.total_reservation_stay = data[0][ "total_stay"]
+    doc.total_active_reservation_stay = data[0][ "total_active_stay"]
+
+    doc.reserved= data[0]["total_reserved"]
     doc.total_checked_in= data[0]["total_checked_in"]
     doc.total_checked_out= data[0]["total_checked_out"]
     doc.total_cancelled= data[0]["total_cancelled"]
@@ -212,6 +216,23 @@ def update_reservation(name=None,doc=None, run_commit = True):
     doc.room_types = room_info_data[0]["room_types"]
     doc.room_numbers = room_info_data[0]["rooms"]
     doc.room_type_alias = room_info_data[0]["room_type_alias"]
+    #update reservation status
+    if doc.reserved>0:
+        doc.reservation_status = 'Reserved'
+    elif doc.total_checked_in>0 and  doc.reserved==0:
+        doc.reservation_status = 'In-house'
+    elif  doc.reserved == 0 and doc.total_checked_in==0 and doc.total_checked_out > 0:
+        doc.reservation_status = 'Checked Out'
+    elif (doc.total_no_show+ doc.total_cancelled + doc.total_void > 0 ) and doc.total_active_reservation_stay == 0:
+        if doc.total_no_show > 0:
+            doc.reservation_status = 'No Show'
+        elif doc.total_cancelled > 0:
+            doc.reservation_status = 'Cancelled'
+        else:
+            doc.reservation_status = "Void" 
+
+
+    
 
     doc.update_reservation_stay = False
 

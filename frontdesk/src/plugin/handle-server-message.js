@@ -8,6 +8,7 @@ export function handleServerMessage(m){
     const message = JSON.parse(JSON.stringify(m))
  
     if(message._server_messages){
+ 
         const _server_messages = JSON.parse(message._server_messages)
  
 		 

@@ -15,6 +15,7 @@ constructor() {
 	
 }
 loadData() {
+	return new Promise((resolve, reject) => {
 	let filters = []
 	if (this.filter.selected_room_type && this.filter.selected_room_type.length > 0) {
 		filters.push(["room_type_id", 'in', this.filter.selected_room_type])
@@ -50,11 +51,13 @@ loadData() {
 		.then((docs) => {
 				
 			this.room_list =  docs
-			console.log(this.room_list)
+			resolve(docs)
 		}
 	)
-	.catch((error) => console.error(error));
-
+	.catch((error) => {
+		reject(error)
+	});
+});
 }
 
 updateRoomStatus(room_name, status_name){

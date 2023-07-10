@@ -4,7 +4,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_oc
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_reservation_color, update_reservation_stay,update_reservation
+from edoor.api.utils import update_reservation_color, update_reservation_folio, update_reservation_stay,update_reservation
 import frappe
 from frappe.utils.data import add_to_date, getdate
 
@@ -156,12 +156,13 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
 
 
 @frappe.whitelist()
-def check_room_occupy(property, room_id, start_date=None, end_date=None, reservation_stay=None):
+def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=None, reservation_stay=None):
     end_date = add_to_date(end_date,days=-1)
     except_stay = ""
     if reservation_stay:
         except_stay = " AND reservation_stay <> '{}'".format(reservation_stay)
-    room_occupy = frappe.db.sql("SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property))
+    sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
+    room_occupy = frappe.db.sql(sql)
     return room_occupy[0][0]
 
 
@@ -365,6 +366,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
         frappe.throw("Please check in master room first")
 
     housekeeping_status =  frappe.db.get_default("housekeeping_status_after_check_in")
+
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
         #check if stay is not assign room then alert to user to asign room first
@@ -384,29 +386,60 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
         stay.checked_in_date = frappe.utils.now()
         stay.save()
 
+        
+
         #update room housekeeing status to occupy clean
         room_id = stay.stays[0].room_id
         room = frappe.get_doc("Room",room_id)
         room.housekeeping_status = housekeeping_status
+        room.reservation_stay = stay.name
         room.save()
-
+        
         #create folio 
         master_folio = {}
         if stay.is_master:
+            
             #check if folio is not create yet
-            if not frappe.db.exists("Reservation Folio",{"reservation_stay":stay.name}):
+            master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":stay.name,"is_master":1})
+            folio = None
+            if len(master_folios) == 0:
                 folio =create_folio(stay)
-                if folio:
+            else:
+                folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
+                
+            if folio:
+                #get first rate from reservation room rate
+                
+                room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1)
+                if (room_rates):
+                    for r  in room_rates:
+                        add_room_charge_to_folio(folio,r )
+                else:
+                    frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+                
+            #Fine all other stay that that mark as pay_by_company then enter folio transaction master folio
+            other_stays = frappe.db.sql("select name  from `tabReservation Stay` where name !='{}' and reservation='{}' and pay_by_company=1 and reservation_status = 'In-house'".format(stay.name, stay.reservation),as_dict=1)
+            if other_stays:
+                for os in other_stays:
                     #get first rate from reservation room rate
-                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":os['name'],"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1)
                     if (room_rates):
                         for r  in room_rates:
                             add_room_charge_to_folio(folio,r )
                     else:
-                        frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+                        frappe.throw("Stay # {} does not have room rate".format(os['name']))
+
         else:
+
             if not stay.pay_by_company:
-                folio = create_folio(stay)
+                # if stay have master folio
+                master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":stay.name,"is_master":1})
+                folio = None
+                if len(master_folios)==0:
+                    folio = create_folio(stay)
+                else:
+                    folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
+                    
                 if folio:
                     #get first rate from reservation room rate
                     room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
@@ -427,14 +460,57 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
                         frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
 
 
-
+ 
     frappe.db.commit()
-
     return {
         "reservation":doc
     }
 
+@frappe.whitelist(methods="POST")
+def undo_check_in(reservation_stay):
+    #validate status and date
+    #validate working day in doc method
+    #validate user role from edoor setting role
+    #delete all auto post under current stay folio
 
+    role = frappe.db.get_default("undo_check_in_role")
+ 
+    if not role in frappe.get_roles(frappe.session.user):
+        frappe.throw(frappe._("You don't have permission to perform this action"))
+
+    doc = frappe.get_doc("Reservation Stay", reservation_stay)
+    working_day = get_working_day(doc.property)
+   
+    if not working_day["cashier_shift"]:
+        frappe.throw("There is no cashier shift open. Please open cashier shift first")   
+
+    
+    doc.reservation_status = 'Reserved'
+    doc.save()
+ 
+    #update housekeeping status to room
+    room_id = doc.stays[0].room_id
+    room = frappe.get_doc("Room",room_id)
+    room.housekeeping_status = frappe.db.get_default("housekeeping_status_after_undo_check_in")
+    room.reservation_stay = None
+    room.save()
+    
+
+    #delete auto post transaction
+    folio_numbers = frappe.db.sql("select distinct folio_number from `tabFolio Transaction` where reservation_stay = '{}' and is_auto_post=1".format(reservation_stay),as_dict=1)
+    frappe.db.delete("Folio Transaction", {"reservation_stay":doc.name, "is_auto_post":1})
+
+    if folio_numbers:
+        for f in folio_numbers:           
+            update_reservation_folio(f["folio_number"], None, run_commit=False)
+
+    frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=reservation_stay, doc=None, run_commit=True)
+    frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc.reservation, doc=None, run_commit=True)
+
+
+
+    return doc
+    
 def get_master_folio(reservation):
     master_stay = frappe.db.get_list("Reservation Stay", filters={"reservation":reservation, "is_master":"1"})
     if master_stay:
@@ -468,7 +544,8 @@ def add_room_charge_to_folio(folio,rate):
         "tax_1_rate":rate.tax_1_rate,
         "tax_2_rate":rate.tax_2_rate,
         "tax_3_rate":rate.tax_3_rate,
-        "rate_include_tax":rate.rate_include_tax
+        "rate_include_tax":rate.rate_include_tax,
+        "is_auto_post":1
     }).insert()
 
 
@@ -760,9 +837,10 @@ def get_reservation_comment_note(doctype, docname):
 @frappe.whitelist(methods="POST")
 def change_stay(data):
     room_id = ""
-    if hasattr(data, 'room_id') and data["room_id"]:
+    if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
-    room_occupy = check_room_occupy(property=data['property'],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
+    room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
+
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
@@ -862,7 +940,7 @@ def update_reservation_status(reservation, stays, status, note):
     update_reservation(reservation)
     return stays
 @frappe.whitelist()
-def get_audit_trail(doctype, docname):
+def get_audit_trail(doctype, docname,is_last_modified=False):
     doc_meta = []
     room_rate = ""
     filter_name = ""
@@ -876,33 +954,37 @@ def get_audit_trail(doctype, docname):
     filters = ""
     filter_folio_transactions = ""
     filter_reservation_stay = ""
-    if doctype == 'Reservation':
-        filter_name = 'reservation'
-        filter_reservation_stay = get_other_doc('Reservation Stay',filter_name, docname)
+    sql=""
+    if is_last_modified:
+        sql = "SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname = '{}' AND ref_doctype = '{}' ORDER BY creation DESC LIMIT 1".format(docname,doctype)
+    else:
+        if doctype == 'Reservation':
+            filter_name = 'reservation'
+            filter_reservation_stay = get_other_doc('Reservation Stay',filter_name, docname)
+            
+        elif doctype == 'Reservation Stay':
+            filter_name = 'reservation_stay'
+            filter_reservation_stay = "'{}'".format(docname)
         
-    elif doctype == 'Reservation Stay':
-        filter_name = 'reservation_stay'
-        filter_reservation_stay = "'{}'".format(docname)
-    
-    if filter_name:
-        filter_folio_transactions = get_other_doc('Folio Transaction',filter_name,docname)
-        room_rate = get_other_doc('Reservation Room Rate',filter_name,docname)
-    filters = (','.join(filter(None,[("'{}'".format(docname)),room_rate,filter_folio_transactions,filter_reservation_stay])))
+        if filter_name:
+            filter_folio_transactions = get_other_doc('Folio Transaction',filter_name,docname)
+            room_rate = get_other_doc('Reservation Room Rate',filter_name,docname)
+        filters = (','.join(filter(None,[("'{}'".format(docname)),room_rate,filter_folio_transactions,filter_reservation_stay])))
 
-    sql = """
-        SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname IN({0})
-        UNION
-        SELECT `name`,reference_name AS `docname`,reference_doctype AS `doctype`, 'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_name IN({0})
-        UNION
-        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_name IN({0})
-        UNION
-        SELECT `name`,reservation_stay AS `docname`, '' AS `doctype`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE `name` IN({2})
-        UNION
-        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, 'Deleted Folio' AS comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`, CONCAT(reservation,'|',reservation_stay,'|',reservation_folio,'|',folio_number,'|',deleted_document,'|',reason) AS `content` FROM `tabComment` WHERE comment_type = 'Deleted' AND reservation_stay IN({1})
-        UNION
-        SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`,`content` FROM `tabComment` WHERE comment_type = 'Created' AND reservation_stay IN({1})
-    """ 
-    sql = sql.format(filters or "''",filter_reservation_stay or "''",filter_folio_transactions or "''")
+        sql = """
+            SELECT `name`,docname AS `docname`, ref_doctype AS `doctype`, 'Version' AS `type`, '' AS comment_type, creation,`owner`,`data` AS `content`   FROM `tabVersion` WHERE docname IN({0})
+            UNION
+            SELECT `name`,reference_name AS `docname`,reference_doctype AS `doctype`, 'Frontdesk Note' AS `type`, '' AS comment_type, creation,`owner`, `content` AS `content` FROM `tabFrontdesk Note` WHERE reference_name IN({0})
+            UNION
+            SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation, COALESCE(comment_by,modified_by) AS `owner`, `content` AS `content` FROM `tabComment` WHERE reference_name IN({0})
+            UNION
+            SELECT `name`,reservation_stay AS `docname`, '' AS `doctype`, 'Folio Transaction' AS `type`, '' AS comment_type, creation, `owner`, CONCAT('Add ', account_name) AS `content` FROM `tabFolio Transaction` WHERE `name` IN({2})
+            UNION
+            SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, 'Deleted Folio' AS comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`, CONCAT(reservation,'|',reservation_stay,'|',reservation_folio,'|',folio_number,'|',deleted_document,'|',reason) AS `content` FROM `tabComment` WHERE comment_type = 'Deleted' AND reservation_stay IN({1})
+            UNION
+            SELECT `name`,reference_name AS `docname`, reference_doctype AS `doctype`, 'Comment' AS `type`, comment_type, creation,COALESCE(comment_by,modified_by) AS `owner`,`content` FROM `tabComment` WHERE comment_type = 'Created' AND reservation_stay IN({1})
+        """ 
+        sql = sql.format(filters or "''",filter_reservation_stay or "''",filter_folio_transactions or "''")
 
     data = frappe.db.sql(sql, as_dict=1)
     meta = frappe.get_meta(doctype)
@@ -1016,6 +1098,9 @@ def get_audit_trail(doctype, docname):
             result.append(record)
         else:
             result.append(record)
+    if is_last_modified:
+        return result[0] if len(result) > 0 else {}
+    
     return result
 
 

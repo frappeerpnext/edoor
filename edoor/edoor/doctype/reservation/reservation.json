@@ -9,16 +9,19 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
+  "reference_number",
+  "internal_reference_number",
   "property",
   "working_day",
   "working_date",
   "cashier_shift",
   "column_break_777",
-  "naming_series",
   "reservation_type",
-  "reference_number",
-  "internal_reference_number",
   "reservation_color",
+  "group_code",
+  "group_name",
+  "group_color",
   "column_break_6",
   "reservation_date",
   "arrival_date",
@@ -619,6 +622,21 @@
    "fieldname": "rate_include_tax",
    "fieldtype": "Data",
    "label": "Rate Include Tax"
+  },
+  {
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "Group Code"
+  },
+  {
+   "fieldname": "group_name",
+   "fieldtype": "Data",
+   "label": "Group Name"
+  },
+  {
+   "fieldname": "group_color",
+   "fieldtype": "Color",
+   "label": "Group Color"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -629,7 +647,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-01 03:40:57.840733",
+ "modified": "2023-07-10 15:17:56.877046",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

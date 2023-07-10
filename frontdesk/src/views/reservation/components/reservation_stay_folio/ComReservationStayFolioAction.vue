@@ -64,7 +64,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, computed, useToast, deleteApi } from '@/plugin';
+import { inject, ref, computed, useToast, deleteApi,updateDoc } from '@/plugin';
 import ComNote from '@/components/form/ComNote.vue';
 import Menu from 'primevue/menu';
 
@@ -304,13 +304,11 @@ function closeFolio() {
         acceptLabel: 'Ok',
         rejectClass: 'hidden',
         accept: () => {
-            db.updateDoc('Reservation Folio', rs.selectedFolio.name, {
+            updateDoc('Reservation Folio', rs.selectedFolio.name, {
                 status: 'Closed',
             })
                 .then((doc) => {
                     rs.selectedFolio.status = doc.status;
-                    toast.add({ severity: 'success', summary: 'Close Folio', detail: 'Close Folio successfully', life: 3000 });
-
                 })
         },
 

@@ -1,8 +1,11 @@
 <template>
-   
+   <div class="mb-2">
     <Dropdown v-model="selected_folio" :options="folios" optionLabel="folio" optionValue="name"
-        placeholder="Select Folio" class="w-full md:w-14rem" @change="refreshReport" />
+        placeholder="Select Folio" class="w-full md:w-14rem mr-2" @change="refreshReport" 
+       
+        />
     <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport"/>  
+</div>
     <iframe id="report-view" style="height: 70vh;" width="100%" :src="url"></iframe>
 </template>
 
@@ -21,10 +24,10 @@ const selected_folio = ref("all")
 const reservation_stay = ref("")
 const report_name = ref("")
 
-letterHead.value = setting.default_letter_head
+letterHead.value = setting.property.default_letter_head
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" +  report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value
+    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" +  report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=1"
      
     if (selected_folio.value){
         url.value = url.value + "&folio=" + selected_folio.value

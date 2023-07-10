@@ -96,6 +96,9 @@ function onUnassignRoom(){
         header: 'Unassign Confirmation',
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
             let data = JSON.parse(JSON.stringify(rs.reservationStay))

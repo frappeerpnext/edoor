@@ -16,10 +16,14 @@
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
   "housekeeping_status_after_run_night_audit",
+  "column_break_10",
   "house_keeping_status_after_check_out",
+  "housekeeping_status_after_undo_check_in",
   "permission_and_role_tab",
   "role_for_back_date_transaction",
-  "check_in_role"
+  "check_in_role",
+  "column_break_14",
+  "undo_check_in_role"
  ],
  "fields": [
   {
@@ -98,12 +102,32 @@
    "fieldtype": "Link",
    "label": "Check In Role",
    "options": "Role"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "undo_check_in_role",
+   "fieldtype": "Link",
+   "label": "Undo Check In Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "housekeeping_status_after_undo_check_in",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status after Undo Check In",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-06 11:25:03.905163",
+ "modified": "2023-07-10 10:00:51.032290",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

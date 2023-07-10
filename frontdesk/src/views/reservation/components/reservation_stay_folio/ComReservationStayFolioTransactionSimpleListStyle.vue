@@ -8,11 +8,13 @@
             :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem">
             <Column selectionMode="multiple" headerStyle="width: 3rem" />
             <Column field="name" header="No. "></Column>
+
             <Column field="posting_date" header="Date">
                 <template #body="slotProps">
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
+            <Column field="room_number" header="Room #"></Column>
             <Column field="account_name" header="Account" style="min-width: 160px;">
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
@@ -76,7 +78,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Total:" :colspan="4" footerStyle="text-align:right" />
+                    <Column footer="Total:" :colspan="5" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:right">
                         <template #footer>
 

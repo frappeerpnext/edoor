@@ -543,7 +543,7 @@ function onPrevNext(key) {
 const onRefresh = () => {
     const cal = fullCalendar.value.getApi()
     cal.refetchEvents()
-    // cal.setOption({now:"2023-05-18"})
+    
  
 }
  

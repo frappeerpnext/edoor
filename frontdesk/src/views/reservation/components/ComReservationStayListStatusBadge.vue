@@ -1,64 +1,95 @@
 <template>
-    <div v-if="setting.reservation_status && lists.length > 0" class="flex flex-wrap gap-3"> 
-        <div v-for="(i, index) in lists" :key="index">
-            <!-- {{ i }} -->
-            <div class="grow p-2 border-round-lg text-white border-none cursor-pointer" :style="[{ background: hexToRgbA(i.color, .3)}]">
-                <div class="flex justify-center align-items-center h-full" :style="[{ color: i.color}]">
-                    <div>
-                        <div class="text-center white-space-nowrap">{{ i.name }} <span class="border-round-lg ml-1" style="padding:0 5px;color:#fff" :style="[{ background: hexToRgbA(i.color, .6)}]">{{ i.total }}</span></div>
-                    </div>
+    <div  class="flex  flex-wrap gap-3"> 
+         <div>
+            <div :style="{ background: data_status[2]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Reserved </span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.reserved }}
+                            </span>
                 </div>
             </div>
         </div>
+        <div>
+            <div :style="{ background: data_status[7]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Checked In</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_checked_in }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div :style="{ background: data_status[3]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">No Show</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_no_show }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div :style="{ background: data_status[4]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Cancelled</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_cancelled }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div :style="{ background: data_status[5]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Void</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_void }}
+                            </span>
+                </div>
+            </div>
+        </div>  
+        <div>
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-300" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Total Stay</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_reservation_stay }}
+                            </span>
+                </div>
+            </div>
+        </div>   
+        <div>
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Total Active Stay</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_reservation_stay }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        
+
     </div>
 </template>
 <script setup>
-import {inject, ref } from 'vue'
-const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+import { ref, inject, getDocList } from '@/plugin';
+const data_status = ref([])
+    getDocList('Reservation Status', {
+        fields: ['name', 'color'],
+        orderBy: {
+            field: 'sort_order',
+            order: 'asc',
+        },
+    })
+    .then((docs) => {
+        data_status.value = docs
+    })
+
 const rs = inject('$reservation')
-const lists = ref([]) 
-if(setting && setting.reservation_status.length > 0 && rs && rs.reservation){
-    setting.reservation_status.forEach(r => {
-        let obj = {name: r.reservation_status, color: r.color, total: 0, sort: 0}
-        if(r.reservation_status == 'Reserved'){
-            obj.total = rs.reservation.total_active_reservation_stay - (rs.reservation.total_checked_out + rs.reservation.total_checked_in)
-            obj.sort = 1
-            lists.value.push(obj)
-        }
-        else if(r.reservation_status == 'Checked In') {
-            obj.total = rs.reservation.total_checked_in
-            obj.sort = 2
-            lists.value.push(obj)
-        }
-        else if(r.reservation_status == 'Checked Out') {
-            obj.total = rs.reservation.total_checked_out
-            obj.sort = 3
-            lists.value.push(obj)
-        }
-        else if(r.reservation_status == 'No Show'){
-            obj.total = rs.reservation.total_no_show
-            obj.sort = 4
-            lists.value.push(obj)
-        }
-        else if(r.reservation_status == 'Cancelled'){
-            obj.total = rs.reservation.total_cancelled
-            obj.sort = 5
-            lists.value.push(obj)
-        }
-        
-        else if(r.reservation_status == 'Void'){
-            obj.total = rs.reservation.total_void
-            obj.sort = 6
-            lists.value.push(obj)
-        }
-    });
-
-    lists.value.push({name: "Total Stay", color: "#000", total: rs.reservation.total_reservation_stay, sort:7})
-    lists.value.push({name: "Total Active Stay", color: "#000", total: rs.reservation.total_active_reservation_stay, sort:8})
-    lists.value = lists.value.sort((a, b) => (a.sort > b.sort) ? 1 : -1);
-
-    
-}
+ 
 
 const hexToRgbA = (hex, alpha) => {
     let color;
@@ -73,7 +104,6 @@ const hexToRgbA = (hex, alpha) => {
     throw new Error('Bad Hex');
 }
 
-// console.log(hexToRgbA('#fbafff', .6))
-    
+ 
  
 </script>

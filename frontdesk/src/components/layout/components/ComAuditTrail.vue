@@ -110,7 +110,7 @@
         </Timeline>
     </ComPlaceholder>
     </ComDialogContent>
-    <Dialog v-model:visible="visible" modal header="Audit Trail Detail" :style="{ width: '50vw' }">
+    <Dialog v-model:visible="visible" modal header="Audit Trail Detail" position="top" :style="{ width: '50vw' }">
         <ComAuditTrailDetail :data="selected" @onClose="onCloseDetail"/>
     </Dialog>
 </template>

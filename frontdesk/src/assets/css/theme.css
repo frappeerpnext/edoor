@@ -7315,7 +7315,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .button.p-button {
   border-radius: .5rem !important;
 }
-span.p-inputnumber.p-component.p-inputwrapper.p-inputwrapper-filled.p-inputnumber-buttons-stacked {
+span.p-inputnumber.p-component.p-inputwrapper.p-inputwrapper-filled.p-inputnumber-buttons-stacked , span.p-inputnumber.p-component.p-inputwrapper.p-inputnumber-buttons-stacked.child-adults-txt  {
   max-height: 3rem;
 }
 span.p-column-title {

@@ -1,5 +1,5 @@
 <template>
-    {{ doc.tax_rule.rate_include_tax }}
+
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="n__re-custom grid">
             <div class="col">
@@ -70,7 +70,7 @@
                         </div>
                         <div class="pt-2 flex justify-between">
                             <div class="flex align-items-center">
-                                <label for="include-tax" class="col-6 font-medium cursor-pointer">Paid by Company</label>
+                                <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
                                 <Checkbox class="" v-model="doc.reservation.pay_by_company" :binary="true" trueValue="1" falseValue="0" />
                             </div>
                             <div>
@@ -137,9 +137,9 @@
                                         v-model="doc.guest_info.id_card_number" :maxlength="50" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                    <label>ID Expire Date</label><br />
+                                    <label>Expire Date</label><br />
                                     <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date" view="month" dateFormat="mm/yy" showIcon />
+                                        placeholder="ID Expire Date"  showIcon />
                                 </div>
                             </div>
                         </div>
@@ -151,6 +151,7 @@
         <div class="grid pt-2">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
+                    {{ setting.tax_rule }}
                     <div class="flex gap-2" v-if="setting.room_tax && (setting.room_tax.tax_1_rate + setting.room_tax.tax_2_rate + setting.room_tax.tax_3_rate) > 0">
                         <div class="flex gap-2 align-items-center relative w-11rem">
                             <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>

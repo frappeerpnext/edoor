@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="pt-2">
-                        <ComReservationDetailRoomList v-if="!rs.loading" />
+                        <ComReservationDetailRoomList/>
                     </div>
                     <div class="pt-3">
                         <div class="border-round-xl">
@@ -159,7 +159,8 @@ function onAuditTrail() {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: "top"
         },
         onClose: (options) => {
             //
@@ -170,8 +171,13 @@ function onAuditTrail() {
 onMounted(() => {
     socket.on("RefreshReservationDetail", (reservation) => {
         if (reservation == name.value) {
-            onRefresh(false)
-            toast.add({ severity: 'info', summary: 'Info', detail: "Reservation detail updated", life: 3000 })
+            //we run this in settime out 
+            //because we need to wait until data from backend that run enqueue process is update ted
+            setTimeout(function(){
+                onRefresh(false)
+            },3000)
+            
+            
 
         }
     })

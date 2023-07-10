@@ -119,8 +119,8 @@
             </div>
         </div>
         <template #footer-left>
-            <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" />
-            <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="more_options_items" /> -->
+            <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
+             
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
@@ -189,15 +189,15 @@ const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
-const onRefresh = () => {
-    rs.getReservationDetail(name.value)
+const onRefresh = (showLoading =true) => {
+  
+    rs.getReservationDetail(name.value,showLoading)
      rs.getChargeSummary(name.value)
 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
     } else if (activeTab.value == 2) {
         //load folio
-
         rs.onLoadReservationFolios(name.value)
             .then((doc) => {
 
@@ -333,7 +333,8 @@ function onAuditTrail() {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: "top"
         },
 
     });
@@ -356,6 +357,7 @@ function onTest() {
             },
             modal: true,
             maximizable: true,
+            position: "top"
         },
     });
 }
