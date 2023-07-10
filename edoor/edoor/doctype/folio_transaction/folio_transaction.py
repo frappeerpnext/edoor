@@ -205,6 +205,7 @@ class FolioTransaction(Document):
 
 		#frappe.throw("You cannot delete me")
 	def after_delete(self):
+	
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
 		update_reservation_folio(self.folio_number, None, False)
 		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
@@ -284,6 +285,7 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 					'input_amount': amount,
 					'amount': amount,
 					"note":note,
-					"parent_reference":self.name
+					"parent_reference":self.name,
+					"is_auto_post":self.is_auto_post
 
 				}).insert()
