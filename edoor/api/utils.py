@@ -1,4 +1,4 @@
-import datetime
+import datetime 
 import frappe
 import json
 from py_linq import Enumerable
@@ -126,6 +126,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
                 sum(if(is_active_reservation =1,child,0)) as child ,
                 
                 sum(if(is_active_reservation=1 and reservation_status='Reserved',1,0)) as total_reserved,
+                sum(if(is_active_reservation=1 and reservation_status='Confirmed',1,0)) as total_confirmed,
                 sum(if(is_active_reservation=1 and reservation_status='In-house',1,0)) as total_checked_in,
                 sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
                 sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
@@ -205,6 +206,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
     doc.total_active_reservation_stay = data[0][ "total_active_stay"]
 
     doc.reserved= data[0]["total_reserved"]
+    doc.total_confirmed= data[0]["total_confirmed"]
     doc.total_checked_in= data[0]["total_checked_in"]
     doc.total_checked_out= data[0]["total_checked_out"]
     doc.total_cancelled= data[0]["total_cancelled"]
@@ -213,9 +215,10 @@ def update_reservation(name=None,doc=None, run_commit = True):
 
 
     #update room info
-    doc.room_types = room_info_data[0]["room_types"]
-    doc.room_numbers = room_info_data[0]["rooms"]
-    doc.room_type_alias = room_info_data[0]["room_type_alias"]
+    doc.room_types =",".join(set(room_info_data[0]["room_types"].split(',')))
+    doc.room_numbers = ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
+    doc.room_type_alias = ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
+
     #update reservation status
     if doc.reserved>0:
         doc.reservation_status = 'Reserved'
@@ -267,11 +270,9 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
     return doc
 
 @frappe.whitelist()
-def update_reservation_stay(name=None, doc=None,run_commit=True):
+def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
     if name:
         doc = frappe.get_doc("Reservation Stay",name)
-    if doc:
-        doc.update_reservation = False
 
     #1 update data to reservation stay room the rest will update from reservation stay validate event
   
@@ -331,10 +332,10 @@ def update_reservation_stay(name=None, doc=None,run_commit=True):
             stay.tax_3_amount =d["tax_3_amount"] or  0
             stay.total_tax =d["total_tax"] or  0
   
-
-    doc.save()
-    if run_commit:
-        frappe.db.commit()
+    if is_save:
+        doc.save()
+        if run_commit:
+            frappe.db.commit()
     return doc
 
 
@@ -436,8 +437,6 @@ def delete_doc(doctype, name, note):
         frappe.db.sql("update `tab{}` set deleted_note = '{}' where name='{}'".format(doctype,note or "",name))
     frappe.delete_doc(doctype,name)
 
-    
-
 @frappe.whitelist()
 def clear_reservation():
     frappe.db.sql("delete from `tabReservation`")
@@ -448,6 +447,6 @@ def clear_reservation():
     frappe.db.sql("delete from `tabRoom Occupy`")
     frappe.db.sql("delete from `tabFolio Transaction`")
     frappe.db.sql("delete from `tabReservation Folio`")
-    frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='' guest='' , guest_name=''")
+    frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='',guest='' , guest_name=''")
     frappe.db.commit()
     return "done"

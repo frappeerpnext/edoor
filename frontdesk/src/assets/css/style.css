@@ -7,10 +7,13 @@
     --btn-border-color: #a0bde0;
     --bg-primary-color: #106ebe;
     --bg-btn-color: #3b82f6;
+    --bg-btn-color-rgb: 59, 130, 246;
     --bg-btn-sec-color: #395173;
     --bg-warning-color: #fd952c;
+    --bg-warning-color-rgb: 253, 149, 44;
     --bg-warning-hover: #fa8b1d;
     --bg-og-color: #ff5b00;
+    --bg-og-color-rgb: 255, 91, 0;
     --bg-og-color-hover: #f05502;
     --bg-danger-color: #e80000;
     --bg-amguest-color: #00cbd0;
@@ -133,9 +136,17 @@ html {
 }
 
 .bg-warning-edoor {
-    background-color: var(--bg-warning-color);
+    background-color: rgba(var(--bg-warning-color-rgb));
 }
-
+.bg-warning-edoor:hover {
+    background-color: rgba(var(--bg-warning-color-rgb), .8);
+}
+.bg-og-edoor{
+    background-color: rgba(var(--bg-og-color-rgb)) !important;
+}
+.bg-og-edoor:hover{
+    background-color: rgba(var(--bg-og-color-rgb), .8) !important;
+}
 .border-color-edoor {
     border-color: var(--btn-border-color);
 }
@@ -145,9 +156,11 @@ html {
 }
 
 .primary-btn-edoor {
-    background-color: var(--bg-btn-color);
+    background-color: rgba(var(--bg-btn-color-rgb));
 }
-
+.primary-btn-edoor:hover {
+    background-color: rgba(var(--bg-btn-color-rgb), .8);
+}
 .d-bg-edoor {
     background-color: var(--bg-primary-color);
 }
@@ -504,7 +517,14 @@ span.p-button-icon.pi.pi-ellipsis-h {
 .tab-reserv-no .p-tabview .p-tabview-nav li .p-tabview-nav-link {
     padding: .6rem;
 }
-
+.view-table-iframe {
+    max-height: 50rem;
+    overflow: auto;
+}
+.view-table-iframe-dialog{
+    max-height: 85vh;
+    overflow: auto;
+}
 .icon-search>.p-autocomplete-input {
     background-image: url('../svg/search-svgrepo-com.svg');
     background-repeat: no-repeat;
@@ -616,6 +636,9 @@ span.p-button-icon.pi.pi-ellipsis-h {
         padding-bottom: unset !important;
         height: 37px;
     }
+    /* .p-dialog .p-dialog-content{
+        padding: 1rem 0rem 1rem 1rem;
+    } */
 }
 /* END Full calenda css */
 
@@ -859,12 +882,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .active_row_hk{
-    border: 2px solid #0088ff59 !important;
+    /* border: 2px solid #0088ff59 !important; */
     color:#0088ff !important;
+    background: #b9d7ff !important;
 }
 
 .tax-info-btn{
     height: 1.5rem !important;
     width: 1.5rem !important;
     padding: 9px  !important;
+}
+p.text-center.small.page-number.visible-pdf {
+    display: none;
+}
+.iframe-view iframe{
+    overflow: auto;
 }

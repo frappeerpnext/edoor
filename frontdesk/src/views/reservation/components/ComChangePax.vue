@@ -10,40 +10,28 @@
 </template>     
 <script setup>
 
-import { ref, useToast, inject } from "@/plugin"
+import { ref, useToast, inject, postApi,postReservationStay } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
-const toast = useToast()
 const rs = inject('$reservation_stay');
-const frappe = inject('$frappe');
-const db = frappe.db();
+const socket = inject('$socket');
 const isLoading = ref(false)
-const gv = inject('$gv');
-
 const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
-
 const onSave = () => {
     isLoading.value = true;
-
-    db.updateDoc("Reservation Stay", stay.value.name, {
+    const data = {
         adult: stay.value.adult,
-        child: stay.value.child,
-        update_reservation: true
+        child: stay.value.child
+    }
+    postReservationStay(stay.value.name, data,['update_reservation']).then((doc) => { 
+        rs.reservationStay.adult = doc.adult
+        rs.reservationStay.child = doc.child
+        isLoading.value = false;
+        socket.emit("RefreshReservationDetail", doc.reservation);
+        emit("onClose")
+    }).catch((ex) => {
+        isLoading.value = false;
     })
-        .then((doc) => {
-            rs.reservationStay.adult = doc.adult
-            rs.reservationStay.child = doc.child
-
-            toast.add({ severity: 'success', summary: 'Change Pax', detail: "Change pax successfully", life: 3000 })
-            isLoading.value = false;
-            emit("onClose")
-        }).catch((ex) => {
-            isLoading.value = false;
-            gv.showErrorMessage(ex)
-        })
-
-
-
 }
 
 

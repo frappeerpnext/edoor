@@ -133,7 +133,7 @@
 </ComDialogContent>
 </template>
 <script setup>
-    import {inject,ref, getApi, onMounted,updateDoc, useDialog, computed,watch} from '@/plugin'
+    import {inject,ref, getApi, onMounted,postApi,watch} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import ComReservationStayChangeRate from './ComReservationStayChangeRate.vue'
     import ComSelectRoomAvailability from './form/ComSelectRoomAvailability.vue'
@@ -229,17 +229,17 @@
             return i
         })
         data.reservationStay.stays.push(newData)
-        data.reservationStay.update_room_occupy = true
-        data.reservationStay.update_reservation_stay = true
-        data.reservationStay.update_reservation = true
-        updateDoc('Reservation Stay', data.reservationStay.name,data.reservationStay).then((r)=>{
-            loading.value = false
+        
+        postApi('reservation.upgrade_room',{doc: data.reservationStay}).then((doc) => { 
+            loading.value = false;
+            socket.emit("RefreshReservationDetail", doc.reservation);
             rs.getReservationDetail(data.reservationStay.name)
-            socket.emit("RefreshReservationDetail", data.reservationStay.reservation);
             onClose()
-        }).catch(()=>{
-            loading.value= false
+        }).catch((ex) => {
+            loading.value = false;
         })
+
+ 
     }
     onMounted(() => {
         getApi("frontdesk.get_working_day", {

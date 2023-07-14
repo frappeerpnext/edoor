@@ -114,6 +114,24 @@ export function postApi(api, params = Object, message){
         })
     })
 }
+export function postReservationStay(docname,data,update_docs){
+    let doc = {
+        docname: docname,
+        data: [],
+        update_doc: update_docs // ['update_reservation']
+    }
+    for (var key in data) {
+        doc.data.push({fieldname: key, value: data[key]})
+    }
+    return new Promise((resolve, reject)=>{
+        postApi('reservation.auto_update_reservation_stay', doc).then((r)=>{
+            resolve(r.message)
+        }).catch((err)=>{
+            reject(err)
+        }) 
+    })
+    
+}
 export function deleteApi(api, params = Object, message){
     const frappe = new FrappeApp()
     const call = frappe.call()

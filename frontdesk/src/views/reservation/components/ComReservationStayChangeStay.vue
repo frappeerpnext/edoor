@@ -49,7 +49,7 @@
                                 <div class="text-right pt-2">
                                     <div>
                                         <Checkbox class="mr-1" v-model="stay.is_override_rate" :binary="true" inputId="disabled" />
-                                        <label for="disabled"> Override Room Rate</label>
+                                        <label for="disabled"> Generate New Room Rate</label>
                                     </div>
                                 </div>
                             </td>

@@ -33,7 +33,7 @@
                         <div class="col-6">
                             <label for="arrival_driver">Pickup Driver</label>
                             {{ stay.driver }}
-                            <ComAutoComplete :clear="false" v-model="stay.driver" isAddNew @onAddNew="onAddPickupDriver"
+                            <ComAutoComplete :clear="false" v-model="stay.pickup_driver" isAddNew @onAddNew="onAddPickupDriver"
                                 placeholder="Pickup Driver" doctype="Drivers" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-12">
@@ -49,12 +49,14 @@
                 <div class="flex flex-wrap">
                     <div class="col-12">
                         <div class="flex items-center gap-2">
-                            <Checkbox inputId="isdeparturemode" v-model="stay.required_drop_off" :binary="true" :trueValue="1" :falseValue="0" />
-                            <label for="isdeparturemode" class="text-lg font-semibold cursor-pointer">Request Drop Off</label>
+                            <Checkbox inputId="isdeparturemode" v-model="stay.require_drop_off" :binary="true"
+                                :trueValue="1" :falseValue="0" />
+                            <label for="isdeparturemode" class="text-lg font-semibold cursor-pointer">Request Drop
+                                Off</label>
                         </div>
                     </div>
                     <div class="flex flex-wrap "
-                        v-bind:class="{ 'pointer-events-none opacity-60': !stay.required_drop_off }">
+                        v-bind:class="{ 'pointer-events-none opacity-60': !stay.require_drop_off }">
                         <div class="col-12">
                             <label for="num">Drop Off Mode</label>
                             <ComSelect :clear="false" v-model="stay.departure_mode" :default="true"
@@ -103,6 +105,7 @@ const frappe = inject("$frappe")
 const db = frappe.db()
 const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
 const dialog = useDialog()
+ 
 function onSave() {
     isSaving.value = true;
     db.updateDoc("Reservation Stay", stay.value.name, stay.value)
@@ -121,23 +124,24 @@ function onSave() {
 function onAddPickupDriver() {
     dialog.open(ComAddDriver, {
         props: {
-            header: `Edit Guest`,
+            header: `Add Driver`,
             style: {
                 width: '50vw',
             },
             breakpoints: {
                 '960px': '75vw',
                 '640px': '90vw'
-            },
+            }, 
             modal: true,
             closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;
-            stay.value.driver = data.name
+            stay.value.pickup_driver = data.name
+
         }
     })
 }
- 
+
 </script>
 <style ></style>

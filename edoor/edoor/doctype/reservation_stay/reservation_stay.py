@@ -13,7 +13,7 @@ from edoor.api.utils import update_reservation, update_reservation_color
 class ReservationStay(Document):
 	def  validate(self):
 		
-		
+	 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
@@ -42,7 +42,7 @@ class ReservationStay(Document):
 
 			#check prevent unasign room
 			
-			if self.reservation_status != 'Reserved' and len([d for d in self.stays if (d.room_id or '') == ''])>0:
+			if not self.reservation_status in ['Reserved', 'Confirmed'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
 				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
 
@@ -65,9 +65,9 @@ class ReservationStay(Document):
 
 		self.pax = self.adult + self.child 	
 		if self.stays:
-			self.rooms = ','.join([(d.room_number or '') for d in self.stays])
-			self.room_types = ','.join([d.room_type for d in self.stays])
-			self.room_type_alias = ','.join([d.room_type_alias for d in self.stays])
+			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
+			self.room_types = ','.join(set([d.room_type for d in self.stays]))
+			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
 
 		for d in self.stays:
 			d.property = self.property
@@ -94,7 +94,7 @@ class ReservationStay(Document):
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
-			
+
 		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
 		self.room_rate= Enumerable(self.stays).min(lambda x: x.rate or 0)
@@ -128,19 +128,10 @@ class ReservationStay(Document):
 					self = update_housekeeping_note(self=self)
 
 	def after_insert(self):
-		generate_room_rate(self)
+		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
+		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
 		generate_room_occupy(self)
-		update_reservation(name=self.reservation)
-	def on_update(self):
-		# this block code has been lost
-		# this is comment note
-		if hasattr(self, 'update_reservation') and self.update_reservation:
-			update_reservation(name=self.reservation)
-		if hasattr(self, 'update_room_occupy') and self.update_room_occupy:
-			change_room_occupy(self)
-			generate_room_rate(self)
-		if hasattr(self, 'update_reservation_stay') and self.update_reservation_stay:
-			update_reservation_stay(name=self.name)
+		generate_room_rate(self, is_update_reservation_stay=True)
 
 
 def update_note(self):
@@ -191,7 +182,7 @@ def generate_room_occupy(self):
 				"pax":self.pax
 			}).insert()
 
-def generate_room_rate(self): 
+def generate_room_rate(self,is_update_reservation_stay=False): 
 	date_avaliables = ""
 	self.update_room_rate = False
 	for stay in self.stays:
@@ -245,9 +236,11 @@ def generate_room_rate(self):
 	if len(deleted_old_rates) > 0:
 		for d in deleted_old_rates:
 			frappe.delete_doc('Reservation Room Rate', d.name)
+	if is_update_reservation_stay:
+		update_reservation_stay(name=self.name)
+	return True
 
 def change_room_occupy(self):
-	self.update_room_occupy = False
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))

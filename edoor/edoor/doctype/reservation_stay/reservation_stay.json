@@ -77,12 +77,12 @@
   "arrival_mode",
   "arrival_flight_number",
   "pickup_location",
-  "driver",
+  "pickup_driver",
   "pickup_driver_name",
   "pickup_driver_phone_number",
   "pickup_note",
   "column_break_51",
-  "required_drop_off",
+  "require_drop_off",
   "drop_off_time",
   "departure_mode",
   "departure_flight_number",
@@ -362,12 +362,6 @@
    "options": "Transportation Company"
   },
   {
-   "fieldname": "driver",
-   "fieldtype": "Link",
-   "label": "Pickup Driver",
-   "options": "Drivers"
-  },
-  {
    "fieldname": "pickup_note",
    "fieldtype": "Small Text",
    "label": "Pickup Note"
@@ -375,12 +369,6 @@
   {
    "fieldname": "column_break_51",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "required_drop_off",
-   "fieldtype": "Check",
-   "label": "Required Drop Off"
   },
   {
    "fieldname": "drop_off_time",
@@ -458,13 +446,13 @@
    "options": "Business Source"
   },
   {
-   "fetch_from": "driver.driver_name",
+   "fetch_from": "pickup_driver.driver_name",
    "fieldname": "pickup_driver_name",
    "fieldtype": "Data",
-   "label": "Driver Name"
+   "label": "Pickup Driver Name"
   },
   {
-   "fetch_from": "driver.phone_number",
+   "fetch_from": "pickup_driver.phone_number",
    "fieldname": "pickup_driver_phone_number",
    "fieldtype": "Data",
    "label": "Phone Number"
@@ -473,7 +461,7 @@
    "fetch_from": "drop_off_driver.driver_name",
    "fieldname": "drop_off_driver_name",
    "fieldtype": "Data",
-   "label": "Driver  Name"
+   "label": "Drop Off Driver  Name"
   },
   {
    "fetch_from": "drop_off_driver.phone_number",
@@ -643,7 +631,6 @@
   {
    "fieldname": "reservation_color",
    "fieldtype": "Color",
-   "hidden": 1,
    "label": "Reservation Color"
   },
   {
@@ -767,6 +754,18 @@
    "fieldname": "no_show_note",
    "fieldtype": "Small Text",
    "label": "No Show Note"
+  },
+  {
+   "fieldname": "pickup_driver",
+   "fieldtype": "Link",
+   "label": "Pickup Driver",
+   "options": "Drivers"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_drop_off",
+   "fieldtype": "Check",
+   "label": "Require Drop Off"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -777,7 +776,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-11 00:49:49.392556",
+ "modified": "2023-07-14 14:19:24.652087",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

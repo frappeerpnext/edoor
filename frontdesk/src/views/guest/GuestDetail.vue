@@ -1,44 +1,48 @@
 <template>
     <TabView  lazy>
         <TabPanel header="General Information">
+            <div class="iframe-view">
             <iframe style="height:500px;width: 100%;"
                 :src="generalInfoUrl">
-
             </iframe>
-
+            </div>
         </TabPanel>
         <TabPanel header="Stay History">
-            <iframe style="height:500px;width: 100%;"
+            <div class="iframe-view">
+            <iframe  style="height:500px;width: 100%;"
                 :src="stayHistoryUrl">
-
             </iframe>
-
+            </div>
         </TabPanel>
         <TabPanel header="POS/Misc. Sale">
+            <div class="iframe-view">
             <iframe style="height:500px;width: 100%;"
                 :src="posMiscSaleUrl">
 
             </iframe>
-
+            </div>
         </TabPanel>
 
         <TabPanel header="Note">
+            <div class="iframe-view">
             <iframe style="height:500px;width: 100%;"
                 :src="noteUrl">
 
             </iframe>
-
+            </div>
         </TabPanel>
         <TabPanel header="Folio">
+            <div class="iframe-view">
             <iframe style="height:500px;width: 100%;"
                 :src="folioUrl">
 
             </iframe>
-
+            </div>
         </TabPanel>
     </TabView>
 </template>
 <script setup>
+
 import { inject, ref, onMounted,computed } from '@/plugin'
 const dialogRef = inject("dialogRef");
 const setting =JSON.parse( localStorage.getItem("edoor_setting"))
@@ -70,12 +74,17 @@ const folioUrl =  computed(() => {
 
 
 onMounted(() => {
-    if (!dialogRef) {
-        alert(111)
-    } else {
+    if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
+    } else {
+        alert(111)
     }
 });
 
 console.log(dialogRef)
 </script>
+<style scoped>
+.iframe-view{
+    margin-right: -1rem;
+}
+</style>

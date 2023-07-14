@@ -13,39 +13,39 @@
                         valueClass="grow"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_ref')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
                         :value="stay.reservationStay?.reference_number" :isAction="true" valueClass="col-4">
                     </ComBoxStayInformation>
-                    <ComBoxStayInformation titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_ref')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
                         :value="stay.reservationStay?.internal_reference_number" :isAction="true" valueClass="grow"
                         titleClass="w-5rem">
                     </ComBoxStayInformation>
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
                     <ComBoxStayInformation  titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
-                        <span class="link_line_action" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code">
+                        <button class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
                             <i class="pi pi-pencil"></i>
                             ...
-                        </span>
+                        </button>
                         <div v-else class="flex gap-2">
-                            <span v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow" >{{ stay.reservationStay?.group_name }}</span>
-                            <span v-else class="link_line_action grow" >
+                            <a v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow" >{{ stay.reservationStay?.group_name }}</a>
+                            <button v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
                                 ...
-                            </span>
+                            </button>
                             <span>/</span>
-                            <span v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow" >
+                            <a v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow" >
                                 {{ stay.reservationStay?.group_code }}
-                            </span>
-                            <span v-else class="link_line_action grow" >
+                            </a>
+                            <button v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
                                 ...  
-                            </span>
+                            </button>
                         </div>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  titleTooltip="Reservation Number" title="Res. No"
+                    <ComBoxStayInformation titleTooltip="Reservation Number" title="Res. No"
                         :value="stay.reservationStay?.reservation" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
@@ -110,6 +110,7 @@
     <OverlayPanel ref="op">
             <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
             <ComChangePax v-else-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+            <ComChangeRefNumber doctype="Reservation Stay" v-else-if="overLayName=='change_ref'" @onClose="onCloseRef" />
             <ComReservationStayChangeArrivalDepartureDate v-else-if="overLayName == 'change_date'" @onClose="closeOverlay"/>
     </OverlayPanel>
 </template>
@@ -121,6 +122,7 @@ import ColorPicker from 'primevue/colorpicker';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
+import ComChangeRefNumber from './ComChangeRefNumber.vue';
 import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
 import ComReservationStayChangeArrivalDepartureDate from './ComReservationStayChangeArrivalDepartureDate.vue';
 const moment = inject('$moment')
@@ -142,6 +144,12 @@ function onChangeDate($event){
         return
     }
     toggle($event, 'change_date')
+}
+function onCloseRef(result){
+    if(result != false){
+        stay.reservationStay = result
+    }
+    op.value.hide()
 }
 
 

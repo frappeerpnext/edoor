@@ -1,4 +1,5 @@
 <template>
+    
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width">
             <div class="col">
@@ -259,7 +260,6 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
-const emit = defineEmits(['onSave'])
 const toast = useToast()
 
 function onUseTax1Change(value) {
@@ -477,7 +477,6 @@ onMounted(() => {
     doc.value.folio_number = dialogRef.value.data.folio_number;
 
     balance.value = dialogRef.value.data.balance
-    
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
         isSaving.value = true
@@ -485,15 +484,16 @@ onMounted(() => {
             name: dialogRef.value.data.folio_transaction_number
         })
             .then((result) => {
-                doc.value = result.message.doc
-                account_code.value = result.message.account_code
-                account_group.value = doc.value.account_group
-                use_tax.value = {
-                    use_tax_1:doc.value.tax_1_rate > 0,
-                    use_tax_3:doc.value.tax_3_rate > 0,
-                    use_tax_2:doc.value.tax_2_rate > 0
-                }
-                isSaving.value = false
+                    doc.value = result.message.doc
+                    // result.message.posting_date = moment(doc.value.posting_date).format("DD-MM-YYYY")
+                    account_code.value = result.message.account_code
+                    account_group.value = doc.value.account_group
+                    use_tax.value = {
+                        use_tax_1:doc.value.tax_1_rate > 0,
+                        use_tax_3:doc.value.tax_3_rate > 0,
+                        use_tax_2:doc.value.tax_2_rate > 0
+                    }
+                isSaving.value = false   
             }).catch(()=>{
                 isSaving.value = false
             })

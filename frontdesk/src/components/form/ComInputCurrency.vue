@@ -2,6 +2,7 @@
     <div>
     
         <InputNumber 
+            class="w-full"
             :class="[`text-${align}`, classCss]"
             @update:modelValue="onUpdate"
             v-model="value"

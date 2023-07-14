@@ -1,4 +1,5 @@
 <template lang="">
+    
     <div> 
     <div class="flex items-center justify-end">
         <div class="res_btn_st">
@@ -13,10 +14,10 @@
                 </button>
                 <button v-if="data.name" @click="onViewFolioDetail"
                     class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                    Detail {{ data.name }}
+                    View Detail
                 </button>
                 <template v-if="isEdit">
-                    <button @click="onEditFolioTransaction"
+                    <button @click="onEditFolioTransaction()"
                         v-if="!data.parent_reference"
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         Edit
@@ -35,7 +36,7 @@
     
 </template>
 <script setup>
-import { ref, useDialog,inject, useConfirm, deleteApi } from '@/plugin'
+import { ref, useDialog, inject, useConfirm, deleteApi } from '@/plugin'
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
@@ -57,7 +58,6 @@ const toggle = (event) => {
 }
 
 function onEditFolioTransaction() {
-
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             folio_transaction_number: props.data.name
@@ -103,24 +103,23 @@ const onViewFolioDetail = () => {
 }
 function onPrintFolioTransaction() {
 
-const dialogRef = dialog.open(ComIFrameModal, {
-    data: {
-        doctype: "Folio Transaction",
-        name: props.data.name,
-        report_name: props.data.print_format,
-    },
-    props: {
-        header: 'Print Preview',
-        style: {
-            width: '75vw',
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            doctype: "Folio Transaction",
+            name: props.data.name,
+            report_name: props.data.print_format,
         },
-
-        modal: true,
-        position: "top"
-    },
-})
+        props: {
+            header: 'Print PreviewXX',
+            style: {
+                width: '75vw',
+            },
+            position: "top",
+            modal: true,
+        },
+    })
 }
-function onOpenDelete(){
+function onOpenDelete() {
     opDelete.value = true
 }
 function onDeleteFolioTransaction(note) {
@@ -136,7 +135,9 @@ function onDeleteFolioTransaction(note) {
             rs.getChargeSummary(rs.reservationStay.name)
             loading.value = false;
 
-        }).catch((err)=>{
+        })
+
+        .catch((error) => {
             loading.value = false
         })
 

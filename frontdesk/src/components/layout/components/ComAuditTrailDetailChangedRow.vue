@@ -21,11 +21,11 @@
                                         <th>New Value</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr v-for="(c, index) in item.feilds" :key="index">
-                                        <td>{{ c[0] }}</td>
-                                        <td style="background:var(--red-100);"><div v-html="c[1]"></div></td>
-                                        <td style="background:var(--green-100);"><div v-html="c[2]"></div></td>
+                                <tbody> 
+                                    <tr v-for="(c, index) in item.rows" :key="index">
+                                        <td>{{ c.feilds[0][0] }}</td>
+                                        <td style="background:var(--red-100);"><div v-html="c.feilds[0][1]"></div></td>
+                                        <td style="background:var(--green-100);"><div v-html="c.feilds[0][2]"></div></td>
                                     </tr>
                                 </tbody>
                             </table>

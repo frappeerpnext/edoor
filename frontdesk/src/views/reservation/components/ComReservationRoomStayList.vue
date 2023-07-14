@@ -1,7 +1,7 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
         <template #content>
-            <div id="room_stay" class="room-stay-list text-center">
+            <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column field="start_date" header="Stay Date" >
                         <template #body="{ data }">
@@ -83,16 +83,17 @@ import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationStayRoomListMoreOption from '../components/ComReservationStayRoomListMoreOption.vue'
 import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
 import ComReservationStayAssignRoom from './ComReservationStayAssignRoom.vue';
-import {inject,ref,useDialog,computed} from '@/plugin'
-import Enumerable from 'linq'
+import {inject,ref,useDialog,computed   } from '@/plugin'
+import Enumerable from 'linq';
 const moment = inject('$moment')
 const selecteds = ref([])
 const gv = inject('$gv');
 const rs = inject("$reservation_stay")
-const dialog = useDialog()
+const dialog = useDialog() 
 const rooms = computed(()=>{
     return Enumerable.from(rs.reservationStay?.stays).orderBy("$.creation").toArray()
 })
+ 
 const canNotUpgradeRoom = computed(()=>{
     return !rs.reservationStatusDelete.find(r=>r == rs.reservationStay.reservation_status)
 })
@@ -140,7 +141,9 @@ function onAssignRoom(data){
             closeOnEscape: false
         },
         onClose: (options) => {
-            //
+            if(options.data && options.data.message){
+                rs.getReservationDetail(options.data.message.name)
+            } 
         }
     })
 }

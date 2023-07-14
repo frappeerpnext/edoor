@@ -1,6 +1,16 @@
 <template>
     <div  class="flex  flex-wrap gap-3"> 
-         <div>
+        <div>
+            <div :style="{ background: data_status[6]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Confirmed </span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_confirmed }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        <div>
             <div :style="{ background: data_status[2]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
                 <div class="flex justify-between align-items-center h-full">
                             <span class="ms-1">Reserved </span>
@@ -11,11 +21,21 @@
             </div>
         </div>
         <div>
-            <div :style="{ background: data_status[7]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+            <div :style="{ background: data_status[0]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
                 <div class="flex justify-between align-items-center h-full">
-                            <span class="ms-1">Checked In</span>
+                            <span class="ms-1">Checked in</span>
                             <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
                                 {{ rs.reservation.total_checked_in }}
+                            </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div :style="{ background: data_status[1]?.color }" class="text-white grow p-1 border-round-lg border-none cursor-pointer" >
+                <div class="flex justify-between align-items-center h-full">
+                            <span class="ms-1">Checked Out</span>
+                            <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2" style="color:#fff;background: #00000021;">
+                                {{ rs.reservation.total_checked_out }}
                             </span>
                 </div>
             </div>

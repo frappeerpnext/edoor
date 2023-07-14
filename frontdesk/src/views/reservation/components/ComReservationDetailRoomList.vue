@@ -40,7 +40,7 @@
                                         <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/<span v-if="slotProps.data.rooms.split(',')[index] !== ''">
                                         {{ slotProps.data.rooms.split(',')[index] }}  
                                         </span>
-                                        <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
+                                        <button v-tooltip.top="'Assign Room'" @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto" v-else>
                                                 <i class="pi pi-pencil"></i>
                                                 <span v-if="slotProps.data.room_type_alias.split(',').length <= 1">
                                                 Assign Room
@@ -59,7 +59,7 @@
                         </Column>
                         <Column header="Guest Name">
                             <template #body="slotProps">
-                                <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest_name)" link>
+                                <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest)" link>
                                    {{slotProps.data.guest_name}}
                                 </Button>
                             </template>
@@ -107,7 +107,6 @@
                             <ComReservationStayListStatusBadge v-if="!(Object.entries(rs.reservation).length === 0)"/>
                         </div>
                     </div>
-                   
                 </div>
                 <hr class="mt-3"/>
                 <div class="pt-3">
@@ -149,31 +148,14 @@ const toast = useToast();
 const socket = inject("$socket")
 const frappe = inject("$frappe")
 const call = frappe.call()
+const name = ref("")
 const note = ref({
     title: '',
     show: false,
     reservation_status:'' // No Show // Void // Cancel
 })
 function onViewCustomerDetail(name) {
-    const dialogRef = dialog.open(GuestDetail, {
-        data: {
-            name: name
-        },
-        props: {
-            header: 'Guest Detail',
-            style: {
-                width: '50vw',
-            },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-            modal: true
-        },
-        onClose: (options) => {
-            console.log(options)
-        }
-    });
+    window.postMessage('view_guest_detail|' + name, '*')
 }
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 

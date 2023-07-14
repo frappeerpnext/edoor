@@ -1,5 +1,5 @@
 <template lang="">
-    <div class="pt-2 pb-1 border-b border-color-edoor g_-todies" @click="onClick">
+    <div class="pt-2 pb-1 border-b border-color-edoor g_-todies" @click="onOpenDetail">
         <div class="flex justify-between align-items-center mb-1">
             <div class="flex align-items-center h-full font-medium">{{title}}</div>
             <div class="flex-grow px-1">
@@ -11,16 +11,15 @@
         </div>
         <ProgressBar v-if="progress != null" :value="progress" class="progress-perentage" :showValue="false"></ProgressBar>
     </div>
-    <Dialog v-model:visible="visible" modal header="View Reservations" :style="{ width: '50vw' }">
-        <div>{{data}}</div>
-    </Dialog>
+ 
 </template>
 <script setup>
-import { ref, computed,getDocList,inject } from "@/plugin"
+import { ref, computed,getDocList,inject,useDialog } from "@/plugin"
 import ProgressBar from 'primevue/progressbar';
-const visible = ref(false) 
-const data = ref([])
+import ComReservationStayList from "./ComReservationStayList.vue";
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const moment = inject('$moment')
+const dialog = useDialog()
 const reservation_chart = JSON.parse(localStorage.getItem('reservation_chart'))
 const props = defineProps({
     title: String,
@@ -34,6 +33,10 @@ const props = defineProps({
     },
     dialogKey:{
         type: String
+    },
+    disabled: {
+        type:Boolean,
+        default:false
     }
 })
 const progress = computed(() => {
@@ -44,24 +47,56 @@ const progress = computed(() => {
     }
 
 })
-function onClick(){
-    const reservation_field = ['*']
-    if(props.dialogKey){
-        if(props.dialogKey == 'arrival'){
-   
-            getReservationStay({
-                fields: reservation_field,
-                filters: [['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")]]
-            })
+
+function onOpenDetail() {
+    if (!props.disabled){
+        const filters = [
+            ['property','=',property.name]
+        ]
+        if(props.dialogKey == "arrival"){
+            filters.push(['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")])
         }
+        else if(props.dialogKey == "departure"){
+            filters.push(['departure_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")])
+        }
+        else if(props.dialogKey == "unassign_room"){
+            filters.push(['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")])
+            filters.push(['rooms', '=', ''])
+        }
+        else if(props.dialogKey == "pickup"){
+            filters.push(['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")])
+            filters.push(['require_pickup', '=', 1])
+        }
+        else if(props.dialogKey == "drop_off"){
+            filters.push(['arrival_date', '=', moment(reservation_chart.start_date).add(1,'days').format("yyyy-MM-DD")])
+            filters.push(['require_drop_off', '=', 1])
+        }
+        dialog.open(ComReservationStayList, {
+            props: {
+                header: props.title,
+                style: {
+                    width: '80vw',
+                },
+                breakpoints: {
+                    '960px': '100vw',
+                    '640px': '100vw'
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false
+            },
+            data:{
+                filters: filters
+            },
+            onClose: (options) => {
+                if(options.data){
+                    //
+                }
+                
+                
+            }
+        });
     }
-    
-    visible.value = true
-}
-function getReservationStay(filter){
-    getDocList('Reservation Stay',filter).then((r)=>{
-        data.value = r 
-    })
 }
 </script>
 <style>

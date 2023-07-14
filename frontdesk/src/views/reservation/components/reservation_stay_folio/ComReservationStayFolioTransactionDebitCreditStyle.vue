@@ -9,7 +9,9 @@
             
         </Column>
         <Column field="name" header="Name">
-
+            <template #body="slotProps">
+                <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" class="link_line_action1">{{slotProps.data?.name}}</button>
+            </template>
         </Column>
         <Column field="room_number" header="Room"></Column>
         <Column field="posting_date" header="Post Date">
@@ -42,13 +44,13 @@
                 <span v-if="slotProps.data.creation">{{ gv.datetimeFormat(slotProps.data.creation) }}</span>
             </template>
         </Column>
-        <!-- <Column header="">
+        <Column header="">
             <template #body="slotProps" >
                 <div v-if="slotProps.data.name"> 
-                    <ComReservationStayFolioTransactionAction :is-edit="false" :data="slotProps.data"/>
+                    <ComReservationStayFolioTransactionAction :is-edit="true" :data="slotProps.data"/>
                 </div>
             </template>
-        </Column> -->
+        </Column>
     </DataTable>
 
     <div class="w-full flex justify-content-end my-2">
@@ -102,21 +104,23 @@ const rowStyleClass = (row) => {
 };
 
 const onViewFolioDetail = (doc) => { 
-    const dialogRef = dialog.open(ComFolioTransactionDetail, {
-        data:{
-            folio_transaction_number:doc.data.name
-        },
-        props: {
-            header: 'Folio Transaction Detail - ' + doc.data.name ,
-            style: {
-                width: '50vw',
+    if (doc.data.name){
+        const dialogRef = dialog.open(ComFolioTransactionDetail, {
+            data:{
+                folio_transaction_number:doc.data.name
             },
-            modal: true
-        },
-        onClose: (options) => {
-            
-        }
-    });
+            props: {
+                header: 'Folio Transaction Detail - ' + doc.data.name ,
+                style: {
+                    width: '50vw',
+                },
+                modal: true
+            },
+            onClose: (options) => {
+                
+            }
+        });
+    }
      
 }
 

@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center justify-content-between py-3">
-        <div class="header-title text-2xl">
+        <div >
             <slot name="start"></slot>
         </div>
         <div>

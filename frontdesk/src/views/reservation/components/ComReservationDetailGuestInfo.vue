@@ -5,8 +5,8 @@
                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded aria-haspopup="true" aria-controls="menu_master_guest" @click="onMenuMasterGuest"/>
                 <Menu ref="menuMasterGuest" id="menu_master_guest" :model="menuMasterGuestList" :popup="true" />
             </template>
-            <template #content>
-                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.reservation?.name)" :dob="rs.masterGuest.date_of_birth"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservation?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber1="rs?.masterGuest.phone_number" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
+            <template #content> 
+                <ComCardProfileGuest  @onClick="onViewGuestDetail(rs.masterGuest?.name)" :dob="rs.masterGuest.date_of_birth"  :photo="rs?.masterGuest?.photo" :color-status="rs?.reservation?.status_color" :name="rs?.masterGuest?.customer_name_en" :phoneNumber1="rs?.masterGuest.phone_number" :email="rs?.masterGuest.email_address" ></ComCardProfileGuest>
             </template>
         </ComReservationStayPanel>
     </div>

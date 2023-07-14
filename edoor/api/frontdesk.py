@@ -53,12 +53,12 @@ def get_dashboard_data(property = None,date = None):
     stay_sql = """SELECT 
                     SUM(if(arrival_date = '{0}' AND reservation_status = 'No Show',1,0)) AS `total_no_show`, 
                     SUM(if(arrival_date = '{0}' AND reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
-                    SUM(if(reservation_status = 'Reserved' AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
-                    SUM(if(reservation_status in('In-house','Check In') AND departure_date = '{0}',1,0)) AS `departure_remaining`,
+                    SUM(if(reservation_status in ('Reserved','Confirmed') AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
+                    SUM(if(reservation_status != 'Checked Out' AND departure_date = '{0}',1,0)) AS `departure_remaining`,
                     sum(if(arrival_date = '{0}' and is_active_reservation = 1, 1, 0)) AS `total_arrival`,
                     SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `pick_up`,
                     sum(if(departure_date = '{0}'   and is_active_reservation = 1, 1, 0)) AS `total_departure`,
-                    SUM(if(required_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` 
+                    SUM(if(require_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` 
                 FROM `tabReservation Stay` WHERE property = '{1}';""".format(date,property)
     stay = frappe.db.sql(stay_sql, as_dict=1)
  
@@ -334,6 +334,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             reference_number,
             reservation,
             reservation_color,
+            is_master,
             parent as reservation_stay,
             'stay' as type,
             1 as editable

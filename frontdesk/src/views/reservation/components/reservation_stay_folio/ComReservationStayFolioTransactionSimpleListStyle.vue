@@ -2,13 +2,17 @@
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
 
         <DataTable v-model:selection="rs.selectedFolioTransactions"
+            @row-dblclick="onViewFolioDetail"
             paginator  
             stateKey="folo_transaction_simple_stype_table_state"
             :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
             :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem">
             <Column selectionMode="multiple" headerStyle="width: 3rem" />
-            <Column field="name" header="No. "></Column>
-
+            <Column field="name" header="No. ">
+                <template #body="slotProps">
+                    <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1">{{slotProps.data?.name}}</button>
+                </template>
+            </Column>
             <Column field="posting_date" header="Date">
                 <template #body="slotProps">
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
@@ -159,8 +163,16 @@
 </template>
 <script setup>
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-import { inject, ref } from '@/plugin';
+import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue'
+
+import { inject, useDialog, ref } from '@/plugin';
 import ComReservationStayFolioTransactionAction from "./ComReservationStayFolioTransactionAction.vue";
+
+const props = defineProps({
+    data: Object
+})
+
+const dialog = useDialog()
 const gv = inject('$gv');
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const rs = inject('$reservation_stay');
@@ -175,6 +187,21 @@ const getTotal = ref((column_name) => {
 
 
 
+const onViewFolioDetail = (doc) => {
+    const dialogRef = dialog.open(ComFolioTransactionDetail, {
+        data: {
+            folio_transaction_number: doc.data.name
+        },
+        props: {
+            header: 'Folio Transaction Detail - ' + doc.data.name,
+            style: {
+                width: '50vw',
+            },
+            modal: true
+        },
+    });
+
+}
 
  
 </script>

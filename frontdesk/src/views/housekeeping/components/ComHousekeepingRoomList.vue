@@ -1,7 +1,6 @@
 <template>
     <div>
-       
-        <DataTable v-model:selection="hk.selectedRooms" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
+        <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
             @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column field="room_number" header="Room #"></Column>

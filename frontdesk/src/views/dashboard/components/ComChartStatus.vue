@@ -1,5 +1,5 @@
 <template>
-    <div class="flex py-2 align-items-center border-b border-color-edoor font-medium " @click="onClick">
+    <div class="flex py-2 align-items-center border-b border-color-edoor font-medium cursor-pointer px-1" @click="onClick">
         <div class="flex-grow">
             {{ title }}
         </div>
@@ -19,6 +19,9 @@ function onClick (){
     emit("onClick")
 }
 </script>
-<style lang="">
-    
+<style scoped>
+.flex.py-2.align-items-center.border-b.border-color-edoor.font-medium.cursor-pointer:hover{
+    background: #f0f0f0;
+
+}
 </style>

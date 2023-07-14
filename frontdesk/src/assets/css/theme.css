@@ -3262,7 +3262,7 @@
   padding: .5rem .5rem;
 }
 .p-datatable .p-datatable-tbody>tr:nth-child(even){
-  background-color: var(--bg-tb-sec-color) !important;
+  background-color: var(--bg-tb-sec-color);
 }
 
 .p-datatable .p-datatable-tbody>tr>td .p-row-toggler,
@@ -7326,4 +7326,7 @@ span.p-column-title {
   pointer-events: none;
   animation: none;
   z-index: 9 !important;
+}
+.p-datatable-table td{
+  white-space: nowrap;
 }

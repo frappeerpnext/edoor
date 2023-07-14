@@ -8,38 +8,40 @@
         </template>
         <template #content>
             <div>
+
+
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation :isAction="true" titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(rs.reservation?.reservation_date)"
                         valueClass="grow"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation :isAction="true" titleTooltip="Reference Number" title="Ref. No"
+                    <ComBoxStayInformation @onClick="toggle($event, 'change_ref')" :isAction="true" titleTooltip="Reference Number" title="Ref. No"
                         :value="rs.reservation?.reference_number" valueClass="grow">
                     </ComBoxStayInformation>
-                    <ComBoxStayInformation :isAction="true" titleTooltip="Internal Reference Number" title="Int. No"
+                    <ComBoxStayInformation @onClick="toggle($event, 'change_ref')" :isAction="true" titleTooltip="Internal Reference Number" title="Int. No"
                         :value="rs.reservation?.internal_reference_number" valueClass="grow"
                         titleClass="w-4rem"></ComBoxStayInformation>
                 </div>
-                <div class="flex mt-2 gap-2">
+                <div class="flex mt-2 gap-2" v-if="!(rs.reservation?.reservation_type == 'FIT')">
                     <ComBoxStayInformation title="Group"  valueClass="grow">
-                        <span class="link_line_action" v-if="!rs.reservation?.reference_number && !rs.reservation?.internal_reference_number">
+                        <button class="link_line_action text-left" v-if="!rs.reservation?.group_name && !rs.reservation?.group_code">
                             <i class="pi pi-pencil"></i>
                             ...
-                        </span>
+                        </button>
                         <div v-else class="flex gap-2">
-                            <span v-if="rs.reservation?.reference_number" class="link_line_action grow" >{{ rs.reservation?.reference_number }}</span>
-                            <span v-else class="link_line_action grow" >
+                            <a v-if="rs.reservation?.group_name" class="link_line_action grow" >{{ rs.reservation?.group_name }}</a>
+                            <button v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
                                 ...
-                            </span>
+                            </button>
                             <span>/</span>
-                            <span v-if="rs.reservation?.internal_reference_number" class="link_line_action grow" >
-                                {{ rs.reservation?.internal_reference_number }}
-                            </span>
-                            <span v-else class="link_line_action grow" >
+                            <a v-if="rs.reservation?.group_code" class="link_line_action grow" >
+                                {{ rs.reservation?.group_code }}
+                            </a>
+                            <button v-else class="link_line_action grow" >
                                 <i class="pi pi-pencil"></i>
                             ...  
-                            </span>
+                            </button>
                         </div>
                     </ComBoxStayInformation>
                 </div>
@@ -48,23 +50,19 @@
                         :value="rs.reservation?.name" valueClass="grow">
                     </ComBoxStayInformation>
                 </div>
-
                 <div class="flex mt-2 gap-2">
-                   
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
+                       
                         <div v-if="rs && rs?.reservationStays">
                             <div 
-                            v-for="(i, index)  in rs?.reservationStays[0]?.room_type_alias?.split(',').slice(0, 3)"
+                            v-for="(i, index)  in rs?.reservation?.room_type_alias?.split(',').slice(0, 3)"
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                <span v-tooltip.top="rs?.reservationStays[0]?.room_types?.split(',')[index]">{{ i }}</span>/{{ rs?.reservationStays[0]?.rooms?.split(',')[index] }}
+                                <span v-tooltip.top="rs?.reservation?.room_types?.split(',')[index]">{{ i }}</span>/{{ rs?.reservation?.room_numbers?.split(',')[index] }}
                             </div>
-                            <div v-if="rs?.reservationStays[0]?.room_type_alias?.split(',').length>3"
-                                v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs?.reservationStays?.map(stay => {
-                                return stay.room_types.split(',').slice(3).map((type, i) => `${type}/${(stay.rooms.split(',').slice(3))[i]}`).join('\n')
-                                  })}</div>` , escape: true, class: 'max-w-30rem' }"
-                                 class="rounded-xl px-2 bg-purple-cs w-auto inline">
-                                    {{ rs?.reservationStays[0]?.room_type_alias?.split(',').length - 3 }}
-                                    Mores
+                            <div v-if="rs?.reservation?.room_type_alias?.split(',').length > 3"
+                                v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${ rs?.reservation.room_types.split(',').slice(3).map((type, i) => `${type}/${rs?.reservation.room_numbers.split(',').slice(3)[i]}`).join('\n')}`, escape: true, class: 'max-w-30rem' }"
+                                class="rounded-xl px-2 bg-purple-cs w-auto inline">
+                                {{ rs?.reservation?.room_type_alias?.split(',').length - 3 }} Mores
                             </div> 
                         </div>
                     </ComBoxStayInformation>
@@ -96,16 +94,12 @@
                         valueClass="col-2"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation 
-                        @onClick="toggle($event, 'change_pax')"
-                        :isAction="true"
+                    <ComBoxStayInformation
                         title="Adult"
                         :value="rs?.reservation?.adult" valueClass="col-2"
                         >
                     </ComBoxStayInformation>
                     <ComBoxStayInformation
-                        @onClick="toggle($event, 'change_pax')"
-                        :isAction="true"
                         title="Children"
                         :value="rs?.reservation?.child" valueClass="col-2"
                         titleClass="w-5rem"></ComBoxStayInformation>
@@ -115,7 +109,8 @@
     </ComReservationStayPanel>
     <OverlayPanel ref="op">
         <ComReservationChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
-        <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" />
+        <!-- <ComChangePax v-if="overLayName=='change_pax'" @onClose="closeOverlay" /> -->
+        <ComChangeRefNumber doctype="Reservation" v-else-if="overLayName=='change_ref'" @onClose="onCloseRef" />
     </OverlayPanel>
 </template>
 <script setup>
@@ -124,6 +119,7 @@ import {inject} from '@/plugin'
 import { ref } from "vue";
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
+import ComChangeRefNumber from './ComChangeRefNumber.vue';
 import ComReservationChangeColorReservation from './ComReservationChangeColorReservation.vue';
 import ComChangePax from './ComChangePax.vue';
 
@@ -139,7 +135,12 @@ const toggle = ($event, name) => {
 const closeOverlay = ()=>{
     op.value.hide();
 }
-
+function onCloseRef(result){
+    if(result != false){
+        rs.reservation = result
+    }
+    op.value.hide()
+}
 
 
 

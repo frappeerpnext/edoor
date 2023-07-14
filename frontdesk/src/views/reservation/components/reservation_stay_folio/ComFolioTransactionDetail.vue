@@ -108,19 +108,8 @@
                 <ComStayInfoNoBox label="Posted Date" :value="gv.datetimeFormat(doc?.posting_date)"/>
                 <ComStayInfoNoBox label="Created Date" :value="gv.datetimeFormat(doc?.creation)"/>
                 <ComStayInfoNoBox label="Made By" :value="doc?.owner"/>
-                <ComStayInfoNoBox v-if="setting.folio_transaction_stype_credit_debit != 1" label="Last Modified" :value="doc?.modified_by +' '+ gv.datetimeFormat(doc?.modified)"/>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="col-6">
-            <h2 data-v-c02f7a3a="" class="h-title mb-2">Last Transaction Detail</h2>
-            <table>
-              <tbody>
-                <ComStayInfoNoBox label="Folio" :value="doc?.name"/>
-                <ComStayInfoNoBox label="Last Modified">
-                  <ComLastModifiedInfo v-if="doc.name" doctype="Folio Transaction" :docname="doc.name"/>
-                </ComStayInfoNoBox>
+                <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by"/>
+                <ComStayInfoNoBox label="Last Modified Date" :value="gv.datetimeFormat(doc?.modified)"/>
               </tbody>
             </table>
           </div>
@@ -316,5 +305,30 @@ onMounted(() => {
   display: inline-block;
   width: 100%;
   background-color: #fdfdff;
+}
+table {
+  border-collapse: collapse;
+  border: 1px solid rgba(204, 204, 204, 0.3);
+  width: 100%;
+}
+th, td {
+  padding: .5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+}
+th {
+  border-top: 1px solid rgba(204, 204, 204, 0.3);
+  border-bottom: 2px solid rgba(204, 204, 204, 0.3);
+  border-left: 1px solid rgba(204, 204, 204, 0.3);
+  font-weight: normal;
+}
+td{
+  border-top: 1px solid rgba(204, 204, 204, 0.3);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.3);
+  border-left: 1px solid rgba(204, 204, 204, 0.3);
+  vertical-align: baseline;
+}
+tr:last-of-type td {
+  border-bottom: none;
 }
 </style>

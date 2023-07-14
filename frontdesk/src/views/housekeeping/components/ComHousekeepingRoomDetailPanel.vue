@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="pb-20">
        <div class="">
         <div class="line-height-1 absolute top-4">
         <div class="text-2xl">Detail OF</div>
@@ -31,31 +31,81 @@
     </OverlayPanel>        
              </div>
         </div>
-        <div v-if="hk && hk.reservationStay" >
+        
+        <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
         <table>
             <ComStayInfoNoBox  label="Res No" :value="hk?.reservationStay?.reservation" />  
             <ComStayInfoNoBox  label="Res Stay No" :value="hk?.reservationStay?.name" />
-            <ComStayInfoNoBox  label="Status" :value="hk?.reservationStay?.reservation_status" /> 
+            <ComStayInfoNoBox  label="Type" :value="hk?.reservationStay?.reservation_type" />
+            <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'"  label="Group" :value="hk?.reservationStay?.group_code + ' / ' + hk?.reservationStay?.group_name" />
+            <ComStayInfoNoBox  label="Status">
+                <span class="-ms-3 font-semibold" :style="{color:hk.reservationStay?.status_color}">{{ hk?.reservationStay?.reservation_status }}</span>
+            </ComStayInfoNoBox>
             <ComStayInfoNoBox  label="Guest Name" :value="hk?.reservationStay?.guest_name" />
             <ComStayInfoNoBox  label="Nationality" :value="hk?.reservationStay?.nationality" /> 
             <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
             <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />  
-             
+            
             <ComStayInfoNoBox  label="PAX" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" /> 
-            <ComStayInfoNoBox  label="Arrival Date" :value="hk?.reservationStay?.arrival_date +' - '+ hk?.reservationStay?.arrival_time" /> 
-            <ComStayInfoNoBox  label="Departure Date" :value="hk?.reservationStay?.departure_date +' - '+ hk?.reservationStay?.departure_time" /> 
+            <ComStayInfoNoBox  label="Arrival">
+                <span class="-ms-3 font-semibold">
+                    {{ gv.dateFormat(hk?.reservationStay?.arrival_date) }} - {{ gv.datetimeFormat(hk?.reservationStay?.arrival_time)  }}
+                </span>
+            </ComStayInfoNoBox> 
+            <ComStayInfoNoBox  label="Departure">
+                <span class="-ms-3 font-semibold">
+                {{ gv.dateFormat(hk?.reservationStay?.departure_date) }} - {{ gv.datetimeFormat(hk?.reservationStay?.departure_time)  }}
+                </span>
+            </ComStayInfoNoBox> 
             <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 
         </table>
+        <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div>
+        <table class="w-full">
+            <ComStayInfoNoBox  label="TOTAL DEBIT" :value="''" />  
+            <ComStayInfoNoBox  label="TOTAL CREDIT" :value="''" />  
+            <ComStayInfoNoBox  label="BALANCE" :value="''" />
+        </table>
+        
         </div>
-        <div class="mb-10">
-           {{ hk.reservationStay }} 
+        <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>
+        <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by " class="mb-5 leading-5 text-sm ">
+           <!-- {{ hk.reservationStay }}  -->
+           <div class="mt-auto">
+           <span class="italic">Created by: </span>
+           <span class="text-500 font-italic">
+               {{ hk.reservationStay?.owner }} {{ gv.datetimeFormat(hk.reservationStay?.creation) }}
+           </span>
+            </div>
+            <div class="mt-auto">
+                <span class="italic"> Last Modified: </span>
+                <span class="text-500 font-italic">
+                    {{ hk.reservationStay?.modified_by }} {{ gv.datetimeFormat(hk.reservationStay?.modified) }}
+                </span>
+            </div>
+            <div>
+                <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_out_by">
+                    <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
+                    <span class="italic">Checked-in by: </span>
+                    <span class="text-500 font-italic">
+                        {{ hk.reservationStay?.checked_in_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_in_date) }}
+                    </span>
+                    </div>
+                    <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
+                    <span class="italic"> Checked-out by: </span>
+                    <span class="text-500 font-italic">
+                        {{ hk.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_out_date) }}
+                    </span>
+                    </div>
+                </div>
+            </div>
         </div>
         
     </div>
 </template>
 <script setup>
 import { inject, ref, useToast} from '@/plugin';
+import ComReservationNote from '@/views/reservation/components/ComReservationNote.vue';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 const hk = inject("$housekeeping")
@@ -71,7 +121,7 @@ const show = ref()
 const frappe = inject("$frappe")
 const db = frappe.db()
 const call = frappe.call()
-
+const gv = inject('$gv');
 if(housekeeping_status.value.length > 0){
     housekeeping_status.value.forEach(h => {
         items.value.push({

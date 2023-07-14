@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent hideButtonOK>
         <ComPlaceholder :loading="loading" :is-not-empty="true">
-            <div>
+            <div> 
                 <div class="at-add" v-if="data?.added || data?.removed">
                     <div v-if="data?.added">
                         <ComAuditTrailDetailAddRemoveRow :data="data.added" type="added" />
@@ -12,6 +12,7 @@
                 </div>
                 <div class="changed" v-if="data?.changed">
                     <h2 class="h-title mb-3">Values Changed</h2>
+                    
                     <table class="w-full" border="1">
                         <thead>
                             <tr>
@@ -31,6 +32,7 @@
                 </div>
                 <ComAuditTrailDetailChangedRow v-else-if="data.row_changed" :data="data"/>
                 <div v-if="list">
+                    
                     <ComAuditTrailDetailDeletedDoc :data="list"/>
                 </div>
                 <div v-if="data.comment_type == 'Created'" class="created">

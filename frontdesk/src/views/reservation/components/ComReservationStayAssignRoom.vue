@@ -33,7 +33,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="pe-2 w-12rem"> 
+                            <td class="pe-2 w-12rem">
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(selectedStay.start_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem"> 
@@ -74,6 +74,18 @@
                             </td>
                         </tr>
                     </tbody>
+                    <tbody>
+                        <tr>
+                            <td colspan="7">
+                                <div class="text-right pt-2">
+                                    <div>
+                                        <Checkbox class="mr-1" v-model="isOverrideRate" :binary="true" inputId="disabled" />
+                                        <label for="disabled"> Override Room Rate</label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
             </template>
@@ -86,7 +98,7 @@
 </ComDialogContent>
 </template>
 <script setup>
-    import {inject,ref, getApi, onMounted,updateDoc, useDialog, computed,watch} from '@/plugin'
+    import {inject,ref, getApi, onMounted,postApi} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import ComReservationStayChangeRate from './ComReservationStayChangeRate.vue'
     const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -97,6 +109,7 @@
     const working_day = ref({})
     const op = ref()
     const loading = ref(false)
+    const isOverrideRate = ref(false)
     const selectedStay = ref({})
     
     const rate = ref(0)
@@ -104,8 +117,8 @@
         selectedStay.value.is_manual_rate = false;
         op.value.hide();
     }
-    const onClose = () =>{
-        dialogRef.value.close();
+    const onClose = (r) =>{ 
+        dialogRef.value.close(r);
     }
     function onCloseRate(){
         op.value.hide()
@@ -125,29 +138,26 @@
         selectedStay.value.rate = r.rate
         rate.value = r.rate
     }
-    function onSave(){
+    function onSave(){ 
         if(!selectedStay.value.room_type_id){
             gv.toast('warn','Please select room type.')
             return
         }
         loading.value = true
-        const data = JSON.parse(JSON.stringify(rs))
-        var newData = JSON.parse(JSON.stringify(selectedStay.value))
-        newData.total_amount = (newData.room_nights || 0) * (newData.rate || 0)
-        data.reservationStay.stays = data.reservationStay.stays.map(i=>{
-            if(i.name === selectedStay.value.name){
-                return  {...i, room_id: selectedStay.value.room_id, room_type_id: selectedStay.value.room_type_id}
-            }
-            return i
-        })
-        data.reservationStay.update_room_occupy = true
-        data.reservationStay.update_reservation_stay = true
-        updateDoc('Reservation Stay', data.reservationStay.name,data.reservationStay).then((r)=>{
+        const dataSave = {
+            reservation_stay: rs.reservationStay.name, 
+            room_stay: selectedStay.value.name,
+            room_type_id: selectedStay.value.room_type_id,
+            room_id: selectedStay.value.room_id,
+            is_manual_rate: selectedStay.value.is_manual_rate,
+            is_override_rate: isOverrideRate.value,
+            rate: selectedStay.value.rate
+        }
+        postApi("reservation.assign_room",{data: dataSave}).then((r)=>{
             loading.value = false
-            rs.getReservationDetail(data.reservationStay.name)
-            onClose()
+            onClose(r)
         }).catch(()=>{
-            loading.value= false
+            loading.value = false
         })
     }
     onMounted(() => {

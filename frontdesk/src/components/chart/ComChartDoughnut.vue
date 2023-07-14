@@ -1,7 +1,8 @@
 <template>
     <div class="relative">
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
-            <span :style="{ color: percentage.color }">{{ percentage.percent }}%</span>
+            <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
+            <span :style="{ color: percentage.color }" v-else>{{ percentage.percent }}%</span>
         </div>
         <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full" width="225" height="150" />
     </div>
@@ -26,7 +27,8 @@ const props = defineProps({
         type: Boolean,
         default: true
     },
-    class: String
+    class: String,
+    showPercentageInteger:Boolean
 })
 const chartOptions = ref({
     cutout: props.cutout,

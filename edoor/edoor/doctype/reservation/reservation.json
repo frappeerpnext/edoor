@@ -58,6 +58,7 @@
   "total_reservation_stay",
   "column_break_42",
   "reserved",
+  "total_confirmed",
   "column_break_44",
   "total_checked_in",
   "column_break_47",
@@ -201,7 +202,7 @@
   },
   {
    "fieldname": "room_numbers",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Room Numbers"
   },
   {
@@ -433,7 +434,7 @@
   },
   {
    "fieldname": "room_type_alias",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Room Type Alias"
   },
   {
@@ -481,7 +482,7 @@
   },
   {
    "fieldname": "room_types",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Room Types",
    "length": 500
   },
@@ -637,6 +638,11 @@
    "fieldname": "group_color",
    "fieldtype": "Color",
    "label": "Group Color"
+  },
+  {
+   "fieldname": "total_confirmed",
+   "fieldtype": "Int",
+   "label": "Total Confirmed"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -647,7 +653,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-10 15:17:56.877046",
+ "modified": "2023-07-12 16:47:43.915904",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

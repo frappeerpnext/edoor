@@ -19,23 +19,34 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Undo Check-In</span>
                 </button>
-
-                <button @click="onMarkasPaybyMasterRoom()"
-                    v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
+                <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
-                    <span class="ml-2">Mark as Pay by Master Room </span>
-                </button>
-
-                <button @click="onUnmarkasPaybyMasterRoom()"
-                    v-if="rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == working_day?.date_working_day"
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
-                    <span class="ml-2"> Unmark as Pay by Master Room </span>
-                </button>
-                <button @click="onAuditTrail" class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Audit Trail</span>
+                </button>
+
+                <button v-if="rs.reservationStay.pay_by_company" @click="onUnmarkasPaybyMasterRoom()"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2"> Unmark as Bill to Master Room </span>
+                </button>
+
+                <button @click="onMarkasPaybyMasterRoom()" v-else
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2"> Mark as Bill to Master Room </span>
+                </button>
+
+                <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Mark as GIT Reservation</span>
+                </button>
+
+                <button v-else @click="onMarkasFITReservation()"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
 
 
@@ -49,11 +60,14 @@ import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.v
 const socket = inject("$socket")
 const confirm = useConfirm()
 const toast = useToast();
-const emit = defineEmits(['onAuditTrail',"onRefresh"])
+const emit = defineEmits(['onAuditTrail', "onRefresh"])
 const items = ref([])
 const folio_menu = ref();
 const rs = inject("$reservation_stay")
 const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))
+const frappe = inject('$frappe');
+const db = frappe.db();
+
 
 const toggle = (event) => {
     folio_menu.value.toggle(event);
@@ -131,7 +145,7 @@ function onUndoCheckIn() {
                 "Undo check in successfully"
             ).then((doc) => {
                 rs.reservationStay = doc.message
-               
+
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
                 socket.emit("RefresheDoorDashboard", doc.message.property)
                 rs.loading = false
@@ -149,9 +163,9 @@ function onUndoCheckIn() {
     });
 }
 
-function onMarkasPaybyMasterRoom(){
+function onMarkasPaybyMasterRoom() {
     confirm.require({
-        message: 'Are you sure you want to Mark as Pay by Master Room?',
+        message: 'Are you sure you want to Mark as Bill to Master Room?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -159,26 +173,51 @@ function onMarkasPaybyMasterRoom(){
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            
             db.updateDoc('Reservation Stay', rs.reservationStay.name, {
                 pay_by_company: 1,
             })
                 .then((doc) => {
-                    rs.folios.forEach(r => r.is_master = false);
+
                     rs.reservationStay.pay_by_company = doc.pay_by_company;
                     toast.add({
-                        severity: 'success', summary: 'Mark Folio as Master Folio',
-                        detail: 'Mark Folio as Master Folio Successfully', life: 3000
+                        severity: 'success', summary: 'Mark as Bill to Master Room',
+                        detail: 'Mark as Bill to Master Room Successfully', life: 3000
+                    });
+                })
+
+        },
+
+    });
+
+}
+function onUnmarkasPaybyMasterRoom() {
+    confirm.require({
+        message: 'Are you sure you want to Unmark as Bill to Master Room?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                pay_by_company: 0,
+            })
+                .then((doc) => {
+                    rs.reservationStay.pay_by_company = doc.pay_by_company;
+                    toast.add({
+                        severity: 'success', summary: 'Unmark as Bill to Master Room',
+                        detail: 'Unmark as Bill to Master Room Successfully', life: 3000
                     });
                 })
         },
 
     });
-   
+
 }
-function onUnmarkasPaybyMasterRoom(){
+function onMarkasGITReservation() {
     confirm.require({
-        message: 'Are you sure you want to Unmark as Pay by Master Room?',
+        message: 'Are you sure you want to Mark as GIT Reservation',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -186,32 +225,52 @@ function onUnmarkasPaybyMasterRoom(){
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            rs.loading = true
-            postApi("reservation.undo_check_in", {
-                reservation_stay: rs.reservationStay.name
-            },
-                "Undo check in successfully"
-            ).then((doc) => {
-                rs.reservationStay = doc.message
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
-                socket.emit("RefresheDoorDashboard", doc.message.property)
-                rs.loading = false
-                setTimeout(() => {
-                    emit('onRefresh')
-                }, 1000);
-
-
-            }).catch((err) => {
-                rs.loading = false
+            db.updateDoc('Reservation', rs.reservation?.name, {
+                reservation_type: "GIT",
             })
-
+                .then((doc) => {
+                    rs.reservationStay.reservation_type = doc.reservation_type,
+                        toast.add({
+                            severity: 'success', summary: 'Mark as GIT Reservation',
+                            detail: 'Mark as GIT Reservation Successfully', life: 3000
+                        });
+                })
         },
 
     });
-   
+
 }
 
-function onAuditTrail(){
+function onMarkasFITReservation() {
+    confirm.require({
+        message: 'Are you sure you want to Mark as GIT Reservation',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation', rs.reservation?.name, {
+                reservation_type: "FIT",
+            })
+                .then((doc) => {
+                    rs.reservationStay.reservation_type = doc.reservation_type,
+                        toast.add({
+                            severity: 'success', summary: 'Mark as GIT Reservation',
+                            detail: 'Mark as GIT Reservation Successfully', life: 3000
+                        });
+                })
+        },
+
+    });
+}
+
+
+
+
+
+function onAuditTrail() {
     emit('onAuditTrail')
 }
 </script>

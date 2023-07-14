@@ -1,9 +1,9 @@
 <template>
-    <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
-        {{ driver }}
+    <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading"> 
         <div class="mb-3">
             <div class="flex justify-center items-center">
-                <ComUploadProfile doctype="Drivers" :docname="driver.name" :path="driver.photo" v-model="driver.photo" @getFileName="onGetFile"/>
+                <ComUploadProfile doctype="Drivers" :docname="driver.name" :path="driver.photo" v-model="driver.photo"
+                    @getFileName="onGetFile" />
             </div>
         </div>
         <ComReservationStayPanel class="mb-3" title="Driver Information">
@@ -72,33 +72,39 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject,createUpdateDoc } from '@/plugin'
+import { ref, inject, createUpdateDoc, onMounted, getDoc } from '@/plugin'
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
 let loading = ref(false)
 const driver = ref({})
-const optionGender = ref(['Not Set','Male','Female'])
+const optionGender = ref(['Not Set', 'Male', 'Female'])
 const moment = inject('$moment')
-
+const rs = inject('$reservation_stay');
 function onClose(param = false) {
     dialogRef.value.close(param)
 }
-function onGetFile(file){
+function onGetFile(file) {
     driver.value.file_name = file
 }
-function onOK() { 
+function onOK() {
     loading.value = true
     var data = JSON.parse(JSON.stringify(driver.value))
     data.expired_date = moment(driver.value.expired_date).format('yyyy-MM-DD')
-    createUpdateDoc('Drivers', {data:data}).then((r) => {
+    createUpdateDoc('Drivers', { data: data }).then((r) => {
         onClose(r)
         loading.value = false
     }).catch((err) => {
         loading.value = false
     })
 }
-
+onMounted(() => {
+    if(dialogRef.value.data && dialogRef.value.data.drivername){
+        getDoc("Drivers", dialogRef.value.data.drivername).then((r)=>{
+            driver.value = r
+        })
+    }
+})
 </script>
 <style>
 .autocomplete-full-with input,

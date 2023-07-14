@@ -1,21 +1,20 @@
 <template>
     <div>
-        <ComChartDoughnut :data="chartData" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
+        <ComChartDoughnut :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
     </div>
     <div class="td_guest_cs px-1 mt-3">
-        <ComTodaySummarySep title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
+        <ComTodaySummarySep title="All Rooms" disabled>{{ data?.total_room }}</ComTodaySummarySep>
         <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival + data.arrival_remaining" :value="data.arrival">
             <span title="Checked-in">{{ data?.arrival }}</span>/<span title="Remain check-in">{{ data?.arrival_remaining
             }}</span>
         </ComTodaySummarySep>
-        <ComTodaySummarySep title="Departure" :totalValue="data.departure + data.departure_remaining"
-            :value="data.departure">
+        <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure + data.departure_remaining" :value="data.departure">
             <span title="Departure">{{ data.departure }}</span>/<span titel="Departure Remain">{{ data?.departure_remaining
             }}</span>
         </ComTodaySummarySep>
-        <ComTodaySummarySep title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
-        <ComTodaySummarySep title="Pickup">{{ data?.pick_up }}</ComTodaySummarySep>
-        <ComTodaySummarySep title="Drop Off">{{ data?.drop_off }}</ComTodaySummarySep>
+        <ComTodaySummarySep dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="pickup" title="Pickup">{{ data?.pick_up }}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="drop_off" title="Drop Off">{{ data?.drop_off }}</ComTodaySummarySep>
 
     </div>
 </template>

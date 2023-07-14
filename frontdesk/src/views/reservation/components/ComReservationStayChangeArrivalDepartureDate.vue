@@ -48,7 +48,6 @@ function onSave(){
     }
     loading.value = true
     postApi("reservation.change_reservation_stay_min_max_date",data).then((r)=>{
-        console.log(r.message)
         if(r.message){
             loading.value = false
             rs.getReservationDetail(r.message.name)

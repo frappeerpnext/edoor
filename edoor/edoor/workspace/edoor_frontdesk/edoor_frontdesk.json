@@ -10,7 +10,7 @@
  "idx": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-06-05 15:08:50.544010",
+ "modified": "2023-07-11 16:45:13.656669",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -41,7 +41,7 @@
    "doc_view": "List",
    "label": "Frontdesk",
    "type": "URL",
-   "url": "http://192.168.10.114:1212/edoor/frontdesk"
+   "url": "http://webmonitor.inccloudserver.com:1212/"
   }
  ],
  "title": "eDoor Frontdesk"

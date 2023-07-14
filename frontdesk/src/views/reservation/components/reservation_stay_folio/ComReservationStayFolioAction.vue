@@ -53,7 +53,7 @@
             </Menu>
         </div>
         <div>
-            <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
+            <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
         </div>
     </div>
     <ComDialogNote :header="`Delete Folio - ${rs.selectedFolio.name}`" :visible="openNote" :loading="loading"
@@ -78,7 +78,9 @@ const frappe = inject('$frappe');
 const call = frappe.call();
 const db = frappe.db();
 const toast = useToast();
-const rs = inject("$reservation_stay")
+const rs = inject("$reservation_stay")  //reservation
+const r = inject("$reservation")  //reservation
+
 const gv = inject("$gv")
 const openNote = ref(false)
 const loading = ref(false)
@@ -94,13 +96,10 @@ const toggle = (event) => {
 
 
 const print_menus = ref([])
-//Folio Summary Report
-print_menus.value.push({
-    label: "Folio Summary Report",
-    icon: 'pi pi-print',
-    command: () => {
 
-        dialog.open(ComPrintReservationStay, {
+function viewFolioSummaryReport(){
+    
+    dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
                 reservation_stay: rs.reservationStay.name,
@@ -113,13 +112,25 @@ print_menus.value.push({
                 style: {
                     width: '80vw',
                 },
+                position:"top",
                 modal: true,
                 maximizable: true,
-                position: top
+
             },
         });
+}
+
+//Folio Summary Report
+print_menus.value.push({
+    label: "Folio Summary Report",
+    icon: 'pi pi-print',
+    command: () => {
+
+        viewFolioSummaryReport()
     }
 })
+
+
 
 //folio detail report
 print_menus.value.push({
@@ -139,17 +150,16 @@ print_menus.value.push({
                 style: {
                     width: '80vw',
                 },
+                position:"top",
                 modal: true,
                 maximizable: true,
-                position: top
+              
             },
         });
     }
 
 
 })
-
-
 
 function onAddFolioTransaction(account_code) {
     if (rs.selectedFolio.status == "Open") {
@@ -242,7 +252,8 @@ function EditFolio(is_edit) {
     })
 }
 function MarkasMasterFolio() {
-    confirm.require({
+    if (rs.selectedFolio.status == "Open"){
+        confirm.require({
         target: event.currentTarget,
         header: 'Mark Folio ' + rs.selectedFolio.name + ' as Master Folio',
         message: 'Do you want to Mark this Folio ' + rs.selectedFolio.name + ' as Master Folio?',
@@ -266,6 +277,11 @@ function MarkasMasterFolio() {
                 })
         },
     })
+    }
+    else{
+        toast.add({ severity: 'warn', summary: "", detail: "Folio closed not allow to Mark as Master Folio.", life: 3000 })
+    }
+    
 }
 function openFolio() {
     confirm.require({

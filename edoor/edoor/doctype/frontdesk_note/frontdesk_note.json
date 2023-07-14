@@ -9,6 +9,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "note_date",
   "reference_doctype",
   "reference_name",
   "reservation",
@@ -40,11 +41,16 @@
    "fieldname": "reservation_stay",
    "fieldtype": "Data",
    "label": "Reservation Stay"
+  },
+  {
+   "fieldname": "note_date",
+   "fieldtype": "Date",
+   "label": "Note Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-03 16:23:29.642153",
+ "modified": "2023-07-13 13:59:37.717003",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Frontdesk Note",

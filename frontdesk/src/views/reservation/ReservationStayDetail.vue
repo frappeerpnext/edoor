@@ -109,10 +109,10 @@
                         {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date) }}
                     </span>
                     </div>
-                    <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_by" class="inline">
+                    <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
                     <span class="italic"> Checked-out by: </span>
                     <span class="text-500 font-italic">
-                        {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_by) }}
+                        {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date) }}
                     </span>
                     </div>
                 </div>

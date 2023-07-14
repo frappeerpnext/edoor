@@ -57,6 +57,7 @@ loadData() {
 	.catch((error) => {
 		reject(error)
 	});
+	
 });
 }
 

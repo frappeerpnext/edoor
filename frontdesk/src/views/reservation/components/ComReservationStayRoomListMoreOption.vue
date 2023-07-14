@@ -22,12 +22,13 @@
     <ComDialogNote header="Delete Room Stay" :visible="openNote" :loading="loading" @onOk="onDeleted" @onClose="onCloseNote"/>
 </template>
 <script setup>
-import {ref,inject, useDialog, deleteApi, useConfirm, updateDoc} from '@/plugin'
+import {ref,inject, useDialog, deleteApi, useConfirm, postApi} from '@/plugin'
 import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
 import ComNote from '@/components/form/ComNote.vue';
 const rs = inject('$reservation_stay')
 const socket = inject('$socket')
 const moment = inject('$moment')
+const dialogRef = inject('dialogRef')
 const dialogConfirm = useConfirm()
 const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 const props = defineProps({
@@ -101,19 +102,8 @@ function onUnassignRoom(){
         acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
-            let data = JSON.parse(JSON.stringify(rs.reservationStay))
- 
-            data.stays.filter(r=>{
-                if(r.name == props.data.name){
-                    r.room_id = null
-                    r.room_number = null
-                }
-                return r
-            })
-            data.update_reservation_stay = true
-            data.update_room_occupy = true
-            updateDoc('Reservation Stay',data.name,data).then((r)=>{
-                rs.reservationStay = r
+            postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{
+                rs.reservationStay = r.message
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 loading.value = false
             }).catch(()=>{

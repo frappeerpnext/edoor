@@ -46,7 +46,8 @@
   "deleted_note",
   "group_code",
   "group_name",
-  "group_color"
+  "group_color",
+  "is_master"
  ],
  "fields": [
   {
@@ -284,12 +285,18 @@
    "fieldname": "group_color",
    "fieldtype": "Data",
    "label": "Group Color"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_master",
+   "fieldtype": "Check",
+   "label": "Is Master"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-07-10 15:23:59.254531",
+ "modified": "2023-07-11 16:07:03.169498",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

@@ -215,6 +215,7 @@ function onRoute(route) {
 }
 
 function onLink(url) {
+    alert("pls remove fix link url")
     location.replace('http://192.168.10.114:1216/app/edoor-frontdesk/' + url)
     //location.replace(serverUrl + '/' + url)
 }
@@ -222,6 +223,7 @@ function onLink(url) {
 function onLogout() {
     auth.logout().then(() => {
         // development mode
+        alert("pls remove fix link url")
         location.replace('http://192.168.10.114:1216/app/edoor-frontdesk')
         // location.replace(serverUrl)
     }).catch((error) => toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 }));

@@ -1,7 +1,6 @@
 <template>
 
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-       
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -69,10 +68,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="grid">
+                            <div class="col-12 lg:col-6">
+                                <div class="pt-2">
+                                    <label>Group Code</label><br />
+                                    <InputText v-model="doc.reservation.group_code" placeholder="Group Code" class="w-full" />
+                                </div>
+                            </div>
+                            <div class="col-12 lg:col-6">
+                                <div class="pt-2">
+                                    <label>Group Name</label><br />
+                                    <InputText v-model="doc.reservation.group_name" placeholder="Group Name" class="w-full" />
+
+                                </div>
+                            </div>
+                        </div>
                         <div class="pt-2 flex justify-between">
-                            <div class="flex align-items-center relative w-11rem">
+                            <div class="flex align-items-center">
                                 <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
-                                <Checkbox class="absolute right-0 w-full flex justify-end mt-1" v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
+                                <Checkbox class="" v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
                             </div>
                             <div>
                                 <div class="text-center">
@@ -140,7 +154,7 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
                                     <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date" view="month" dateFormat="mm/yy" showIcon />
+                                        placeholder="ID Expire Date"  showIcon />
                                 </div>
                             </div>
                         </div>
@@ -152,8 +166,8 @@
         <div class="grid pt-2" v-if="setting.room_tax && (setting.room_tax.tax_1_rate + setting.room_tax.tax_2_rate + setting.room_tax.tax_3_rate) > 0">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
-                    {{ setting.tax_rule }}
-                    <div class="flex gap-2">
+                   
+                    <div class="flex gap-2" >
                         <div class="flex gap-2 align-items-center relative w-11rem">
                             <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
                             <span class="absolute right-0 w-full">
@@ -202,100 +216,62 @@
 
         <div class="bg-card-info border-round-xl mt-2 p-3 add-room-reserv">
             <div class="n__re-custom">
+ 
                 <table class="w-full">
                     <thead>
                         <tr>
                             <th class="text-left">
-                                <label>Room Type<span class="text-red-500">*</span></label>
+                                <label>Room Type</label>
                             </th>
-                            <th class="text-left">
-                                <label class="px-2">Room Name</label>
+                            <th class="text-center">
+                                <label class="px-2">Total Rooms</label>
                             </th>
-                            <th class="text-right" >
-                                <label class="px-2">Rate</label>
+                            <th class="text-center">
+                                <label class="text-center px-2">Total Room Available</label>
                             </th>
-                            <th class="text-right" v-if="totalTax1Amount>0 || totalTax2Amount>0 || totalTax3Amount>0">
-                                <label class="text-center px-2">Total Tax</label>
+                            <th class="text-center">
+                                <label class="text-center px-2">Rate</label>
                             </th>
-                            <th>
-                                <label class="text-center px-2">Adults</label>
-                            </th>
-                            <th>
-                                <label class="text-center px-2">Children</label>
+                            <th class="text-center">
+                                <label class="text-center px-2">Tax</label>
                             </th>
                             <th>
-                                <label class="text-center px-2">Total Nights</label>
+                                <label class="text-center px-2">No. of Room</label>
                             </th>
-                            <th class="text-right">
-                                <label class="px-2">Amount</label>
-                            </th>
-
+                           
                         </tr>
                     </thead>
                     <tbody>
 
 
-                        <tr v-for="(  d, index  ) in   doc.reservation_stay" :key="index">
+                        <tr v-for="(  d, index  ) in   room_types" :key="index">
                             <td class="pr-2">
-                                <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
-                                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type"
-                                    class="w-full" />
+                               {{ d.room_type }}
                             </td>
-                            <td class="p-2">
-                                <Dropdown v-model="d.room_id"
-                                    :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
-                                    optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
-                                    placeholder="Select Room" showClear filter class="w-full" />
+                            <td class="p-2 text-center">
+                                {{d.total_room}}
                             </td>
-                            <td class="p-2 w-12rem text-right">
-                                <span @click="onOpenChangeRate($event, d)"
-                                    class="text-right w-full color-purple-edoor text-md font-italic ">
-                                    <span class="link_line_action">
-                                        <CurrencyFormat :value="d.rate" />
-                                    </span>
-                                </span>
+                            <td class="p-2 w-12rem text-center">
+                                 {{ d.total_vacant_room }}
                             </td>
-                            <td class="p-2 w-12rem text-right" v-if="roomRateTax(d)>0">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
-                                    <CurrencyFormat :value="roomRateTax(d)" />
-                                </div>
+                            <td class="p-2 w-12rem text-center">
+                                 {{ d.rate }}
                             </td>
-                            <td class="p-2 w-5rem">
-                                <InputNumber v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
-                                    class="child-adults-txt" />
-                            </td>
-                            <td class="p-2 w-5rem">
-                                <InputNumber v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
-                                    class="child-adults-txt" />
+                            
+                            <td class="p-2 w-12rem text-center">
+                                 {{ d.total_tax }}
                             </td>
 
-                            <td class="p-2 w-8rem">
-                                <div class="p-inputtext-pt text-center border-1 border-white h-12">{{
-                                    doc.reservation.room_night
-                                }}</div>
+                            <td class="p-2 w-12rem text-right">
+                                <InputNumber v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="1" :max="d.total_vacant_room"
+                                class="child-adults-txt" />
                             </td>
-                            <td class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
-                                    <CurrencyFormat :value="((doc.reservation.room_night ?? 0) * rateTax(d)) + (roomRateTax(d) * (doc.reservation.room_night ?? 0))" />
-                                </div>
-                            </td>
-                            <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end">
-                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
-                                    aria-label="Filter" />
-                            </td>
+                            
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="flex justify-between">
-                <div>
-                    <Button @click="onAddRoom" class="px-4 mt-2 conten-btn">
-                        <img :src="IconAddRoom" class="btn-add_comNote__icon  me-1" />
-                        Add Room 
-                    </Button>
-                </div>
 
-            </div>
         </div>
         <div class="mt-3">
             <div>
@@ -304,6 +280,8 @@
                     class="w-full border-round-xl" />
             </div>
         </div>
+        {{ doc.reservation_stay }}
+        
         <OverlayPanel ref="op">
             <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan"
                 @onChangeRate="onChangeRate" />
@@ -338,6 +316,7 @@ const working_day = ref({})
 const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
+
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
     rate.value = JSON.parse(JSON.stringify(stay)).rate
@@ -347,17 +326,17 @@ const doc = ref({
     reservation: {
         doctype: "Reservation",
         property: property.name,
-        reservation_type: "FIT",
+        reservation_type: "GIT",
         arrival_time: '12:00:00',
         departure_time: '12:00:00',
         adult: 1,
         child: 0,
         reservation_status: 'Reserved',
         tax_rule: setting.room_tax?.name,
-        pay_by_company: 0,
+        pay_by_company: 1,
         group_code:"",
         group_name:""
-
+        
     },
     guest_info: {
         "doctype": "Customer",
@@ -489,12 +468,12 @@ const onDateSelect = (date) => {
 
     doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
     getRoomType()
-    getRooms()
+    
 }
 
 
 const getRoomType = () => {
-
+ 
     call.get("edoor.api.reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(doc.value.reservation.arrival_date).format("yyyy-MM-DD"),
@@ -503,26 +482,25 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
-            room_types.value = result.message;
+            result.message.forEach((r)=>{
+                
+                let rt =room_types.value?.find((t)=>t.name == r.name)
+              
+                if (rt){
+                    rt.total_room = r.total_room
+                    rt.total_vacant_room = r.total_vacant_room
+                    rt.rate = r.rate
+                }else {
+                    room_types.value.push(r) 
+                }
+            })
+            
             updateRate()
         }).catch((error) => {
             gv.showErrorMessage(error)
         })
 }
-
-const getRooms = () => {
-
-    call.get("edoor.api.reservation.check_room_availability", {
-        property: property.name,
-        start_date: moment(doc.value.reservation.arrival_date).format("yyyy-MM-DD"),
-        end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD")
-    })
-        .then((result) => {
-
-            rooms.value = result.message;
-
-        })
-}
+ 
 
 function onSelectedCustomer(event) {
     if (event.value) {
@@ -541,7 +519,7 @@ const onRoomNightChanged = (event) => {
 
     doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(event, "Days").toDate()
     getRoomType()
-    getRooms()
+    
 }
 
 const onUseTax1Change = (value) => {
@@ -579,16 +557,31 @@ const onAddRoom = () => {
 const onSave = () => {
 
     isSaving.value = true
+     
+    doc.value.reservation_stay = []
+    room_types.value.filter(r=>r.total_selected_room>0).forEach((r)=>{
+         
+        for (let i =0; i <= r.total_selected_room-1; i++) {
+            doc.value.reservation_stay.push(
+                { "rate": r.rate, "adult": 2, "child": 1, "is_manual_rate": false, "is_master": 0, "room_type_id": r.name,"room_id":"" }
+            )
+        }
+    });
+
     const data = JSON.parse(JSON.stringify(doc.value))
+
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
     if (data.reservation.departure_date) data.reservation.departure_date = moment(data.reservation.departure_date).format("yyyy-MM-DD")
-    if (data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
+    if (
+        data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
 
     data.reservation.tax_1_rate = doc.value.tax_rule.tax_1_rate
     data.reservation.tax_2_rate = doc.value.tax_rule.tax_2_rate
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
+
+     
     postApi('reservation.add_new_fit_reservation', {
         doc: data
     },
@@ -619,7 +612,7 @@ onMounted(() => {
             doc.value.reservation.departure_date = moment(working_day.value.date_working_day).add(1, 'days').toDate()
 
             getRoomType()
-            getRooms()
+         
         } else {
             if (dialogRef.value.data?.arrival_date) {
                 doc.value.reservation.arrival_date = dialogRef.value.data.arrival_date
@@ -633,7 +626,7 @@ onMounted(() => {
             }
 
             getRoomType()
-            getRooms()
+          
         }
 
 
@@ -642,25 +635,7 @@ onMounted(() => {
     })
 });
 
-const OnSelectRoom = () => {
-    rooms.value.forEach(r => {
-        r.selected = 0
-    });
-
-    doc.value.reservation_stay.forEach(r => {
-        let room = rooms.value.find(x => x.name == r.room_id)
-        if (room) {
-            room.selected = 1
-        }
-    });
-
-}
-const onSelectRoomType = (stay) => {
-
-    stay.room_id = null
-    OnSelectRoom()
-    updateRate()
-}
+ 
 
 const onDeleteStay = (index) => {
     doc.value.reservation_stay.splice(index, 1);

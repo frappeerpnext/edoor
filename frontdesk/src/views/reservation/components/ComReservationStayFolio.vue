@@ -8,8 +8,8 @@
         </div>
     </div>
     <div v-else class="min-h-folio-cus flex flex-column justify-content-center">
-        <div class="text-center mb-3"><Button class="conten-btn" label="Create Folio" icon="pi pi-folder-open"
-                @click="onAddCreatNewFolio()"></Button>
+        <div class="text-center mb-3">
+            <Button class="conten-btn" label="Create Folio" icon="pi pi-folder-open" @click="onAddCreatNewFolio()"></Button>
         </div>
         <div class="text-center text-600">Create a Folio to post transactions.</div>
     </div>

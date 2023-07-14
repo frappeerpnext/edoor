@@ -6,17 +6,17 @@
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
-                        <div class="ml-8" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
-                        <div class="ml-8" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
                 </div>
             </template>
             <template #end>
                 <div class="flex gap-2 justify-content-end">
+                    <Button @click="showNote=!showNote">Show Note</Button>
                     <NewFITReservationButton/>
-                    <Button v-tooltip.left="'New Group Booking'" @click="groupReservation" label="New group booking" class="btn-date__tt btn-inner-set-icon border-none cursor-pointer">
-                        <img class="mr-2" :src="iconEdoorAddGroupBooking">New Group Booking
-                    </Button>
+                    <NewGITReservationButton/>
+                  
                 </div>
             </template>
         </ComHeader>
@@ -52,8 +52,14 @@
                         </div>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
+                       
+                        <Sidebar v-model:visible="showNote" position="right">
+                            <ComNote v-if="showNote"/>    
+                        </Sidebar>
+                        
+
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
-                            <template v-slot:eventContent="{event}">
+                            <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" style="height: 36px" v-tooltip.bottom="{ value: `
                                     <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
                                         <table>
@@ -68,10 +74,21 @@
                                             </tbody>
                                         </table>
                                     </div>`, escape: true, class: 'event-tooltip' }">
-                                        {{ event.title }}
+                                        <div class="flex">
+                                            <span class="h-1rem w-1rem rounded-full" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
+                                                
+                                            </span>
+                                            <span v-if="event.extendedProps.is_master">
+                                                <ComIcon style="height: 12px;" icon="iconCrown"/>
+                                            </span>
+                                            
+                                            <div>{{event.title}}</div>
+                                        </div>
                                     </div>
-                            </template>
+                            </template> 
                         </FullCalendar>
+
+                    
                     </div>
                 </div>
             </div>
@@ -86,6 +103,7 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import interactionPlugin from '@fullcalendar/interaction'
 
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
+import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
 import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
 import NewReservation from '@/views/reservation/NewReservation.vue';
@@ -95,6 +113,10 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
+import ComNote from '@/views/note/ComNote.vue'
+
+
+
 const socket = inject("$socket");
 const frappe = inject('$frappe')
 const call = frappe.call();
@@ -120,6 +142,7 @@ let showTooltip = ref(false)
 const reservation = ref({})
 const isLoading = ref(true)
 const showSummary = ref(true)
+const showNote = ref(false)
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
@@ -200,17 +223,6 @@ const calendarOptions = reactive({
             .catch((error) => {
                 alert("load data fiale")
             });
-    },
-    eventContent: function(info, element, view) {
- 
-        var resourceId = info.event._def.resourceIds[0];
-        var resource = info.view.calendar.getResourceById(resourceId);
- 
-        // var td = info.el.closest('td');
-        // td.setAttribute('data-resource-id', resourceId);
-
-        
- 
     },
     eventAllow: function (dropInfo, draggedEvent) {
         return false
@@ -604,8 +616,7 @@ function showReservationDetail(name) {
 
 
 /// filter rescource
-function onFilterResource(f){
-    console.log(f)
+function onFilterResource(f){ 
     roomChartResourceFilter = {
         property: property.name,
         room_type_group: f.room_type_group,

@@ -138,7 +138,8 @@ onMounted(() => {
 })
 
 
-function showGuestDetail(name) {
+function showGuestDetail(name) { 
+ 
     const dialogRef = dialog.open(GuestDetail, {
         data: {
             name: name
@@ -146,13 +147,10 @@ function showGuestDetail(name) {
         props: {
             header: 'Guest Detail',
             style: {
-                width: '50vw',
+                width: '80vw',
             },
             maximizable: true,
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
+            
             modal: true,
             position:"top"
         },

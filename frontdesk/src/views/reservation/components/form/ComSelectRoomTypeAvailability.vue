@@ -41,7 +41,7 @@
             end_date: moment(end_date).format("yyyy-MM-DD"),
             rate_type: rate_type,
             business_source: business_source,
-            room_type_id: roomTypeId.value
+            room_type_id: ""
         })
         .then((result) => {
             data.value = result.message;
