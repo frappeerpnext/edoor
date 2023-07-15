@@ -1,7 +1,10 @@
 <template>
     <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
-        placeholder="Select Guest" class="w-full md:w-14rem" @change="refreshReport" />
-    <iframe id="report-view" style="height: 1024px;" width="100%" :src="url"></iframe>
+        placeholder="Select Guest" class="w-full md:w-14rem mb-3" @change="refreshReport" />
+    
+    <ComSelect @change="refreshReport" class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" />
+    
+    <iframe @load="onIframeLoaded()" id="report-view"  width="100%" :src="url"></iframe>
 </template>
 
 <script setup>
@@ -16,10 +19,19 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const url = ref("")
 const guests = ref([]);
 const selected_guest = ref({})
+const letter_head = ref("")
+const reservationStay = ref("")
 
+letter_head.value = setting.property.default_letter_head
+function onIframeLoaded() {
+    const iframe = document.getElementById("report-view");
+     
+    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    
+}
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format=eDoor%20Guest%20Registration%20Card&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en"
+    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format=eDoor%20Guest%20Registration%20Card&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
     document.getElementById("report-view").contentWindow.location.replace(url.value)
 }
 
@@ -28,7 +40,7 @@ onMounted(() => {
         alert("no dialog")
     } else {
         const params = dialogRef.value.data
-
+        reservationStay.value = params.reservation_stay
 
         call.get('edoor.api.reservation.get_reservation_guest', {
             reservation: params.reservation,

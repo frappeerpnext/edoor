@@ -18,6 +18,7 @@
   "reservation_color",
   "internal_reference_number",
   "reservation",
+  "reservation_date",
   "reservation_type",
   "group_code",
   "group_name",
@@ -766,6 +767,12 @@
    "fieldname": "require_drop_off",
    "fieldtype": "Check",
    "label": "Require Drop Off"
+  },
+  {
+   "fetch_from": "reservation.reservation_date",
+   "fieldname": "reservation_date",
+   "fieldtype": "Date",
+   "label": "Reservation Date"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -776,7 +783,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-14 14:19:24.652087",
+ "modified": "2023-07-14 14:54:04.165305",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

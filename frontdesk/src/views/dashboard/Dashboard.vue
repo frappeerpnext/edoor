@@ -1,18 +1,16 @@
 <template lang="">
     <ComHeader isRefresh @onRefresh="onRefresh()">
-    <template #start>
-        <div class="font-bold">{{ property.name }}</div>
-        <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
-    </template>
-    <template #center>
-        {{selected_date}} / {{tomorrow}}
-        <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
-            :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
-        <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
-            :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-        <Calendar v-model="date" class="w-48 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
-    </template>
-    
+        <template #start>
+            <div class="font-bold">{{ property.name }}</div>
+            <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
+        </template>
+        <template #center>
+            <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
+                :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
+            <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
+                :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
+            <Calendar v-model="date" class="w-48 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+        </template>
         <template #end>
             <div class="flex gap-2 justify-content-end">
                 <NewFITReservationButton/>
@@ -61,10 +59,13 @@
                         <ComKPI @onClick="viewSummary('Check-out remaining')" :value="data.departure_remaining" title="Check-out Remaining"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
-                        <ComKPI @onClick="viewSummary('Pickup and Drop Off')" :value="data.pick_up + '/' + data.drop_off" title="Pickup/Drop off" class="bg-warning-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI @onClick="viewSummary('GIT Arrival')" :value="data.git_reservation_arrival + '/' +  data.git_stay_arrival" title="GIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+
+                        <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        
                         <ComKPI @onClick="viewSummary('Unassign Room')" :value="data.unassign_room" title="Unassign Room" class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI @onClick="viewSummary" :value="15" title="GIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI @onClick="viewSummary('Stay Over')" :value="15" title="Stay Over" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI @onClick="viewSummary('Pickup and Drop Off')" :value="data.pick_up + '/' + data.drop_off" title="Pickup/Drop off" class="bg-warning-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        
                     </div>
                 </ComPanel>
             </div>
@@ -81,19 +82,23 @@
             <TabPanel>
                 <template #header>
                     <span>Arrivals</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
+                     
                     <iframe @load="onIframeLoaded('iframeArrival')" frameborder="0" scrolling="no" id="iframeArrival" width="100%" :src="arrivalUrl" ></iframe>
+                     
                 </div>
             </TabPanel>
             <TabPanel>
                 <template #header>
                     <span>Departures</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining }}</span>
                 </template>
-                <div class="mt-2">
-                    <iframe  @load="onIframeLoaded('iframeDeparture')" id="iframeDeparture" width="100%" :src="departureUrl"></iframe>
+                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
+                    
+                    <iframe @load="onIframeLoaded('iframeDeparture')" id="iframeDeparture" width="100%" :src="departureUrl"></iframe>
+                    
                 </div>
             </TabPanel>
             <TabPanel>
@@ -102,8 +107,8 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
                     }}</span>
                 </template>
-                <div class="mt-2">
-                    <iframe  @load="onIframeLoaded('iframeInhouse')" id="iframeInhouse" width="100%" :src="inhouseUrl"></iframe>
+                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
+                    <iframe @load="onIframeLoaded('iframeInhouse')" id="iframeInhouse" width="100%" :src="inhouseUrl"></iframe>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -112,8 +117,9 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
                     }}</span>
                 </template>
-                <div class="mt-2">
-                    <iframe  @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="inhouseUrl"></iframe>
+                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
+
+                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="inhouseUrl"></iframe>
                 </div>
             </TabPanel>
         </TabView>
@@ -182,6 +188,7 @@ function getArrivalUrl() {
 
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format=eDoor%20Dashboard%20Arrival%20Guest&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
     url = url + "&date=" + selected_date.value
+
     return url;
 }
 
@@ -195,7 +202,8 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
            report_name: report_name,
            view:"ui",
            extra_params:extra_params,
-           filter_options:filter_options
+           filter_options:filter_options,
+           fullheight: true
        },
        props: {
            header:title,
@@ -213,6 +221,7 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
 
 function onRefresh(loading = true){
     getData(loading)
+   
 }
 
 function onViewRoomOccupy(){
@@ -298,15 +307,17 @@ function onViewNoShowReservation(){
 
 
 function getDepartureUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
     url = url + "&date=" + selected_date.value
+ 
     return url;
 
 }
 
 function getInhouseGuestUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Stay%20Over%20Guest&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
-    url = url + "&working_date=" + selected_date.value
+    url = url + "&date=" + selected_date.value
     return url;
 
 }
@@ -351,6 +362,13 @@ getData();
 function getData(loading=true) {
     gv.loading = loading;
     const call = api.call();
+    if (!selected_date.value){
+        const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day')).date_working_day
+        selected_date.value = moment(edoor_working_day).format("YYYY-MM-DD")
+    }
+    if(!date.value){
+        date.value = moment(selected_date.value).format("DD-MM-YYYY")
+    }
     call.get('edoor.api.frontdesk.get_dashboard_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: selected_date.value
@@ -362,14 +380,16 @@ function getData(loading=true) {
             const documentStyle = getComputedStyle(document.body);
             chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
             chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
+           
             if (!selected_date.value) {
                 date.value = moment(data.value.working_date).format("DD-MM-YYYY")
-                tomorrow.value = moment(data.value.working_date).add(1,"days").format("DD-MM-YYYY")
+                tomorrow.value = moment(data.value.working_date).add(1,"days").format("YYYY-MM-DD")
                 selected_date.value = data.value.working_date;
-                arrivalUrl.value = getArrivalUrl();
+          
+            }
+            arrivalUrl.value = getArrivalUrl();
                 departureUrl.value = getDepartureUrl();
                 inhouseUrl.value = getInhouseGuestUrl();
-            }
 
             gv.loading = false;
 
@@ -382,10 +402,9 @@ function getData(loading=true) {
 }
  
 function onIframeLoaded(id){
- 
     const iframe = document.getElementById(id);
-   iframe.height = iframe.contentWindow.document.body.scrollHeight;
-
+    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    iframe.width = iframe.contentWindow.document.body.scrollWidth;
 }
 
 const viewSummary = (name) => { 
@@ -429,8 +448,14 @@ const viewSummary = (name) => {
             )
         }
         else if(name == "Unassign Room"){
-            filters.push(['arrival_date', '=', moment(selected_date.value).format("yyyy-MM-DD")])
-            filters.push(['rooms', '=', ''])
+ 
+             onViewData(
+                'Business%20Branch',
+                "eDoor%20Unassign%20Room%20Reservation%20List",
+                'Unassign Room Reservation List',
+                [{key:"date", value:selected_date.value}],
+                ['keyword','room_type','reservation_status','business_source']
+            )
         }
         else if(name == "Pickup and Drop Off"){
             onViewData(
@@ -438,13 +463,27 @@ const viewSummary = (name) => {
                 "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
                 'Pickup & Drop Off',
                 [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
-                ['keyword','building','floor','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
+                ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
             )
              
         }
+        else if(name == "GIT Arrival"){
+            onViewData(
+                'Business%20Branch',
+                "eDoor%20GIT%20Arrival%20Guest",
+                'GIT Arrival',
+                [{key:"date", value:selected_date.value}],
+                ['keyword','room_type','reservation_status','business_source']
+            )
+        }
         else if(name == "Stay Over"){
-            filters.push(['departure_date', '<=', moment(selected_date.value).format("yyyy-MM-DD")])
-            filters.push(['reservation_status', 'in', ['In-house','Checked In']])
+           onViewData(
+                'Business%20Branch',
+                "eDoor%20Dashboard%20Stay%20Over%20Guest",
+                'Stay Over',
+                [{key:"date", value:selected_date.value}],
+                ['keyword','room_type','reservation_status','business_source']
+            )
         }
          
 }

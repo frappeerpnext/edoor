@@ -1,6 +1,6 @@
 <template>
-    <div class="wrap-dialog">
-        <div class="py-3 pl-3 view-table-iframe-dialog">
+    <div class="wrap-dialog" :class="{'full-height' : dialogRef.data.fullheight}">
+        <div class="py-3 pl-3 view-table-iframe-dialog" style="height: 80vh;">
             <div class="flex gap-2 mb-3">
                 <div v-if="show_letter_head">
                     <ComSelect v-model="letter_head" doctype="Letter Head" @change="loadIframe"/>
@@ -61,11 +61,11 @@
                 </div>
 
                 <div>
-                    <Button class="border-none" @click="loadIframe">Refresh</Button>
+                    <!-- <Button class="border-none h-full" @click="loadIframe">Refresh</Button> -->
+                    <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon border-none h-full"></Button>
                 </div>
-            </div>
-
-            <iframe @load="onIframeLoaded()" id="iframe"  width="100%" :src="url"></iframe>
+            </div> 
+            <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
         </div>
     </div>
 </template>
@@ -112,11 +112,8 @@ const hasFilter = ref((f) => {
 
 function onIframeLoaded() {
     const iframe = document.getElementById("iframe");
-    // const iframeWidth = iframe.offsetWidth;
     iframe.height = iframe.contentWindow.document.body.scrollHeight;
-    iframe.width = iframe.contentWindow.document.body.scrollWidth; 
-
-    console.log(iframe.style.width)
+    
 }
 
 function loadIframe() {
@@ -185,3 +182,8 @@ onUnmounted(() => {
 
 
 </script> 
+<style scoped>
+.full-height {
+    height: 90vh;
+}
+</style>

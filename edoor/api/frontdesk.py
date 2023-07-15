@@ -55,28 +55,45 @@ def get_dashboard_data(property = None,date = None):
                     SUM(if(arrival_date = '{0}' AND reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
                     SUM(if(reservation_status != 'Checked Out' AND departure_date = '{0}',1,0)) AS `departure_remaining`,
-                    sum(if(arrival_date = '{0}' and is_active_reservation = 1, 1, 0)) AS `total_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND arrival_date = '{0}'  AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND arrival_date = '{0}' and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
                     SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `pick_up`,
                     sum(if(departure_date = '{0}'   and is_active_reservation = 1, 1, 0)) AS `total_departure`,
-                    SUM(if(require_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` 
+                    SUM(if(require_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` ,
+                    sum(if(  '{0}'>arrival_date and '{0}'< departure_date  AND is_active_reservation = 1, 1, 0)) AS `total_stay_over`
                 FROM `tabReservation Stay` WHERE property = '{1}';""".format(date,property)
     stay = frappe.db.sql(stay_sql, as_dict=1)
- 
+    git_reservation_sql = """
+                        select 
+                            count(distinct reservation)   as total
+                        from `tabReservation Stay`
+                        where 
+                            is_active_reservation=1 and 
+                            reservation_status   in ('Reserved','Confirmed','In-house') and
+                            reservation_type = 'GIT' and 
+                            arrival_date = '{0}' and
+                            property = '{1}' 
+                    """.format(date, property)
+    
+    
+    
     return {
         "working_date":working_date,
         "total_room":total_room or 0,
         "total_room_occupy":total_room_occupy or 0,
         "total_room_vacant": (total_room or 0) - (total_room_occupy or 0),
-        "arrival":stay[0]["total_arrival"],
-        "arrival_remaining": stay[0]["arrival_remaining"],
-        "departure":stay[0]["total_departure"],
-        "departure_remaining": stay[0]["departure_remaining"],
-        "pick_up":stay[0]["pick_up"],
-        "drop_off":stay[0]["drop_off"],
-        "unassign_room":unassign_room,
-        "total_no_show":stay[0]["total_no_show"],
-        "total_cancelled":stay[0]["total_cancelled"],
-        "stay_over":8
+        "arrival":stay[0]["total_arrival"] or 0,
+        "arrival_remaining": stay[0]["arrival_remaining"] or 0,
+        "departure":stay[0]["total_departure"] or 0,
+        "departure_remaining": stay[0]["departure_remaining"] or 0,
+        "pick_up":stay[0]["pick_up"] or 0,
+        "drop_off":stay[0]["drop_off"] or 0,
+        "unassign_room":unassign_room or 0,
+        "total_no_show":stay[0]["total_no_show"] or 0,
+        "total_cancelled":stay[0]["total_cancelled"] or 0,
+        "stay_over":stay[0]["total_stay_over"] or 0,
+        "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
+        "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0
         
     }
 

@@ -146,9 +146,9 @@ function onChangeDate($event){
     toggle($event, 'change_date')
 }
 function onCloseRef(result){
-    if(result != false){
+    if(result){
         stay.reservationStay = result
-    }
+    } 
     op.value.hide()
 }
 

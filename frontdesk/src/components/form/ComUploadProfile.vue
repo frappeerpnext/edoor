@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="path && !isClear" class="absolute profile__config_c z-3 transition-duration-500" style="right: 2px !important;top: 18px !important;">
+        <div v-if="path || !isClear" class="absolute profile__config_c z-3 transition-duration-500" style="right: 2px !important;top: 18px !important;">
             <Button @click="onRemove()" icon="pi pi-times" class="p-0 h-6 border-round-3xl" severity="danger"></Button>
         </div>  
     </div>
@@ -105,14 +105,13 @@ const onSelectedFiles = (event) => {
 function onRemove(){
     isClear.value = true
     files.value = []
-
-    emit('update:modelValue', false)
+    emit('update:modelValue', "")
 }
 
 function onUpdateDoctype(file_url){
     if(props.docname){
         const dataUpdate = {}
-        dataUpdate[props.fieldname] = file_url
+        dataUpdate[props.fieldname] = file_url || ""
         updateDoc(props.doctype, props.docname, dataUpdate).then((r)=>{
             emit('update:modelValue', '')
         })

@@ -42,7 +42,7 @@ export default class ReservationStay {
 			this.reservationStayNames.value = result.message.reservation_stay_names
 			this.guest.value = result.message.guest
 			this.masterGuest.value = result.message.master_guest
-
+			console.log(this.reservationStay.value)
 			this.loading.value = false
 
 		}).catch((error) => {
@@ -247,7 +247,7 @@ export default class ReservationStay {
 
 	canCheckIn() {
 		const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-		return this.reservationStay.reservation_status == 'Reserved' &&
+		return this.reservationStay?.reservation_status == 'Reserved' &&
 			this.reservationStay.arrival_date <= working_day.date_working_day
 	}
 	clear() {

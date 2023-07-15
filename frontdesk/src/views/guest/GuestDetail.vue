@@ -1,45 +1,38 @@
 <template>
+    <div class="iframe-view">
     <TabView  lazy>
+        
         <TabPanel header="General Information">
-            <div class="iframe-view">
-            <iframe style="height:500px;width: 100%;"
+            
+            <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
                 :src="generalInfoUrl">
             </iframe>
-            </div>
         </TabPanel>
         <TabPanel header="Stay History">
-            <div class="iframe-view">
-            <iframe  style="height:500px;width: 100%;"
+            <iframe  @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
                 :src="stayHistoryUrl">
             </iframe>
-            </div>
         </TabPanel>
         <TabPanel header="POS/Misc. Sale">
-            <div class="iframe-view">
-            <iframe style="height:500px;width: 100%;"
+            <div style="margin-right:-1rem;">
+            <iframe style="height:500px; width: 100%;"
                 :src="posMiscSaleUrl">
-
             </iframe>
             </div>
         </TabPanel>
 
         <TabPanel header="Note">
-            <div class="iframe-view">
-            <iframe style="height:500px;width: 100%;"
+            <iframe @load="onIframeLoaded('note')" id="note" style="width: 100%;"
                 :src="noteUrl">
 
             </iframe>
-            </div>
         </TabPanel>
         <TabPanel header="Folio">
-            <div class="iframe-view">
-            <iframe style="height:500px;width: 100%;"
+            <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;"
                 :src="folioUrl">
-
             </iframe>
-            </div>
         </TabPanel>
-    </TabView>
+    </TabView></div>
 </template>
 <script setup>
 
@@ -49,7 +42,13 @@ const setting =JSON.parse( localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 
 const name = ref("")
+
+function onIframeLoaded(id){
  
+ const iframe = document.getElementById(id);
+iframe.height = iframe.contentWindow.document.body.scrollHeight;
+
+}
 
 const generalInfoUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Guest%20Detail%20General%20Information&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
@@ -85,6 +84,10 @@ console.log(dialogRef)
 </script>
 <style scoped>
 .iframe-view{
+    overflow: auto !important;
+    max-height: 550px !important;
+    min-height: 550px !important;
     margin-right: -1rem;
+    padding-right: 1rem !important;
 }
 </style>

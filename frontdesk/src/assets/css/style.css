@@ -518,7 +518,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     padding: .6rem;
 }
 .view-table-iframe {
-    max-height: 50rem;
+    max-height: 40rem;
     overflow: auto;
 }
 .view-table-iframe-dialog{

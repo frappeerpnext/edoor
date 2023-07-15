@@ -136,7 +136,7 @@ const closeOverlay = ()=>{
     op.value.hide();
 }
 function onCloseRef(result){
-    if(result != false){
+    if(result){
         rs.reservation = result
     }
     op.value.hide()

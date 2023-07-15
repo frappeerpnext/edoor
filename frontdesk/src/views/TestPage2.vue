@@ -1,21 +1,14 @@
 <template>
     <div>
-        xx
-        <ComDialogNote value="trow" :visible="x"/>
-        xx
+       {{ data }}
     </div>
 </template>
-<script setup> 
-import {ref} from 'vue'
-const x = ref(true)
-// import {ref, getApi} from '@/plugin'
-// const data = ref()
-// await getApi('reservation.get_audit_test',{
-//                 doctype: "Reservation",
-//                 docname: "RS2023-0217"
-//             }).then((r)=>{
-//                 data = r
-//             })
+<script setup>
+import {ref, getDoc} from '@/plugin'
+const data = ref()
+getDoc("Reservation Stay","ST2023-1057").then((r)=>{
+    data.value = r
+})
 </script>
 <style lang="">
     

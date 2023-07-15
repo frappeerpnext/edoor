@@ -194,13 +194,14 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 			date_avaliables = date_avaliables + ("'{}',".format(d.strftime("%Y-%m-%d")))
 			# validate room old rate update only new rate
 			room_rate = frappe.db.count("Reservation Room Rate", filters={'reservation_stay':self.name,'date':d})
-			input_rate = stay.rate
-			is_manual_rate = stay.is_manual_rate
-			if hasattr(self, 'is_override_rate') and self.is_override_rate:
-				input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
-				is_manual_rate = False
+			
 			if room_rate == 0:
 				#generate room to reservation room rate
+				input_rate = stay.rate
+				is_manual_rate = stay.is_manual_rate
+				if hasattr(self, 'is_override_rate') and self.is_override_rate:
+					input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
+					is_manual_rate = False
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
 					"reservation":self.reservation,
@@ -226,7 +227,8 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 				old_rate.room_type_id = stay.room_type_id
 				old_rate.room_id = stay.room_id
 				old_rate.room_number = stay.room_number
-				old_rate.input_rate = stay.rate
+				if hasattr(self, 'is_old_override_rate') and self.is_old_override_rate:
+					old_rate.input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
 				old_rate.save()
 				frappe.db.commit()
  

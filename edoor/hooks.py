@@ -209,5 +209,12 @@ doc_events = {
 #	"edoor.auth.validate"
 # ]
 
+
+fixtures = [
+   
+    {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]}
+   
+]
+
 # website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
 website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': 'frontdesk'},]

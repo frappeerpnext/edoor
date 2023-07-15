@@ -849,7 +849,6 @@ def change_stay(data):
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
-
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
@@ -872,10 +871,10 @@ def change_stay(data):
                     frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
         doc.save()
         frappe.db.commit()
-        if doc:
-            update_reservation(name=doc.reservation)
+        if doc: 
             change_room_occupy(doc)
-            generate_room_rate(doc)
+            generate_room_rate(self=doc, is_update_reservation_stay=True)
+            update_reservation(name=doc.reservation)
         return doc
 
 @frappe.whitelist(methods="POST")
@@ -892,6 +891,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
     doc.save()
     update_reservation(name=doc.reservation)
     change_room_occupy(doc)
+    generate_room_rate(doc)
     frappe.db.commit()
     return doc
 
@@ -1349,6 +1349,7 @@ def upgrade_room(doc):
 @frappe.whitelist(methods="POST")
 def unassign_room(reservation_stay, room_stay):
     doc = frappe.get_doc('Reservation Stay', reservation_stay)
+    doc.reservation_status = 'Confirmed'
     for s in doc.stays:
         if s.name == room_stay:
             s.room_id = None
@@ -1363,6 +1364,7 @@ def unassign_room(reservation_stay, room_stay):
 @frappe.whitelist(methods="POST")
 def assign_room(data):
     doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
+    doc.reservation_status = 'Reserved'
     for s in doc.stays:
         if s.name == data['room_stay']:
             s.room_id = data['room_id']

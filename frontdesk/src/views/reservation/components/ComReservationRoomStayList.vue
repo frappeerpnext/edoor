@@ -1,6 +1,7 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
-        <template #content>
+        <template #content> 
+            {{rs.reservationStay?.stays}}
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column field="start_date" header="Stay Date" >
@@ -68,6 +69,11 @@
                             <template v-if="canNotUpgradeRoom">
                                 <ComReservationStayRoomListMoreOption class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
                             </template>
+                        </template>
+                    </Column>
+                    <Column header="Input Rate">
+                        <template #body="slotProps">
+                            {{slotProps.data?.input_rate}}
                         </template>
                     </Column>
             </DataTable>

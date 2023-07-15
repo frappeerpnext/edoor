@@ -134,7 +134,7 @@ function onDeleteFolioTransaction(note) {
             }, 2000)
             rs.getChargeSummary(rs.reservationStay.name)
             loading.value = false;
-
+            opDelete.value = false
         })
 
         .catch((error) => {

@@ -102,7 +102,7 @@
                         {{ rs.reservationStay?.modified_by }} {{ gv.datetimeFormat(rs.reservation?.modified) }}
                     </span>
                 </div>
-                <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay?.checked_out_by">
+                <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
                     <span class="italic">Checked-in by: </span>
                     <span class="text-500 font-italic">

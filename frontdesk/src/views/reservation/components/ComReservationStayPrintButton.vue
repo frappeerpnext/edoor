@@ -35,6 +35,7 @@ items.value.push({
                 style: {
                     width: '80vw',
                 },
+                position:"top",
                 modal: true,
                 maximizable: true,
             },

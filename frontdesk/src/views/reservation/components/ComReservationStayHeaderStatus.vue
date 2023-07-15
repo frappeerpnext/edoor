@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </ComTagReservation>
-            <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay.is_master"
+            <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay && rs.reservationStay.is_master"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
             </div>

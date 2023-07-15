@@ -4,6 +4,7 @@
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
             <div class="n__re-custom">
+                {{ stay }}
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -26,6 +27,9 @@
                     </thead>
                     <tbody>
                         <tr>
+                            <td colspan="5">
+                                {{ stay.rate }}
+                            </td>
                             <td class="pe-2"> 
                                 <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
@@ -120,7 +124,8 @@
         var newData = JSON.parse(JSON.stringify(stay.value))
         newData.start_date = gv.dateApiFormat(newData.start_date)
         newData.end_date = gv.dateApiFormat(newData.end_date)
-
+        newData.rate = newData.input_rate
+        console.log(newData)
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
             rs.getReservationDetail(rs.reservationStay.name)

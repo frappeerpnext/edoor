@@ -177,6 +177,7 @@ const toast = useToast()
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting?.backend_port;
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
+import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 
 
 const toggle = (event) => {
@@ -209,6 +210,20 @@ function changeProperty() {
         }
     });
 }
+function onRunNightAudit() {
+    dialog.open(ComRunNightAudit, {
+        props: {
+            header: 'Run Night Audit',
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true
+        },
+        
+    });
+}
+
 
 function onRoute(route) {
     router.push({ name: route })
@@ -235,16 +250,14 @@ function onBlankGuestRegistration() {
         data: {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
-            report_name: "eDoor%20Blank%20Guest%20Registration%20Card",
-            view: "print"
-            // extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }]
+            report_name: "eDoor%20Blank%20Guest%20Registration%20Card",          
         },
         props: {
             header: "Blank Guest Registration Card",
             style: {
                 width: '80vw',
             },
-
+            position:"top",
             modal: true,
             maximizable: true,
         },
