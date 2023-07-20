@@ -1,11 +1,12 @@
 import secrets
-from edoor.api.utils import get_date_range
+from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio
 import frappe
 import datetime
 import random
 from datetime import datetime
 from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
+from frappe.utils import getdate,add_to_date
 
 @frappe.whitelist()
 def get_meta(doctype=None):
@@ -145,7 +146,7 @@ def get_edoor_setting(property = None):
     
     
     edoor_setting  =  {
-        "folio_transaction_stype_credit_debit":edoor_setting_doc.folio_transaction_stype_credit_debit,
+        "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
@@ -645,7 +646,124 @@ def get_future_departure_data(property,start,end):
 
     
     return  frappe.db.sql(sql,as_dict=1)
+@frappe.whitelist(methods="POST")
+def validate_run_night_audit(property,step):
+    working_day = get_working_day(property)
+    if step ==2:
+        #valdate if have check room vaivable
+        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('Confirmed','Reserved') and arrival_date='{}' and property='{}' limit 1".format(working_day["date_working_day"],property)
+        data = frappe.db.sql(sql, as_dict=1)
+        if data:
+            frappe.throw("Please check in or cancel the Confirmed and Reserved")
+    elif step==3:
+        #validate check out guest
+        sql="select name from `tabReservation Stay` where is_active_reservation=1 and reservation_status in ('In-house','Reserved','Confirmed') and departure_date='{}' and property='{}' limit 1".format(working_day["date_working_day"], property)
+        data = frappe.db.sql(sql, as_dict=1)
+        if data:
+            frappe.throw("Please check out all reservation")
+    elif step==4:
+        sql="select name from `tabReservation Room Rate` where date = date_add('{}', interval 1 day) and property='{}' limit 1".format(working_day["date_working_day"], property)
+        data = frappe.db.sql(sql, as_dict=1)
+        return True if data else False
+    elif step == 5:
+        sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property='{}' and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"], property)
+        data = frappe.db.sql(sql, as_dict=1)
+        return True if data else False
+    elif step == 6:
+        sql="select name from `tabCashier Shift` where posting_date = '{}'  and business_branch='{}' and is_closed = 0 limit 1".format(working_day["date_working_day"], property)
+        data = frappe.db.sql(sql, as_dict=1)
+        if  data:
+            frappe.throw("Please close all cashier shift")
+    return False
+
+@frappe.whitelist(methods="POST")
+def run_night_audit(property, working_day):
     
+    #1. Validate working day is still open
+    #2. Validate cashier shift open
+    #3. validate arrival to check in 
+    #3. validate departure to check out 
+    doc_property = frappe.get_doc("Business Branch", property)
+    doc_working_day = frappe.get_doc("Working Day", working_day)
+
+    if doc_working_day.is_closed==1:
+        frappe.throw("Working day # {}, Date {} is already closed by {}. Please refresh your browser to get update.".format(working_day, doc_working_day.posting_date.strftime("%d-%m-%Y"), doc_working_day.modified_by))
+    
+    # if frappe.db.exists("Cashier Shift",{"working_day":working_day, "is_closed":0}):
+    #     frappe.throw("Please close all cashier shift before run night audit")
+    #validate room to check in
+    if frappe.db.exists("Reservation Stay",{"property":property, "reservation_status":["in",["Confirmed","Reserved"],], "arrival_date": doc_working_day.posting_date}):
+        frappe.throw("Please check in all arrival reservation")
+
+    if frappe.db.exists("Reservation Stay",{"property":property, "reservation_status":"In-house", "departure_date": doc_working_day.posting_date}):
+        frappe.throw("Please check out all departure reservation")
+    
+    #Close working
+    doc_working_day.is_closed = 1
+    doc_working_day.closed_date = datetime.now()
+    doc_working_day.save()
+
+    #create new working day
+    new_working_day = frappe.get_doc(
+                    {
+                        "doctype":"Working Day",
+                        "posting_date": add_to_date(getdate(doc_working_day.posting_date), days=1),
+                        "business_branch":property,
+                        "pos_profile": doc_property.default_pos_profile,
+
+                    }
+                    ).insert()
+    
+    #create a new cashier shift
+    doc_pos_profile = frappe.get_doc("POS Profile", doc_property.default_pos_profile)
+    doc_pos_config = frappe.get_doc("POS Config", doc_pos_profile.pos_config)
+    cash_float = []
+    for d in doc_pos_config.payment_type:
+
+        if d.allow_cash_float == 1:
+            cash_float.append({
+                "payment_method":d.payment_type,
+                "exchange_rate":d.exchange_rate,
+                "input_amount":0,
+                "opening_amount":0
+            })
+     
+
+    doc_cashier_shift = frappe.get_doc(  {
+            "doctype":"Cashier Shift",
+            "working_day": new_working_day.name,
+            "shift_name": frappe.db.get_default("shift_name_after_run_night_audit"),
+            "pos_profile": doc_property.default_pos_profile,
+            "cash_float":cash_float
+        }
+    ).insert()
 
     
+    #queue post room change to folio
+    post_room_change_to_folio(new_working_day)
+
+    #frappe.throw("we pass valicatation")
     
+    return property
+
+@frappe.whitelist()
+def post_room_change_to_folio(working_day):
+    
+    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"property":working_day.business_branch,"date":working_day.posting_date})
+    for r in room_rates:
+        
+        folio = None
+        if frappe.db.get_value("Reservation Stay",r.reservation_stay,"pay_by_company") == 0:
+            master_folios = frappe.db.get_list("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1})
+            if master_folios:
+                folio = master_folios[0]
+        else:
+            folio = get_master_folio(r.reservation)
+        
+        if folio:
+            add_room_charge_to_folio(folio, r)
+
+    
+    #verify if reservation stay and and reservation is update balance
+
+

@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
-                    <DataTable class="p-datatable-sm" v-model:selection="selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
+                    <DataTable  class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="name" header="Res Stay#">
                         <template #body="slotProps">
@@ -34,26 +34,47 @@
                         </Column>
                         <Column header="Room">
                             <template #body="slotProps">
-                                <div>
-                                    <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
+                                <div> 
+                                    <span v-for="(i, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
+                                        <span v-if="index < 3">
+                                            {{(index != 0) ? ',' : ''}}
+                                            <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>/
+                                            <span v-if="i.room_number">
+                                                {{ i.room_number }}  
+                                            </span>
+                                            <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                                <i class="pi pi-pencil"></i>
+                                                <span>
+                                                    Assign Room {{i.reservation_stay}}
+                                                </span> 
+                                            </button>
+                                        </span>
+                                    </span>
+                                    <span v-if="JSON.parse(slotProps.data.rooms_data).length > 3"
+                                        v-tooltip.top="{ value: getTooltip(slotProps.data) , escape: true, class: 'max-w-30rem' }"
+                                        class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
+                                        {{JSON.parse(slotProps.data.rooms_data).length - 3}} Mores
+                                    </span>
+                                    
+                                    <!-- <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
                                         {{(index != 0) ? ',' : ''}}
                                         <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/<span v-if="slotProps.data.rooms.split(',')[index] !== ''">
                                         {{ slotProps.data.rooms.split(',')[index] }}  
                                         </span>
-                                        <button v-tooltip.top="'Assign Room'" @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto" v-else>
-                                                <i class="pi pi-pencil"></i>
-                                                <span v-if="slotProps.data.room_type_alias.split(',').length <= 1">
-                                                Assign Room
-                                                </span>
+                                        <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(slotProps.data.room_names.split(',')[index], slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                            <i class="pi pi-pencil"></i>
+                                            <span v-if="slotProps.data.room_type_alias.split(',').length <= 1">
+                                            Assign Room
+                                            </span>
                                         </button>
-                                    </div>
+                                    </div> 
                                     <div v-if="slotProps.data.room_type_alias.split(',').length > 3"
                                         v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs.roomList?.map(stay => {
                                         return stay.room_types.split(',').slice(3).map((type, index) => `${type}/${(stay.rooms.split(',').slice(3))[index]}`).join('\n')
                                           })}</div>` , escape: true, class: 'max-w-30rem' }"
                                         class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
                                         {{slotProps.data.room_type_alias.split(',').length - 3}} Mores
-                                    </div>
+                                    </div> -->
                                 </div>
                             </template>
                         </Column>
@@ -108,22 +129,10 @@
                         </div>
                     </div>
                 </div>
-                <hr class="mt-3"/>
-                <div class="pt-3">
-                    <div class="flex justify-end gap-2">  
-                        <Button @click="onCheckIn"  >Check In</Button>
-                        <SplitButton class="spl__btn_cs sp" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
-                        <Button class="border-1 conten-btn sp" @click="onAddRoomMore">
-                            <img class="btn-add_comNote__icon me-2" :src="AddRoomIcon"/> Add More Room
-                        </Button>
-                        <Button class="border-1 conten-btn sp" label="Edit Booking" icon="pi pi-file-edit" />
-                    </div>
-                </div>  
             </ComPlaceholder>
         </template>
-    </ComReservationStayPanel>
- 
-    <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/>
+
+    </ComReservationStayPanel> 
 </template>
 <script setup>
 import {inject,ref,onMounted,useDialog, postApi,useConfirm,useToast} from '@/plugin'
@@ -140,7 +149,6 @@ const confirm = useConfirm()
 const moment = inject('$moment')
 const rs = inject("$reservation")
 const gv = inject("$gv")
-const selecteds = ref([])
 const dialog = useDialog()
 const selectStatus = ref()
 const loading = ref(false)
@@ -149,201 +157,28 @@ const socket = inject("$socket")
 const frappe = inject("$frappe")
 const call = frappe.call()
 const name = ref("")
-const note = ref({
-    title: '',
-    show: false,
-    reservation_status:'' // No Show // Void // Cancel
-})
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 
-const items = [
-    {
-        label: 'Group No Show',
-        command: () => {
-            onChangeStatus('No Show')
+function getTooltip(p){
+   var data = JSON.parse(p.rooms_data)
+   var html = ''
+   var index = 0
+   data.forEach(e => {
+        index = index + 1
+        if(index > 3){
+            html = html + `${e.room_type}/${e.room_number ? e.room_number : ''}\n`
         }
-    }, 
-    {
-        label: 'Group Cancel',
-        command: () => {
-            onChangeStatus('Cancelled')
-        }
-    },{
-        label: 'Group Void',
-        command: () => {
-            onChangeStatus('void')
-        }
-    },
-    {
-        label: 'Group Check-In',
-        command: ()=>{
-            onGroupCheckIn(true)
-        }
-    },
-    {
-        label: 'Group Undo Check-In',
-        command: ()=>{
-            onGroupCheckIn(false)
-        }
-    },
-    {
-        label: 'Group Check Out',
-        command: ()=>{
-            onGroupCheckOut(true)
-        }
-    },
-    {
-        label: 'Group Undo Check Out',
-        command: ()=>{
-            onGroupCheckOut(false)
-        }
-    },
-    {
-        label: 'Group Build To Company',
-    },
-    {
-        label: 'Group Build To Master Group ',
-    },
-    {
-        label: 'Group Build To Guest',
-    },
-    {
-        label: 'Group Build To Room and Tax to Company, Extra to Guest',
-    }
-];
+        
+   });
+    return `<div class='tooltip-room-stay'>${html}</div>`
+ 
+}
 
 function onFilterSelectStatus(r){
     rs.getRoomList(r)
-}
-
-function onCheckIn(){
-    if (selecteds.value.length==0){
-        toast.add({ severity: 'warn', summary: "Group Check In", detail:"Please select reservation stay to check in.", life: 3000 })
-        return
-    }
-    const dialogRef = dialog.open(ComConfirmCheckIn, {
-        data:{
-            stays:selecteds.value
-        },
-        props: {
-            header: 'Confirm Check In',
-            style: {
-                width: '450px',
-            },
-            modal: true,
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            const result = options.data;
-
-            if (result) {
-                rs.loading = true
-
-                postApi("reservation.check_in", {
-                    reservation: rs.reservation.name,
-                    reservation_stays: selecteds.value.map(d => d["name"])
-                }).then((result) => {
-                    rs.loading = false
-                    rs.LoadReservation(rs.reservation.name);
-                    socket.emit("RefresheDoorDashboard", property.name);
-                    
-                
-
-                })
-                    .catch((err) => {
-                        rs.loading = false
-                    })
-                }
-        }
-
-
-    })
-}
-
-
-function onChangeStatus(reservation_status){
-    if(validateSelectReservation()){
-        note.value.title = `${reservation_status}`
-        note.value.show = true
-        note.value.reservation_status = reservation_status
-    }
-    
-}
-function validateSelectReservation(){
-    if(selecteds.value && selecteds.value.length > 0){
-        return true
-    }
-    else{
-        gv.toast('warn','Please select reservation stay.')
-        return false
-    }
-}
-function onSaveGroupStatus(txt){ 
-    const data = {
-        reservation: rs.reservation.name,
-        stays:selecteds.value,
-        status:note.value.reservation_status,
-        note:txt
-    } 
-    postApi('reservation.update_reservation_status',data).then((r)=>{
-        rs.LoadReservation(rs.reservation.name)
-    })
-}
-
-function onCloseNote(){
-    note.value.title = ''
-    note.value.show = false
-    note.value.reservation_status = ''
-}
- 
-
-function onGroupCheckOut(is_not_undo = false){
-    const isSelect = validateSelectReservation()
-    if(isSelect){
-        confirm.require({
-        message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check out reservations?`,
-        header: 'Check In',
-        icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-success',
-        accept: () => {
-            const checkList = selecteds.value.map((r)=>r.name).join(',')
-            postApi("reservation.check_out",{
-                reservation: rs.reservation.name,
-                reservation_stays: checkList,
-                is_undo: !is_not_undo
-            }).then((result) => {
-                if(result){
-                    rs.LoadReservation()
-                }
-            }).catch((error) => {
-                //
-            })
-
-        }
-    });
-    }
-}
-function onAddRoomMore(){
-    const dialogRef = dialog.open(ComReservationStayAddMore, {
-        props: {
-            header: 'Add more stay room',
-            style: {
-                width: '80vw',
-            },
-            maximizable: true,
-            modal: true,
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            const data = options.data;
-            if (data) {
-                rs.LoadReservation(data.name)
-            }
-        }
-    });
 }
 function showReservationStayDetail(selected) {
     let stayName = selected
@@ -366,7 +201,9 @@ function showReservationStayDetail(selected) {
         }, 
     });
 }
- 
+function onAssignRoom(room_name, reservation_stay){
+    window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
+}
 </script>
 <style scoped>
     .p-datatable > .p-datatable-wrapper {

@@ -9,11 +9,11 @@ from edoor.api.utils import  update_reservation_stay,update_reservation,get_base
 import json
 class ReservationRoomRate(Document):
 	def validate(self):
-		self.input_rate =float( self.input_rate or 0)
+		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:
 			#get_room_rate(property, rate_type, room_type, business_source, date):
 			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:
-				self.input_rate = get_room_rate(self.property, self.rate_type, self.room_type,self.business_source,self.date)	
+				self.input_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
 		
 		self.rate = self.input_rate or 0		 
 		self.discount = self.discount or 0

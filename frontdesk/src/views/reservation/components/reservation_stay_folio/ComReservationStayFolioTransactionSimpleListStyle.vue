@@ -1,12 +1,12 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
-
         <DataTable v-model:selection="rs.selectedFolioTransactions"
             @row-dblclick="onViewFolioDetail"
             paginator  
             stateKey="folo_transaction_simple_stype_table_state"
             :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
-            :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem">
+            :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem"
+            :rowClass="onRowClass">
             <Column selectionMode="multiple" headerStyle="width: 3rem" />
             <Column field="name" header="No. ">
                 <template #body="slotProps">
@@ -24,7 +24,6 @@
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
                     </span>
                     <span>{{ slotProps.data.account_name }}</span>
-
                 </template>
             </Column>
             <Column header="Qty" class="text-right">
@@ -127,33 +126,30 @@
                     <Column />
                     <Column />
                     <Column />
-                    <!-- <Column/>
-                <Column/> -->
-
                 </Row>
             </ColumnGroup>
 
         </DataTable>
         <div class="w-full flex justify-content-end my-2">
             <div class="w-30rem">
-                <div v-for="(item, index) in rs.folio_summary" :key="index" class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency :title="item.account_category" :value="item.amount"
+                <div v-for="(item, index) in rs?.folio_summary" :key="index" class="flex mt-2 gap-2">
+                    <ComBoxStayInformation isCurrency :title="item?.account_category || 'Undefine'" :value="item?.amount || 0"
                         valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total Debit" :value="rs.totalDebit"
+                    <ComBoxStayInformation isCurrency title="Total Debit" :value="rs?.totalDebit"
                         valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total Credit" :value="rs.totalCredit"
+                    <ComBoxStayInformation isCurrency title="Total Credit" :value="rs?.totalCredit"
                         valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
                     </ComBoxStayInformation>
 
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Balance" :value="(rs.totalDebit - rs.totalCredit)"
+                    <ComBoxStayInformation isCurrency title="Balance" :value="(rs?.totalDebit - rs?.totalCredit)"
                         valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
                     </ComBoxStayInformation>
                 </div>
@@ -185,7 +181,13 @@ const getTotal = ref((column_name) => {
     }
 });
 
-
+function onRowClass(r){
+    var classRow = ''
+    if(r.is_auto_post){
+        classRow = classRow + ("auto-post ")
+    }
+    return classRow
+}
 
 const onViewFolioDetail = (doc) => {
     const dialogRef = dialog.open(ComFolioTransactionDetail, {
@@ -197,7 +199,8 @@ const onViewFolioDetail = (doc) => {
             style: {
                 width: '50vw',
             },
-            modal: true
+            modal: true,
+            position:"top"
         },
     });
 
@@ -205,3 +208,12 @@ const onViewFolioDetail = (doc) => {
 
  
 </script>
+<style>
+    .auto-post td span, .auto-post td {
+        color: var(--bg-og-color-hover) !important;
+    }
+    .auto-post td button.link_line_action1{
+        border: 1px dashed var(--bg-og-color-hover) !important;
+        color: var(--bg-og-color-hover) !important;
+    }
+</style>

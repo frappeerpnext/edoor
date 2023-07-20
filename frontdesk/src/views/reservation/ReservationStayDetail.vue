@@ -38,7 +38,7 @@
                                     <div class="col-4">
                                         <div class="grid">
                                             <div class="col-12">
-                                                <ComReservationStayDetailGuestInfo />  
+                                                <ComReservationStayDetailGuestInfo />
                                             </div>
                                             <div class="col-12">
                                                 <ComReservationBusinessSourceAndRate />
@@ -104,23 +104,25 @@
                 </div>
                 <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
-                    <span class="italic">Checked-in by: </span>
-                    <span class="text-500 font-italic">
-                        {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date) }}
-                    </span>
+                        <span class="italic">Checked-in by: </span>
+                        <span class="text-500 font-italic">
+                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date)
+                            }}
+                        </span>
                     </div>
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
-                    <span class="italic"> Checked-out by: </span>
-                    <span class="text-500 font-italic">
-                        {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date) }}
-                    </span>
+                        <span class="italic"> Checked-out by: </span>
+                        <span class="text-500 font-italic">
+                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date)
+                            }}
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
         <template #footer-left>
             <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
-             
+
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
@@ -189,10 +191,10 @@ const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
-const onRefresh = (showLoading =true) => {
-  
-    rs.getReservationDetail(name.value,showLoading)
-     rs.getChargeSummary(name.value)
+const onRefresh = (showLoading = true) => {
+
+    rs.getReservationDetail(name.value, showLoading)
+    rs.getChargeSummary(name.value)
 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
@@ -296,7 +298,7 @@ const onCheckIn = () => {
                     .catch((err) => {
                         rs.loading = false
                     })
-                }
+            }
         }
 
 
@@ -304,7 +306,31 @@ const onCheckIn = () => {
 }
 
 const onCheckOut = () => {
-    alert('check out')
+    if(rs.reservationStay.balance>0){
+        toast.add({ severity: 'warn', summary: "You cannot check this reservation because balance is not zero", detail: '', life: 3000 })
+        return
+    }
+    confirm.require({
+        message: 'Are you sure you want to check out this room?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            rs.loading = true
+            postApi("reservation.check_out", {
+                reservation: rs.reservation.name,
+                reservation_stays: [rs.reservationStay.name]
+            },"Check out successfully").then((result) => {
+                rs.loading = false
+                onRefresh()
+                socket.emit("RefresheDoorDashboard", property.name);
+                socket.emit("RefreshReservationDetail", rs.reservation.name);
+            })
+                .catch((err) => {
+                    rs.loading = false
+                })
+        }
+    });
+
 }
 
 const OnViewReservation = () => {

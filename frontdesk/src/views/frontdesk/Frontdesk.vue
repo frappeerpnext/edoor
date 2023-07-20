@@ -13,7 +13,10 @@
             </template>
             <template #end>
                 <div class="flex gap-2 justify-content-end">
-                    <Button @click="showNote=!showNote">Show Note</Button>
+                    <Button class="bg-yellow-500 border-none" @click="showNote=!showNote">
+                        <ComIcon icon="iconNoteWhite" class="me-2" style="height: 16px;" />
+                        Note
+                    </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
                   
@@ -31,7 +34,7 @@
             </div>
         </div>
         <div style="max-width: 100%;">
-            <div id="fron__desk-fixed-top">  
+            <div id="fron__desk-fixed-top">
                 <div :class="showSummary ? 'flex gap-2' : ''">
                     <div v-if="showSummary" class="relative" style="width:280px">
                         <div>
@@ -53,8 +56,19 @@
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                        
-                        <Sidebar v-model:visible="showNote" position="right">
-                            <ComNote v-if="showNote"/>    
+                        <Sidebar v-model:visible="showNote" class="top-20 -mt-1 w-3" style="padding-bottom: 82px;" position="right">
+                            <template #header>
+                                <div class="flex justify-between items-center me-2">
+                                    <div class="absolute left-5 text-xl"> Notes </div>
+                                    <div class="flex gap-2" >
+                                        <Button icon="pi pi-search text-sm" class="w-2rem h-2rem" style="color:#6c757d;font-size:13px;" text rounded aria-label="search" />
+                                        <Button icon="pi pi-external-link text-sm" class="w-2rem h-2rem" style="color:#6c757d;font-size:13px;" text rounded aria-label="open" />
+                                        
+                                    </div>
+                                </div>
+                            </template>
+                            <hr class="left-0 fixed w-full">
+                            <ComNoteGlobal v-if="showNote"/>    
                         </Sidebar>
                         
 
@@ -113,7 +127,7 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
-import ComNote from '@/views/note/ComNote.vue'
+import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 
 

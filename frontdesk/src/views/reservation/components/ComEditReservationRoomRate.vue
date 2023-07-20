@@ -75,6 +75,12 @@
             <div class="col-12">
                 <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
             </div>
+            
+            <div class="col-12" v-if="showCheckUpdateFutureStayRoomRate">
+                <Checkbox class="" v-model="updateFutureRoomRate"   :binary="true" /> 
+                Update room rate to the future stay room rate ({{ futureRoomRates?.length-1 }} Room Night(s))
+            </div>
+
             </div>
         </div>
         <div class="col-5">
@@ -154,10 +160,9 @@
                  </div>
             </div>
         </div>
-        <!-- <div class="col-12">
-            <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
-        </div> -->
+       
         <hr />
+      
     </div> 
     </ComDialogContent>
 </template>
@@ -169,8 +174,8 @@ import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
-// import ComResvertionTableInfo from '@/views/reservation/components/ComResvertionTableInfo.vue';
-
+ 
+const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
 const frappe = inject('$frappe');
@@ -185,6 +190,9 @@ const toast = useToast()
 const stay = ref({})
 const rate_plan = ref({})
 const room_types = ref([])
+const showCheckUpdateFutureStayRoomRate = ref(false)
+const updateFutureRoomRate = ref(false)
+const futureRoomRates = ref([])
 const tax_rule = computed(() => {
     if (doc.value?.tax_rule_data) {
         return JSON.parse(doc.value?.tax_rule_data)
@@ -336,18 +344,39 @@ function onUseManualRate(){
 }
 
 function onSave() {
+  
+    //prepare room rate name send to api
+    let room_rate_names = []
+    let reservation_stay_names = []
+    
+ 
+    if (futureRoomRates.value && futureRoomRates.value.length>0) 
+    {
+ 
+        if(updateFutureRoomRate.value==true){
+            room_rate_names =  futureRoomRates.value.map(d => d["name"])
+            reservation_stay_names = Array.from(new Set( futureRoomRates.value.map(d => d["reservation_stay"])))
+        }
+        
+    }else {
+        room_rate_names =  selectedRoomRates.value.map(d => d["name"])
+        reservation_stay_names = Array.from(new Set( selectedRoomRates.value.map(d => d["reservation_stay"])))
+    }
+
+  
     isSaving.value = true;
-   
     call
         .post('edoor.api.reservation.update_room_rate', {
-            room_rate_names: selectedRoomRates.value.map(d => d["name"]),
+            room_rate_names: room_rate_names,
             data: doc.value,
-            reservation_stays: Array.from(new Set( selectedRoomRates.value.map(d => d["reservation_stay"])))
+            reservation_stays: reservation_stay_names
         })
         .then((doc) => {
             toast.add({ severity: 'success', summary: 'Edit Room Rate', detail: "Update Success", life: 3000 })
             isSaving.value = false;
-             
+            
+            socket.emit("RefreshNightAuditStep", JSON.parse(localStorage.getItem("edoor_property")).name);
+
             dialogRef.value.close(doc.message);
         })
         .catch((error) => {
@@ -359,17 +388,26 @@ function onSave() {
 onMounted(() => {
     stay.value = dialogRef.value.data.reservation_stay
     
+    
+    showCheckUpdateFutureStayRoomRate.value = dialogRef.value.data.show_check_update_future_stay_room_rate
+     
     if (dialogRef.value.data.selected_room_rate) {
         doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rate)) 
+        //this condition below is true only if user edit rate from run night audit
+   
+     
+        futureRoomRates.value = dialogRef.value.data.future_room_rates;
+
+        
         
     } else if (dialogRef.value.data.selected_room_rates?.length > 0) {
         selectedRoomRates.value = dialogRef.value.data.selected_room_rates
         doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rates[0]))
     
-    } 
-    if(doc.value.is_manual_rate==0){
-
     }
+
+
+
     use_tax.value = {
         use_tax_1:doc.value.tax_1_rate > 0,
         use_tax_3:doc.value.tax_3_rate > 0,

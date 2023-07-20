@@ -8,11 +8,13 @@ export default class Reservation {
 		this.reservation = {}
 		this.masterGuest = {}
 		this.roomList = []
+		this.selecteds = []
 		this.reservationSummary  =ref([])
 	}	
 
 	LoadReservation(name,showLoading = true) {
 		this.loading = showLoading
+		this.selecteds = []
 		getApi("reservation.get_reservation_detail", {
 			name: name || this.reservation?.name
 		}).then((result) => {

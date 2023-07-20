@@ -23,11 +23,11 @@
                     </div>
                     <div class="col-6">
                     <label for="input_amount">Amount</label>
-                    <ComInputCurrency classCss="w-full" v-model="doc.input_amount"/>
+                    <ComInputCurrency classCss="w-full" v-model="doc.input_amount" id="input_amount" />
                     </div>
                     <div v-if="doc.account_name" class="col-12 -mt-2">
-                        <div class="bg-green-100 border-l-4 border-green-400 p-2">
-                            {{ doc.account_name }}
+                        <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
+                            <span class="text-500 font-italic">You Selected Account Code</span> {{ doc.account_name }}
                         </div>
                     </div>
                     <!-- Quantity -->
@@ -73,8 +73,8 @@
                                 class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
                             </div>
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
-                                <div class="bg-green-100 border-l-4 border-green-400 p-2">
-                                    {{ doc.city_ledger_name }}
+                                <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
+                                    <span class="text-500 font-italic">You Selected</span> {{ doc.city_ledger_name }} 
                                 </div>
                             </div>
                         </div>   
@@ -204,24 +204,28 @@
                 </div>
             </div>
             <!-- Total Amount -->
-            <div class="col-12 mb-1">
+            <div class="col-12 mb-2 -mt-2">
                 <hr>
             </div>
-            <div class="col-12">
-            <div class="flex justify-end w-full">
-                <div v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0) && doc?.account_code " class="col-4 p-0">
-                    <div class="flex justify-end">
-                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Rate Before Tax" :value="amount"
-                            valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
+            <div class="col-12 py-0">
+                <div class="flex justify-end w-full">
+                    <div class="col-3 p-0 mr-3" v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0) && doc?.account_code ">
+                        <div class="flex justify-end">
+                            <div class="flex flex-column grow p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                                <span class="text-500 uppercase text-sm text-end">Rate Before Tax</span>
+                                <span class="text-xl line-height-2 font-semibold text-end"><CurrencyFormat :value="amount"/></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3 p-0">
+                        <div class="flex justify-end">
+                            <div class="flex flex-column grow p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
+                                <span class="text-500 uppercase text-sm text-end">Total</span>
+                                <span class="text-xl line-height-2 font-semibold text-end"><CurrencyFormat :value="total_amount"/></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-4 p-0">
-                    <div class="flex justify-end">
-                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
-                            valueClass="max-h-3rem h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
-                    </div>
-                </div>
-            </div>
             </div>
             <!-- /Total Amount -->    
             <!-- note -->
@@ -233,6 +237,7 @@
             <!-- /note -->
         </div>
     </ComDialogContent>
+    
 </template>
 <script setup>
 
@@ -243,7 +248,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
-
+const input_amount = ref(null)
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();
@@ -288,7 +293,7 @@ const tax_rule = computed(() => {
 const doc = ref({
     discount_type: "Percent",
     quantity: 1,
-
+    input_amount: 0,
 });
 
 const min_date = computed(() => {
@@ -393,6 +398,7 @@ const total_amount = computed(() => {
 });
 
 function onSelectAccountCode(data) {
+
     if(data.value){
         getDoc('Account Code', data.value)
         .then((d) => {
@@ -424,6 +430,9 @@ function onSelectAccountCode(data) {
                 doc.value.input_amount =d.price
             }
 
+            const input = document.getElementById("input_amount").querySelector('input')
+            input.focus()
+            input.select()
 
         })
         .catch((error) => {
@@ -434,7 +443,8 @@ function onSelectAccountCode(data) {
         doc.value.rate_include_tax = 'No'
         doc.value.input_amount = 0
         total_amount.value = 0
-
+        doc.value.city_ledger = ''
+        doc.value.city_ledger_name = ''
     }
 }
 function onSelectCityLedger(data) {
@@ -473,7 +483,8 @@ function onSave() {
 }
 
 onMounted(() => {
-    
+     
+ 
     doc.value.folio_number = dialogRef.value.data.folio_number;
 
     balance.value = dialogRef.value.data.balance
@@ -485,7 +496,6 @@ onMounted(() => {
         })
             .then((result) => {
                     doc.value = result.message.doc
-                    // result.message.posting_date = moment(doc.value.posting_date).format("DD-MM-YYYY")
                     account_code.value = result.message.account_code
                     account_group.value = doc.value.account_group
                     use_tax.value = {

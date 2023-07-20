@@ -57,14 +57,13 @@ items.value.push({
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
                 report_name: "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
-                view: "print" 
             },
             props: {
                 header: "Confirmation Voucher",
                 style: {
                     width: '80vw',
                 },
-
+                position:"top",
                 modal: true,
                 maximizable: true,
             },

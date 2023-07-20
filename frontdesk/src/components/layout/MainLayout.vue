@@ -99,7 +99,7 @@
                                     <button @click="changeProperty"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround"
                                         v-if="user.property.length > 1">
-                                        <i class="pi pi-user" />
+                                        <i class="pi pi-building" />
                                         <span class="ml-2">Change property</span>
                                     </button>
 
@@ -113,14 +113,21 @@
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Open cashier shift</span>
                                     </button>
+                                    <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-eye" />
+                                        <span class="ml-2">View Shift Detail</span>
+                                    </button>
+                                    
                                     <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
+                                        <i class="pi pi-ban" />
                                         <span class="ml-2">Close cashier shift</span>
                                     </button>
+
                                     <button @click="onRunNightAudit"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
+                                        <i class="pi pi-stopwatch" />
                                         <span class="ml-2">Run night audit</span>
                                     </button>
                                 </template>
@@ -178,6 +185,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting?.backend_port;
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
+const moment = inject("$moment")
 
 
 const toggle = (event) => {
@@ -186,6 +194,10 @@ const toggle = (event) => {
 
 function onUserProfile() {
     alert()
+}
+
+function onViewShiftDetail(){
+    window.postMessage('view_cashier_shift_detail|' +  gv.cashier_shift?.name , '*')
 }
 
 //change property
@@ -211,14 +223,17 @@ function changeProperty() {
     });
 }
 function onRunNightAudit() {
+    const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+
     dialog.open(ComRunNightAudit, {
         props: {
-            header: 'Run Night Audit',
+            header: 'Run Night Audit [' +moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
             style: {
                 width: '80vw',
             },
             position:"top",
-            modal: true
+            modal: true,
+            closeOnEscape: false,
         },
         
     });
@@ -260,6 +275,7 @@ function onBlankGuestRegistration() {
             position:"top",
             modal: true,
             maximizable: true,
+            closeOnEscape: false
         },
     });
 }
@@ -275,7 +291,9 @@ function onSearch() {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            position: 'top',
+            closeOnEscape: false
         },
     });
 }
@@ -289,13 +307,14 @@ function onOpenCashierShift() {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
 
     });
 }
 function onCloseCashierShift() {
-    alert("close shift")
+    window.postMessage('close_shift', '*')
 }
 
 </script>

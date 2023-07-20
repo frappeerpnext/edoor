@@ -43,6 +43,9 @@ export default class Gv {
 	datetimeFormat(datetime) {
 		return moment(datetime).format("DD-MM-yy h:mm:ss A")
 	}
+	timeFormat(datetime) { 
+		return moment(datetime, "HH:mm:ss").format("h:mm A")
+	}
 	dateApiFormat(date){
 		return moment(date).format("yyyy-MM-DD")
 	}

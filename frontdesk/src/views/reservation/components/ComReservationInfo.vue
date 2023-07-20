@@ -54,7 +54,23 @@
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
                        
                         <div v-if="rs && rs?.reservationStays">
-                            <div 
+                            <div> 
+                                <span v-for="(i, index) in roomData" :key="index">
+                                    <span v-if="index < 3">
+                                        {{(index != 0) ? ',' : ''}}
+                                        <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>/
+                                        <span>
+                                            {{ i.room_number }}  
+                                        </span>
+                                    </span>
+                                </span>
+                                <span v-if="roomData.length > 3"
+                                    v-tooltip.top="{ value: getTooltip() , escape: true, class: 'max-w-30rem' }"
+                                    class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
+                                    {{roomData.length - 3}} Mores
+                                </span>
+                            </div>
+                            <!-- <div 
                             v-for="(i, index)  in rs?.reservation?.room_type_alias?.split(',').slice(0, 3)"
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
                                 <span v-tooltip.top="rs?.reservation?.room_types?.split(',')[index]">{{ i }}</span>/{{ rs?.reservation?.room_numbers?.split(',')[index] }}
@@ -63,7 +79,7 @@
                                 v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${ rs?.reservation.room_types.split(',').slice(3).map((type, i) => `${type}/${rs?.reservation.room_numbers.split(',').slice(3)[i]}`).join('\n')}`, escape: true, class: 'max-w-30rem' }"
                                 class="rounded-xl px-2 bg-purple-cs w-auto inline">
                                 {{ rs?.reservation?.room_type_alias?.split(',').length - 3 }} Mores
-                            </div> 
+                            </div>  -->
                         </div>
                     </ComBoxStayInformation>
                 </div>
@@ -71,7 +87,7 @@
                     <ComBoxStayInformation :isAction="true" title="Arrival"                    
                         :value="moment(rs.reservation?.arrival_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="rs.reservation?.arrival_time"
+                    <ComBoxStayInformation :value="gv.timeFormat(rs.reservation?.arrival_time)"
                         valueClass="col " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.arrival_date).format('dddd')"
@@ -82,7 +98,7 @@
                     <ComBoxStayInformation :isAction="true" title="Departure"
                         :value="moment(rs.reservation?.departure_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :isAction="true" :value="rs.reservation?.departure_time"
+                    <ComBoxStayInformation :isAction="true" :value="gv.timeFormat(rs.reservation?.departure_time)"
                         valueClass="col" class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.departure_date).format('dddd')"
@@ -115,8 +131,7 @@
 </template>
 <script setup>
 import OverlayPanel from 'primevue/overlaypanel';
-import {inject} from '@/plugin'
-import { ref } from "vue";
+import {inject, computed, ref} from '@/plugin'
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangeRefNumber from './ComChangeRefNumber.vue';
@@ -128,6 +143,25 @@ const rs = inject('$reservation');
 const gv = inject('$gv');
 const overLayName = ref("")
 const op = ref();
+const roomData = computed(()=>{
+    if(rs.reservation && rs.reservation.rooms_data){
+        return JSON.parse(rs.reservation.rooms_data)
+    }
+    return []
+})
+function getTooltip(){ 
+   var html = ''
+   var index = 0
+   roomData.value.forEach(e => {
+        index = index + 1
+        if(index > 3){
+            html = html + `${e.room_type}/${e.room_number ? e.room_number : ''}\n`
+        }
+        
+   });
+    return `<div class='tooltip-room-stay'>${html}</div>`
+ 
+}
 const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);

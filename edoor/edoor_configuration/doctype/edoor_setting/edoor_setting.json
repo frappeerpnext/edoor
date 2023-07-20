@@ -10,7 +10,8 @@
   "room_block_status",
   "room_block_color",
   "room_revenue_code",
-  "folio_transaction_stype_credit_debit",
+  "shift_name_after_run_night_audit",
+  "folio_transaction_style_credit_debit",
   "allow_user_to_add_back_date_transaction",
   "show_account_code_in_folio_transaction",
   "housekeeping_status_tab",
@@ -44,12 +45,6 @@
    "fieldtype": "Link",
    "label": "Room Revenue Code",
    "options": "Account Code"
-  },
-  {
-   "default": "0",
-   "fieldname": "folio_transaction_stype_credit_debit",
-   "fieldtype": "Check",
-   "label": "View folio transaction style as credit and debit"
   },
   {
    "default": "0",
@@ -122,12 +117,24 @@
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check In",
    "options": "Housekeeping Status"
+  },
+  {
+   "default": "0",
+   "fieldname": "folio_transaction_style_credit_debit",
+   "fieldtype": "Check",
+   "label": "View folio transaction style as credit and debit"
+  },
+  {
+   "fieldname": "shift_name_after_run_night_audit",
+   "fieldtype": "Link",
+   "label": "Shift Name after Run Night Audit",
+   "options": "Shift Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-10 10:00:51.032290",
+ "modified": "2023-07-20 13:49:17.463398",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

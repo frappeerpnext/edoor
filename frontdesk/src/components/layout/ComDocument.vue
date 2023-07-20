@@ -139,7 +139,9 @@ const dialogRef = dialog.open(ReservationStayDetail, {
             width: '80vw',
         },
         maximizable: true,
-        modal: true
+        modal: true,
+        closeOnEscape: false,
+        position: 'top'
     },
     onClose: (options) => {
         const data = options.data;

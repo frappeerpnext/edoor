@@ -32,6 +32,7 @@
   "room_types",
   "room_type_alias",
   "room_numbers",
+  "room_names",
   "section_break_21",
   "business_source",
   "business_source_type",
@@ -110,7 +111,8 @@
   "tax_2_name",
   "tax_2_rate",
   "tax_3_name",
-  "tax_3_rate"
+  "tax_3_rate",
+  "rooms_data"
  ],
  "fields": [
   {
@@ -643,6 +645,16 @@
    "fieldname": "total_confirmed",
    "fieldtype": "Int",
    "label": "Total Confirmed"
+  },
+  {
+   "fieldname": "room_names",
+   "fieldtype": "Small Text",
+   "label": "Room Names"
+  },
+  {
+   "fieldname": "rooms_data",
+   "fieldtype": "JSON",
+   "label": "Rooms Data"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -653,7 +665,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-12 16:47:43.915904",
+ "modified": "2023-07-19 10:45:27.327311",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

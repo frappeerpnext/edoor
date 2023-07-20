@@ -2,6 +2,7 @@
     <div>
     
         <InputNumber 
+            inputClass="w-full"
             class="w-full"
             :class="[`text-${align}`, classCss]"
             @update:modelValue="onUpdate"
@@ -12,6 +13,7 @@
             :locale="setting.currency.locale"
             :max="9999999999"
             :disabled="disabled"
+      
             />
     </div>
 </template>
@@ -27,7 +29,8 @@ const props = defineProps({
         defualt: "right"
     },
     disabled :Boolean,
-    classCss: String
+    classCss: String,
+   
 })
 let value = computed({
     get(){

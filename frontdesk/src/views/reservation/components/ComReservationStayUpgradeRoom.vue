@@ -221,6 +221,7 @@
         var newData = JSON.parse(JSON.stringify(newRoom.value))
         newData.start_date = gv.dateApiFormat(newData.start_date)
         newData.end_date = gv.dateApiFormat(newData.end_date)
+        newData.input_rate = newData.rate
         newData.total_amount = (newData.room_nights || 0) * (newData.rate || 0)
         data.reservationStay.stays = data.reservationStay.stays.map(i=>{
             if(i.name === lastStay.value.name){

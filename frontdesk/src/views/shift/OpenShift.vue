@@ -2,41 +2,45 @@
     <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift"  doctype="Shift Type" placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time"/>
     
     <table>
-        <tr>
-            <td>Type</td>
-            <td>Amount</td>
-            <td>Amount {{ setting?.currency?.name }}</td>
-        </tr>
+        <thead>
+            <tr>
+                <td>Type</td>
+                <td>Amount</td>
+                <td>Amount {{ setting?.currency?.name }}</td>
+            </tr>
+        </thead>
         
-        <tr v-for="(p, index) in shift.cash_float" :key="index">
-            <td>{{ p.payment_method }}</td>
-            <td>
-                <InputText  v-model="p.input_amount" />
-                <div v-if="p.exchange_rate!=1">
-              Excahnge Rate:  {{ p.exchange_rate }}
-                </div>
-            </td>
-            <td>
-                
-                <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 "/>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Total
-            </td>
-            <td></td>
-            <td><CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
+        <tbody>
+            <tr v-for="(p, index) in shift.cash_float" :key="index">
+                <td>{{ p.payment_method }}</td>
+                <td>
+                    <InputText  v-model="p.input_amount" />
+                    <div v-if="p.exchange_rate!=1">
+                        Excahnge Rate:  {{ p.exchange_rate }}
+                    </div>
                 </td>
-        </tr>
+                <td>
+                    
+                    <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 "/>
 
-        Note:
- <InputText  v-model="shift.open_note" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Total
+                </td>
+                <td></td>
+                <td><CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
+                    </td>
+            </tr>
+        </tbody>
+        Note: <InputText  v-model="shift.open_note" />
     </table>
 
-    <Button @click="onOpen">Open</Button>
-    <Button @click="dialogRef.close()">Cancel</Button>
+    <div class="flex gap-2">
+        <Button class="border-none" @click="onOpen">Open</Button>
+        <Button class="border-none" @click="dialogRef.close()">Cancel</Button>
+    </div>
 
 </template>
 <script setup>

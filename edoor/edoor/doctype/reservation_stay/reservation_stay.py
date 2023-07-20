@@ -1,5 +1,6 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
+import json
 from frappe.utils import get_url_to_form
 from datetime import datetime
 from edoor.api.frontdesk import get_working_day
@@ -68,7 +69,17 @@ class ReservationStay(Document):
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
-
+			self.room_names = ','.join(set([d.name for d in self.stays]))
+			# json stay room
+			rooms_data = []
+			for s in self.stays:
+				rooms_data.append({
+					"name": s.name,
+					"room_number": s.room_number or '',
+					"room_type_alias": s.room_type_alias,
+					"room_type": s.room_type
+				})
+			self.rooms_data = json.dumps(rooms_data)
 		for d in self.stays:
 			d.property = self.property
 			d.reservation_status = self.reservation_status
@@ -197,10 +208,10 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 			
 			if room_rate == 0:
 				#generate room to reservation room rate
-				input_rate = stay.rate
 				is_manual_rate = stay.is_manual_rate
+				regenerate_rate = False
 				if hasattr(self, 'is_override_rate') and self.is_override_rate:
-					input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
+					regenerate_rate = True
 					is_manual_rate = False
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
@@ -215,10 +226,12 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 					"room_type_id":stay.room_type_id,
 					"room_id":stay.room_id,
 					"date":d,
-					"input_rate": input_rate,
+					"input_rate": stay.input_rate,
 					"rate_type":self.rate_type,
 					"is_manual_rate":is_manual_rate,
-					"property":self.property
+					"property":self.property,
+					"regenerate_rate":regenerate_rate,
+					"is_active_reservation":1
 				}).insert()
 			else:
 				# avaliable room rate

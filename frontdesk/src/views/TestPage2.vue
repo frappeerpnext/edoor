@@ -1,14 +1,15 @@
 <template>
-    <div>
-       {{ data }}
+    <div> 
+        {{ rs }}
+        <ComAutoComplete doctype="Reservation" v-model="r"/>
+        <ComAutoComplete field-filter="reservation" :value-filter="r" doctype="Reservation Stay" v-model="rs"/>
     </div>
 </template>
-<script setup>
-import {ref, getDoc} from '@/plugin'
-const data = ref()
-getDoc("Reservation Stay","ST2023-1057").then((r)=>{
-    data.value = r
-})
+<script setup> 
+import {ref, getApi} from '@/plugin'
+import ComAutoComplete from '../components/form/ComAutoComplete.vue';
+const rs = ref()
+const r = ref()
 </script>
 <style lang="">
     

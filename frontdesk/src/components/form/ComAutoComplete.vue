@@ -23,10 +23,10 @@
             </template> 
         </AutoComplete>
         <button v-if="!isHideClearButton && selected != ''" type="button" class="absolute right-0 top-0 bottom-0 px-3 py-2" @click="onClear"><i class="pi pi-times text-gray-400" style="font-size: 1rem"></i></button>
-    </div>
+    </div> 
 </template>
 <script setup>
-import { ref, inject, computed, useToast, useDialog, getDoc } from '@/plugin'
+import { ref, inject, computed, useToast, useDialog, getDoc,watch,getDocList } from '@/plugin'
 import Search from './ComAdvancedSearch.vue';
 const props = defineProps({
     doctype: String,
@@ -56,6 +56,12 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    fieldFilter: String,
+    valueFilter: String,
+    fieldSearch: {
+        type: String,
+        default: 'keyword'
+    },
     placeholder: String,
     addNewTitle: String
 })
@@ -79,6 +85,12 @@ let value = computed({
         return newValue
     }
 })
+watch(()=> props.valueFilter, (newValue)=>{
+    options.value = []
+    if(selectedObj.value.filter && selectedObj.value.filter != newValue){
+        onClear()
+    }
+})
 const emit = defineEmits(['update:modelValue', 'onAddNew', 'onSelected'])
 const frappe = inject('$frappe')
 const call = frappe.call();
@@ -87,24 +99,24 @@ const addNewKey = '#add#new'
 const AdvancedSearchKey = '#advanced#search'
 const keyword = ref('')
 let selected = ref('')
+let selectedObj = ref({})
 const toast = useToast()
-
 const dialog = useDialog();
 
 const search = (event) => {
     keyword.value = event.query
-    if (!event.query.trim().length) {
-        getData('')
-    } else {
-        getData(event.query)
+    if(props.fieldFilter){
+        getDataByFilter(event.query)
+    }else{
+        if (!event.query.trim().length) {
+            getData('')
+        } else {
+            getData(event.query)
+        }
     }
-
 }
 const onSelected = (event) => {
     if (event.value.description == addNewKey) {
-        //selected.value = ''
-        //console.log(keyword.value)
-        // alert(keyword.value)
         emit("onAddNew")
     }
     if (event.value.description == AdvancedSearchKey) {
@@ -112,6 +124,7 @@ const onSelected = (event) => {
         onAdvancedSearch()
     }
     else {
+        selectedObj.value = event.value
         value.value = event.value.value
         if(props.isSelectData)
             getSelectedData(event.value.value)
@@ -144,15 +157,15 @@ async function getData(keyword) {
             })
         }
         return options.value
-    })
-        .catch((error) => {
-            toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
-            return []
-        });
+    }).catch((error) => {
+        toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
+        return []
+    });
 }
 function onClear() {
     getData('')
     selected.value = ''
+    selectedObj.value = {}
     emit('onSelected', {})
     emit('update:modelValue', '')
 }
@@ -173,7 +186,10 @@ function onBlur() {
 }
 function onFocus() {
     if (options.value.length == 0) {
-        getData('')
+        if(props.valueFilter)
+            getDataByFilter('')
+        else
+            getData('')
     }
 
 }
@@ -217,6 +233,30 @@ function getSelectedData(name){
         }
     })
 }
+
+function getDataByFilter(keyword){
+    var filter = {
+        fields: ['name', 'keyword',props.fieldFilter],
+        filters: [],
+    }
+    if(props.valueFilter)
+        filter.filters.push([props.fieldFilter, '=', props.valueFilter])
+    if(keyword)
+        filter.filters.push([props.fieldSearch, 'like', '%'+keyword+'%'])
+     
+    getDocList(props.doctype,filter).then((r)=>{
+
+        options.value = r.map((x)=>{
+            return {
+                label: x.name,
+                value: x.name,
+                filter: x[props.fieldFilter],
+                description: x.keyword
+            }
+        })
+    })
+}
+
 
 </script>
 <style></style>

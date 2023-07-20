@@ -67,7 +67,8 @@ function onEditFolioTransaction() {
             style: {
                 width: '50vw',
             },
-            modal: true
+            modal: true,
+            position:'top'
         },
         onClose: (options) => {
             const data = options.data;
@@ -95,7 +96,8 @@ const onViewFolioDetail = () => {
             style: {
                 width: '50vw',
             },
-            modal: true
+            modal: true,
+            position:'top'
         },
 
     });
@@ -110,7 +112,7 @@ function onPrintFolioTransaction() {
             report_name: props.data.print_format,
         },
         props: {
-            header: 'Print PreviewXX',
+            header: 'Print Preview',
             style: {
                 width: '75vw',
             },

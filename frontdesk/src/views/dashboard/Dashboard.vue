@@ -348,7 +348,9 @@ function onShowTommorowData() {
 }
 
 function onDateSelect(event) {
-
+    const today = moment(data.value.working_date);
+    tomorrow.value = today.add(1, 'days');
+    tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = moment(event).format("YYYY-MM-DD")
     arrivalUrl.value = getArrivalUrl();
     departureUrl.value = getDepartureUrl();
@@ -403,8 +405,22 @@ function getData(loading=true) {
  
 function onIframeLoaded(id){
     const iframe = document.getElementById(id);
+    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    // iframe.width = iframe.contentWindow.document.body.scrollWidth;
+
+    // const iframe = document.getElementById("iframe");
+    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
+    var windowWidth = window.innerWidth;
+    
+    console.log(windowWidth)
+    
+    if (windowWidth >= 1920){
+        iframe.style.minWidth = 100 + '%'
+    }
+    else{
+        iframe.style.width = contentWidth + 'px';
+    }
     iframe.height = iframe.contentWindow.document.body.scrollHeight;
-    iframe.width = iframe.contentWindow.document.body.scrollWidth;
 }
 
 const viewSummary = (name) => { 

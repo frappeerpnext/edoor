@@ -4,7 +4,7 @@
             <p>Working Day #: {{ data.name }}, System date: {{ moment(data.date_working_day).format("DD-MMM-YYYY") }}
 
                 <template v-if="gv.cashier_shift">
-                    | {{ gv.cashier_shift?.shift_name }}, Shift #: {{ gv.cashier_shift?.name }},
+                    | {{ gv.cashier_shift?.shift_name }}, Shift #: <a @click="onViewShiftDetail">{{ gv.cashier_shift?.name }}</a>,
                     {{ moment(gv.cashier_shift?.creation).format("DD-MMM-YYYY hh:mm A") }}
                 </template>
             </p>
@@ -18,5 +18,7 @@ const moment = inject('$moment')
 
 const data = JSON.parse(localStorage.getItem("edoor_working_day"))
 const gv = inject("$gv")
-
+function onViewShiftDetail(){
+    window.postMessage('view_cashier_shift_detail|' +  gv.cashier_shift?.name , '*')
+}
 </script>

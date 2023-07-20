@@ -3,8 +3,7 @@
     <div>
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
-            <div class="n__re-custom">
-                {{ stay }}
+            <div class="n__re-custom"> 
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -26,10 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="5">
-                                {{ stay.rate }}
-                            </td>
+                        <tr> 
                             <td class="pe-2"> 
                                 <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
@@ -43,7 +39,10 @@
                                 <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex white-space-nowrap">{{ stay.room_type }}</span>
                             </td>
                             <td class="ps-2">
-                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex">{{ stay.room_number }}</span>
+                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex">
+                                    <span v-if="stay.room_number">{{ stay.room_number }}</span>
+                                    <span v-else class="text-red-400">Unassign</span>
+                                </span>
                             </td> 
                         </tr>
                     </tbody>
@@ -52,7 +51,7 @@
                             <td colspan="5">
                                 <div class="text-right pt-2">
                                     <div>
-                                        <Checkbox class="mr-1" v-model="stay.is_override_rate" :binary="true" inputId="disabled" />
+                                        <Checkbox class="mr-1" v-model="generate_new_room_rate" :binary="true" inputId="disabled" />
                                         <label for="disabled"> Generate New Room Rate</label>
                                     </div>
                                 </div>
@@ -78,6 +77,7 @@
     const socket = inject('$socket')
     const dialogRef = inject('dialogRef'); 
     const loading = ref(false) 
+    const generate_new_room_rate = ref(true) 
     const maxNight = ref(null) 
     const stay = ref(JSON.parse(JSON.stringify(dialogRef.value.data.item)))
     stay.value.start_date = moment(stay.value.start_date).toDate()
@@ -125,7 +125,7 @@
         newData.start_date = gv.dateApiFormat(newData.start_date)
         newData.end_date = gv.dateApiFormat(newData.end_date)
         newData.rate = newData.input_rate
-        console.log(newData)
+        newData.is_override_rate = generate_new_room_rate.value
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
             rs.getReservationDetail(rs.reservationStay.name)

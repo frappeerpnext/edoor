@@ -3,7 +3,7 @@
         <ComResevationStayFolioList />
         <div class="col py-0 overflow-x-auto"> 
             <ComReservationStayFolioAction />
-            <ComReservationStayFolioTransactionDebitCreditStyle v-if="setting.folio_transaction_stype_credit_debit == 1" />
+            <ComReservationStayFolioTransactionDebitCreditStyle v-if="setting.folio_transaction_style_credit_debit == 1" />
             <ComReservationStayFolioTransactionSimpleListStyle v-else />
         </div>
     </div>

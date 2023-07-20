@@ -1,7 +1,6 @@
 <template>
 
-    <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-       
+    <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose> 
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -48,7 +47,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="">
                         <div class="grid">
                             <div class="col-12 lg:col-6">
@@ -140,7 +138,7 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
                                     <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date" view="month" dateFormat="mm/yy" showIcon />
+                                        placeholder="ID Expire Date" view="month" dateFormat="mm-yy" showIcon />
                                 </div>
                             </div>
                         </div>
@@ -148,12 +146,11 @@
                 </div>
             </div>
         </div>
-
         <div class="grid pt-2" v-if="setting.room_tax && (setting.room_tax.tax_1_rate + setting.room_tax.tax_2_rate + setting.room_tax.tax_3_rate) > 0">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     {{ setting.tax_rule }}
-                    <div class="flex gap-2">
+                    <div class="flex gap-3">
                         <div class="flex gap-2 align-items-center relative w-11rem">
                             <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
                             <span class="absolute right-0 w-full">
@@ -290,18 +287,16 @@
             <div class="flex justify-between">
                 <div>
                     <Button @click="onAddRoom" class="px-4 mt-2 conten-btn">
-                        <img :src="IconAddRoom" class="btn-add_comNote__icon  me-1" />
+                        <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
                         Add Room 
                     </Button>
                 </div>
-
             </div>
         </div>
         <div class="mt-3">
             <div>
                 <label>Note</label><br />
-                <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30"
-                    class="w-full border-round-xl" />
+                <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30" class="w-full border-round-xl" />
             </div>
         </div>
         <OverlayPanel ref="op">

@@ -8,7 +8,7 @@
           <i v-if="!value && value != 0" class="pi pi-pencil"></i>
           {{ value || value == 0 ? value : '...' }}
         </span>
-        <span v-else-if="isCurrency"><CurrencyFormat :value="value"/></span>
+        <span v-else-if="isCurrency"><CurrencyFormat :value="value" /></span>
         <span v-else-if="value">{{ value }} </span>
         <slot></slot>
     </span>

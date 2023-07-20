@@ -10,7 +10,7 @@
             <div class=""> 
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
-                        valueClass="grow"></ComBoxStayInformation>
+                        valueClass="grow" :isAction="true" ></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_ref')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
@@ -62,7 +62,7 @@
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
                                 <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' + i.room_number + ' ' : '' }}                               
                             </div>
-                            <div v-if="stay.reservationStay?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${stay?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + obj.room_number  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
+                            <div v-if="stay.reservationStay?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${stay?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + (obj.room_number || '')  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
                                     {{ stay.reservationStay?.stays.length - 3 }}
                                     Mores
                             </div> 
@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation @onClick="onChangeDate($event)" title="Arrival" :value="gv.dateFormat(stay.reservationStay?.arrival_date)" valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="stay.reservationStay?.arrival_time" valueClass="col " :isAction="true" ></ComBoxStayInformation>
+                    <ComBoxStayInformation :value="gv.timeFormat(stay.reservationStay?.arrival_time)" valueClass="col " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="moment(stay.reservationStay?.arrival_date).format('dddd')" valueClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -80,7 +80,7 @@
                         @onClick="onChangeDate($event)"
                         :value="gv.dateFormat(stay.reservationStay?.departure_date)"
                         valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="stay.reservationStay?.departure_time"
+                    <ComBoxStayInformation :value="gv.timeFormat(stay.reservationStay?.departure_time)"
                         valueClass="col color-purple-edoor" :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(stay.reservationStay?.departure_date).format('dddd')"

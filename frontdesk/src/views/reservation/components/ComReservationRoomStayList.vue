@@ -1,7 +1,6 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
-        <template #content> 
-            {{rs.reservationStay?.stays}}
+        <template #content>
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column field="start_date" header="Stay Date" >
@@ -21,7 +20,7 @@
                     <Column field="room_nights" header="Nights"></Column>
                     <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">
-                        <div>
+                        <div> 
                             <span v-tooltip.top="data.room_type">
                               {{ data.room_type_alias }}  
                             </span>/<span  v-if="data.room_number">
@@ -67,13 +66,8 @@
                     <Column header="">
                         <template #body="slotProps">
                             <template v-if="canNotUpgradeRoom">
-                                <ComReservationStayRoomListMoreOption class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
+                                <ComReservationStayRoomListMoreOption :rooms="rooms" class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
                             </template>
-                        </template>
-                    </Column>
-                    <Column header="Input Rate">
-                        <template #body="slotProps">
-                            {{slotProps.data?.input_rate}}
                         </template>
                     </Column>
             </DataTable>
@@ -129,9 +123,11 @@ function onUpgradeRoom() {
 }
     
 function onAssignRoom(data){
+    let getData = JSON.parse(JSON.stringify(data))
+    getData.business_source = rs.reservationStay.business_source
     dialog.open(ComReservationStayAssignRoom, {
         data: {
-            stay_room: data
+            stay_room: getData
         },
         props: {
             header: `Assign Room`,

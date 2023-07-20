@@ -100,13 +100,18 @@ export function getApi(api, params = Object){
         })
     })
 }
-export function postApi(api, params = Object, message){
+export function postApi(api, params = Object, message,show_message=true){
  
     const frappe = new FrappeApp()
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
         call.post(`edoor.api.${api}`, params).then((result) => {
-            window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                if(show_message){
+                    window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                }
+                
+          
+            
             resolve(result)
         }).catch((error) =>{
             handleServerMessage(error)

@@ -21,7 +21,7 @@
         I am verify that all information is correct
         <template #footer-right>
 
-            <Button :disabled="!isConfirm" @click="onOk" class="bg-green-500">
+            <Button :disabled="!isConfirm" @click="onOk" class="bg-green-500 border-none">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" /> Check In
             </Button>
 

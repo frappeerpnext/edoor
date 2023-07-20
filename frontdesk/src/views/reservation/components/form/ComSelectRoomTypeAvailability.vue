@@ -1,4 +1,4 @@
-<template>
+<template> 
     <Dropdown v-model="roomTypeId" :showClear="showClear" :options="data" showClear optionValue="name" @change="onSelectRoomType($event)" optionLabel="room_type" placeholder="Select Room Type" class="w-full" />
 </template>
 <script setup>
@@ -53,9 +53,9 @@
     watch(()=> [props.startDate,props.endDate, props.rateType, props.businessSource], ([newStartDate,newEndDate,newRateType,newBusinessSource],[oldStartDate,oldEndDate,oldRateType,oldBusinessSource])=>{
         isWatchWork.value = true
         getRoomType(property.name, newStartDate, newEndDate, newRateType,newBusinessSource)
-    })
-
+    }) 
     if(!isWatchWork.value && props.startDate && props.endDate){
+        
         getRoomType(property.name, props.startDate, props.endDate, props.rateType,props.businessSource)
     }
  

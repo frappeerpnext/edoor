@@ -12,44 +12,37 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Mark as Master Room </span>
                 </button>
-
                 <button @click="onUndoCheckIn()"
                     v-if="rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Undo Check-In</span>
                 </button>
-                <button @click="onAuditTrail"
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
-                    <span class="ml-2">Audit Trail</span>
-                </button>
-
                 <button v-if="rs.reservationStay.pay_by_company" @click="onUnmarkasPaybyMasterRoom()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2"> Unmark as Bill to Master Room </span>
                 </button>
-
                 <button @click="onMarkasPaybyMasterRoom()" v-else
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2"> Mark as Bill to Master Room </span>
                 </button>
-
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Mark as GIT Reservation</span>
                 </button>
-
                 <button v-else @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
-
-
+                <button @click="onAuditTrail"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Audit Trail</span>
+                </button>
             </template>
         </Menu>
     </div>

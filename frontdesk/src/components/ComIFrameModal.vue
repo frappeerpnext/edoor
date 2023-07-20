@@ -112,8 +112,18 @@ const hasFilter = ref((f) => {
 
 function onIframeLoaded() {
     const iframe = document.getElementById("iframe");
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
+    var windowWidth = window.innerWidth;
     
+    console.log(windowWidth)
+    
+    if (windowWidth >= 1920){
+        iframe.style.minWidth = 100 + '%'
+    }
+    else{
+        iframe.style.width = contentWidth + 'px';
+    }
+    iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 
 function loadIframe() {

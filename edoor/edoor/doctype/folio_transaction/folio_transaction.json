@@ -36,6 +36,10 @@
   "column_break_23",
   "room_id",
   "room_number",
+  "guest_profile_section",
+  "guest",
+  "column_break_31",
+  "guest_name",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -110,7 +114,8 @@
   "bank_fee_account",
   "column_break_91",
   "bank_fee_description",
-  "is_auto_post"
+  "is_auto_post",
+  "payment_type_group"
  ],
  "fields": [
   {
@@ -681,11 +686,40 @@
    "fieldname": "is_auto_post",
    "fieldtype": "Check",
    "label": "Is Auto Post"
+  },
+  {
+   "fieldname": "guest_profile_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Profile"
+  },
+  {
+   "fetch_from": "folio_number.guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "column_break_31",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
+  },
+  {
+   "fetch_from": "account_code.payment_type_group",
+   "fieldname": "payment_type_group",
+   "fieldtype": "Link",
+   "label": "Payment Type Group",
+   "options": "Payment Type Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-11 10:10:41.720915",
+ "modified": "2023-07-19 14:26:09.149888",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

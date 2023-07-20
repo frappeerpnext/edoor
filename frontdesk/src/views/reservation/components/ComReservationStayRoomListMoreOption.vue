@@ -12,7 +12,7 @@
                         <button @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
                         </button>
-                        <button @click="openNote = true" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onOpenDeleted" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Delete
                         </button>
                 </template>
@@ -27,12 +27,14 @@ import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
 import ComNote from '@/components/form/ComNote.vue';
 const rs = inject('$reservation_stay')
 const socket = inject('$socket')
+const gv = inject('$gv')
 const moment = inject('$moment')
 const dialogRef = inject('dialogRef')
 const dialogConfirm = useConfirm()
 const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 const props = defineProps({
     data: Object,
+    rooms: Array,
     class: String
 })
 const dialog = useDialog()
@@ -43,6 +45,15 @@ const loading = ref(false)
 const toggle = (event) => {
     show.value.toggle(event);
 };
+function onOpenDeleted(){
+    const names = props.rooms.map(item => item.name);
+    const index = names.indexOf(props.data.name)
+    if((index + 1) < props.rooms.length){
+        gv.toast('warn',"This room stay is not last stay.")
+        return
+    }
+    openNote.value = true
+}
 function onSelected(room,status){
     show.value.hide()
     emit('onSelected',room,status)

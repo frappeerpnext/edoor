@@ -169,7 +169,8 @@ def update_reservation(name=None,doc=None, run_commit = True):
                 SELECT 
                     GROUP_CONCAT(rooms) as rooms,
                     GROUP_CONCAT(room_types) as room_types,
-                    GROUP_CONCAT(room_type_alias) as room_type_alias
+                    GROUP_CONCAT(room_type_alias) as room_type_alias,
+                    GROUP_CONCAT(name) as room_stay 
                     FROM `tabReservation Stay`
                 where 
                     is_active_reservation = 1 and 
@@ -215,10 +216,29 @@ def update_reservation(name=None,doc=None, run_commit = True):
 
 
     #update room info
-    doc.room_types =",".join(set(room_info_data[0]["room_types"].split(',')))
-    doc.room_numbers = ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
-    doc.room_type_alias = ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
+     
+    doc.room_types ="" if not room_info_data[0]["room_types"] else  ",".join(set(room_info_data[0]["room_types"].split(',')))
+    doc.room_numbers ="" if not room_info_data[0]["rooms"] else  ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
+    doc.room_type_alias ="" if not room_info_data[0]["room_type_alias"] else ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
+    # update room info json
+    room_stays_list = room_info_data[0]["room_stay"].split(",")
+    
+    room_stays = ','.join(f"'{x}'" for x in room_stays_list)
+    sql_room_json = "SELECT `name`, room_number, room_type, room_type_alias,parent as reservation_stay FROM `tabReservation Stay Room` WHERE parent IN({})".format(room_stays)
+    room_stay_data = frappe.db.sql(sql_room_json, as_dict=1)
 
+    room_stay_json_list = []
+    if len(room_stay_data) > 0:
+        for s in room_stay_data:
+            room_stay_json_list.append({
+                "name": s['name'],
+                "room_number": s['room_number'] or '',
+                "room_type_alias": s['room_type_alias'],
+                "room_type": s['room_type'],
+                "reservation_stay": s['reservation_stay']
+            })
+    doc.rooms_data = json.dumps(room_stay_json_list)
+ 
     #update reservation status
     if doc.reserved>0:
         doc.reservation_status = 'Reserved'
@@ -438,6 +458,60 @@ def delete_doc(doctype, name, note):
     frappe.delete_doc(doctype,name)
 
 @frappe.whitelist()
+def remove_temp_room_occupy(reservation):
+    frappe.db.sql(""" 
+                    delete from `tabTemp Room Occupy` 
+                    where  
+                        reservation_stay in (
+                                select 
+                                    name 
+                                from `tabReservation Stay` 
+                                where reservation = '{0}' and 
+                                (is_active_reservation = 0 or reservation_status ='Checked Out') 
+                        ) and 
+                        reservation = '{0}'
+                  """.format(reservation))
+    frappe.db.commit()
+
+def add_room_charge_to_folio(folio,rate):
+    account_code = frappe.get_doc("Account Code",frappe.db.get_default("room_revenue_code"))
+    doc = frappe.get_doc({
+        "doctype":"Folio Transaction",
+        "posting_date":rate.date,
+        "folio_number":folio.name,
+        "room_type_id":rate.room_type_id,
+        "room_id":rate.room_id,
+        "room_id":rate.room_id,
+        "input_amount":rate.input_rate,
+        "account_code":account_code.name,
+        "tax_rule":account_code.tax_rule,
+        "discount_type":rate.discount_type,
+        "discount":rate.discount,
+        "tax_1_rate":rate.tax_1_rate,
+        "tax_2_rate":rate.tax_2_rate,
+        "tax_3_rate":rate.tax_3_rate,
+        "rate_include_tax":rate.rate_include_tax,
+        "is_auto_post":1
+    }).insert()
+
+
+def get_master_folio(reservation):
+    master_stay = frappe.db.get_list("Reservation Stay", filters={"reservation":reservation, "is_master":"1"})
+    if master_stay:
+        master_folio = frappe.db.get_list("Reservation Folio", fields=["*"], filters={"reservation_stay":master_stay[0].name, "is_master":1})
+        if master_folio:
+            return master_folio[0]
+    return None
+
+def create_folio(stay):
+    doc = frappe.get_doc({
+        "doctype":"Reservation Folio",
+        "reservation_stay":stay.name,
+        "guest":stay.guest
+    }).insert()
+    return doc
+ 
+@frappe.whitelist()
 def clear_reservation():
     frappe.db.sql("delete from `tabReservation`")
     frappe.db.sql("delete from `tabReservation Stay`")
@@ -448,5 +522,12 @@ def clear_reservation():
     frappe.db.sql("delete from `tabFolio Transaction`")
     frappe.db.sql("delete from `tabReservation Folio`")
     frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='',guest='' , guest_name=''")
+    frappe.db.sql("delete from `tabSale Product`")
+    frappe.db.sql("delete from `tabSale Payment`")
+    frappe.db.sql("delete from `tabSale`")
+    frappe.db.sql("delete from `tabWorking Day`")
+    frappe.db.sql("delete from `tabCashier Shift`")
+    
+    
     frappe.db.commit()
     return "done"

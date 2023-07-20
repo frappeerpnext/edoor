@@ -41,8 +41,7 @@ export default class ReservationStay {
 			this.reservationStay.value = result.message.reservation_stay
 			this.reservationStayNames.value = result.message.reservation_stay_names
 			this.guest.value = result.message.guest
-			this.masterGuest.value = result.message.master_guest
-			console.log(this.reservationStay.value)
+			this.masterGuest.value = result.message.master_guest 
 			this.loading.value = false
 
 		}).catch((error) => {
@@ -104,7 +103,7 @@ export default class ReservationStay {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 
 		if (this.folioTransactions.value) {
-			if (setting.folio_transaction_stype_credit_debit == 1) {
+			if (setting.folio_transaction_style_credit_debit == 1) {
 				return this.folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
 			} else {
 				return this.folioTransactions.value.reduce((n, d) => n + (d.type == "Credit" ? Math.abs((d.amount || 0)) : 0), 0)
@@ -118,7 +117,7 @@ export default class ReservationStay {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 
 		if (this.folioTransactions.value) {
-			if (setting.folio_transaction_stype_credit_debit == 1) {
+			if (setting.folio_transaction_style_credit_debit == 1) {
 				return this.folioTransactions.value.reduce((n, d) => n + (d.debit || 0), 0)
 			} else {
 				return Math.abs(this.folioTransactions.value.reduce((n, d) => n + (d.type == "Debit" ? (d.amount || 0) : 0), 0))
@@ -156,7 +155,7 @@ export default class ReservationStay {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 		if (data?.name) {
 
-			if (setting?.folio_transaction_stype_credit_debit == 1) {
+			if (setting?.folio_transaction_style_credit_debit == 1) {
 				call.get('edoor.api.reservation.get_folio_transaction', {
 					folio_number: data.name
 				})
@@ -193,7 +192,8 @@ export default class ReservationStay {
 						"modified",
 						"modified_by",
 						"show_print_preview",
-						"print_format"
+						"print_format",
+						"is_auto_post"
 					],
 					filters: [["folio_number", "=", data.name]],
 					limit: 1000

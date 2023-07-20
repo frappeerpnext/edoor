@@ -246,7 +246,8 @@ function onViewCustomerDetail(name) {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             console.log(options)

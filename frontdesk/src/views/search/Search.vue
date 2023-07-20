@@ -1,5 +1,5 @@
 <template >
-    <ComDialogContent :is-dialog="false">
+    <ComDialogContent :is-dialog="false" :hideFooter="true">
         <div class="d-flex w-full">
             <span class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
@@ -10,7 +10,5 @@
 </template>
 <script setup>
 import ComDialogContent from '../../components/form/ComDialogContent.vue';
-
-
 </script>
 <style ></style>

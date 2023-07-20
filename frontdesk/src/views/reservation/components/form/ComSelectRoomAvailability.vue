@@ -40,9 +40,7 @@
     })
  
     watch(()=> [props.roomType], ([newValue],[oldValue])=>{
-        console.log(newValue)
-        console.log(oldValue)
-        if(newValue != oldValue){
+        if(oldValue != undefined && newValue != oldValue){
             roomId.value = null
             emit('update:modelValue', null)
             emit('onSelected', {})

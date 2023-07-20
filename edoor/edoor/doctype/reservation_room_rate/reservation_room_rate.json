@@ -14,6 +14,8 @@
   "reservation_stay",
   "stay_room_id",
   "business_source",
+  "guest",
+  "guest_name",
   "column_break_7",
   "room_type_id",
   "room_type",
@@ -49,7 +51,8 @@
   "total_tax",
   "section_break_25",
   "total_rate",
-  "note"
+  "note",
+  "is_active_reservation"
  ],
  "fields": [
   {
@@ -283,11 +286,31 @@
    "fieldname": "room_type_alias",
    "fieldtype": "Data",
    "label": "Room Type Alias"
+  },
+  {
+   "fetch_from": "reservation_stay.guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_stay.is_active_reservation",
+   "fieldname": "is_active_reservation",
+   "fieldtype": "Check",
+   "label": "Is Active Reservation"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-30 12:21:48.888119",
+ "modified": "2023-07-20 13:59:59.341523",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",
