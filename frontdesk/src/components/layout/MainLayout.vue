@@ -97,42 +97,42 @@
                             <Menu ref="show" id="overlay_menu" :popup="true" style="min-width: 180px;">
                                 <template #end>
                                     <button @click="changeProperty"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround"
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround"
                                         v-if="user.property.length > 1">
                                         <i class="pi pi-building" />
                                         <span class="ml-2">Change property</span>
                                     </button>
 
                                     <button @click="onBlankGuestRegistration"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-file" />
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
                                     <!-- <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Open cashier shift</span>
                                     </button> -->
                                     <button @click="onOpenCashierShift"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Open cashier shift</span>
                                     </button>
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-eye" />
                                         <span class="ml-2">View Shift Detail</span>
                                     </button>
                                     
                                     <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-ban" />
                                         <span class="ml-2">Close cashier shift</span>
                                     </button>
 
                                     <button @click="onRunNightAudit"
-                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-stopwatch" />
+                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
+                                        <img :src="runNightAuditSvgIcon" style="height: 15px;"/>
                                         <span class="ml-2">Run night audit</span>
                                     </button>
                                 </template>
@@ -175,6 +175,7 @@ import Property from '@/views/user_property/Property.vue';
 import { useDialog } from 'primevue/usedialog';
 import ComFooter from '../../components/layout/components/ComFooter.vue';
 import OpenShift from "@/views/shift/OpenShift.vue"
+import runNightAuditSvgIcon from '@/assets/svg/icon-run-night-audit.svg'
 
 const dialog = useDialog();
 

@@ -4,9 +4,9 @@
         <table>
             <thead>
                 <tr>
-                    <td>Type</td>
-                    <td>Amount</td>
-                    <td>Amount {{ setting?.currency?.name }}</td>
+                    <td><label>Type</label></td>
+                    <td><label>Amount</label></td>
+                    <td><label>Amount {{ setting?.currency?.name }}</label></td>
                 </tr>
             </thead>
             <tbody>
@@ -103,3 +103,8 @@
     });
     }
 </script>
+<style scoped>
+table{
+    width: 100%;
+}
+</style>
