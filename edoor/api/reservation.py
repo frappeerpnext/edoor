@@ -1368,10 +1368,13 @@ def unassign_room(reservation_stay, room_stay):
             s.room_id = None
             s.room_number = None
     doc.save()
-    frappe.db.commit()
+    
     if doc:
         change_room_occupy(doc)
         generate_room_rate(self=doc, is_update_reservation_stay=True)
+        update_reservation(name=doc.reservation, run_commit=False)
+    
+    frappe.db.commit()
     return doc
 
 @frappe.whitelist(methods="POST")
@@ -1386,10 +1389,13 @@ def assign_room(data):
                 s.is_manual_rate = data['is_manual_rate']
                 s.input_rate = data['rate']
     doc.save()
-    frappe.db.commit()
+    
     if doc:
         change_room_occupy(doc)
         generate_room_rate(self=doc,is_update_reservation_stay=True)
+        update_reservation(name=doc.reservation, run_commit=False)
+    
+    frappe.db.commit()
     return doc
 @frappe.whitelist()
 def get_room_rate_by_name_to_edit(name):

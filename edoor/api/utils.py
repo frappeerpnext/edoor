@@ -240,7 +240,10 @@ def update_reservation(name=None,doc=None, run_commit = True):
     doc.rooms_data = json.dumps(room_stay_json_list)
  
     #update reservation status
-    if doc.reserved>0:
+   
+    if doc.total_confirmed>0:
+        doc.reservation_status = 'Confirmed'
+    elif doc.reserved>0:
         doc.reservation_status = 'Reserved'
     elif doc.total_checked_in>0 and  doc.reserved==0:
         doc.reservation_status = 'In-house'
@@ -254,7 +257,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
         else:
             doc.reservation_status = "Void" 
 
-
+  
     
 
     doc.update_reservation_stay = False
