@@ -5149,6 +5149,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .p-dialog .p-dialog-content {
+  padding-bottom: 61px !important;
   background: #ffffff;
   color: #495057;
   padding: 1rem;

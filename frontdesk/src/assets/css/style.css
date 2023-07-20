@@ -822,9 +822,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     /* min-height: 30rem; */
     min-height: calc(100vh - 247px);
 }
-.p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
+/* .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
     padding-bottom: 61px;
-}
+} */
 
 .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
     max-height: calc(100vh - 89px) !important;

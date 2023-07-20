@@ -17,10 +17,8 @@ import App from "./App.vue";
 import Error from "./components/Error.vue";
 
 import router from './router';
-// import resourceManager from "../../../doppio/libs/resourceManager";
-// import call from "../../../doppio/libs/controllers/call";
 
-// import Auth from "../../../doppio/libs/controllers/auth";
+import Auth from "./utils/auth";
 
 import { FrappeApp } from 'frappe-js-sdk';
 import { resourcesPlugin } from "./resources"
@@ -218,7 +216,7 @@ app.use(PrimeVue, {
 })
 app.use(ToastService);
 app.use(DialogService);
-app.use(resourceManager);
+// app.use(resourceManager);
 app.use(ConfirmationService);
 
 
@@ -231,9 +229,9 @@ app.use(ConfirmationService);
 // dialogService.position = 'top';
 
 // Global Properties,
-// components can inject this
+
 app.provide("$auth", auth);
-app.provide("$call", call);
+
 app.provide("$socket", socket)
 app.provide("$frappe", frappe);
 app.provide("$numberFormat",NumberFormat)
@@ -255,6 +253,8 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
+
+
 
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {

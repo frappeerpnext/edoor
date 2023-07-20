@@ -11,7 +11,9 @@
             </thead>
             <tbody>
                 <tr v-for="(p, index) in shift.cash_float" :key="index">
-                    <td>{{ p.payment_method }}</td>
+                    <td>
+                        {{ p.payment_method }}
+                    </td>
                     <td>
                         <InputText  v-model="p.input_amount" />
                         <div v-if="p.exchange_rate!=1">
@@ -19,7 +21,9 @@
                         </div>
                     </td>
                     <td>
-                        <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 "/>
+                        <div class="p-inputtext-pt text-center border-1 border-white h-12">
+                            <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 "/>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -28,7 +32,9 @@
                     </td>
                     <td></td>
                     <td>
-                        <CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
+                        <div class="p-inputtext-pt text-center border-1 border-white h-12">
+                            <CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
+                        </div>
                     </td>
                 </tr>
             </tbody>
