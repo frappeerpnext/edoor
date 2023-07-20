@@ -50,7 +50,7 @@
                                 <p title="Housekeeping">Housekeeping</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Guest Ledger" @onClick="onLink('guest-ledger')">
+                        <ComHeaderBarItemButton current-page="Guest Ledger" title="Guest Ledger" @onClick="onLink('guest-ledger')">
                             <template #icon>
                                 <img :src="iconGuestLedger">
                             </template>

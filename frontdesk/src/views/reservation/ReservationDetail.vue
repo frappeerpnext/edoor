@@ -265,12 +265,6 @@ function onCheckIn(){
 
 const items = [
     {
-        label: 'Audit Trail',
-        command: () => {
-            onAuditTrail()
-        }
-    },
-    {
         label: 'Group No Show',
         command: () => {
             onChangeStatus('No Show')
@@ -322,6 +316,12 @@ const items = [
     },
     {
         label: 'Group Build To Room and Tax to Company, Extra to Guest',
+    },
+    {
+        label: 'Audit Trail',
+        command: () => {
+            onAuditTrail()
+        }
     }
 ];
 

@@ -32,7 +32,6 @@
   "room_types",
   "room_type_alias",
   "room_numbers",
-  "room_names",
   "section_break_21",
   "business_source",
   "business_source_type",
@@ -647,11 +646,6 @@
    "label": "Total Confirmed"
   },
   {
-   "fieldname": "room_names",
-   "fieldtype": "Small Text",
-   "label": "Room Names"
-  },
-  {
    "fieldname": "rooms_data",
    "fieldtype": "JSON",
    "label": "Rooms Data"
@@ -665,7 +659,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-19 10:45:27.327311",
+ "modified": "2023-07-20 16:04:24.228918",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

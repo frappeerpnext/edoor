@@ -69,7 +69,6 @@ class ReservationStay(Document):
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
-			self.room_names = ','.join(set([d.name for d in self.stays]))
 			# json stay room
 			rooms_data = []
 			for s in self.stays:
