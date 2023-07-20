@@ -14,6 +14,7 @@ import './assets/css/style.css'
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
+ 
 import Error from "./components/Error.vue";
 
 import router from './router';
@@ -31,10 +32,11 @@ import { vue3Debounce } from 'vue-debounce'
 
 const app = createApp(App);
 
+
 const auth = reactive(new Auth());
 const frappe = new FrappeApp()
 
- 
+
 
 // inject
 import moment from "./utils/moment";
@@ -121,7 +123,7 @@ import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
 import ComStayInfoNoBox from '@/views/reservation/components/ComStayInfoNoBox.vue'
 import ComLastModifiedInfo from './components/layout/components/ComLastModifiedInfo.vue'
- 
+
 
 
 
@@ -170,7 +172,7 @@ app.component('Chip', Chip);
 app.component('Tooltip', Tooltip);
 app.component('AutoComplete', AutoComplete)
 app.component('Calendar', Calendar)
-app.component('Chart',Chart)
+app.component('Chart', Chart)
 app.component('Skeleton', Skeleton)
 app.component('Message', Message)
 // use custom components //
@@ -188,18 +190,18 @@ app.component('ComOverlayPanelContent', ComOverlayPanelContent)
 app.component('ComIcon', ComIcon)
 app.component('ComAttachFile', ComAttachFile)
 app.component('ComDocument', ComDocument)
-app.component('ComInputTime',ComInputTime)
-app.component('ComPlaceholder',ComPlaceholder)
-app.component('ComReservationStatus',ComReservationStatus)
-app.component('ComUploadProfile', ComUploadProfile) 
+app.component('ComInputTime', ComInputTime)
+app.component('ComPlaceholder', ComPlaceholder)
+app.component('ComReservationStatus', ComReservationStatus)
+app.component('ComUploadProfile', ComUploadProfile)
 app.component('ComSelectRoomTypeAvailability', ComSelectRoomTypeAvailability)
 app.component('ComSelectRoomAvailability', ComSelectRoomAvailability)
-app.component('ComNote',ComNote)
-app.component('ComDialogNote',ComDialogNote)
+app.component('ComNote', ComNote)
+app.component('ComDialogNote', ComDialogNote)
 app.component('ComColorPicker', ComColorPicker)
-app.component('ComInputCurrency',ComInputCurrency)
+app.component('ComInputCurrency', ComInputCurrency)
 app.component('ComStayInfoNoBox', ComStayInfoNoBox)
-app.component('ComLastModifiedInfo',ComLastModifiedInfo)
+app.component('ComLastModifiedInfo', ComLastModifiedInfo)
 
 // Plugins
 app.use(frappe)
@@ -220,7 +222,7 @@ app.use(DialogService);
 app.use(ConfirmationService);
 
 
- 
+
 
 // const dialogService = createDialogService();
 // app.component('Dialog', createDialog());
@@ -234,8 +236,8 @@ app.provide("$auth", auth);
 
 app.provide("$socket", socket)
 app.provide("$frappe", frappe);
-app.provide("$numberFormat",NumberFormat)
- 
+app.provide("$numberFormat", NumberFormat)
+
 
 
 app.directive('badge', BadgeDirective);
@@ -282,34 +284,30 @@ router.beforeEach(async (to, from, next) => {
 
 
 
- 
- 
-apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
-	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
-}).then((r) => {
-	const data = r.message
-	localStorage.setItem('edoor_user', JSON.stringify( data.user))
-	localStorage.setItem("edoor_setting", JSON.stringify( data.edoor_setting))
-	if(r.message.property=="Invalid Property"){
-		localStorage.removeItem("edoor_property")
-	}
-	else{
-		localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-	
-		if (r.message.property) {
-			if (r.message.property.length == 1) {
-				localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+
+	apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
+		property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
+	}).then((r) => {
+		const data = r.message
+		localStorage.setItem('edoor_user', JSON.stringify(data.user))
+		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
+		if (r.message.property == "Invalid Property") {
+			localStorage.removeItem("edoor_property")
+		}
+		else {
+			localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
+
+			if (r.message.property) {
+				if (r.message.property.length == 1) {
+					localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+				}
 			}
 		}
-	}
 
-	
-	app.mount("#app");
+		app.mount("#app");
 
-}).catch((error) => {
-	 console.log(error)
-	// const errorApp = createApp(Error);
-	// errorApp.mount("#app");
-})
-
-
+	}).catch((error) => {
+		 alert("Load app error")
+		// const errorApp = createApp(Error);
+		// errorApp.mount("#app");
+	})

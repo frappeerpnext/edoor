@@ -57,7 +57,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-20 16:31:12.142002",
+ "modified": "2023-07-20 23:40:27.033287",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",
@@ -83,6 +83,16 @@
    "read": 1,
    "report": 1,
    "role": "All",
+   "select": 1,
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
    "share": 1
   }
  ],
