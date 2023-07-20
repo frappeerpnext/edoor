@@ -299,14 +299,14 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
     sql_folio = """
        select  
-            account_category_name as label,
+            account_category as label,
             abs(sum(amount * if(type='Debit',1,-1))) as amount ,
             sum(if(type='Debit',amount,0)) as debit,
             sum(if(type='Credit',amount,0)) as credit
         from `tabFolio Transaction` 
         where
             reservation_stay = '{}'
-        group by account_category_name
+        group by account_category
     """.format(
             doc.name
         )
@@ -321,7 +321,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
     for  d in folio_data:
         del d["credit"]
         del d["debit"]
-    doc.summary_data  = json.dumps(folio_data)
+
     for stay in doc.stays:
         sql = """
             select 
