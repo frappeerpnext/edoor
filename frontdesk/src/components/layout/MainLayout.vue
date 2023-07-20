@@ -42,7 +42,7 @@
                                 <p title="Guest Database">Guest Database</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Housekeeping" icon="pi-users" @onClick="onRoute('Housekeeping')">
+                        <ComHeaderBarItemButton current-page="Housekeeping" title="Housekeeping" icon="pi-users" @onClick="onRoute('Housekeeping')">
                             <template #icon>
                                 <img :src="iconEdoorHouseKeeping">
                             </template>
@@ -108,7 +108,12 @@
                                         <i class="pi pi-file" />
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
-                                    <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
+                                    <!-- <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-refresh" />
+                                        <span class="ml-2">Open cashier shift</span>
+                                    </button> -->
+                                    <button @click="onOpenCashierShift"
                                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Open cashier shift</span>

@@ -25,7 +25,7 @@
                         <slot name="footer-right"></slot>
                         
                         <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
-                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
+                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{titleButtonClose}}
                         </Button>
                         <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
                             <span v-if="!loading" class="flex align-items-center">

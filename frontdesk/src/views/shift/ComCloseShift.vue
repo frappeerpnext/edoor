@@ -3,7 +3,7 @@
         <div v-for="(item, index) in doc?.cash_float" :key="index">
             {{ item }}
         </div>
-        
+        {{ doc }}
         <div class="grid justify-between">
             <div class="col-6">
             <table>
@@ -16,7 +16,8 @@
             <div class="col-6">
                 <table>
                     <tbody>
-                    <ComStayInfoNoBox  label="Date" :value="moment(doc.creation).format('DD-MM-yyyy')"/>
+                        <ComStayInfoNoBox  label="Date" :value="moment(doc.creation).format('DD-MM-yyyy')"/>
+                        <ComStayInfoNoBox  label="Shift" :value="doc.shift_name" />
                     </tbody>
                 </table>
             </div>
@@ -24,7 +25,7 @@
         <label>Cash Float</label>
         <div class="grid gap-0">
             <div v-for="(item, index) in doc?.cash_float" :key="index" class="col-12 md:col-6 lg:col-4">
-                {{ item.currency }}
+                {{ item.payment_method }}
                 <ComInputCurrency classCss="w-full" v-model="item.input_close_amount" id="input_amount" />
             </div>
         </div>

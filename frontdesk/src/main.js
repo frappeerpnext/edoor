@@ -17,10 +17,11 @@ import App from "./App.vue";
 import Error from "./components/Error.vue";
 
 import router from './router';
-import resourceManager from "../../../doppio/libs/resourceManager";
-import call from "../../../doppio/libs/controllers/call";
+// import resourceManager from "../../../doppio/libs/resourceManager";
+// import call from "../../../doppio/libs/controllers/call";
 
-import Auth from "../../../doppio/libs/controllers/auth";
+// import Auth from "../../../doppio/libs/controllers/auth";
+
 import { FrappeApp } from 'frappe-js-sdk';
 import { resourcesPlugin } from "./resources"
 import { setConfig, frappeRequest } from './resource'
