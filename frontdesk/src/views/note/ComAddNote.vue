@@ -38,7 +38,7 @@
          </div>
       </div>
       <div class="col-12">
-        <label>Content</label>
+        <label>Note</label>
         <div class="card flex justify-content-left">
             <Textarea v-model="data.content" rows="3"  style="width: 100%;" />
         </div>
