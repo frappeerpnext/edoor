@@ -365,7 +365,7 @@ function getData(loading=true) {
     gv.loading = loading;
     const call = api.call();
     if (!selected_date.value){
-        const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day')).date_working_day
+        const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))?.date_working_day
         selected_date.value = moment(edoor_working_day).format("YYYY-MM-DD")
     }
     if(!date.value){

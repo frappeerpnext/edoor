@@ -29,14 +29,14 @@ const data = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const chartData = ref([]) 
 watch(()=> [props.date], ([newValue])=>{
-    let filterDate = working_day.date_working_day
+    let filterDate = working_day?.date_working_day
     if (newValue){
         filterDate = gv.dateApiFormat(newValue)
     }
     loadData(filterDate)
 })
 onMounted(() => {
-    loadData(working_day.date_working_day)
+    loadData(working_day?.date_working_day)
 })
 function loadData(date){
     chartData.value = []

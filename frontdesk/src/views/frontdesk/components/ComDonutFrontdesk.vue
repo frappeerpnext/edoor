@@ -41,7 +41,7 @@ const setChartData = () => {
 
 call.get('edoor.api.frontdesk.get_dashboard_data', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name,
-    date: working_day.date_working_day
+    date: working_day?.date_working_day
 }).then((result) => {
     data.value = result.message
 })
