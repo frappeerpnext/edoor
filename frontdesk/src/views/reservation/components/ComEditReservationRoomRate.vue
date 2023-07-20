@@ -44,7 +44,7 @@
                     </div>
                 </div> 
                 <div class="col-6">
-                    <label>Rate</label>                
+                    <label>Room Rate</label>                
                         <ComInputCurrency classCss="w-full" v-model="doc.input_rate" :disabled="doc.is_manual_rate==0"/>
                 </div>
                 <div class="col-4">
