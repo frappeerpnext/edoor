@@ -106,7 +106,7 @@ let dateRange = reactive({
     end: ''
 })
 const working_date = ref('')
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+    const property = JSON.parse(localStorage.getItem("edoor_property"))
 const dialog = useDialog();
 loadData();
 

@@ -1,6 +1,5 @@
 <template>
-    <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift"  doctype="Shift Type" placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time"/>
-    
+    <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift"  doctype="Shift Type" placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time"/> 
     <table>
         <thead>
             <tr>
@@ -9,7 +8,6 @@
                 <td>Amount {{ setting?.currency?.name }}</td>
             </tr>
         </thead>
-        
         <tbody>
             <tr v-for="(p, index) in shift.cash_float" :key="index">
                 <td>{{ p.payment_method }}</td>
@@ -20,9 +18,7 @@
                     </div>
                 </td>
                 <td>
-                    
                     <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 "/>
-
                 </td>
             </tr>
             <tr>
@@ -30,11 +26,12 @@
                     Total
                 </td>
                 <td></td>
-                <td><CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
-                    </td>
+                <td>
+                    <CurrencyFormat :value="shift.cash_float.reduce((n, d) => n + ((d.input_amount/d.exchange_rate) || 0),0)"/>
+                </td>
             </tr>
         </tbody>
-        Note: <InputText  v-model="shift.open_note" />
+        Note: <InputText v-model="shift.open_note" />
     </table>
 
     <div class="flex gap-2">
