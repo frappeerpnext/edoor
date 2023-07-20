@@ -212,7 +212,8 @@ doc_events = {
 
 fixtures = [
    
-    {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]}
+    {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
+    {"dt": "Reservation Status"}
    
 ]
 
