@@ -42,10 +42,10 @@
     </div>
     </ComPlaceholder>
     <OverlayPanel ref="op">
-    <ComOverlayPanelContent :loading="saving" @onSave="onSave" @onCancel="onClose">
+    <ComOverlayPanelContent width="30rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
     <label for="textnote">{{edit.note_type}}</label><br/>
-    <Textarea id="textnote" v-model="edit.content" rows="5" cols="30" />
+    <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />
     </div>
     </ComOverlayPanelContent>
     </OverlayPanel>
