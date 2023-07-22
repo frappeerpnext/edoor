@@ -167,7 +167,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, useToast, getDoc } from "@/plugin"
+import { ref, inject, computed, onMounted, useToast, getDoc ,postApi} from "@/plugin"
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
@@ -178,8 +178,8 @@ import ComReservationStayPanel from '@/views/reservation/components/ComReservati
 const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
-const frappe = inject('$frappe');
-const call = frappe.call();
+ 
+ 
 
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
@@ -309,8 +309,7 @@ const total_amount = computed(() => {
 
 function onSelectRateType(selected){
     if(doc.value.is_manual_rate == 0 && selected.value){
-        call
-            .post('edoor.api.reservation.get_room_rate',{
+        postApi('reservation.get_room_rate',{
                 property: doc.value.property,
                 rate_type: selected.value,
                 room_type: doc.value.room_type_id, 
@@ -327,8 +326,7 @@ function onSelectRateType(selected){
 }
 function onUseManualRate(){
     if(doc.value.is_manual_rate == 0){
-        call
-            .post('edoor.api.reservation.get_room_rate',{
+        postApi('reservation.get_room_rate',{
                 property: doc.value.property,
                 rate_type: doc.value.rate_type,
                 room_type: doc.value.room_type_id, 
@@ -365,8 +363,7 @@ function onSave() {
 
   
     isSaving.value = true;
-    call
-        .post('edoor.api.reservation.update_room_rate', {
+    postApi('reservation.update_room_rate', {
             room_rate_names: room_rate_names,
             data: doc.value,
             reservation_stays: reservation_stay_names
@@ -381,7 +378,7 @@ function onSave() {
         })
         .catch((error) => {
             isSaving.value = false;
-            throw new Error(error.exception || error.message)
+            
         });
 
 }

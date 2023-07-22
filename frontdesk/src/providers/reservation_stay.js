@@ -23,6 +23,7 @@ export default class ReservationStay {
 		this.selectedFolio = ref({})
 		this.folioTransactions = ref([])
 		this.selectedFolioTransactions = ref([])
+		this.selectedRoomRates =[]
 		this.reservationStatusDelete = ['No Show', 'Void', 'Cancelled']
 		this.folio_summary = ref([])
 		this.room_rates = ref([])
@@ -193,7 +194,8 @@ export default class ReservationStay {
 						"modified_by",
 						"show_print_preview",
 						"print_format",
-						"is_auto_post"
+						"is_auto_post",
+						"allow_enter_quantity"
 					],
 					filters: [["folio_number", "=", data.name]],
 					limit: 1000
@@ -201,6 +203,7 @@ export default class ReservationStay {
 
 					const folio_transaction = Enumerable.from(result).orderBy("$.posting_date").thenBy("name").toArray()
 					folio_transaction.forEach(r => {
+						r.quantity = r.allow_enter_quantity == 1? r.quantity:0;
 						r.total_amount = r.type == "Credit" ? (r.total_amount - r.bank_fee_amount) * -1 : r.total_amount
 						r.amount = r.type == "Credit" ? r.amount * -1 : r.amount
 						r.price = r.type == "Credit" ? (r.price + r.bank_fee_amount) * -1 : r.price

@@ -518,9 +518,15 @@ span.p-button-icon.pi.pi-ellipsis-h {
     padding: .6rem;
 }
 .view-table-iframe {
-    max-height: 40rem;
-    min-height: 40rem;
+    max-height: 42rem;
+    min-height: 42rem;
     overflow: auto;
+}
+@media (max-height: 1080px) {
+    .view-table-iframe {
+        max-height: 39rem;
+        min-height: 39rem;
+    }
 }
 .view-table-iframe-dialog{
     max-height: 85vh;
@@ -659,7 +665,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     line-height: 1rem;
 }
 .ress__list .p-datatable-tbody tr:nth-child(even){
-    background: var(--bg-tb-sec-color) !important;
+    background: var(--bg-tb-sec-color) ;
 }
 span.p-button-icon.pi.pi-ellipsis-v{
     font-size: 1.5rem;
@@ -723,8 +729,11 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .rte_message .p-message{
     margin: 0;
 }
-.isMaster-guest tbody tr:first-child td{
+/* .isMaster-guest tbody tr:first-child td{
     background: rgba(0, 128, 0, .1)
+} */
+.row-master-room{
+    background: rgba(0, 128, 0, .1) !important;
 }
 .p-avatar img{
     object-fit: cover;

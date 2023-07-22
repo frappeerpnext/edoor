@@ -99,6 +99,7 @@ items.value.push({
                         position:"top",
                         modal: true,
                         maximizable: true,
+                        closeOnEscape: false
                     },
                 });
             }

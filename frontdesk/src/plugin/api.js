@@ -39,6 +39,7 @@ export function updateDoc(doctype, name, data, message){
             window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
         })
         .catch((error) => {
+            
             const message = handleServerMessage(error)
             reject(error) 
         });

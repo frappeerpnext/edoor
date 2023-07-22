@@ -39,6 +39,7 @@ function viewFolioSummaryReport(){
                 position:"top",
                 modal: true,
                 maximizable: true,
+                closeOnEscape: false
 
             },
         });
@@ -75,7 +76,8 @@ print_menus.value.push({
                 },
                 position:"top",
                 modal: true,
-                maximizable: true
+                maximizable: true,
+                closeOnEscape: false
             },
         });
     }

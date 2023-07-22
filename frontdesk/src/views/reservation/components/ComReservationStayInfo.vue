@@ -9,20 +9,20 @@
         <template #content>
             <div class=""> 
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay?.reservation_date)"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"  titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay.reservationStay?.reservation_date)"
                         valueClass="grow" :isAction="true" ></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_ref')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
                         :value="stay.reservationStay?.reference_number" :isAction="true" valueClass="col-4">
                     </ComBoxStayInformation>
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_ref')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
                         :value="stay.reservationStay?.internal_reference_number" :isAction="true" valueClass="grow"
                         titleClass="w-5rem">
                     </ComBoxStayInformation>
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"   titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
                         <button class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
                             <i class="pi pi-pencil"></i>
                             ...
@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation @onClick="onChangeDate($event)" title="Arrival" :value="gv.dateFormat(stay.reservationStay?.arrival_date)" valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="gv.timeFormat(stay.reservationStay?.arrival_time)" valueClass="col " :isAction="true" ></ComBoxStayInformation>
+                    <ComBoxStayInformation  @onClick="onChangeDate($event)" :value="gv.timeFormat(stay.reservationStay?.arrival_time)" valueClass="col " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation :value="moment(stay.reservationStay?.arrival_date).format('dddd')" valueClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -80,7 +80,7 @@
                         @onClick="onChangeDate($event)"
                         :value="gv.dateFormat(stay.reservationStay?.departure_date)"
                         valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="gv.timeFormat(stay.reservationStay?.departure_time)"
+                    <ComBoxStayInformation  @onClick="onChangeDate($event)" :value="gv.timeFormat(stay.reservationStay?.departure_time)"
                         valueClass="col color-purple-edoor" :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(stay.reservationStay?.departure_date).format('dddd')"
@@ -110,7 +110,7 @@
     <OverlayPanel ref="op">
             <ComReservationStayChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
             <ComChangePax v-else-if="overLayName=='change_pax'" @onClose="closeOverlay" />
-            <ComChangeRefNumber doctype="Reservation Stay" v-else-if="overLayName=='change_ref'" @onClose="onCloseRef" />
+            <ComEditReservationInformation doctype="Reservation Stay" v-else-if="overLayName=='change_reservation_information'" @onClose="onCloseRef" />
             <ComReservationStayChangeArrivalDepartureDate v-else-if="overLayName == 'change_date'" @onClose="closeOverlay"/>
     </OverlayPanel>
 </template>
@@ -122,7 +122,7 @@ import ColorPicker from 'primevue/colorpicker';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
-import ComChangeRefNumber from './ComChangeRefNumber.vue';
+import ComEditReservationInformation from './ComEditReservationInformation.vue';
 import ComReservationStayChangeColorReservation from './ComReservationStayChangeColorReservation.vue';
 import ComReservationStayChangeArrivalDepartureDate from './ComReservationStayChangeArrivalDepartureDate.vue';
 const moment = inject('$moment')

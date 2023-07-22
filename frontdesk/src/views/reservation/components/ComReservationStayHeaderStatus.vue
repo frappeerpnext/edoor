@@ -43,19 +43,45 @@
     </div>
 </template>
 <script setup>
-import { inject, useRouter } from '@/plugin'
+import { inject, useRouter,useDialog } from '@/plugin'
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
+import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 const rs = inject('$reservation_stay');
 const dialogRef = inject("dialogRef");
 const router = useRouter()
+const dialog = useDialog()
 const OnViewReservation = () => {
     if (rs.is_page) {
-
         router.push({ name: 'ReservationDetail', params: { name: rs.reservation.name } })
     } else {
-        dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+        // dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+        showReservationDetail(rs.reservation.name)
     }
-
+}
+function showReservationDetail(name) {
+    
+    const open = dialog.open(ReservationDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Reservation Detail',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true,
+            closeOnEscape: false,
+            position:"top"
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+                //
+            }
+        }
+    });
+    dialogRef.value.close()
 }
 </script>
 

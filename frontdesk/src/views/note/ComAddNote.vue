@@ -9,7 +9,7 @@
          <label for="Note Date">Note Date</label>
         <div class="card flex justify-content-left">
           <Calendar class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.note_date"
-        :placeholder="correntDate()" :value="correntDate()" dateFormat="dd-mm-yy" showIcon showButtonBar />
+        dateFormat="dd-mm-yy" showIcon showButtonBar />
         </div>
       </div>
       </div>
@@ -25,16 +25,16 @@
           <InputText class="w-full" type="text" v-model="data.reference_name" />
           </div>
       </div> -->
-      <div class="col-6">
+      <div class="col-6"> 
         <label for="Reservation">Reservation</label>
-        <div class="card flex justify-content-left">
+        <div class="card flex justify-content-left"> 
           <ComAutoComplete class="w-full" v-model="data.reservation" doctype="Reservation"/>
         </div>
       </div>
       <div class="col-6">
          <label for="Reservation Stay">Reservation Stay</label>
          <div class="card flex justify-content-left">
-            <ComAutoComplete class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
+            <ComAutoComplete fieldFilter="reservation" :valueFilter="data.reservation" class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
          </div>
       </div>
       <div class="col-12">
@@ -51,23 +51,10 @@
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')
+const moment = inject('$moment')
 const loading = ref(false);
 const data = ref({})
 const note = ref()
-
-function correntDate(){
-  if (!data.value.note_date) {
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var yyyy = today.getFullYear();
-
-    today = mm + '-' + dd + '-' + yyyy;
-    return today;
-  } else {
-    return '';
-  }
-}
 
 function onSave(){
   loading.value = true
@@ -86,6 +73,8 @@ onMounted(() => {
     getDoc("Frontdesk Note", dialogRef.value.data.name).then((r)=>{
       data.value = r
     })
+  }else{
+    data.value.note_date = gv.dateFormat(new Date())
   }
 })
 

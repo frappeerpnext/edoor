@@ -111,6 +111,7 @@ const isSaving = ref(false)
 const gv = inject("$gv")
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const edoor_working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const rooms = ref([])
 const working_day = ref({})
 const selectedStay = ref({})
@@ -132,6 +133,7 @@ const list = ref([])
 
  
 const onAddRoom = () => {
+    
     list.value.push(
         { 
             arrival_date: list.value[list.value.length - 1].arrival_date,
@@ -222,9 +224,17 @@ function onStartDate(newValue, selected){
 
 onMounted(() => {
     if(rs.reservation){
-        doc.value.arrival_date = moment(rs.reservation.arrival_date).toDate()
-        doc.value.departure_date = moment(rs.reservation.departure_date).toDate()
-        doc.value.room_nights = moment(doc.value.departure_date).diff(moment(doc.value.arrival_date), 'days')
+        const arrival_date = ref(moment(rs.reservation.arrival_date).toDate())
+        if(moment(arrival_date.value).isSame(edoor_working_day.date_working_day) || moment(arrival_date.value).isBefore(edoor_working_day.date_working_day)){
+            arrival_date.value = moment(edoor_working_day.date_working_day).toDate()
+        }
+        const departure_date = ref(moment(rs.reservation.departure_date).toDate())
+        if(moment(departure_date.value).isSame(arrival_date.value) || moment(departure_date.value).isBefore(arrival_date.value)){
+            departure_date.value = moment(arrival_date.value).add(1, 'days').toDate()
+        }
+        doc.value.arrival_date = arrival_date.value
+        doc.value.departure_date = departure_date.value
+        doc.value.room_nights = moment(departure_date.value).diff(moment(arrival_date.value), 'days')
     }
     list.value.push(doc.value)
 })

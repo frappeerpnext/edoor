@@ -83,7 +83,8 @@ function onOpenDetail() {
                 },
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                position: 'top'
             },
             data:{
                 filters: filters

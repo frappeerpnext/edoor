@@ -134,7 +134,6 @@ function onSaveNote(doctype, data) {
     }
     saving.value = true
     // for folio trancation
-    console.log(props)
     if (props.doctype == 'Folio Transaction') {
         data.reservation = props.reservation || ''
         data.reservation_stay = props.reservationStay || ''

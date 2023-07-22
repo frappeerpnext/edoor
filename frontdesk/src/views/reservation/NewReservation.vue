@@ -1,6 +1,7 @@
 <template>
 
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose> 
+   
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -291,7 +292,9 @@
                         Add Room 
                     </Button>
                 </div>
+               
             </div>
+            <Message v-if="doc.reservation_stay.filter(r=>!r.room_id).length>0">You have {{  doc.reservation_stay.filter(r=>!r.room_id).length}} unassign room(s). You can assign room later in reservation detail.</Message>
         </div>
         <div class="mt-3">
             <div>
@@ -515,6 +518,7 @@ const getRooms = () => {
         .then((result) => {
 
             rooms.value = result.message;
+            OnSelectRoom()
 
         })
 }
@@ -537,6 +541,7 @@ const onRoomNightChanged = (event) => {
     doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(event, "Days").toDate()
     getRoomType()
     getRooms()
+    
 }
 
 const onUseTax1Change = (value) => {
@@ -553,11 +558,6 @@ const onUseTax3Change = (value) => {
 const onAddRoom = () => {
     doc.value.reservation_stay.push(
         {
-            // room_type_id: "RT-0005",
-            // room_type: null,
-            // room_id: "RM-0039",
-            // room_number: null,
-
             adult: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].adult,
             child: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].child,
             room_type_id: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].room_type_id,
@@ -621,6 +621,7 @@ onMounted(() => {
                 doc.value.reservation.departure_date = dialogRef.value.data.departure_date
                 doc.value.reservation_stay[0].room_type_id = dialogRef.value.data.room_type_id
                 doc.value.reservation_stay[0].room_id = dialogRef.value.data.room_id
+                 
             } else {
                 doc.value.reservation.arrival_date = moment(working_day.value.date_working_day).toDate()
                 doc.value.reservation.departure_date = moment(working_day.value.date_working_day).add(1, 'days').toDate()

@@ -3,7 +3,7 @@
  
         <div v-if="rs.room_rates?.length > 0 && reservationStays?.length==0">
             <Message severity="info"> Room rate on {{ moment(rs.room_rates[0].date).format('DD-MM-YYYY') }} is
-                <CurrencyFormat :value="rs.room_rates[0].rate" />
+                <CurrencyFormat :value="rs.room_rates[0].total_rate" />
                 <br />
                 Please make sure your room rate is correct.
             </Message>

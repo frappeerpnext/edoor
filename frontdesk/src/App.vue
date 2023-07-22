@@ -279,7 +279,8 @@ function showFolioTransactionDetail(name) {
                 width: '50vw',
             },
             modal: true,
-            position:"top"
+            position:"top",
+            closeOnEscape: false
         },
     });
 }

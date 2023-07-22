@@ -38,14 +38,17 @@ class ReservationFolio(Document):
 					
 
 
-
-		if self.balance > 0 and self.status == "Closed":
+		 
+		if round(self.balance,int(frappe.db.get_default("currency_precision"))) > 0 and self.status == "Closed":
 			frappe.throw("Cannot close folio with balance is greater than 0")
 	def on_update(self):
 		if self.is_master==1:
 			#reset other is master = 0
 			frappe.db.sql("update `tabReservation Folio` set is_master=0 where is_master=1 and name<>'{}' and reservation_stay='{}'".format(self.name,self.reservation_stay))
 	def on_trash(self):
+		if self.is_master:
+			frappe.throw("Master folio is not allow to delete")
+			
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )

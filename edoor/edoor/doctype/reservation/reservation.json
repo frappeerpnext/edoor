@@ -203,8 +203,9 @@
   },
   {
    "fieldname": "room_numbers",
-   "fieldtype": "Small Text",
-   "label": "Room Numbers"
+   "fieldtype": "Data",
+   "label": "Room Numbers",
+   "length": 1000
   },
   {
    "fieldname": "reservation_status",
@@ -435,8 +436,9 @@
   },
   {
    "fieldname": "room_type_alias",
-   "fieldtype": "Small Text",
-   "label": "Room Type Alias"
+   "fieldtype": "Data",
+   "label": "Room Type Alias",
+   "length": 500
   },
   {
    "fieldname": "note_by",
@@ -483,9 +485,9 @@
   },
   {
    "fieldname": "room_types",
-   "fieldtype": "Small Text",
+   "fieldtype": "Data",
    "label": "Room Types",
-   "length": 500
+   "length": 1000
   },
   {
    "fieldname": "column_break_41",
@@ -659,7 +661,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-20 16:04:24.228918",
+ "modified": "2023-07-22 09:47:53.051700",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

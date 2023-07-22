@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
-                    <DataTable  class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
+                    <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                         <Column field="name" header="Res Stay#">
                         <template #body="slotProps">
@@ -56,25 +56,7 @@
                                         {{JSON.parse(slotProps.data.rooms_data).length - 3}} Mores
                                     </span>
                                     
-                                    <!-- <div v-for="(i, index)  in slotProps.data.room_type_alias.split(',').slice(0, 3)" :key="index" class="inline">
-                                        {{(index != 0) ? ',' : ''}}
-                                        <span v-tooltip.top="slotProps.data.room_types.split(',')[index]">{{i}}</span>/<span v-if="slotProps.data.rooms.split(',')[index] !== ''">
-                                        {{ slotProps.data.rooms.split(',')[index] }}  
-                                        </span>
-                                        <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(slotProps.data.room_names.split(',')[index], slotProps.data.name)" class="link_line_action w-auto" v-else>
-                                            <i class="pi pi-pencil"></i>
-                                            <span v-if="slotProps.data.room_type_alias.split(',').length <= 1">
-                                            Assign Room
-                                            </span>
-                                        </button>
-                                    </div> 
-                                    <div v-if="slotProps.data.room_type_alias.split(',').length > 3"
-                                        v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs.roomList?.map(stay => {
-                                        return stay.room_types.split(',').slice(3).map((type, index) => `${type}/${(stay.rooms.split(',').slice(3))[index]}`).join('\n')
-                                          })}</div>` , escape: true, class: 'max-w-30rem' }"
-                                        class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
-                                        {{slotProps.data.room_type_alias.split(',').length - 3}} Mores
-                                    </div> -->
+                                  
                                 </div>
                             </template>
                         </Column>
@@ -161,6 +143,10 @@ function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
+const rowClass = (data) => {
+     
+    return [{ 'bg-purple-100': data.is_master===1 }];
+};
 
 function getTooltip(p){
    var data = JSON.parse(p.rooms_data)

@@ -7,7 +7,6 @@
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full">
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-
                         <ComHeaderBarItemButton title="eDoor Dashboard" current-page="Dashboard"
                             @onClick="onRoute('Dashboard')">
                             <template #icon>
@@ -97,43 +96,38 @@
                             <Menu ref="show" id="overlay_menu" :popup="true" style="min-width: 180px;">
                                 <template #end>
                                     <button @click="changeProperty"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround"
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround"
                                         v-if="user.property.length > 1">
-                                        <i class="pi pi-building" />
-                                        <span class="ml-2">Change property</span>
+                                        <img :src="iconChangeProperty" style="height: 15px;"/>
+                                        <span class="ml-2">Change Property</span>
                                     </button>
 
                                     <button @click="onBlankGuestRegistration"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-file" />
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                                        <img :src="iconBlankGuestRegisteration" style="height: 15px;"/>
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
-                                    <!-- <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
-                                        <span class="ml-2">Open cashier shift</span>
-                                    </button> -->
-                                    <button @click="onOpenCashierShift"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-refresh" />
+                                    <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                                        <img :src="iconOpenCashierShift" style="height: 15px;"/>
                                         <span class="ml-2">Open cashier shift</span>
                                     </button>
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-eye" />
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                                        <img :src="iconViewShiftDetail" style="height: 15px;"/>
                                         <span class="ml-2">View Shift Detail</span>
                                     </button>
                                     
                                     <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
-                                        <i class="pi pi-ban" />
-                                        <span class="ml-2">Close cashier shift</span>
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                                        <img :src="iconCloseCashierShift" style="height: 15px;"/>
+                                        <span class="ml-2">Close Cashier Shift</span>
                                     </button>
 
                                     <button @click="onRunNightAudit"
-                                        class="w-full p-link flex align-items-center p-2 pl-3 text-color hover:surface-200 border-noround">
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="runNightAuditSvgIcon" style="height: 15px;"/>
-                                        <span class="ml-2">Run night audit</span>
+                                        <span class="ml-2">Run Night Audit</span>
                                     </button>
                                 </template>
                             </Menu>
@@ -176,6 +170,11 @@ import { useDialog } from 'primevue/usedialog';
 import ComFooter from '../../components/layout/components/ComFooter.vue';
 import OpenShift from "@/views/shift/OpenShift.vue"
 import runNightAuditSvgIcon from '@/assets/svg/icon-run-night-audit.svg'
+import iconCloseCashierShift from '@/assets/svg/icon-close-cashier-shift.svg'
+import iconOpenCashierShift from '@/assets/svg/icon-open-cashier-shift.svg'
+import iconViewShiftDetail from '@/assets/svg/icon-view-cashier-shift.svg'
+import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
+import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 
 const dialog = useDialog();
 
@@ -218,7 +217,9 @@ function changeProperty() {
                 '960px': '75vw',
                 '640px': '90vw'
             },
-            modal: true
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             const data = options.data;
@@ -309,7 +310,7 @@ function onOpenCashierShift() {
         props: {
             header: 'Open Shift',
             style: {
-                width: '50vw',
+                width: '40vw',
             },
             modal: true,
             maximizable: true,

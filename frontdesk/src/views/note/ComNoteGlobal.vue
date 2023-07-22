@@ -14,7 +14,7 @@
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
 					<div class="font-medium">
-						{{ i.reference_doctype }} 
+						{{ i.reference_doctype }}
 						<span v-if="i.reference_doctype && i.reference_name"> - </span>
 						<span class="link_line_action w-auto border-none p-0" @click="showReservationStayDetail(i?.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
 							{{i.reference_name}}
@@ -41,17 +41,23 @@
 					</div>
 					<div> 	
 					</div>
-					<span class="text-sm"> {{gv.dateFormat(i.note_date)}}</span>
+					<div class="flex items-center mt-1 text-500 font-italic">
+						<span class="text-sm"> {{gv.dateFormat(i.note_date)}}</span>
+					</div>
+					
 				</div>
 				<div class="flex">
 					<span class="btn-in-note hidden">
 						<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit"/>
 					</span>
-					<Button class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note hidden" text rounded><ComIcon icon="pushPin" style="height:20px;"></ComIcon></Button>
+					<Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
+						<ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
+						<ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
+					</Button>
 				</div>
 			</div>
-			<div class="mt-1">
-				<p>{{ i.content }}</p>
+			<div v-if="i.content" class="mt-1 max-h-28 whitespace-pre-wrap break-words overflow-auto">
+				{{ i.content }}
 			</div>
 		</div>
 	</div>
@@ -59,12 +65,13 @@
 </template>
 
 <script setup>
-import { ref, inject,useDialog,onMounted } from '@/plugin';
+import { ref, inject,useDialog,onMounted,updateDoc } from '@/plugin';
 import ComAddNote from './ComAddNote.vue';
 import ComNoteGlobalButtonMore from './ComNoteGlobalButtonMore.vue';
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+import Enumerable from 'linq'
 const frappe = inject('$frappe');
 const gv = inject('$gv');
 const db = frappe.db();
@@ -97,7 +104,12 @@ function onEdit(name){
             }
         });
 }
-
+function onPin(i){
+	i.is_pin = !i.is_pin
+	updateDoc('Frontdesk Note', i.name, i).then((r)=>{
+		onLoadData()
+	})
+}
 function onViewFolioDetail (selected) {
 
 const dialogRef = dialog.open(ComFolioTransactionDetail, {
@@ -110,7 +122,8 @@ const dialogRef = dialog.open(ComFolioTransactionDetail, {
 			width: '50vw',
 		},
 		modal: true,
-		position:'top'
+		position:'top',
+		closeOnEscape: false
 	},
 
 });
@@ -159,13 +172,14 @@ function showReservationDetail(selected) {
 function onLoadData(){
 	loading.value = true
 	db.getDocList('Frontdesk Note', {
-		fields: ['name','note_date','reference_doctype','reference_name', "reservation", "reservation_stay", "content"],
+		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content"],
 		orderBy: {
 			field: 'modified',
 			order: 'desc',
 		}
 	}).then((docs) => {
-		notes.value = docs;
+
+		notes.value = Enumerable.from(docs).orderByDescending("$.is_pin").toArray();
 		loading.value = false			
 	}).catch((rr)=>{
 		gv.toast('error', rr)
@@ -177,3 +191,8 @@ onMounted(() => {
 })
 
 </script>
+<style scoped>
+.conten-btn:hover{
+	background-color: #eee0ba !important;
+}
+</style>

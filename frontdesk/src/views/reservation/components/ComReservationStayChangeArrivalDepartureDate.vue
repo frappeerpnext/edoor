@@ -1,12 +1,28 @@
 <template>
-    <ComOverlayPanelContent title="Change Date" :loading="loading" @onSave="onSave" @onCancel="onClose">
-        <div class="flex gap-2 my-2">
-            <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date).add(1,'days'))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
-            <div>
+    <ComOverlayPanelContent title="Change Date" style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
+        <div class="grid py-2">
+            <div class="col-6">
+                <label>Arrival Date</label>
+                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date).add(1,'days'))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+            </div>
+            <div class="col-6">
+                <label>Arrival Time</label>
+                <Calendar class="w-full" v-model="stay.arrival_time" timeOnly />
+            </div>
+            <div class="col-6">
+                <label>Departure Date</label>
+                <Calendar hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+            </div>
+            <div class="col-6">
+                <label>Departure Time</label>
+                <Calendar class="w-full" v-model="stay.departure_time" timeOnly /> 
+            </div>
+            <div class="col-6">
+                <label>Nights</label>
                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight($event)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
             </div>
-            <Calendar hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
         </div>
+
     </ComOverlayPanelContent>
 </template>
 <script setup>
@@ -22,7 +38,10 @@ const stay = ref({
     min_date: workingDay.date_working_day,
     can_arrival: (moment(workingDay.date_working_day).isSame(rs.reservationStay.arrival_date) || moment(workingDay.date_working_day).isAfter(rs.reservationStay.arrival_date) ? true : false),
     arrival_date: moment(rs.reservationStay.arrival_date).toDate(),
-    departure_date: moment(rs.reservationStay.departure_date).toDate()
+    departure_date: moment(rs.reservationStay.departure_date).toDate(),
+    arrival_time: moment(rs.reservationStay.arrival_date + " " +  rs.reservationStay.arrival_time).toDate(),
+    departure_time:moment(rs.reservationStay.departure_date + " " +  rs.reservationStay.departure_time).toDate(),
+
 })
 function onClose(){
     emit('onClose')
@@ -41,10 +60,14 @@ function onStartDate(newValue){
     stay.value.room_nights = moment(stay.value.departure_date).diff(moment(newValue), 'days')
 }
 function onSave(){
+ 
     const data = {
         reservation_stay: rs.reservationStay.name,
         arrival_date: gv.dateApiFormat(stay.value.arrival_date),
-        departure_date: gv.dateApiFormat(stay.value.departure_date)
+        departure_date: gv.dateApiFormat(stay.value.departure_date),
+        arrival_time:moment(stay.value.arrival_time).format("HH:mm:ss"),
+        departure_time:moment(stay.value.departure_time).format("HH:mm:ss"),
+
     }
     loading.value = true
     postApi("reservation.change_reservation_stay_min_max_date",data).then((r)=>{

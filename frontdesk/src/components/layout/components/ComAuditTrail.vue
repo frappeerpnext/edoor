@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent hideButtonOK @onClose="onClose">
-        <ComPlaceholder :loading="loading" :is-not-empty="true">
+        <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
         <Timeline :value="data">
             <template #marker="slotProps">
                 <div class="surface-ground w-2rem h-2rem border-circle h-full border-1" style="background: var(--bg-btn-dialog-inside);">

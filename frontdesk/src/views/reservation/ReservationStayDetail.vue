@@ -195,6 +195,8 @@ const onRefresh = (showLoading = true) => {
 
     rs.getReservationDetail(name.value, showLoading)
     rs.getChargeSummary(name.value)
+    rs.selectedRoomRates = []
+    
 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
@@ -288,16 +290,17 @@ const onCheckIn = () => {
                 rs.loading = true
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
-                    reservation_stays: [rs.reservationStay.name]
+                    reservation_stays: [rs.reservationStay.name],
+                   
                 }).then((result) => {
                     rs.loading = false
                     onRefresh()
                     socket.emit("RefresheDoorDashboard", property.name);
                     socket.emit("RefreshReservationDetail", rs.reservation.name);
                 })
-                    .catch((err) => {
-                        rs.loading = false
-                    })
+                .catch((err) => {
+                    rs.loading = false
+                })
             }
         }
 
@@ -342,6 +345,7 @@ onUnmounted(() => {
     rs.reservationStay = {}
     rs.guest = {}
     rs.masterGuest = {}
+    rs.selectedRoomRates = []
 
 })
 

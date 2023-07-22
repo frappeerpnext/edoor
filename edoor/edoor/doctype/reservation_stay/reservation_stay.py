@@ -7,7 +7,7 @@ from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range,get_room_rate, update_reservation_stay
 import frappe
 from frappe.model.document import Document
-from frappe.utils import add_to_date,today,now
+from frappe.utils import add_to_date,today,now,getdate
 from py_linq import Enumerable
 from edoor.api.utils import update_reservation, update_reservation_color
  
@@ -17,8 +17,9 @@ class ReservationStay(Document):
 	 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
-
-		if self.departure_date<=self.arrival_date:
+			
+		 
+		if  getdate(self.departure_date)<=getdate(self.arrival_date):
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 
 		working_day = get_working_day(self.property)
@@ -33,7 +34,6 @@ class ReservationStay(Document):
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
-		#check reservation status if allow to edit
 		reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
 		#check with old doc
 		if not self.is_new():
@@ -212,6 +212,7 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 				if hasattr(self, 'is_override_rate') and self.is_override_rate:
 					regenerate_rate = True
 					is_manual_rate = False
+			 
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
 					"reservation":self.reservation,

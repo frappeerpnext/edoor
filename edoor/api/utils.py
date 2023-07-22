@@ -186,9 +186,11 @@ def update_reservation(name=None,doc=None, run_commit = True):
     
 
     #update to reservation
+    #get min and max active stay
+    stay_date  =frappe.db.sql( "select min(arrival_date) as arrival_date, max(departure_date) as departure_date from `tabReservation Stay` where reservation='{}' and is_active_reservation=1".format(doc.name),as_dict=1)
+    doc.arrival_date = stay_date[0]["arrival_date"]  or doc.arrival_date
+    doc.departure_date= stay_date[0]["departure_date"] or   doc.departure_date
 
-    doc.arrival_date = data[0]["arrival_date"]
-    doc.departure_date= data[0]["departure_date"]
     
     doc.adult = data[0][ "adult"]
     doc.child = data[0][ "child"]
@@ -221,11 +223,13 @@ def update_reservation(name=None,doc=None, run_commit = True):
     doc.room_numbers ="" if not room_info_data[0]["rooms"] else  ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
     doc.room_type_alias ="" if not room_info_data[0]["room_type_alias"] else ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
     # update room info json
-    room_stays_list = room_info_data[0]["room_stay"].split(",")
-    
-    room_stays = ','.join(f"'{x}'" for x in room_stays_list)
-    sql_room_json = "SELECT `name`, room_number, room_type, room_type_alias,parent as reservation_stay FROM `tabReservation Stay Room` WHERE parent IN({})".format(room_stays)
-    room_stay_data = frappe.db.sql(sql_room_json, as_dict=1)
+    room_stays_list = []
+    room_stay_data = []
+    if room_info_data[0]["room_stay"]:
+        room_stays_list = room_info_data[0]["room_stay"].split(",")
+        room_stays = ','.join(f"'{x}'" for x in room_stays_list)
+        sql_room_json = "SELECT `name`, room_number, room_type, room_type_alias,parent as reservation_stay FROM `tabReservation Stay Room` WHERE parent IN({})".format(room_stays)
+        room_stay_data = frappe.db.sql(sql_room_json, as_dict=1)
 
     room_stay_json_list = []
     if len(room_stay_data) > 0:
@@ -423,7 +427,7 @@ def get_base_rate(amount,tax_rule,tax_1_rate, tax_2_rate,tax_3_rate):
 	t1_r = (tax_1_rate or 0) / 100
 	t2_r = (tax_2_rate or 0)  / 100
 	t3_r = (tax_3_rate or 0)  / 100
-	#frappe.throw("{}-{}-{}-{}-{}".format(amount,disc,t1_r,t2_r,t3_r))
+ 
 
 
 	price = 0
@@ -494,7 +498,8 @@ def add_room_charge_to_folio(folio,rate):
         "tax_2_rate":rate.tax_2_rate,
         "tax_3_rate":rate.tax_3_rate,
         "rate_include_tax":rate.rate_include_tax,
-        "is_auto_post":1
+        "is_auto_post":1,
+        "valiate_input_amount": False
     }).insert()
 
 

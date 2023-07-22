@@ -48,6 +48,7 @@
   "status_color",
   "reservation_status_note",
   "is_active_reservation",
+  "allow_user_to_edit_information",
   "business_source_tab",
   "business_source_type",
   "column_break_36",
@@ -772,6 +773,7 @@
   },
   {
    "fetch_from": "reservation.reservation_date",
+   "fetch_if_empty": 1,
    "fieldname": "reservation_date",
    "fieldtype": "Date",
    "label": "Reservation Date"
@@ -789,6 +791,13 @@
    "fieldtype": "JSON",
    "hidden": 1,
    "label": "Rooms Data"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_status.allow_user_to_edit_information",
+   "fieldname": "allow_user_to_edit_information",
+   "fieldtype": "Check",
+   "label": "Allow user to edit information"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -799,7 +808,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-19 09:39:27.652013",
+ "modified": "2023-07-22 08:54:55.667495",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

@@ -115,6 +115,7 @@ function viewFolioSummaryReport(){
                 position:"top",
                 modal: true,
                 maximizable: true,
+                closeOnEscape: false
 
             },
         });
@@ -153,6 +154,7 @@ print_menus.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                closeOnEscape: false
               
             },
         });
@@ -264,7 +266,7 @@ function MarkasMasterFolio() {
         acceptIcon: 'pi pi-check-circle',
 
         accept: () => {
-            db.updateDoc('Reservation Folio', rs.selectedFolio.name, {
+            updateDoc('Reservation Folio', rs.selectedFolio.name, {
                 is_master: 1,
             })
                 .then((doc) => {
@@ -294,7 +296,7 @@ function openFolio() {
         acceptLabel: 'Ok',
         rejectClass: 'hidden',
         accept: () => {
-            db.updateDoc('Reservation Folio', rs.selectedFolio.name, {
+            updateDoc('Reservation Folio', rs.selectedFolio.name, {
                 status: 'Open',
             })
                 .then((doc) => {

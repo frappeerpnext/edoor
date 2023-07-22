@@ -14,7 +14,8 @@
   "reference_name",
   "reservation",
   "reservation_stay",
-  "content"
+  "content",
+  "is_pin"
  ],
  "fields": [
   {
@@ -43,14 +44,21 @@
    "label": "Reservation Stay"
   },
   {
+   "default": "Today",
    "fieldname": "note_date",
    "fieldtype": "Date",
    "label": "Note Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_pin",
+   "fieldtype": "Check",
+   "label": "Is Pin"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-13 13:59:37.717003",
+ "modified": "2023-07-21 10:48:54.859826",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Frontdesk Note",

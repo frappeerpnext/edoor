@@ -1,45 +1,48 @@
 <template> 
     <ComDialogContent hideButtonOK :loading="loading" @onClose="onClose">
-        <DataTable :value="data" tableStyle="min-width: 50rem">
-            <Column field="name" header="Document Number">
-                <template #body="slotProps">
-                    <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
-                        {{ slotProps.data.name }}
-                    </Button>
-                </template>
-            </Column>
-            <Column field="reference_number" header="Ref. #"></Column>
-            <Column field="guest_name" header="Guest Name">
-                <template #body="slotProps">
-                    <Button class="p-0 link_line_action1" @click="onViewCustomerDetail(slotProps.data.guest)" link>
-                        {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
-                    </Button>
-                </template>
-            </Column>
-            <Column field="business_source" header="Business Source"></Column>
-            <Column field="rooms" header="Room No"></Column>
-            <Column field="arrival_date" header="Arrival">
-                <template #body="slotProps">
-                    <span>{{ gv.dateFormat(slotProps.data.arrival_date) }}</span>
-                </template>
-            </Column>
-            <Column field="departure_date" header="Departure">
-                <template #body="slotProps">
-                    <span>{{ gv.dateFormat(slotProps.data.departure_date) }}</span>
-                </template>
-            </Column> 
-            <Column field="reservation_status" header="Status">
-                <template #body="slotProps">
-                    <ComReservationStatus :statusName="slotProps.data.reservation_status"/>
-                </template>
-            </Column>
-        </DataTable>
+        <ComPlaceholder text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
+            <DataTable :value="data" tableStyle="min-width: 50rem">
+                <Column field="name" header="Document Number">
+                    <template #body="slotProps">
+                        <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
+                            {{ slotProps.data.name }}
+                        </Button>
+                    </template>
+                </Column>
+                <Column field="reference_number" header="Ref. #"></Column>
+                <Column field="guest_name" header="Guest Name">
+                    <template #body="slotProps">
+                        <Button class="p-0 link_line_action1" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                            {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
+                        </Button>
+                    </template>
+                </Column>
+                <Column field="business_source" header="Business Source"></Column>
+                <Column field="rooms" header="Room No"></Column>
+                <Column field="arrival_date" header="Arrival">
+                    <template #body="slotProps">
+                        <span>{{ gv.dateFormat(slotProps.data.arrival_date) }}</span>
+                    </template>
+                </Column>
+                <Column field="departure_date" header="Departure">
+                    <template #body="slotProps">
+                        <span>{{ gv.dateFormat(slotProps.data.departure_date) }}</span>
+                    </template>
+                </Column> 
+                <Column field="reservation_status" header="Status">
+                    <template #body="slotProps">
+                        <ComReservationStatus :statusName="slotProps.data.reservation_status"/>
+                    </template>
+                </Column>
+            </DataTable>
+        </ComPlaceHolder>
     </ComDialogContent> 
 </template>
 <script setup>
 import { inject, onMounted,useDialog,getDocList,ref } from '@/plugin'
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
+import ComPlaceholder from "@/components/layout/components/ComPlaceholder.vue"
 const dialogRef = inject("dialogRef")
 const gv = inject("$gv")
 const dialog = useDialog();
@@ -85,7 +88,7 @@ function onViewReservationDetail(name) {
             name: name
         },
         props: {
-            header: 'Reservation Detail',
+            header: 'Reservation Stay Detail',
             style: {
                 width: '80vw',
             },

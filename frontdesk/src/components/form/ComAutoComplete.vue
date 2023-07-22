@@ -1,6 +1,7 @@
 <template>
     <div class="relative">
-        <AutoComplete :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
+       
+        <AutoComplete :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
             :placeholder="placeholder">
@@ -63,7 +64,8 @@ const props = defineProps({
         default: 'keyword'
     },
     placeholder: String,
-    addNewTitle: String
+    addNewTitle: String,
+    disabled:Boolean
 })
 let value = computed({
     get() {
@@ -238,6 +240,7 @@ function getDataByFilter(keyword){
     var filter = {
         fields: ['name', 'keyword',props.fieldFilter],
         filters: [],
+        limit:25
     }
     if(props.valueFilter)
         filter.filters.push([props.fieldFilter, '=', props.valueFilter])

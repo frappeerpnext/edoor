@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div :style="{minWidth: width}">
+    <div class="xxxx">
+        <div :style="[{minWidth: width}, {maxWidth: width}]">
             <span class="font-semibold text-lg mb-3">{{ title }}</span>
             <slot name="default"></slot>
             <ComOverlayPanelFooter :hideButtonOK="hideButtonOK" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">

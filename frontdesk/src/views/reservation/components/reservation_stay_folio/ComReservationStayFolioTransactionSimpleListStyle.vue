@@ -200,7 +200,8 @@ const onViewFolioDetail = (doc) => {
                 width: '50vw',
             },
             modal: true,
-            position:"top"
+            position:"top",
+            closeOnEscape: false
         },
     });
 

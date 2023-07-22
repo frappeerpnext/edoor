@@ -4,12 +4,12 @@
     <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
       <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
       Edit Rate 
-      <template v-if="selectedRoomRates.length>0">
-        ({{ selectedRoomRates.length  }})
+      <template v-if="rs.selectedRoomRates.length>0">
+        ({{ rs.selectedRoomRates.length  }})
       </template>
     </Button>
  
-    <DataTable v-model:selection="selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
+    <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
@@ -95,7 +95,7 @@ import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 
 const rs = inject('$reservation_stay')
 const data = ref([])
-const selectedRoomRates = ref([])
+ 
 const moment = inject("$moment")
 const gv = inject('$gv')
 const dialog = useDialog();
@@ -136,11 +136,11 @@ function onEditRoomRate(room_rate = null) {
     }
 
     })
-  }else if(selectedRoomRates.value.length>0){
+  }else if(rs.selectedRoomRates.length>0){
 
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
-        selected_room_rates:selectedRoomRates.value,
+        selected_room_rates:rs.selectedRoomRates,
         reservation_stay:rs.reservationStay,
         
         },
@@ -157,14 +157,14 @@ function onEditRoomRate(room_rate = null) {
         
         if(result){
           rs.room_rates = result
-          selectedRoomRates.value.length = 0
+          rs.selectedRoomRates = []
           rs.getReservationDetail(rs.reservationStay.name);
            
         }
     }
 
     })
-  } else if (selectedRoomRates.value.length == 0){
+  } else if (rs.selectedRoomRates.length == 0){
     toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
     return 
   }

@@ -1,7 +1,7 @@
 <template>
     
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        <div class="grid justify-between override-input-text-width">
+        <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
                 <div class="grid">
                     <div class="col-6">
@@ -10,20 +10,21 @@
                     </div>
                     <div class="col-6">
                     <label for="posting_date">Posting Date</label>
-                        <Calendar inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
+                    
+                        <Calendar :disabled="!canEdit" inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
                             :maxDate="moment(working_day?.date_working_day).toDate()" class="w-full" dateFormat="dd-mm-yy" showIcon
                             showButtonBar />
                     </div>
                     <div class="col-6">
                         <label for="account_code">Account Code</label>
-                        <ComAutoComplete v-model="doc.account_code" placeholder="Select Account Code" doctype="Account Code"
+                        <ComAutoComplete  :disabled="!canEdit" v-model="doc.account_code" placeholder="Select Account Code" doctype="Account Code"
                             class="auto__Com_Cus w-full" @onSelected="onSelectAccountCode"
                             :filters="{ 'account_group': account_group }" />
                         
                     </div>
                     <div class="col-6">
                     <label for="input_amount">Amount</label>
-                    <ComInputCurrency classCss="w-full" v-model="doc.input_amount" id="input_amount" />
+                    <ComInputCurrency classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount" id="input_amount" />
                     </div>
                     <div v-if="doc.account_name" class="col-12 -mt-2">
                         <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
@@ -42,14 +43,14 @@
                             <div class="col-12 md:col-6 lg:col-4">
                                 <label for="dis_type">Discount Type</label>
                                 <div class="w-full">
-                                <ComSelect class="w-full min-w-full" id="dis_type" v-model="doc.discount_type"
+                                <ComSelect class="w-full min-w-full" id="dis_type" :disabled="!canEdit" v-model="doc.discount_type"
                                     :options="['Percent', 'Amount']" :clear="false" />
                                 </div>
                             </div>
                             <div class="col-12 md:col-6 lg:col-4">
                                 <label for="minmaxfraction">Discount</label>
                                 <div class="w-full">
-                                <InputNumber inputClass="w-full" v-model="doc.discount" inputId="minmaxfraction"
+                                <InputNumber inputClass="w-full" :disabled="!canEdit" v-model="doc.discount" inputId="minmaxfraction" id="discount"
                                     :minFractionDigits="2" :maxFractionDigits="10" />
                                 </div>
                             </div>
@@ -69,7 +70,7 @@
                         <div class="grid">
                             <div class="col-12">
                                 <label>City Ledger Name</label>
-                                <ComAutoComplete v-model="doc.city_ledger" placeholder="Select City Ledger Name" doctype="City Ledger"
+                                <ComAutoComplete :disabled="!canEdit" v-model="doc.city_ledger" placeholder="Select City Ledger Name" doctype="City Ledger"
                                 class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
                             </div>
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
@@ -90,7 +91,7 @@
                     <div class="flex flex-col">
                     <div class="flex justify-end text-end">
                             <label for="include-tax" class="col-6 font-medium cursor-pointer">Rate Include Tax</label> 
-                            <Checkbox input-id="include-tax"  class="col-6 px-3" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes"
+                            <Checkbox input-id="include-tax"  class="col-6 px-3" :disabled="!canEdit" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes"
                                 falseValue="No" />
                     </div>
                     </div>
@@ -102,7 +103,7 @@
                             <template #prefix>
                                 <div>
                                     <div class="flex items-center">
-                                        <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax" />
+                                        <Checkbox inputId="tax-1" v-model="use_tax.use_tax_1" @input="onUseTax1Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax || !canEdit" />
                                     </div>
                                 </div>
                             </template>
@@ -122,7 +123,7 @@
                         <template #prefix>
                             <div>
                             <div class="flex items-center">
-                                <Checkbox inputId="tax-2"  v-model="use_tax.use_tax_2" @input="onUseTax2Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax"/>
+                                <Checkbox inputId="tax-2"  v-model="use_tax.use_tax_2" @input="onUseTax2Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax || !canEdit"/>
                             </div>
                             </div>
                         </template>
@@ -142,7 +143,7 @@
                         <template #prefix>
                             <div>
                             <div class="flex items-center">
-                                <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax"/>
+                                <Checkbox inputId="tax-3" v-model="use_tax.use_tax_3" @input="onUseTax3Change" :binary="true" :disabled="!account_code.allow_user_to_change_tax || !canEdit"/>
                             </div>
                             </div>
                         </template>
@@ -267,6 +268,8 @@ const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
 const toast = useToast()
 
+ 
+
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
 }
@@ -282,6 +285,10 @@ function onUseTax3Change(value) {
 }
 
 
+const canEdit = computed(() => {
+    return edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name==undefined;
+});
+
 const tax_rule = computed(() => {
     if (account_code.value?.tax_rule) {
 
@@ -290,6 +297,7 @@ const tax_rule = computed(() => {
         return null
     }
 });
+
 const doc = ref({
     discount_type: "Percent",
     quantity: 1,
@@ -484,16 +492,18 @@ function onSave() {
 
 onMounted(() => {
      
- 
+    
     doc.value.folio_number = dialogRef.value.data.folio_number;
 
     balance.value = dialogRef.value.data.balance
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
         isSaving.value = true
+    
+
         call.get("edoor.api.reservation.get_folio_detail", {
             name: dialogRef.value.data.folio_transaction_number
-        })
+            })
             .then((result) => {
                     doc.value = result.message.doc
                     account_code.value = result.message.account_code
@@ -503,10 +513,15 @@ onMounted(() => {
                         use_tax_3:doc.value.tax_3_rate > 0,
                         use_tax_2:doc.value.tax_2_rate > 0
                     }
+                    doc.value.posting_date = moment(doc.value.posting_date ).toDate();
+                    
                 isSaving.value = false   
             }).catch(()=>{
                 isSaving.value = false
             })
+
+        
+        
     } else {
         //when user want to add data 
         account_group.value = dialogRef.value.data.account_group

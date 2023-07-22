@@ -48,7 +48,7 @@
         <Column header="">
             <template #body="slotProps" >
                 <div v-if="slotProps.data.name"> 
-                    <ComReservationStayFolioTransactionAction :is-edit="true" :data="slotProps.data"/>
+                    <ComReservationStayFolioTransactionAction :is-edit="true" :is-delete="false" :data="slotProps.data"/>
                 </div>
             </template>
         </Column>
@@ -133,7 +133,8 @@ const onViewFolioDetail = (doc) => {
                     width: '50vw',
                 },
                 modal: true,
-                position:'top'
+                position:'top',
+                closeOnEscape: false
             },
             onClose: (options) => {
                 

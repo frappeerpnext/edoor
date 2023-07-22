@@ -41,7 +41,7 @@ export default class Reservation {
 				}
 				
 			});
-			this.roomList.value = list;
+			this.roomList = list;
 		}else{
 
 			this.roomList = this.reservationStays

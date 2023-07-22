@@ -45,7 +45,7 @@
     <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
 </template>
 <script setup>
-import {ref, useDialog, updateDoc,inject} from '@/plugin'
+import {ref, useDialog, postApi,inject} from '@/plugin'
 
 const props = defineProps({
     data: Object,
@@ -81,22 +81,36 @@ function onCloseNote(){
 }
 function onSaveNote(text_note){
     loading.value = true
-    const data = JSON.parse(JSON.stringify(props.data))
-    data.reservation_status = note.value.reservation_status
-    data.reservation_status_note = text_note
-    data.update_room_occupy = true
-    data.update_reservation = true
-    updateDoc('Reservation Stay', data.name, data).then((r)=>{
-        if(r.reservation){
-            rs.LoadReservation(r.reservation)
-            socket.emit("RefreshReservationDetail", r.reservation);
-            loading.value = false
-            onCloseNote()
-        }
-            
+    // const data = JSON.parse(JSON.stringify(props.data))
+    // data.reservation_status = note.value.reservation_status
+    // data.reservation_status_note = text_note
+ 
+    const data = {
+        reservation: rs.reservation.name,
+        stays: [props.data],
+        status:note.value.reservation_status,
+        note:text_note
+    } 
+    postApi('reservation.update_reservation_status',data).then((r)=>{
+        rs.LoadReservation(r.reservation)
+        socket.emit("RefreshReservationDetail", r.reservation);
+        loading.value = false
+        onCloseNote()
+        rs.LoadReservation(rs.reservation.name)
     }).catch(()=>{
         loading.value = false
     })
+    // data.update_room_occupy = true
+    // data.update_reservation = true
+    // updateDoc('Reservation Stay', data.name, data).then((r)=>{
+    //     if(r.reservation){
+    //         rs.LoadReservation(r.reservation)
+    //         socket.emit("RefreshReservationDetail", r.reservation);
+    //         loading.value = false
+    //         onCloseNote()
+    //     }
+            
+    
 }
 </script>
 <style>

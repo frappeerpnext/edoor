@@ -3,6 +3,9 @@
 
 # import frappe
 from frappe.model.document import Document
+from frappe.utils.data import now
 
 class FrontdeskNote(Document):
-	pass
+	def validate(self):
+		if not hasattr(self, 'note_date') and self.note_date:
+			self.note_date = now()

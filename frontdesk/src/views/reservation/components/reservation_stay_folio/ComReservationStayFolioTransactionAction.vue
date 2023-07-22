@@ -22,8 +22,10 @@
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         Edit
                     </button>
+                </template>
+                <template v-if="isDelete">
                     <button @click="onOpenDelete"
-                        v-if="!data.parent_reference"
+                        v-if="!data.parent_reference "
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         Delete
                     </button>
@@ -43,7 +45,11 @@ import ComFolioTransactionDetail from '@/views/reservation/components/reservatio
 const props = defineProps({
     data: Object,
     isEdit: {
-        type: String,
+        type: Boolean,
+        default: true
+    },
+    isDelete: {
+        type: Boolean,
         default: true
     }
 })
@@ -97,7 +103,8 @@ const onViewFolioDetail = () => {
                 width: '50vw',
             },
             modal: true,
-            position:'top'
+            position:'top',
+            closeOnEscape: false
         },
 
     });

@@ -270,7 +270,7 @@ function onViewCancelReservation(){
         props: {
             header:"Cancelled Reservation List",
             style: {
-                width: '80vw',
+                width: '90vw',
             },
             position:"top",
             modal: true,

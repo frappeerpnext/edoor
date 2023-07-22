@@ -9,13 +9,13 @@
         <ComReservationStayPanel class="mb-3" title="Driver Information">
             <template #content>
                 <div class="grid">
-                    <div class="col-12 pt-2">
+                    <div class="col-12 lg:col-10 pt-2">
                         <label>Driver Name<span class="text-red-500">*</span></label><br />
                         <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Driver Name"
                             v-model="driver.driver_name" :maxlength="50" />
                     </div>
 
-                    <div class="col-12 lg:col-6 xl:col-4 pt-2">
+                    <div class="col-12 lg:col-2  pt-2">
                         <label>Gender</label><br />
                         <Dropdown v-model="driver.gender" :options="optionGender" placeholder="Gender" class="w-full" />
                     </div>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="col-12 lg:col-6 pt-2">
                         <label>Phone Number 2</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                        <InputText  type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
                             v-model="driver.phone_number_2" :maxlength="50" />
                     </div>
                 </div>
@@ -42,14 +42,14 @@
             <template #content>
                 <div class="grid">
 
-                    <div class="col-12 lg:col-6 xl:col-4 pt-1">
+                    <div class="col-12 lg:col-6  pt-1">
                         <label class="white-space-nowrap">Driver License Code</label><br />
                         <InputText type="text" class="p-inputtext-sm w-full" placeholder="Driver License Code"
                             v-model="driver.driver_license_code" :maxlength="50" />
                     </div>
-                    <div class="col-12 lg:col-6 xl:col-4 pt-1">
+                    <div class="col-12 lg:col-6  pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="driver.expired_date" placeholder="ID Expire Date"
+                        <Calendar inputClass="w-full" class="p-inputtext-sm w-full" v-model="driver.expired_date" placeholder="ID Expire Date"
                             dateFormat="dd-mm-yy" />
                     </div>
                 </div>
@@ -58,7 +58,7 @@
         <ComReservationStayPanel title="Address & Note">
             <template #content>
                 <div class="grid">
-                    <div class="col-12 lg:col-6 pt-1">
+                    <div class="col-12  pt-1">
                         <label class="white-space-nowrap">Address</label><br />
                         <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="driver.address" rows="4" />
                     </div>

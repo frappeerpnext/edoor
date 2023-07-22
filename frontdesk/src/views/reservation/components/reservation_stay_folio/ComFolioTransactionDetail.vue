@@ -1,6 +1,5 @@
 <template>
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
-    {{ doc }}
     <div class="border-round-xl h-full">
         <div class="grid">
           <div class="col-6">

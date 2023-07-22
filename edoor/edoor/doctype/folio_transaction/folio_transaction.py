@@ -16,7 +16,8 @@ class FolioTransaction(Document):
 			self.note_by = frappe.session.user
 			self.note_modified = now()
 		if not self.input_amount:
-			frappe.throw("Please enter amount")
+			if not hasattr(self,"valiate_input_amount"):
+				frappe.throw("Please enter amount")
 
 		if self.require_city_ledger_account==1:
 			if not self.city_ledger:
@@ -196,6 +197,11 @@ class FolioTransaction(Document):
 		
 
 	def on_trash(self):
+		#if this transaction is auto post 
+		if self.is_auto_post:
+	
+			if (frappe.db.get_default("allow_user_to_delete_auto_post_transaction") or 0)==0:
+				frappe.throw("Auto post transaction is not allow to delete.")
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )

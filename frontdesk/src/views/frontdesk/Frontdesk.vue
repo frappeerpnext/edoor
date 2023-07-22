@@ -60,11 +60,6 @@
                             <template #header>
                                 <div class="flex justify-between items-center me-2">
                                     <div class="absolute left-5 text-xl"> Notes </div>
-                                    <div class="flex gap-2" >
-                                        <Button icon="pi pi-search text-sm" class="w-2rem h-2rem" style="color:#6c757d;font-size:13px;" text rounded aria-label="search" />
-                                        <Button icon="pi pi-external-link text-sm" class="w-2rem h-2rem" style="color:#6c757d;font-size:13px;" text rounded aria-label="open" />
-                                        
-                                    </div>
                                 </div>
                             </template>
                             <hr class="left-0 fixed w-full">
