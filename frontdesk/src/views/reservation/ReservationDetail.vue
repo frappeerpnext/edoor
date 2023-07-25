@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage" :loading="rs.loading">
+    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" @onMaximize="onMaximize" :isDialog="!isPage" :loading="rs.loading">
         <div :class="[isPage, 'bg-white']">
             <div class="grid">
                 <div :class="isPage ? 'col py-3' : 'col pt-0'">
@@ -32,7 +32,7 @@
                                 <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                                 </icon>
                             </button>
-                            <button @click="onRoute" v-tooltip.top="'Open New Window'" v-if="!isPage"
+                            <button @click="onRoute" v-tooltip.left="'Open New Window'" v-if="!isPage"
                                 class="rounded-lg conten-btn " link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
@@ -83,6 +83,9 @@
                         </div>
                     </div>
                 </TabPanel>
+                <TabPanel header="Deposit">
+                    <ComReservationDeposit />
+                </TabPanel>
                 <TabPanel header="Room Rate">
                     <ComReservationRoomRate />
                 </TabPanel>
@@ -128,6 +131,7 @@ import ComAuditTrail from '../../components/layout/components/ComAuditTrail.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
+import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 const route = useRoute()
 const frappe = inject("$frappe")
 const rs = inject("$reservation")
@@ -163,6 +167,9 @@ function onRoute() {
 }
 function onClose() {
     dialogRef.value.close()
+}
+function onMaximize(){
+    dialogRef.value.maximize()
 }
 function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
@@ -393,7 +400,7 @@ function onCloseNote(){
 function onAddRoomMore(){
     const dialogRef = dialog.open(ComReservationStayAddMore, {
         props: {
-            header: 'Add more stay room',
+            header: 'Add More Stay Room',
             style: {
                 width: '80vw',
             },

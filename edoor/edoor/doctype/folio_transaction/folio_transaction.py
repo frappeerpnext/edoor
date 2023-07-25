@@ -29,6 +29,10 @@ class FolioTransaction(Document):
 		
 		#validate working day  
 		if self.is_new():
+			if not self.property:
+				if self.reservation:
+					self.property = frappe.db.get_value("Reservation", self.reservatin, "property")
+
 			working_day = get_working_day(self.property)
 			 
 			if not working_day["name"]:
@@ -148,52 +152,12 @@ class FolioTransaction(Document):
 	
 		if not self.parent_reference:
 			update_sub_account_description(self)
+	def after_insert(self):
+		update_folio_transaction(self)
 
 	def on_update(self):
-		#we use this method add folio transaction breakown
-		#1. self is main account transaction
-		#2. Discount Account
-		#3. Tax 1 Account 
-		#4. Tax 2 Account 
-		#5. Tax 3 Account 
-		#6. Bank Fee Account
-		account_doc = frappe.get_doc("Account Code", self.account_code)
-		#discount
-		add_sub_account_to_folio_transaction(self,account_doc.discount_account, self.discount_amount,"Discount from folio transaction: {}. Date: {}. Room: {}({})".format(self.name,self.posting_date,self.room_number,self.room_type ))
-		if account_doc.discount_account:
-			self.discount_account = account_doc.discount_account
-			if self.discount_amount == 0:
-				self.discount_description = ""
-			else:
-				account_name = frappe.db.get_value("Account Code", account_doc.discount_account,"account_name")
-				if self.discount_type=="Percent":
-					self.discount_description = '{} - {}%'.format(account_name, self.discount)
-				else:
-					self.discount_description = '{}'.format(account_name)
-		
-		#tax 
-		if self.tax_rule:
-			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
-			add_sub_account_to_folio_transaction(self,tax_rule.tax_1_account, self.tax_1_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-			add_sub_account_to_folio_transaction(self,tax_rule.tax_2_account, self.tax_2_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-			add_sub_account_to_folio_transaction(self,tax_rule.tax_3_account, self.tax_3_amount,"Tax breakdown from folio transaction: {}".format(self.name))
-			 		
-		add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
-		
-		
-
-		#update folio transaction to reservation folio
-		update_reservation_folio(self.folio_number, None, False)
-		
-		#update to reservation stay and reservation
-		if not self.parent_reference:	 
-			update_reservation_stay(self.reservation_stay,None, False)
-			
-			update_reservation(self.reservation,None, False)
-			
-			# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
-			# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
-	
+		if not self.is_new():
+			update_folio_transaction(self)
 		
 
 	def on_trash(self):
@@ -213,9 +177,57 @@ class FolioTransaction(Document):
 	def after_delete(self):
 	
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
-		update_reservation_folio(self.folio_number, None, False)
+		if self.folio_number:
+			update_reservation_folio(self.folio_number, None, False)
 		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 		frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
+
+def update_folio_transaction(self):
+	#we use this method add folio transaction breakown
+	#1. self is main account transaction
+	#2. Discount Account
+	#3. Tax 1 Account 
+	#4. Tax 2 Account 
+	#5. Tax 3 Account 
+	#6. Bank Fee Account
+
+	account_doc = frappe.get_doc("Account Code", self.account_code)
+	#discount
+	add_sub_account_to_folio_transaction(self,account_doc.discount_account, self.discount_amount,"Discount from folio transaction: {}. Date: {}. Room: {}({})".format(self.name,self.posting_date,self.room_number,self.room_type ))
+	if account_doc.discount_account:
+		self.discount_account = account_doc.discount_account
+		if self.discount_amount == 0:
+			self.discount_description = ""
+		else:
+			account_name = frappe.db.get_value("Account Code", account_doc.discount_account,"account_name")
+			if self.discount_type=="Percent":
+				self.discount_description = '{} - {}%'.format(account_name, self.discount)
+			else:
+				self.discount_description = '{}'.format(account_name)
+	
+	#tax 
+	if self.tax_rule:
+		tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
+		add_sub_account_to_folio_transaction(self,tax_rule.tax_1_account, self.tax_1_amount,"Tax breakdown from folio transaction: {}".format(self.name))
+		add_sub_account_to_folio_transaction(self,tax_rule.tax_2_account, self.tax_2_amount,"Tax breakdown from folio transaction: {}".format(self.name))
+		add_sub_account_to_folio_transaction(self,tax_rule.tax_3_account, self.tax_3_amount,"Tax breakdown from folio transaction: {}".format(self.name))
+				
+	add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
+	
+	
+
+	#update folio transaction to reservation folio
+	if self.folio_number:
+		update_reservation_folio(self.folio_number, None, False)
+	
+	#update to reservation stay and reservation
+	if not self.parent_reference:	 
+		update_reservation_stay(self.reservation_stay,None, False)
+		
+		update_reservation(self.reservation,None, False)
+		
+		# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
+		# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
 
 def update_sub_account_description(self):
 	if self.discount_account:
@@ -260,38 +272,39 @@ def update_sub_account_description(self):
 		
 
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
-	if account_code:
-		docs = frappe.db.get_list("Folio Transaction",filters={"account_code": account_code,"parent_reference":self.name })
-		if docs:
-			frappe.db.set_value("Folio Transaction",docs[0].name,
-			{
-				"quantity":1,
-				"amount":amount or 0,
-				"input_amount":amount or 0,
-				"posting_date": self.posting_date,
-				"note":note
-			}
-			)
-		else:
-			if amount> 0:
-				doc = frappe.get_doc({
-					'doctype': 'Folio Transaction',
-					'reference_number': self.reference_number,
-					'naming_series':self.name + '.-.##',
-					'folio_number':self.folio_number,
-					'property': self.property,
-					'reservation': self.reservation,
-					'reservation_stay': self.reservation_stay,
-					'posting_date': self.posting_date,
-					'working_day': self.working_day,
-					'cashier_shift': self.cashier_shift,
-					'working_date': self.working_date,
-					'account_code': account_code,
+	if self.folio_number:
+		if account_code:
+			docs = frappe.db.get_list("Folio Transaction",filters={"account_code": account_code,"parent_reference":self.name })
+			if docs:
+				frappe.db.set_value("Folio Transaction",docs[0].name,
+				{
 					"quantity":1,
-					'input_amount': amount,
-					'amount': amount,
-					"note":note,
-					"parent_reference":self.name,
-					"is_auto_post":self.is_auto_post
+					"amount":amount or 0,
+					"input_amount":amount or 0,
+					"posting_date": self.posting_date,
+					"note":note
+				}
+				)
+			else:
+				if amount> 0:
+					doc = frappe.get_doc({
+						'doctype': 'Folio Transaction',
+						'reference_number': self.reference_number,
+						'naming_series':self.name + '.-.##',
+						'folio_number':self.folio_number,
+						'property': self.property,
+						'reservation': self.reservation,
+						'reservation_stay': self.reservation_stay,
+						'posting_date': self.posting_date,
+						'working_day': self.working_day,
+						'cashier_shift': self.cashier_shift,
+						'working_date': self.working_date,
+						'account_code': account_code,
+						"quantity":1,
+						'input_amount': amount,
+						'amount': amount,
+						"note":note,
+						"parent_reference":self.name,
+						"is_auto_post":self.is_auto_post
 
-				}).insert()
+					}).insert()

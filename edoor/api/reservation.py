@@ -1112,11 +1112,20 @@ def get_audit_trail(doctype, docname,is_last_modified=False):
 
 
 @frappe.whitelist()
-def get_folio_transaction(folio_number):
- 
-    show_account_code = frappe.db.get_default("show_account_code_in_folio_transaction") ==1
+def get_folio_transaction(folio_number = None,reservation = None, account_category=None):
+    show_account_code = frappe.db.get_default("show_account_code_in_folio_transaction")==1
+    sql = "select * from `tabFolio Transaction` where 1=1 "
+    if folio_number:
+        sql =" {} and  folio_number='{}' and coalesce(parent_reference,'')=''".format(sql,folio_number)
+
+    if reservation:
+        sql =" {} and reservation='{}' and coalesce(parent_reference,'')=''".format(sql,reservation)
     
-    data = frappe.db.sql("select * from `tabFolio Transaction` where folio_number='{}' and coalesce(parent_reference,'')=''".format(folio_number),as_dict=1)
+    if account_category:
+        sql =" {} and  account_category='{}'".format(sql,account_category)
+    
+  
+    data = frappe.db.sql(sql,as_dict=1)
 
     balance = 0
     folio_transactions = []

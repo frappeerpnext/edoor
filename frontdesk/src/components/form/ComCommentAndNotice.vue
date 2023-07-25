@@ -38,11 +38,11 @@
             <Button text icon="pi pi-trash" class="w-1rem h-1rem" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
         </div>
     </div>
-        <div class="whitespace-pre-wrap py-1" v-html="i.content"></div>
+        <div class="whitespace-pre-wrap break-words py-1" v-html="i.content"></div>
     </div>
     </ComPlaceholder>
     <OverlayPanel ref="op">
-    <ComOverlayPanelContent width="30rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
+    <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
     <label for="textnote">{{edit.note_type}}</label><br/>
     <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />

@@ -150,11 +150,11 @@
                 </ComBoxBetwenConten>
             </div>
                 <div class="flex mt-2" v-if="tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
-                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
+                    <ComBoxStayInformation is-currency="true" title-class="col-6 m-auto font-medium" title="Total Tax" :value="total_tax"
                         valueClass="leading-8 max-h-3rem col-6 bg-gray-edoor-10 text-right" />
                 </div>
                 <div class="flex mt-2">
-                    <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total" :value="total_amount"
+                    <ComBoxStayInformation is-currency="true" title-class="col-6 m-auto font-medium" title="Total" :value="total_amount"
                         valueClass="leading-8 max-h-3rem col-6 bg-gray-edoor-10 text-right" />
                 </div>
                  </div>
@@ -332,7 +332,7 @@ function onUseManualRate(){
                 room_type: doc.value.room_type_id, 
                 business_source: doc.value.business_source, 
                 date: doc.value.date
-            })
+            },"", false)
             .then((result) => {
                 doc.value.input_rate = result.message
             })
@@ -367,9 +367,9 @@ function onSave() {
             room_rate_names: room_rate_names,
             data: doc.value,
             reservation_stays: reservation_stay_names
-        })
+        },"Edit room rate successfully")
         .then((doc) => {
-            toast.add({ severity: 'success', summary: 'Edit Room Rate', detail: "Update Success", life: 3000 })
+            
             isSaving.value = false;
             
             socket.emit("RefreshNightAuditStep", JSON.parse(localStorage.getItem("edoor_property")).name);

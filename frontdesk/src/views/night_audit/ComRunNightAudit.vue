@@ -21,7 +21,7 @@
     <Button @click="refreshReport" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
     
     <div class="wrp-night-audit-content w-full view-table-iframe">
-        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" width="100%" :src="url"></iframe>
+        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="width: 100%; overflow-x: auto;" :src="url" ></iframe>
     </div>
 
     <div class="wrp-action-btn-in-night-audit pb-2">
@@ -127,8 +127,7 @@ function onNext() {
             currentStep.value = currentStep.value + 1
             refreshReport()
         }
-        // reloadIframe
-        onIframeLoaded()
+
 
     }
 }
@@ -151,8 +150,7 @@ function onFinish() {
         },
 
     });
-     // reloadIframe
-     onIframeLoaded()
+    
 }
 
 
@@ -165,9 +163,7 @@ function onBack() {
         currentStep.value = currentStep.value - 1
         refreshReport()
     }
-    
-     // reloadIframe
-     onIframeLoaded()
+   
 }
 
 function onClose(){
@@ -177,16 +173,18 @@ function onClose(){
 function onIframeLoaded() {
 
     const iframe = document.getElementById("iframe_run_night_audit");
-    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
-    var windowWidth = window.innerWidth;
+   
+    if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
+        iframe.style.overflowX = 'hidden';
+    } else {
+        iframe.style.overflowX = 'auto';
+    }
 
-    if (windowWidth >= 1920){
-        iframe.style.minWidth = 100 + '%'
-    }
-    else{
-        iframe.style.width = contentWidth + 'px';
-    }
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    iframe.style.minWidth ="0px"
+    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
+
+    iframe.style.height = '0px';
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 
 }
 

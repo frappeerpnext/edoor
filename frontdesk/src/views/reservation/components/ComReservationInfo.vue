@@ -20,7 +20,7 @@
                     </ComBoxStayInformation>
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')" :isAction="true" titleTooltip="Internal Reference Number" title="Int. No"
                         :value="rs.reservation?.internal_reference_number" valueClass="grow"
-                        titleClass="w-4rem"></ComBoxStayInformation>
+                        titleClass="w-4rem leading-10"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2" v-if="!(rs.reservation?.reservation_type == 'FIT')">
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')"   title="Group"  valueClass="grow">
@@ -110,7 +110,7 @@
                    
                     <ComBoxStayInformation
                         title="Children" valueClass="col-2"
-                        titleClass="w-5rem">
+                        titleClass="w-5rem leading-10">
                      {{ rs?.reservation?.child }}
                     </ComBoxStayInformation>
                 </div>

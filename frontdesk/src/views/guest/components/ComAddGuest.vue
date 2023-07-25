@@ -27,16 +27,7 @@
                         <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
                             dateFormat="dd-mm-yy" />
                     </div>
-                    <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label>Market Source</label><br />
-                        <ComAutoComplete v-model="guest.market_source" class="w-full" placeholder="Market Source"
-                            doctype="Market Source" />
-                    </div>
-                    <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                        <label>Market Segment</label><br />
-                        <ComAutoComplete v-model="guest.market_segment" class="w-full" placeholder="Market Segment"
-                            doctype="Market Segment" />
-                    </div>
+                   
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
                         <div class="flex align-items-center">

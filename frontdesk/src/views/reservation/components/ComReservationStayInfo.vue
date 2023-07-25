@@ -18,7 +18,7 @@
                     </ComBoxStayInformation>
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
                         :value="stay.reservationStay?.internal_reference_number" :isAction="true" valueClass="grow"
-                        titleClass="w-5rem">
+                        titleClass="w-5rem leading-10">
                     </ComBoxStayInformation>
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
@@ -102,7 +102,7 @@
                         @onClick="toggle($event, 'change_pax')"
                         title="Children"
                         :value="stay.reservationStay?.child" valueClass="col-2 color-purple-edoor"
-                        titleClass="w-5rem" :isAction="true"></ComBoxStayInformation>
+                        titleClass="w-5rem leading-10" :isAction="true"></ComBoxStayInformation>
                 </div>
             </div>
         </template>

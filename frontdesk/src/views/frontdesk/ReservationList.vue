@@ -2,7 +2,7 @@
     <div>
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #start>
-                <div>Reservation List</div>
+                <div class="text-2xl">Reservation List</div>
             </template>
             <template #end>
                 <NewFITReservationButton />
@@ -47,7 +47,7 @@
             </div>
         </div>
         <DataTable :value="data" tableStyle="min-width: 50rem">
-            <Column field="name" header="Document Number">
+            <Column field="name" header="Document Number" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
                         {{ slotProps.data.name }}
@@ -63,19 +63,29 @@
                 </template>
             </Column>
             <Column field="business_source" header="Business Source"></Column>
-            <Column field="room_numbers" header="Room No"></Column>
-            <Column field="arrival_date" header="Arrival">
+            <Column field="room_numbers" header="Room No">
                 <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.arrival_date).format("DD/MM/YYYY") }}</span>
+                    <template v-if="slotProps?.data && slotProps?.data?.room_numbers" v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
+                        <span class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num">{{ item }}</span>
+                    </template>
                 </template>
             </Column>
-            <Column field="departure_date" header="Departure">
+            <Column field="arrival_date" header="Arrival" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.departure_date).format("DD/MM/YYYY") }}</span>
+                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }}</span>
+                </template>
+            </Column>
+            <Column field="departure_date" header="Departure" headerClass="text-center" bodyClass="text-center">
+                <template #body="slotProps">
+                    <span>{{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
             <Column field="guest_type" header="Guest Type"></Column>
-            <Column field="reservation_status" header="Status"></Column>
+            <Column header="Status" headerClass="text-center" bodyClass="text-center">
+                <template #body="slotProps">
+                    <span class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl" :style="{backgroundColor: slotProps.data.status_color}">{{ slotProps.data.reservation_status }}</span>
+                </template>
+            </Column>
         </DataTable>
     </div>
 </template>
@@ -162,7 +172,8 @@ function loadData() {
             'reservation_status',
             'arrival_date',
             'departure_date',
-            'guest_type'
+            'guest_type',
+            'status_color'
         ],
         filters: filters
     })

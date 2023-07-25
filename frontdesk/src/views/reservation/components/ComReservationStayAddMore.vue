@@ -5,70 +5,68 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="text-left">
+                            <th class="text-left pr-2">
                                 <label>Arrival Data<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>Departure Data<span class="text-red-500">*</span></label>
                             </th>
                             <th>
                                 <label class="text-center px-2">Nights</label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-left">
+                            <th class="text-left px-2">
                                 <label class="px-2">Room Name</label>
                             </th>
-                            <th class="text-right">
-                                <label class="px-2">Rate</label>
+                            <th class="text-right px-2">
+                                <label>Rate</label>
                             </th>
                             <th>
-                                <label class="text-center px-2">Adults</label>
+                                <label class="text-center ">Adults</label>
                             </th>
                             <th>
-                                <label class="text-center px-2">Children</label>
+                                <label class="text-center">Children</label>
                             </th>
                             
-                            <th class="text-right">
-                                <label class="px-2">Amount</label>
+                            <th class="text-right px-2">
+                                <label>Amount</label>
                             </th>
                             <th class="w-0"></th>
                         </tr>
                     </thead>
                     <tbody>  
                         <tr v-for="(d, index) in list" :key="index"> 
-                            <td class="px-2 w-14rem"> 
-                                <Calendar showIcon v-model="d.arrival_date" :max-date="new Date(moment(d.departure_date))" :min-date="new Date(moment(rs.reservation.arrival_date))" @update:modelValue="onStartDate($event,d)" dateFormat="dd-mm-yy" class="w-full"/>
+                            <td class="pr-2 w-10rem"> 
+                                <Calendar inputClass="w-7rem" showIcon v-model="d.arrival_date" :max-date="new Date(moment(d.departure_date))" :min-date="new Date(moment(rs.reservation.arrival_date))" @update:modelValue="onStartDate($event,d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
-                            <td class="px-2 w-14rem"> 
-                                <Calendar showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
+                            <td class="px-2 w-10rem"> 
+                                <Calendar inputClass="w-7rem" showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
-                            <td>
+                            <td class="px-2 w-5rem">
                                 <InputNumber v-model="d.room_nights" @update:modelValue="onNight($event,d)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
                             </td>
-                            <td class="px-2">
+                            <td class="px-2 w-15rem">
                                 <ComSelectRoomTypeAvailability v-model="d.room_type_id" @onSelected="onSelectRoomType($event,d)" :start-date="d.arrival_date" :end-date="d.departure_date"/>
                             </td>
-                            <td class="px-2">
+                            <td class="px-2 w-10rem">
                                 <ComSelectRoomAvailability showClear v-model="d.room_id" :except="list.map(r => r.room_id).join(',')" :start-date="d.arrival_date" :end-date="d.departure_date" :roomType="d.room_type_id" />
                             </td>
-                            <td class="p-2 w-12rem text-right">
-                                <span @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic ">
+                            <td class="p-2 text-right w-10rem">
+                                <button @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic ">
                                     <span class="link_line_action"><CurrencyFormat :value="d.rate" /></span>
-                                </span>
+                                </button>
                             </td>
                             <td class="px-2 w-5rem">
-                                <InputNumber v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
-                                    class="child-adults-txt" />
+                                <InputNumber v-model="d.adult" style="width: -webkit-fill-available;" inputClass="w-5rem" inputId="stacked-buttons" showButtons :min="1" :max="100"/>
                             </td>
                             <td class="px-2 w-5rem">
-                                <InputNumber v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
-                                    class="child-adults-txt" />
+                                <InputNumber v-model="d.child" style="width: -webkit-fill-available;" inputClass="w-5rem" inputId="stacked-buttons" showButtons :min="0" :max="100"/>
                             </td> 
                             <td class="px-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
-                                    <CurrencyFormat :value="(d.room_nights ?? 0) * (d.rate ?? 0)" />
+                                <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12">
+                                    <CurrencyFormat  :value="(d.room_nights ?? 0) * (d.rate ?? 0)" />
                                 </div>
                             </td>
                             <td v-if="list.length > 1" class="pl-2 text-end">
@@ -76,17 +74,13 @@
                             </td>
                         </tr>
                     </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="10" class="text-right">
-                                <Button @click="onAddRoom" class="px-4 mt-2 conten-btn" >
-                                    <img :src="IconAddRoom" class="btn-add_comNote__icon  me-1"/>
-                                     Add Room
-                                </Button>
-                            </td>
-                        </tr>
-                    </tfoot>
                 </table>
+            </div>
+            <div class="mt-3 flex justify-end">
+                <Button @click="onAddRoom" class="dialog_btn_transform conten-btn py-4">
+                    <img :src="IconAddRoom" class="btn-add_comNote__icon me-1"/>
+                    Add Room
+                </Button>
             </div>
         </div>
         <OverlayPanel ref="op">

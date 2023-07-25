@@ -18,7 +18,7 @@
         </div>
          
           <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
-              <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
+              <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
           </div>
       </template>
     </ComReservationStayPanel>

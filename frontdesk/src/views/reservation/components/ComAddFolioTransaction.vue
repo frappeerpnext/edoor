@@ -19,7 +19,7 @@
                         <label for="account_code">Account Code</label>
                         <ComAutoComplete  :disabled="!canEdit" v-model="doc.account_code" placeholder="Select Account Code" doctype="Account Code"
                             class="auto__Com_Cus w-full" @onSelected="onSelectAccountCode"
-                            :filters="{ 'account_group': account_group }" />
+                            :filters="{ 'account_group': doc.account_group }" />
                         
                     </div>
                     <div class="col-6">
@@ -34,7 +34,7 @@
                     <!-- Quantity -->
                     <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
                         <label for="quantity">Quantity</label>
-                        <InputNumber class="w-full" v-model="doc.quantity" />
+                        <InputNumber class="w-full" v-model="doc.quantity"   :minFractionDigits="0" :maxFractionDigits="2" />
                     </div>
                     <!-- /Quantity -->
                     <!-- Discount -->
@@ -158,7 +158,7 @@
                     <!-- Total tax -->
                     <div v-if="tax_rule && (tax_rule.tax_1_rate + tax_rule.tax_2_rate + tax_rule.tax_3_rate > 0)"
                         class="flex justify-end mt-2">
-                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium" title="Total Tax" :value="total_tax"
+                        <ComBoxStayInformation is-currency="true" title-class="col-6 font-medium leading-8" title="Total Tax" :value="total_tax"
                             valueClass="max-h-3rem leading-8 col-6 bg-gray-edoor-10 pr-0 text-right" />
                     </div>
                     <!-- /Total tax -->
@@ -258,7 +258,7 @@ const call = frappe.call()
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
-const account_group = ref("")
+
 const account_code = ref({});
 const city_ledger = ref({});
 const balance = ref(0);
@@ -493,7 +493,7 @@ function onSave() {
 onMounted(() => {
      
     
-    doc.value.folio_number = dialogRef.value.data.folio_number;
+
 
     balance.value = dialogRef.value.data.balance
     if (dialogRef.value.data.folio_transaction_number) {
@@ -507,7 +507,7 @@ onMounted(() => {
             .then((result) => {
                     doc.value = result.message.doc
                     account_code.value = result.message.account_code
-                    account_group.value = doc.value.account_group
+                   
                     use_tax.value = {
                         use_tax_1:doc.value.tax_1_rate > 0,
                         use_tax_3:doc.value.tax_3_rate > 0,
@@ -523,9 +523,10 @@ onMounted(() => {
         
         
     } else {
-        //when user want to add data 
-        account_group.value = dialogRef.value.data.account_group
+              doc.value  = dialogRef.value.data.new_doc
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
+   
+
     }
 });
 

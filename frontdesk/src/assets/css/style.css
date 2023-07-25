@@ -999,3 +999,6 @@ p.text-center.small.page-number.visible-pdf {
     bottom: 0;
     margin-right: 12px;
 }
+.table-add-room-pax{
+    max-width: 50px;
+}

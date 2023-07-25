@@ -13,31 +13,31 @@
               <div v-if="rs.reservationStay.require_pickup" class="">
                 <div class="flex mt-4 gap-2">
                   <ComBoxStayInformation title="Arrival Mode" :value="rs.reservationStay?.arrival_mode"
-                    valueClass="col-7 " titleClass="grow">
+                    valueClass="col-7 " titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Flight No" :value="rs.reservationStay?.arrival_flight_number"
-                    valueClass="col-7 " titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7 " titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Location" :value="rs.reservationStay?.pickup_location" valueClass="col-7"
-                    titleClass="grow"></ComBoxStayInformation>
+                    titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Pickup Time"
                     :value="moment(rs.reservationStay?.pickup_time, 'HH:mm:ss').format('h:mm a')" valueClass="col-7"
-                    titleClass="grow">
+                    titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">                 
                   <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.pickup_driver)" title="Driver"
-                    isAction="true" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="grow">
+                    isAction="true" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Phone Number" :value="rs.reservationStay?.pickup_driver_phone_number"
-                    valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
                   <div>Note</div>
@@ -56,30 +56,30 @@
               <div v-if="rs.reservationStay.require_drop_off">
                 <div class="flex mt-4 gap-2">
                   <ComBoxStayInformation title="Departure Mode" :value="rs.reservationStay?.departure_mode"
-                    valueClass="col-7 " titleClass="grow">
+                    valueClass="col-7 " titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Flight No" :value="rs.reservationStay?.departure_flight_number"
-                    valueClass="col-7 " titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7 " titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Location" :value="rs.reservationStay?.drop_off_location"
-                    valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Drop Off Time"
                     :value="moment(rs.reservationStay?.drop_off_time, 'HH:mm:ss').format('h:mm a')" valueClass="col-7"
-                    titleClass="grow">
+                    titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.drop_off_driver_name"
-                    valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Phone number" :value="rs.reservationStay?.drop_off_driver_phone_number"
-                    valueClass="col-7" titleClass="grow"></ComBoxStayInformation>
+                    valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
                   <div>Note</div>

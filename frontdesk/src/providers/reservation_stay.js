@@ -253,6 +253,7 @@ export default class ReservationStay {
 		return this.reservationStay?.reservation_status == 'Reserved' &&
 			this.reservationStay.arrival_date <= working_day.date_working_day
 	}
+
 	clear() {
 		this.loading = ref(false)
 		this.stay = {}
@@ -262,6 +263,26 @@ export default class ReservationStay {
 		this.reservation.value = ref({})
 		this.reservationStayNames.value = ref([])
 		this.stay_summary.value = ref([])
+
+		this.reservation.value = ref({})
+
+	 
+		this.selectedRoomRates = []
+		this.folioTransactions.value = ref([])
+		this.selectedFolioTransactions.value = ref([])
+
+		//clear state key seletion of folio transaction
+		 
+		const state =JSON.parse( sessionStorage.getItem("folo_transaction_credit_debit_table_state"))
+		if(state){
+			state.selection=[]
+			sessionStorage.setItem("folo_transaction_credit_debit_table_state", JSON.stringify(state))
+	
+		}
+		
+
+		 
+	 
 	}
 
 }

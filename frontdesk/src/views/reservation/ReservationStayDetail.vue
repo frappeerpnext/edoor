@@ -10,6 +10,7 @@
                             <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                             </icon>
                         </button>
+                        
                         <button @click="onRoute" v-tooltip.left="'Open New Window'" v-if="!isPage"
                             class="rounded-lg conten-btn " link>
                             <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
@@ -78,6 +79,7 @@
                     </TabPanel>
 
                     <TabPanel header="Folio">
+                       
                         <ComReservationStayFolio />
                     </TabPanel>
 
@@ -341,11 +343,9 @@ const OnViewReservation = () => {
 }
 
 onUnmounted(() => {
-    rs.reservation = {}
-    rs.reservationStay = {}
-    rs.guest = {}
-    rs.masterGuest = {}
-    rs.selectedRoomRates = []
+  
+    rs.clear()
+
 
 })
 

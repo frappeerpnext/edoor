@@ -45,7 +45,7 @@
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import BtnOkIcon from '@/assets/svg/icon-save.svg' 
 
-const emit = defineEmits(['onOK', 'onClose'])
+const emit = defineEmits(['onOK', 'onClose', 'onMaximize'])
 const props = defineProps({
     loading: {
         type: Boolean,
@@ -85,6 +85,9 @@ function onOK() {
 }
 function close() {
     emit('onClose')
+}
+function onMaximize(){
+    emit('onMaximize')
 }
 </script>
 <style scoped>

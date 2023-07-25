@@ -257,7 +257,6 @@ app.provide("$reservation_stay", reservation_stay)
 const apiCall = frappe.call()
 
 
-
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {
 	document.title = (to.meta.title || '') + ' | eDoor Frontdesk'
@@ -308,6 +307,5 @@ router.beforeEach(async (to, from, next) => {
 
 	}).catch((error) => {
 		 alert("Load app error")
-		// const errorApp = createApp(Error);
-		// errorApp.mount("#app");
+
 	})

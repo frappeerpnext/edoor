@@ -133,7 +133,6 @@
    "options": "Reservation Folio"
   },
   {
-   "fetch_from": "folio_number.property",
    "fetch_if_empty": 1,
    "fieldname": "property",
    "fieldtype": "Link",
@@ -719,7 +718,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-19 14:26:09.149888",
+ "modified": "2023-07-24 13:22:12.224818",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

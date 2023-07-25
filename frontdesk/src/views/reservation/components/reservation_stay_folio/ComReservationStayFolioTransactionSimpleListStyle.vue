@@ -134,23 +134,23 @@
             <div class="w-30rem">
                 <div v-for="(item, index) in rs?.folio_summary" :key="index" class="flex mt-2 gap-2">
                     <ComBoxStayInformation isCurrency :title="item?.account_category || 'Undefine'" :value="item?.amount || 0"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
+                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation isCurrency title="Total Debit" :value="rs?.totalDebit"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
+                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation isCurrency title="Total Credit" :value="rs?.totalCredit"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
+                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                     </ComBoxStayInformation>
 
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation isCurrency title="Balance" :value="(rs?.totalDebit - rs?.totalCredit)"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="grow font-semibold">
+                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                     </ComBoxStayInformation>
                 </div>
             </div>

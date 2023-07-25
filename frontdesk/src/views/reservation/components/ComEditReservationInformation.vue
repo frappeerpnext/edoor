@@ -68,7 +68,10 @@ onMounted(() => {
 const onSave = () => {
     isLoading.value = true;
     let doc = JSON.parse(JSON.stringify(data.value))
-
+    doc.reference_number = doc.reference_number || ""
+    doc.internal_reference_number = doc.internal_reference_number || ""
+    doc.group_code = doc.group_code || ""
+    doc.group_name = doc.group_name || ""
     if (doc.reservation_date) doc.reservation_date = moment(doc.reservation_date).format("yyyy-MM-DD")
 
 

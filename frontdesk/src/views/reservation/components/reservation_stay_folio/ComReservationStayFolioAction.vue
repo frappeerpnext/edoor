@@ -1,14 +1,14 @@
 <template>
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-3">
         <div>
-            <Button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1)" :key="index"
+            <Button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab==1)" :key="index"
                 @click="onAddFolioTransaction(d)" class="conten-btn mr-1">Post {{ d.account_name }}</Button>
 
             <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
-                    <button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0)"
+                    <button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab==1)"
                         :key="index" @click="onAddFolioTransaction(d)"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i :class="d.icon" />
@@ -167,8 +167,12 @@ function onAddFolioTransaction(account_code) {
     if (rs.selectedFolio.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
-                folio_number: rs.selectedFolio.name,
-                account_group: account_code.name,
+                new_doc:{
+                    folio_number:rs.selectedFolio.name,
+                    reservation:rs.reservation.name,
+                    property: rs.reservation.property,
+                    account_group:account_code.name
+                },
                 balance: rs.totalDebit - rs.totalCredit
             },
             props: {
@@ -178,7 +182,8 @@ function onAddFolioTransaction(account_code) {
                 },
 
                 modal: true,
-                position: "top"
+                position: "top",
+                closeOnEscape: false
             },
             onClose: (options) => {
                 const data = options.data;
@@ -242,7 +247,9 @@ function EditFolio(is_edit) {
             style: {
                 width: '50vw',
             },
-            modal: true
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             let data = options.data;

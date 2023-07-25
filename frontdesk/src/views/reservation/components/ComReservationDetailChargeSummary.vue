@@ -20,7 +20,7 @@
                 </div>
                       
                 <div v-for="d in rs.reservationSummary" :key="items" class="flex gap-2 mt-2">
-                    <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-4" ></ComBoxStayInformation>
+                    <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
                 </div>
             </template>
         </ComReservationStayPanel>
@@ -55,7 +55,7 @@
                         </OverlayPanel>
                     </div>
                     <div class="flex mt-2 gap-2">
-                        <ComBoxStayInformation isCurrency title="Total Room Rate" :value="rs?.reservation?.total_room_rate" valueClass="grow text-right" titleClass="col-4" ></ComBoxStayInformation>
+                        <ComBoxStayInformation isCurrency title="Total Room Rate" :value="rs?.reservation?.total_room_rate" valueClass="grow text-right font-semibold" titleClass="col-4 font-semibold" ></ComBoxStayInformation>
                     </div>
                 </div>
                 <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">

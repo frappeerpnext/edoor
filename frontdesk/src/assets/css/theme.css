@@ -3264,6 +3264,12 @@
 .p-datatable .p-datatable-tbody>tr:nth-child(even){
   background-color: var(--bg-tb-sec-color);
 }
+.p-datatable .p-datatable-tbody>tr:nth-child(even) .room-num{
+  background: #e3efff !important;
+}
+.p-datatable .p-datatable-tbody>tr:hover{
+  background: #e3efff !important;
+}
 
 .p-datatable .p-datatable-tbody>tr>td .p-row-toggler,
 .p-datatable .p-datatable-tbody>tr>td .p-row-editor-init,
@@ -7330,4 +7336,7 @@ span.p-column-title {
 }
 .p-datatable-table td{
   white-space: nowrap;
+}
+.p-dialog-mask .p-component-overlay .p-component-overlay-enter{
+z-index: 900 !important;
 }

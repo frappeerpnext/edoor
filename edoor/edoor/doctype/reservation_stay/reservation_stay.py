@@ -13,16 +13,20 @@ from edoor.api.utils import update_reservation, update_reservation_color
  
 class ReservationStay(Document):
 	def  validate(self):
-		
+		working_day = get_working_day(self.property)
 	 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 			
 		 
+		if  getdate(self.arrival_date)< getdate( working_day["date_working_day"]):
+			frappe.throw("Please check role add back date")
+		
 		if  getdate(self.departure_date)<=getdate(self.arrival_date):
 			frappe.throw("Departure date cannot less than or equal to arrival date")
+		
 
-		working_day = get_working_day(self.property)
+		
 		if not working_day:
 			frappe.throw("There is no working open")
 		else:

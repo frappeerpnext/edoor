@@ -1,11 +1,10 @@
 <template>
     
-    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
-    <DataTable v-model:selection="rs.selectedFolioTransactions" @row-dblclick="onViewFolioDetail"  :value="rs.folioTransactions" tableStyle="min-width: 50rem" 
+    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.depositTransactions.length > 0">
+    <DataTable v-model:selection="rs.selectedDepositTransactions" @row-dblclick="onViewFolioDetail"  
+    :value="rs.depositTransactions" tableStyle="min-width: 50rem" 
     :rowClass="rowStyleClass"
-    paginator  
-            stateKey="folo_transaction_credit_debit_table_state"
-            :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
+  
     >
         <Column selectionMode="multiple" headerStyle="width: 3rem">
             
@@ -57,24 +56,20 @@
 
     <div class="w-full flex justify-content-end my-2" id="detl_foloi">
         <div class="w-30rem">
-            <div v-for="(item, index) in rs?.folio_summary" :key="index" class="flex mt-2 gap-2">
-                <ComBoxStayInformation :title="item?.account_category || 'Undefine'" :value="item?.amount || 0" isCurrency
+          
+            <div class="flex mt-2 gap-2">
+                <ComBoxStayInformation isCurrency title="Total Debit" :value="totalDebit"
                     valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                 </ComBoxStayInformation>
             </div>
             <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Total Debit" :value="rs?.totalDebit"
-                    valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
-                </ComBoxStayInformation>
-            </div>
-            <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Total Credit" :value="rs?.totalCredit"
+                <ComBoxStayInformation isCurrency title="Total Credit" :value="totalCredit"
                     valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                 </ComBoxStayInformation>
 
             </div>
             <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Balance" :value="(rs?.totalDebit - rs?.totalCredit)"
+                <ComBoxStayInformation isCurrency title="Balance" :value="(totalDebit - totalCredit)"
                     valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
                 </ComBoxStayInformation>
             </div>
@@ -84,10 +79,11 @@
 </template>
 <script setup>
 
-import { inject,ref,useDialog,computed,onUnmounted} from '@/plugin';
+import { inject,ref,useDialog,computed,onMounted} from '@/plugin';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-import ComReservationStayFolioTransactionAction from './ComReservationStayFolioTransactionAction.vue';
+import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
+
 const gv = inject('$gv');
 
 const dialog = useDialog();
@@ -97,9 +93,10 @@ const toggle = (event) => {
     show.value.toggle(event)
 }
 
-const rs = inject('$reservation_stay');
+const rs = inject('$reservation');
 const moment = inject("$moment")
- 
+
+
 const rowStyleClass = (r) => {
     var classRow = ''
  
@@ -119,6 +116,24 @@ const rowStyleClass = (r) => {
     
     return classRow
 };
+
+
+const totalDebit = computed(()=>{
+		if (rs.depositTransactions){
+			return rs.depositTransactions.reduce((n, d) => n + (d.debit || 0), 0)
+		}
+		return 0
+		
+	})
+	
+const totalCredit=computed(()=>{
+		if (rs.depositTransactions){
+			return rs.depositTransactions.reduce((n, d) => n + (d.credit || 0), 0)
+		}
+		return 0
+	}
+	)
+
 
  
 
@@ -144,6 +159,10 @@ const onViewFolioDetail = (doc) => {
     }
      
 }
+
+onMounted(()=>{
+    rs.getDepositTransaction(rs.reservation.name)
+})
 
  
 </script>

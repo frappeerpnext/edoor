@@ -147,10 +147,12 @@ def get_edoor_setting(property = None):
     
     edoor_setting  =  {
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
+        
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
         "backend_port":epos_setting.backend_port,
+        
         "currency":{
             "name":currency.name,
             "locale":currency.locale,
@@ -199,7 +201,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
-    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon"], order_by="sort_order")
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","icon"], order_by="sort_order")
     room_revenue_code = frappe.db.get_default("room_revenue_code")
  
     if room_revenue_code:

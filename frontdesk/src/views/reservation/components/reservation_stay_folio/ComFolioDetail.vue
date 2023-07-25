@@ -1,10 +1,8 @@
 <template>
-    <ComDialogContent   hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true">
+    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true">
     <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
     <template #footer-left>
-        
         <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
-
     </template>
   </ComDialogContent>
 </template>

@@ -81,7 +81,7 @@
         <TabView class="tabview-custom" lazy>
             <TabPanel>
                 <template #header>
-                    <span>Arrivals</span>
+                    <span>Arrival Remaining</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -92,7 +92,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span>Departures</span>
+                    <span>Departure Remaining</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -104,7 +104,7 @@
             <TabPanel>
                 <template #header>
                     <span>Stay Over</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over
                     }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">

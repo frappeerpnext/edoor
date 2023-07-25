@@ -1,6 +1,6 @@
 
 <template>
-  <span v-tooltip.top="titleTooltip" v-if="title !== null" class="flex items-center justify-end text-right white-space-nowrap" :class="titleClass">{{ title }}</span>
+  <span v-tooltip.top="titleTooltip" v-if="title !== null" class=" text-right white-space-nowrap overflow-hidden text-overflow-ellipsis" :class="titleClass">{{ title }}</span>
   <div class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
     <span v-tooltip.top="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action':''" @click="onClick" >
  

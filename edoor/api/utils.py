@@ -114,162 +114,163 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
     return dates
 @frappe.whitelist()
 def update_reservation(name=None,doc=None, run_commit = True):
-    if name:
-        doc = frappe.get_doc("Reservation",name)
+    if name or doc:
+        if name:
+            doc = frappe.get_doc("Reservation",name)
 
-    sql = """select 
-                min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
-                max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
-                count(name) as total_stay,
-                sum(if(is_active_reservation =1,1,0)) as total_active_stay, 
-                sum(if(is_active_reservation =1,adult,0)) as adult, 
-                sum(if(is_active_reservation =1,child,0)) as child ,
-                
-                sum(if(is_active_reservation=1 and reservation_status='Reserved',1,0)) as total_reserved,
-                sum(if(is_active_reservation=1 and reservation_status='Confirmed',1,0)) as total_confirmed,
-                sum(if(is_active_reservation=1 and reservation_status='In-house',1,0)) as total_checked_in,
-                sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
-                sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
-                sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
-                sum(if(is_active_reservation=0 and reservation_status='Void',1,0)) as total_void,
-                
-                sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
-                sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
-                avg(if(is_active_reservation=1,adr,0)) as adr,
-                min(if(is_active_reservation=1,room_rate,0)) as room_rate,
-                sum(if(is_active_reservation=1,room_rate_discount,0)) as room_rate_discount,
-                sum(if(is_active_reservation=1,room_rate_tax_1_amount,0)) as room_rate_tax_1_amount,
-                sum(if(is_active_reservation=1,room_rate_tax_2_amount,0)) as room_rate_tax_2_amount,
-                sum(if(is_active_reservation=1,room_rate_tax_3_amount,0)) as room_rate_tax_3_amount,
-                sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax
+        sql = """select 
+                    min(if(is_active_reservation=0,'2050-01-01', arrival_date)) as arrival_date,
+                    max(if(is_active_reservation=0,'2000-01-01', departure_date)) as departure_date,
+                    count(name) as total_stay,
+                    sum(if(is_active_reservation =1,1,0)) as total_active_stay, 
+                    sum(if(is_active_reservation =1,adult,0)) as adult, 
+                    sum(if(is_active_reservation =1,child,0)) as child ,
+                    
+                    sum(if(is_active_reservation=1 and reservation_status='Reserved',1,0)) as total_reserved,
+                    sum(if(is_active_reservation=1 and reservation_status='Confirmed',1,0)) as total_confirmed,
+                    sum(if(is_active_reservation=1 and reservation_status='In-house',1,0)) as total_checked_in,
+                    sum(if(is_active_reservation=1 and reservation_status='Checked Out',1,0)) as total_checked_out,
+                    sum(if(is_active_reservation=0 and reservation_status='Cancelled',1,0)) as total_cancelled,
+                    sum(if(is_active_reservation=0 and reservation_status='No Show',1,0)) as total_no_show,
+                    sum(if(is_active_reservation=0 and reservation_status='Void',1,0)) as total_void,
+                    
+                    sum(if(is_active_reservation =1,room_nights,0)) as room_nights,
+                    sum(if(is_active_reservation=1,total_room_rate,0)) as total_room_rate,
+                    avg(if(is_active_reservation=1,adr,0)) as adr,
+                    min(if(is_active_reservation=1,room_rate,0)) as room_rate,
+                    sum(if(is_active_reservation=1,room_rate_discount,0)) as room_rate_discount,
+                    sum(if(is_active_reservation=1,room_rate_tax_1_amount,0)) as room_rate_tax_1_amount,
+                    sum(if(is_active_reservation=1,room_rate_tax_2_amount,0)) as room_rate_tax_2_amount,
+                    sum(if(is_active_reservation=1,room_rate_tax_3_amount,0)) as room_rate_tax_3_amount,
+                    sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax
 
-            from `tabReservation Stay`
-            where 
-                reservation='{}'
-            """.format(name)
-    
-    data = frappe.db.sql(sql,as_dict=1)
-
-    #get folio summary
-    sql_folio = """
-        select  
-            sum(if(type='Debit',amount,0)) as debit,
-            sum(if(type='Credit',amount,0)) as credit
-        from `tabFolio Transaction` 
-        where
-            reservation = '{}'
-    """.format(
-        doc.name
-    )
-
-    folio_data = frappe.db.sql(sql_folio, as_dict=1)
-    
-    #get room_numbers, room_type , and room_type alias
-    sql_room_info = """
-                SELECT 
-                    GROUP_CONCAT(rooms) as rooms,
-                    GROUP_CONCAT(room_types) as room_types,
-                    GROUP_CONCAT(room_type_alias) as room_type_alias,
-                    GROUP_CONCAT(name) as room_stay 
-                    FROM `tabReservation Stay`
+                from `tabReservation Stay`
                 where 
-                    is_active_reservation = 1 and 
-                    reservation = '{}'
-    """.format(doc.name)
-    room_info_data =frappe.db.sql(sql_room_info, as_dict=1)
+                    reservation='{}'
+                """.format(name)
+        
+        data = frappe.db.sql(sql,as_dict=1)
+
+        #get folio summary
+        sql_folio = """
+            select  
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                reservation = '{}'
+        """.format(
+            doc.name
+        )
+
+        folio_data = frappe.db.sql(sql_folio, as_dict=1)
+        
+        #get room_numbers, room_type , and room_type alias
+        sql_room_info = """
+                    SELECT 
+                        GROUP_CONCAT(rooms) as rooms,
+                        GROUP_CONCAT(room_types) as room_types,
+                        GROUP_CONCAT(room_type_alias) as room_type_alias,
+                        GROUP_CONCAT(name) as room_stay 
+                        FROM `tabReservation Stay`
+                    where 
+                        is_active_reservation = 1 and 
+                        reservation = '{}'
+        """.format(doc.name)
+        room_info_data =frappe.db.sql(sql_room_info, as_dict=1)
 
 
 
 
-    doc.total_debit = folio_data[0]["debit"]
-    doc.total_credit= folio_data[0]["credit"]
+        doc.total_debit = folio_data[0]["debit"]
+        doc.total_credit= folio_data[0]["credit"]
+        
+
+        #update to reservation
+        #get min and max active stay
+        stay_date  =frappe.db.sql( "select min(arrival_date) as arrival_date, max(departure_date) as departure_date from `tabReservation Stay` where reservation='{}' and is_active_reservation=1".format(doc.name),as_dict=1)
+        doc.arrival_date = stay_date[0]["arrival_date"]  or doc.arrival_date
+        doc.departure_date= stay_date[0]["departure_date"] or   doc.departure_date
+
+        
+        doc.adult = data[0][ "adult"]
+        doc.child = data[0][ "child"]
+
+        doc.room_nights= data[0]["room_nights"]
+        doc.total_room_rate= data[0]["total_room_rate"]
+        doc.room_rate= data[0]["room_rate"]
+        doc.adr= data[0]["adr"]
+        doc.room_rate_discount= data[0]["room_rate_discount"]
+        doc.room_rate_tax_1_amount= data[0]["room_rate_tax_1_amount"]
+        doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]
+        doc.room_rate_tax_3_amount= data[0]["room_rate_tax_3_amount"]
+        doc.total_room_rate_tax= data[0]["total_room_rate_tax"]
+        
+        doc.total_reservation_stay = data[0][ "total_stay"]
+        doc.total_active_reservation_stay = data[0][ "total_active_stay"]
+
+        doc.reserved= data[0]["total_reserved"]
+        doc.total_confirmed= data[0]["total_confirmed"]
+        doc.total_checked_in= data[0]["total_checked_in"]
+        doc.total_checked_out= data[0]["total_checked_out"]
+        doc.total_cancelled= data[0]["total_cancelled"]
+        doc.total_void= data[0]["total_void"]
+        doc.total_no_show= data[0]["total_no_show"]
+
+
+        #update room info
+        
+        doc.room_types ="" if not room_info_data[0]["room_types"] else  ",".join(set(room_info_data[0]["room_types"].split(',')))
+        doc.room_numbers ="" if not room_info_data[0]["rooms"] else  ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
+        doc.room_type_alias ="" if not room_info_data[0]["room_type_alias"] else ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
+        # update room info json
+        room_stays_list = []
+        room_stay_data = []
+        if room_info_data[0]["room_stay"]:
+            room_stays_list = room_info_data[0]["room_stay"].split(",")
+            room_stays = ','.join(f"'{x}'" for x in room_stays_list)
+            sql_room_json = "SELECT `name`, room_number, room_type, room_type_alias,parent as reservation_stay FROM `tabReservation Stay Room` WHERE parent IN({})".format(room_stays)
+            room_stay_data = frappe.db.sql(sql_room_json, as_dict=1)
+
+        room_stay_json_list = []
+        if len(room_stay_data) > 0:
+            for s in room_stay_data:
+                room_stay_json_list.append({
+                    "name": s['name'],
+                    "room_number": s['room_number'] or '',
+                    "room_type_alias": s['room_type_alias'],
+                    "room_type": s['room_type'],
+                    "reservation_stay": s['reservation_stay']
+                })
+        doc.rooms_data = json.dumps(room_stay_json_list)
     
-
-    #update to reservation
-    #get min and max active stay
-    stay_date  =frappe.db.sql( "select min(arrival_date) as arrival_date, max(departure_date) as departure_date from `tabReservation Stay` where reservation='{}' and is_active_reservation=1".format(doc.name),as_dict=1)
-    doc.arrival_date = stay_date[0]["arrival_date"]  or doc.arrival_date
-    doc.departure_date= stay_date[0]["departure_date"] or   doc.departure_date
+        #update reservation status
+    
+        if doc.total_confirmed>0:
+            doc.reservation_status = 'Confirmed'
+        elif doc.reserved>0:
+            doc.reservation_status = 'Reserved'
+        elif doc.total_checked_in>0 and  doc.reserved==0:
+            doc.reservation_status = 'In-house'
+        elif  doc.reserved == 0 and doc.total_checked_in==0 and doc.total_checked_out > 0:
+            doc.reservation_status = 'Checked Out'
+        elif (doc.total_no_show+ doc.total_cancelled + doc.total_void > 0 ) and doc.total_active_reservation_stay == 0:
+            if doc.total_no_show > 0:
+                doc.reservation_status = 'No Show'
+            elif doc.total_cancelled > 0:
+                doc.reservation_status = 'Cancelled'
+            else:
+                doc.reservation_status = "Void" 
 
     
-    doc.adult = data[0][ "adult"]
-    doc.child = data[0][ "child"]
+        
 
-    doc.room_nights= data[0]["room_nights"]
-    doc.total_room_rate= data[0]["total_room_rate"]
-    doc.room_rate= data[0]["room_rate"]
-    doc.adr= data[0]["adr"]
-    doc.room_rate_discount= data[0]["room_rate_discount"]
-    doc.room_rate_tax_1_amount= data[0]["room_rate_tax_1_amount"]
-    doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]
-    doc.room_rate_tax_3_amount= data[0]["room_rate_tax_3_amount"]
-    doc.total_room_rate_tax= data[0]["total_room_rate_tax"]
-    
-    doc.total_reservation_stay = data[0][ "total_stay"]
-    doc.total_active_reservation_stay = data[0][ "total_active_stay"]
+        doc.update_reservation_stay = False
 
-    doc.reserved= data[0]["total_reserved"]
-    doc.total_confirmed= data[0]["total_confirmed"]
-    doc.total_checked_in= data[0]["total_checked_in"]
-    doc.total_checked_out= data[0]["total_checked_out"]
-    doc.total_cancelled= data[0]["total_cancelled"]
-    doc.total_void= data[0]["total_void"]
-    doc.total_no_show= data[0]["total_no_show"]
-
-
-    #update room info
-     
-    doc.room_types ="" if not room_info_data[0]["room_types"] else  ",".join(set(room_info_data[0]["room_types"].split(',')))
-    doc.room_numbers ="" if not room_info_data[0]["rooms"] else  ",".join(set(d for d in  room_info_data[0]["rooms"].split(',') if d !=''))
-    doc.room_type_alias ="" if not room_info_data[0]["room_type_alias"] else ",".join(set(room_info_data[0]["room_type_alias"].split(','))) 
-    # update room info json
-    room_stays_list = []
-    room_stay_data = []
-    if room_info_data[0]["room_stay"]:
-        room_stays_list = room_info_data[0]["room_stay"].split(",")
-        room_stays = ','.join(f"'{x}'" for x in room_stays_list)
-        sql_room_json = "SELECT `name`, room_number, room_type, room_type_alias,parent as reservation_stay FROM `tabReservation Stay Room` WHERE parent IN({})".format(room_stays)
-        room_stay_data = frappe.db.sql(sql_room_json, as_dict=1)
-
-    room_stay_json_list = []
-    if len(room_stay_data) > 0:
-        for s in room_stay_data:
-            room_stay_json_list.append({
-                "name": s['name'],
-                "room_number": s['room_number'] or '',
-                "room_type_alias": s['room_type_alias'],
-                "room_type": s['room_type'],
-                "reservation_stay": s['reservation_stay']
-            })
-    doc.rooms_data = json.dumps(room_stay_json_list)
- 
-    #update reservation status
-   
-    if doc.total_confirmed>0:
-        doc.reservation_status = 'Confirmed'
-    elif doc.reserved>0:
-        doc.reservation_status = 'Reserved'
-    elif doc.total_checked_in>0 and  doc.reserved==0:
-        doc.reservation_status = 'In-house'
-    elif  doc.reserved == 0 and doc.total_checked_in==0 and doc.total_checked_out > 0:
-        doc.reservation_status = 'Checked Out'
-    elif (doc.total_no_show+ doc.total_cancelled + doc.total_void > 0 ) and doc.total_active_reservation_stay == 0:
-        if doc.total_no_show > 0:
-            doc.reservation_status = 'No Show'
-        elif doc.total_cancelled > 0:
-            doc.reservation_status = 'Cancelled'
-        else:
-            doc.reservation_status = "Void" 
-
-  
-    
-
-    doc.update_reservation_stay = False
-
-    doc.save()
-    if run_commit:
-        frappe.db.commit()
-    return doc
+        doc.save()
+        if run_commit:
+            frappe.db.commit()
+        return doc
 
 @frappe.whitelist()
 def update_reservation_folio(name=None, doc=None,run_commit=True):
@@ -298,72 +299,73 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
-    if name:
-        doc = frappe.get_doc("Reservation Stay",name)
+    if name or doc:
+        if name:
+            doc = frappe.get_doc("Reservation Stay",name)
 
-    #1 update data to reservation stay room the rest will update from reservation stay validate event
-  
-
-    sql_folio = """
-       select  
-            account_category as label,
-            abs(sum(amount * if(type='Debit',1,-1))) as amount ,
-            sum(if(type='Debit',amount,0)) as debit,
-            sum(if(type='Credit',amount,0)) as credit
-        from `tabFolio Transaction` 
-        where
-            reservation_stay = '{}'
-        group by account_category
-    """.format(
-            doc.name
-        )
-
-    folio_data = frappe.db.sql(sql_folio, as_dict=1)
-
-
+        #1 update data to reservation stay room the rest will update from reservation stay validate event
     
-    doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
-    doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
-    #REMOVE credit and debit from dict
-    for  d in folio_data:
-        del d["credit"]
-        del d["debit"]
 
-    for stay in doc.stays:
-        sql = """
-            select 
-                min(rate) as rate,
-                avg(rate) as adr,
-                sum(discount_amount) as discount_amount,
-                sum(tax_1_amount) as tax_1_amount,
-                sum(tax_2_amount) as tax_2_amount,
-                sum(tax_3_amount) as tax_3_amount,
-                sum(total_tax) as total_tax,
-                sum(total_rate) as total_amount
-
-            from `tabReservation Room Rate`
+        sql_folio = """
+        select  
+                account_category as label,
+                abs(sum(amount * if(type='Debit',1,-1))) as amount ,
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
             where
-            stay_room_id = '{}'
-        """.format(stay.name)
-       
-        data = frappe.db.sql(sql,as_dict=1)
+                reservation_stay = '{}'
+            group by account_category
+        """.format(
+                doc.name
+            )
+
+        folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+
         
-        if data:
-            d = data[0]
-            stay.rate =  d["rate"]
-            stay.total_rate =  d["total_amount"] or  0
-            stay.adr =  d["adr"]
-            stay.discount_amount =d["discount_amount"] or 0
-            stay.tax_1_amount =d["tax_1_amount"] or  0
-            stay.tax_2_amount =d["tax_2_amount"] or  0
-            stay.tax_3_amount =d["tax_3_amount"] or  0
-            stay.total_tax =d["total_tax"] or  0
-  
-    if is_save:
-        doc.save()
-        if run_commit:
-            frappe.db.commit()
-    return doc
+        doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
+        doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
+        #REMOVE credit and debit from dict
+        for  d in folio_data:
+            del d["credit"]
+            del d["debit"]
+
+        for stay in doc.stays:
+            sql = """
+                select 
+                    min(rate) as rate,
+                    avg(rate) as adr,
+                    sum(discount_amount) as discount_amount,
+                    sum(tax_1_amount) as tax_1_amount,
+                    sum(tax_2_amount) as tax_2_amount,
+                    sum(tax_3_amount) as tax_3_amount,
+                    sum(total_tax) as total_tax,
+                    sum(total_rate) as total_amount
+
+                from `tabReservation Room Rate`
+                where
+                stay_room_id = '{}'
+            """.format(stay.name)
+        
+            data = frappe.db.sql(sql,as_dict=1)
+            
+            if data:
+                d = data[0]
+                stay.rate =  d["rate"]
+                stay.total_rate =  d["total_amount"] or  0
+                stay.adr =  d["adr"]
+                stay.discount_amount =d["discount_amount"] or 0
+                stay.tax_1_amount =d["tax_1_amount"] or  0
+                stay.tax_2_amount =d["tax_2_amount"] or  0
+                stay.tax_3_amount =d["tax_3_amount"] or  0
+                stay.total_tax =d["total_tax"] or  0
+    
+        if is_save:
+            doc.save()
+            if run_commit:
+                frappe.db.commit()
+        return doc
 
 
 def update_reservation_color(self=None):

@@ -124,7 +124,8 @@ function onEditRoomRate(room_rate = null) {
           width: '50vw',
         },
         position: "top",
-        modal: true
+        modal: true,
+        closeOnEscape: false
       },
       onClose: (options) => {
         const result = options.data;
@@ -150,7 +151,8 @@ function onEditRoomRate(room_rate = null) {
           width: '50vw',
         },
         position: "top",
-        modal: true
+        modal: true,
+        closeOnEscape: false
       },
       onClose: (options) => {
         const result = options.data;

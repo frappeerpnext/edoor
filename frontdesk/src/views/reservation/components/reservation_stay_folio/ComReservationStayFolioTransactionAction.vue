@@ -74,7 +74,8 @@ function onEditFolioTransaction() {
                 width: '50vw',
             },
             modal: true,
-            position:'top'
+            position:'top',
+            closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;

@@ -9,7 +9,7 @@
                         <button @click="onChangeStay" v-if="moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Change Stay
                         </button>
-                        <button @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button  @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
                         </button>
                         <button @click="onOpenDeleted" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
@@ -45,14 +45,21 @@ const loading = ref(false)
 const toggle = (event) => {
     show.value.toggle(event);
 };
-function onOpenDeleted(){
+function isNotLast(){
     const names = props.rooms.map(item => item.name);
     const index = names.indexOf(props.data.name)
     if((index + 1) < props.rooms.length){
         gv.toast('warn',"This room stay is not last stay.")
-        return
+        return false
+    }else{
+        return true
     }
-    openNote.value = true
+}
+function onOpenDeleted(){
+    if(isNotLast()){
+        openNote.value = true
+    }
+    
 }
 function onSelected(room,status){
     show.value.hide()
@@ -80,27 +87,29 @@ function onDeleted(note){
     })
 }
 function onChangeStay(){
-    dialog.open(ComReservationStayChangeStay, {
-        data: {
-            item: props.data
-        },
-        props: {
-            header: `Change Stay`,
-            style: {
-                width: '60vw',
+    if(isNotLast()){
+        dialog.open(ComReservationStayChangeStay, {
+            data: {
+                item: props.data
             },
-            
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
+            props: {
+                header: `Change Stay`,
+                style: {
+                    width: '60vw',
+                },
+                
+                breakpoints: {
+                    '960px': '75vw',
+                    '640px': '90vw'
+                },
+                modal: true,
+                closeOnEscape: false
             },
-            modal: true,
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            //
-        }
-    })
+            onClose: (options) => {
+                //
+            }
+        })
+    }
 }
 function onUnassignRoom(){
     dialogConfirm.require({

@@ -201,7 +201,8 @@ function onEditRoomRate(name) {
                 },
                 maximizable: true,
                 modal: true,
-                position: "top"
+                position: "top",
+                closeOnEscape: false
             }
         });
     })

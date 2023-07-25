@@ -615,9 +615,10 @@ function showReservationDetail(name) {
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) {
-
-            }
+            if (data) {}
+        },
+        onMaximize: (options) => {
+            alert('Dialog is on miximizable')
         }
     });
 }
