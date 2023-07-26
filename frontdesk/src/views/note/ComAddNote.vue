@@ -55,7 +55,7 @@ const moment = inject('$moment')
 const loading = ref(false);
 const data = ref({})
 const note = ref()
-
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 function onSave(){
   loading.value = true
   let dataSave = JSON.parse(JSON.stringify(data.value))
@@ -74,7 +74,8 @@ onMounted(() => {
       data.value = r
     })
   }else{
-    data.value.note_date = gv.dateFormat(new Date())
+    data.value.note_date = new Date()
+    data.value.property = property.name
   }
 })
 

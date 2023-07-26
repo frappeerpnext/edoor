@@ -11,9 +11,9 @@
                         placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
                     </div>
 
-                    <div v-if="hasFilter('business_source')">
+                    <div v-if="hasFilter('business_source')" class="w-12rem">
                         <ComAutoComplete v-model="filters.business_source" placeholder="Business Source" @onSelected="reloadIframe"
-                            doctype="Business Source" class="auto__Com_Cus" />
+                            doctype="Business Source" class="auto__Com_Cus w-full" />
                     </div>
 
                     <div v-if="hasFilter('building')">

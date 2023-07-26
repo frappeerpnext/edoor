@@ -24,9 +24,9 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
-                            dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"  dateFormat="dd-mm-yy" />
                     </div>
+                    <!-- guest.date_of_birth -->
                    
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
@@ -78,8 +78,7 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date"
-                            dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
                     </div>
                 </div>
             </template>
@@ -106,22 +105,27 @@ import ComBoxStayInformation from '../../reservation/components/ComBoxStayInform
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
+const gv = inject('$gv')
 let loading = ref(false)
 const guest = ref({})
 const optionGender = ref()
 const moment = inject('$moment')
 
-function onLoad(r) {
+const date = ref()
+
+function onLoad() {
     loading.value = true
     getDoc('Customer', dialogRef.value.data.name)
         .then((doc) => {
             guest.value = doc
+            guest.value.date_of_birth = new Date(doc.date_of_birth)
+            guest.value.expired_date = new Date(doc.expired_date)
+            console.log(guest.value)
             loading.value = false
         })
         .catch((error) => {
             loading.value = false
         });
-
 }
 
 function onClose(param = false) {
@@ -142,9 +146,11 @@ function getMeta() {
 
 function onOK() {
     loading.value = true
+    
     var data = JSON.parse(JSON.stringify(guest.value))
-    data.date_of_birth = moment(guest.value.date_of_birth).format('yyyy-MM-DD')
-    data.expired_date = moment(guest.value.expired_date).format('yyyy-MM-DD')
+    data.date_of_birth = moment(data.date_of_birth).format("YYYY-MM-DD")
+    data.expired_date = moment(data.expired_date).format("YYYY-MM-DD")
+ 
     createUpdateDoc('Customer', {data:data}).then((r) => {
         if (r.name) {
             getDoc('Customer', r.name).then((g) => {
@@ -158,7 +164,7 @@ function onOK() {
 }
 
 onMounted(() => {
-    getMeta()
+    getMeta() 
     if (dialogRef.value.data.name) {
         onLoad()
     }

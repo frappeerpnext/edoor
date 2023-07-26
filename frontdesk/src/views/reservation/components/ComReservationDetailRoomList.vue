@@ -177,6 +177,7 @@ function showReservationStayDetail(selected) {
         },
         props: {
             header: 'Reservation Stay Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },

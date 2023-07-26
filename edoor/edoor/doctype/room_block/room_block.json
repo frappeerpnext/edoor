@@ -48,7 +48,7 @@
    "fieldname": "end_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "End Date",
+   "label": "Release Date",
    "reqd": 1
   },
   {
@@ -157,7 +157,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-05-26 15:59:38.149599",
+ "modified": "2023-07-26 12:16:07.507041",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

@@ -135,6 +135,7 @@ const dialogRef = dialog.open(ReservationStayDetail, {
     },
     props: {
         header: 'Reservation Stay Detail',
+        contentClass: 'ex-pedd',
         style: {
             width: '80vw',
         },

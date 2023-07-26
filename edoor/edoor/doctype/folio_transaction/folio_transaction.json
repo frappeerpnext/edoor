@@ -9,7 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "naming_series",
-  "reference_type",
+  "transaction_type",
+  "transaction_number",
   "reference_number",
   "folio_number",
   "property",
@@ -660,11 +661,6 @@
    "label": "Print Format"
   },
   {
-   "fieldname": "reference_type",
-   "fieldtype": "Data",
-   "label": "Reference Type"
-  },
-  {
    "fetch_from": "reservation_stay.reservation_status",
    "fieldname": "reservation_status",
    "fieldtype": "Data",
@@ -714,11 +710,22 @@
    "fieldtype": "Link",
    "label": "Payment Type Group",
    "options": "Payment Type Group"
+  },
+  {
+   "fieldname": "transaction_type",
+   "fieldtype": "Link",
+   "label": "Transaction Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "transaction_number",
+   "fieldtype": "Data",
+   "label": "Transaction Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-24 13:22:12.224818",
+ "modified": "2023-07-26 08:39:24.577574",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

@@ -2,6 +2,10 @@ import datetime
 import frappe
 import json
 from py_linq import Enumerable
+from frappe import local
+def successful_login(login_manager):
+    pass
+ 
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
     skip_doctypes = ["DocType","Temp Product Menu"]
@@ -282,7 +286,8 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
                 sum(if(type='Credit',amount,0)) as credit
             from `tabFolio Transaction` 
             where
-                folio_number = '{}'
+                transaction_type = 'Reservation Folio' and 
+                transaction_number = '{}'
         """.format(
                 doc.name
             )
@@ -486,8 +491,9 @@ def add_room_charge_to_folio(folio,rate):
     account_code = frappe.get_doc("Account Code",frappe.db.get_default("room_revenue_code"))
     doc = frappe.get_doc({
         "doctype":"Folio Transaction",
+        "transaction_type":"Reservation Folio",
         "posting_date":rate.date,
-        "folio_number":folio.name,
+        "transaction_number":folio.name,
         "room_type_id":rate.room_type_id,
         "room_id":rate.room_id,
         "room_id":rate.room_id,
@@ -537,6 +543,7 @@ def clear_reservation():
     frappe.db.sql("delete from `tabSale`")
     frappe.db.sql("delete from `tabWorking Day`")
     frappe.db.sql("delete from `tabCashier Shift`")
+    frappe.db.sql("delete from `tabFrontdesk Note`")
     
     
     frappe.db.commit()

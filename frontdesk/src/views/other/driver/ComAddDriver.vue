@@ -79,7 +79,7 @@ const dialogRef = inject('dialogRef')
 let loading = ref(false)
 const driver = ref({})
 const optionGender = ref(['Not Set', 'Male', 'Female'])
-const moment = inject('$moment')
+const gv = inject('$gv')
 const rs = inject('$reservation_stay');
 function onClose(param = false) {
     dialogRef.value.close(param)
@@ -90,7 +90,7 @@ function onGetFile(file) {
 function onOK() {
     loading.value = true
     var data = JSON.parse(JSON.stringify(driver.value))
-    data.expired_date = moment(driver.value.expired_date).format('yyyy-MM-DD')
+    data.expired_date = gv.dateApiFormat(driver.value.expired_date)
     createUpdateDoc('Drivers', { data: data }).then((r) => {
         onClose(r)
         loading.value = false
@@ -102,6 +102,7 @@ onMounted(() => {
     if(dialogRef.value.data && dialogRef.value.data.drivername){
         getDoc("Drivers", dialogRef.value.data.drivername).then((r)=>{
             driver.value = r
+            driver.value.expired_date = gv.dateFormat(r.expired_date)
         })
     }
 })

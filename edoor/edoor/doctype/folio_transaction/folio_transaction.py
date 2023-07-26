@@ -29,9 +29,19 @@ class FolioTransaction(Document):
 		
 		#validate working day  
 		if self.is_new():
+			ref_doc = frappe.get_doc(self.transaction_type, self.transaction_number)
+			if self.transaction_type =="Reservation Folio":
+				self.property = ref_doc.property
+				self.reservation = ref_doc.reservation
+				self.reservation_stay = ref_doc.reservation_stay
+				
+			elif self.transaction_type == "Reservation":
+				self.property = ref_doc.property
+			
+
 			if not self.property:
 				if self.reservation:
-					self.property = frappe.db.get_value("Reservation", self.reservatin, "property")
+					self.property = frappe.db.get_value("Reservation", self.reservation, "property")
 
 			working_day = get_working_day(self.property)
 			 
@@ -49,22 +59,23 @@ class FolioTransaction(Document):
 			if not self.room_id:
 				#get room info
 				#1 get room from reservation room rate
-				room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
-			
-				if room_rate_data:
-					self.room_type_id =room_rate_data[0].room_type_id
-					self.room_id =room_rate_data[0].room_id 
-					self.room_number =room_rate_data[0].room_number 
-					self.room_type =room_rate_data[0].room_type
-				else:
-					#get first row of room rate
-					room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay}, limit_page_length=1)
+				if self.reservation_stay:
+					room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
+				
 					if room_rate_data:
 						self.room_type_id =room_rate_data[0].room_type_id
 						self.room_id =room_rate_data[0].room_id 
 						self.room_number =room_rate_data[0].room_number 
 						self.room_type =room_rate_data[0].room_type
-				#end update room type and room number
+					else:
+						#get first row of room rate
+						room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay}, limit_page_length=1)
+						if room_rate_data:
+							self.room_type_id =room_rate_data[0].room_type_id
+							self.room_id =room_rate_data[0].room_id 
+							self.room_number =room_rate_data[0].room_number 
+							self.room_type =room_rate_data[0].room_type
+					#end update room type and room number
 		
 
 		self.discount = self.discount if (self.discount or 0) >0 else 0
@@ -217,8 +228,8 @@ def update_folio_transaction(self):
 	
 
 	#update folio transaction to reservation folio
-	if self.folio_number:
-		update_reservation_folio(self.folio_number, None, False)
+	if self.transaction_type=="Reservation Folio":
+		update_reservation_folio(self.transaction_number, None, False)
 	
 	#update to reservation stay and reservation
 	if not self.parent_reference:	 
@@ -272,7 +283,6 @@ def update_sub_account_description(self):
 		
 
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
-	if self.folio_number:
 		if account_code:
 			docs = frappe.db.get_list("Folio Transaction",filters={"account_code": account_code,"parent_reference":self.name })
 			if docs:
@@ -289,6 +299,8 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 				if amount> 0:
 					doc = frappe.get_doc({
 						'doctype': 'Folio Transaction',
+						'transaction_type':self.transaction_type,
+						'transaction_number':self.transaction_number,
 						'reference_number': self.reference_number,
 						'naming_series':self.name + '.-.##',
 						'folio_number':self.folio_number,

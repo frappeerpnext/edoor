@@ -872,6 +872,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .das-calendar.p-calendar.p-component input{
     height: unset !important;
 }
+@-moz-document url-prefix() {
+    .das-calendar.p-calendar.p-component input{
+        height: 35px !important;
+    }
+}
 .p-tieredmenu.p-component.p-tieredmenu-overlay.p-input-filled,
 .p-menu.p-component.p-menu-overlay.p-input-filled{
     min-width: 216px !important;  
@@ -1001,4 +1006,13 @@ p.text-center.small.page-number.visible-pdf {
 }
 .table-add-room-pax{
     max-width: 50px;
+}
+.p-dialog.p-dialog-maximized{
+    margin: 0 !important;
+}
+.footer-fixed.dialog-ftt{
+    bottom: -48px;
+}
+.p-dialog-maximized .dialog-ftt{
+    bottom: 0 !important;
 }

@@ -16,12 +16,12 @@
                                 <p>eDoor</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Frontdesk" current-page="Frontdesk" @onClick="onRoute('Frontdesk')">
+                        <ComHeaderBarItemButton title="Front Desk" current-page="Frontdesk" @onClick="onRoute('Frontdesk')">
                             <template #icon>
                                 <img :src="iconEdoorFrontdesk">
                             </template>
                             <template #defualt>
-                                <p>Frontdesk</p>
+                                <p>Front Desk</p>
                             </template>
                         </ComHeaderBarItemButton>
                         <ComHeaderBarItemButton title="Reservations" current-page="ReservationList"

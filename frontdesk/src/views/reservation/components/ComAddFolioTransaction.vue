@@ -3,7 +3,13 @@
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
+                <div class="col-6">
+                    <label for="room">Room</label>
+                    <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_number" placeholder="Select Room" doctype="Room"
+                        class="auto__Com_Cus w-full" />
+                </div>
                 <div class="grid">
+                    
                     <div class="col-6">
                             <label for="ref">Ref. No</label>
                             <InputText id="ref" class="w-full" type="text" v-model="doc.reference_number" />
@@ -238,7 +244,6 @@
             <!-- /note -->
         </div>
     </ComDialogContent>
-    
 </template>
 <script setup>
 
@@ -249,7 +254,7 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
-const input_amount = ref(null)
+
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();
@@ -267,8 +272,8 @@ const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
 const toast = useToast()
-
- 
+const doc = ref({});
+const rs = inject('$reservation_stay')
 
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
@@ -298,12 +303,6 @@ const tax_rule = computed(() => {
     }
 });
 
-const doc = ref({
-    discount_type: "Percent",
-    quantity: 1,
-    input_amount: 0,
-});
-
 const min_date = computed(() => {
     if (edoor_setting?.allow_user_to_add_back_date_transaction == 0) {
         return moment(working_day?.date_working_day).toDate()
@@ -322,19 +321,19 @@ const min_date = computed(() => {
 const amount = computed(() => {
     if (tax_rule.value) {
         if (doc.value.rate_include_tax == "Yes") {
-            return gv.getRateBeforeTax(((doc.value.input_amount || 0) * doc.value.quantity) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
+            return gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
 
         } else {
-            return ((doc.value.input_amount || 0) * (doc.value.quantity || 0))
+            return ((doc.value.input_amount || 0) * (doc.value.quantity || 1))
         }
     }
-        return ((doc.value.input_amount || 0) * (doc.value.quantity || 0)) - discount_amount.value
+        return ((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - discount_amount.value
 })  
 
 
 const discount_amount = computed(() => {
     if (doc.value.discount_type == "Percent") {
-        return ((doc.value.input_amount || 0) * doc.value.quantity) * (doc.value.discount / 100 || 0)
+        return ((doc.value.input_amount || 0) * (doc.value.quantity || 1)) * (doc.value.discount / 100 || 0)
     } else {
         return (doc.value.discount || 0)
     }
@@ -419,6 +418,9 @@ function onSelectAccountCode(data) {
             doc.value.account_code = d.name
             doc.value.show_print_preview = d.show_print_preview
             doc.value.print_format= d.print_format
+            doc.value.discount_type = "Percent"
+            doc.value.input_amount = 0
+            doc.value.quantity = 1
             if (d.tax_rule) {
                 const tax_rule = JSON.parse(account_code.value.tax_rule_data)
                 if (tax_rule) {

@@ -158,7 +158,8 @@ export default class ReservationStay {
 
 			if (setting?.folio_transaction_style_credit_debit == 1) {
 				call.get('edoor.api.reservation.get_folio_transaction', {
-					folio_number: data.name
+					transaction_type: "Reservation Folio",
+					transaction_number: data.name
 				})
 					.then((result) => {
 						this.folioTransactions = result.message
@@ -197,7 +198,7 @@ export default class ReservationStay {
 						"is_auto_post",
 						"allow_enter_quantity"
 					],
-					filters: [["folio_number", "=", data.name]],
+					filters: [["transaction_number", "=", data.name],["transaction_type", "=", "Reservation Folio"]],
 					limit: 1000
 				}).then((result) => {
 
@@ -222,8 +223,9 @@ export default class ReservationStay {
 	}
 
 	getFolioSummary(folio_number) {
-		call.get("edoor.api.reservation.get_reservation_charge_summary", {
-			folio_number: folio_number
+		call.get("edoor.api.reservation.get_folio_summary_by_transaction_type", {
+			transaction_type: "Reservation Folio",
+			transaction_number: folio_number
 		}).then((result) => {
 			this.folio_summary = result.message
 		}).

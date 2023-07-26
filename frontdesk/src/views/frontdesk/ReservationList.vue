@@ -46,9 +46,9 @@
                     placeholder="Select Date Range" />
             </div>
         </div>
-        <DataTable :value="data" tableStyle="min-width: 50rem">
+        <DataTable :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationDetail">
             <Column field="name" header="Document Number" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps">
+                <template #body="slotProps"> 
                     <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
                         {{ slotProps.data.name }}
                     </Button>
@@ -65,19 +65,19 @@
             <Column field="business_source" header="Business Source"></Column>
             <Column field="room_numbers" header="Room No">
                 <template #body="slotProps">
-                    <template v-if="slotProps?.data && slotProps?.data?.room_numbers" v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
-                        <span class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num">{{ item }}</span>
-                    </template>
+                    <div class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num" v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                        <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
+                            <span>{{ item }}</span>
+                            <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">, </span>
+                        </template>
+                    </div>
                 </template>
             </Column>
-            <Column field="arrival_date" header="Arrival" headerClass="text-center" bodyClass="text-center">
+
+
+            <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }}</span>
-                </template>
-            </Column>
-            <Column field="departure_date" header="Departure" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
+                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
             <Column field="guest_type" header="Guest Type"></Column>
@@ -214,13 +214,18 @@ function debouncer(fn, delay) {
 }
 
 
-function onViewReservationDetail(name) {
+function onViewReservationDetail(event) { 
+    var name = event
+    if(event.data && event.data.name){
+        name = event.data.name
+    }
     const dialogRef = dialog.open(ReservationDetail, {
         data: {
             name: name
         },
         props: {
             header: 'Reservation Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },

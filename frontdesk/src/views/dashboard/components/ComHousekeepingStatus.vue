@@ -37,8 +37,9 @@ const onViewRoomList = (status) => {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
             report_name: "eDoor%20Housekeeping%20Status",
-            extra_params: [{ key: "status", value: encodeURIComponent(status.value.status) }],
-            view:"ui"
+            extra_params: [{ key: "housekeeping_status", value: encodeURIComponent(status.value.status) }],
+            view:"ui",
+            filter_options: ['keyword','building','floor','room_type']
         },
         props: {
             header: status.value.status,

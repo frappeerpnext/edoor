@@ -68,6 +68,7 @@ let op = ref()
 const loading = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
+const property = JSON.parse(localStorage.getItem('edoor_property'))
 const dialogConfirm = useConfirm();
 const currentUser = JSON.parse(localStorage.getItem('edoor_user'))
 const create = ref({
@@ -133,6 +134,9 @@ function onSaveNote(doctype, data) {
         return
     }
     saving.value = true
+    if(!data.name){
+        data.property = property.name
+    }
     // for folio trancation
     if (props.doctype == 'Folio Transaction') {
         data.reservation = props.reservation || ''

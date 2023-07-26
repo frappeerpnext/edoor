@@ -164,6 +164,7 @@
         <hr />
       
     </div> 
+
     </ComDialogContent>
 </template>
 <script setup>
@@ -179,8 +180,6 @@ const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
  
- 
-
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
 const isSaving = ref(false);
@@ -347,7 +346,6 @@ function onSave() {
     let room_rate_names = []
     let reservation_stay_names = []
     
- 
     if (futureRoomRates.value && futureRoomRates.value.length>0) 
     {
  
@@ -402,8 +400,6 @@ onMounted(() => {
         doc.value = JSON.parse(JSON.stringify(dialogRef.value.data.selected_room_rates[0]))
     
     }
-
-
 
     use_tax.value = {
         use_tax_1:doc.value.tax_1_rate > 0,

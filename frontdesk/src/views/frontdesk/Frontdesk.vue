@@ -1,5 +1,6 @@
 <template lang="">
     <div>
+         
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
@@ -26,7 +27,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro">
             <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
                 <template #date>
-                    <Calendar class="btn-set__h" panelClass="room-chart-celendar" v-model="filter.date" dateFormat="dd-MM-yy" @date-select="onFilterDate" showButtonBar showIcon />
+                    <Calendar class="btn-set__h" panelClass="room-chart-celendar" v-model="selectedDate" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar showIcon />
                 </template>
             </ComRoomChartFilterSelect>
             <div>
@@ -69,20 +70,9 @@
 
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
-                                    <div class="group relative h-full p-1" style="height: 36px" v-tooltip.bottom="{ value: `
-                                    <div class='tooltip-reservation text-sm -mt-6' style='width:350px; line-height: auto'>
-                                        <table>
-                                            <tbody>
-                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
-                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
-                                            <tr><td><div>Guest: ${event.title}</div></td></tr>
-                                            <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
-                                            <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
-                                            <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
-                                            <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>`, escape: true, class: 'event-tooltip' }">
+                                    <div class="group relative h-full p-1" style="height: 36px"
+                                  
+                                    >
                                         <div class="flex">
                                             <span class="h-1rem w-1rem rounded-full" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 
@@ -105,7 +95,7 @@
     </div>
   </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, computed } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted,watch } from '@/plugin'
 import FullCalendar from '@fullcalendar/vue3'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
@@ -123,7 +113,11 @@ import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingS
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
+import Tooltip from 'primevue/tooltip'
+import { useTippy } from 'vue-tippy'
+ 
 
+ 
 
 
 const socket = inject("$socket");
@@ -136,6 +130,7 @@ const filter = reactive({
     date: '',
     end_date: ''
 })
+const selectedDate = ref()
 const titleStartEndDate = reactive({})
 const fullCalendar = ref(null)
 const gv = inject("$gv")
@@ -178,8 +173,10 @@ socket.on("RefresheDoorDashboard", (arg) => {
     }
 })
 
-
-
+ 
+watch(() => filter.date, (newValue, oldValue) => {
+    selectedDate.value = new Date(newValue)
+})
 
 function dateFormat(date) {
     return moment(date).format("MMM DD, YYYY")
@@ -295,9 +292,34 @@ const calendarOptions = reactive({
 
     }),
     eventMouseEnter: (($event) => {
-        eventInfo.data = $event.event;
-        // showTooltip.value = true;
+        const event=$event.event._def
+       
+       
+
+        const description=`<div style="background:red">
+                                        <table>
+                                            <tbody>
+                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
+                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
+                                            <tr><td><div>Guest: ${event.title}</div></td></tr>
+                                            <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
+                                            <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
+                                            <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
+                                            <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>`
+ 
+
+        const { tippyInstance } = useTippy($event.el, {
+            content: description,
+        })
+
+      
+   
+        
     }),
+
     eventMouseLeave: (() => {
         showTooltip.value = !showTooltip.value;
         eventInfo.data = null;
@@ -507,11 +529,8 @@ function onView() {
 }
 function onFilter(key) {
     filter.peroid = key
-
     const cal = fullCalendar.value.getApi()
     const visibleRange = cal.currentData.options.visibleRange
-    console.log('start: ', visibleRange.start)
-    console.log('start: ', visibleRange.end)
     if (key == 'week') {
         const currentViewChart = setRoomChartlocationStorage('', '', '', key)
         visibleRange.start = moment(currentViewChart.start_date).format("yyyy-MM-DD")
@@ -539,7 +558,7 @@ function onFilter(key) {
 }
 
 function onFilterDate(event) {
-
+    filter.date = event
     const filter_date = moment(event).add(-1, 'days').format("yyyy-MM-DD")
     const setViewChart = setRoomChartlocationStorage(filter_date, '', '', '', '')
     onFilter(setViewChart.peroid)
@@ -576,6 +595,7 @@ function showReservationStayDetail(name) {
         },
         props: {
             header: 'Reservation Stay Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },
@@ -605,6 +625,7 @@ function showReservationDetail(name) {
         },
         props: {
             header: 'Reservation Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },
@@ -615,10 +636,6 @@ function showReservationDetail(name) {
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) {}
-        },
-        onMaximize: (options) => {
-            alert('Dialog is on miximizable')
         }
     });
 }
@@ -651,8 +668,11 @@ onMounted(() => {
  
     onInitialDate()
  
- 
-    var list = document.getElementsByClassName("fc-resource")
+    if(!selectedDate.value){
+        const currentViewChart = JSON.parse(localStorage.getItem('reservation_chart'))
+        selectedDate.value = new Date(moment(currentViewChart.start_date).add(1,'days'))
+    }
+    // var list = document.getElementsByClassName("fc-resource")
     
 })
 onUnmounted(() => {

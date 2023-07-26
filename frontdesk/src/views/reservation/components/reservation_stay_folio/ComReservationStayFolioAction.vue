@@ -168,7 +168,8 @@ function onAddFolioTransaction(account_code) {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
                 new_doc:{
-                    folio_number:rs.selectedFolio.name,
+                    transaction_type:"Reservation Folio",
+                    transaction_number:rs.selectedFolio.name,
                     reservation:rs.reservation.name,
                     property: rs.reservation.property,
                     account_group:account_code.name

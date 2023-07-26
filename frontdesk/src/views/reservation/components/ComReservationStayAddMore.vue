@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        <div class="bg-card-info border-round-xl mt-2 p-3 add-room-reserv">
+        <div class="bg-card-info border-round-xl p-3 add-room-reserv">
             <div class="n__re-custom"> 
                 <table class="w-full">
                     <thead>
@@ -38,10 +38,10 @@
                     </thead>
                     <tbody>  
                         <tr v-for="(d, index) in list" :key="index"> 
-                            <td class="pr-2 w-10rem"> 
+                            <td class="pr-2 w-11rem"> 
                                 <Calendar inputClass="w-7rem" showIcon v-model="d.arrival_date" :max-date="new Date(moment(d.departure_date))" :min-date="new Date(moment(rs.reservation.arrival_date))" @update:modelValue="onStartDate($event,d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
-                            <td class="px-2 w-10rem"> 
+                            <td class="px-2 w-11rem"> 
                                 <Calendar inputClass="w-7rem" showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-5rem">

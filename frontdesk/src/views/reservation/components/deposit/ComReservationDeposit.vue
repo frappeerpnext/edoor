@@ -31,6 +31,8 @@ function onAddFolioTransaction(account_code) {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
                 new_doc:{
+                    transaction_type:"Reservation",
+                    transaction_number:rs.reservation.name,
                     reservation:rs.reservation.name,
                     property: rs.reservation.property,
                     account_group:account_code.name

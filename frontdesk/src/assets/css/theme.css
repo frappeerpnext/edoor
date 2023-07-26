@@ -3264,9 +3264,6 @@
 .p-datatable .p-datatable-tbody>tr:nth-child(even){
   background-color: var(--bg-tb-sec-color);
 }
-.p-datatable .p-datatable-tbody>tr:nth-child(even) .room-num{
-  background: #e3efff !important;
-}
 .p-datatable .p-datatable-tbody>tr:hover{
   background: #e3efff !important;
 }
@@ -5155,7 +5152,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .p-dialog .p-dialog-content {
-  padding-bottom: 61px !important;
   background: #ffffff;
   color: #495057;
   padding: 1rem;

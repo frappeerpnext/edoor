@@ -1,7 +1,13 @@
 <template>
     
-    <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="rs.folio_summary.length > 0">
-    <DataTable v-model:selection="rs.selectedFolioTransactions" @row-dblclick="onViewFolioDetail"  :value="rs.folioTransactions" tableStyle="min-width: 50rem" 
+    <ComPlaceholder 
+        text="There is no Folio transactions" 
+        :loading="loading" 
+        :isNotEmpty="rs.folioTransactions.length > 0">
+
+    <DataTable v-model:selection="rs.selectedFolioTransactions"
+     @row-dblclick="onViewFolioDetail" :value="rs.folioTransactions" 
+     tableStyle="min-width: 50rem" 
     :rowClass="rowStyleClass"
     paginator  
             stateKey="folo_transaction_credit_debit_table_state"

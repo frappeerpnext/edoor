@@ -23,7 +23,7 @@
                 </div>
             </template> 
         </AutoComplete>
-        <button v-if="!isHideClearButton && selected != ''" type="button" class="absolute right-0 top-0 bottom-0 px-3 py-2" @click="onClear"><i class="pi pi-times text-gray-400" style="font-size: 1rem"></i></button>
+        <button v-if="!isHideClearButton && selected != '' && !disabled" type="button" class="absolute right-0 top-0 bottom-0 px-3 py-2" @click="onClear"><i class="pi pi-times text-gray-400" style="font-size: 1rem"></i></button>
     </div> 
 </template>
 <script setup>

@@ -66,7 +66,7 @@ export default class Reservation {
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 		if (name) {
 			if (setting?.folio_transaction_style_credit_debit == 1) {
-				getApi("reservation.get_folio_transaction",{"reservation":name,account_category:"Deposit"})
+				getApi("reservation.get_folio_transaction",{"transaction_number":name,"transaction_type":"Reservation"})
 				.then((result)=>{
 					this.depositTransactions =result.message
 				 

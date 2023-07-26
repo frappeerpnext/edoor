@@ -5,7 +5,7 @@ from datetime import datetime
 from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
-from frappe.utils.data import pretty_date
+from frappe.utils.data import add_to_date, getdate, pretty_date
 
 class RoomBlock(Document):
 	def validate(self):
@@ -13,8 +13,8 @@ class RoomBlock(Document):
 		 
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
 		
-		if datetime.strptime(self.start_date, "%Y-%m-%d").date() < datetime.now().date():
-			frappe.throw("Start date cannot be less than current date")
+		# if datetime.strptime(self.start_date, "%Y-%m-%d").date() < datetime.now().date():
+		# 	frappe.throw("Start date cannot be less than current date")
 		
 		if datetime.strptime(self.end_date, "%Y-%m-%d").date() < datetime.now().date():
 			frappe.throw("End date cannot be less than current date")
@@ -32,7 +32,7 @@ class RoomBlock(Document):
 
 	def on_submit(self):
 		#generate room to temp room occupy
-		dates = get_date_range( datetime.strptime(self.start_date, "%Y-%m-%d").date(),  datetime.strptime(self.end_date, "%Y-%m-%d").date(),False)
+		dates = get_date_range( datetime.strptime(self.start_date, "%Y-%m-%d").date(), add_to_date (getdate(self.end_date),days=-1),False)
 		
 		for d in dates: 
 			frappe.get_doc({
@@ -56,6 +56,9 @@ class RoomBlock(Document):
 				"property":self.property,
 				"stay_room_id":self.name,
 			}).insert()
+		#check if block date is equal to current system date than change room status to block
+
+
 
 	def on_cancel(self):
 		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))

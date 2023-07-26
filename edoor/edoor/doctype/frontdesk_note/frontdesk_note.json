@@ -10,6 +10,7 @@
  "engine": "InnoDB",
  "field_order": [
   "note_date",
+  "property",
   "reference_doctype",
   "reference_name",
   "reservation",
@@ -54,11 +55,19 @@
    "fieldname": "is_pin",
    "fieldtype": "Check",
    "label": "Is Pin"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-21 10:48:54.859826",
+ "modified": "2023-07-26 10:40:55.128364",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Frontdesk Note",

@@ -15,7 +15,7 @@
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
                     
-                    <Button class="color-purple-edoor" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                    <Button class="color-purple-edoor p-0" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         <span class="link_line_action">{{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}</span>
                     </Button>
                 </template>
@@ -24,7 +24,7 @@
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
                     <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
-                        size="small" icon="pi pi-pencil" iconPos="right"></Button>
+                        size="small" class="link_line_action1"></Button>
                 </template>
             </Column>
         </DataTable>
@@ -149,7 +149,8 @@ function onViewCustomerDetail(name) {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            maximizable: true
         },
         onClose: (options) => {
             console.log(options)

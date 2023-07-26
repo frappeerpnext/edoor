@@ -365,6 +365,11 @@
   dependencies:
     debug "^4.3.1"
 
+"@popperjs/core@^2.9.0":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
@@ -2181,6 +2186,13 @@ thenify-all@^1.0.0:
   dependencies:
     any-promise "^1.0.0"
 
+tippy.js@^6.3.7:
+  version "6.3.7"
+  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-6.3.7.tgz#8ccfb651d642010ed9a32ff29b0e9e19c5b8c61c"
+  integrity sha512-E1d3oP2emgJ9dRQZdf3Kkn0qJgI6ZLpyS5z6ZkY1DF3kaQaBsGZsndEpHwx+eC+tYM41HaSNvNtLx8tU57FzTQ==
+  dependencies:
+    "@popperjs/core" "^2.9.0"
+
 to-regex-range@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/to-regex-range/-/to-regex-range-5.0.1.tgz#1648c44aae7c8d988a326018ed72f5b4dd0392e4"
@@ -2327,6 +2339,13 @@ vue-screen@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/vue-screen/-/vue-screen-2.2.0.tgz#70733bcae6cfc82dc61b6eb68a1d49f5d61dc5a5"
   integrity sha512-M5gpl+6gsDlcEADvmrSWPmEu431+n+SRi0n8JOcZcH3uon+6SRJn4lH/AhcOp7lGXXsD0S7FkalPeopK+kTDow==
+
+vue-tippy@v6:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/vue-tippy/-/vue-tippy-6.2.0.tgz#ee8c4d4220d033a77c7fb467af967cd299fb968e"
+  integrity sha512-UytUItp2ZDLXUwAotmioz02uLQoaAl5iVM+5yKsQWrXr29L9ivavtkL684FqbmOfbeCypBw+rVKsXhwdnCt/Cg==
+  dependencies:
+    tippy.js "^6.3.7"
 
 vue2-timeago@^3.0.2:
   version "3.0.2"

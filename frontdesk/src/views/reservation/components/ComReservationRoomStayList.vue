@@ -114,7 +114,8 @@ function onUpgradeRoom() {
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             //
@@ -140,7 +141,8 @@ function onAssignRoom(data){
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             if(options.data && options.data.message){

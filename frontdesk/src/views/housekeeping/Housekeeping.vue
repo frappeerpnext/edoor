@@ -9,10 +9,6 @@
                     </div>
                 </template>
             </ComHeader>
-            <!-- <div class="flex my-2">
-        <Button @click="hk.view_type ='table'"><i class="pi pi-list me-2" />Table</Button>
-        <Button @click="hk.view_type ='kanban'"><i class="pi pi-th-large me-2"/>Kanban</Button>
-    </div> -->
             <div class="grid">
                 <div class="col-12">
                     <div class="flex justify-between">
@@ -25,8 +21,9 @@
                     </div>
                 </div>
                 <div class="col-12 m-0 p-0">
-                    <div class="flex justify-end">
-                        <div class="col-10">
+                    <div  class="flex justify-end gap-3">
+                        <div v-if="showSummary" class="col-2"></div>
+                        <div class="col px-0 pt-0">
                             <div class="w-full flex justify-between my-2">
                                 <div class="flex gap-2">
                                     <ComHousekeepingActionButton />

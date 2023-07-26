@@ -51,6 +51,32 @@ def get_reservation_stay_detail(name):
         "reservation_stay_names":reservation_stay_names
     }
 
+
+@frappe.whitelist()
+def get_folio_summary_by_transaction_type(transaction_type, transaction_number):
+     
+
+    sql = """
+        select 
+            account_category,
+            account_category_sort_order, 
+            sum(amount * if(type='Debit',1,-1)) as amount 
+        from `tabFolio Transaction` 
+        where 
+            transaction_type = '{}' and 
+            transaction_number = '{}'
+        group by 
+            account_category 
+        order by account_category_sort_order
+     """.format(
+        transaction_type,
+        transaction_number
+    )
+   
+
+    return frappe.db.sql(sql, as_dict=1)
+
+
 @frappe.whitelist()
 def get_reservation_charge_summary(reservation = None, reservation_stay = None,folio_number = None):
     search_field = "reservation"
@@ -506,12 +532,12 @@ def undo_check_in(reservation_stay):
     
 
     #delete auto post transaction
-    folio_numbers = frappe.db.sql("select distinct folio_number from `tabFolio Transaction` where reservation_stay = '{}' and is_auto_post=1".format(reservation_stay),as_dict=1)
+    folio_numbers = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where reservation_stay = '{}' and is_auto_post=1 and transaction_type='Reservation Folio'".format(reservation_stay),as_dict=1)
     frappe.db.delete("Folio Transaction", {"reservation_stay":doc.name, "is_auto_post":1})
 
     if folio_numbers:
         for f in folio_numbers:           
-            update_reservation_folio(f["folio_number"], None, run_commit=False)
+            update_reservation_folio(f["transaction_number"], None, run_commit=False)
 
     frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=reservation_stay, doc=None, run_commit=True)
     frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc.reservation, doc=None, run_commit=True)
@@ -1112,18 +1138,12 @@ def get_audit_trail(doctype, docname,is_last_modified=False):
 
 
 @frappe.whitelist()
-def get_folio_transaction(folio_number = None,reservation = None, account_category=None):
+def get_folio_transaction(transaction_type, transaction_number):
     show_account_code = frappe.db.get_default("show_account_code_in_folio_transaction")==1
-    sql = "select * from `tabFolio Transaction` where 1=1 "
-    if folio_number:
-        sql =" {} and  folio_number='{}' and coalesce(parent_reference,'')=''".format(sql,folio_number)
-
-    if reservation:
-        sql =" {} and reservation='{}' and coalesce(parent_reference,'')=''".format(sql,reservation)
+    sql = "select * from `tabFolio Transaction` where ifnull(parent_reference,'') = '' and  transaction_type='{}' and transaction_number='{}'"
+    sql = sql.format(transaction_type, transaction_number)
     
-    if account_category:
-        sql =" {} and  account_category='{}'".format(sql,account_category)
-    
+       
   
     data = frappe.db.sql(sql,as_dict=1)
 

@@ -3,6 +3,7 @@
         <template #start>
             <div class="font-bold">{{ property.name }}</div>
             <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
+             
         </template>
         <template #center>
             <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
@@ -114,12 +115,12 @@
             <TabPanel>
                 <template #header>
                     <span>Upcoming note</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note
                     }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
 
-                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="inhouseUrl"></iframe>
+                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="upCommingNoteUrl"></iframe>
                 </div>
             </TabPanel>
         </TabView>
@@ -137,7 +138,7 @@ import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
 import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
 
-import { inject, ref, onUnmounted } from '@/plugin'
+import { inject, ref, onUnmounted , onMounted} from '@/plugin'
 
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
@@ -151,6 +152,7 @@ import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
+ 
 
 
 const toast = useToast();
@@ -177,6 +179,7 @@ const selected_date = ref(null)
 const arrivalUrl = ref("");
 const departureUrl = ref("");
 const inhouseUrl = ref("");
+const upCommingNoteUrl = ref("");
 const chartOccupancy = ref([])
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -322,6 +325,13 @@ function getInhouseGuestUrl() {
 
 }
 
+function getUpCommingNoteUrl() {
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Up%20Coming%20Note&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url = url + "&date=" + selected_date.value
+    return url;
+
+}
+
 function onShowTodayData() {
 
     selected_date.value = data.value.working_date
@@ -329,6 +339,7 @@ function onShowTodayData() {
     arrivalUrl.value = getArrivalUrl();
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
+    upCommingNoteUrl.value = getUpCommingNoteUrl();
     getData()
 
     // this.classList.add("active");
@@ -344,6 +355,7 @@ function onShowTommorowData() {
     arrivalUrl.value = getArrivalUrl();
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
+    upCommingNoteUrl.value = getUpCommingNoteUrl();
     getData()
 }
 
@@ -355,6 +367,7 @@ function onDateSelect(event) {
     arrivalUrl.value = getArrivalUrl();
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
+    upCommingNoteUrl.value = getUpCommingNoteUrl();
     getData();
 }
 
@@ -392,6 +405,7 @@ function getData(loading=true) {
             arrivalUrl.value = getArrivalUrl();
                 departureUrl.value = getDepartureUrl();
                 inhouseUrl.value = getInhouseGuestUrl();
+                upCommingNoteUrl.value = getUpCommingNoteUrl();
 
             gv.loading = false;
 
@@ -507,5 +521,6 @@ const viewSummary = (name) => {
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })
+ 
 
 </script>

@@ -358,7 +358,10 @@ function onGroupCheckOut(is_not_undo = false){
         message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check out reservations?`,
         header: 'Check In',
         icon: 'pi pi-info-circle',
-        acceptClass: 'p-button-success',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             const checkList = rs.selecteds.map((r)=>r.name).join(',')
             postApi("reservation.check_out",{
@@ -406,7 +409,8 @@ function onAddRoomMore(){
             },
             maximizable: true,
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             const data = options.data;

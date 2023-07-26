@@ -166,6 +166,7 @@ function showReservationDetail(name) {
         },
         props: {
             header: 'Reservation Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },
@@ -229,7 +230,8 @@ function onAssignRoom(reservation_stay_name, name) {
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             if (options.data && options.data.message) {
@@ -247,6 +249,7 @@ function showReservationStayDetail(name) {
         },
         props: {
             header: 'Reservation Stay Detail',
+            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },

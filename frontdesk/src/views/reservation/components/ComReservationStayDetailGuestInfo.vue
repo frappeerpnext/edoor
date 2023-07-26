@@ -178,7 +178,8 @@ function onAdvancedSearch(guest_type) {
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         data:{
             guest_type: guest_type,
@@ -208,7 +209,8 @@ function onEditGuest(guest_type) {
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         data:{
             name: selectGuestName.value,

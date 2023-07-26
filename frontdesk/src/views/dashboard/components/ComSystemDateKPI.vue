@@ -1,6 +1,6 @@
 <template lang="">
     <div class="h-full">
-        <ComPanel title="System date" class="sys-date bg text-white h-full">
+        <ComPanel title="System Date" class="sys-date bg text-white h-full">
             <div class="text-center content_date">
                 <div class="padding text-4xl">{{ moment(data.working_date).format("dddd") }}</div>
                 <div class="padding day text-8xl">{{ moment(data.working_date).format("DD") }}</div>

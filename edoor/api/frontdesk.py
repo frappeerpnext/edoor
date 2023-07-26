@@ -77,6 +77,8 @@ def get_dashboard_data(property = None,date = None):
                     """.format(date, property)
     
     
+    #count upcommintg note
+    upcoming_note = frappe.db.sql("select count(name) as total  from `tabFrontdesk Note` where note_date>='{}' and property='{}'".format(date,property), as_dict=1)
     
     return {
         "working_date":working_date,
@@ -94,7 +96,8 @@ def get_dashboard_data(property = None,date = None):
         "total_cancelled":stay[0]["total_cancelled"] or 0,
         "stay_over":stay[0]["total_stay_over"] or 0,
         "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
-        "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0
+        "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
+        "upcoming_note":upcoming_note[0]["total"] or 0
         
     }
 
@@ -401,8 +404,8 @@ def get_room_block_event(start,end,property):
             name as id, 
             room_id as resourceId,
             room_number,
-            concat(start_date,'T00:00:00') as start ,
-            concat(end_date,'T23:00:00') as end,
+            concat(start_date,'T12:00:00') as start ,
+            concat(end_date,'T12:00:00') as end,
             'Room Block' as title,
             status_color as color,
             reason,

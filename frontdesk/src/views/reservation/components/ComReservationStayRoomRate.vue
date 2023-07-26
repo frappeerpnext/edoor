@@ -3,7 +3,7 @@
 
     <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
       <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
-      Edit Rate 
+      Edit Rate
       <template v-if="rs.selectedRoomRates.length>0">
         ({{ rs.selectedRoomRates.length  }})
       </template>
@@ -27,7 +27,7 @@
           <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
         </template>
       </Column>
-      <Column field="rate_type" header="Rate Type">
+      <Column field="rate_type" header="Rate Typexx">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>
@@ -87,7 +87,7 @@
       </ColumnGroup>
     </DataTable>
   </div>
- 
+
 </template>
 <script setup>
 import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
@@ -95,6 +95,7 @@ import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 
 const rs = inject('$reservation_stay')
 const data = ref([])
+const setting = JSON.parse(localStorage.getItem('edoor_setting'))
  
 const moment = inject("$moment")
 const gv = inject('$gv')
@@ -111,8 +112,8 @@ const getTotal = ref((column_name) => {
 
 
 function onEditRoomRate(room_rate = null) {
-  if(room_rate){
-
+  if(rs.reservationStay?.is_active_reservation == 1){
+    if(room_rate){
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
         selected_room_rate:room_rate,
@@ -169,6 +170,10 @@ function onEditRoomRate(room_rate = null) {
   } else if (rs.selectedRoomRates.length == 0){
     toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
     return 
+  }
+  }else{
+          toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "This Reservation Stay has been cancelled.", life: 3000 })
+          return 
   }
 
 }

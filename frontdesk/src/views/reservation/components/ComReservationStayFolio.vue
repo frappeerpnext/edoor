@@ -63,8 +63,9 @@ function onAddCreatNewFolio() {
             style: {
                 width: '50vw',
             },
-
-            modal: true
+            modal: true,
+            position: 'top',
+            closeOnEscape: false
         },
         onClose: (options) => {
             const data = options.data;

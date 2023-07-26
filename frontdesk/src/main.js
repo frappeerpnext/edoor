@@ -123,6 +123,8 @@ import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
 import ComStayInfoNoBox from '@/views/reservation/components/ComStayInfoNoBox.vue'
 import ComLastModifiedInfo from './components/layout/components/ComLastModifiedInfo.vue'
+import VueTippy from 'vue-tippy'
+import 'tippy.js/dist/tippy.css' // optional for styling
 
 
 
@@ -222,14 +224,22 @@ app.use(DialogService);
 app.use(ConfirmationService);
 
 
-
-
-// const dialogService = createDialogService();
-// app.component('Dialog', createDialog());
-// app.provide('dialogService', dialogService);
-
-// dialogService.position = 'top';
-
+ 
+app.use(
+	VueTippy,
+	// optional
+	{
+	  directive: 'tippy', // => v-tippy
+	  component: 'tippy', // => <tippy/>
+	  componentSingleton: 'tippy-singleton', // => <tippy-singleton/>,
+	  defaultProps: {
+		placement:"bottom",
+		allowHTML: true,
+		followCursor: true,
+	  }, 
+	}
+  )
+ 
 // Global Properties,
 
 app.provide("$auth", auth);
@@ -255,12 +265,14 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
-
+ 
 
 // Configure route gaurds
 router.beforeEach(async (to, from, next) => {
-	document.title = (to.meta.title || '') + ' | eDoor Frontdesk'
+	 
+	document.title = (to.meta.title || '') + ' | eDoor Front Desk'
 	if (to.matched.some((record) => !record.meta.isLoginPage)) {
+
 		// this route requires auth, check if logged in
 		// if not, redirect to login page.
 		if (!auth.isLoggedIn) {
@@ -288,6 +300,11 @@ router.beforeEach(async (to, from, next) => {
 		property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
 	}).then((r) => {
 		const data = r.message
+		if(data.user.name=="Guest"){
+			 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + data.edoor_setting.backend_port;
+			 
+			 window.location.replace(serverUrl)
+		}else { 
 		localStorage.setItem('edoor_user', JSON.stringify(data.user))
 		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
 		if (r.message.property == "Invalid Property") {
@@ -304,8 +321,10 @@ router.beforeEach(async (to, from, next) => {
 		}
 
 		app.mount("#app");
+	}
 
 	}).catch((error) => {
 		 alert("Load app error")
-
+		// const errorApp = createApp(Error);
+		// errorApp.mount("#app");
 	})

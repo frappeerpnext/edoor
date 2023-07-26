@@ -165,7 +165,8 @@ function onEditGuest() {
                 '640px': '90vw'
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         data:{
             name: rs.masterGuest.name,
