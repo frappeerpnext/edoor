@@ -67,9 +67,13 @@ class RoomBlock(Document):
 
 
 	def on_update_after_submit(self):
-		room_doc = frappe.get_doc("Room", self.room_id)
-		room_doc.housekeeping_status = self.unblock_housekeeping_status 
-		room_doc.save()
+		if self.is_unblock ==1:
+			room_doc = frappe.get_doc("Room", self.room_id)
+			room_doc.housekeeping_status = self.unblock_housekeeping_status 
+			room_doc.save()
+			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
+			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
+
 
 
 	def on_cancel(self):

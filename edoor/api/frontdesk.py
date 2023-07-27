@@ -420,6 +420,7 @@ def get_room_block_event(start,end,property):
             `tabRoom Block` 
         where 
             docstatus = 1   and 
+            is_unblock = 0 and
             name in (
                 select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' 
             ) and 

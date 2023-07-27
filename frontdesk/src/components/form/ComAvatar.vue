@@ -1,6 +1,7 @@
 <template>
     <div class="w-full flex align-items-center text-color border-noround" :class="align">
         <div :class="{'cursor-pointer':isDisplayImage}" @click="onShowImage" v-if="!fileName">
+            <!-- <ComIcon class="mr-2 bg-gray-300 " icon="userProfile" :style="{borderColor:colorStatus}" ></ComIcon> -->
             <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" />
         </div>
         <template v-else>
