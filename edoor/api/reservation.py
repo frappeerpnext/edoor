@@ -609,7 +609,7 @@ def check_out(reservation,reservation_stays=None):
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
 
-
+    room_status = frappe.db.get_default("housekeeping_status_after_check_out")
     for s in reservation_stays:
         stay = frappe.get_doc("Reservation Stay", s)
         if stay.reservation_status=="Checked Out":
@@ -624,7 +624,20 @@ def check_out(reservation,reservation_stays=None):
         stay.reservation_status = "Checked Out"
         stay.save()
 
+        #update room status
+        #get last stay room form temp occupy
+        frapp
+        
+        current_stay_room = frappe.db.sql("select room_id from `tabTemp Room Occupy` where reservation_stay='{}' order by date desc limit 1".format(s),as_dict=1)
+        for r in current_stay_room:
+            room_doc = frappe.get_doc("Room", r["room_id"])
+            room_doc.housekeeping_status = room_status
+            room_doc.save()
+
     doc = update_reservation(name=reservation,run_commit=False)
+
+    
+    
     frappe.db.commit()
 
     #enqueu remove record from temp room occupy
