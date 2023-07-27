@@ -15,6 +15,7 @@
     <img v-else-if="icon == 'pushPin'" :class="class" :src="pushPin"/>
     <img v-else-if="icon == 'pushPined'" :class="class" :src="pushPined"/>
     <img v-else-if="icon == 'iconNoteWhite'" :class="class" :src="iconNoteWhite"/>
+    <img v-else-if="icon == 'userProfile'" :class="class" :src="userProfile"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -43,6 +44,7 @@ import pushPin from '@/assets/svg/push_pin.svg'
 import pushPined from '@/assets/svg/push_pined.svg'
 import iconBedPurple from '../assets/svg/icon-room-purple.svg'
 import iconNoteWhite from '@/assets/svg/icon-note-paper-white.svg'
+import userProfile from '@/assets/svg/user-icon-profile.svg'
 
 
 </script>

@@ -545,6 +545,11 @@ def clear_reservation():
     frappe.db.sql("delete from `tabCashier Shift`")
     frappe.db.sql("delete from `tabFrontdesk Note`")
     frappe.db.sql("delete from `tabRoom Block`")
+
+    room_list = frappe.db.get_all("Room")
+    for r in room_list:
+        room_doc = frappe.get_doc("Room", r.name)
+        room_doc.save()
     
     
     frappe.db.commit()
