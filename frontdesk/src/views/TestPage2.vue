@@ -1,6 +1,6 @@
 <template>
-    <div ref="input">
-        <TestPage :list="msg" :test="test" >
+    <div>
+        <TestPage :list="msg" :test="test"  ref="input">
             <template v-slot="slotProps">
                 <div class="text-red-400">{{ slotProps.data }}</div>
             </template>
@@ -9,15 +9,18 @@
     </div>
 </template>
 <script setup> 
-import {ref} from 'vue'
+import {ref, onMounted} from 'vue'
 import TestPage from './TestPage.vue'
 var msg = ref(['A','B','C'])
 const test = ref('v')
 const input = ref()
-console.log(input)
+
 function onClick(){
     test.value = 'ww'
 }
+onMounted(() => {
+    console.log(input)
+})
 </script>
 <style scoped>
 

@@ -774,6 +774,14 @@ def update_room_status(working_day):
         room_doc.housekeeping_status = room_status
         room_doc.save()
 
+    #2 update room status of room block
+    room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property='{}' and date='{}'".format(working_day.business_branch, working_day.posting_date),as_dict=1)
+    room_status = frappe.db.get_default("room_block_status")
+    for r in room_block:
+        room_doc = frappe.get_doc("Room", r["room_id"])
+        room_doc.housekeeping_status = room_status
+        room_doc.save()
+
     frappe.db.commit()
     
 
