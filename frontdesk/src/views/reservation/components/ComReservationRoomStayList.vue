@@ -8,9 +8,7 @@
                             <span v-tooltip.top="'Arrival Date'">
                             {{gv.dateFormat(data.start_date) }}
                             </span>
-                            <span class="mx-2">
-                            <i class="pi text-500 pi-arrow-right font-thin" style="font-size:8px;" />
-                            </span>
+                            &#8594;
                             <span v-tooltip.top="'Departure Date'">
                             {{gv.dateFormat(data.end_date) }}
                             </span> 

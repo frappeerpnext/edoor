@@ -21,6 +21,8 @@
   "column_break_10",
   "house_keeping_status_after_check_out",
   "housekeeping_status_after_undo_check_in",
+  "section_break_15",
+  "housekeeping_status_after_cancel_room_block",
   "permission_and_role_tab",
   "role_for_back_date_transaction",
   "check_in_role",
@@ -136,12 +138,22 @@
    "fieldname": "allow_user_to_delete_auto_post_transaction",
    "fieldtype": "Check",
    "label": "Allow User to delete auto post transaction"
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "housekeeping_status_after_cancel_room_block",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status after Cancel Room Block",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-24 16:06:47.242301",
+ "modified": "2023-07-26 18:32:17.976685",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

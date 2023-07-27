@@ -2,7 +2,7 @@
     <ComDialogContent hideButtonOK :loading="loading" @onClose="onClose">
         <ComPlaceholder text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
             <DataTable :value="data" tableStyle="min-width: 50rem">
-                <Column field="name" header="Document Number">
+                <Column field="name" header="Document Number" headerClass="text-center" bodyClass="text-center">
                     <template #body="slotProps">
                         <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
                             {{ slotProps.data.name }}
@@ -18,18 +18,31 @@
                     </template>
                 </Column>
                 <Column field="business_source" header="Business Source"></Column>
-                <Column field="rooms" header="Room No"></Column>
-                <Column field="arrival_date" header="Arrival">
+                <Column field="rooms" header="Room No">
                     <template #body="slotProps">
-                        <span>{{ gv.dateFormat(slotProps.data.arrival_date) }}</span>
+                        <span v-if="slotProps.data.rooms_data">
+                            <span v-for="(item, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
+                                <span>{{ item.room_type_alias }}</span>/
+                                <span v-if="item.room_number">
+                                    <span>{{ item.room_number }}</span><span v-if="index !== JSON.parse(slotProps.data.rooms_data).length - 1">, </span>
+                                </span>
+                                <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                    <i class="pi pi-pencil"></i>
+                                    <span>
+                                        <span>{{ item.room_type_alias }}</span> / assign
+                                    </span>
+                                </button>
+                            </span>
+                        </span>
                     </template>
+
                 </Column>
-                <Column field="departure_date" header="Departure">
+                <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
                     <template #body="slotProps">
-                        <span>{{ gv.dateFormat(slotProps.data.departure_date) }}</span>
+                        <span>{{ gv.dateFormat(slotProps.data.departure_date) }} &#8594; {{ gv.dateFormat(slotProps.data.arrival_date) }}</span>
                     </template>
                 </Column> 
-                <Column field="reservation_status" header="Status">
+                <Column field="reservation_status" header="Status" headerClass="text-center" bodyClass="text-center">
                     <template #body="slotProps">
                         <ComReservationStatus :statusName="slotProps.data.reservation_status"/>
                     </template>
@@ -65,7 +78,9 @@ function loadData() {
             'rooms',
             'reservation_status',
             'arrival_date',
-            'departure_date'
+            'departure_date',
+            'room_type_alias',
+            'rooms_data'
         ],
         filters: dialogRef.value.data.filters
     }).then((doc) => {
@@ -89,7 +104,6 @@ function onViewReservationDetail(name) {
         },
         props: {
             header: 'Reservation Stay Detail',
-            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },
@@ -99,7 +113,8 @@ function onViewReservationDetail(name) {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position: 'top'
         },
         onClose: (options) => {
             console.log(options)

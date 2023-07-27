@@ -50,12 +50,12 @@
             <ComStayInfoNoBox  label="PAX" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" /> 
             <ComStayInfoNoBox  label="Arrival">
                 <span class="-ms-3 font-semibold">
-                    {{ gv.dateFormat(hk?.reservationStay?.arrival_date) }} - {{ gv.datetimeFormat(hk?.reservationStay?.arrival_time)  }}
+                    {{ gv.dateFormat(hk?.reservationStay?.arrival_date) }} - {{ gv.timeFormat(hk?.reservationStay?.arrival_time)  }}
                 </span>
             </ComStayInfoNoBox> 
             <ComStayInfoNoBox  label="Departure">
                 <span class="-ms-3 font-semibold">
-                {{ gv.dateFormat(hk?.reservationStay?.departure_date) }} - {{ gv.datetimeFormat(hk?.reservationStay?.departure_time)  }}
+                {{ gv.dateFormat(hk?.reservationStay?.departure_date) }} - {{ gv.timeFormat(hk?.reservationStay?.departure_time)  }}
                 </span>
             </ComStayInfoNoBox> 
             <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 

@@ -60,8 +60,7 @@
                                         <hr>
                                     </div>
                                     <div class="col-12">
-                                        <ComCommentAndNotice v-if="!rs.loading"
-                                            doctype="Reservation Stay" :docname="rs.reservationStay.name" />
+                                        <ComCommentAndNotice v-if="!rs.loading && rs.reservationStay.name" doctype="Reservation Stay" :docname="rs.reservationStay.name" />
                                     </div>
                                 </div>
                             </div>

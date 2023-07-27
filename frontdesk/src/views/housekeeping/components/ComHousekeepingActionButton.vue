@@ -36,7 +36,7 @@
     </Dialog>
 </template>
 <script setup>
-import { ref, inject, useToast } from '@/plugin';
+import { ref, inject, useToast,postApi } from '@/plugin';
 
 const toast = useToast();
 const hk = inject("$housekeeping")
@@ -70,13 +70,13 @@ function AssingnHousekeeper() {
 function onSaveChangeHousekeepingStatus() {
     submitLoading.value = true;
     const rooms = hk.selectedRooms.map(r => r.name).join(",");
-    call.post("edoor.api.housekeeping.update_housekeeping_status", {
+    postApi("housekeeping.update_housekeeping_status", {
         rooms: rooms,
         status: selectedStatus.value
     }).then((result) => {
         visibleHousekeepingStatus.value = false
         hk.selectedRooms = []
-        toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
+     
         hk.loadData()
         submitLoading.value = false
         selectedStatus.value = ""

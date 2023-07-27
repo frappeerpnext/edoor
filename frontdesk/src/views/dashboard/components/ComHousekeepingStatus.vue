@@ -21,7 +21,7 @@ import ComIFrameModal from "../../../components/ComIFrameModal.vue";
 const frappe = inject("$frappe")
 const call = frappe.call()
 const data = ref([])
-
+const working_day = JSON.parse(localStorage.getItem('edoor_working_day')) 
 const dialog = useDialog();
 
 call.get('edoor.api.frontdesk.get_house_keeping_status', {
@@ -31,7 +31,9 @@ call.get('edoor.api.frontdesk.get_house_keeping_status', {
 })
 
 const onViewRoomList = (status) => {
-
+ 
+    if (status.value.is_block_room==0){
+ 
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
             "doctype": "Business%20Branch",
@@ -53,6 +55,30 @@ const onViewRoomList = (status) => {
         },
         
     });
+}
+    else {
+        const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: "eDoor%20Room%20Block",
+            extra_params: [{  key: "housekeeping_status", value: encodeURIComponent(status.value.status) },{  key: "date", value:working_day.date_working_day }],
+            view:"ui",
+            filter_options: ['keyword']
+        },
+        props: {
+            header: status.value.status,
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        },
+        
+    });
+    }
 }
 
 </script>

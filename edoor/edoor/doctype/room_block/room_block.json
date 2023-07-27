@@ -22,6 +22,7 @@
   "unblock_section",
   "is_unblock",
   "unblock_date",
+  "unblock_housekeeping_status",
   "column_break_14",
   "unblock_note",
   "amended_from",
@@ -152,12 +153,21 @@
    "fieldname": "status_color",
    "fieldtype": "Color",
    "label": "Status Color"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.is_unblock==1",
+   "fieldname": "unblock_housekeeping_status",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status",
+   "mandatory_depends_on": "eval:doc.is_unblock==1",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-26 12:16:07.507041",
+ "modified": "2023-07-26 19:17:18.585748",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

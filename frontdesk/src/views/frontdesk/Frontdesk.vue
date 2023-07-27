@@ -231,10 +231,12 @@ const calendarOptions = reactive({
             });
     },
     eventAllow: function (dropInfo, draggedEvent) {
-        return false
+        
+     
+        return draggedEvent._def.extendedProps.can_resize
     },
     selectable: true,
-    editable: false,
+    editable: true,
     eventResizableFromStart: true,
     resourceAreaWidth: "250px",
     height: 'auto',
@@ -247,19 +249,10 @@ const calendarOptions = reactive({
 
     slotLabelFormat: function (date) {
 
-        //console.log(date.date.year,date.date.month,date.date.day)
-        // console.log(moment(date.date.marker).format("DD"))
         return " "
     },
 
     slotLabelDidMount: function (info) {
- 
-        // var resourceId = info.event._def.resourceIds[0];
-        // var resource = info.view.calendar.getResourceById(resourceId);
-        // var td = info.el.closest('td');
-        // td.setAttribute('data-resource-id', resourceId);
-        // console.log(resourceId)
-        // console.log(resource)
 
         const d = moment(info.date).format("DD")
         const day = moment(info.date).format("ddd")
@@ -294,8 +287,10 @@ const calendarOptions = reactive({
     eventMouseEnter: (($event) => {
         const event=$event.event._def
        
-       
+        
+        if(event.extendedProps.type =="stay" || event.extendedProps.type =="room_block" ){
 
+        
         const description=`<div style="background:red">
                                         <table>
                                             <tbody>
@@ -314,15 +309,10 @@ const calendarOptions = reactive({
         const { tippyInstance } = useTippy($event.el, {
             content: description,
         })
-
+    }
       
    
         
-    }),
-
-    eventMouseLeave: (() => {
-        showTooltip.value = !showTooltip.value;
-        eventInfo.data = null;
     }),
     eventDrop: function (info) {
         if (!confirm("Are you sure about this change?")) {

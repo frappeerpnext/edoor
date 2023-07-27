@@ -31,7 +31,8 @@
   "column_break_21",
   "guest",
   "guest_name",
-  "show_in_room_availability"
+  "show_in_room_availability",
+  "is_block"
  ],
  "fields": [
   {
@@ -188,11 +189,18 @@
    "fieldname": "show_in_room_availability",
    "fieldtype": "Check",
    "label": "Show in Room Availability"
+  },
+  {
+   "default": "0",
+   "fetch_from": "housekeeping_status.is_block_room",
+   "fieldname": "is_block",
+   "fieldtype": "Check",
+   "label": "Is Block"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-11 11:55:55.522803",
+ "modified": "2023-07-26 17:26:16.737677",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

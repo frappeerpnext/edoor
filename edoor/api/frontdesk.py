@@ -18,7 +18,6 @@ def get_meta(doctype=None):
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
-
     working_date =  frappe.utils.today() 
     if data:
         working_date = data[0]["date"]
@@ -109,13 +108,15 @@ def get_house_keeping_status(property):
     for d in hk_data:
         total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
 
-        
         housekeeping_status.append({
             "status":d.name,
             "color":d.status_color,
             "icon":d.icon,
-            "total":total
+            "total":total,
+            "is_block_room":d.is_block_room
         })
+ 
+
     return housekeeping_status
 
 @frappe.whitelist()
@@ -138,7 +139,7 @@ def get_mtd_room_occupany(property):
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
-    housekeeping_status = frappe.get_list("Housekeeping Status", fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
+    housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
@@ -360,7 +361,10 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             is_master,
             parent as reservation_stay,
             'stay' as type,
-            1 as editable
+            1 as can_resize,
+            arrival_date,
+            departure_date,
+            rooms
 
         from 
             `tabReservation Stay Room` 
@@ -382,7 +386,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
     data = frappe.db.sql(sql, as_dict=1)
  
     for d in data:
-        d["editable"]  = d["editable"] ==1
+        d["can_resize"]  = d["can_resize"] ==0
     events = data
    
 
@@ -747,9 +751,27 @@ def run_night_audit(property, working_day):
     #queue post room change to folio
     post_room_change_to_folio(new_working_day)
 
-    #frappe.throw("we pass valicatation")
+    #update room status after runight auit
+    update_room_status(new_working_day)
     
     return property
+
+@frappe.whitelist()
+def update_room_status(working_day):
+    #1. update stay over guesty
+    stay_over_room = frappe.db.sql("""
+                            select 
+                                name 
+                            from `tabRoom` 
+                            where 
+                                ifnull(reservation_stay,'')<>'' and 
+                                property='{}' 
+                    """.format(working_day.business_branch),as_dict=1)
+    room_status = frappe.db.get_default("housekeeping_status_after_run_audit")
+    for r in stay_over_room:
+        room_doc = frappe.get_doc("Room", r)
+        room_doc.housekeeping_status = room_status
+        room_doc.save()
 
 @frappe.whitelist()
 def post_room_change_to_folio(working_day):

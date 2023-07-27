@@ -29,8 +29,10 @@
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
             </div>
-            <ComReservationStatus v-if="rs.reservationStay && rs.reservationStay?.reservation_status"
-                :status-name="rs.reservationStay?.reservation_status" />
+            <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: rs.reservationStay?.status_color }" v-if="rs.reservationStay && rs.reservationStay?.reservation_status">
+                {{ rs.reservationStay?.reservation_status }}
+                
+            </span>
             <span v-if="rs.reservationStay?.reservation_type == 'FIT'"
                 class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                 <i class="pi pi-user" style="font-size: 10px;"></i>

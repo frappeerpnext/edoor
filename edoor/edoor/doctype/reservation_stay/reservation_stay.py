@@ -147,6 +147,9 @@ class ReservationStay(Document):
 		generate_room_occupy(self)
 		generate_room_rate(self, is_update_reservation_stay=True)
 
+	def on_update(self):
+		frappe.db.sql("update `tabReservation Stay Room` set rooms='{}',arrival_date='{}',departure_date='{}' where parent='{}'".format(self.rooms,self.arrival_date,self.departure_date, self.name))
+
 
 def update_note(self):
 	self.note_by = frappe.session.user

@@ -25,16 +25,14 @@
                             <template #body="slotProps">
                                 <div>
                                     <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
-                                        <span class="mx-2">
-                                            <i class="pi text-500 pi-arrow-right font-thin" style="font-size:8px;" />
-                                        </span>
+                                    &#8594;
                                     <span v-tooltip.top="'Departure Date'">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
                                 </div>                               
                             </template>
                         </Column>
                         <Column header="Room">
                             <template #body="slotProps">
-                                <div> 
+                                <div>
                                     <span v-for="(i, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
                                         <span v-if="index < 3">
                                             {{(index != 0) ? ',' : ''}}

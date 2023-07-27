@@ -1,5 +1,5 @@
 <template>
-    <span v-if="status" class="px-2 rounded-lg me-2 text-white p-1px" :class="class"  :style="{ background: status?.color}">
+    <span v-if="status" class="rounded-pill py-1 px-2 text-white border-round-3xl" :class="class"  :style="{ background: status?.color}">
         {{ status.name }}
     </span>
 </template>

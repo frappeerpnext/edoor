@@ -6,6 +6,7 @@ from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
 from frappe.utils.data import add_to_date, getdate, pretty_date
+from edoor.api.frontdesk import get_working_day
 
 class RoomBlock(Document):
 	def validate(self):
@@ -57,7 +58,18 @@ class RoomBlock(Document):
 				"stay_room_id":self.name,
 			}).insert()
 		#check if block date is equal to current system date than change room status to block
+		working_day = get_working_day(self.property)
+		if getdate(working_day["date_working_day"])>=getdate(self.start_date) and getdate(working_day["date_working_day"])<=add_to_date(getdate(self.end_date),days=-1):
+			 
+			room_doc = frappe.get_doc("Room", self.room_id)
+			room_doc.housekeeping_status = self.housekeeping_status 
+			room_doc.save()
 
+
+	def on_update_after_submit(self):
+		room_doc = frappe.get_doc("Room", self.room_id)
+		room_doc.housekeeping_status = self.unblock_housekeeping_status 
+		room_doc.save()
 
 
 	def on_cancel(self):
