@@ -6,10 +6,15 @@
             </slot>
         </li>
     </ul>
+    {{ test }}
 </template>
 <script setup>
-    import {ref} from 'vue'
+    import {ref, watchEffect} from 'vue'
     const props = defineProps({
-        list: Array
+        list: Array,
+        test: String
+    })
+    watchEffect(()=>{
+        console.log(props.test)
     })
 </script>

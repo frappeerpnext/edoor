@@ -668,12 +668,6 @@ onMounted(() => {
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })
-
-
-
-// document.addEventListener('mouseover', function(event) {
-//   console.log(event);
-// });
 </script>
 <style>
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {

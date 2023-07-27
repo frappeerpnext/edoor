@@ -24,13 +24,11 @@
                             <span v-for="(item, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
                                 <span>{{ item.room_type_alias }}</span>/
                                 <span v-if="item.room_number">
-                                    <span>{{ item.room_number }}</span><span v-if="index !== JSON.parse(slotProps.data.rooms_data).length - 1">, </span>
+                                    <span>{{ item.room_number }}</span>{{ (index !== JSON.parse(slotProps.data.rooms_data).length - 1) ? ', ' : '' }}
                                 </span>
-                                <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(item.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
                                     <i class="pi pi-pencil"></i>
-                                    <span>
-                                        <span>{{ item.room_type_alias }}</span> / assign
-                                    </span>
+                                    <span>assign</span>
                                 </button>
                             </span>
                         </span>
@@ -147,6 +145,10 @@ function onViewCustomerDetail(name) {
             //
         }
     });
+}
+
+function onAssignRoom(room_name, reservation_stay){
+    window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
 
 </script>

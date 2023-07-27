@@ -32,7 +32,7 @@
                         </Column>
                         <Column header="Room">
                             <template #body="slotProps">
-                                <div>
+                                <div> 
                                     <span v-for="(i, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
                                         <span v-if="index < 3">
                                             {{(index != 0) ? ',' : ''}}
