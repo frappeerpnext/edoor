@@ -6,6 +6,7 @@
             </template>
         </TestPage>
         <Button type="button" @click="onClick">click</Button>
+        <component :is="TestPage"></component>
     </div>
 </template>
 <script setup> 

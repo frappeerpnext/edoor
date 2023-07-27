@@ -6,7 +6,7 @@
             </slot>
         </li>
     </ul>
-    {{ test }}
+    {{ test }}zz
 </template>
 <script setup>
     import {ref, watchEffect, watchPostEffect} from 'vue'

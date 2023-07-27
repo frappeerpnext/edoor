@@ -757,7 +757,7 @@ def run_night_audit(property, working_day):
     return property
 
 @frappe.whitelist()
-def update_room_status(working_day):
+def update_room_status(working_day=None):
     #1. update stay over guesty
     stay_over_room = frappe.db.sql("""
                             select 
@@ -781,7 +781,8 @@ def update_room_status(working_day):
         room_doc = frappe.get_doc("Room", r["room_id"])
         room_doc.housekeeping_status = room_status
         room_doc.save()
-
+    
+   
     frappe.db.commit()
     
 
