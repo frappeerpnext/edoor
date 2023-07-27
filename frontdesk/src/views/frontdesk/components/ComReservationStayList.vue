@@ -22,12 +22,12 @@
                     <template #body="slotProps">
                         <span v-if="slotProps.data.rooms_data">
                             <span v-for="(item, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
-                                <span>{{ item.room_type_alias }}</span>/
+                                <span v-tooltip.top="item.room_type">{{ item.room_type_alias }}</span>/
                                 <span v-if="item.room_number">
                                     <span>{{ item.room_number }}</span>{{ (index !== JSON.parse(slotProps.data.rooms_data).length - 1) ? ', ' : '' }}
                                 </span>
                                 <span v-else>
-                                    <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(item.name,slotProps.data.name)" class="link_line_action w-auto">
+                                    <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(item.name,slotProps.data.name)" class="link_line_action w-auto cursor-pointer">
                                         <i class="pi pi-pencil"></i>
                                         <span> Assign Room</span>
                                     </button>{{ (index !== JSON.parse(slotProps.data.rooms_data).length - 1) ? ', ' : '' }} 
@@ -35,7 +35,6 @@
                             </span>
                         </span>
                     </template>
-
                 </Column>
                 <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
                     <template #body="slotProps">

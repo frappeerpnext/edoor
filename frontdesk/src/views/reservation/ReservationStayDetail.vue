@@ -137,10 +137,11 @@
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
             </Button>
             <Button
-                v-if="rs.reservationStay?.reservation_status == 'In-house' && (rs.reservation.working_date >= moment(rs.reservation.departure_date).add(-1, 'day').format('YYYY-MM-DD'))"
+                v-if="rs.reservationStay?.reservation_status == 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservation.departure_date).add(-1, 'day'))"
                 @click="onCheckOut" class="bg-red-400">
                 <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
             </Button>
+        
         </template>
 
     </ComDialogContent>
@@ -187,6 +188,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'

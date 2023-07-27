@@ -17,11 +17,7 @@ class ReservationStay(Document):
 	 
 		if not self.reservation:
 			frappe.throw("Please select reservation")
-			
-		 
-		if  getdate(self.arrival_date)< getdate( working_day["date_working_day"]) and self.is_new():
-			frappe.throw("You don't have permission to add back date transaction")
-		
+
 		if  getdate(self.departure_date)<=getdate(self.arrival_date):
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 		
