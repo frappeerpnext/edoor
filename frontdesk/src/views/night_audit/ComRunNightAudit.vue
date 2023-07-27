@@ -92,11 +92,13 @@ function onNext() {
     //set selected
     if (currentStep.value < steps.value.length) {
         if (currentStep.value > 1) {
+            
             loading.value = true
             postApi("frontdesk.validate_run_night_audit", {
                 property: setting?.property?.name,
                 step: currentStep.value
             }, "", false).then((result) => {
+             
                 if (currentStep.value == 4) {
                     //confrim room rate
                     if (result.message) {
