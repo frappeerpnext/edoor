@@ -223,7 +223,6 @@ function onEditGuest(guest_type) {
                 else if(guest_type == 'stay_guest'){
                     rs.guest = options.data
                 }else{
-                    alert(rs.reservationStay.name)
                     getDoc('Reservation Stay', rs.reservationStay.name).then((r)=>{
                         rs.reservationStay = r
                     })

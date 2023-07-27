@@ -374,6 +374,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
     #add room charge to folio transaction
     #check master room is already check in
     #update check date and check in by in to reservation stay
+    
     check_in_role = frappe.db.get_default("check_in_role")
  
     if not check_in_role in frappe.get_roles(frappe.session.user):
@@ -592,8 +593,6 @@ def mark_as_master_folio(reservation,reservation_stay):
     frappe.db.commit()
     return doc
 
-    
-
 @frappe.whitelist(methods="POST")
 def check_out(reservation,reservation_stays=None):
     #reservation stay is array
@@ -626,10 +625,8 @@ def check_out(reservation,reservation_stays=None):
 
         #update room status
         #get last stay room form temp occupy
-        frapp
-        
-        current_stay_room = frappe.db.sql("select room_id from `tabTemp Room Occupy` where reservation_stay='{}' order by date desc limit 1".format(s),as_dict=1)
-        for r in current_stay_room:
+        last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay.name), as_dict=1)
+        for r in last_stay_room:
             room_doc = frappe.get_doc("Room", r["room_id"])
             room_doc.housekeeping_status = room_status
             room_doc.save()
@@ -648,8 +645,30 @@ def check_out(reservation,reservation_stays=None):
     }
 
 @frappe.whitelist(methods="POST")
-def undo_check_out(property,reservation_stay):
-    pass
+def undo_check_out(property=None, reservation = None, reservation_stays=None):
+    stay_doc = {}
+    working_day = get_working_day(property)
+    room_status = frappe.db.get_default("housekeeping_status_after_undo_check_out")
+    for s in reservation_stays:
+        stay_doc = frappe.get_doc("Reservation Stay", s)
+        if stay_doc.reservation_status =="Checked Out" and stay_doc.departure_date == working_day["date_working_day"]:
+            stay_doc.reservation_status = "In-house"
+            stay_doc.is_undo_check_out = True
+            stay_doc.save()
+            #update room status
+            last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay_doc.name), as_dict=1)
+            if last_stay_room:
+                room_doc = frappe.get_doc("Room",last_stay_room[0]["room_id"])
+                room_doc.housekeeping_status = room_status
+                room_doc.save()
+
+        else:
+            frappe.throw("This reservation stay {}, room {} is not allow to undo check out".format(stay_doc.name, stay_doc.rooms))
+
+    frappe.msgprint("Undo check out successfully")
+    if not reservation:
+        return stay_doc
+    #frappe.throw("undo check out ")
 
 @frappe.whitelist()
 def change_reservation_guest( guest, reservation='',reservation_stay='', is_apply_all_stays='false', is_apply_master_guest='false', is_only_master_guest='false'):

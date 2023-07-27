@@ -51,12 +51,13 @@
     </ComDialogContent> 
 </template>
 <script setup>
-import { inject, onMounted,useDialog,getDocList,ref } from '@/plugin'
+import { inject, onMounted,useDialog,getDocList,ref,onUnmounted } from '@/plugin'
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComPlaceholder from "@/components/layout/components/ComPlaceholder.vue"
 const dialogRef = inject("dialogRef")
 const gv = inject("$gv")
+const socket = inject("$socket")
 const dialog = useDialog();
 const loading = ref(false)
 const data = ref([])
@@ -83,9 +84,7 @@ function loadData() {
         ],
         filters: dialogRef.value.data.filters
     }).then((doc) => {
-        console.log(doc)
         data.value = doc
-        console.log(data.value)
         loading.value = false
     })
     .catch((error) => {
@@ -93,6 +92,13 @@ function loadData() {
     })
 
 }
+socket.on("RefreshReservationStayList", (arg) => {
+
+    if(arg ==property.name){
+        loadData()
+    }    
+
+})
 function onClose(){
     dialogRef.value.close()
 }
@@ -151,5 +157,7 @@ function onViewCustomerDetail(name) {
 function onAssignRoom(room_name, reservation_stay){
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
-
+onUnmounted(() => {
+    socket.off("RefreshReservationStayList");
+})
 </script>

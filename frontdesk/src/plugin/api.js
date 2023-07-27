@@ -107,8 +107,13 @@ export function postApi(api, params = Object, message,show_message=true){
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
         call.post(`edoor.api.${api}`, params).then((result) => {
-                if(show_message){
+                if(show_message && !result.hasOwnProperty("_server_messages")){
                     window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                }else{
+                    const _server_messages = JSON.parse(result._server_messages)
+                    _server_messages.forEach(r => {
+                        window.postMessage('show_success|' + JSON.parse(r).message, '*')
+                    });
                 }
                 
           

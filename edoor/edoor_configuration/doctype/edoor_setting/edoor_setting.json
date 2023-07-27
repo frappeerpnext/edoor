@@ -23,6 +23,8 @@
   "housekeeping_status_after_undo_check_in",
   "section_break_15",
   "housekeeping_status_after_cancel_room_block",
+  "column_break_17",
+  "housekeeping_status_after_undo_check_out",
   "permission_and_role_tab",
   "role_for_back_date_transaction",
   "check_in_role",
@@ -148,12 +150,22 @@
    "fieldtype": "Link",
    "label": "Housekeeping Status after Check Out",
    "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "column_break_17",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "housekeeping_status_after_undo_check_out",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status after Undo Check Out",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-27 15:02:29.844101",
+ "modified": "2023-07-27 22:11:18.513165",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

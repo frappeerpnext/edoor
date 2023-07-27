@@ -236,6 +236,8 @@ function onAssignRoom(reservation_stay_name, name) {
         onClose: (options) => {
             if (options.data && options.data.message) {
                 rs.getReservationDetail(options.data.message.name)
+                socket.emit("RefresheDoorDashboard", property.name)
+                socket.emit("RefreshReservationStayList", property.name)
             }
         }
     })

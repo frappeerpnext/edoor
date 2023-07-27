@@ -1,6 +1,6 @@
 import Enumerable from 'linq'
 import { FrappeApp } from 'frappe-js-sdk';
-import { ref, computed, useRouter,getDocList } from '@/plugin';
+import { ref, computed, useRouter } from '@/plugin';
 import moment from '@/utils/moment.js';
 const frappe = new FrappeApp();
 const db = frappe.db();
@@ -27,8 +27,7 @@ export default class ReservationStay {
 		this.reservationStatusDelete = ['No Show', 'Void', 'Cancelled']
 		this.folio_summary = ref([])
 		this.room_rates = ref([])
-		this.is_page = false,
-		this.listByFilters = []
+		this.is_page = false
 
 	}
 
@@ -287,30 +286,5 @@ export default class ReservationStay {
 		 
 	 
 	}
-	getListByFilter(filters) {
-		this.loading.value = true
-		getDocList('Reservation Stay', {
-			fields: [
-				'name',
-				'creation',
-				'reference_number',
-				'guest',
-				'guest_name',
-				'business_source',
-				'rooms',
-				'reservation_status',
-				'arrival_date',
-				'departure_date',
-				'room_type_alias',
-				'rooms_data'
-			],
-			filters: filters
-		}).then((doc) => {
-			this.listByFilters.value = doc
-			this.loading.value = false
-		})
-		.catch((error) => {
-			this.loading.value = false
-		})
-	}	
+
 }

@@ -1,8 +1,11 @@
 <template>
     <div class="w-full flex align-items-center text-color border-noround" :class="align">
         <div :class="{'cursor-pointer':isDisplayImage}" @click="onShowImage" v-if="!fileName">
-            <!-- <ComIcon class="mr-2 bg-gray-300 " icon="userProfile" :style="{borderColor:colorStatus}" ></ComIcon> -->
-            <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" />
+            <Avatar v-if="image" :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" />
+            <div v-else class="mr-3 bg-gray-300 border-circle p-1 border-2" :style="{borderColor:colorStatus}">
+                <ComIcon  icon="userProfile" ></ComIcon>
+            </div>
+            <!-- <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" /> -->
         </div>
         <template v-else>
             <Avatar v-if="icon" :size="size" :icon="icon" class="mr-2 !bg-transparent" shape="circle" :style="{borderColor:colorStatus}" />

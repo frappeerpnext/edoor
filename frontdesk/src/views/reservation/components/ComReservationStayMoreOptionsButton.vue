@@ -18,6 +18,12 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Undo Check-In</span>
                 </button>
+                <button @click="OnUndoCheckOut()"
+                    v-if="rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date == working_day?.date_working_day"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Undo Check Out</span>
+                </button>
                 <button v-if="rs.reservationStay.pay_by_company" @click="onUnmarkasPaybyMasterRoom()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
@@ -65,6 +71,7 @@ const db = frappe.db();
 const toggle = (event) => {
     folio_menu.value.toggle(event);
 }
+
 items.value.push({
     label: "Audit Trail",
     icon: 'pi pi-history',
@@ -155,6 +162,45 @@ function onUndoCheckIn() {
 
     });
 }
+
+function OnUndoCheckOut() {
+    
+    confirm.require({
+        message: 'Are you sure you want to undo check out this reservation?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            rs.loading = true
+            postApi("reservation.undo_check_out", {
+                property: rs.reservationStay.property,
+                reservation_stays:[rs.reservationStay.name] 
+            }
+            ).then((doc) => {
+              
+                rs.reservationStay = doc.message
+
+                socket.emit("RefreshReservationDetail", rs.reservation.name)
+                socket.emit("RefresheDoorDashboard", doc.message.property)
+
+                rs.loading = false
+                setTimeout(() => {
+                    emit('onRefresh')
+                }, 1000);
+
+
+            }).catch((err) => {
+                rs.loading = false
+            })
+
+        },
+
+    });
+}
+
 
 function onMarkasPaybyMasterRoom() {
     confirm.require({
