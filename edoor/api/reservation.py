@@ -655,6 +655,27 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None):
             stay_doc.reservation_status = "In-house"
             stay_doc.is_undo_check_out = True
             stay_doc.save()
+            
+            #get stay date to temp room occupy
+            room_occupy_list = frappe.db.sql("select date,room_type_id, room_id,stay_room_id from `tabRoom Occupy` where reservation_stay='{}'".format(s),as_dict=1)
+            
+            for r in room_occupy_list:
+                
+                frappe.get_doc({
+                    "doctype":"Temp Room Occupy",
+                    "reservation":stay_doc.reservation,
+                    "reservation_stay":s,
+                    "room_type_id":r["room_type_id"],
+                    "room_id":r["room_id"],
+                    "date":r["date"],
+                    "type":"Reservation",
+                    "property":stay_doc.property,
+                    "stay_room_id":r["stay_room_id"],
+                    "adult":stay_doc.adult,
+                    "child":stay_doc.child,
+                    "pax":stay_doc.pax
+                }).insert()
+
             #update room status
             last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay_doc.name), as_dict=1)
             if last_stay_room:
