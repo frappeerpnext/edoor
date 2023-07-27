@@ -14,24 +14,29 @@
                 <label>Int. No</label><br/>
                 <InputText v-model="data.internal_reference_number" class="w-full"/>
             </div>
-            <div class="col-6">
-                <label>Group Code</label><br/>
-                <InputText v-model="data.group_code" class="w-full"/>
+            <div v-if="data.reservation_type != 'FIT'" class="col-12">
+                <div class="grid">
+                    <div class="col-6">
+                        <label>Group Name</label><br/>
+                        <InputText v-model="data.group_name" class="w-full"/>
+                    </div>
+                    <div class="col-6">
+                        <label>Group Code</label><br/>
+                        <InputText v-model="data.group_code" class="w-full"/>
+                    </div>
+                </div>
             </div>
-            <div class="col-6">
-                <label>Group Name</label><br/>
-                <InputText v-model="data.group_name" class="w-full"/>
-            </div>
+            
             <div class="col flex gap-3">
-                <div>
+                <div class="flex items-center">
                     <template v-if="data.doctype=='Reservation Stay'">
                         <Checkbox inputId="update_to_reservation" v-model="update_to_reservation" :binary="true" />
-                        <label for="update_to_reservation" class="cursor-pointer">Apply change to reservation</label>
+                        <label for="update_to_reservation" class="cursor-pointer m-auto ps-2">Apply change to reservation</label>
                     </template>
                 </div>
-                <div>
+                <div class="flex items-center">
                     <Checkbox inputId="apply-all-stay" v-model="apply_all_stay" :binary="true" />
-                    <label for="apply-all-stay" class="cursor-pointer">Apply to all active stays</label>
+                    <label for="apply-all-stay" class="cursor-pointer m-auto ps-2">Apply to all active stays</label>
                 </div>
             </div>
         </div>

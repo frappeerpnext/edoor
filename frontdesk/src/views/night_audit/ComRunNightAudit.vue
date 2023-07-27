@@ -62,7 +62,7 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
-
+const dialogRef = inject("dialogRef");
 const currentStep = ref(1)
 const loading = ref(false)
 const steps = ref([
@@ -78,7 +78,6 @@ const steps = ref([
 
 
 socket.on("RefreshNightAuditStep", (arg) => {
-
     if (arg == JSON.parse(localStorage.getItem("edoor_property")).name) {
         refreshReport()
         toast.add({ severity: 'info', summary: 'Info', detail: "night audit stop is updated updated if see this pls remove me", life: 3000 })
@@ -167,6 +166,7 @@ function onBack() {
 }
 
 function onClose(){
+    
     dialogRef.value.close()
 }
 

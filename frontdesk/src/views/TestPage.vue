@@ -9,7 +9,7 @@
     {{ test }}
 </template>
 <script setup>
-    import {ref, watchEffect} from 'vue'
+    import {ref, watchEffect, watchPostEffect} from 'vue'
     const props = defineProps({
         list: Array,
         test: String

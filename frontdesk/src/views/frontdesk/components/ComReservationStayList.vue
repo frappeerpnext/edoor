@@ -26,10 +26,12 @@
                                 <span v-if="item.room_number">
                                     <span>{{ item.room_number }}</span>{{ (index !== JSON.parse(slotProps.data.rooms_data).length - 1) ? ', ' : '' }}
                                 </span>
-                                <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(item.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
-                                    <i class="pi pi-pencil"></i>
-                                    <span>assign</span>
-                                </button>
+                                <span v-else>
+                                    <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(item.name,slotProps.data.name)" class="link_line_action w-auto">
+                                        <i class="pi pi-pencil"></i>
+                                        <span> Assign Room</span>
+                                    </button>{{ (index !== JSON.parse(slotProps.data.rooms_data).length - 1) ? ', ' : '' }} 
+                                </span>
                             </span>
                         </span>
                     </template>

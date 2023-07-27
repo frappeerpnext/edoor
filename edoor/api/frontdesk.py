@@ -753,7 +753,7 @@ def run_night_audit(property, working_day):
 
     #update room status after runight auit
     update_room_status(new_working_day)
-    
+
     return property
 
 @frappe.whitelist()
@@ -769,9 +769,10 @@ def update_room_status(working_day):
                     """.format(working_day.business_branch),as_dict=1)
     room_status = frappe.db.get_default("housekeeping_status_after_run_audit")
     for r in stay_over_room:
-        room_doc = frappe.get_doc("Room", r)
+        room_doc = frappe.get_doc("Room", r["name"])
         room_doc.housekeeping_status = room_status
         room_doc.save()
+    
 
 @frappe.whitelist()
 def post_room_change_to_folio(working_day):
