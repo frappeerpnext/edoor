@@ -767,11 +767,14 @@ def update_room_status(working_day):
                                 ifnull(reservation_stay,'')<>'' and 
                                 property='{}' 
                     """.format(working_day.business_branch),as_dict=1)
-    room_status = frappe.db.get_default("housekeeping_status_after_run_audit")
+    room_status = frappe.db.get_default("housekeeping_status_after_run_night_audit")
+    
     for r in stay_over_room:
         room_doc = frappe.get_doc("Room", r["name"])
         room_doc.housekeeping_status = room_status
         room_doc.save()
+
+    frappe.db.commit()
     
 
 @frappe.whitelist()
