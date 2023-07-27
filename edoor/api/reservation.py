@@ -598,6 +598,7 @@ def check_out(reservation,reservation_stays=None):
     #reservation stay is array
     #validate user role
     #validate cashier shift 
+    #remove guest and stay number from room
     
     doc = frappe.get_doc("Reservation",reservation)
     if not reservation:
@@ -629,6 +630,8 @@ def check_out(reservation,reservation_stays=None):
         for r in last_stay_room:
             room_doc = frappe.get_doc("Room", r["room_id"])
             room_doc.housekeeping_status = room_status
+            room_doc.guest = None
+            room_doc.reservation_stay = None 
             room_doc.save()
 
     doc = update_reservation(name=reservation,run_commit=False)
@@ -681,10 +684,16 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None):
             if last_stay_room:
                 room_doc = frappe.get_doc("Room",last_stay_room[0]["room_id"])
                 room_doc.housekeeping_status = room_status
+                room_doc.guest = stay_doc.guest
+                room_doc.reservation_stay = s
                 room_doc.save()
 
         else:
             frappe.throw("This reservation stay {}, room {} is not allow to undo check out".format(stay_doc.name, stay_doc.rooms))
+    if reservation:
+        update_reservation(name=reservation,run_commit=False)
+    else:
+         update_reservation(name=stay_doc.reservation ,run_commit=False)
 
     frappe.msgprint("Undo check out successfully")
     if not reservation:
