@@ -30,20 +30,20 @@ const data = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const chartData = ref([]) 
 watch(()=> [props.date], ([newValue])=>{
-    let filterDate = working_day?.date_working_day
-    if (newValue){
-        filterDate = gv.dateApiFormat(moment(newValue).add(1,'days'))
-    }
-    loadData(filterDate)
+    loadData(newValue)
 })
 onMounted(() => {
-    loadData(working_day?.date_working_day)
+    loadData(props.date)
 })
-function loadData(date){
+function loadData(date){ 
     chartData.value = []
+    const currentDate = ref(working_day?.date_working_day)
+    if(date){
+        currentDate.value = gv.dateApiFormat(date)
+    }
     getApi('frontdesk.get_dashboard_data', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
-        date: date
+        date: currentDate.value
     }).then((result) => {
         data.value = result.message
         const documentStyle = getComputedStyle(document.body);

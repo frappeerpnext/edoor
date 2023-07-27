@@ -20,7 +20,7 @@ import ComReservationStayList from "./ComReservationStayList.vue";
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const moment = inject('$moment')
 const dialog = useDialog()
-const reservation_chart = JSON.parse(localStorage.getItem('reservation_chart'))
+
 const props = defineProps({
     title: String,
     value: {
@@ -49,6 +49,7 @@ const progress = computed(() => {
 })
 
 function onOpenDetail() {
+    const reservation_chart = JSON.parse(localStorage.getItem('reservation_chart'))
     if (!props.disabled){
         const filters = [
             ['property','=',property.name]
