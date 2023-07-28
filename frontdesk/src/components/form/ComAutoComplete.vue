@@ -1,6 +1,6 @@
 <template>
     <div class="relative">
-       
+       {{ modelValue }}
         <AutoComplete :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
@@ -70,6 +70,7 @@ const props = defineProps({
 let value = computed({
     get() {
         if (props.modelValue) {
+            console.log(props.modelValue)
             call.get('frappe.desk.search.get_link_title', { doctype: props.doctype, docname: props.modelValue }).then((result) => {
                 selected.value = result.message || props.modelValue
                 return props.modelValue

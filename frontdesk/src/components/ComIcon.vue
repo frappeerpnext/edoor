@@ -11,6 +11,7 @@
     <img v-else-if="icon == 'iconNote'" :class="class" :src="iconNote"/>
     <img v-else-if="icon == 'iconNoteBlue'" :class="class" :src="iconNoteBlue"/>
     <img v-else-if="icon == 'iconCrown'" :class="class" :src="iconCrown"/>
+    <img v-else-if="icon == 'iconFIT'" :class="class" :src="iconFIT"/>
     <img v-else-if="icon == 'iconBedPurple'" :class="class" :src="iconBedPurple"/>
     <img v-else-if="icon == 'pushPin'" :class="class" :src="pushPin"/>
     <img v-else-if="icon == 'pushPined'" :class="class" :src="pushPined"/>
@@ -40,6 +41,7 @@ import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
 import iconNote from '@/assets/svg/icon-note-paper-pen.svg'
 import iconNoteBlue from '@/assets/svg/icon-note-paper-pen-blue.svg'
 import iconCrown from '@/assets/svg/icon-crown.svg'
+import iconFIT from '@/assets/svg/user-icon-profile.svg'
 import pushPin from '@/assets/svg/push_pin.svg'
 import pushPined from '@/assets/svg/push_pined.svg'
 import iconBedPurple from '../assets/svg/icon-room-purple.svg'

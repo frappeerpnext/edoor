@@ -44,7 +44,7 @@ loadData() {
 	}
 
 	db.getDocList('Room', {
-		fields: ['name','guest','guest_name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper","reservation_stay"],
+		fields: ['name','guest','guest_name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper","reservation_stay","reservation_status"],
 		filters: filters,
 		limit: 1000,
 	})

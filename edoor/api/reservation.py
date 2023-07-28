@@ -575,7 +575,7 @@ def mark_as_master_folio(reservation,reservation_stay):
 
     frappe.set_value("Reservation Stay",{"reservation":reservation,"is_master":1},"is_master",0)
     
-    doc.is_master =1
+    doc.is_master = 1
     doc.save()
     #check if this reservation stay is already check in then and folio not exists
     #create new folio and mark it as master folio

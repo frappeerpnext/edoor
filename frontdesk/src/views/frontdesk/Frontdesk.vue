@@ -69,19 +69,24 @@
 
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
-                                    <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px"
-                                  
-                                    >
+                                    <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
                                         <div class="flex">
-                                            <span class="h-1rem w-1rem rounded-full" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
+                                            <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 
                                             </span>
-                                            <span v-if="event.extendedProps.is_master" class="is-master-guest">
-                                                <ComIcon style="height: 12px;" icon="iconCrown"/>
+                                            <span class="wrp-statu-icon">
+                                                <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
+                                                    <ComIcon style="height: 12px;" icon="iconCrown"/>
+                                                </span>
+                                                <span v-if="event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
+                                                    <ComIcon style="height: 12px;" icon="iconCrown"/>
+                                                </span>
+                                                <span v-if="event.extendedProps.reservation_type=='FIT'" class="stay-bar-status">
+                                                    <ComIcon style="height: 12px;" icon="iconFIT"/>
+                                                </span>
                                             </span>
-                                            
-                                            <div>
-                                                {{event.title}}
+                                            <div class="geust-title">
+                                                {{event.title}} / {{event.extendedProps.reservation_type}}
                                                 <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
                                             </div>
                                         </div>

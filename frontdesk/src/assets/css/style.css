@@ -643,23 +643,36 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
 {
     border-radius: 0 !important;
 }
-.is-master-guest{
+.wrp-statu-icon{
+    position: absolute;
+    top: -8px;
+    z-index: 2;
+    display: inline-block;
+}
+.stay-bar-status{
     border-radius: 50%;
     border:1px solid #0056c0;
     background-color: #eff6ff;
-    position: absolute;
-    display: block;
-    background-color: #FFF;
+    display: inline-block;
     min-width: 15px;
     max-width: 15px;
     min-height: 15px;
     max-height: 15px;
-    top: -8px;
-    z-index: 2; 
 }
-.is-master-guest img{
+.stay-bar-status img{
     width: 10px; margin-left: 2px;
 }
+.stay-identify-position{
+    position: absolute;
+    min-width: 10px;
+    min-height: 10px;
+    max-width: 10px;
+    max-height: 10px;
+    border-radius: 50%;
+    right: 4px;
+    top: 6px;
+}
+
 @-moz-document url-prefix() {
     .fc-event[href], .fc-event.fc-event-draggable{
         height: 25px;
@@ -679,9 +692,6 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
         padding-bottom: unset !important;
         height: 37px;
     }
-    /* .p-dialog .p-dialog-content{
-        padding: 1rem 0rem 1rem 1rem;
-    } */
 }
 
 /* END Full calenda css */

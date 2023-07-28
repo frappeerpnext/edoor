@@ -2,7 +2,7 @@
     <div>
         <ComChartDoughnut :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
     </div>
-    <div class="td_guest_cs px-1 mt-3">
+    <div class="td_guest_cs px-1 mt-3 cursor-pointer">
         <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
         <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival + data.arrival_remaining" :value="data.arrival">
             <span title="Checked-in">{{ (data?.arrival || 0) - (data?.arrival_remaining || 0) }}</span>/<span title="Remain check-in">{{ (data?.arrival || 0)}}</span>

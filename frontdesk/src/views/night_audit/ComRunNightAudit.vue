@@ -28,12 +28,8 @@
         <hr class="mb-2" />
         <div class="flex items-center flex-row-reverse flex-wrap">
             <div class="">
-                <Button class="border-none mr-2" :disabled="currentStep == 1" v-if="currentStep < 8" @click="onBack">
-                    <i class="pi pi-arrow-left mr-2"></i> Back
-                </Button>
-                <Button class="border-none" :disabled="currentStep == steps.length" v-if="currentStep < 7" @click="onNext">
-                    Next <i class="pi pi-arrow-right ml-2"></i>
-                </Button>
+                <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left"  :loading="loading" :disabled="currentStep == 1" v-if="currentStep < 8" @click="onBack" />
+                <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading" iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 7" @click="onNext" />
                 <Button class="border-none" v-if="currentStep == 7" @click="onFinish">Finish</Button>
                 <Button class="border-none" v-if="currentStep == 8" @click="onClose">Close</Button>
             </div>
@@ -174,8 +170,9 @@ function onClose(){
 
 function onIframeLoaded() {
 
+    loading.value = false
     const iframe = document.getElementById("iframe_run_night_audit");
-   
+
     if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
         iframe.style.overflowX = 'hidden';
     } else {
@@ -188,10 +185,12 @@ function onIframeLoaded() {
     iframe.style.height = '0px';
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 
+ 
+
 }
 
 const refreshReport = () => {
-
+    loading.value = true
     url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=eDoor%20Run%20Night%20Audit%20Step&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
     url.value = url.value + "&step=" + currentStep.value
 

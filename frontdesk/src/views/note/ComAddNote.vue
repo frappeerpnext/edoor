@@ -28,13 +28,14 @@
       <div class="col-6"> 
         <label for="Reservation">Reservation</label>
         <div class="card flex justify-content-left"> 
+          {{ data }}
           <ComAutoComplete class="w-full" v-model="data.reservation" doctype="Reservation"/>
         </div>
       </div>
       <div class="col-6">
          <label for="Reservation Stay">Reservation Stay</label>
          <div class="card flex justify-content-left">
-            <ComAutoComplete fieldFilter="reservation" :valueFilter="data.reservation" class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
+            <ComAutoComplete fieldFilter="reservation" :valueFilter="data.reservation_stay" class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
          </div>
       </div>
       <div class="col-12">

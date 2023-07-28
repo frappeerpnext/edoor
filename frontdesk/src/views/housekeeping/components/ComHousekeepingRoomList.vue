@@ -12,15 +12,28 @@
                 </template>
             </Column>
             <Column field="room_type" header="Room Type"></Column>
+            <Column field="reservation_stay" header="Reservation Stay">
+                <template #body="slotProps">
+                    <Button v-if="slotProps.data.reservation_stay" @click="onViewReservationStayDetail(slotProps.data.reservation_stay)" :label="slotProps.data.reservation_stay" link
+                        size="small" class="link_line_action1"></Button>
+                </template>
+            </Column>
+           
+            
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
-                    
                     <Button class="color-purple-edoor p-0" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         <span class="link_line_action">{{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}</span>
                     </Button>
                 </template>
             </Column>
-            <Column field="room_type" header="Reservation Status"></Column>
+            <Column field="reservation_status" header="Reservation Status">
+                <template #body="slotProps">
+                    <Button  v-if="slotProps.data.reservation_status" @click="onReservationStatus($event, slotProps.data)" :label="slotProps.data.reservation_status" link
+                        size="small" class="link_line_action1"></Button>
+                </template>
+            
+            </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
                     <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
@@ -156,6 +169,13 @@ function onViewCustomerDetail(name) {
             console.log(options)
         }
     });
+}
+function onViewReservationStayDetail(rs){
+    window.postMessage('view_reservation_stay_detail|'+rs, '*')
+
+}
+function onReservationStatus (){
+   
 }
 </script>
 <style scoped>

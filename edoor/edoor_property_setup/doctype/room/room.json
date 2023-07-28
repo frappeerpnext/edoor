@@ -26,6 +26,7 @@
   "room_type_group",
   "current_guest_tab",
   "reservation_stay",
+  "reservation_status",
   "arrival",
   "departure",
   "column_break_21",
@@ -196,11 +197,17 @@
    "fieldname": "is_block",
    "fieldtype": "Check",
    "label": "Is Block"
+  },
+  {
+   "fetch_from": "reservation_stay.reservation_status",
+   "fieldname": "reservation_status",
+   "fieldtype": "Data",
+   "label": "Reservation Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-27 18:02:38.055606",
+ "modified": "2023-07-28 16:34:58.103657",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

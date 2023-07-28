@@ -36,8 +36,7 @@
                                 <div>
                                     <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
                                 </div>
-                                <ComReservationInputNight v-model="doc.reservation.room_night"
-                                    @onUpdate="onRoomNightChanged" />
+                                <ComReservationInputNight v-model="doc.reservation.room_night" @onUpdate="onRoomNightChanged" />
                             </div>
                             <div class="arr_wfit col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
@@ -139,8 +138,7 @@
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
-                                    <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date" view="month" dateFormat="mm-yy" showIcon />
+                                    <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date" placeholder="ID Expire Date" view="month" dateFormat="dd-mm-yy" showIcon />
                                 </div>
                             </div>
                         </div>
@@ -330,7 +328,7 @@ import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConte
 
 
 
-import { ref, inject, computed, onMounted, postApi } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, watch } from "@/plugin"
 import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
 const toast = useToast();
@@ -410,6 +408,7 @@ const rateTax = ref((d) => {
         return 0
     }
 })
+
 
 function getTax1Amount(rate) {
     if (setting.room_tax) {
@@ -542,7 +541,7 @@ function onSelectedCustomer(event) {
         db.getDoc('Customer', event.value)
             .then((d) => { 
                 doc.value.guest_info = d
-                doc.value.guest_info.expired_date = moment( doc.value.guest_info.expired_dat).toDate()
+                doc.value.guest_info.expired_date = gv.dateFormat(doc.value.guest_info.expired_date) // moment( doc.value.guest_info.expired_dat).toDate()
             })
     } else {
         doc.value.guest_info = {
@@ -651,7 +650,6 @@ onMounted(() => {
 
 
         doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
-
     })
 });
 
