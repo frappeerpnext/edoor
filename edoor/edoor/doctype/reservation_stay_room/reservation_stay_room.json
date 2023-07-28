@@ -51,7 +51,8 @@
   "is_master",
   "arrival_date",
   "departure_date",
-  "rooms"
+  "rooms",
+  "pay_by_company"
  ],
  "fields": [
   {
@@ -315,12 +316,18 @@
    "fieldname": "rooms",
    "fieldtype": "Data",
    "label": "Rooms"
+  },
+  {
+   "default": "0",
+   "fieldname": "pay_by_company",
+   "fieldtype": "Check",
+   "label": "Pay by Company"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-07-26 16:53:26.950966",
+ "modified": "2023-07-28 11:11:46.778685",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

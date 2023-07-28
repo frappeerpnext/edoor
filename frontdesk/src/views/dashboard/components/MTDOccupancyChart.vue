@@ -36,9 +36,10 @@ const setChartData = (data) => {
         labels: data.map(r => moment(r.date).format("DD")),
         datasets: [
             {
-                label: 'MTD Occpany',
+                label: 'Occupancy',
                 backgroundColor: documentStyle.getPropertyValue('--blue-500'),
-                data:  data.map(r => r.occupancy)
+                data:  data.map(r => r.occupancy),
+                
             }
         ]
     };
@@ -55,7 +56,8 @@ const setChartOptions = () => {
         plugins: {
             legend: {
                 labels: {
-                    fontColor: textColor
+                    fontColor: textColor,
+                    
                 }
             }
         },
@@ -74,7 +76,8 @@ const setChartOptions = () => {
             },
             y: {
                 ticks: {
-                    color: textColorSecondary
+                    color: textColorSecondary,
+                   
                 },
                 grid: {
                     color: surfaceBorder,

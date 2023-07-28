@@ -181,7 +181,7 @@ function onIframeLoaded() {
     } else {
         iframe.style.overflowX = 'auto';
     }
-
+  
     iframe.style.minWidth ="0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
 

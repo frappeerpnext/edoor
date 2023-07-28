@@ -145,7 +145,11 @@ class ReservationStay(Document):
 		generate_room_rate(self, is_update_reservation_stay=True)
 
 	def on_update(self):
-		frappe.db.sql("update `tabReservation Stay Room` set rooms='{}',arrival_date='{}',departure_date='{}' where parent='{}'".format(self.rooms,self.arrival_date,self.departure_date, self.name))
+		frappe.db.sql("""
+			update `tabReservation Stay Room` 
+			set rooms='{}',
+			arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
+		""".format(self.rooms,self.arrival_date,self.departure_date,self.is_master,self.reservation_color,self.group_color,self.group_code,self.group_name,self.reservation_type,self.pay_by_company, self.name))
 
 
 def update_note(self):

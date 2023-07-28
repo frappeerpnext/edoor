@@ -17,8 +17,10 @@
 
         </div>
 
-        <Checkbox v-model="isConfirm" :binary="true" />
-        I am verify that all information is correct
+        <div class="relative">
+            <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>
+            <span class="pl-5">I am verify that all information is correct</span>
+        </div>
         <template #footer-right>
 
             <Button :disabled="!isConfirm" @click="onOk" class="bg-green-500 border-none">

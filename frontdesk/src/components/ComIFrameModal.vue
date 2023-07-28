@@ -1,8 +1,8 @@
 <template>
     <div class="wrap-dialog" :class="{'full-height' : dialogRef.data.fullheight}">
-        <div class="py-3 pl-3 view-table-iframe-dialog" style="height: 80vh;">
-            <div class="grid mb-3">
-                <div class="col flex gap-2">
+        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
+            <div class="grid mb-3 ">
+                <div class="col flex gap-2 ">
                     <div v-if="show_letter_head">
                         <ComSelect v-model="letter_head" doctype="Letter Head" @change="loadIframe"/>
                     </div>
@@ -62,12 +62,14 @@
                     </div>
                 </div>
                 <div class="col flex justify-end">
-                    <div class="pr-3">
+                    <div class="">
                         <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon border-none h-full"></Button>
                     </div>
                 </div>
             </div> 
+            <div class="widht-ifame">
             <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
+            </div>
         </div>
     </div>
 </template>
@@ -118,14 +120,26 @@ function onIframeLoaded() {
     var windowWidth = window.innerWidth;
     
     console.log(windowWidth)
-    
-    if (windowWidth >= 1920){
-        iframe.style.minWidth = 100 + '%'
+    if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
+        iframe.style.overflowX = 'hidden';
+    } else {
+        iframe.style.overflowX = 'auto';
     }
-    else{
-        iframe.style.width = contentWidth + 'px';
-    }
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+  
+    iframe.style.minWidth ="0px"
+    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
+
+    iframe.style.height = '0px';
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    // if (windowWidth >= 1800){
+    //     iframe.style.minWidth = 100 + '%'
+    // }
+    // else{
+    //     const dialog_widht = document.querySelector('.widht-ifame');
+    //     dialog_widht.style.width = contentWidth + 'px';
+    //     iframe.style.width = contentWidth  + 'px';
+    // }
+    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 
 function loadIframe() {

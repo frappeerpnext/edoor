@@ -42,7 +42,7 @@
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
                                     <div>
-                                        <ComTodaySummary :date="filter.date"/>
+                                        <ComTodaySummary :date="working_day.date_working_day"/>
                                     </div>
                                 </ComPanel>
                                 <ComPanel title="Room Status" class="pb-3 mb-3 front-house__kep">
@@ -70,7 +70,7 @@
 
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
-                                    <div class="group relative h-full p-1" style="height: 36px"
+                                    <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px"
                                   
                                     >
                                         <div class="flex">
@@ -81,7 +81,15 @@
                                                 <ComIcon style="height: 12px;" icon="iconCrown"/>
                                             </span>
                                             
-                                            <div>{{event.title}}</div>
+                                            <div>
+                                                {{event.title}} / 
+                                                {{event.extendedProps.type}} / 
+                                                {{event.extendedProps.reservation_type}} / 
+                                                {{event.extendedProps.group_color}} / 
+                                                {{event.extendedProps.group_code}} / 
+                                                {{event.extendedProps.group_name}} / 
+                                                <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
+                                            </div>
                                         </div>
                                     </div>
                             </template> 
@@ -422,7 +430,8 @@ function onSelectedDate(event) {
                 },
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                position: 'top'
             },
             onClose: (options) => {
                 const data = options.data;

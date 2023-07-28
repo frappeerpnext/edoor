@@ -11,7 +11,10 @@
                 </div>    
             </div>
         </div>
-        <div v-if="!hideFooter" :class="is_page ? 'border-t border-gray-200 p-2 footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed dialog-ftt'">
+        <div v-if="!hideFooter" :class="[is_page ? 'border-t border-gray-200 p-2 footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed dialog-ftt', loading ? 'unset-absolute' : '']">
+            <!-- <div class="relative">
+                <div v-if="loading" class="overlay-loading-dialog"></div>
+            </div> -->
             <div>
                 <slot name="footer-top"></slot>
                 <div class="flex justify-between items-center">

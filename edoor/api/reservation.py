@@ -374,7 +374,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
     #add room charge to folio transaction
     #check master room is already check in
     #update check date and check in by in to reservation stay
-    
+
     check_in_role = frappe.db.get_default("check_in_role")
  
     if not check_in_role in frappe.get_roles(frappe.session.user):

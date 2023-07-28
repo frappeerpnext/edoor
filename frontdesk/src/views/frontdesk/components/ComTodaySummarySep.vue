@@ -17,9 +17,11 @@
 import { ref, computed,getDocList,inject,useDialog } from "@/plugin"
 import ProgressBar from 'primevue/progressbar';
 import ComReservationStayList from "./ComReservationStayList.vue";
+import ComIFrameModal from '@/components/ComIFrameModal.vue';
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const moment = inject('$moment')
 const dialog = useDialog()
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 const props = defineProps({
     title: String,
@@ -48,7 +50,109 @@ const progress = computed(() => {
 
 })
 
-function onOpenDetail() {
+
+function onViewData(doctype, report_name, title ,extra_params,filter_options ){
+   
+   const dialogRef = dialog.open(ComIFrameModal, {
+
+       data: {
+           "doctype": doctype,
+           name: JSON.parse(localStorage.getItem("edoor_property")).name,
+           report_name: report_name,
+           view:"ui",
+           extra_params:extra_params,
+           filter_options:filter_options,
+           fullheight: true
+       },
+       props: {
+           header:title,
+           style: {
+               width: '90vw',
+           },
+           position:"top",
+           modal: true,
+           maximizable: true,
+           closeOnEscape: false
+       }
+      
+   });
+}
+
+
+const onOpenDetail = () => { 
+
+ const filters = [
+     ['property','=',property.name]
+ ]
+ if(props.dialogKey == "all_rooms"){
+    onViewData(
+        'Business%20Branch',
+        "eDoor%20Room%20List",
+        'Room List',
+        [],
+        ['keyword','building','floor','room_type_group','room_type','housekeeping_status']
+    )
+ }else if(props.dialogKey  == "arrival"){
+     onViewData(
+         'Business%20Branch',
+         "eDoor%20Dashboard%20Arrival%20Guest",
+         'Arrival Guest',
+         [{key:'action', value:"view_arrival"},{key:"date", value:working_day.date_working_day}],
+         ['keyword','building','floor','room_type','reservation_status']
+     )
+ }
+ else if(props.dialogKey == "departure"){
+     onViewData(
+         'Business%20Branch',
+         "eDoor%20Dashboard%20Departure%20Guest",
+         'Departure',
+         [{key:'action', value:"view_departure"},{key:"date", value:working_day.date_working_day}],
+         ['keyword','building','floor','room_type','reservation_status','business_source']
+     )
+ } else if(props.dialogKey == "unassign_room"){
+
+      onViewData(
+         'Business%20Branch',
+         "eDoor%20Unassign%20Room%20Reservation%20List",
+         'Unassign Room Reservation List',
+         [{key:"date", value:working_day.date_working_day}],
+         ['keyword','room_type','reservation_status','business_source']
+     )
+ }
+ else if(props.dialogKey == "pickup_drop_off"){
+     onViewData(
+         'Business%20Branch',
+         "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+         'Pickup & Drop Off',
+         [{key:'action', value:"view_departure_remaining"},{key:"date", value:working_day.date_working_day}],
+         ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
+     )
+      
+ }
+ else if(props.dialogKey == "git_arrival"){
+     onViewData(
+         'Business%20Branch',
+         "eDoor%20GIT%20Arrival%20Guest",
+         'GIT Arrival',
+         [{key:"date", value:working_day.date_working_day}],
+         ['keyword','room_type','reservation_status','business_source']
+     )
+ }
+ else if(props.dialogKey  == "stay_over"){
+    onViewData(
+         'Business%20Branch',
+         "eDoor%20Dashboard%20Stay%20Over%20Guest",
+         'Stay Over',
+         [{key:"date",value:working_day.date_working_day}],
+         ['keyword','room_type','reservation_status','business_source']
+     )
+ }
+  
+}
+
+
+function onOpenDetailx() {
+     
     const reservation_chart = JSON.parse(localStorage.getItem('reservation_chart'))
     if (!props.disabled){
         const filters = [

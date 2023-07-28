@@ -121,18 +121,24 @@ def get_house_keeping_status(property):
 
 @frappe.whitelist()
 def get_mtd_room_occupany(property):
-
+    total_room = frappe.db.sql("select count(name) from `tabRoom` where property='{}' and disabled=0".format(property))[0][0] 
+    
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
     
     end_date = now + relativedelta(day=1, months=1, days=-1)
-    sql = "select date from `tabDates` where date between cast('{}' as date) and cast('{}' as date)"
+    sql = "select date,0 as occupancy from `tabDates` where date between cast('{}' as date) and cast('{}' as date)"
     sql = sql.format(start_date, end_date)
-    data = frappe.db.sql(sql,as_dict=1)
+    data_date = frappe.db.sql(sql,as_dict=1)
+    
+    sql = "select date, count(name) as  total from `tabRoom Occupy` where property='{}' and date between '{}' and '{}' and type='Reservation' group by date "
+ 
+    data = frappe.db.sql(sql.format(property, start_date,end_date),as_dict=1)
+    
+    for r in data:
+          [x for x in data_date if x["date"]==r["date"]][0]["occupancy"] = (r["total"]) 
 
-    for d in data:
-        d.occupancy = random.randint(10, 100)
-    return data
+    return data_date
 
 
 
@@ -364,8 +370,12 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             1 as can_resize,
             arrival_date,
             departure_date,
-            rooms
-
+            rooms,
+            reservation_type,
+            group_color,
+            group_name,
+            group_code,
+            pay_by_company
         from 
             `tabReservation Stay Room` 
         where 

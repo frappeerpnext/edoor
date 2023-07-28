@@ -91,7 +91,8 @@
    "allow_on_submit": 1,
    "fieldname": "reason",
    "fieldtype": "Small Text",
-   "label": "Reason"
+   "label": "Reason",
+   "reqd": 1
   },
   {
    "fieldname": "unblock_section",
@@ -169,7 +170,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-27 18:17:50.386081",
+ "modified": "2023-07-28 01:41:39.903029",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

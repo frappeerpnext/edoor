@@ -126,7 +126,8 @@
         </TabView>
     </div>
     <div class="mt-3">
-        <ComPanel title="Monthly occupancy (May/2023)">
+         
+        <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') +')'">
             <MTDOccupancyChart />
         </ComPanel>
     </div>
@@ -159,6 +160,8 @@ const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")
 const gv = inject("$gv")
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+ 
 
 socket.on("RefresheDoorDashboard", (arg) => {
 

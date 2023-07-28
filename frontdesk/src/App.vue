@@ -166,7 +166,6 @@ function showReservationDetail(name) {
         },
         props: {
             header: 'Reservation Detail',
-            contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
             },
