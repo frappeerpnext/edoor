@@ -28,7 +28,6 @@
       <div class="col-6"> 
         <label for="Reservation">Reservation</label>
         <div class="card flex justify-content-left"> 
-          {{ data }}
           <ComAutoComplete class="w-full" v-model="data.reservation" doctype="Reservation"/>
         </div>
       </div>
