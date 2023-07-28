@@ -9,3 +9,7 @@ class FrontdeskNote(Document):
 	def validate(self):
 		if not hasattr(self, 'note_date') and self.note_date:
 			self.note_date = now()
+		if self.reference_doctype == 'Reservation Stay' and not self.reservation_stay:
+			self.reservation_stay = self.reference_name
+		elif self.reference_doctype == 'Reservation' and not self.reservation:
+			self.reservation = self.reference_name

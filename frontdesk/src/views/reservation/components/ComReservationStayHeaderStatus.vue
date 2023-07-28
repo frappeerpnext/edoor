@@ -36,14 +36,18 @@
             <div v-if="rs.reservationStay?.reservation_type == 'FIT'"
                 class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500 inline">
                 <!-- <i class="pi pi-user" style="font-size: 10px;"></i> -->
-                <span class="flex">
-                <ComIcon style="height: 14px;" class="m-auto pe-2" icon="userProfile" />
+                <span class="flex items-center">
+                <ComIcon style="height: 15px;" class="m-auto pe-1" icon="userProfile" />
                 {{ rs.reservationStay?.reservation_type }}
                 </span>
             </div>
             <span v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
-                <i class="pi pi-users"></i>
-                {{ rs.reservationStay?.reservation_type }}</span>
+                <!-- <i class="pi pi-users"></i> -->
+                <span class="flex items-center">
+                <ComIcon style="height: 15px;" class="m-auto pe-1" icon="userGroupWhite" />
+                {{ rs.reservationStay?.reservation_type }}
+            </span>
+        </span>
 
         </div>
     </div>
