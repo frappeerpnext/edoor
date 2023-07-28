@@ -1,6 +1,5 @@
 <template lang="">
     <div>
-         
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
@@ -77,17 +76,12 @@
                                             <span class="h-1rem w-1rem rounded-full" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 
                                             </span>
-                                            <span v-if="event.extendedProps.is_master">
+                                            <span v-if="event.extendedProps.is_master" class="is-master-guest">
                                                 <ComIcon style="height: 12px;" icon="iconCrown"/>
                                             </span>
                                             
                                             <div>
-                                                {{event.title}} / 
-                                                {{event.extendedProps.type}} / 
-                                                {{event.extendedProps.reservation_type}} / 
-                                                {{event.extendedProps.group_color}} / 
-                                                {{event.extendedProps.group_code}} / 
-                                                {{event.extendedProps.group_name}} / 
+                                                {{event.title}}
                                                 <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
                                             </div>
                                         </div>
@@ -331,8 +325,8 @@ const calendarOptions = reactive({
 })
 
 function getRoomChartlocationStorage() {
-    if (localStorage.getItem('reservation_chart')) {
-        const result = JSON.parse(localStorage.getItem('reservation_chart'))
+    if (sessionStorage.getItem('reservation_chart')) {
+        const result = JSON.parse(sessionStorage.getItem('reservation_chart'))
         filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
         filter.end_date = result.end_date
         return result;
@@ -346,9 +340,9 @@ function getRoomChartlocationStorage() {
             end_date: moment(_date).add(1, 'months').format("yyyy-MM-DD")
         }
 
-        localStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
-        if (localStorage.getItem('reservation_chart')) {
-            const result = JSON.parse(localStorage.getItem('reservation_chart'))
+        sessionStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
+        if (sessionStorage.getItem('reservation_chart')) {
+            const result = JSON.parse(sessionStorage.getItem('reservation_chart'))
             filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
             filter.end_date = result.end_date
             return result
@@ -359,7 +353,7 @@ function getRoomChartlocationStorage() {
 }
 function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', peroid = '') {
     // set room chart localstorage
-
+ 
     let dataStorage = getRoomChartlocationStorage()
     if (start_date != '')
         dataStorage.start_date = start_date
@@ -372,9 +366,11 @@ function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', 
 
 
 
-    localStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
+    sessionStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
+
     filter.date = moment(dataStorage.start_date).add(1, 'days').format("yyyy-MM-DD")
     filter.end_date = dataStorage.end_date
+
     return dataStorage
 
 }
@@ -668,7 +664,7 @@ onMounted(() => {
     onInitialDate()
  
     if(!selectedDate.value){
-        const currentViewChart = JSON.parse(localStorage.getItem('reservation_chart'))
+        const currentViewChart = JSON.parse(sessionStorage.getItem('reservation_chart'))
         selectedDate.value = new Date(moment(currentViewChart.start_date).add(1,'days'))
     }
     // var list = document.getElementsByClassName("fc-resource")

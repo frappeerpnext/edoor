@@ -153,7 +153,7 @@ const onOpenDetail = () => {
 
 function onOpenDetailx() {
      
-    const reservation_chart = JSON.parse(localStorage.getItem('reservation_chart'))
+    const reservation_chart = JSON.parse(sessionStorage.getItem('reservation_chart'))
     if (!props.disabled){
         const filters = [
             ['property','=',property.name]

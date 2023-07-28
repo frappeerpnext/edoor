@@ -627,13 +627,39 @@ span.p-button-icon.pi.pi-ellipsis-h {
     height: 25px;
     margin-top: 4px;    
 }
-.fc .fc-event-main{
+.fc .fc-event-main .geust-title{
     display: inline-block;
     white-space: nowrap;
-    overflow: hidden !important;
+    min-width: 62px;
+    max-width: 124px;
+    overflow: hidden;
     text-overflow: ellipsis;
 }
-
+td[data-resource-id="vacant_room"] .fc-event.fc-event-draggable, 
+td[data-resource-id="occupany"] .fc-event.fc-event-draggable,
+td[data-resource-id="out_of_order"] .fc-event.fc-event-draggable,
+td[data-resource-id="arrival_departure"] .fc-event.fc-event-draggable,
+td[data-resource-id="pax"] .fc-event.fc-event-draggable
+{
+    border-radius: 0 !important;
+}
+.is-master-guest{
+    border-radius: 50%;
+    border:1px solid #0056c0;
+    background-color: #eff6ff;
+    position: absolute;
+    display: block;
+    background-color: #FFF;
+    min-width: 15px;
+    max-width: 15px;
+    min-height: 15px;
+    max-height: 15px;
+    top: -8px;
+    z-index: 2; 
+}
+.is-master-guest img{
+    width: 10px; margin-left: 2px;
+}
 @-moz-document url-prefix() {
     .fc-event[href], .fc-event.fc-event-draggable{
         height: 25px;
