@@ -1,5 +1,5 @@
 <template>
-    <div class="xxxx">
+    <div class="">
         <div :style="[{minWidth: width}, {maxWidth: width}]">
             <span class="font-semibold text-lg mb-3">{{ title }}</span>
             <slot name="default"></slot>

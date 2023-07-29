@@ -1,11 +1,12 @@
 <template lang="">
     <div>
+        
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
+                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk  </div>
                         <div class="ml-8 header-title text-2xl" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                         <div class="ml-8 header-title text-2xl" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
@@ -102,7 +103,7 @@
     </div>
   </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted,watch } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch } from '@/plugin'
 import FullCalendar from '@fullcalendar/vue3'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
@@ -122,9 +123,6 @@ import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import Tooltip from 'primevue/tooltip'
 import { useTippy } from 'vue-tippy'
- 
-
- 
 
 
 const socket = inject("$socket");
@@ -172,7 +170,7 @@ let roomChartResourceFilter = reactive({
 let eventKeyword = ref()
 
 socket.on("RefresheDoorDashboard", (arg) => {
-    
+
     if (arg == property.name) {
         onRefresh()
         toast.add({ severity: 'info', summary: 'Info', detail: "Reservation updated", life: 3000 })
@@ -180,7 +178,7 @@ socket.on("RefresheDoorDashboard", (arg) => {
     }
 })
 
- 
+
 watch(() => filter.date, (newValue, oldValue) => {
     selectedDate.value = new Date(newValue)
 })
@@ -193,7 +191,7 @@ const calendarOptions = reactive({
     plugins: [
         interactionPlugin,
         resourceTimelinePlugin
-        
+
     ],
     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
     timeZone: 'UTC',
@@ -206,7 +204,7 @@ const calendarOptions = reactive({
     stickyHeaderDates: true,
     headerToolbar: false,
     refetchResourcesOnNavigate: true,
-    loading: function(loading) {
+    loading: function (loading) {
         gv.loading = loading
     },
     visibleRange: function (currentDate) {
@@ -215,10 +213,17 @@ const calendarOptions = reactive({
         return { start: startDate, end: endDate };
     },
     resourceAreaColumns: resourceColumn(),
-     
+
     resources: function (info, successCallback, failureCallback) {
         call.get('edoor.api.frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
             successCallback(result.message)
+            const room_status = document.getElementsByClassName("room-status")
+            for (let i = 0; i < room_status.length; i++) {
+             
+                useTippy(room_status[i], {
+                    content: room_status[i].getAttribute("data-title")
+                })
+            }
         }).catch((error) => {
             console.log(error)
         });
@@ -238,8 +243,8 @@ const calendarOptions = reactive({
             });
     },
     eventAllow: function (dropInfo, draggedEvent) {
-        
-     
+
+
         return draggedEvent._def.extendedProps.can_resize
     },
     selectable: true,
@@ -258,6 +263,7 @@ const calendarOptions = reactive({
 
         return " "
     },
+
 
     slotLabelDidMount: function (info) {
 
@@ -292,13 +298,14 @@ const calendarOptions = reactive({
 
     }),
     eventMouseEnter: (($event) => {
-        const event=$event.event._def
-       
-        
-        if(event.extendedProps.type =="stay" || event.extendedProps.type =="room_block" ){
+        const event = $event.event._def
 
-        
-        const description=`<div style="background:red">
+
+
+        if (event.extendedProps.type == "stay" || event.extendedProps.type == "room_block") {
+
+
+            const description = `<div style="background:red">
                                         <table>
                                             <tbody>
                                             <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
@@ -311,21 +318,24 @@ const calendarOptions = reactive({
                                             </tbody>
                                         </table>
                                     </div>`
- 
 
-        const { tippyInstance } = useTippy($event.el, {
-            content: description,
-        })
-    }
-      
-   
-        
+
+            const { tippyInstance } = useTippy($event.el, {
+                content: description,
+            })
+        }
+
+
+
     }),
     eventDrop: function (info) {
         if (!confirm("Are you sure about this change?")) {
             info.revert();
         }
-    }
+    },
+
+
+
 
 })
 
@@ -358,7 +368,7 @@ function getRoomChartlocationStorage() {
 }
 function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', peroid = '') {
     // set room chart localstorage
- 
+
     let dataStorage = getRoomChartlocationStorage()
     if (start_date != '')
         dataStorage.start_date = start_date
@@ -406,13 +416,13 @@ function onSelectedDate(event) {
     }
 
     if (event.resource._resource.extendedProps.type == "room") {
-        let room_type_id =  event.resource._resource.extendedProps.room_type_id ?? ""
-        
-        if(room_type_id==""){
-          
+        let room_type_id = event.resource._resource.extendedProps.room_type_id ?? ""
+
+        if (room_type_id == "") {
+
             room_type_id = event.resource._resource.parentId;
         }
-        
+
         const dialogRef = dialog.open(NewReservation, {
             data: {
                 arrival_date: event.start,
@@ -457,9 +467,10 @@ function resourceColumn() {
                 width: 40,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
+                    console.log(arg.resource._context)
                     const item = arg.resource.extendedProps
                     if (item.housekeeping_icon) {
-                        el.innerHTML = `<div class="cell-status text-center" title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                        el.innerHTML = `<div  class="cell-status text-center room-status" data-title="${arg.fieldValue} - ${arg.resource.id}">${item.housekeeping_icon}${JSON.stringify(arg.resource)}</div>`;
                     }
                     else {
                         el.innerHTML = ''
@@ -497,15 +508,18 @@ function resourceColumn() {
                 field: 'housekeeping_status',
                 width: 40,
                 cellContent: function (arg) {
+
                     const el = arg.resource._context.calendarApi.el
+
+
                     const item = arg.resource.extendedProps
                     if (item.housekeeping_icon) {
-                        el.innerHTML = `<div class="cell-status text-center" title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                        el.innerHTML = `<div class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
                     }
                     else {
                         el.innerHTML = ''
                     }
-
+                    //yyyyyyyyyyyyyyy
                     const dom = [el.innerHTML]
                     return { html: dom }
                 }
@@ -513,6 +527,7 @@ function resourceColumn() {
         ]
     }
 }
+
 
 function onShowSummary() {
     showSummary.value = !showSummary.value
@@ -526,6 +541,7 @@ function onView() {
     const cal = fullCalendar.value.getApi()
     cal.setOption('resourceAreaColumns', resourceColumn())
     cal.refetchResources()
+
 }
 function onFilter(key) {
     filter.peroid = key
@@ -583,10 +599,10 @@ function onPrevNext(key) {
 const onRefresh = () => {
     const cal = fullCalendar.value.getApi()
     cal.refetchEvents()
-    
- 
+
+
 }
- 
+
 function showReservationStayDetail(name) {
 
     const dialogRef = dialog.open(ReservationStayDetail, {
@@ -602,7 +618,7 @@ function showReservationStayDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position:"top"
+            position: "top"
         },
         onClose: (options) => {
             const data = options.data;
@@ -632,7 +648,7 @@ function showReservationDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position:"top"
+            position: "top"
         },
         onClose: (options) => {
             const data = options.data;
@@ -643,37 +659,36 @@ function showReservationDetail(name) {
 
 
 /// filter rescource
-function onFilterResource(f){ 
+function onFilterResource(f) {
     roomChartResourceFilter = {
         property: property.name,
         room_type_group: f.room_type_group,
         room_type: f.room_type,
         building: f.building,
         floor: f.floor,
-        room_number:f.room_number,
+        room_number: f.room_number,
         view_type: filter.view_type // room_type = true or room = false
     }
     const cal = fullCalendar.value.getApi()
     cal.refetchResources()
 }
 // search event
-function onSearch(key){
-    eventKeyword.value = key 
+function onSearch(key) {
+    eventKeyword.value = key
     onRefresh()
     // cal.setOption({now:"2023-05-18"})
- 
+
 }
 
 onMounted(() => {
- 
+
     onInitialDate()
- 
-    if(!selectedDate.value){
+
+    if (!selectedDate.value) {
         const currentViewChart = JSON.parse(sessionStorage.getItem('reservation_chart'))
-        selectedDate.value = new Date(moment(currentViewChart.start_date).add(1,'days'))
+        selectedDate.value = new Date(moment(currentViewChart.start_date).add(1, 'days'))
     }
-    // var list = document.getElementsByClassName("fc-resource")
-    
+
 })
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
@@ -706,8 +721,7 @@ onUnmounted(() => {
 }
 
 .fc-timeline-slot:hover {
-  background: #DBDBDB;
-  opacity: 0.4;
+    background: #DBDBDB;
+    opacity: 0.4;
 }
- 
 </style>

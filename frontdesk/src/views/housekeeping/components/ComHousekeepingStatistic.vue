@@ -2,7 +2,7 @@
        <div>
               <ComPanel title="Today Statistic" class=" pb-3">
                 <ComDonutFrontdesk/> 
-                <ComHousekeepingTodaySummary/>   
+                <ComHousekeepingTodaySummary :isHousekeeping="true"/>   
               </ComPanel>
               <ComPanel title="Housekeeping Statistic" class="mt-3 pb-3">
                  <ComHousekeepingStatus />       

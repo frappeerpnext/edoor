@@ -33,7 +33,7 @@
                                 <p title="Reservations">Reservations</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Guest Database" @onClick="onRoute('GuestDatabase')">
+                        <ComHeaderBarItemButton current-page="GuestDatabase" title="Guest Database" @onClick="onRoute('GuestDatabase')">
                             <template #icon>
                                 <img :src="iconEdoorGuestDatabase">
                             </template>
@@ -242,7 +242,6 @@ function onRunNightAudit() {
             modal: true,
             closeOnEscape: false,
         },
-        
     });
 }
 

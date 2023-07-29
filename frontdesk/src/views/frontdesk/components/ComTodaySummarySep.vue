@@ -39,6 +39,10 @@ const props = defineProps({
     disabled: {
         type:Boolean,
         default:false
+    },
+    isHousekeeping: {
+        type:Boolean,
+        default:false
     }
 })
 const progress = computed(() => {
@@ -89,7 +93,7 @@ const onOpenDetail = () => {
         'Business%20Branch',
         "eDoor%20Room%20List",
         'Room List',
-        [],
+        [{key:"is_housekeeping", value:props.isHousekeeping}],
         ['keyword','building','floor','room_type_group','room_type','housekeeping_status']
     )
  }else if(props.dialogKey  == "arrival"){
@@ -97,7 +101,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20Dashboard%20Arrival%20Guest",
          'Arrival Guest',
-         [{key:'action', value:"view_arrival"},{key:"date", value:working_day.date_working_day}],
+         [{key:'action', value:"view_arrival"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','building','floor','room_type','reservation_status']
      )
  }
@@ -106,7 +110,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20Dashboard%20Departure%20Guest",
          'Departure',
-         [{key:'action', value:"view_departure"},{key:"date", value:working_day.date_working_day}],
+         [{key:'action', value:"view_departure"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','building','floor','room_type','reservation_status','business_source']
      )
  } else if(props.dialogKey == "unassign_room"){
@@ -115,7 +119,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20Unassign%20Room%20Reservation%20List",
          'Unassign Room Reservation List',
-         [{key:"date", value:working_day.date_working_day}],
+         [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','room_type','reservation_status','business_source']
      )
  }
@@ -124,7 +128,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
          'Pickup & Drop Off',
-         [{key:'action', value:"view_departure_remaining"},{key:"date", value:working_day.date_working_day}],
+         [{key:'action', value:"view_departure_remaining"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
      )
       
@@ -134,7 +138,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20GIT%20Arrival%20Guest",
          'GIT Arrival',
-         [{key:"date", value:working_day.date_working_day}],
+         [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','room_type','reservation_status','business_source']
      )
  }
@@ -143,7 +147,7 @@ const onOpenDetail = () => {
          'Business%20Branch',
          "eDoor%20Dashboard%20Stay%20Over%20Guest",
          'Stay Over',
-         [{key:"date",value:working_day.date_working_day}],
+         [{key:"date",value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
          ['keyword','room_type','reservation_status','business_source']
      )
  }

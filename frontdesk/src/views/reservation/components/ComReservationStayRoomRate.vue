@@ -27,7 +27,7 @@
           <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
         </template>
       </Column>
-      <Column field="rate_type" header="Rate Typexx">
+      <Column field="rate_type" header="Rate Type">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>

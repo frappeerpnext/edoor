@@ -1,7 +1,8 @@
 <template>
-    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK>
+    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK titleButtonClose="Close Shift">
         <div class="grid justify-between">
             <div class="col-6">
+                {{ doc }}
             <table>
                 <tbody>
                     <template v-for="(item, index) in doc?.cash_float" :key="index">
@@ -49,7 +50,6 @@
                 </table>
             </div>
         </div>
-        <!-- <label>Cash Float</label> -->
         <div class="grid justify-between">
             <div v-for="(item, index) in doc?.cash_float" :key="index" class="col-6">
                 <span class="text-500 font-italic">{{ item.payment_method }}</span>     

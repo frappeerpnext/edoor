@@ -2,7 +2,7 @@
     <ComReservationStayPanel title="Stay Information">
         <template #btn>
             <div class="flex items-center">
-                <span> Res Color </span> 
+                <span> Res {{ rs.reservation?.reservation_type }} Color </span> 
                 <button :style="{background:rs?.reservation?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
             </div>
         </template>

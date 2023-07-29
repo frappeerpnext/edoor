@@ -5,7 +5,7 @@
             <slot name="icon"></slot>
         </div>
         <div class="pro-navbar-txt">
-            <slot name="defualt"></slot>
+            <slot name="defualt"></slot> 
         </div>
     </div>
 </template>

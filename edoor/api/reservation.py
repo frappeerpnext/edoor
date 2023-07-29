@@ -1574,7 +1574,7 @@ def update_reservation_color(data):
         reservation = data['reservation']
 
     frappe.db.set_value('Reservation', reservation, 'reservation_color', data['reservation_color'])
-    stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation})
+    stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation, 'is_active_reservation': 1})
     for t in stays:
         doc = frappe.get_doc('Reservation Stay', t.name)
         doc.reservation_color = data['reservation_color']
