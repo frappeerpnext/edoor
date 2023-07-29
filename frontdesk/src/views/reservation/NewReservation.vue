@@ -541,7 +541,7 @@ function onSelectedCustomer(event) {
         db.getDoc('Customer', event.value)
             .then((d) => { 
                 doc.value.guest_info = d
-                doc.value.guest_info.expired_date = gv.dateFormat(doc.value.guest_info.expired_date) // moment( doc.value.guest_info.expired_dat).toDate()
+                doc.value.guest_info.expired_date = moment( doc.value.guest_info.expired_dat).toDate()
             })
     } else {
         doc.value.guest_info = {
@@ -594,6 +594,7 @@ const onSave = () => {
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
     if (data.reservation.departure_date) data.reservation.departure_date = moment(data.reservation.departure_date).format("yyyy-MM-DD")
+    alert(data.guest_info.expired_date)
     if (data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
 
     data.reservation.tax_1_rate = doc.value.tax_rule.tax_1_rate

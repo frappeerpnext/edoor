@@ -69,7 +69,6 @@ const props = defineProps({
 let value = computed({
     get() {
         if (props.modelValue) {
-            console.log(props.modelValue)
             call.get('frappe.desk.search.get_link_title', { doctype: props.doctype, docname: props.modelValue }).then((result) => {
                 selected.value = result.message || props.modelValue
                 return props.modelValue
@@ -89,7 +88,7 @@ let value = computed({
 })
 watch(()=> props.valueFilter, (newValue)=>{
     options.value = []
-    if(selectedObj.value.filter && selectedObj.value.filter != newValue){
+    if(newValue){
         onClear()
     }
 })

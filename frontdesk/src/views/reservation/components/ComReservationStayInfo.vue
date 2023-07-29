@@ -3,7 +3,7 @@
         <template #btn>
             <div class="flex items-center">
                 <span> Res Color </span> 
-                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
+                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>
             </div>
         </template>
         <template #content>

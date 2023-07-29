@@ -4,7 +4,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_oc
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_reservation_color, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
+from edoor.api.utils import update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
 import frappe
 from frappe.utils.data import add_to_date, getdate
 
@@ -1566,3 +1566,17 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
         return frappe.get_doc("Reservation Stay",doc["name"])
     else:
         return reservation
+    
+@frappe.whitelist(methods="POST")
+def update_reservation_color(data):
+    reservation = data['name']
+    if data['doctype'] == 'Reservation Stay':
+        reservation = data['reservation']
+
+    frappe.db.set_value('Reservation', reservation, 'reservation_color', data['reservation_color'])
+    stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation})
+    for t in stays:
+        doc = frappe.get_doc('Reservation Stay', t.name)
+        doc.reservation_color = data['reservation_color']
+        doc.save()
+    return frappe.get_doc(data['doctype'], data['name'])

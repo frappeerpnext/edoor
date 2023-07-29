@@ -125,7 +125,7 @@
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
-                    style="font-weight: 600 !important" :value="rs?.reservationStayNames.length" severity="warning">
+                    style="font-weight: 600 !important;" class="badge-rs"  :value="rs?.reservationStayNames.length" severity="warning">
                 </Badge>
             </Button>
         </template>

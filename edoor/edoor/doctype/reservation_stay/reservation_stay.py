@@ -9,7 +9,7 @@ import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now,getdate
 from py_linq import Enumerable
-from edoor.api.utils import update_reservation, update_reservation_color
+from edoor.api.utils import update_reservation
  
 class ReservationStay(Document):
 	def  validate(self):

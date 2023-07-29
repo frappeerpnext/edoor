@@ -15,15 +15,16 @@
                                 <span class="px-2 rounded-lg me-2 text-white p-1px"
                                     :style="{ background: rs.reservation?.status_color }">{{
                                         rs.reservation?.reservation_status }}</span>
-                                        <span v-if="rs.reservation?.reservation_type == 'FIT'" class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
-                                            <i class="pi pi-user" style="font-size: 10px;"></i>
-                                            {{rs.reservation?.reservation_type }}</span>
-                                        <span v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
-                                            <i class="pi pi-users"></i>
-                                            {{rs.reservation?.reservation_type }}</span>
-                                <!-- <span class="px-2 rounded-lg me-2 text-white p-1px"
-                                    :style="{ background: rs.reservation?.status_color }">{{
-                                        rs.reservation?.reservation_type }}</span> -->
+                                        <div v-tooltip.top="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                                            <span class="">
+                                                <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
+                                            </span>
+                                        </div>
+                                        <div v-tooltip.top="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                                            <span>
+                                                <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
+                                            </span>
+                                        </div>
                             </div>
                         </div>
                         <div class="flex gap-2">

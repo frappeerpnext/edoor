@@ -372,22 +372,6 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 frappe.db.commit()
         return doc
 
-
-def update_reservation_color(self=None):
-    is_reservation_stay = hasattr(self, 'reservation')
-    stays = []
-    if is_reservation_stay:
-        rs = frappe.get_doc('Reservation', self.reservation)
-        rs.reservation_color = self.reservation_color
-        if rs.total_active_reservation_stay > 1:
-            stays = frappe.db.get_list('Reservation Stay', filters={'reservation':self.reservation, 'name': ['!=', self.name]})
-        rs.save()
-        frappe.db.commit()
-    else:
-        stays = frappe.db.get_list('Reservation Stay', filters={'reservation':self.name})
-    for t in stays:
-        frappe.db.set_value('Reservation Stay', t.name, 'reservation_color', self.reservation_color)
-
 @frappe.whitelist()
 def get_room_rate(property, rate_type, room_type, business_source, date):
     sql = "select name from `tabSeason` where '{}' between start_date and end_date limit 1".format(date)

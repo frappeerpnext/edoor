@@ -86,7 +86,7 @@
                                                 </span>
                                             </span>
                                             <div class="geust-title">
-                                                {{event.title}} / {{event.extendedProps.reservation_type}}
+                                                {{event.title}}
                                                 <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
                                             </div>
                                         </div>

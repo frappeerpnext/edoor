@@ -3,10 +3,10 @@
         <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
             @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-            <Column field="room_number" header="Room #"></Column>
-            <Column header="Status">
+            <Column class="text-center" field="room_number" header="Room #"></Column>
+            <Column  header="Status">
                 <template #body="{ data }">
-                    <span class="py-1 px-3 rounded-xl text-white white-space-nowrap " :style="{ background: data.status_color }">
+                    <span class="py-1 px-3 rounded-xl text-white  white-space-nowrap " :style="{ background: data.status_color }">
                         {{ data.housekeeping_status }}
                     </span> 
                 </template>
@@ -29,10 +29,9 @@
             </Column>
             <Column field="reservation_status" header="Reservation Status">
                 <template #body="slotProps">
-                    <Button  v-if="slotProps.data.reservation_status" @click="onReservationStatus($event, slotProps.data)" :label="slotProps.data.reservation_status" link
-                        size="small" class="link_line_action1"></Button>
+                    <span  v-if="slotProps.data.reservation_status" 
+                       >{{slotProps.data.reservation_status}}</span>
                 </template>
-            
             </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
@@ -113,7 +112,9 @@ function SidebarClose() {
                 elements_row_hk.classList.remove('active_row_hk');
         });
     }
-function onRowSelect(r) {   
+function onRowSelect(r) {
+    
+       
     console.log(r)    
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
