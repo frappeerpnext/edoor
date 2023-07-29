@@ -41,6 +41,7 @@ class ReservationFolio(Document):
 		 
 		if round(self.balance,int(frappe.db.get_default("currency_precision"))) > 0 and self.status == "Closed":
 			frappe.throw("Cannot close folio with balance is greater than 0")
+			
 	def on_update(self):
 		if self.is_master==1:
 			#reset other is master = 0
