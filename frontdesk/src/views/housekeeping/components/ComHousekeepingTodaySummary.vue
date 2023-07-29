@@ -1,18 +1,18 @@
 <template>
-    <div class="td_guest_cs px-1">
-        <ComTodaySummarySep title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
-        <ComTodaySummarySep title="Arrival" :totalValue="data.arrival + data.arrival_remaining" :value="data.arrival">
+    <div class="td_guest_cs px-1 cursor-pointer">
+        <ComTodaySummarySep dialogKey="all_rooms" title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="arrival" title="Arrival" :totalValue="data.arrival + data.arrival_remaining" :value="data.arrival">
             <span title="Checked-in">{{ data?.arrival }}</span>/<span title="Remain check-in">{{ data?.arrival_remaining
             }}</span>
         </ComTodaySummarySep>
-        <ComTodaySummarySep title="Departure" :totalValue="data.departure + data.departure_remaining"
+        <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure + data.departure_remaining"
             :value="data.departure">
             <span title="Departure">{{ data.departure }}</span>/<span titel="Departure Remain">{{ data?.departure_remaining
             }}</span>
         </ComTodaySummarySep>
-        <ComTodaySummarySep title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
-        <ComTodaySummarySep title="Pickup">{{ data?.pick_up }}</ComTodaySummarySep>
-        <ComTodaySummarySep title="Drop Off">{{ data?.drop_off }}</ComTodaySummarySep>
+        <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
+        <ComTodaySummarySep dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="pickup_drop_off" title="Pickup / Drop Off">{{ data?.pick_up }} / {{ data?.drop_off }} </ComTodaySummarySep>
     </div>
 </template>
 <script setup>
