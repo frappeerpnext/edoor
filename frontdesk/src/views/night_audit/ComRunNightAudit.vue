@@ -100,6 +100,7 @@ function onNext() {
                     if (result.message) {
                         if (isConfirmRoomRate.value == false) {
                             toast.add({ severity: 'warn', summary: "Please tick on confirm room rate check box", detail: '', life: 3000 })
+                            loading.value = false
                             return
                         }
                     }
@@ -108,6 +109,7 @@ function onNext() {
                     if (result.message) {
                         if (isConfirmFolioPosting.value == false) {
                             toast.add({ severity: 'warn', summary: "Please tick on confirm folio posting check box", detail: '', life: 3000 })
+                            loading.value = false
                             return
                         }
                     }
@@ -131,6 +133,7 @@ function onNext() {
 
 
 function onFinish() {
+    loading.value = true;
     confirm.require({
         message: 'Are you sure you want to process run night audit?',
         header: 'Run Night Audit',
@@ -143,6 +146,9 @@ function onFinish() {
             }, "", false).then((result) => {
                 currentStep.value = 8
                 refreshReport()
+                loading.value = false;
+            }).catch((err)=>{
+                loading.value = false;
             })
         },
 

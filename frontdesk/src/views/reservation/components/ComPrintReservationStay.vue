@@ -1,4 +1,5 @@
 <template>
+    <div class=" view-table-iframe-dialog -mr-3 pr-2" style="height: 75vh;">
    <div class="mb-2">
     <Dropdown v-model="selected_folio" :options="folios" optionLabel="folio" optionValue="name"
         placeholder="Select Folio" class="w-full md:w-14rem mr-2" @change="refreshReport" 
@@ -6,7 +7,8 @@
         />
     <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport"/>  
 </div>
-    <iframe id="report-view" style="height: 70vh;" width="100%" :src="url"></iframe>
+    <iframe id="report-view" width="100%" :src="url"></iframe>
+    </div>
 </template>
 
 <script setup>
@@ -34,6 +36,7 @@ const refreshReport = () => {
     }
 
     document.getElementById("report-view").contentWindow.location.replace(url.value)
+    
 }
 
 onMounted(() => {

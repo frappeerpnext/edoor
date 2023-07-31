@@ -138,7 +138,7 @@
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
-                                    <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date" placeholder="ID Expire Date" view="month" dateFormat="dd-mm-yy" showIcon />
+                                    <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date" placeholder="ID Expire Date" view="month" dateFormat="mm-yy" showIcon />
                                 </div>
                             </div>
                         </div>

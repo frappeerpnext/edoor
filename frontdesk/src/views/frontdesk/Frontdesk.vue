@@ -219,7 +219,7 @@ const calendarOptions = reactive({
             successCallback(result.message)
             const room_status = document.getElementsByClassName("room-status")
             for (let i = 0; i < room_status.length; i++) {
-             
+
                 useTippy(room_status[i], {
                     content: room_status[i].getAttribute("data-title")
                 })
@@ -264,7 +264,15 @@ const calendarOptions = reactive({
         return " "
     },
 
+    resourceLabelDidMount: function (info) {
+        setTimeout(() => {
+            const el = document.querySelector("#room_status_" + info.resource._resource.id)
 
+            useTippy(el, {
+                content: el.getAttribute("data-title")
+            })
+        }, 1000);
+    },
     slotLabelDidMount: function (info) {
 
         const d = moment(info.date).format("DD")
@@ -467,10 +475,10 @@ function resourceColumn() {
                 width: 40,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
-                    console.log(arg.resource._context)
                     const item = arg.resource.extendedProps
+
                     if (item.housekeeping_icon) {
-                        el.innerHTML = `<div  class="cell-status text-center room-status" data-title="${arg.fieldValue} - ${arg.resource.id}">${item.housekeeping_icon}${JSON.stringify(arg.resource)}</div>`;
+                        el.innerHTML = `<div id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
                     }
                     else {
                         el.innerHTML = ''
@@ -495,7 +503,7 @@ function resourceColumn() {
                     const item = arg.resource.extendedProps
 
                     if (item.room_type) {
-                        el.innerHTML = `<div title="${item.room_type}">${arg.fieldValue}</div>`;
+                        el.innerHTML = `<div  title="${item.room_type}">${arg.fieldValue}</div>`;
                     }
                     else {
                         el.innerHTML = ''
@@ -510,16 +518,14 @@ function resourceColumn() {
                 cellContent: function (arg) {
 
                     const el = arg.resource._context.calendarApi.el
-
-
                     const item = arg.resource.extendedProps
                     if (item.housekeeping_icon) {
-                        el.innerHTML = `<div class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                        el.innerHTML = `<div id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
                     }
                     else {
                         el.innerHTML = ''
                     }
-                    //yyyyyyyyyyyyyyy
+
                     const dom = [el.innerHTML]
                     return { html: dom }
                 }

@@ -1,10 +1,13 @@
 <template>
+    <div class=" view-table-iframe-dialog -mr-3 pr-2" style="height: 75vh;">
+    <div class="mb-2">
     <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
         placeholder="Select Guest" class="w-full md:w-14rem mb-3" @change="refreshReport" />
     
     <ComSelect @change="refreshReport" class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" />
-    
-    <iframe @load="onIframeLoaded()" id="report-view"  width="100%" :src="url"></iframe>
+    </div>
+    <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
+</div>
 </template>
 
 <script setup>
@@ -25,8 +28,8 @@ const reservationStay = ref("")
 letter_head.value = setting.property.default_letter_head
 function onIframeLoaded() {
     const iframe = document.getElementById("report-view");
-     
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
     
 }
 

@@ -369,11 +369,13 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
     #reservation_stays is apply then we skip check reservation 
     #validate user permission check if user have role in check in role in edoor setting
     #validate with working day and cashier shift
+    #validate room if still have guest inhouse
     #validate with room is already assign room 
     #after check in check if no folio then create 1 and mark as master
     #add room charge to folio transaction
     #check master room is already check in
     #update check date and check in by in to reservation stay
+
 
     check_in_role = frappe.db.get_default("check_in_role")
  
@@ -414,6 +416,14 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
       
         if frappe.utils.getdate(stay.arrival_date) > working_day["date_working_day"]:
             frappe.throw("Stay # {}. Room {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
+        #validate check if current room is still have guest in house
+
+        room_id = stay.stays[0].room_id
+        check_room_in_house = frappe.db.sql("select name from `tabReservation Stay Room` where parent!='{}' and room_id='{}' and end_date='{}' and reservation_status='In-house'".format(stay.name,room_id, stay.arrival_date),as_dict=1)
+        if check_room_in_house:
+             frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
+
+ 
 
         stay.reservation_status = "In-house" if not is_undo else "Confirmed"
         stay.checked_in_by = frappe.session.user
