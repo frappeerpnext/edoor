@@ -44,7 +44,7 @@ class ReservationStay(Document):
 
 			#check prevent unasign room
 			
-			if not self.reservation_status in ['Reserved', 'Confirmed'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
+			if not old_doc.reservation_status in ['Reserved', 'Confirmed'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
 				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
 
@@ -84,7 +84,15 @@ class ReservationStay(Document):
 			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
-			d.show_in_room_chart = reservation_status.show_in_room_chart
+
+			if hasattr(d, "reserved_room"):
+			 
+				d.show_in_room_chart = d.reserved_room
+			else:
+				 
+				d.show_in_room_chart = reservation_status.show_in_room_chart
+
+		 
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
 			d.group_code = self.group_code
@@ -118,6 +126,8 @@ class ReservationStay(Document):
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
 		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
 
+		self.arrival_date = Enumerable(self.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
+		self.departure_date = Enumerable(self.stays).min(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
 
@@ -148,8 +158,9 @@ class ReservationStay(Document):
 		frappe.db.sql("""
 			update `tabReservation Stay Room` 
 			set rooms='{}',
+			internal_reference_number = '{}',
 			arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
-		""".format(self.rooms,self.arrival_date,self.departure_date,self.is_master,self.reservation_color,self.group_color,self.group_code,self.group_name,self.reservation_type,self.pay_by_company, self.name))
+		""".format(self.rooms,self.internal_reference_number,self.arrival_date,self.departure_date,self.is_master,self.reservation_color,self.group_color,self.group_code,self.group_name,self.reservation_type,self.pay_by_company, self.name))
 
 
 def update_note(self):

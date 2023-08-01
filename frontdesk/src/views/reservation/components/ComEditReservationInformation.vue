@@ -3,7 +3,7 @@
         <div class="py-2 grid">
             <div class="col-12">
                 <label>Res. Date</label><br/>
-                <Calendar class="p-inputtext-sm w-full" v-model="data.reservation_date"
+                <Calendar class="p-inputtext-sm w-full" :selectOtherMonths="true" v-model="data.reservation_date"
                 placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
             </div>
             <div class="col-6">

@@ -328,4 +328,5 @@ router.beforeEach(async (to, from, next) => {
 		 alert("Load app error")
 		// const errorApp = createApp(Error);
 		// errorApp.mount("#app");
+		console.log(error)
 	})

@@ -6,6 +6,8 @@
             </template>
             <template #end>
                 <NewFITReservationButton />
+                <Button label="Group Booking " icon=" pi pi-users" severity="info" />
+                
             </template>
         </ComHeader>
         <div class="mb-3">

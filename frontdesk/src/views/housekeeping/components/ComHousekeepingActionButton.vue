@@ -7,13 +7,13 @@
         </span>
     </Button>
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
-        :style="{ width: '30vw' }">
+        :style="{ width: '30vw' }" position="top">
         <div>
             <ComSelect isFilter v-model="selectedStatus" placeholder="Housekeeping Status" doctype="Housekeeping Status" :filters="{is_block_room:0}" />
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" />
-            <Button label="Yes" icon="pi pi-check" @click="onSaveChangeHousekeepingStatus" autofocus
+            <!-- <Button class="border-none" label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" /> -->
+            <Button class="border-none" label="Ok" icon="pi pi-check-circle" @click="onSaveChangeHousekeepingStatus" autofocus
                 :loading="submitLoading" />
         </template>
     </Dialog>
@@ -25,14 +25,14 @@
         </span>
     </Button>
 
-    <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }">
+    <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }" position="top">
         <div>
             <ComSelect isFilter v-model="selectedHousekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper" />
 
         </div>
         <template #footer>
-            <Button label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" />
-            <Button label="Yes" icon="pi pi-check" @click="onSaveAssignHousekeeper" autofocus :loading="submitLoading" />
+            <!-- <Button class="border-none" label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" /> -->
+            <Button class="border-none" label="Ok" icon="pi pi-check-circle" @click="onSaveAssignHousekeeper" autofocus :loading="submitLoading" />
         </template>
     </Dialog>
 </template>

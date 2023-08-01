@@ -9,7 +9,7 @@
           {{ value || value == 0 ? value : '...' }}
         </span>
         <span v-else-if="isCurrency"><CurrencyFormat :value="value" /></span>
-        <span v-else-if="value">{{ value }} </span>
+        <span v-else >{{ value }} </span>
         <slot></slot>
     </span>
   </div>

@@ -1,9 +1,11 @@
 <template>
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
+
             <div :class="[isPage, 'bg-white']">
                 <div class="flex mb-3 justify-between">
                     <ComReservationStayHeaderStatus />
+
                     <div class="flex gap-2">
                         <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"
                             class="rounded-lg conten-btn flex" link>
@@ -19,7 +21,7 @@
                                 :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
                                 class="border-noround-right border-y-none border-left-none">
                             </Button>
-                            <Button class="border-noround border-rl-ed">{{
+                            <Button class="border-noround border-rl-ed border-none">{{
                                 (rs?.reservationStayNames.indexOf(rs.reservationStay?.name))
                                 + 1 }} / {{ rs?.reservationStayNames.length }} </Button>
                             <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
@@ -29,7 +31,21 @@
                         </div>
                     </div>
                 </div>
-
+                <Message v-if="rs.reservationStay && rs.reservationStay?.reservation_status=='No Show'">
+                  
+                    <div 
+                        class="flex items-center gap-3"
+                        v-if="rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0 && rs.reservationStay?.reservation_status == 'No Show'">
+                        <span>
+                            We reserved room for this reservation.
+                        </span>
+                        <Button @click="onUnreservedRoom" class="conten-btn border-1" serverity="waring">Unreserve Room</Button>
+                    </div>
+                    <div class="flex items-center gap-3" v-else>
+                        <span>We do not reserved room for this reservation.</span>
+                        <Button @click="onReservedRoom" class="conten-btn border-1" serverity="waring">Reserve Room</Button>
+                    </div>
+                </Message>
                 <TabView lazy v-model:activeIndex="activeTab">
                     <TabPanel header="General Information">
                         <div class="grid mt-2 ml-0 ms-0">
@@ -59,7 +75,8 @@
                                         <hr>
                                     </div>
                                     <div class="col-12">
-                                        <ComCommentAndNotice v-if="!rs.loading && rs.reservationStay.name" doctype="Reservation Stay" :docname="rs.reservationStay.name" />
+                                        <ComCommentAndNotice v-if="!rs.loading && rs.reservationStay.name"
+                                            doctype="Reservation Stay" :docname="rs.reservationStay.name" />
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +93,7 @@
                     </TabPanel>
 
                     <TabPanel header="Folio">
-                       
+
                         <ComReservationStayFolio />
                     </TabPanel>
 
@@ -119,27 +136,29 @@
                 </div>
             </div>
         </div>
+        <!-- <hr class="mt-2" v-if="rs?.is_page"> -->
         <template #footer-left>
             <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
 
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
                 <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
-                    style="font-weight: 600 !important;" class="badge-rs"  :value="rs?.reservationStayNames.length" severity="warning">
+                    style="font-weight: 600 !important;" class="badge-rs" :value="rs?.reservationStayNames.length"
+                    severity="warning">
                 </Badge>
             </Button>
         </template>
         <template #footer-right>
 
-            <Button v-if="rs.canCheckIn()" @click="onCheckIn" class="bg-green-500">
+            <Button v-if="rs.canCheckIn()" @click="onCheckIn" class="bg-green-500 border-none">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
             </Button>
             <Button
                 v-if="rs.reservationStay?.reservation_status == 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservation.departure_date).add(-1, 'day'))"
-                @click="onCheckOut" class="bg-red-400">
+                @click="onCheckOut" class="bg-red-400 border-none">
                 <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
             </Button>
-        
+
         </template>
 
     </ComDialogContent>
@@ -170,6 +189,7 @@ import ComReservationStayHeaderStatus from '@/views/reservation/components/ComRe
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import TestPage2 from '../TestPage2.vue';
+import Message from 'primevue/message';
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
 const route = useRoute()
@@ -197,7 +217,7 @@ const onRefresh = (showLoading = true) => {
     rs.getReservationDetail(name.value, showLoading)
     rs.getChargeSummary(name.value)
     rs.selectedRoomRates = []
-    
+
 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
@@ -222,6 +242,48 @@ const onRefresh = (showLoading = true) => {
 
 
 }
+function onUnreservedRoom(){ 
+    
+    confirm.require({
+        message: 'Are you sure you want to unreserve room for this reservation?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            postApi("reservation.unreserved_room",{
+                property: rs.reservation.property,
+                reservation_stay: rs.reservationStay.name
+            }).then((resul)=>{
+                rs.getReservationDetail(rs.reservationStay.name)
+            })  
+        },
+
+    });
+}
+function onReservedRoom(){ 
+    confirm.require({
+        message: 'Are you sure you want to reserve room for this reservation?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            postApi("reservation.reserved_room",{
+                property: rs.reservation.property,
+                reservation_stay: rs.reservationStay.name
+            }).then((resul)=>{
+                rs.getReservationDetail(rs.reservationStay.name)
+            })  
+        },
+
+    });
+}
+
 onMounted(() => {
 
     if (!dialogRef) {
@@ -292,16 +354,16 @@ const onCheckIn = () => {
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
                     reservation_stays: [rs.reservationStay.name],
-                   
+
                 }).then((result) => {
                     rs.loading = false
                     onRefresh()
                     socket.emit("RefresheDoorDashboard", property.name);
                     socket.emit("RefreshReservationDetail", rs.reservation.name);
                 })
-                .catch((err) => {
-                    rs.loading = false
-                })
+                    .catch((err) => {
+                        rs.loading = false
+                    })
             }
         }
 
@@ -310,7 +372,7 @@ const onCheckIn = () => {
 }
 
 const onCheckOut = () => {
-    if(rs.reservationStay.balance>0){
+    if (rs.reservationStay.balance > 0) {
         toast.add({ severity: 'warn', summary: "You cannot check this reservation because balance is not zero", detail: '', life: 3000 })
         return
     }
@@ -323,7 +385,7 @@ const onCheckOut = () => {
             postApi("reservation.check_out", {
                 reservation: rs.reservation.name,
                 reservation_stays: [rs.reservationStay.name]
-            },"Check out successfully").then((result) => {
+            }, "Check out successfully").then((result) => {
                 rs.loading = false
                 onRefresh()
                 socket.emit("RefresheDoorDashboard", property.name);
@@ -342,7 +404,7 @@ const OnViewReservation = () => {
 }
 
 onUnmounted(() => {
-  
+
     rs.clear()
 
 
@@ -394,9 +456,7 @@ function onTest() {
 
 </script>
 <style scoped>
-.p-button {
-    border: 0 !important;
-}
+
 
 .border-rl-ed {
     border-right: 1px solid var(--btn-border-color) !important;
@@ -405,5 +465,4 @@ function onTest() {
 
 .min-whidth-modified {
     line-height: 1.4;
-}
-</style>
+}</style>

@@ -12,7 +12,7 @@
             <div class="grid">
                 <div class="col-12">
                     <div class="flex justify-between">
-                        <div class="flex gap-3">
+                        <div class="flex gap-2">
                             <ComHousekeepingFilter />
                         </div>
                         <!-- <div class="flex gap-3">
@@ -20,8 +20,8 @@
                 </div> -->
                     </div>
                 </div>
-                <div class="col-12 m-0 p-0">
-                    <div  class="flex justify-end gap-3">
+                <div class="col-12">
+                    <div class="flex justify-end gap-3">
                         <div v-if="showSummary" class="col-2"></div>
                         <div class="col px-0 pt-0">
                             <div class="w-full flex justify-between my-2">
@@ -29,7 +29,7 @@
                                     <ComHousekeepingActionButton />
                                 </div>
                                 <div
-                                    class=" flex  justify-center items-center bg-gray-100 shadow-lg overflow-hidden rounded-lg">
+                                    class="flex justify-center items-center bg-gray-100 shadow-lg overflow-hidden rounded-lg">
                                     <button type="button" @click="hk.view_type = 'table'"
                                         :class="(hk.view_type == 'table') ? 'bg-blue-500  text-white ' : 'bg-white'"
                                         class="border-blue-100 border-2 border-round-left-lg py-2 px-3 "><i
@@ -51,7 +51,6 @@
                             <ComHousekeepingStatistic />
                         </div>
                         <div class="col bg-white rounded-xl">
-
                             <ComHousekeepingRoomList v-if="hk.view_type == 'table'" />
                             <ComHousekeepingRoomKanbanView v-else />
                         </div>

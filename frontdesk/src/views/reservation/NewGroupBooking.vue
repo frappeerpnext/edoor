@@ -1,6 +1,7 @@
 <template>
 
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+ 
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -9,7 +10,7 @@
                             <div class="col">
                                 <label>Reservation Date<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
-                                    placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                    placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar :selectOtherMonths="true"/>
                             </div>
                             <div class="col-6"> </div>
                         </div>
@@ -30,7 +31,7 @@
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
-                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                    @date-select="onDateSelect"  dateFormat="dd-mm-yy" showIcon showButtonBar :selectOtherMonths="true"/>
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
@@ -42,8 +43,8 @@
                             <div class="arr_wfit col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
-                                    placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
-                                    :minDate="departureMinDate" showIcon />
+                                    placeholder="Departure Date"  @date-select="onDateSelect" dateFormat="dd-mm-yy"
+                                    :minDate="departureMinDate"  showButtonBar showIcon :selectOtherMonths="true"/>
                             </div>
                         </div>
                     </div>
@@ -85,16 +86,27 @@
                         </div>
                         <div class="pt-2 flex justify-between">
                             <div class="flex align-items-center">
+                                 Group Color
+                                <input type="color" v-model="group_color"   />
+                    
+                            </div>
+                            <div class="flex align-items-center">
                                 <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
                                 <Checkbox class="" v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
                             </div>
                             <div>
                                 <div class="text-center">
-                                    <label class="text-center">Total Pax</label><br>
+                                    <label class="text-center">Adult (Per Room)</label><br>
                                 </div>
-                                <div class="p-inputtext-pt text-center border-1 border-white h-12 w-7rem">{{
-                                    doc.reservation_stay.reduce((n, d) => n + d.adult, 0) }} /
-                                    {{ doc.reservation_stay.reduce((n, d) => n + d.child, 0) }}</div>
+                                <InputNumber v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                                class="child-adults-txt" />
+                            </div>
+                            <div>
+                                <div class="text-center">
+                                    <label class="text-center">Child (Per Room)</label><br>
+                                </div>
+                                <InputNumber v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                                class="child-adults-txt" />
                             </div>
                         </div>
                     </div>
@@ -154,7 +166,7 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
                                     <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date"  showIcon />
+                                        placeholder="ID Expire Date" dateFormat="dd-mm-yy" showIcon :selectOtherMonths="true"/>
                                 </div>
                             </div>
                         </div>
@@ -255,15 +267,20 @@
                                  {{ d.total_vacant_room }}
                             </td>
                             <td class="p-2 w-12rem text-center">
-                                 {{ d.rate }}
+                                <span @click="onOpenChangeRate($event, d)"
+                                class="text-right w-full color-purple-edoor text-md font-italic ">
+                                    <span class="link_line_action">
+                                        <CurrencyFormat :value="d.rate" />
+                                    </span>
+                                </span>
                             </td>
                             
                             <td class="p-2 w-12rem text-center">
-                                 {{ d.total_tax }}
+                                <CurrencyFormat :value="roomRateTax(d)" />
                             </td>
 
                             <td class="p-2 w-12rem text-right">
-                                <InputNumber v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="1" :max="d.total_vacant_room"
+                                <InputNumber v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0" :max="d.total_vacant_room"
                                 class="child-adults-txt" />
                             </td>
                             
@@ -280,12 +297,14 @@
                     class="w-full border-round-xl" />
             </div>
         </div>
-        {{ doc.reservation_stay }}
-        
+        {{ onDateSelect() }}
         <OverlayPanel ref="op">
             <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan"
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
+        <template #footer-right>
+            <Button @click="onSave(true)">Create Reservation & Assign Room</Button>
+        </template>
     </ComDialogContent>
 </template>
 <script setup>
@@ -293,7 +312,7 @@ import ComReservationInputNight from './components/ComReservationInputNight.vue'
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
-
+import ColorPicker from 'primevue/colorpicker';
 
 
 import { ref, inject, computed, onMounted, postApi } from "@/plugin"
@@ -316,6 +335,7 @@ const working_day = ref({})
 const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
+const group_color= ref("#" + generateRandomColor())
 
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
@@ -389,6 +409,7 @@ function getTax1Amount(rate) {
         }
         return (rate || 0) * (doc.value.tax_rule.tax_1_rate / 100 || 0)
     } else {
+        alert(123)
         return 0
     }
 }
@@ -433,21 +454,21 @@ function getTax3Amount(rate) {
 
 const totalTax1Amount =  computed(()=>{
     let amount = 0
-    doc.value.reservation_stay.forEach(r => {
+    room_types.value.forEach(r => {
         amount = amount + getTax1Amount(r.rate)
     });
     return amount
 })
 const totalTax2Amount =  computed(()=>{
     let amount = 0
-    doc.value.reservation_stay.forEach(r => {
+    room_types.value.forEach(r => {
         amount = amount + getTax2Amount(r.rate)
     });
     return amount
 })
 const totalTax3Amount =  computed(()=>{
     let amount = 0
-    doc.value.reservation_stay.forEach(r => {
+    room_types.value.forEach(r => {
         amount = amount + getTax3Amount(r.rate)
     });
     return amount
@@ -464,11 +485,12 @@ const departureMinDate = computed(() => {
 })
 
 const onDateSelect = (date) => {
-
-
+    if(doc.value.reservation.arrival_date >= doc.value.reservation.departure_date){
+        doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(1,'days').toDate()
+        
+    }
     doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
-    getRoomType()
-    
+        getRoomType()
 }
 
 
@@ -482,16 +504,21 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
+        
             result.message.forEach((r)=>{
-                
+               
                 let rt =room_types.value?.find((t)=>t.name == r.name)
               
                 if (rt){
+                    
                     rt.total_room = r.total_room
                     rt.total_vacant_room = r.total_vacant_room
                     rt.rate = r.rate
+                    
                 }else {
+                               r.total_selected_room = 0
                     room_types.value.push(r) 
+         
                 }
             })
             
@@ -505,7 +532,12 @@ const getRoomType = () => {
 function onSelectedCustomer(event) {
     if (event.value) {
         db.getDoc('Customer', event.value)
-            .then((d) => doc.value.guest_info = d)
+            .then((d) => {
+                
+                doc.value.guest_info = d
+                doc.value.guest_info.expired_date = moment(d.expired_date).toDate()
+            
+            })
     } else {
         doc.value.guest_info = {
             "doctype": "Customer",
@@ -532,43 +564,27 @@ const onUseTax3Change = (value) => {
     doc.value.tax_rule.tax_3_rate = value ? setting.room_tax.tax_3_rate : 0
 }
 
-
-const onAddRoom = () => {
-    doc.value.reservation_stay.push(
-        {
-            // room_type_id: "RT-0005",
-            // room_type: null,
-            // room_id: "RM-0039",
-            // room_number: null,
-
-            adult: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].adult,
-            child: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].child,
-            room_type_id: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].room_type_id,
-            rate: doc.value.reservation_stay[doc.value.reservation_stay.length - 1].rate,
-            room_id: "",
-            is_manual_rate: false,
-            is_master: 0
-
-        }
-    )
-}
+ 
 
 
-const onSave = () => {
-
+const onSave = (assign_room=false) => {
+ 
     isSaving.value = true
+    
      
     doc.value.reservation_stay = []
     room_types.value.filter(r=>r.total_selected_room>0).forEach((r)=>{
          
         for (let i =0; i <= r.total_selected_room-1; i++) {
             doc.value.reservation_stay.push(
-                { "rate": r.rate, "adult": 2, "child": 1, "is_manual_rate": false, "is_master": 0, "room_type_id": r.name,"room_id":"" }
+                { "rate": r.rate, "adult": doc.value.reservation.adult, "child": doc.value.reservation.child, "is_manual_rate": r.is_manual_rate || false, "is_master": 0, "room_type_id": r.name,"room_id":"" }
             )
         }
     });
 
     const data = JSON.parse(JSON.stringify(doc.value))
+
+   
 
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
@@ -584,12 +600,12 @@ const onSave = () => {
      
     postApi('reservation.add_new_fit_reservation', {
         doc: data
-    },
-    "Add new reservation successfully"
+    }
     ).then((result) => {
+       
         isSaving.value = false
         socket.emit("RefresheDoorDashboard", property.name);
-        dialogRef.value.close(result.message);
+        dialogRef.value.close({reservation:result.message, assign_room:assign_room});
     })
         .catch((error) => {
 
@@ -597,7 +613,23 @@ const onSave = () => {
         });
 }
 
+function generateRandomColor() {
+  // Generate a random number between 0 and 16777215.
+  var randomNumber = Math.floor(Math.random() * 16777215);
+
+  // Convert the random number to a hexadecimal (hex) value.
+  var hexColor = randomNumber.toString(16);
+
+  // Pad the hex value with zeros to make it 6 characters long.
+  hexColor = "000000" + hexColor;
+
+  // Return the hex value.
+  return hexColor.slice(-6);
+}
+
+
 onMounted(() => {
+    
     doc.value.guest_info.expired_date = moment().toDate()
 
     call.get("edoor.api.frontdesk.get_working_day", {

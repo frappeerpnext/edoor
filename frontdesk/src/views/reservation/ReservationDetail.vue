@@ -97,7 +97,7 @@
 
                 </TabPanel>
 
-                <TabPanel header="Document">
+                <TabPanel header="Document"> 
                     <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
                 </TabPanel>
 
@@ -105,7 +105,8 @@
         </div>
         <template #footer-left>
             <div class="flex justify-end gap-2">  
-                <SplitButton class="border-none" icon="pi pi-list" label="Mores" @click="moreOptions" :model="items" />
+                <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->
+                <ComReservationMoreOptionsButton />
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
                 <Button class="border-none" label="Edit Booking" icon="pi pi-file-edit" />
             </div>
@@ -116,8 +117,9 @@
                 Check In</Button>
         </template>
     </ComDialogContent>
-    <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/>
+    <!-- <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/> -->
 </template>
+
 <script setup>
 import { inject, ref, onMounted, computed, useToast, useRoute, onUnmounted, useDialog, postApi } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
@@ -135,8 +137,12 @@ import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirm
 import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
+import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
+const frappe = inject('$frappe');
+const db = frappe.db();
+const loading = ref(false)
 const route = useRoute()
-const frappe = inject("$frappe")
+
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const call = frappe.call();
@@ -149,11 +155,11 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const name = ref("")
 const dialog = useDialog()
-const note = ref({
-    title: '',
-    show: false,
-    reservation_status:'' // No Show // Void // Cancel
-})
+// const note = ref({
+//     title: '',
+//     show: false,
+//     reservation_status:'' // No Show // Void // Cancel
+// })
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
 })
@@ -173,31 +179,6 @@ function onClose() {
 }
 function onMaximize(){
     dialogRef.value.maximize()
-}
-function onAuditTrail() {
-    const dialogRef = dialog.open(ComAuditTrail, {
-        data: {
-            doctype: 'Reservation',
-            docname: name.value
-        },
-        props: {
-            header: 'Audit Trail',
-            style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position: "top"
-        },
-        onClose: (options) => {
-            //
-        }
-    });
 }
 
 onMounted(() => {
@@ -272,137 +253,6 @@ function onCheckIn(){
         }
     })
 }
-
-const items = [
-    {
-        label: 'Group No Show',
-        command: () => {
-            onChangeStatus('No Show')
-        }
-    }, 
-    {
-        label: 'Group Cancel',
-        command: () => {
-            onChangeStatus('Cancelled')
-        }
-    },{
-        label: 'Group Void',
-        command: () => {
-            onChangeStatus('void')
-        }
-    },
-    {
-        label: 'Group Check-In',
-        command: ()=>{
-            onGroupCheckIn(true)
-        }
-    },
-    {
-        label: 'Group Undo Check-In',
-        command: ()=>{
-            onGroupCheckIn(false)
-        }
-    },
-    {
-        label: 'Group Check Out',
-        command: ()=>{
-            onGroupCheckOut(true)
-        }
-    },
-    {
-        label: 'Group Undo Check Out',
-        command: ()=>{
-            onGroupCheckOut(false)
-        }
-    },
-    {
-        label: 'Group Build To Company',
-    },
-    {
-        label: 'Group Build To Master Group ',
-    },
-    {
-        label: 'Group Build To Guest',
-    },
-    {
-        label: 'Group Build To Room and Tax to Company, Extra to Guest',
-    },
-    {
-        label: 'Audit Trail',
-        command: () => {
-            onAuditTrail()
-        }
-    }
-];
-
-function onChangeStatus(reservation_status){
- 
-    if(validateSelectReservation()){
-        note.value.title = `${reservation_status}`
-        note.value.show = true
-        note.value.reservation_status = reservation_status
-    }
-    
-}
-function validateSelectReservation(){
-    if(rs.selecteds && rs.selecteds.length > 0){
-        return true
-    }
-    else{
-        gv.toast('warn','Please select reservation stay.')
-        return false
-    }
-}
-
-function onGroupCheckOut(is_not_undo = false){
-    const isSelect = validateSelectReservation()
-    if(isSelect){
-        confirm.require({
-        message: `Are you sure you want to${is_not_undo ? ' undo ' :' '}check out reservations?`,
-        header: 'Check In',
-        icon: 'pi pi-info-circle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            const checkList = rs.selecteds.map((r)=>r.name).join(',')
-            postApi("reservation.check_out",{
-                reservation: rs.reservation.name,
-                reservation_stays: checkList,
-                is_undo: !is_not_undo
-            }).then((result) => {
-                if(result){
-                    rs.LoadReservation()
-                }
-            }).catch((error) => {
-                //
-            })
-
-        }
-    });
-    }
-}
- 
-function onSaveGroupStatus(txt){ 
-    const data = {
-        reservation: rs.reservation.name,
-        stays:rs.selecteds,
-        status:note.value.reservation_status,
-        note:txt
-    } 
-    postApi('reservation.update_reservation_status',data).then((r)=>{
-        onCloseNote()
-        rs.LoadReservation(rs.reservation.name)
-    })
-}
-
-function onCloseNote(){
-    note.value.title = ''
-    note.value.show = false
-    note.value.reservation_status = ''
-}
-
 function onAddRoomMore(){
     const dialogRef = dialog.open(ComReservationStayAddMore, {
         props: {
@@ -423,7 +273,12 @@ function onAddRoomMore(){
         }
     });
 }
+
+const items = ref([
+  
+]);
 </script>
+
 <style scoped>
 .res__bagde {
     border-radius: 0.5rem;

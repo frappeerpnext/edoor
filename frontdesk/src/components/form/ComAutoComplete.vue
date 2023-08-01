@@ -133,7 +133,6 @@ const onSelected = (event) => {
             emit('onSelected', event.value)
         emit('update:modelValue', event.value.value)
     }
-
 }
 async function getData(keyword) {
     let apiParams = { doctype: props.doctype, txt: keyword }

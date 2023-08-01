@@ -3,17 +3,22 @@
         <div>
             <ComColorPicker v-model="color"/>
         </div>
-    </ComOverlayPanelContent>
+    </ComOverlayPanelContent> 
 </template>     
 <script setup>
-import { ref, useToast, inject, postApi } from "@/plugin"
+import { ref, inject, postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');
+const gv = inject('$gv');
 const loading = ref(false)
 const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
 const color = ref(stay.value.reservation_color)
 function onSave(){
+    if(!stay.value.is_active_reservation){
+        gv.toast('warn','Cannot change color on unactive reservation.')
+        return
+    }
     loading.value = true
     stay.value.reservation_color = color.value
     postApi('reservation.update_reservation_color',{data: stay.value}).then((r)=>{

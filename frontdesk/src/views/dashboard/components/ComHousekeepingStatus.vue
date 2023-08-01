@@ -13,18 +13,16 @@
 </template>
 <script setup>
 
-import { inject, ref } from "@/plugin"
+import { inject, ref,getApi } from "@/plugin"
 import { useDialog } from 'primevue/usedialog';
 import ComDashboardRowStatus from '@/views/dashboard/components/ComDashboardRowStatus.vue';
 import ComIFrameModal from "../../../components/ComIFrameModal.vue";
 
-const frappe = inject("$frappe")
-const call = frappe.call()
 const data = ref([])
 const working_day = JSON.parse(localStorage.getItem('edoor_working_day')) 
 const dialog = useDialog();
 
-call.get('edoor.api.frontdesk.get_house_keeping_status', {
+getApi('frontdesk.get_house_keeping_status', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((result) => {
     data.value = result.message

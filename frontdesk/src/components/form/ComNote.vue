@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
         <label for="reason-text" class="mb-1 font-medium block">Reason</label>
-        <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason"/>
+        <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full"/>
     </ComDialogContent>
 
 </template>

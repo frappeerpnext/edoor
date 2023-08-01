@@ -20,6 +20,12 @@
                 </tbody>
             </table>
         </div>
+        <div v-if="rs.reservationStay?.reservation_status == 'In-house' && stay?.arrival_date <= working_day?.date_working_day">
+            <Message severity="info">Changes to room rates made to past or current dates will not 
+                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            </Message>
+        </div>
+        
     </div>
     <hr class="my-1">
     <div class="grid">  
@@ -175,11 +181,14 @@ import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import Message from "primevue/message";
  
 const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
- 
+const rs = inject('$reservation_stay')
+
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
 const isSaving = ref(false);
@@ -314,9 +323,8 @@ function onSelectRateType(selected){
                 room_type: doc.value.room_type_id, 
                 business_source: doc.value.business_source, 
                 date: doc.value.date
-            })
+            },"",false)
             .then((result) => {
-               
                 doc.value.input_rate = result.message
             })
      }    

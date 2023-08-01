@@ -45,9 +45,11 @@ def get_dashboard_data(property = None,date = None):
     
     room_operation = frappe.db.sql(sql, as_dict=1)
 
+
     if room_operation:
         unassign_room = room_operation[0]["unassign_room"]
         total_room_occupy = room_operation[0]["total_room_occupy"]
+
 
     # get reservation stay
     stay_sql = """SELECT 
@@ -79,11 +81,16 @@ def get_dashboard_data(property = None,date = None):
     #count upcommintg note
     upcoming_note = frappe.db.sql("select count(name) as total  from `tabFrontdesk Note` where note_date>='{}' and property='{}'".format(date,property), as_dict=1)
     
+    #get total room block 
+    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block';".format(date,property)
+    total_room_block = frappe.db.sql(sql,as_dict=1)
+
+
     return {
         "working_date":working_date,
         "total_room":total_room or 0,
         "total_room_occupy":total_room_occupy or 0,
-        "total_room_vacant": (total_room or 0) - (total_room_occupy or 0),
+        "total_room_vacant": (total_room or 0) - (total_room_occupy or 0) - (total_room_block[0]["total_room_block"] or 0),
         "arrival":stay[0]["total_arrival"] or 0,
         "arrival_remaining": stay[0]["arrival_remaining"] or 0,
         "departure":stay[0]["total_departure"] or 0,
@@ -270,6 +277,7 @@ def get_working_day(property = ''):
     
 @frappe.whitelist()
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
+    
     resources = []
     filters = ""
     if room_number:
@@ -300,7 +308,8 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         sql=sql.format(property,filter_room_type)
         room_types = frappe.db.sql(sql, as_dict=1)
         for t in room_types:
-            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and disabled = 0 {1} order by room_number".format(t["name"], filters),as_dict=1)
+            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)
+            
             resources.append({
                 "id":t["name"],
                 "title":t["room_type"],
@@ -310,7 +319,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 "children": rooms
             })
     else:
-        resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where disabled = 0 {0} {1} order by room_number".format(filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
+        resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
     
     resources.append({
         "id": "vacant_room",
@@ -362,6 +371,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             child,
             pax,
             reference_number,
+            internal_reference_number,
             reservation,
             reservation_color,
             is_master,
@@ -493,6 +503,7 @@ def get_calendar_event_for_room_type_resource(start,end,property):
             future_dates[0].strftime('%Y-%m-%d'),
             future_dates[len(future_dates)-1].strftime('%Y-%m-%d'),
         )
+         
         temp_occupy_data = frappe.db.sql(sql,as_dict=1)
         #get temp room occupy 
         
@@ -503,7 +514,7 @@ def get_calendar_event_for_room_type_resource(start,end,property):
                     "resourceId": d["room_type_id"],
                     "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
                     "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": d["total_room"] - Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
+                    "title": d["total_room"] - Enumerable(temp_occupy_data).where(lambda r:r.room_type_id==d["room_type_id"] and r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: (r.total_occupy or 0) + (r.total_block or 0)),
                     "color": "#29CD42",
                     "type":"available_room"
                 })
@@ -543,7 +554,7 @@ def get_calendar_event_for_room_type_resource(start,end,property):
                     "resourceId": "vacant_room",
                     "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
                     "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": total_room - Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
+                    "title": total_room - Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: (r.total_occupy or 0) + (r.total_block or 0)),
                     "color": "#ccce45",
                     "type":"vacant_room"
                 })
@@ -787,6 +798,7 @@ def update_room_status(working_day=None):
 
     #2 update room status of room block
     room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property='{}' and date='{}'".format(working_day.business_branch, working_day.posting_date),as_dict=1)
+    
     room_status = frappe.db.get_default("room_block_status")
     for r in room_block:
         room_doc = frappe.get_doc("Room", r["room_id"])

@@ -6,7 +6,7 @@
                 <div class="col-6">
                     <label for="room">Room</label>
                     <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_number" placeholder="Select Room" doctype="Room"
-                        class="auto__Com_Cus w-full" />
+                        class="auto__Com_Cus w-full" :filters="{ 'property' : doc.property }" />
                 </div>
                 <div class="grid">
                     
@@ -19,7 +19,7 @@
                     
                         <Calendar :disabled="!canEdit" inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
                             :maxDate="moment(working_day?.date_working_day).toDate()" class="w-full" dateFormat="dd-mm-yy" showIcon
-                            showButtonBar />
+                            showButtonBar :selectOtherMonths="true"/>
                     </div>
                     <div class="col-6">
                         <label for="account_code">Account Code</label>

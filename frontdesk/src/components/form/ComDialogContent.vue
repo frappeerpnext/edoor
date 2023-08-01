@@ -1,5 +1,5 @@
 <template>
-    <div :class="isDialog ? 'wrap-dialog' : 'bg-white p-2'">
+    <div :class="isDialog ? 'wrap-dialog' : 'bg-white p-2 relative di-page'">
         <div :class="isDialog ? 'wrap-dialog-content overflow-auto' : ''">
             <slot name="default"></slot>
             <div v-if="loading">
@@ -11,7 +11,7 @@
                 </div>    
             </div>
         </div>
-        <div v-if="!hideFooter" :class="[is_page ? 'border-t border-gray-200 p-2 footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed dialog-ftt', loading ? 'unset-absolute' : '']">
+        <div v-if="!hideFooter" :class="[isDialog == false ? 'border-t p-2 page-footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed dialog-ftt', loading ? 'unset-absolute' : '']">
             <div>
                 <slot name="footer-top"></slot>
                 <div class="flex justify-between items-center">

@@ -151,6 +151,26 @@ const onOpenDetail = () => {
          ['keyword','room_type','reservation_status','business_source']
      )
  }
+ else if(props.dialogKey  == "no_show"){
+ 
+    onViewData(
+         'Business%20Branch',
+         "eDoor%20No%20Show%20Reservation%20List",
+         'No Show',
+         [{key:"date",value:working_day.date_working_day}],
+         []
+     )
+ }
+  
+ else if(props.dialogKey  == "cancelled"){
+    onViewData(
+         'Business%20Branch',
+         "eDoor%20Cancel%20Reservation%20List",
+         'Cancelled Reservation',
+         [{key:"date",value:working_day.date_working_day}],
+         []
+     )
+ }
   
 }
 

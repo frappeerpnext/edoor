@@ -2,8 +2,9 @@
     <div class="relative com_pro__wrap">
         <div class="rounded-full overflow-hidden p-1" style="width: 120px; height: 120px;background-color: var(--bg-card-info);">
             <div class="relative w-full h-full rounded-full border-2 overflow-hidden" style="border-color: var(--bg-btn-color);">
-                <div v-if="isClear || (files.length === 0 && !path)">
-                    <img :src="profileImage"/>
+                <div class="h-full flex justify-center justify-items-center" v-if="isClear || (files.length === 0 && !path)">
+                    <!-- <img :src="profileImage"/> -->
+                    <ComIcon style="width: 60%;" icon="userProfile" ></ComIcon>
                 </div>
                 <div v-else-if="files.length > 0" class="h-full rounded-full border-2 overflow-hidden">
                     <img role="presentation" class="h-full w-full object-cover" :alt="files[0].name" :src="files[0].objectURL" />

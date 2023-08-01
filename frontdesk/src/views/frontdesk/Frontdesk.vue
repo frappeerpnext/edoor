@@ -103,7 +103,7 @@
     </div>
   </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi } from '@/plugin'
 import FullCalendar from '@fullcalendar/vue3'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
@@ -215,7 +215,7 @@ const calendarOptions = reactive({
     resourceAreaColumns: resourceColumn(),
 
     resources: function (info, successCallback, failureCallback) {
-        call.get('edoor.api.frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
+        getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
             successCallback(result.message)
             const room_status = document.getElementsByClassName("room-status")
             for (let i = 0; i < room_status.length; i++) {
@@ -224,9 +224,7 @@ const calendarOptions = reactive({
                     content: room_status[i].getAttribute("data-title")
                 })
             }
-        }).catch((error) => {
-            console.log(error)
-        });
+        })
     },
     events: function (info, successCallback, failureCallback) {
 
@@ -301,28 +299,35 @@ const calendarOptions = reactive({
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
-            alert("Open dialog of " + data.type)
+            
+             window.postMessage(info.event._def, '*')
         }
 
     }),
     eventMouseEnter: (($event) => {
         const event = $event.event._def
 
-
-
         if (event.extendedProps.type == "stay" || event.extendedProps.type == "room_block") {
-
-
-            const description = `<div style="background:red">
-                                        <table>
+            
+            const description = `<div class="p-2 w-full">
+                                        <table class="tip_description_stay_table">
                                             <tbody>
-                                            <tr><td><div>ID: ${event.reservation || ''}</div></td></tr>
-                                            <tr><td><div>Ref #: ${event.reference_number || ''}</div></td></tr>
-                                            <tr><td><div>Guest: ${event.title}</div></td></tr>
-                                            <tr><td><div>Start Date: ${dateFormat(event.start)}</div></td></tr>
-                                            <tr><td><div>End Date: ${dateFormat(event.end)}</div></td></tr>
-                                            <tr><td><div>Room: ${event.extendedProps?.room_number}</div></td></tr>
-                                            <tr><td><div>Adult: ${event.extendedProps?.adult} Child: ${event.extendedProps?.child} Pax: ${event.extendedProps?.pax}</div></td></tr>
+                                            <tr><td>Res. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
+                                            <tr><td>Res Stay. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
+                                            <tr><td>Ref. No</td><td class="px-3">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
+                                            <tr><td>Int. No</td><td class="px-3">:</td><td>${event.extendedProps?.internal_reference_number || ''}</td></tr>
+                                            <tr><td>Ref. type</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( '+ event.extendedProps?.group_code +' )' : ''}</td></tr>    
+                                            <tr><td>Guest</td><td class="px-3">:</td><td>${event.title}</td></tr>
+                                            <tr><td>Arrival</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)}</td></tr>
+                                            <tr><td>Departure</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)}</td></tr>
+                                            <tr><td>Room</td><td class="px-3">:</td><td>${event.extendedProps?.room_number}</td></tr>
+                                            <tr><td>Pax</td><td class="px-3">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
+                                            <tr><td>Source</td><td class="px-3">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
+                                            <tr><td>Room Rate</td><td class="px-3">:</td><td>${event.extendedProps?.total_toom_rate || ''}</td></tr>
+                                            <tr><td>Total Debit</td><td class="px-3">:</td><td>${event.extendedProps?.total_debit || ''}</td></tr>
+                                            <tr><td>Total Credit</td><td class="px-3">:</td><td>${event.extendedProps?.total_credit || ''}</td></tr>
+                                            <tr><td>Balance</td><td class="px-3">:</td><td>${event.extendedProps?.balance || ''}</td></tr>
+                                            
                                             </tbody>
                                         </table>
                                     </div>`
@@ -704,7 +709,9 @@ onUnmounted(() => {
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
     justify-content: center !important
 }
-
+.fc.fc-theme-standard > .room-status {
+    display: none;
+}
 .current_day {
     background: #5b029f;
     color: #fff;

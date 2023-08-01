@@ -4,7 +4,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_oc
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
+from edoor.api.utils import get_date_range, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
 import frappe
 from frappe.utils.data import add_to_date, getdate
 
@@ -197,7 +197,9 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
 
 @frappe.whitelist(methods="POST")
 def add_new_fit_reservation(doc):
-    
+    #for group booking stay can be 0 
+    if len(doc["reservation_stay"]) == 0:
+        frappe.throw("Please select room to add reservation")
 
 
     arrival_date = doc["reservation"]["arrival_date"]
@@ -250,6 +252,7 @@ def add_new_fit_reservation(doc):
     i = 0
     stay_names = []
     # set first stay as master room 
+    frappe.throw("im here")
     doc["reservation_stay"][0]["is_master"] = 1
     for   d in doc["reservation_stay"]:
       
@@ -307,6 +310,7 @@ def add_new_fit_reservation(doc):
     update_reservation(name=reservation.name, run_commit= False)
  
     frappe.db.commit()
+    frappe.msgprint("Add new reservation successfully")
     return reservation
 
 def validate_room_type_availability(doc):
@@ -1026,24 +1030,50 @@ def update_note(data):
     return doc
 
 @frappe.whitelist(methods="POST")
-def update_reservation_status(reservation, stays, status, note):
+def update_reservation_status(reservation, stays, status, note,reserved_room=True):
+    doc_reservation = frappe.get_doc("Reservation", reservation)
+
+    working_day =get_working_day(doc_reservation.property)
+    if not working_day["cashier_shift"]:
+        frappe.throw("Please start cashier shift first") 
+    
     for s in stays:
-        if not s["reservation_status"] == "Reserved" or s["reservation_status"] == "Confirmed":
-            frappe.throw("Room Stay has status {}".format(s["reservation_status"].lower()))
+        if not  s["reservation_status"] in ["Reserved" , "Confirmed"]:
+            frappe.throw("You can {} on Confirmed and Reserved reservation only".format(status))
         stay = frappe.get_doc('Reservation Stay', s['name'])
+        #check if currentr working day is not equal to arrival date
+        if getdate( stay.arrival_date) != getdate(working_day["date_working_day"]):
+            frappe.throw("Reservation stay {}, room {}, Arrival date of date of No Show reservation must be equal to current working date".format(stay.name,stay.rooms ))
+        
+        #validate folio balance
+        if stay.balance> 0:
+            frappe.throw("You have folio balance in reservation stay {}. To {} a reservation, balace must be 0".format(stay.name, status))
+
+
         stay.reservation_status = status
         stay.reservation_status_note = note
         stay.is_active_reservation = False
+        if status=="No Show" and reserved_room:
+            for stay_room in stay.stays:
+                stay_room.reserved_room = reserved_room
      
         stay.save()
 
         #update is active reservation to room rate 
         frappe.db.sql("update `tabReservation Room Rate` set is_active_reservation = 0 where reservation_stay='{}'".format(s['name']))
-        change_room_occupy(stay)
+        if status!="No Show":
+            change_room_occupy(stay)
+        else:
+            if not reserved_room:
+                change_room_occupy(stay)
+        
     update_reservation(reservation, run_commit=False)
     frappe.db.commit()
-    
+    frappe.msgprint("{} reservation successfully".format(status))
     return stays
+
+
+
 @frappe.whitelist()
 def get_audit_trail(doctype, docname,is_last_modified=False):
     doc_meta = []
@@ -1579,14 +1609,146 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
     
 @frappe.whitelist(methods="POST")
 def update_reservation_color(data):
+    
     reservation = data['name']
     if data['doctype'] == 'Reservation Stay':
         reservation = data['reservation']
 
     frappe.db.set_value('Reservation', reservation, 'reservation_color', data['reservation_color'])
+ 
     stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation, 'is_active_reservation': 1})
     for t in stays:
         doc = frappe.get_doc('Reservation Stay', t.name)
         doc.reservation_color = data['reservation_color']
         doc.save()
     return frappe.get_doc(data['doctype'], data['name'])
+
+
+@frappe.whitelist(methods="POST")
+def unreserved_room(property, reservation_stay):
+    working_day = get_working_day (property)
+    if not working_day["cashier_shift"]:
+        frappe.throw("Please start cashier shift first")   
+    
+    stay = frappe.get_doc("Reservation Stay", reservation_stay)
+    if stay.reservation_status !="No Show":
+        frappe.throw("You cannot unserved room for {} reservation".format(stay.reservation_status))
+    
+    if getdate(stay.departure_date)<= getdate(working_day["date_working_day"]):
+        frappe.throw("Departure date must be greater than current working date")
+    
+    frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 0 where parent='{}'".format(stay.name))
+    frappe.db.sql("delete from `tabTemp Room Occupy`  where reservation_stay='{}'".format(stay.name))
+    frappe.db.sql("delete from `tabRoom Occupy`  where reservation_stay='{}'".format(stay.name))
+
+    frappe.db.commit()
+    frappe.msgprint("Unreserved room successfully")
+
+@frappe.whitelist(methods="POST")
+def reserved_room(property, reservation_stay):
+    working_day = get_working_day (property)
+    if not working_day["cashier_shift"]:
+        frappe.throw("Please start cashier shift first")   
+    
+    stay = frappe.get_doc("Reservation Stay", reservation_stay)
+    if stay.reservation_status !="No Show":
+        frappe.throw("You cannot reserved room for {} reservation".format(stay.reservation_status))
+    
+    if getdate(stay.departure_date)<= getdate(working_day["date_working_day"]):
+        frappe.throw("Departure date must be greater than current working date")
+
+    #validate room availability
+    #check room type first
+    for s in stay.stays:
+        available_room = check_room_type_availability(
+            property=stay.property,
+            room_type_id=s.room_type_id,
+            start_date=s.start_date,
+            end_date=s.end_date
+        )
+        for d in available_room:
+            if d.total_vacant_room == 0:
+                frappe.throw("Room type {} is not available".format(s.room_type))
+
+        #check if current room is already assign room 
+        if s.room_id:
+            
+            data = frappe.db.sql("select name from `tabTemp Room Occupy` where room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
+            if data:
+                frappe.throw("Room {} is not available now".format(s.room_number))
+    
+    
+    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay='{}'".format(stay.name))
+    frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}'".format(stay.name))
+
+    
+
+    dates = get_date_range(working_day["date_working_day"], stay.departure_date)
+    for s in stay.stays: 
+        for d in dates:
+            #generate room to temp room occupy
+            frappe.get_doc({
+                "doctype":"Temp Room Occupy",
+                "reservation":stay.reservation,
+                "reservation_stay":stay.name,
+                "room_type_id":s.room_type_id,
+                "room_id":s.room_id,
+                "date":d,
+                "type":"Reservation",
+                "property":stay.property,
+                "stay_room_id":s.name,
+                "adult":stay.adult,
+                "child":stay.child,
+                "pax":stay.pax
+
+            }).insert()
+
+
+            #generate room to room occupy
+            frappe.get_doc({
+                "doctype":"Room Occupy",
+                "room_type_id":s.room_type_id,
+                "room_id":s.room_id,
+                "date":d,
+                "type":"Reservation",
+                "property":stay.property,
+                "stay_room_id":s.name,
+                "reservation":stay.reservation,
+                "reservation_stay":stay.name,
+                "adult":stay.adult,
+                "child":stay.child,
+                "pax":stay.pax
+            }).insert()
+    
+    #show no show reservation to room chart
+    frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 1 where parent='{}'".format(stay.name))
+
+    frappe.db.commit()
+    frappe.msgprint("Reserved room successfully")
+
+@frappe.whitelist()
+def get_reservation_stay_for_assign_room(reservation):
+    doc_reservation = frappe.get_doc("Reservation", reservation)
+    data = frappe.db.sql("select name, start_date, end_date,  room_type_id, room_type_id as new_room_type_id,room_type,rate_type,rate,room_nights,guest,guest_name from `tabReservation Stay Room` where reservation='{}' and is_active_reservation=1 and ifnull(room_id,'')=''".format(reservation),as_dict=1)
+    dates = []
+    for d in data:
+        dates.append({"start_date":d["start_date"],"end_date":d["end_date"]})
+    
+    room_available = [dict(t) for t in {tuple(d.items()) for d in dates}]
+
+    for d in room_available:
+        d["room_types"] = check_room_type_availability(
+                property=doc_reservation.property, 
+                start_date=d["start_date"],
+                end_date=d["end_date"],
+                business_source= doc_reservation.business_source,
+                )
+        d["rooms"] = check_room_availability(
+            property=doc_reservation.property, 
+                start_date=d["start_date"],
+                end_date=d["end_date"],
+        )
+
+    
+
+    return {"data":data, "rooms":room_available}

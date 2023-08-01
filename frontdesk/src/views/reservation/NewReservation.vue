@@ -8,8 +8,9 @@
                         <div class="grid">
                             <div class="col">
                                 <label>Reservation Date<span class="text-red-500">*</span></label><br />
-                                <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
-                                    placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
+                                    v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
+                                    dateFormat="dd-mm-yy" showIcon showButtonBar />
                             </div>
                             <div class="col-6"> </div>
                         </div>
@@ -28,7 +29,7 @@
                         <div class="grid m-0">
                             <div class="arr_wfit col px-0">
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
-                                <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
+                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
                             </div>
@@ -36,13 +37,15 @@
                                 <div>
                                     <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
                                 </div>
-                                <ComReservationInputNight v-model="doc.reservation.room_night" @onUpdate="onRoomNightChanged" />
+                                <ComReservationInputNight v-model="doc.reservation.room_night"
+                                    @onUpdate="onRoomNightChanged" />
                             </div>
                             <div class="arr_wfit col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
-                                <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
-                                    placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
-                                    :minDate="departureMinDate" showIcon />
+                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
+                                    v-model="doc.reservation.departure_date" placeholder="Departure Date"
+                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon
+                                    showButtonBar />
                             </div>
                         </div>
                     </div>
@@ -138,7 +141,9 @@
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Expire Date</label><br />
-                                    <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date" placeholder="ID Expire Date" view="month" dateFormat="mm-yy" showIcon />
+                                    <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
+                                        v-model="doc.guest_info.expired_date" placeholder="ID Expire Date"
+                                        dateFormat="dd-mm-yy" showIcon />
                                 </div>
                             </div>
                         </div>
@@ -220,7 +225,7 @@
                             <th class="text-right">
                                 <label class="px-2">Rate</label>
                             </th>
-                            <th class="text-right" v-if="totalTax1Amount > 0 || totalTax2Amount > 0 || totalTax3Amount > 0">
+                            <th class="text-right">
                                 <label class="text-center px-2">Total Tax</label>
                             </th>
                             <th>
@@ -261,7 +266,7 @@
                                     </span>
                                 </span>
                             </td>
-                            <td class="p-2 w-12rem text-right" v-if="roomRateTax(d) > 0">
+                            <td class="p-2 w-12rem text-right">
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12">
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
@@ -497,10 +502,18 @@ const departureMinDate = computed(() => {
 
 const onDateSelect = (date) => {
 
+    if (doc.value.reservation.arrival_date >= doc.value.reservation.departure_date) {
+
+        doc.value.reservation.departure_date = (moment(doc.value.reservation.arrival_date).add(1, 'days')).toDate()
+
+    }
 
     doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
+
     getRoomType()
     getRooms()
+
+
 }
 
 
@@ -514,6 +527,7 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
+
             room_types.value = result.message;
             updateRate()
         }).catch((error) => {
@@ -539,9 +553,9 @@ const getRooms = () => {
 function onSelectedCustomer(event) {
     if (event.value) {
         db.getDoc('Customer', event.value)
-            .then((d) => { 
+            .then((d) => {
                 doc.value.guest_info = d
-                doc.value.guest_info.expired_date = moment( doc.value.guest_info.expired_dat).toDate()
+                doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
             })
     } else {
         doc.value.guest_info = {
@@ -594,7 +608,7 @@ const onSave = () => {
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
     if (data.reservation.departure_date) data.reservation.departure_date = moment(data.reservation.departure_date).format("yyyy-MM-DD")
-    
+
     if (data.guest_info.expired_date) data.guest_info.expired_date = moment(data.guest_info.expired_date).format("yyyy-MM-DD")
 
     data.reservation.tax_1_rate = doc.value.tax_rule.tax_1_rate
@@ -734,7 +748,8 @@ function onClose() {
     op.value.hide()
 }
 </script>
-<style>.ch__rate_nres input {
+<style>
+.ch__rate_nres input {
     text-align: right !important;
     font-size: 1.1rem;
     height: 3rem;

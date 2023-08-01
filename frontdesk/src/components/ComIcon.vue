@@ -20,6 +20,7 @@
     <img v-else-if="icon == 'userProfile'" :class="class" :src="userProfile"/>
     <img v-else-if="icon == 'userGroupWhite'" :class="class" :src="userGroupWhite"/>
     <img v-else-if="icon == 'userFitWhite'" :class="class" :src="userFitWhite"/>
+    <img v-else-if="icon == 'userGif'" :class="class" :src="userGif"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -53,6 +54,7 @@ import iconNoteWhite from '@/assets/svg/icon-note-paper-white.svg'
 import userProfile from '@/assets/svg/user-icon-profile.svg'
 import userGroupWhite from '@/assets/svg/icon-user-group-white.svg'
 import userFitWhite from '@/assets/svg/icon-user-fit.svg'
+import userGif from '@/assets/svg/icon-user-group.svg'
 
 
 </script>

@@ -112,7 +112,7 @@ const getTotal = ref((column_name) => {
 
 
 function onEditRoomRate(room_rate = null) {
-  if(rs.reservationStay?.is_active_reservation == 1){
+  if( rs.reservationStay?.reservation_status != 'Cancelled' && rs.reservationStay?.reservation_status != 'Void'){
     if(room_rate){
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {
@@ -171,11 +171,10 @@ function onEditRoomRate(room_rate = null) {
     toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
     return 
   }
-  }else{
-          toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "This Reservation Stay has been cancelled.", life: 3000 })
+  }else {
+          toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "This Reservation Stay has been Cancelled or Void.", life: 3000 })
           return 
   }
-
 }
 
 

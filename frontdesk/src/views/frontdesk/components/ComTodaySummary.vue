@@ -3,23 +3,27 @@
         <ComChartDoughnut :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
     </div>
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
-        <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
-        <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival + data.arrival_remaining" :value="data.arrival">
-            <span title="Checked-in">{{ (data?.arrival || 0) - (data?.arrival_remaining || 0) }}</span>/<span title="Remain check-in">{{ (data?.arrival || 0)}}</span>
-        </ComTodaySummarySep>
         
-   
-
-        <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure" :value="data.departure - data?.departure_remaining">
-            <span title="Departure">{{ (data?.departure ||0) - (data?.departure_remaining ||0) }}</span>/<span titel="Departure Remain">{{ data?.departure || 0
-            }}</span>
+        <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
+        <tippy :content="' Total Arrival ' + (data?.arrival|| 0) + ' and ' + ((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in '   ">
+        <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival" :value="((data.arrival || 0) -(data.arrival_remaining || 0))">
+            <span>{{ (data?.arrival || 0) -(data?.arrival_remaining || 0) }}</span>/<span>{{ (data?.arrival || 0) }}</span>
         </ComTodaySummarySep>
+        </tippy>
+        <tippy :content="'Total Departure ' +  (data?.departure ||0) + ' And '+  ((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out'  ">
+        <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure" :value="data.departure - data?.departure_remaining">
+        <span title="Departure">{{ (data?.departure ||0) - (data?.departure_remaining ||0) }}</span>/<span titel="Departure Remain">{{ data?.departure || 0 }}</span>
+        </ComTodaySummarySep>
+        </tippy>
         <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
         <ComTodaySummarySep dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
         <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) and ' + data?.git_stay_arrival + ' Stay(s)'">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + '/' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep  dialogKey="pickup_drop_off" title="Pickup/Drop Off">{{ data?.pick_up || 0 }} / {{data?.drop_off || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="no_show" title="No Show">{{data?.total_no_show || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="cancelled" title="Cancelled">{{data?.total_cancel || 0}}</ComTodaySummarySep>
+        
     </div>
 </template>
 <script setup>

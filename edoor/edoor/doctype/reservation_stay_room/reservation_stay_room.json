@@ -30,6 +30,7 @@
   "child",
   "pax",
   "reference_number",
+  "internal_reference_number",
   "reservation",
   "reservation_color",
   "rate_type",
@@ -139,7 +140,6 @@
   },
   {
    "default": "0",
-   "fetch_from": "reservation_status.show_in_room_chart",
    "fieldname": "show_in_room_chart",
    "fieldtype": "Check",
    "label": "Show In Room Chart"
@@ -322,12 +322,17 @@
    "fieldname": "pay_by_company",
    "fieldtype": "Check",
    "label": "Pay by Company"
+  },
+  {
+   "fieldname": "internal_reference_number",
+   "fieldtype": "Data",
+   "label": "Internal Reference Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-07-28 11:11:46.778685",
+ "modified": "2023-08-01 16:19:18.867933",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

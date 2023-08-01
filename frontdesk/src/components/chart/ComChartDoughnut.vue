@@ -1,4 +1,5 @@
 <template>
+
     <div class="relative">
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
             <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
@@ -67,6 +68,7 @@ const chartData = computed(() => {
         })
         // calculate
         const percent = (percentage.value.field_show / percentage.value.total) * 100
+
         percentage.value.percent = gv.numberFormat(percent)
         return {
             labels: labels,

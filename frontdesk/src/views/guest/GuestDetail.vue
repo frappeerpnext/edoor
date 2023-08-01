@@ -33,6 +33,7 @@
             </iframe>
         </TabPanel>
     </TabView></div>
+    <Button label="Edit Guest" icon="pi pi-user-edit" />
 </template>
 <script setup>
 

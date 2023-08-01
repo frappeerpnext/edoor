@@ -7,7 +7,7 @@
         />
     <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport"/>  
 </div>
-    <iframe id="report-view" width="100%" :src="url"></iframe>
+    <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
     </div>
 </template>
 
@@ -38,7 +38,11 @@ const refreshReport = () => {
     document.getElementById("report-view").contentWindow.location.replace(url.value)
     
 }
-
+function onIframeLoaded() {
+    const iframe = document.getElementById("report-view");
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
+}
 onMounted(() => {
     if (dialogRef)  {
         const params = dialogRef.value.data

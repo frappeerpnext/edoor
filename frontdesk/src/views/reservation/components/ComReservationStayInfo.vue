@@ -3,7 +3,7 @@
         <template #btn>
             <div class="flex items-center">
                 <span> Res {{ stay?.reservationStay?.reservation_type }} Color </span> 
-                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>
+                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>
             </div>
         </template>
         <template #content>
@@ -14,11 +14,19 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Reference Number" valueTooltip="Add Reference Number" title="Ref. No"
-                        :value="stay.reservationStay?.reference_number" :isAction="true" valueClass="col-4">
+                         :isSlot="true" :isAction="true" valueClass="col-4">
+                        <span>
+                            <i v-if="!stay.reservationStay?.reference_number" class="pi pi-pencil"></i>
+                            {{ stay.reservationStay?.reference_number ? stay.reservationStay?.reference_number : '...' }}
+                        </span>
                     </ComBoxStayInformation>
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" titleTooltip="Internal Reference Number" valueTooltip="Add Internal Reference Number" title="Int. No"
-                        :value="stay.reservationStay?.internal_reference_number" :isAction="true" valueClass="grow"
+                     :isAction="true" valueClass="grow" :isSlot="true"
                         titleClass="w-5rem leading-10">
+                        <span>
+                            <i v-if="!stay.reservationStay?.internal_reference_number" class="pi pi-pencil"></i>
+                            {{ stay.reservationStay?.internal_reference_number ? stay.reservationStay?.internal_reference_number : '...' }}
+                        </span>
                     </ComBoxStayInformation>
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
@@ -88,20 +96,20 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title-class="col-2" title="Nights" :value="stay.reservationStay?.room_nights"
+                    <ComBoxStayInformation title-class="col-2" title="Nights" :value="(stay.reservationStay?.room_nights || 0)"
                         valueClass="col-2 pr-0"></ComBoxStayInformation>
                 </div>
 
                 <div class="flex mt-2 gap-2">               
                     <ComBoxStayInformation 
                         @onClick="toggle($event, 'change_pax')"
-                        title="Adult"
-                        :value="stay.reservationStay?.adult" valueClass="col-2 color-purple-edoor"
+                        title="Adults"
+                        :value="(stay.reservationStay?.adult || 0)" valueClass="col-2 color-purple-edoor"
                          :isAction="true"></ComBoxStayInformation>
                     <ComBoxStayInformation
                         @onClick="toggle($event, 'change_pax')"
                         title="Children"
-                        :value="stay.reservationStay?.child" valueClass="col-2 color-purple-edoor"
+                        :value="(stay.reservationStay?.child || 0)" valueClass="col-2 color-purple-edoor"
                         titleClass="w-5rem leading-10" :isAction="true"></ComBoxStayInformation>
                 </div>
             </div>

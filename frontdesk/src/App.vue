@@ -24,6 +24,7 @@ import ComFolioDetail from '@/views/reservation/components/reservation_stay_foli
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
 import ComCloseShift from "./views/shift/ComCloseShift.vue";
+import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 const socket = inject("$socket");
 const gv = inject("$gv")
 
@@ -60,6 +61,9 @@ if (localStorage.getItem("edoor_property") == null) {
 
 
 const actionClickHandler = async function (e) {
+    
+ 
+
     if (e.isTrusted && typeof (e.data) == 'string') {
 
         const data = e.data.split("|")
@@ -102,6 +106,12 @@ const actionClickHandler = async function (e) {
             }
         }
 
+    }else{
+ 
+        if(e.data.extendedProps.type=="room_block"){
+            showRoomBlockDetail(e.data.publicId)
+        }
+        
     }
 };
 
@@ -318,6 +328,24 @@ function showCashierShiftDetail(name) {
             header:"Shift Detail- " + name,
             style: {
                 width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true
+        }
+       
+    });
+}
+function showRoomBlockDetail(name) {
+    const dialogRef = dialog.open(ComRoomBlockDetail, {
+        data: {
+            name: name,
+        },
+        props: {
+            header:"Room Block Detail - " + name,
+            style: {
+                width: '60vw',
             },
             position:"top",
             modal: true,

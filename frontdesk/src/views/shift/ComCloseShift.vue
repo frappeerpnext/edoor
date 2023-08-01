@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK titleButtonClose="Close Shift">
+    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK :hideButtonClose="true">
         <div class="grid justify-between">
             <div class="col-6">
                 {{ doc }}
@@ -66,6 +66,9 @@
                 </div>
             </div>
         </div>
+        <template #footer-right>
+            <Button v-if="doc.is_closed == 0" @click="onCloseShift">Close Shift</Button>
+        </template>
     </ComDialogContent>
 </template>
 <script setup>
@@ -88,7 +91,9 @@
     }
     return 0;
 }) 
-
+    function onCloseShift(){
+        isSaving.value = true;
+    }
     function onClose(){
         isSaving.value = true;
     }

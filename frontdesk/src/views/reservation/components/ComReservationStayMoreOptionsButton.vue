@@ -1,13 +1,15 @@
 <template>
     <div>
-
+ 
         <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" /> -->
         <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="folio_menu" />
         <Menu ref="folio_menu" id="folio_menu" :popup="true">
             <template #end>
                 <button @click="onMarkAsMasterRoom()"
+
                     v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
+                    
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Mark as Master Room </span>
@@ -15,7 +17,7 @@
                 <button @click="onUndoCheckIn()"
                     v-if="rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-undo" />
                     <span class="ml-2">Undo Check-In</span>
                 </button>
                 <button @click="OnUndoCheckOut()"
@@ -24,24 +26,66 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Undo Check Out</span>
                 </button>
-                <button v-if="rs.reservationStay.pay_by_company" @click="onUnmarkasPaybyMasterRoom()"
+                
+                <button @click="onNoShowReservationStay()"
+                    v-if="(rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
-                    <span class="ml-2"> Unmark as Bill to Master Room </span>
+                    <span class="ml-2">No Show</span>
                 </button>
-                <button @click="onMarkasPaybyMasterRoom()" v-else
+              
+                <button @click="onReservedRoom()"
+                    v-if="rs.reservationStay?.reservation_status=='No Show' && 
+                            moment(rs.reservationStay?.departure_date).toDate()> moment(working_day?.date_working_day).toDate() &&
+                            rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length == 0
+                            "
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
-                    <span class="ml-2"> Mark as Bill to Master Room </span>
+                    <span class="ml-2">Reserve Room</span>
                 </button>
+                <button @click="onUnReservedRoom()"
+                v-if="rs.reservationStay?.reservation_status=='No Show' && 
+                        moment(rs.reservationStay?.departure_date).toDate()> moment(working_day?.date_working_day).toDate() &&
+                        rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0
+                        "
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Unreserve Room</span>
+                </button>
+                
+                <button @click="onCancelReservationStay()"
+                    v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Cancel Reservation Stay</span>
+                </button>
+                <button @click="onVoidReservationStay()"
+                    v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-file-edit" />
+                    <span class="ml-2">Void Reservation Stay</span>
+                </button>
+            
+                    <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" @click="onUnmarkasPaybyCityLedger()"
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <i class="pi pi-file-edit" />
+                        <span class="ml-2"> Unmark as Bill to City Ledger </span>
+                    </button>
+                    <button @click="onMarkasPaybyCityLedger()" v-else-if="!rs.reservationStay.pay_by_company && !rs.reservationStay.is_master"
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <i class="pi pi-file-edit" />
+                        <span class="ml-2"> Mark as Bill to City Ledger </span>
+                    </button>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
+                    <ComIcon icon="userGif" style="height: 15px;" />
                     <span class="ml-2">Mark as GIT Reservation</span>
                 </button>
+
                 <button v-else @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    
+                    <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
                 <button @click="onAuditTrail"
@@ -52,11 +96,15 @@
             </template>
         </Menu>
     </div>
+
+    <ComDialogNote :confirm_message="note.confirm_message" :show_reserved_room="note.show_reserved_room" :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
+
 </template>
 <script setup>
 import { inject, ref, useConfirm, useToast, postApi } from "@/plugin";
 import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
 const socket = inject("$socket")
+const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
 const emit = defineEmits(['onAuditTrail', "onRefresh"])
@@ -66,6 +114,12 @@ const rs = inject("$reservation_stay")
 const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))
 const frappe = inject('$frappe');
 const db = frappe.db();
+const loading = ref(false)
+const note = ref({
+    show:false,
+    show_reserved_room:false
+
+})
 
 
 const toggle = (event) => {
@@ -116,11 +170,8 @@ function onMarkAsMasterRoom() {
                 reservation: rs.reservation.name,
                 reservation_stay: rs.reservationStay.name
             }).then((doc) => {
-
                 rs.reservationStay = doc.message
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
-
-                //toast.add({ severity: 'info', summary: 'Information', detail: 'Update successfully', life: 3000 });
             })
 
         },
@@ -201,10 +252,109 @@ function OnUndoCheckOut() {
     });
 }
 
+function onCancelReservationStay() {
+     note.value.title = "Cancel Reservation Stay # " + rs.reservationStay.name,
+     note.value.confirm_message = "You are about to cancel this reservation.<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first."
+     note.value.reservation_status = "Cancelled"
+     note.value.show_reserved_room = false
+     note.value.show = true
+}
+function onVoidReservationStay() {
+     note.value.title = "Void Reservation Stay # " + rs.reservationStay.name,
+     note.value.show_reserved_room = false
+     note.value.reservation_status = "Void"
+     note.value.show = true
+}
 
-function onMarkasPaybyMasterRoom() {
+function onNoShowReservationStay() {
+     note.value.title = "No Show Reservation Stay # " + rs.reservationStay.name,
+     note.value.confirm_message = "You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>"
+    note.value.show_reserved_room = true
+     note.value.reservation_status = "No Show"
+     note.value.show = true
+}
+
+
+function onSaveNote(data){
+ 
+    loading.value = true
+
+    data = {
+        reservation: rs.reservation.name,
+        stays: [{name:rs.reservationStay.name, reservation_status:rs.reservationStay.reservation_status}],
+        status:note.value.reservation_status,
+        note:data.note,
+        reserved_room:data.reserved_room
+    } 
+   
+    postApi('reservation.update_reservation_status',data).then((r)=>{
+        
+        loading.value = false
+        note.value.show = false
+        rs.getReservationDetail(rs.reservationStay.name)
+        socket.emit("RefreshReservationDetail", r.reservation);
+        socket.emit("RefresheDoorDashboard", r.reservation.property);
+    }).catch(()=>{
+        loading.value = false
+    })
+
+    loading.value = false
+    
+}
+
+function onCloseNote(){
+    note.value.show = false;
+}
+
+function onReservedRoom() {
+ 
     confirm.require({
-        message: 'Are you sure you want to Mark as Bill to Master Room?',
+        message: 'Are you sure you want to reserve room for this reservation?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            postApi("reservation.reserved_room",{
+                property: rs.reservation.property,
+                reservation_stay: rs.reservationStay.name
+            }).then((resul)=>{
+                rs.getReservationDetail(rs.reservationStay.name)
+            })  
+        },
+
+    });
+
+}
+
+function onUnReservedRoom() {
+ 
+    confirm.require({
+        message: 'Are you sure you want to unreserve room for this reservation?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            postApi("reservation.unreserved_room",{
+                property: rs.reservation.property,
+                reservation_stay: rs.reservationStay.name
+            }).then((resul)=>{
+                rs.getReservationDetail(rs.reservationStay.name)
+            })  
+        },
+
+    });
+
+}
+
+function onMarkasPaybyCityLedger() {
+    confirm.require({
+        message: 'Are you sure you want to Mark as Bill to City Ledger?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -219,8 +369,8 @@ function onMarkasPaybyMasterRoom() {
 
                     rs.reservationStay.pay_by_company = doc.pay_by_company;
                     toast.add({
-                        severity: 'success', summary: 'Mark as Bill to Master Room',
-                        detail: 'Mark as Bill to Master Room Successfully', life: 3000
+                        severity: 'success', summary: 'Mark as Bill to City Ledger',
+                        detail: 'Mark as Bill to City Ledger Successfully', life: 3000
                     });
                 })
 
@@ -229,9 +379,9 @@ function onMarkasPaybyMasterRoom() {
     });
 
 }
-function onUnmarkasPaybyMasterRoom() {
+function onUnmarkasPaybyCityLedger() {
     confirm.require({
-        message: 'Are you sure you want to Unmark as Bill to Master Room?',
+        message: 'Are you sure you want to Unmark as Bill to City Ledger?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -245,8 +395,8 @@ function onUnmarkasPaybyMasterRoom() {
                 .then((doc) => {
                     rs.reservationStay.pay_by_company = doc.pay_by_company;
                     toast.add({
-                        severity: 'success', summary: 'Unmark as Bill to Master Room',
-                        detail: 'Unmark as Bill to Master Room Successfully', life: 3000
+                        severity: 'success', summary: 'Unmark as Bill to City Ledger ',
+                        detail: 'Unmark as Bill to City Ledger Successfully', life: 3000
                     });
                 })
         },

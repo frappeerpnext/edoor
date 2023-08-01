@@ -3,7 +3,7 @@
         <template #btn>
             <div class="flex items-center">
                 <span> Res {{ rs.reservation?.reservation_type }} Color </span> 
-                <button :style="{background:rs?.reservation?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg"></button>   
+                <button :style="{background:rs?.reservation?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>   
             </div>
         </template>
         <template #content>
@@ -16,11 +16,20 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')" :isAction="true" titleTooltip="Reference Number" title="Ref. No"
-                        :value="rs.reservation?.reference_number" valueClass="grow">
+                         :isSlot="true" valueClass="grow">
+                        <span>
+                            <i v-if="!rs.reservation?.reference_number" class="pi pi-pencil"></i>
+                            {{ rs.reservation?.reference_number ? rs.reservation?.reference_number : '...' }}
+                        </span>
                     </ComBoxStayInformation>
-                    <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')" :isAction="true" titleTooltip="Internal Reference Number" title="Int. No"
-                        :value="rs.reservation?.internal_reference_number" valueClass="grow"
-                        titleClass="w-4rem leading-10"></ComBoxStayInformation>
+                    <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')" :isSlot="true" :isAction="true" titleTooltip="Internal Reference Number" title="Int. No"
+                         valueClass="grow"
+                        titleClass="w-4rem leading-10">
+                        <span>
+                            <i v-if="!rs.reservation?.internal_reference_number" class="pi pi-pencil"></i>
+                            {{ rs.reservation?.internal_reference_number ? rs.reservation?.internal_reference_number : '...' }}
+                        </span>
+                    </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2" v-if="!(rs.reservation?.reservation_type == 'FIT')">
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')"   title="Group"  valueClass="grow">
@@ -57,7 +66,6 @@
                             <div> 
                                 <span v-for="(i, index) in roomData" :key="index">
                                     <div class="inline" v-if="index < 3">
-                                        {{(index != 0) ? ',' : ''}}
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
                                         <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>/
                                         <span>
@@ -98,20 +106,20 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Nights" :value="rs.reservation?.room_nights"
+                    <ComBoxStayInformation title="Nights" :value="(rs.reservation?.room_nights || 0)"
                         valueClass="col-2"></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation
-                        title="Adult"
-                        :value="rs?.reservation?.adult" valueClass="col-2"
+                        title="Adults"
+                        :value="(rs?.reservation?.adult || 0)" valueClass="col-2"
                         >
                     </ComBoxStayInformation>
                    
                     <ComBoxStayInformation
                         title="Children" valueClass="col-2"
                         titleClass="w-5rem leading-10">
-                     {{ rs?.reservation?.child }}
+                     {{ (rs?.reservation?.child || 0) }}
                     </ComBoxStayInformation>
                 </div>
             </div>

@@ -7,12 +7,13 @@
       <div class="col-12">
         <div class="w-6">
          <label for="Note Date">Note Date</label>
-        <div class="card flex justify-content-left">
-          <Calendar class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.note_date"
-        dateFormat="dd-mm-yy" showIcon showButtonBar />
+          <div class="card flex justify-content-left">
+            <Calendar class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.note_date"
+              dateFormat="dd-mm-yy" showIcon showButtonBar />
+          </div>
         </div>
       </div>
-      </div>
+      
       <!-- <div class="col-6">
         <label for="Reference Doctype">Reference Doctype</label>
         <div class="card flex justify-content-left">
@@ -34,6 +35,7 @@
       <div class="col-6">
          <label for="Reservation Stay">Reservation Stay</label>
          <div class="card flex justify-content-left">
+          {{ data.reservation_stay }}
             <ComAutoComplete fieldFilter="reservation" :valueFilter="data.reservation" class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
          </div>
       </div>

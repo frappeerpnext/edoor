@@ -10,6 +10,7 @@ import { ref, inject, postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation');
+const gv = inject('$gv');
 const loading = ref(false)
 const reservation = ref(JSON.parse(JSON.stringify(rs.reservation)))
 const color = ref(reservation.value.reservation_color)

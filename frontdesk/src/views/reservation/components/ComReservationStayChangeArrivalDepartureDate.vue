@@ -3,7 +3,7 @@
         <div class="grid py-2">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date).add(1,'days'))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" :selectOtherMonths="true" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date).add(1,'days'))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
@@ -11,7 +11,7 @@
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar hideOnDateTimeSelect showIcon v-model="stay.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Departure Time</label>

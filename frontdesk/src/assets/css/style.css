@@ -630,8 +630,8 @@ span.p-button-icon.pi.pi-ellipsis-h {
 .fc .fc-event-main .geust-title{
     display: inline-block;
     white-space: nowrap;
-    min-width: 62px;
-    max-width: 124px;
+    min-width: 60px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -652,7 +652,7 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
 .stay-bar-status{
     border-radius: 50%;
     border:1px solid #0056c0;
-    background-color: #eff6ff;
+    background-color: #FFFFFF;
     display: inline-block;
     min-width: 15px;
     max-width: 15px;
@@ -1065,4 +1065,14 @@ p.text-center.small.page-number.visible-pdf {
     display: flex;
     justify-content: center;
     justify-items: center;
+}
+.page-footer-fixed{
+    position: fixed;
+    bottom: 22px;
+    width: 100%;
+    background: #fff;
+    left: 0;
+}
+.di-page {
+    margin-bottom: 54px !important;
 }

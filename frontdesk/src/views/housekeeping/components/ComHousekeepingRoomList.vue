@@ -4,39 +4,38 @@
             @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column class="text-center" field="room_number" header="Room #"></Column>
-            <Column  header="Status">
+            <Column  header="Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="{ data }">
-                    <span class="py-1 px-3 rounded-xl text-white  white-space-nowrap " :style="{ background: data.status_color }">
+                    <span class="rounded-pill py-1 px-2 text-white border-round-3xl border-round-3xl white-space-nowrap " :style="{ background: data.status_color }">
                         {{ data.housekeeping_status }}
                     </span> 
                 </template>
             </Column>
             <Column field="room_type" header="Room Type"></Column>
-            <Column field="reservation_stay" header="Reservation Stay">
+            <Column field="reservation_stay" header="Reservation Stay" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <Button v-if="slotProps.data.reservation_stay" @click="onViewReservationStayDetail(slotProps.data.reservation_stay)" :label="slotProps.data.reservation_stay" link
-                        size="small" class="link_line_action1"></Button>
+                        size="small" class="link_line_action1 no-underline"></Button>
                 </template>
             </Column>
            
             
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
-                    <Button class="color-purple-edoor p-0" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                    <Button class="color-purple-edoor p-0 no-underline" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         <span class="link_line_action">{{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}</span>
                     </Button>
                 </template>
             </Column>
-            <Column field="reservation_status" header="Reservation Status">
+            <Column field="reservation_status" header="Reservation Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <span  v-if="slotProps.data.reservation_status" 
-                       >{{slotProps.data.reservation_status}}</span>
+                    <ComReservationStatus :statusName="slotProps.data.reservation_status"/>
                 </template>
             </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
                     <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
-                        size="small" class="link_line_action1"></Button>
+                        size="small" class="link_line_action1 no-underline"></Button>
                 </template>
             </Column>
         </DataTable>
@@ -183,5 +182,4 @@ function onReservationStatus (){
 .p-sidebar-mask.p-component-overlay{
     pointer-events:none !important;
 }
-
 </style>
