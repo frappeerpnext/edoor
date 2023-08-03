@@ -337,7 +337,8 @@
             <Button @click="onSave(true)" v-if="!doc.auto_assign_room">Create Reservation & Assign Room</Button>
         </template>
     </ComDialogContent>
-    {{ room_types }}
+    {{ roomRateTax(d) }}
+    {{ totalTax1Amount }}
 </template>
 <script setup>
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
@@ -420,9 +421,14 @@ const useTax = ref({
 })
 
 const roomRateTax = ref((d) => {
-    const tax_1_amount = getTax1Amount(d.rate)
-    const tax_2_amount = getTax2Amount(d.rate)
-    const tax_3_amount = getTax3Amount(d.rate)
+    let tax_1_amount = 0
+    let tax_2_amount = 0
+    let tax_3_amount = 0
+    room_types.value.forEach((r)=>{
+        tax_1_amount = getTax1Amount(d.rate) * r.total_selected_room
+        tax_2_amount = getTax2Amount(d.rate) * r.total_selected_room
+        tax_3_amount = getTax3Amount(d.rate) * r.total_selected_room
+    })
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
 // const rateTax = ref((d) => {
