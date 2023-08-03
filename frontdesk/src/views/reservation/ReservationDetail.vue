@@ -217,8 +217,13 @@ onUnmounted(() => {
 
 function onCheckIn(){
     if (rs.selecteds.length==0){
-        toast.add({ severity: 'warn', summary: "Group Check In", detail:"Please select reservation stay to check in.", life: 3000 })
+        if(rs.reservationStays.length>1){
+            toast.add({ severity: 'warn', summary: "Group Check In", detail:"Please select reservation stay to check in.", life: 3000 })
         return
+        }else {
+            rs.selecteds = rs.reservationStays
+        }
+       
     }
     const dialogRef = dialog.open(ComConfirmCheckIn, {
         data:{

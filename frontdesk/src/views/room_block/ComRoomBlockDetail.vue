@@ -1,5 +1,5 @@
 <template>
-    
+    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK :hideButtonClose="true">
     <table>
         <tr>
             <td colspan="2" class="bg-slate-200 p-2 font-medium text-center border-1">Room Block</td>
@@ -18,6 +18,11 @@
             {{ doc?.reason }}
         </div>
     </div>
+    <template #footer-right>
+        <Button  @click="onEditBlockRoom">Edit</Button>
+        <Button  @click="onUnBlockRoom">Unblock </Button>
+    </template>
+    </ComDialogContent>
 </template>
 <script setup>
 import {ref,getDoc,onMounted,inject } from "@/plugin"
@@ -26,7 +31,12 @@ const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
  
-
+function onEditBlockRoom(){
+    alert("Hello");
+}
+function onUnBlockRoom(){
+    alert("How are you?");
+}
 onMounted(() => {
     loading.value = true
     getDoc("Room Block",dialogRef.value.data.name ).then((data)=>{

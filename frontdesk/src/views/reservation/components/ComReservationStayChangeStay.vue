@@ -27,9 +27,9 @@
                     <tbody>
                         <tr> 
                             <td class="pe-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
-                            <td class="px-2">
+                            <td class="px-2"> 
                                 <Calendar class="w-full" showIcon v-model="stay.end_date" :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
@@ -82,6 +82,9 @@
     const stay = ref(JSON.parse(JSON.stringify(dialogRef.value.data.item)))
     stay.value.start_date = moment(stay.value.start_date).toDate()
     stay.value.end_date = moment(stay.value.end_date).toDate()
+    const maxStartDate = computed(()=>{
+        return new Date(moment(stay.value.end_date).subtract(1,'days'))
+    })
     const minDate = computed(()=>{
         if(moment(stay.value.start_date).isSame(working_day.date_working_day) || moment(stay.value.start_date).isBefore(working_day.date_working_day)){
             return new Date(moment(working_day.date_working_day).add(1,'days'))
@@ -116,11 +119,11 @@
     }
     function onSave(){
         loading.value = true
-        if(moment(stay.value.start_date).isSame(stay.value.end_date)){
-            gv.toast('warn','Start date cannot same end date.')
+        if(moment(stay.value.start_date).isSame(stay.value.end_date) || moment(stay.value.start_date).isAfter(stay.value.end_date)){
+            gv.toast('warn','Departure date cannot less than or equal to arrival date.')
             loading.value = false
             return
-        }
+        } 
         var newData = JSON.parse(JSON.stringify(stay.value))
         newData.start_date = gv.dateApiFormat(newData.start_date)
         newData.end_date = gv.dateApiFormat(newData.end_date)

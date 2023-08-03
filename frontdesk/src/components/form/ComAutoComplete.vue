@@ -1,5 +1,5 @@
 <template>
-    <div class="relative"> 
+    <div class="relative">
         <AutoComplete :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
@@ -86,9 +86,9 @@ let value = computed({
         return newValue
     }
 })
-watch(()=> props.valueFilter, (newValue)=>{
-    options.value = []
-    if(newValue){
+watch(()=> props.valueFilter, (oldValue, newValue)=>{
+    options.value = [] 
+    if(newValue && oldValue){
         onClear()
     }
 })

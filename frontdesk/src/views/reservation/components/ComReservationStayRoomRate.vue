@@ -87,7 +87,6 @@
       </ColumnGroup>
     </DataTable>
   </div>
-
 </template>
 <script setup>
 import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';

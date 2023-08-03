@@ -6,7 +6,7 @@
             </template>
             <template #end>
                 <NewFITReservationButton />
-                <Button label="Group Booking " icon=" pi pi-users" severity="info" />
+                <NewGITReservationButton/>
                 
             </template>
         </ComHeader>
@@ -97,6 +97,7 @@ import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
+import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 
 const dates = ref()
 const frappe = inject('$frappe')

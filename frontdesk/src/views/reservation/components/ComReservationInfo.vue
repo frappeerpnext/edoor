@@ -39,7 +39,7 @@
                         </button>
                         <div v-else class="flex gap-2">
                             <a v-tooltip.top="'Group Name'" v-if="rs.reservation?.group_name" class="link_line_action grow" >{{ rs.reservation?.group_name }}</a>
-                            <button v-else class="link_line_action grow" >
+                            <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
@@ -47,7 +47,7 @@
                             <a v-tooltip.top="'Group Code'" v-if="rs.reservation?.group_code" class="link_line_action grow" >
                                 {{ rs.reservation?.group_code }}
                             </a>
-                            <button v-else class="link_line_action grow" >
+                            <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                             ...  
                             </button>
@@ -67,9 +67,8 @@
                                 <span v-for="(i, index) in roomData" :key="index">
                                     <div class="inline" v-if="index < 3">
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                        <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>/
-                                        <span>
-                                            {{ i.room_number }}  
+                                        <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>
+                                        <span v-if="i.room_number">/{{ i.room_number }}  
                                         </span>
                                         </div>
                                     </div>
@@ -156,7 +155,7 @@ function getTooltip(){
    roomData.value.forEach(e => {
         index = index + 1
         if(index > 3){
-            html = html + `${e.room_type}/${e.room_number ? e.room_number : ''}\n`
+            html = html + ` ${e.room_type}/${e.room_number ?  e.room_number : ''}\n`
         }
         
    });

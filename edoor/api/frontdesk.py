@@ -8,6 +8,7 @@ from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
 
+
 @frappe.whitelist()
 def get_meta(doctype=None):
     data =  frappe.get_meta(doctype)
@@ -151,6 +152,8 @@ def get_mtd_room_occupany(property):
 
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["*"],order_by="sort_order asc")
+
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
@@ -163,6 +166,7 @@ def get_edoor_setting(property = None):
     
     
     edoor_setting  =  {
+        "edoor_menu": edoor_menus,
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
         
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
@@ -174,7 +178,8 @@ def get_edoor_setting(property = None):
             "name":currency.name,
             "locale":currency.locale,
             "precision":  currency.currency_precision,
-            "symbol": currency.symbol
+            "symbol": currency.symbol,
+            "pos_currency_format": currency.pos_currency_format
         },
         "housekeeping_status":housekeeping_status,
         'reservation_status':reservation_status,
@@ -210,6 +215,7 @@ def get_edoor_setting(property = None):
         "default_letter_head":property.default_letter_head
     }
 
+
     pos_profile = frappe.get_doc("POS Profile",property.default_pos_profile)
     
     edoor_setting["pos_profile"] = {
@@ -230,7 +236,8 @@ def get_edoor_setting(property = None):
     return {
         "user":get_logged_user(),
         "working_day": working_day,
-        "edoor_setting":edoor_setting
+        "edoor_setting":edoor_setting,
+         
     }
 
 @frappe.whitelist()
@@ -380,12 +387,19 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             1 as can_resize,
             arrival_date,
             departure_date,
+            start_time,
+            end_time,
+            business_source,
             rooms,
             reservation_type,
             group_color,
             group_name,
             group_code,
-            pay_by_company
+            pay_by_company,
+            total_debit,
+            balance,
+            total_credit,
+            total_room_rate
         from 
             `tabReservation Stay Room` 
         where 

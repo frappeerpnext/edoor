@@ -6,7 +6,15 @@
         </Button>
         <div class="mr-2 relative h-full">
             <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
-            <Menu ref="menu" id="peroid_menu" :overlayVisible="false" :focused="false" :model="items" :popup="true" />
+            <Menu ref="menu" id="peroid_menu" :popup="true" :model="items">
+                <template #item="data">
+                    <button @click="onFilter('week')"
+                        :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <span class="ml-2">{{data.item.label}}</span>
+                    </button>
+                </template>
+            </Menu>
         </div>
         <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>
         <Button @click="onToday('today')" class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
@@ -22,6 +30,8 @@ import iconChangeRoom from '@/assets/svg/change-room-icon.svg'
 const iconChangeRoomStatus = ref({
     img: iconChangeRoom
 })
+const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))
+const active = ref(reservation_chart.value.peroid)
 
 const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday'])
 const props = defineProps({
@@ -34,20 +44,23 @@ const menu = ref();
 const items = ref([
     {
         label: 'Week',
+        key: 'week',
         command: () => {
-            emit('onFilter', 'week')
+            onFilter('week')
         }
     },
     {
         label: '14 Days',
+        key: '14_days',
         command: () => {
-            emit('onFilter', '14_days')
+            onFilter('14_days')
         }
     },
     {
         label: 'Month',
+        key: 'month',
         command: () => {
-            emit('onFilter', 'month')
+            onFilter('month')
         }
     }
 ]);
@@ -55,6 +68,7 @@ function onToday() {
     emit('onToday')
 }
 function onFilter(key) {
+    active.value = key
     emit('onFilter', key)
 }
 function onPrevNext(key) {

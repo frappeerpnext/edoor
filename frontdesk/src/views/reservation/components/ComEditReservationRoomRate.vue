@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
-       <div class="grid justify-between">
+       <div class="grid justify-between" v-if="stay">
         <div class="col-6">
         <table>
             <tbody>
@@ -20,13 +20,33 @@
                 </tbody>
             </table>
         </div>
-        <div v-if="rs.reservationStay?.reservation_status == 'In-house' && stay?.arrival_date <= working_day?.date_working_day">
+        </div>
+        <div class="grid justify-between" v-if="stay_reservation">
+            <div class="col-6">
+            <table>
+                <tbody>
+                    <ComStayInfoNoBox  label="Res Stay. No" :value="stay_reservation?.name" />
+                    <ComStayInfoNoBox  label="Business Source" :value="stay_reservation?.business_source" />
+                    <ComStayInfoNoBox  label="Room" :value="stay_reservation?.room_type_alias + '/' + stay_reservation?.room_numbers" />
+                    <ComStayInfoNoBox  label="Date" :value="moment(stay_reservation?.arrival_date).format('DD-MM-yyyy')"/>
+                </tbody>
+            </table> 
+            </div>
+            <div class="col-6">
+                <table>
+                    <tbody>
+                    <ComStayInfoNoBox  label="Guest" :value="stay_reservation?.guest_name +' ('+ stay_reservation?.guest+')' "/> 
+                    <ComStayInfoNoBox  label="Pax" :value="stay_reservation?.adult + '/' + stay_reservation?.child" />
+                    <ComStayInfoNoBox  label="Phone Number" :value="stay_reservation?.guest_phone_number" /> 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div>
             <Message severity="info">Changes to room rates made to past or current dates will not 
                 automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
             </Message>
         </div>
-        
-    </div>
     <hr class="my-1">
     <div class="grid">  
         <div class="col-12 mt-2 -mb-3 p-0">
@@ -180,24 +200,21 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
-import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+
 import Message from "primevue/message";
  
 const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
-const rs = inject('$reservation_stay')
 
-const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
 const isSaving = ref(false);
 const selectedRoomRates = ref([])
 const use_tax = ref({})
-const toast = useToast()
+
 const stay = ref({})
-const rate_plan = ref({})
-const room_types = ref([])
+const stay_reservation = ref({})
 const showCheckUpdateFutureStayRoomRate = ref(false)
 const updateFutureRoomRate = ref(false)
 const futureRoomRates = ref([])
@@ -390,7 +407,7 @@ function onSave() {
 }
 onMounted(() => {
     stay.value = dialogRef.value.data.reservation_stay
-    
+    stay_reservation.value = dialogRef.value.data.reservation
     
     showCheckUpdateFutureStayRoomRate.value = dialogRef.value.data.show_check_update_future_stay_room_rate
      

@@ -35,7 +35,6 @@
       <div class="col-6">
          <label for="Reservation Stay">Reservation Stay</label>
          <div class="card flex justify-content-left">
-          {{ data.reservation_stay }}
             <ComAutoComplete fieldFilter="reservation" :valueFilter="data.reservation" class="w-full" v-model="data.reservation_stay" doctype="Reservation Stay"/>
          </div>
       </div>
@@ -53,17 +52,18 @@
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')
-const moment = inject('$moment')
 const loading = ref(false);
 const data = ref({})
-const note = ref()
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 function onSave(){
+  if(!data.value.content){
+    gv.toast('warn','Please input note.')
+    return
+  }
   loading.value = true
   let dataSave = JSON.parse(JSON.stringify(data.value))
   dataSave.note_date = gv.dateApiFormat(dataSave.note_date)
   createUpdateDoc("Frontdesk Note", {data: dataSave}).then((r)=>{
-    note.value = r;
     loading.value = false
     dialogRef.value.close(r)
   }).catch((err)=>{
@@ -82,9 +82,3 @@ onMounted(() => {
 })
 
 </script>
-<style scoped>
-.conten-btn:hover{
-background: #fbedc2 !important;
-}
-</style>
-

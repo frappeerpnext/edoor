@@ -25,9 +25,6 @@
                             <th class="text-right px-2">
                                 <label>Rate</label>
                             </th>
-                            <th class="text-right ps-2">
-                                <label>Amount</label>
-                            </th>
 
                         </tr>
                     </thead>
@@ -55,7 +52,7 @@
                                     :end-date="selectedStay.end_date"
                                     :roomType="selectedStay.room_type_id" />
                             </td>
-                            <td class="text-center px-2 w-5rem"> 
+                            <td class="text-center px-2 w-10rem"> 
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
                             </td>
                             <td class="px-2 w-10rem">
@@ -69,11 +66,6 @@
                                         </span>
                                     </span>
                                 </span> -->
-                            </td>
-                            <td class="text-right ps-2 w-10rem">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">
-                                    <CurrencyFormat :value="(selectedStay.room_nights   ?? 0) * (selectedStay.rate ?? 0)" />
-                                </span>
                             </td>
                         </tr>
                     </tbody>

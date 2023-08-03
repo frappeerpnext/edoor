@@ -1,75 +1,92 @@
 <template >
-    <h1>Group Assign Room</h1>
-  
-
+    <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+    <ComReservationStayPanel title="Group Assign Room">
+        <template #content> 
     <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
-    <table v-else>
-        <tr>
+    <table class="w-full " v-else>
+        <tr class="font-medium">
             <td>Stay Date</td>
-            <td>End Date</td>
             <td>Guest</td>
             <td>Rate Type</td>
-            <td>Book Room Type</td>
-            <td>Selected Room Type</td>
-            <td>Room</td>
-            <td>Room Night(s)</td>
-            <td>Rate</td>
+            <!-- <td>Book Room Type</td> -->
+            <td>Room Type</td>
+            <td>Room Number</td>
+            <td class="text-center">Nights</td>
+            <td class="text-right">Rate</td>
         </tr>
         <tr v-for="(d, index) in data" :key="index">
             <td>
-                {{ moment(d.start_date).format("DD-MM-YYYY") }}
+                <div class="box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt" >
+                <span v-tooltip.top="'Arrival date'"> {{ moment(d.start_date).format("DD-MM-YYYY") }}</span> &#8594;
+                <span v-tooltip.top="'Departure date'">{{ moment(d.end_date).format("DD-MM-YYYY") }}</span>
+                </div>
+                
             </td>
             <td>
-                {{ moment(d.end_date).format("DD-MM-YYYY") }}
-            </td>
-            <td>
+                <div class="box-input  px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                 {{ d.guest }} - {{ d.guest_name }}
+                </div>
             </td>
             <td>
-                {{ d.rate_type }}
+                <div class="box-input  px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
+                    {{ d.rate_type }}
+                </div>
             </td>
+            <!-- <td>
+                <div class="box-input  px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
+                {{ d.room_type }}
+            </div>
+            </td> -->
+            <td class="pr-2" style="min-width: 15rem; max-width:15rem;" >
 
-            <td>
-                {{d.room_type}}
+                <Dropdown class="w-full" v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"
+                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" />
 
+                <!-- <Message v-if="d.room_type_id != d.new_room_type_id">
+                    <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0" />
+                    <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
+                        regenerate rate</label>
+                </Message> -->
             </td>
-            <td class="pr-2">
- 
-                <Dropdown v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"
-                   @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" />
-
-                <Message v-if="d.room_type_id!=d.new_room_type_id">
-                    <Checkbox  v-model="d.is_generate_rate" :binary="true" />
-                    <label  class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to regenerate rate</label>
-                </Message>
-            </td>
-            <td class="p-2">
-                <Dropdown v-model="d.room_id" :options="get_rooms(d)" optionValue="name" @change="OnSelectRoom"
+            <td class="p-2" style="min-width: 10rem; max-width:10rem;">
+                <Dropdown class="w-full" v-model="d.room_id" :options="get_rooms(d)" optionValue="name" 
                     optionLabel="room_number" placeholder="Select Room" showClear filter />
- 
+
             </td>
 
-            <td>
+            <td class="text-center w-5rem">
+                <div class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                 {{ d.room_nights }}
+                </div>
             </td>
-            <td>
+            <td class="text-right w-10rem">
+                <div class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                 <CurrencyFormat :value="d.rate"></CurrencyFormat>
+                </div>
             </td>
 
 
         </tr>
     </table>
-    <Button @click="onSave()">Save</Button>
+</template>
+</ComReservationStayPanel>  
+
+    <!-- <Button @click="onSave()">Save</Button> -->
+</ComDialogContent>
 </template>
 <script setup>
-import { ref, getApi, inject, onMounted, computed } from "@/plugin"
+import { ref, getApi, inject, onMounted, postApi, computed } from "@/plugin"
 import Message from "primevue/message";
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 const loading = ref(false)
 const dialogRef = inject("dialogRef");
 const data = ref([])
+const gv = inject('$gv');
 const moment = inject("$moment")
 const reservation = ref({})
 const room_data = ref([])
+const socket = inject("$socket")
 
 function get_room_types(d) {
 
@@ -80,13 +97,9 @@ const get_rooms = ref((d) => {
 
     if (room_data.value) {
         let rooms = []
-       
         const roomNumbersToExclude = data.value.filter(r => r.room_id).map(r => r.room_id)
-        
-        
-
         rooms = room_data.value.find(r => r.start_date == d.start_date && r.end_date == d.end_date).rooms
-        rooms = rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id==d.new_room_type_id))
+        rooms = rooms.filter(r => (r.room_type_id == d.new_room_type_id && !roomNumbersToExclude.includes(r.name)) || (r.name == d.room_id && r.room_type_id == d.new_room_type_id))
 
 
         return rooms
@@ -97,15 +110,36 @@ const get_rooms = ref((d) => {
 
 });
 
+const onClose = (d) =>{ 
+        dialogRef.value.close(d);
+    }
 
 
 const onSelectRoomType = (d) => {
-   if(d.room_type_id!=d.new_room_type_id){
-    d.room_id=null
+    
+    if (d.room_type_id != d.new_room_type_id) {
+        d.room_id = null
+        d.room_number = null
+    } else {
+        d.is_generate_rate = false
+    }
+}
 
-   }else {
-    d.is_generate_rate = false
-   }
+
+
+function onSave() {
+    loading.value = true
+    postApi("reservation.bulk_assign_room", {
+        reservation:reservation.value.name,
+        reservation_stays: data.value.filter(r=>r.room_id)
+    }).then((result) => {
+        socket.emit("RefresheDoorDashboard", reservation.value.property);
+        socket.emit("RefreshReservationDetail", reservation.value.name);
+        dialogRef.value.close()
+        loading.value = false
+    }).catch((err) => {
+        loading.value = false
+    })
 }
 
 
@@ -120,6 +154,9 @@ onMounted(() => {
         }).then((result) => {
             data.value = result.message.data
             room_data.value = result.message.rooms
+            data.value.forEach(r => {
+                r.room_id = null
+            });
 
 
             loading.value = false
@@ -134,3 +171,11 @@ onMounted(() => {
 
 
 </script>
+<style scoped>
+td{
+    padding:0 0.5rem;
+}
+.p-inputtext-pt{
+    background-color: #ebf0f6 !important;
+}
+</style>

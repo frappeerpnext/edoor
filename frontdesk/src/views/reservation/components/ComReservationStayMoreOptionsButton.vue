@@ -118,7 +118,6 @@ const loading = ref(false)
 const note = ref({
     show:false,
     show_reserved_room:false
-
 })
 
 

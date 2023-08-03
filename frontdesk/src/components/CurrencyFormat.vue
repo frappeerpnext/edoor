@@ -18,29 +18,29 @@ const props = defineProps({
 
 const format = ref("#,###,##0.00##")
 
-let currency_name = props.currency
+// let currency_name = props.currency
 
-if (currency_name == "") {
-
-    currency_name = gv.setting?.default_currency
-}
 const currencyDefualt = {pos_currency_format : '$ #,###,##0.00', currency_precision: 2}
-const currency = gv.setting.currencies ? gv.setting?.currencies.find(r => r.name == currency_name) : currencyDefualt
-
-if (currency) {
-
-    format.value = currency.pos_currency_format
+const currency = ref()
+if (gv.setting.currency && gv.setting.currency.pos_currency_format){
+    currency.value = gv.setting.currency
 }
+else{
+    currency.value = currencyDefualt
+
+}
+
+format.value = currency.value.pos_currency_format
 
 const amount = computed(() => {
     let n = (props.value);
     if ((typeof n) == 'number') {
-        return   Number(n.toFixed(currency.currency_precision));
+        return   Number(n.toFixed(currency.value.currency_precision));
     } else {
         return  0
     }
-}
-)
+})
+ 
 
 
 </script>

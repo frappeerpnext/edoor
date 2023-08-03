@@ -56,7 +56,7 @@ function onOpenGroupAssignRoom(reservation) {
             reservation: reservation
         },
         props: {
-            header: 'Group Assign Room - ' + reservation,
+            header: 'Group Assign Room - ' + reservation.name,
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',

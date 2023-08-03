@@ -71,7 +71,7 @@
                                 <span v-tooltip.top="'Adults'">{{slotProps.data.adult}}</span>/<span v-tooltip.top="'Children'">{{slotProps.data.child}}</span>
                             </template>
                         </Column>
-                        <Column class="text-right res__room-list-right" header="Room Rate">
+                        <Column class="text-right res__room-list-right" header="Total Rate">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_room_rate"/>
                             </template>

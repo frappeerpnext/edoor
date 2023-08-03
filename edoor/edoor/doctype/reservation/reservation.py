@@ -9,7 +9,6 @@ from frappe.utils import now,getdate
 class Reservation(Document):
 	def validate(self):
 		if self.departure_date<=self.arrival_date:
-			
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 
 		working_day = get_working_day(self.property)

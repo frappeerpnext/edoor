@@ -70,17 +70,23 @@
                             </div>
                         </div>
                         <div class="grid">
-                            <div class="col-12 lg:col-6">
+                            <div class="col-12 lg:col-5">
                                 <div class="pt-2">
                                     <label>Group Code</label><br />
                                     <InputText v-model="doc.reservation.group_code" placeholder="Group Code" class="w-full" />
                                 </div>
                             </div>
-                            <div class="col-12 lg:col-6">
+                            <div class="col-12 lg:col-5">
                                 <div class="pt-2">
                                     <label>Group Name</label><br />
                                     <InputText v-model="doc.reservation.group_name" placeholder="Group Name" class="w-full" />
 
+                                </div>
+                            </div>
+                            <div class="col-12 lg:col-2">
+                                <div class="pt-2 rounded-lg" style="height: 43px;">
+                                <label>Group Color</label>  
+                                 <div class="w-full h-full rounded-lg border-2 border-gray-500" :style="{background:group_color}"></div>
                                 </div>
                             </div>
                         </div>
@@ -91,21 +97,29 @@
                     
                             </div>
                             <div class="flex align-items-center">
-                                <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
-                                <Checkbox class="" v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
+                                <label 
+                                v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
+                                <Checkbox 
+                                v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                class="" v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
                             </div>
                             <div>
                                 <div class="text-center">
                                     <label class="text-center">Adult (Per Room)</label><br>
                                 </div>
-                                <InputNumber v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                                <InputNumber 
+                                    v-tippy="'Please enter number of adult per room here. Total adult will be calculate  from each reservation stay room in this reservation. You can update number of adult later in Reservation Stay Detail'" 
+                                    v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
                                 class="child-adults-txt" />
                             </div>
                             <div>
                                 <div class="text-center">
                                     <label class="text-center">Child (Per Room)</label><br>
                                 </div>
-                                <InputNumber v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                                <InputNumber 
+                                v-tippy="'Please enter number of child per room here. Total child will be calculate  from each reservation stay room in this reservation. You can update number of child later in Reservation Stay Detail'" 
+                                    v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
                                 class="child-adults-txt" />
                             </div>
                         </div>
@@ -257,6 +271,7 @@
 
 
                         <tr v-for="(  d, index  ) in   room_types" :key="index">
+                            
                             <td class="pr-2">
                                {{ d.room_type }}
                             </td>
@@ -269,10 +284,16 @@
                             <td class="p-2 w-12rem text-center">
                                 <span @click="onOpenChangeRate($event, d)"
                                 class="text-right w-full color-purple-edoor text-md font-italic ">
-                                    <span class="link_line_action">
-                                        <CurrencyFormat :value="d.rate" />
+                                
+                                <div v-tooltip.top = "(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan' " class="link_line_action flex justify-between">
+                                    <span class="text-left">
+                                <i v-if="d.is_manual_rate" class="pi pi-pencil text-sm ms-2"></i>
+                                <i v-else class="pi pi-chart-line text-sm ms-2"></i>
                                     </span>
-                                </span>
+                                        <CurrencyFormat :value="d.new_rate" />
+                                </div>
+                            </span>
+                             
                             </td>
                             
                             <td class="p-2 w-12rem text-center">
@@ -287,32 +308,43 @@
                         </tr>
                     </tbody>
                 </table>
+                
             </div>
-
+            <Checkbox 
+            v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'"
+            inputId="auto_assign_room" v-model="doc.auto_assign_room" :binary="true"  />
+        <label for="auto_assign_room" class="mr-3 cursor-pointer"
+        v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'"
+        >Automatically assign room</label>
         </div>
         <div class="mt-3">
+            
             <div>
                 <label>Note</label><br />
                 <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30"
                     class="w-full border-round-xl" />
             </div>
         </div>
-        {{ onDateSelect() }}
+ 
         <OverlayPanel ref="op">
             <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan"
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
         <template #footer-right>
-            <Button @click="onSave(true)">Create Reservation & Assign Room</Button>
+
+    
+
+            <Button @click="onSave(true)" v-if="!doc.auto_assign_room">Create Reservation & Assign Room</Button>
         </template>
     </ComDialogContent>
+    {{ room_types }}
 </template>
 <script setup>
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
-import ColorPicker from 'primevue/colorpicker';
+ 
 
 
 import { ref, inject, computed, onMounted, postApi } from "@/plugin"
@@ -337,11 +369,17 @@ const rate = ref(0)
 const op = ref();
 const group_color= ref("#" + generateRandomColor())
 
+
 const onOpenChangeRate = (event, stay) => {
+    
+    stay.is_manual_rate = true
     selectedStay.value = stay
-    rate.value = JSON.parse(JSON.stringify(stay)).rate
+    rate.value = JSON.parse(JSON.stringify(stay)).new_rate
     op.value.toggle(event);
 }
+ 
+
+
 const doc = ref({
     reservation: {
         doctype: "Reservation",
@@ -355,7 +393,8 @@ const doc = ref({
         tax_rule: setting.room_tax?.name,
         pay_by_company: 1,
         group_code:"",
-        group_name:""
+        group_name:"",
+        auto_assign_room: false
         
     },
     guest_info: {
@@ -386,18 +425,24 @@ const roomRateTax = ref((d) => {
     const tax_3_amount = getTax3Amount(d.rate)
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
-const rateTax = ref((d) => {
-    if(setting.room_tax){
-        if(doc.value.tax_rule.rate_include_tax == 'Yes'){
-            return gv.getRateBeforeTax((d.rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-        }else{
-            return d.rate
-        }
-    }else{
-        return 0
-    }
-})
-
+// const rateTax = ref((d) => {
+//     if(setting.room_tax){
+//         if(doc.value.tax_rule.rate_include_tax == 'Yes'){
+//             return gv.getRateBeforeTax((d.rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+//         }else{
+//             return d.rate
+//         }
+//     }else{
+//         return 0
+//     }
+// })
+function getSelectedRoom(total_selected_room){
+    let selected_room = 0
+    room_types.value.forEach((r)=>{
+        selected_room = r.total_selected_room
+    });
+    return selected_room
+}
 function getTax1Amount(rate) { 
     if (setting.room_tax) {
         if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
@@ -417,7 +462,7 @@ function getTax2Amount(rate) {
 
     if (setting.room_tax) {
         if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+             rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
              
         } else {
             rate = rate
@@ -433,20 +478,22 @@ function getTax2Amount(rate) {
 }
 function getTax3Amount(rate) {
     if (setting.room_tax) {
-        if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-             
+        room_types.value.forEach((r)=>{
+            if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
+            rate = gv.getRateBeforeTax((rate || 0 * r.total_selected_room || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
         } else {
-            rate = rate
+            rate = rate * r.total_selected_room || 0
              
         }
         if (setting.room_tax.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
-            rate = rate
+            rate = rate * r.total_selected_room || 0
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
         if (setting.room_tax.calculate_tax_3_after_adding_tax_2 == 0 || (rate * (doc.value.tax_rule.tax_2_rate / 100)) == 0 ) {
-            rate = rate
+            rate = rate * r.total_selected_room || 0
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_2_rate / 100))}
         return (rate || 0) * (doc.value.tax_rule.tax_3_rate / 100 || 0)
+        })
+        
     } else {
         return 0
     }   
@@ -455,21 +502,21 @@ function getTax3Amount(rate) {
 const totalTax1Amount =  computed(()=>{
     let amount = 0
     room_types.value.forEach(r => {
-        amount = amount + getTax1Amount(r.rate)
+        amount = amount + (getTax1Amount(r.rate) * getSelectedRoom(r.total_selected_room))
     });
     return amount
 })
 const totalTax2Amount =  computed(()=>{
     let amount = 0
     room_types.value.forEach(r => {
-        amount = amount + getTax2Amount(r.rate)
+        amount = amount + (getTax2Amount(r.rate) * getSelectedRoom(r.total_selected_room))
     });
     return amount
 })
 const totalTax3Amount =  computed(()=>{
     let amount = 0
     room_types.value.forEach(r => {
-        amount = amount + getTax3Amount(r.rate)
+        amount = amount + (getTax3Amount(r.rate) * getSelectedRoom(r.total_selected_room))
     });
     return amount
 })
@@ -504,7 +551,6 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
-        
             result.message.forEach((r)=>{
                
                 let rt =room_types.value?.find((t)=>t.name == r.name)
@@ -516,7 +562,7 @@ const getRoomType = () => {
                     rt.rate = r.rate
                     
                 }else {
-                               r.total_selected_room = 0
+                    r.total_selected_room = 0
                     room_types.value.push(r) 
          
                 }
@@ -570,6 +616,7 @@ const onUseTax3Change = (value) => {
 const onSave = (assign_room=false) => {
  
     isSaving.value = true
+
     
      
     doc.value.reservation_stay = []
@@ -577,7 +624,7 @@ const onSave = (assign_room=false) => {
          
         for (let i =0; i <= r.total_selected_room-1; i++) {
             doc.value.reservation_stay.push(
-                { "rate": r.rate, "adult": doc.value.reservation.adult, "child": doc.value.reservation.child, "is_manual_rate": r.is_manual_rate || false, "is_master": 0, "room_type_id": r.name,"room_id":"" }
+                { "rate": r.new_rate, "adult": doc.value.reservation.adult, "child": doc.value.reservation.child, "is_manual_rate": r.is_manual_rate || false, "is_master": 0, "room_type_id": r.name,"room_id":"" }
             )
         }
     });
@@ -598,7 +645,7 @@ const onSave = (assign_room=false) => {
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
 
      
-    postApi('reservation.add_new_fit_reservation', {
+    postApi('reservation.add_new_reservation', {
         doc: data
     }
     ).then((result) => {
@@ -674,16 +721,10 @@ const onDeleteStay = (index) => {
 }
 
 const updateRate = () => {
-    doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).forEach(s => {
-        const room_type = room_types.value.find(r => r.name == s.room_type_id)
+    
 
-
-        if (room_type) {
-
-            s.rate = room_type.rate
-
-        }
-
+    room_types.value.filter(r => (r.is_manual_rate || false) == false).forEach(s => {
+        s.new_rate = s.rate
     });
 }
 
@@ -714,13 +755,13 @@ const onRateTypeChange = (rate_type) => {
 
 const onChangeRate = () => {
 
-    selectedStay.value.rate = rate.value
+    selectedStay.value.new_rate = rate.value
     selectedStay.value.is_manual_rate = true
     op.value.hide();
 }
 
 const onUseRatePlan = () => {
-
+ 
     selectedStay.value.is_manual_rate = false;
     updateRate()
     op.value.hide();

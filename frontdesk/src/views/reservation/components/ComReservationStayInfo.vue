@@ -36,16 +36,16 @@
                             ...
                         </button>
                         <div v-else class="flex gap-2">
-                            <a v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow" >{{ stay.reservationStay?.group_name }}</a>
-                            <button v-else class="link_line_action grow" >
+                            <a v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left" >{{ stay.reservationStay?.group_name }}</a>
+                            <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
                             <span>/</span>
-                            <a v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow" >
+                            <a v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow text-left" >
                                 {{ stay.reservationStay?.group_code }}
                             </a>
-                            <button v-else class="link_line_action grow" >
+                            <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                                 ...  
                             </button>

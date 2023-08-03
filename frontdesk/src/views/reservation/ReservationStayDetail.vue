@@ -5,6 +5,7 @@
             <div :class="[isPage, 'bg-white']">
                 <div class="flex mb-3 justify-between">
                     <ComReservationStayHeaderStatus />
+                    
 
                     <div class="flex gap-2">
                         <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"

@@ -308,6 +308,7 @@ router.beforeEach(async (to, from, next) => {
 		}else { 
 		localStorage.setItem('edoor_user', JSON.stringify(data.user))
 		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
+		gv.setting = data.edoor_setting
 		if (r.message.property == "Invalid Property") {
 			localStorage.removeItem("edoor_property")
 		}

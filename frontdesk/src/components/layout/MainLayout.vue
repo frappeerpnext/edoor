@@ -1,13 +1,35 @@
 <template>
     <div class="wrap-page">
+        
         <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
             mode="indeterminate">
         </ProgressBar>
+          
+      
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full">
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-                        <ComHeaderBarItemButton title="eDoor Dashboard" current-page="Dashboard"
+                        <template v-for="(m , index) in eDoorMenu.filter(r=>r.parent_edoor_menu=='All Menus')" :key="index">
+                        <ComHeaderBarItemButton :title="m.menu_title" :current-page="m.menu_name"
+                            @onClick="onRoute(m.menu_name)">
+                            <template #icon>
+                                <img :src="iconEdoorDashboard" />
+                            </template>
+                            <template #defualt>
+                                <p>{{m.menu_text}}</p>
+                            </template>
+                        </ComHeaderBarItemButton>
+                        <!--Sub Menu-->`
+                        <hr/>
+                        <template v-for="(sm , index) in eDoorMenu.filter(r=>r.parent_edoor_menu==m.name)" :key="index">
+                            
+                            <Button v-if="sm.parent_edoor_menu == m.name">{{sm.menu_text}}</Button>
+                        </template>
+
+                        <!--end submenu-->
+                        </template>
+                        <!-- <ComHeaderBarItemButton title="eDoor Dashboard" current-page="Dashboard"
                             @onClick="onRoute('Dashboard')">
                             <template #icon>
                                 <img :src="iconEdoorDashboard" />
@@ -23,7 +45,7 @@
                             <template #defualt>
                                 <p>Front Desk</p>
                             </template>
-                        </ComHeaderBarItemButton>
+                        </ComHeaderBarItemButton> -->
                         <ComHeaderBarItemButton title="Reservations" current-page="ReservationList"
                             @onClick="onRoute('ReservationList')">
                             <template #icon>
@@ -149,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, inject, useToast, useRouter, useRoute } from '@/plugin'
+import { ref, inject, useToast, useRouter, useRoute,onMounted } from '@/plugin'
 import ComAvatar from '../form/ComAvatar.vue';
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar';
@@ -191,6 +213,7 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 const moment = inject("$moment")
+const eDoorMenu = ref([])
 
 
 const toggle = (event) => {
@@ -323,4 +346,7 @@ function onCloseCashierShift() {
     window.postMessage('close_shift', '*')
 }
 
+onMounted(()=>{
+   eDoorMenu.value =  setting?.edoor_menu.filter(r=>(r.parent_edoor_menu || "")!="")
+})
 </script>

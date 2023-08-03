@@ -53,7 +53,12 @@
   "arrival_date",
   "departure_date",
   "rooms",
-  "pay_by_company"
+  "pay_by_company",
+  "business_source",
+  "total_credit",
+  "total_debit",
+  "balance",
+  "total_room_rate"
  ],
  "fields": [
   {
@@ -327,12 +332,38 @@
    "fieldname": "internal_reference_number",
    "fieldtype": "Data",
    "label": "Internal Reference Number"
+  },
+  {
+   "fetch_from": "reservation.business_source",
+   "fieldname": "business_source",
+   "fieldtype": "Data",
+   "label": "Business Source"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
+  },
+  {
+   "fieldname": "total_room_rate",
+   "fieldtype": "Currency",
+   "label": "Total Room Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-08-01 16:19:18.867933",
+ "modified": "2023-08-02 15:38:15.313163",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-
+       
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -71,8 +71,10 @@
                         </div>
                         <div class="pt-2 flex justify-between">
                             <div class="flex align-items-center relative w-11rem">
-                                <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
+                                <label for="include-tax" class="font-medium cursor-pointer me-2" 
+                                >Paid by Company</label>
                                 <Checkbox class="absolute right-0 w-full flex justify-end mt-1"
+                                v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
                                     v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1"
                                     :falseValue="0" />
                             </div>
@@ -615,7 +617,7 @@ const onSave = () => {
     data.reservation.tax_2_rate = doc.value.tax_rule.tax_2_rate
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
-    postApi('reservation.add_new_fit_reservation', {
+    postApi('reservation.add_new_reservation', {
         doc: data
     },
         "Add new reservation successfully"

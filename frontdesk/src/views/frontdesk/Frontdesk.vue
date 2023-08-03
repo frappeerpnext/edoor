@@ -309,25 +309,25 @@ const calendarOptions = reactive({
 
         if (event.extendedProps.type == "stay" || event.extendedProps.type == "room_block") {
             
+            
             const description = `<div class="p-2 w-full">
                                         <table class="tip_description_stay_table">
                                             <tbody>
                                             <tr><td>Res. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
                                             <tr><td>Res Stay. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
                                             <tr><td>Ref. No</td><td class="px-3">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
-                                            <tr><td>Int. No</td><td class="px-3">:</td><td>${event.extendedProps?.internal_reference_number || ''}</td></tr>
+                                            <tr><td>Int. No</td><td class="px-3">:</td><td>${event.extendedProps?.internal_reference_number ?? ''}</td></tr>
                                             <tr><td>Ref. type</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( '+ event.extendedProps?.group_code +' )' : ''}</td></tr>    
                                             <tr><td>Guest</td><td class="px-3">:</td><td>${event.title}</td></tr>
-                                            <tr><td>Arrival</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)}</td></tr>
-                                            <tr><td>Departure</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)}</td></tr>
+                                            <tr><td>Arrival</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)} - ${gv.timeFormat(event.extendedProps?.start_time)}</td></tr>
+                                            <tr><td>Departure</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)} - ${gv.timeFormat(event.extendedProps?.end_time)}</td></tr>
                                             <tr><td>Room</td><td class="px-3">:</td><td>${event.extendedProps?.room_number}</td></tr>
                                             <tr><td>Pax</td><td class="px-3">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
                                             <tr><td>Source</td><td class="px-3">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
-                                            <tr><td>Room Rate</td><td class="px-3">:</td><td>${event.extendedProps?.total_toom_rate || ''}</td></tr>
-                                            <tr><td>Total Debit</td><td class="px-3">:</td><td>${event.extendedProps?.total_debit || ''}</td></tr>
-                                            <tr><td>Total Credit</td><td class="px-3">:</td><td>${event.extendedProps?.total_credit || ''}</td></tr>
-                                            <tr><td>Balance</td><td class="px-3">:</td><td>${event.extendedProps?.balance || ''}</td></tr>
-                                            
+                                            <tr><td>Total Room Rate</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_room_rate)}</td></tr>
+                                            <tr><td>Total Debit</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
+                                            <tr><td>Total Credit</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
+                                            <tr><td>Balance</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
                                             </tbody>
                                         </table>
                                     </div>`
@@ -688,7 +688,6 @@ function onSearch(key) {
     eventKeyword.value = key
     onRefresh()
     // cal.setOption({now:"2023-05-18"})
-
 }
 
 onMounted(() => {

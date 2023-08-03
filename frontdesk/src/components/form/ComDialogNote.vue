@@ -1,5 +1,5 @@
 <template>
-    <Dialog :header="header" v-model:visible="show" @update:visible="onHide" modal>
+    <Dialog :header="header" :visible="show" @update:visible="onHide" modal>
         <Message v-if="confirm_message" >
             <div v-html="confirm_message" />
         </Message>
@@ -25,10 +25,9 @@ const props = defineProps({
         default:''
     },
     loading: Boolean,
-    confirm_message:String,
+    confirm_message: String,
     show_reserved_room:Boolean
 })
-
  
 const reserved_room = ref(true)
 
@@ -52,10 +51,9 @@ let note = computed({
 function onOk(note){
     emit('onOk',{note:note ,reserved_room:reserved_room.value }) 
 }
-// function onHide($event){
-//     show.value = $event 
-//     emit('onClose')
-// }
+function onHide(){
+    emit('onClose')
+}
 </script>
 <style lang="">
     

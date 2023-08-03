@@ -1,6 +1,7 @@
  
 import NumberFormat from 'number-format.js'
 import moment from "../utils/moment.js";
+import {ref} from 'vue'
 export default class Gv {
 	constructor() {
 		this.setting = {}
@@ -34,8 +35,25 @@ export default class Gv {
 	toast(type = 'alert', message){
 		window.postMessage(`show_${type == 'warn' ? 'alert' : type}|` + message, '*')
 	}
-	numberFormat(value){
-		return NumberFormat('#,##0.#0',value)
+	numberFormat(value){ 
+		return NumberFormat('#,##0.#0',value || 0)
+	}
+	currencyFormat(value){
+		const currencyDefualt = {pos_currency_format : '$ #,###,##0.00', precision: 2}
+		const currency = ref()
+		if (this.setting.currency && this.setting.currency.pos_currency_format){
+			currency.value = this.setting.currency
+		}
+		else{
+			currency.value = currencyDefualt
+
+		}
+		const result = ref(0)
+		if ((typeof value) == 'number') {
+			result.value =   Number(value.toFixed(currency.value.precision));
+		} 
+		return NumberFormat(currency.value.pos_currency_format, result.value)
+		 
 	}
 	dateFormat(date) {
 		return moment(date).format("DD-MM-YYYY")

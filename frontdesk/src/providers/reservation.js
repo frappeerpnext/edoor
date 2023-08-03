@@ -1,6 +1,6 @@
 
 import { getApi, ref,computed } from '@/plugin';
-
+import moment from "../utils/moment.js";
 export default class Reservation {
 	constructor() {
 		this.loading = false
@@ -12,6 +12,9 @@ export default class Reservation {
 		this.reservationSummary = ref([])
 		this.depositTransactions =[]
 		this.selecteddepositTransactions =[]
+		this.room_rates = []
+		this.selectedRoomRates = []
+
 	}
 
 	LoadReservation(name, showLoading = true) {
@@ -82,7 +85,18 @@ export default class Reservation {
 		return 0
 	}
 
-	
+	getRoomRate(reservation) {
+
+		getApi('reservation.get_reservation_room_rate', {
+			reservation:reservation
+		}).then((result) => {
+			
+			this.room_rates = result.message
+			this.room_rates.forEach(r=>r.date_search = moment(r.date).format("DD-MM-YYYY"))
+		})
+
+	}
+
 
 
 		clear(){
@@ -92,5 +106,7 @@ export default class Reservation {
 			this.masterGuest = {}
 			this.reservationSummary.value = []
 			this.depositTransaction = []
+			this.room_rates = []
+			this.selectedRoomRates = []
 		}
 	}

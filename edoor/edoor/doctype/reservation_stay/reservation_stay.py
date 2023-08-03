@@ -14,7 +14,7 @@ from edoor.api.utils import update_reservation
 class ReservationStay(Document):
 	def  validate(self):
 		working_day = get_working_day(self.property)
-	 
+		
 		if not self.reservation:
 			frappe.throw("Please select reservation")
 
@@ -67,6 +67,7 @@ class ReservationStay(Document):
 
 		self.pax = self.adult + self.child 	
 		if self.stays:
+			
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
@@ -81,6 +82,7 @@ class ReservationStay(Document):
 				})
 			self.rooms_data = json.dumps(rooms_data)
 		for d in self.stays:
+			
 			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
@@ -158,9 +160,13 @@ class ReservationStay(Document):
 		frappe.db.sql("""
 			update `tabReservation Stay Room` 
 			set rooms='{}',
+			total_credit='{}',
+			total_debit='{}',
+			balance='{}',
+			total_room_rate='{}',
 			internal_reference_number = '{}',
 			arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
-		""".format(self.rooms,self.internal_reference_number,self.arrival_date,self.departure_date,self.is_master,self.reservation_color,self.group_color,self.group_code,self.group_name,self.reservation_type,self.pay_by_company, self.name))
+		""".format(self.rooms,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
 
 
 def update_note(self):
@@ -211,14 +217,15 @@ def generate_room_occupy(self):
 				"pax":self.pax
 			}).insert()
 
-def generate_room_rate(self,is_update_reservation_stay=False): 
+def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True): 
+
 	date_avaliables = ""
 	self.update_room_rate = False
 	for stay in self.stays:
 		start_date = datetime.strptime(str(stay.start_date), '%Y-%m-%d')
 		end_date = datetime.strptime(str(stay.end_date), '%Y-%m-%d')
 		dates = get_date_range(start_date=start_date, end_date=end_date)
- 
+		
 		for d in dates:
 			date_avaliables = date_avaliables + ("'{}',".format(d.strftime("%Y-%m-%d")))
 			# validate room old rate update only new rate
@@ -231,7 +238,7 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 				if hasattr(self, 'is_override_rate') and self.is_override_rate:
 					regenerate_rate = True
 					is_manual_rate = False
-			 
+				
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
 					"reservation":self.reservation,
@@ -262,7 +269,7 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 				if hasattr(self, 'is_old_override_rate') and self.is_old_override_rate:
 					old_rate.input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
 				old_rate.save()
-				frappe.db.commit()
+				
  
 	# remove old rate
 	sql = "SELECT `name` FROM `tabReservation Room Rate` WHERE `date` NOT IN({}) AND reservation_stay = '{}'".format(date_avaliables[:-1], self.name)
@@ -271,7 +278,9 @@ def generate_room_rate(self,is_update_reservation_stay=False):
 		for d in deleted_old_rates:
 			frappe.delete_doc('Reservation Room Rate', d.name)
 	if is_update_reservation_stay:
-		update_reservation_stay(name=self.name)
+		update_reservation_stay(name=self.name, run_commit=False)
+	if run_commit:
+		frappe.db.commit()
 	return True
 
 def change_room_occupy(self):
