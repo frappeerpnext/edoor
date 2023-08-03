@@ -219,7 +219,8 @@ on_login = "edoor.api.utils.successful_login"
 
 fixtures = [
     {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
-    {"dt": "Reservation Status"}
+    {"dt": "Reservation Status"},
+    {"dt": "eDoor Menu"},
 ]
 
 # website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
