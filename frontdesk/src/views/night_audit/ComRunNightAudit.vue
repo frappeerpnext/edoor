@@ -21,7 +21,7 @@
     <Button @click="refreshReport" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
     
     <div class="wrp-night-audit-content w-full view-table-iframe">
-        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="width: 100%; overflow-x: auto;" :src="url" ></iframe>
+        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="min-height:20rem; width: 100%; overflow-x: auto;" :src="url" ></iframe>
     </div>
 
     <div class="wrp-action-btn-in-night-audit pb-2">
@@ -30,8 +30,8 @@
             <div class="">
                 <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left"  :loading="loading" :disabled="currentStep == 1" v-if="currentStep < 8" @click="onBack" />
                 <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading" iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 7" @click="onNext" />
-                <Button class="border-none" v-if="currentStep == 7" @click="onFinish">Finish</Button>
-                <Button class="border-none" v-if="currentStep == 8" @click="onClose">Close</Button>
+                <Button class="border-none" :loading="loading" v-if="currentStep == 7" @click="onFinish">Finish</Button>
+                <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onClose">Close</Button>
             </div>
             <div class="">
                 <template v-if="currentStep == 4">

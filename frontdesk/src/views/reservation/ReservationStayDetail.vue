@@ -6,7 +6,6 @@
                 <div class="flex mb-3 justify-between">
                     <ComReservationStayHeaderStatus />
                     
-
                     <div class="flex gap-2">
                         <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"
                             class="rounded-lg conten-btn flex" link>
@@ -69,7 +68,7 @@
                                         <ComReservationRoomStayList />
                                     </div>
                                     <div class="col-12">
-                                        <ComReservationNote v-if="rs.reservationStay && rs.reservationStay.name"
+                                        <ComReservationNote v-if="!rs.loading && rs.reservationStay && rs.reservationStay.name"
                                             doctype="Reservation Stay" />
                                     </div>
                                     <div class="col-12">

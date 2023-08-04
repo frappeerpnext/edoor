@@ -90,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-08-02 23:50:44.604182",
+ "modified": "2023-08-03 16:07:02.158704",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Menu",
@@ -109,8 +109,21 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

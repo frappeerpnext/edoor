@@ -14,7 +14,7 @@ import './assets/css/style.css'
 
 import { createApp, reactive } from "vue";
 import App from "./App.vue";
- 
+
 import Error from "./components/Error.vue";
 
 import router from './router';
@@ -126,12 +126,6 @@ import ComLastModifiedInfo from './components/layout/components/ComLastModifiedI
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css' // optional for styling
 
-
-
-
-
-
-
 // use components //
 app.component('Button', Button);
 app.component('Menu', Menu);
@@ -224,23 +218,23 @@ app.use(DialogService);
 app.use(ConfirmationService);
 
 
- 
+
 app.use(
 	VueTippy,
 	// optional
 	{
-	  directive: 'tippy', // => v-tippy
-	  component: 'tippy', // => <tippy/>
-	  componentSingleton: 'tippy-singleton', // => <tippy-singleton/>,
-	  defaultProps: {
-		placement:"bottom",
-		allowHTML: true,
-		followCursor: true,
-		//interactive: true,
-	  }, 
+		directive: 'tippy', // => v-tippy
+		component: 'tippy', // => <tippy/>
+		componentSingleton: 'tippy-singleton', // => <tippy-singleton/>,
+		defaultProps: {
+			placement: "bottom",
+			allowHTML: true,
+			followCursor: true,
+			//interactive: true,
+		},
 	}
-  )
- 
+)
+
 // Global Properties,
 
 app.provide("$auth", auth);
@@ -266,68 +260,81 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
+
+
+	// Configure route gaurds
+	router.beforeEach(async (to, from, next) => {
+		document.title = (to.meta.title || '') + ' | eDoor Front Desk'
+		if (to.matched.some((record) => !record.meta.isLoginPage)) {
+			// this route requires auth, check if logged in
+			// if not, redirect to login page.
+			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+			if (!auth.isLoggedIn) {
+				  
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+ 
+				window.location.replace(serverUrl)
+			} else {
+				next()
+				// console.log(to)
+				// if (setting.edoor_menu.filter.filter((r)=>r.menu_name==to.name).length>0){
+				// 	next();
+				// }else{
+				// 	next({ name: 'NoPermission' });
+				// }
+				
+			}
+		} else {
+			if (auth.isLoggedIn) {
+				alert(2)
+				next({ name: 'Dashboard' });
+			} else {
+				alert(3)
+				next();
+			}
+			alert(4)
+			next();
+		}
+	});
+
+	
+ 
+	if (auth.isLoggedIn) {
+		 
+		apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
+			property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
+		}).then((r) => {
+		 
+			const data = r.message
+			if (data.user.name == "Guest") {
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + data.edoor_setting.backend_port;
+ 
+				window.location.replace(serverUrl)
+			} else {
+				localStorage.setItem('edoor_user', JSON.stringify(data.user))
+				localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
+				gv.setting = data.edoor_setting
+				if (r.message.property == "Invalid Property") {
+					localStorage.removeItem("edoor_property")
+				}
+				else {
+					localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
+
+					if (r.message.property) {
+						if (r.message.property.length == 1) {
+							localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+						}
+					}
+				}
+
+				app.mount("#app");
+			}
+
+		}).catch((error) => {
+			console.log(error)
+		})
+	} 
+
  
 
-// Configure route gaurds
-router.beforeEach(async (to, from, next) => {
-	 
-	document.title = (to.meta.title || '') + ' | eDoor Front Desk'
-	if (to.matched.some((record) => !record.meta.isLoginPage)) {
 
-		// this route requires auth, check if logged in
-		// if not, redirect to login page.
-		if (!auth.isLoggedIn) {
-			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-			const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-			window.location.replace(serverUrl)
-		} else {
-			next();
-		}
-	} else {
-		if (auth.isLoggedIn) {
-			next({ name: 'Dashboard' });
-		} else {
-			next();
-		}
-		next();
-	}
-});
-
-
-
-
-
-	apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
-		property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
-	}).then((r) => {
-		const data = r.message
-		if(data.user.name=="Guest"){
-			 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + data.edoor_setting.backend_port;
-			 
-			 window.location.replace(serverUrl)
-		}else { 
-		localStorage.setItem('edoor_user', JSON.stringify(data.user))
-		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
-		gv.setting = data.edoor_setting
-		if (r.message.property == "Invalid Property") {
-			localStorage.removeItem("edoor_property")
-		}
-		else {
-			localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-
-			if (r.message.property) {
-				if (r.message.property.length == 1) {
-					localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
-				}
-			}
-		}
-
-		app.mount("#app");
-	}
-
-	}).catch((error) => {
-		 alert("Load app error")
-		// const errorApp = createApp(Error);
-		// errorApp.mount("#app");
-		console.log(error)
-	})

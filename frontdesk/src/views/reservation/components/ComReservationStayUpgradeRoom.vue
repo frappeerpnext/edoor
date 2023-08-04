@@ -31,24 +31,24 @@
                     <tbody>
                         <tr v-if="lastStay">
                             <td class="pe-2 flex"> 
-                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full white-space-nowrap">{{gv.dateFormat(lastStay.start_date)}}</span>
+                                <span class="box-input-detail">{{gv.dateFormat(lastStay.start_date)}}</span>
                             </td>
                             <td class="px-2 w-14rem"> 
                                 <Calendar class="w-14rem" showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2 text-left">
-                                <div class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex"><span v-tooltip.top="lastStay?.room_type">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number">{{ lastStay.room_number}}</span></div>
+                                <div class="box-input-detail flex"><span v-tooltip.top="lastStay?.room_type">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number">{{ lastStay.room_number}}</span></div>
                             </td>
                             <td class="text-right px-2">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end white-space-nowrap">
+                                <span class="box-input-detail flex justify-end white-space-nowrap">
                                     <CurrencyFormat :value="lastStay.rate" />
                                 </span>
                             </td> 
                             <td class="text-right px-2"> 
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-center">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
+                                <span class="box-input-detail flex justify-center">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
                             </td>
                             <td class="text-right ps-2">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end white-space-nowrap">
+                                <span class="box-input-detail flex justify-end white-space-nowrap">
                                     <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
                                 </span>
                             </td>
@@ -102,17 +102,25 @@
                             <td class="px-2 w-8rem">
                                 <ComSelectRoomAvailability showClear v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
                             </td>
-                            <td class="text-center px-2 w-5rem"> 
-                                <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
+                            <td class="text-center px-2 w-5rem ">
+                                
+                                    <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
+                                
                             </td>
                             <td class="text-right px-2 w-10rem">
+                                <div class="box-input-detail">
                                 <span class="white-space-nowrap">
                                     <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                        <span class="link_line_action">
+                                        <span class="link_line_action flex justify-between">
+                                            <div>
+                                                <span class="text-sm" v-if="newRoom?.is_manual_rate"> (Manual) </span>
+                                                   <span class="text-sm" v-else>(Plan)</span>
+                                            </div>
                                             <CurrencyFormat :value="newRoom.rate" />
                                         </span>
                                     </span>
                                 </span>
+                                </div> 
                             </td>
                             <td class="text-right ps-2 w-10rem">
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">

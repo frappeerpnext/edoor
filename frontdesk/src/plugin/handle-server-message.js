@@ -1,26 +1,27 @@
 export function handleServerMessage(m){
-
+    
     const dictionary = [
         {exception: 'frappe.exceptions.MandatoryError', text: 'Invalid input'},
         {exception: 'frappe.exceptions.TimestampMismatchError', text: 'Please refresh to get the latest document.'},
         {exception: 'frappe.exceptions.LinkExistsError', text: 'Cannot delete because it has relative data.'}
     ]
     const message = JSON.parse(JSON.stringify(m))
- 
+    if(message._error_message){
+        window.postMessage('show_error|' + message._error_message, '*')
+    }
+
     if(message._server_messages){
  
         const _server_messages = JSON.parse(message._server_messages)
  
 		 
 			_server_messages.forEach(r => {
-				 
                 window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ",""), '*')
 			});
 			
+        }
 			
-			
-		 
-    }else  if(message.httpStatus == 417){
+        else  if(message.httpStatus == 417){
         var arrException = []
         if(message.exception){
             if(Array.isArray(message.exception)){
@@ -41,7 +42,9 @@ export function handleServerMessage(m){
                 }
                     
             }
-        }
+        } 
+
+        
     }else{ 
         window.postMessage('show_error|' + message.httpStatusText, '*')
     }

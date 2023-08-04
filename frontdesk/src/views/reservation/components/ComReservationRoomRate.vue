@@ -78,13 +78,13 @@
       </Column>
       <ColumnGroup type="footer">
         <Row>
-          <Column footer="Total:" :colspan="3" footerStyle="text-align:right" />
+          <Column footer="Total:" :colspan="5" footerStyle="text-align:right" />
           <Column >
             <template #footer>
               {{ rs?.room_rates?.length }} Room Night(s)
             </template>
           </Column>
-          <Column footerStyle="text-align:right">
+          <Column footerStyle="text-align:center">
             <template #footer>
               <CurrencyFormat :value="getTotal('rate')" />
             </template>

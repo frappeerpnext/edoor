@@ -961,9 +961,6 @@ def change_stay(data):
         frappe.throw("Room not avaible")
     else:
         doc = frappe.get_doc("Reservation Stay",data['parent'])
-        # doc.update_reservation = True
-        # doc.update_room_occupy = True
-        # doc.update_reservation_stay = True
         doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
         stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
         
@@ -1030,6 +1027,7 @@ def delete_stay_room(parent,name, note):
 
 @frappe.whitelist(methods="POST")
 def update_note(data):
+
     note = '' if data.get("note") is None else data['note']
     housekeeping_note = '' if data.get("housekeeping_note") is None else data['housekeeping_note']
     doc = frappe.get_doc(data['doctype'], data['name'])

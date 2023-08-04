@@ -16,7 +16,7 @@
                 <div class="flex gap-2 justify-content-end">
                     <Button class="bg-yellow-500 border-none" @click="showNote=!showNote">
                         <ComIcon icon="iconNoteWhite" class="me-2" style="height: 16px;" />
-                        Note
+                        Upcoming Note
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
@@ -64,7 +64,8 @@
                                 </div>
                             </template>
                             <hr class="left-0 fixed w-full">
-                            <ComNoteGlobal v-if="showNote"/>    
+                            <ComNoteGlobal v-if="showNote"/> 
+                           
                         </Sidebar>
                         
 
@@ -543,6 +544,7 @@ function resourceColumn() {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
+    onRefresh()
 }
 
 function onView() {

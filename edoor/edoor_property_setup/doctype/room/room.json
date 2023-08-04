@@ -208,7 +208,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-31 11:59:55.795576",
+ "modified": "2023-08-03 16:26:54.921646",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",
@@ -226,6 +226,36 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Clerk",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Frontdesk Manager",
+   "share": 1
   }
  ],
  "search_fields": "property,room_type,housekeeping_status",

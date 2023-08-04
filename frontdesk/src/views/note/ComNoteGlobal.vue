@@ -8,6 +8,20 @@
 					<i class="pi pi-plus text-lg  me-2"></i>
 					Add Note
 				</Button>
+
+				<!-- <div class="d-flex w-full">
+            <span class="p-input-icon-left w-full">
+                <i class="pi pi-search" />
+                <InputText  class="w-full unrounded__box_cus bg-transparent" v-model="value1" placeholder="Search" @input="onSearch" />
+            </span>
+        </div>  -->
+
+				<div class="card flex flex-wrap justify-content-center gap-3">
+        <span class="p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText v-model="keyword" placeholder="Search" @input="onSearch"/>
+            </span>
+    		</div>
 			</div>
 		</div>
 		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 pb-4 mt-3 content-global-note">
@@ -46,13 +60,15 @@
 					</div>
 					
 				</div>
+				
 				<div class="flex">
 					<span class="btn-in-note hidden">
-						<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit"/>
+						<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData"/>
 					</span>
 					<Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
 						<ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
 						<ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
+						
 					</Button>
 				</div>
 			</div>
@@ -72,12 +88,16 @@ import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
+
 const frappe = inject('$frappe');
 const gv = inject('$gv');
 const db = frappe.db();
 const dialog = useDialog()
 const notes = ref([]);
 const loading = ref(false);
+const keyword = ref()
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+
 function onEdit(name){
 	const dialogRef = dialog.open(ComAddNote, {
             data: {
@@ -173,11 +193,17 @@ function showReservationDetail(selected) {
 
 function onLoadData(){
 	loading.value = true
+	let filters = []
+	filters.push(["note_date",">=", working_day.date_working_day])
+	if (keyword.value){
+		filters.push(["content","like", '%' + keyword.value + '%'])
+	}
 	db.getDocList('Frontdesk Note', {
 		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content"],
+		filters:filters,
 		orderBy: {
-			field: 'modified',
-			order: 'desc',
+			field: 'creation',
+			order: 'asc',
 		}
 	}).then((docs) => {
 
@@ -188,6 +214,22 @@ function onLoadData(){
 	})
 }
 
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
+const onSearch = debouncer(() => {
+    onLoadData();
+}, 500);
+
+ 
 onMounted(() => {
 	onLoadData()
 })

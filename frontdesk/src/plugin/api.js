@@ -96,6 +96,7 @@ export function getApi(api, params = Object){
         call.get(`edoor.api.${api}`, params).then((result) => {
             resolve(result)
         }).catch((error) =>{
+          
             handleServerMessage(error)
             reject(error)
         })
@@ -108,7 +109,6 @@ export function postApi(api, params = Object, message,show_message=true){
     return new Promise((resolve, reject)=>{
         call.post(`edoor.api.${api}`, params).then((result) => {
                 if(show_message && !result.hasOwnProperty("_server_messages")){
-                 
                     window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
                 }else{
                     if(result.hasOwnProperty("_server_messages")){
@@ -163,7 +163,6 @@ export function deleteApi(api, params = Object, message){
 export function uploadFiles(files, fileArgs = Object){
     const frappe = new FrappeApp()
     const file = frappe.file();
-    console.log(fileArgs)
     return new Promise((resolve, reject)=>{
         let countFile = 0
         files.forEach((r)=>{

@@ -64,7 +64,12 @@
                     </Button>
                 </template>
             </Column>
-            <Column field="business_source" header="Business Source"></Column>
+            <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
+                <template #body="slotProps">
+                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
+                </template>
+            </Column>
+            
             <Column field="room_numbers" header="Room No">
                 <template #body="slotProps">
                     <div class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num" v-if="slotProps?.data && slotProps?.data?.room_numbers">
@@ -75,13 +80,7 @@
                     </div>
                 </template>
             </Column>
-
-
-            <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
-                </template>
-            </Column>
+            <Column field="business_source" header="Business Source"></Column>
             <Column field="guest_type" header="Guest Type"></Column>
             <Column header="Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
@@ -176,7 +175,9 @@ function loadData() {
             'arrival_date',
             'departure_date',
             'guest_type',
-            'status_color'
+            'status_color',
+            'room_types',
+            'room_type_alias'
         ],
         filters: filters
     })
@@ -257,7 +258,7 @@ function onViewCustomerDetail(name) {
         props: {
             header: 'Guest Detail',
             style: {
-                width: '50vw',
+                width: '75vw',
             },
             breakpoints: {
                 '960px': '75vw',

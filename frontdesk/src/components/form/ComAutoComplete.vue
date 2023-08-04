@@ -158,7 +158,17 @@ async function getData(keyword) {
         }
         return options.value
     }).catch((error) => {
+        
+        if (error._server_messages) {
+            const _server_messages = JSON.parse(message._server_messages)
+            _server_messages.forEach(r => {
+                window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ", ""), '*')
+            });
+        }else if(error._error_message){
+            toast.add({ severity: 'error', summary: error.httpStatusText, detail: error._error_message, life: 3000 });
+        }else{
         toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
+        }
         return []
     });
 }

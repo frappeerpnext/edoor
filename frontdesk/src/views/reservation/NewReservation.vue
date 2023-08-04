@@ -260,16 +260,22 @@
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
-                            <td class="p-2 w-12rem text-right">
-                                <span @click="onOpenChangeRate($event, d)"
-                                    class="text-right w-full color-purple-edoor text-md font-italic ">
-                                    <span class="link_line_action">
+                            <td class="p-2 w-15rem text-right">
+                                <div class="box-input-detail">
+                                <div  @click="onOpenChangeRate($event, d)"
+                                    class="text-right w-full color-purple-edoor text-md font-italic inline ">
+                                    <div v-tooltip.top = "(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan' " class="link_line_action flex justify-between">
+                                        <div>
+                                         <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
+                                            <span class="text-sm" v-else>(Plan)</span>
+                                        </div>
                                         <CurrencyFormat :value="d.rate" />
-                                    </span>
-                                </span>
+                                    </div>
+                                </div>
+                                </div>
                             </td>
                             <td class="p-2 w-12rem text-right">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
+                                <div class="box-input-detail">
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
                             </td>
@@ -283,15 +289,20 @@
                             </td>
 
                             <td class="p-2 w-8rem">
-                                <div class="p-inputtext-pt text-center border-1 border-white h-12">{{
+                                <div class="box-input-detail">{{
                                     doc.reservation.room_night
                                 }}</div>
                             </td>
                             <td class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12">
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-if="doc.tax_rule.rate_include_tax == 'Yes'">
                                     <CurrencyFormat
-                                        :value="((doc.reservation.room_night ?? 0) * rateTax(d)) + (roomRateTax(d) * (doc.reservation.room_night ?? 0))" />
+                                        :value=" (d.rate) * (doc.reservation.room_night ?? 0)" />
                                 </div>
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-else>
+                                    <CurrencyFormat
+                                        :value=" (roomRateTax(d) ) + (d.rate * doc.reservation.room_night ?? 0)" />
+                                </div>
+                                
                             </td>
                             <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end">
                                 <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
@@ -399,9 +410,9 @@ const useTax = ref({
 })
 
 const roomRateTax = ref((d) => {
-    const tax_1_amount = getTax1Amount(d.rate)
-    const tax_2_amount = getTax2Amount(d.rate)
-    const tax_3_amount = getTax3Amount(d.rate)
+    const tax_1_amount = getTax1Amount(d.rate * doc.value.reservation.room_night)
+    const tax_2_amount = getTax2Amount(d.rate * doc.value.reservation.room_night)
+    const tax_3_amount = getTax3Amount(d.rate * doc.value.reservation.room_night)
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
 const rateTax = ref((d) => {
@@ -475,21 +486,21 @@ const totalTax1Amount = computed(() => {
     doc.value.reservation_stay.forEach(r => {
         amount = amount + getTax1Amount(r.rate)
     });
-    return amount
+    return amount * doc.value.reservation.room_night
 })
 const totalTax2Amount = computed(() => {
     let amount = 0
     doc.value.reservation_stay.forEach(r => {
         amount = amount + getTax2Amount(r.rate)
     });
-    return amount
+    return amount * doc.value.reservation.room_night
 })
 const totalTax3Amount = computed(() => {
     let amount = 0
     doc.value.reservation_stay.forEach(r => {
         amount = amount + getTax3Amount(r.rate)
     });
-    return amount
+    return amount * doc.value.reservation.room_night
 })
 
 
@@ -617,6 +628,8 @@ const onSave = () => {
     data.reservation.tax_2_rate = doc.value.tax_rule.tax_2_rate
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
+    data.reservation_stay = data.reservation_stay.filter(r=>r.room_type_id)
+    
     postApi('reservation.add_new_reservation', {
         doc: data
     },

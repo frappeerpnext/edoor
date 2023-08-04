@@ -154,7 +154,6 @@ items.value.push({
     }
 })
 
-
 function onMarkAsMasterRoom() {
     confirm.require({
         message: 'Are you sure you want to mark this room as master room?',

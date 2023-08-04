@@ -8,13 +8,16 @@
                     <thead>
                         <tr>
                             <th class="text-left pe-2 w-12rem">
-                                <label>Start Date</label>
+                                <label>Stay Date</label>
                             </th>
-                            <th class="text-left px-2 w-14rem">
+                            <!-- <th class="text-left px-2 w-14rem">
                                 <label>End Date</label>
+                            </th> --> 
+                            <th class="text-left px-2">
+                                <label>Rate Type</label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Type<span class="text-red-500">*</span></label>
+                                <label>Room Type</label>
                             </th>
                             <th class="text-left px-2">
                                 <label>Room Name</label>
@@ -22,6 +25,7 @@
                             <th class="text-center px-2 w-5rem">
                                 <label class="text-center">Nights</label>
                             </th>
+                           
                             <th class="text-right px-2">
                                 <label>Rate</label>
                             </th>
@@ -30,13 +34,17 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="pe-2 w-12rem">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(selectedStay.start_date))}}</span>
+                            <td class="pe-2">
+                                <div class="p-inputtext-pt border-1 border-white h-12 w-full white-space-nowrap">
+                                    <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(moment(selectedStay.start_date))}}</span>
+                                    &#8594;
+                                    <span v-tooltip.top="'Departure Date'">{{gv.dateFormat(moment(selectedStay.end_date))}}</span>
+                                </div>
                             </td>
-                            <td class="px-2 w-14rem"> 
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(selectedStay.end_date))}}</span>
+                            <td class="text-right px-2 w-10rem"> 
+                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{ selectedStay.rate_type }}</span>
                             </td>
-                            <td class="px-2 w-16rem">  
+                            <td class="px-2 select-room-type-style">  
                                 <ComSelectRoomTypeAvailability 
                                     v-model="selectedStay.room_type_id"
                                     @onSelected="onSelectRoomType"
@@ -45,7 +53,7 @@
                                     :start-date="selectedStay.start_date"
                                     :end-date="selectedStay.end_date"/>
                             </td>
-                            <td class="px-2 w-8rem">
+                            <td class="px-2 select-room-number-style">
                                 <ComSelectRoomAvailability 
                                     v-model="selectedStay.room_id"
                                     :start-date="selectedStay.start_date"
@@ -55,7 +63,7 @@
                             <td class="text-center px-2 w-10rem"> 
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
                             </td>
-                            <td class="px-2 w-10rem">
+                            <td class="px-2 w-15rem">
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap justify-end">
                                     <CurrencyFormat :value="selectedStay.rate" />
                                 </span>

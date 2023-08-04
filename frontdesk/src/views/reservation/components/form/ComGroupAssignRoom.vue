@@ -10,7 +10,7 @@
             <td>Rate Type</td>
             <!-- <td>Book Room Type</td> -->
             <td>Room Type</td>
-            <td>Room Number</td>
+            <td>Room Name</td>
             <td class="text-center">Nights</td>
             <td class="text-right">Rate</td>
         </tr>
@@ -37,7 +37,7 @@
                 {{ d.room_type }}
             </div>
             </td> -->
-            <td class="pr-2" style="min-width: 15rem; max-width:15rem;" >
+            <td class="pr-2 select-room-type-style"  >
 
                 <Dropdown class="w-full" v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"
                     @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" />
@@ -48,7 +48,7 @@
                         regenerate rate</label>
                 </Message> -->
             </td>
-            <td class="p-2" style="min-width: 10rem; max-width:10rem;">
+            <td class="p-2 select-room-number-style">
                 <Dropdown class="w-full" v-model="d.room_id" :options="get_rooms(d)" optionValue="name" 
                     optionLabel="room_number" placeholder="Select Room" showClear filter />
 

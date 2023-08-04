@@ -4,9 +4,13 @@
         <template v-if="data?.name">
             <Menu ref="show" :id="data?.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #end>
-                    <button @click="onEdit()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                    <button @click="onEdit()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround" >
                         <i class="pi pi-pencil me-1"></i>
                         <span class="ml-2">Edit</span>
+                    </button>
+                    <button @click="onDelete()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <i class="pi pi-trash  me-1"></i>
+                        <span class="ml-2">Delete</span>
                     </button>
                 </template>
             </Menu>
@@ -14,17 +18,41 @@
     </div>
 </template>
 <script setup>
-    import {ref} from 'vue'
+    import {ref, useConfirm,deleteDoc } from "@/plugin";
+    const confirm = useConfirm()
     const props = defineProps({
         data: Object
     })
-    const emit = defineEmits(['onEdit'])
+    const loading = ref(false)
+    const emit = defineEmits(['onEdit','onDeleted'])
     const show = ref()
+    const deleteNote = ref()
     const toggle = (event) => {
         show.value.toggle(event);
     };
     function onEdit(){
         emit('onEdit', props.data.name)
+    }
+    function onDelete (){
+        confirm.require({
+        message: 'Are you sure you want to delete reservation note?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+             deleteDoc('Frontdesk Note',props.data.name )
+                 .then(() =>{
+                    deleteNote.value = props.data.name
+                    emit('onDeleted')
+                    loading.value = true
+
+                 } )               
+        },
+
+    });
     }
 </script>
 <style lang="">

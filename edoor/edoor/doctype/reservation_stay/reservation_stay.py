@@ -129,7 +129,7 @@ class ReservationStay(Document):
 		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
 
 		self.arrival_date = Enumerable(self.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
-		self.departure_date = Enumerable(self.stays).min(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+		self.departure_date = Enumerable(self.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
 
@@ -288,13 +288,13 @@ def change_room_occupy(self):
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
 	
-	if not self.reservation_status in ['Void','No Show','Cancelled']:
-		doc = frappe.get_doc('Reservation Stay', self.name)
-		doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
-		doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
-		doc.save()
-		frappe.db.commit()
-		generate_stay_room_occupy(self=doc)
+	#if self.is_active_reservation:
+	doc = frappe.get_doc('Reservation Stay', self.name)
+	# doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
+	# doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+	# doc.save()
+	# frappe.db.commit()
+	generate_stay_room_occupy(self=doc)
 
 def generate_stay_room_occupy(self):
 	self.update_room_occupy = False

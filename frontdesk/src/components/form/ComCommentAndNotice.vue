@@ -2,6 +2,7 @@
     <div>
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.note_type}}</label><br/>
+            <!-- <span v-if="create.note_type == 'Notice'">{{ gv.dateFormat(create.note_date) }}</span> -->
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
             </div>
@@ -63,7 +64,9 @@ const props = defineProps({
     docname: String,
     reservationStay: String,
     reservation: String
+    
 })
+
 let op = ref()
 const loading = ref(false)
 const saving = ref(false)
@@ -73,7 +76,8 @@ const dialogConfirm = useConfirm();
 const currentUser = JSON.parse(localStorage.getItem('edoor_user'))
 const create = ref({
     note_type: 'Comment',
-    content: ''
+    content: '',
+    
 })
 const edit = ref({
     note_type: 'Comment',

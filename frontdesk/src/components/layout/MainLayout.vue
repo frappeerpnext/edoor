@@ -1,33 +1,27 @@
 <template>
     <div class="wrap-page">
-        
+
         <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
             mode="indeterminate">
         </ProgressBar>
-          
-      
+ 
+
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full">
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-                        <template v-for="(m , index) in eDoorMenu.filter(r=>r.parent_edoor_menu=='All Menus')" :key="index">
-                        <ComHeaderBarItemButton :title="m.menu_title" :current-page="m.menu_name"
-                            @onClick="onRoute(m.menu_name)">
-                            <template #icon>
-                                <img :src="iconEdoorDashboard" />
-                            </template>
-                            <template #defualt>
-                                <p>{{m.menu_text}}</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <!--Sub Menu-->`
-                        <hr/>
-                        <template v-for="(sm , index) in eDoorMenu.filter(r=>r.parent_edoor_menu==m.name)" :key="index">
-                            
-                            <Button v-if="sm.parent_edoor_menu == m.name">{{sm.menu_text}}</Button>
-                        </template>
-
-                        <!--end submenu-->
+                        <template v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')"
+                            :key="index">
+                            <ComHeaderBarItemButton :title="m.menu_title" :current-page="m.menu_name"
+                                @onClick="onRoute(m.menu_name)">
+                                <template #icon>
+                                    <img :src="iconEdoorDashboard" />
+                                </template>
+                                <template #defualt>
+                                    <p>{{ m.menu_text }}</p>
+                                </template>
+                            </ComHeaderBarItemButton>
+                       
                         </template>
                         <!-- <ComHeaderBarItemButton title="eDoor Dashboard" current-page="Dashboard"
                             @onClick="onRoute('Dashboard')">
@@ -55,7 +49,8 @@
                                 <p title="Reservations">Reservations</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="GuestDatabase" title="Guest Database" @onClick="onRoute('GuestDatabase')">
+                        <ComHeaderBarItemButton current-page="GuestDatabase" title="Guest Database"
+                            @onClick="onRoute('GuestDatabase')">
                             <template #icon>
                                 <img :src="iconEdoorGuestDatabase">
                             </template>
@@ -63,7 +58,8 @@
                                 <p title="Guest Database">Guest Database</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="Housekeeping" title="Housekeeping" icon="pi-users" @onClick="onRoute('Housekeeping')">
+                        <ComHeaderBarItemButton current-page="Housekeeping" title="Housekeeping" icon="pi-users"
+                            @onClick="onRoute('Housekeeping')">
                             <template #icon>
                                 <img :src="iconEdoorHouseKeeping">
                             </template>
@@ -71,7 +67,8 @@
                                 <p title="Housekeeping">Housekeeping</p>
                             </template>
                         </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="Guest Ledger" title="Guest Ledger" @onClick="onLink('guest-ledger')">
+                        <ComHeaderBarItemButton current-page="Guest Ledger" title="Guest Ledger"
+                            @onClick="onLink('guest-ledger')">
                             <template #icon>
                                 <img :src="iconGuestLedger">
                             </template>
@@ -120,35 +117,35 @@
                                     <button @click="changeProperty"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround"
                                         v-if="user.property.length > 1">
-                                        <img :src="iconChangeProperty" style="height: 15px;"/>
+                                        <img :src="iconChangeProperty" style="height: 15px;" />
                                         <span class="ml-2">Change Property</span>
                                     </button>
 
                                     <button @click="onBlankGuestRegistration"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="iconBlankGuestRegisteration" style="height: 15px;"/>
+                                        <img :src="iconBlankGuestRegisteration" style="height: 15px;" />
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
                                     <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="iconOpenCashierShift" style="height: 15px;"/>
+                                        <img :src="iconOpenCashierShift" style="height: 15px;" />
                                         <span class="ml-2">Open cashier shift</span>
                                     </button>
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="iconViewShiftDetail" style="height: 15px;"/>
+                                        <img :src="iconViewShiftDetail" style="height: 15px;" />
                                         <span class="ml-2">View Shift Detail</span>
                                     </button>
-                                    
+
                                     <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="iconCloseCashierShift" style="height: 15px;"/>
+                                        <img :src="iconCloseCashierShift" style="height: 15px;" />
                                         <span class="ml-2">Close Cashier Shift</span>
                                     </button>
 
                                     <button @click="onRunNightAudit"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="runNightAuditSvgIcon" style="height: 15px;"/>
+                                        <img :src="runNightAuditSvgIcon" style="height: 15px;" />
                                         <span class="ml-2">Run Night Audit</span>
                                     </button>
                                 </template>
@@ -158,9 +155,14 @@
                     </div>
                 </div>
             </div>
+            
         </div>
+        
         <div>
             <div class="wrap-page-content -mb-2 px-2">
+                <template v-for="(sm, index) in subMenus" :key="index">
+                    <Button   @click="onRoute(sm.menu_name)">{{sm.menu_text}}</Button>
+                </template>
                 <router-view />
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
@@ -171,7 +173,7 @@
 </template>
 
 <script setup>
-import { ref, inject, useToast, useRouter, useRoute,onMounted } from '@/plugin'
+import { ref, inject, useToast, useRouter, useRoute, onMounted, computed } from '@/plugin'
 import ComAvatar from '../form/ComAvatar.vue';
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar';
@@ -215,17 +217,34 @@ import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 const moment = inject("$moment")
 const eDoorMenu = ref([])
 
+const currentRouteName = computed(() => route.name.replace(/"/g, ''));
+
+const subMenus = computed(() => {
+    const current_menu_id = setting.edoor_menu.find(r => r.menu_name == currentRouteName.value)
+    if (current_menu_id) {
+        let parent_menu_id = current_menu_id.name
+ 
+        if (current_menu_id.is_group == 0){
+            if(current_menu_id.parent_edoor_menu!="All Menus"){
+                parent_menu_id =current_menu_id.parent_edoor_menu  
+            }
+           
+        }
+
+        return setting.edoor_menu?.filter((r) => r.parent_edoor_menu == parent_menu_id)
+    }
+
+
+    return []
+})
 
 const toggle = (event) => {
     show.value.toggle(event);
 };
 
-function onUserProfile() {
-    alert()
-}
 
-function onViewShiftDetail(){
-    window.postMessage('view_cashier_shift_detail|' +  gv.cashier_shift?.name , '*')
+function onViewShiftDetail() {
+    window.postMessage('view_cashier_shift_detail|' + gv.cashier_shift?.name, '*')
 }
 
 //change property
@@ -257,11 +276,11 @@ function onRunNightAudit() {
 
     dialog.open(ComRunNightAudit, {
         props: {
-            header: 'Run Night Audit [' +moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
+            header: 'Run Night Audit [' + moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
             style: {
                 width: '80vw',
             },
-            position:"top",
+            position: "top",
             modal: true,
             closeOnEscape: false,
         },
@@ -270,6 +289,7 @@ function onRunNightAudit() {
 
 
 function onRoute(route) {
+ 
     router.push({ name: route })
 }
 
@@ -294,14 +314,14 @@ function onBlankGuestRegistration() {
         data: {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
-            report_name: "eDoor%20Blank%20Guest%20Registration%20Card",          
+            report_name: "eDoor%20Blank%20Guest%20Registration%20Card",
         },
         props: {
             header: "Blank Guest Registration Card",
             style: {
                 width: '80vw',
             },
-            position:"top",
+            position: "top",
             modal: true,
             maximizable: true,
             closeOnEscape: false
@@ -346,7 +366,7 @@ function onCloseCashierShift() {
     window.postMessage('close_shift', '*')
 }
 
-onMounted(()=>{
-   eDoorMenu.value =  setting?.edoor_menu.filter(r=>(r.parent_edoor_menu || "")!="")
+onMounted(() => {
+    eDoorMenu.value = setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != "")
 })
 </script>

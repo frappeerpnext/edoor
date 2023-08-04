@@ -1,5 +1,4 @@
 <template>
-    
     <ComPlaceholder 
         text="There is no Folio transactions" 
         :loading="loading" 

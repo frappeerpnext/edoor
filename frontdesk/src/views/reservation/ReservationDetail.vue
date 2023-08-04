@@ -74,14 +74,15 @@
                         <ComReservationDetailRoomList/>
                     </div>
                     <div class="pt-3">
-                        <div class="border-round-xl">
-                            <ComReservationNote v-if="rs.reservation && rs.reservation.name" doctype="Reservation" />
+                        <div class="border-round-xl"> 
+                            <ComReservationNote v-if="!rs.loading && rs.reservation && rs.reservation.name" doctype="Reservation" />
                         </div>
                     </div>
                     <hr class="my-3" />
                     <div>
                         <div class="border-round-xl">
-                            <ComCommentAndNotice v-if="rs && rs.reservation && rs.reservation.name" doctype="Reservation"
+                            
+                            <ComCommentAndNotice v-if="!rs.loading && rs.reservation && rs.reservation.name" doctype="Reservation"
                                 :docname="rs.reservation.name" />
                         </div>
                     </div>

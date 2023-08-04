@@ -151,8 +151,12 @@ def get_mtd_room_occupany(property):
 
 
 @frappe.whitelist(allow_guest=True)
+def get_server_port():
+    return{"backend_port": frappe.get_doc('ePOS Settings').backend_port}
+
+@frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
-    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["*"],order_by="sort_order asc")
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon"],order_by="sort_order asc")
 
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')

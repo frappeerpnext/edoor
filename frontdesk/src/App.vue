@@ -99,7 +99,7 @@ const actionClickHandler = async function (e) {
                 toast.add({ severity: 'warn', summary: data[1], detail: '', life: 3000 })
             }
             else if (data[0] == "show_error") {
-                toast.add({ severity: 'warn', summary: data[1], detail: '', life: 3000 })
+                toast.add({ severity: 'error', summary: data[1], detail: '', life: 3000 })
             }
             else if (data[0] == "show_success") {
                 toast.add({ severity: 'success', summary: data[1], detail: '', life: 3000 })
