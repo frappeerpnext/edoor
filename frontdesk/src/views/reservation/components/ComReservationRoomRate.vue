@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-folio-cus mt-3">
-    <div class="grid">               
-      <div class="col-2">
+    <div class="flex justify-between">               
+      <div class="">
         <span class="p-input-icon-left">
           <i class="pi pi-search" />
           <InputText v-model="filters['global'].value" placeholder="Search" />
         </span>
       </div>
-      <div class="col-2">
+      <div class="">
         <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
           <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
           Edit Rate
@@ -48,12 +48,12 @@
           <span>{{ slotProps.data?.guest_name }}</span>
         </template>
       </Column>
-      <Column field="rate_type" header="Rate Type">
+      <Column field="rate_type" header="Rate Type" bodyClass="text-center" headerClass="text-center">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>
       </Column>
-      <Column field="rate" header="Rate" bodyStyle="text-align:center" headerStyle="text-align:center">
+      <Column field="rate" header="Rate" bodyClass="text-right" headerClass="text-right">
           <template #body="{ data }">
             <CurrencyFormat @click="onEditRoomRate(data)" :value="data.rate" class="p-0 link_line_action1"/>
           </template>

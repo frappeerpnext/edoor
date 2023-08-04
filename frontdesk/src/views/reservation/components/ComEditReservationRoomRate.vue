@@ -53,7 +53,7 @@
             <div class="grid">
                 <div class="col-6">
                     <div class="flex">
-                    <label for="manual_rate"  class="col-6 font-medium cursor-pointer">Use Manualy Update Rate</label>
+                    <label for="manual_rate"  class="col-6 font-medium cursor-pointer">Use Manually Update Rate</label>
                     <div class="inline col-6 text-left px-3">
                             <Checkbox input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1" :falseValue="0" :binary="true" @input="onUseManualRate"/>
                     </div>

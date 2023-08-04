@@ -139,7 +139,6 @@ function onFinish() {
         header: 'Run Night Audit',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-
             postApi("frontdesk.run_night_audit", {
                 property: setting?.property?.name,
                 working_day:working_day.name
@@ -149,10 +148,18 @@ function onFinish() {
                 loading.value = false;
             }).catch((err)=>{
                 loading.value = false;
-            })
+            }).finally(() => {
+                loading.value = false; 
+            });
         },
-
+        reject: () => {
+            loading.value = false; 
+        },
+        onHide: () => {
+            loading.value = false; 
+        },
     });
+
     
 }
 

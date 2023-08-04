@@ -42,9 +42,9 @@
                                                 {{ i.room_number }}  
                                             </span>
                                             <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
-                                                <i class="pi pi-pencil"></i>
+                                                <!-- <i class="pi pi-pencil"></i> -->
                                                 <span>
-                                                    Assign Room {{i.reservation_stay}}
+                                                    Assign {{i.reservation_stay}}
                                                 </span> 
                                             </button>
                                         </span>

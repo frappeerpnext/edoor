@@ -113,7 +113,8 @@
             </div>
         </template>
         <template #footer-right>
-            <Button class="border-none bg-green-500" @click="onCheckIn">
+             
+            <Button v-if="canCheckIn" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
                 Check In</Button>
         </template>
@@ -139,23 +140,25 @@ import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
-const frappe = inject('$frappe');
-const db = frappe.db();
+const moment = inject('$moment');
+
 const loading = ref(false)
 const route = useRoute()
 
 const rs = inject("$reservation")
 const gv = inject("$gv")
-const call = frappe.call();
+ 
 const confirm = useConfirm()
 const toast = useToast()
 const socket = inject("$socket")
 const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+
 const name = ref("")
 const dialog = useDialog()
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+
 // const note = ref({
 //     title: '',
 //     show: false,
@@ -163,6 +166,11 @@ const dialog = useDialog()
 // })
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
+})
+const canCheckIn = computed(() => {
+    let can_check_in =  rs.reservationStays.map((x)=>x.reservation_status).includes("Reserved")
+    can_check_in = can_check_in &&  rs.reservationStays.filter((r)=>r.reservation_status=='Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate())
+    return can_check_in;
 })
 
 

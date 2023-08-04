@@ -18,22 +18,43 @@
             {{ doc?.reason }}
         </div>
     </div>
-    <template #footer-right>
-        <Button  @click="onEditBlockRoom">Edit</Button>
-        <Button  @click="onUnBlockRoom">Unblock </Button>
+    <template #footer-right> 
+        <!-- <Button  @click="onEditBlockRoom" >Edit</Button> -->
+        <div class="card flex justify-content-left">
+        <Button label="Edit " @click="visible = true" />
+        <Dialog v-model:visible="visible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }">
+            hello
+            <div class="card flex justify-content-left">
+                <span >
+                    <InputText type="text" v-model="value" />
+                </span>
+                <div class="card flex justify-content-right">
+                <span>
+                    <InputText type="text" v-model="value" />
+                </span>
+            </div>     
+    </div>
+        </Dialog>
+    </div>
+    <Button  @click="onUnBlockRoom">Unblock </Button> 
+
     </template>
     </ComDialogContent>
 </template>
 <script setup>
-import {ref,getDoc,onMounted,inject } from "@/plugin"
+import {ref,getDoc,onMounted,inject,useDialog } from "@/plugin"
+
+const visible = ref(false);
 const dialogRef = inject("dialogRef");
 const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
+const dialog = useDialog()
+
  
-function onEditBlockRoom(){
-    alert("Hello");
-}
+// function onEditBlockRoom(){
+// alert("hello")
+// };
 function onUnBlockRoom(){
     alert("How are you?");
 }

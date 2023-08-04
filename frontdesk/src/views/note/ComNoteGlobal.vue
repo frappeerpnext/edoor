@@ -8,14 +8,6 @@
 					<i class="pi pi-plus text-lg  me-2"></i>
 					Add Note
 				</Button>
-
-				<!-- <div class="d-flex w-full">
-            <span class="p-input-icon-left w-full">
-                <i class="pi pi-search" />
-                <InputText  class="w-full unrounded__box_cus bg-transparent" v-model="value1" placeholder="Search" @input="onSearch" />
-            </span>
-        </div>  -->
-
 				<div class="card flex flex-wrap justify-content-center gap-3">
         <span class="p-input-icon-left">
             <i class="pi pi-search" />
@@ -190,7 +182,6 @@ function showReservationDetail(selected) {
     });
 }
 
-
 function onLoadData(){
 	loading.value = true
 	let filters = []
@@ -206,7 +197,6 @@ function onLoadData(){
 			order: 'asc',
 		}
 	}).then((docs) => {
-
 		notes.value = Enumerable.from(docs).orderByDescending("$.is_pin").toArray();
 		loading.value = false			
 	}).catch((rr)=>{
@@ -229,7 +219,6 @@ const onSearch = debouncer(() => {
     onLoadData();
 }, 500);
 
- 
 onMounted(() => {
 	onLoadData()
 })

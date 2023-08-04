@@ -260,7 +260,7 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
-
+ 
 
 	// Configure route gaurds
 	router.beforeEach(async (to, from, next) => {
@@ -275,25 +275,41 @@ const apiCall = frappe.call()
  
 				window.location.replace(serverUrl)
 			} else {
-				next()
-				// console.log(to)
-				// if (setting.edoor_menu.filter.filter((r)=>r.menu_name==to.name).length>0){
-				// 	next();
-				// }else{
-				// 	next({ name: 'NoPermission' });
-				// }
+	 
+				if (to?.name){
+					if (setting.edoor_menu.filter((r)=>r.menu_name==to.name).length>0 || ["NoPermission"].includes(to.name)){
+					next();
+				}else{
+					next({ name: 'NoPermission' });
+				}
+				}
+				
 				
 			}
 		} else {
 			if (auth.isLoggedIn) {
-				alert(2)
+				alert("check user home page here")
 				next({ name: 'Dashboard' });
 			} else {
-				alert(3)
-				next();
+ 
+				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+				if (setting?.backend_port){
+					  
+					const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+					window.location.replace(serverUrl)
+
+				}else {
+					//get port from server 
+					apiCall.get('edoor.api.frontdesk.get_server_port').then((result)=>{
+
+						 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + result.message.backend_port;
+						 window.location.replace(serverUrl)
+					})
+					
+				}
+				
 			}
-			alert(4)
-			next();
+
 		}
 	});
 
@@ -326,7 +342,7 @@ const apiCall = frappe.call()
 						}
 					}
 				}
-
+			 
 				app.mount("#app");
 			}
 
