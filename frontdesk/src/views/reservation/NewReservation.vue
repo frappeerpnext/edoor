@@ -157,54 +157,49 @@
             v-if="setting.room_tax && (setting.room_tax.tax_1_rate + setting.room_tax.tax_2_rate + setting.room_tax.tax_3_rate) > 0">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
-                    {{ setting.tax_rule }}
-                    <div class="flex gap-3">
-                        <div class="flex gap-2 align-items-center relative w-11rem">
-                            <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
-                            <span class="absolute right-0 w-full">
-                                <Checkbox input-id="rate_tax" class="w-full flex justify-end"
-                                    v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes"
-                                    falseValue="No" />
-                            </span>
-                        </div>
-                        <div class="flex gap-3">
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem">
-                                    <label class="font-medium">{{ setting.room_tax.tax_1_name }}
-                                        {{ setting.room_tax.tax_1_rate }}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-1-rate" class="w-full flex justify-end"
-                                            v-model="useTax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+                    <div class="flex gap-2 align-items-center relative my-3" style="width: 12.4rem;">
+                        <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <span class="absolute right-0 w-full">
+                            <Checkbox input-id="rate_tax" class="w-full flex justify-end"
+                                v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes"
+                                falseValue="No" />
+                        </span>
+                    </div>
+                    <div class="">
+                        <div class="flex gap-3 flex-wrap">
+                            <div class="flex gap-3 relative">
+                                <label for="tax-1-rate" class="font-medium flex align-items-center h-full">{{ setting.room_tax.tax_1_name }}{{ setting.room_tax.tax_1_rate }}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1" @input="onUseTax1Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                                    <CurrencyFormat :value="totalTax1Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax1Amount" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem">
-                                    <label class="font-medium">{{ setting.room_tax.tax_2_name }}
-                                        {{ setting.room_tax.tax_2_rate }}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-2-rate" class="w-full flex justify-end"
-                                            v-model="useTax.use_tax_2" @input="onUseTax2Change" :binary="true" />
+
+                            <div class="flex gap-3 relative">
+                                <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{ setting.room_tax.tax_2_name }}{{ setting.room_tax.tax_2_rate }}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2" @input="onUseTax2Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                                    <CurrencyFormat :value="totalTax2Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax2Amount" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem">
-                                    <label class="font-medium">{{ setting.room_tax.tax_3_name }}
-                                        {{ setting.room_tax.tax_3_rate }}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-3-rate" class="w-full flex justify-end"
-                                            v-model="useTax.use_tax_3" @input="onUseTax3Change" :binary="true" />
+
+                            <div class="flex gap-3 relative">
+                                <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{ setting.room_tax.tax_3_name }}{{ setting.room_tax.tax_3_rate }}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3" @input="onUseTax3Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                                    <CurrencyFormat :value="totalTax3Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax3Amount" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -515,14 +510,17 @@ const departureMinDate = computed(() => {
 
 const onDateSelect = (date) => {
 
-    if (doc.value.reservation.arrival_date > doc.value.reservation.departure_date) {
+    
+    let arrival_date = moment(doc.value.reservation.arrival_date).format("YYYY-MM-DD")
+    arrival_date =  moment(arrival_date).toDate()
+    
+    let departure_date =moment(doc.value.reservation.departure_date).format("YYYY-MM-DD")
+    departure_date = moment(departure_date).toDate()
+ 
 
-        doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(1, 'days').toDate()
-    }else if (doc.value.reservation.arrival_date = doc.value.reservation.departure_date) {
-
+    if (arrival_date>=departure_date) {
         doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(1, 'days').toDate()
     }
-
     doc.value.reservation.room_night = moment(doc.value.reservation.departure_date).diff(moment(doc.value.reservation.arrival_date), 'days')
 
     getRoomType()

@@ -27,6 +27,7 @@ import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 const socket = inject("$socket");
 const gv = inject("$gv")
+const moment= inject("$moment")
 
 socket.on("UpdateCashierShift", (arg) => {
 
@@ -107,9 +108,12 @@ const actionClickHandler = async function (e) {
         }
 
     }else{
- 
+        
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
+        }
+        else if(e.data.extendedProps.type=="unassign_room"){
+            onViewUnassignRoom(e.data.date)
         }
         
     }
@@ -355,6 +359,34 @@ function showRoomBlockDetail(name) {
        
     });
 }
+
+function onViewUnassignRoom(date) {
+
+    const dialogRef = dialog.open(ComIFrameModal, {
+
+       data: {
+           "doctype":   'Business%20Branch',
+           name: JSON.parse(localStorage.getItem("edoor_property")).name,
+           report_name: "eDoor%20Unassign%20Room%20Reservation%20List",
+           view:"ui",
+           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")}],
+           filter_options:['keyword','room_type','reservation_status','business_source'],
+           fullheight: true
+       },
+       props: {
+           header:"Unassign Room on " + moment(date).format("DD-MM-YYYY"),
+           style: {
+               width: '90vw',
+           },
+           position:"top",
+           modal: true,
+           maximizable: true,
+           closeOnEscape: false
+       }
+      
+   });
+}
+
 
 function openCloseShift() {
     const dialogRef = dialog.open(ComCloseShift, {

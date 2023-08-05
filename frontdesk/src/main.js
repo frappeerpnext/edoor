@@ -288,8 +288,21 @@ const apiCall = frappe.call()
 			}
 		} else {
 			if (auth.isLoggedIn) {
-				alert("check user home page here")
-				next({ name: 'Dashboard' });
+				//find first record of edoor menu 
+				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+				let edoorMenu = setting?.edoor_menu?.filter(r=>r.menu_name!='All Menus' && r.parent_edoor_menu=='All Menus')
+				edoorMenu = edoorMenu.sort((a, b) => {
+					return a.sort_order - b.sort_order;
+				});  
+				if(edoorMenu){
+				 
+					next({ name: edoorMenu[0].menu_name });
+				}else {
+					next({ name: 'Dashboard' });
+				}
+		
+				
+
 			} else {
  
 				const setting = JSON.parse(localStorage.getItem('edoor_setting'))

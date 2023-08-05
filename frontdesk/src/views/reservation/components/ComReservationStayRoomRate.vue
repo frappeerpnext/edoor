@@ -13,7 +13,7 @@
       :rowsPerPageOptions="[20, 50, 100]">
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
-      <Column field="date" header="Date">
+      <Column field="date" header="Date" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
@@ -21,7 +21,7 @@
 
       <Column field="room_number" header="Room">
         <template #body="slotProps">
-          <div class="rounded-xl px-2 me-1 bg-gray-edoor inline"> 
+          <div> 
             <span v-tooltip.top="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
           </div>
           <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->

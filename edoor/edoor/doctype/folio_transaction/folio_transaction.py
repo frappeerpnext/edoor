@@ -224,7 +224,10 @@ def update_folio_transaction(self):
 		add_sub_account_to_folio_transaction(self,tax_rule.tax_3_account, self.tax_3_amount,"Tax breakdown from folio transaction: {}".format(self.name))
 				
 	add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
-	
+
+	if account_doc.require_select_a_folio==1: 
+		if self.folio_number:
+			transfer_folio_balance(self)
 	
 
 	#update folio transaction to reservation folio
@@ -320,3 +323,27 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"is_auto_post":self.is_auto_post
 
 					}).insert()
+
+
+
+def transfer_folio_balance(self):
+ 
+	doc = frappe.get_doc({
+		'doctype': 'Folio Transaction',
+		'transaction_type':self.transaction_type,
+		'transaction_number':self.folio_number,
+		'reference_number': self.reference_number,
+		'property': self.property,
+		'reservation': self.reservation,
+		'reservation_stay': self.reservation_stay,
+		'posting_date': self.posting_date,
+		'working_day': self.working_day,
+		'cashier_shift': self.cashier_shift,
+		'working_date': self.working_date,
+		'account_code': self.account_code,
+		'type': "Credit" if self.type =='Debit' else 'Debit', 
+		"quantity":1,
+		'input_amount': self.input_amount,
+		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.name, self.room_number),
+		"is_auto_post":1
+	}).insert()

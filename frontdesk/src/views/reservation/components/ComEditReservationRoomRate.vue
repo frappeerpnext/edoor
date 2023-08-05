@@ -42,7 +42,7 @@
                 </table>
             </div>
         </div>
-        <div>
+        <div v-if="current_date >= arrival_date">
             <Message severity="info">Changes to room rates made to past or current dates will not 
                 automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
             </Message>
@@ -212,12 +212,14 @@ const moment = inject("$moment")
 const isSaving = ref(false);
 const selectedRoomRates = ref([])
 const use_tax = ref({})
-
+const current_date = moment(new Date).toDate()
 const stay = ref({})
 const stay_reservation = ref({})
 const showCheckUpdateFutureStayRoomRate = ref(false)
 const updateFutureRoomRate = ref(false)
 const futureRoomRates = ref([])
+let arrival_date = moment(stay_reservation?.value.arrival_datee).format("YYYY-MM-DD")
+    arrival_date =  moment(arrival_date).toDate()
 const tax_rule = computed(() => {
     if (doc.value?.tax_rule_data) {
         return JSON.parse(doc.value?.tax_rule_data)

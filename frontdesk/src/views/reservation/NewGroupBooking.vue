@@ -566,7 +566,14 @@ const departureMinDate = computed(() => {
 })
 
 const onDateSelect = (date) => {
-    if(doc.value.reservation.arrival_date >= doc.value.reservation.departure_date){
+    let arrival_date = moment(doc.value.reservation.arrival_date).format("YYYY-MM-DD")
+    arrival_date =  moment(arrival_date).toDate()
+    
+    let departure_date =moment(doc.value.reservation.departure_date).format("YYYY-MM-DD")
+    departure_date = moment(departure_date).toDate()
+ 
+
+    if (arrival_date>=departure_date) {
         doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(1,'days').toDate()
         
     }

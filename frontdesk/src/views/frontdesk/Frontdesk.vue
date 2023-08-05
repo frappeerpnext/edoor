@@ -105,10 +105,10 @@
   </template>
 <script setup>
 import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi } from '@/plugin'
-import FullCalendar from '@fullcalendar/vue3'
 import '@fullcalendar/core/vdom' // solves problem with Vite
-import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
+import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
@@ -124,6 +124,7 @@ import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import Tooltip from 'primevue/tooltip'
 import { useTippy } from 'vue-tippy'
+import { initCustomFormatter } from 'vue';
 
 
 const socket = inject("$socket");
@@ -296,11 +297,12 @@ const calendarOptions = reactive({
         console.log($event)
     }),
     eventClick: ((info) => {
+ 
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
-            
+             info.event._def.date = info.event.start;
              window.postMessage(info.event._def, '*')
         }
 
@@ -308,11 +310,12 @@ const calendarOptions = reactive({
     eventMouseEnter: (($event) => {
         const event = $event.event._def
 
-        if (event.extendedProps.type == "stay" || event.extendedProps.type == "room_block") {
+        if (event.extendedProps.type == "stay" ) {
             
             
             const description = `<div class="p-2 w-full">
-                                        <table class="tip_description_stay_table">
+                                        <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
+                                        <table class="tip_description_stay_table m-1 pt-3">
                                             <tbody>
                                             <tr><td>Res. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
                                             <tr><td>Res Stay. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
@@ -337,10 +340,35 @@ const calendarOptions = reactive({
             const { tippyInstance } = useTippy($event.el, {
                 content: description,
             })
+        }else if (event.extendedProps.type == "room_block"){
+            const description = `<div class="w-full p-2">
+                                        <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
+                                        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
+                                            <tbody>
+                                            <tr><td>Block Number</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start_date)}</td></tr>  
+                                            <tr><td>Start Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start_date)}</td></tr>
+                                            <tr><td>Release Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end_date)}</td></tr>
+                                            <tr><td>Blocked by</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end_date)}</td></tr>
+                                            <tr><td><span class="mt-2">Reason</span></td></tr>
+                                            <tr ><td colspan="3" ><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.end_date}</div></td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>`
+            const { tippyInstance } = useTippy($event.el, {
+                content: description,
+            })
         }
-
-
-
+         else if (event.extendedProps.type == "available_room"){
+            const description = `<div class="pt-1"> Available Room ${event.title} </div> `
+            const { tippyInstance } = useTippy($event.el, {
+                content: description,
+            })
+        } else if (event.extendedProps.type == "unassign_room"){
+            const description =`<div class="pt-1"> Unassign Room ${event.title} </div> `
+            const { tippyInstance } = useTippy($event.el, {
+                content: description,
+            })
+        }
     }),
     eventDrop: function (info) {
         if (!confirm("Are you sure about this change?")) {
@@ -556,6 +584,7 @@ function onView() {
     cal.refetchResources()
 
 }
+
 function onFilter(key) {
     filter.peroid = key
     const cal = fullCalendar.value.getApi()
@@ -738,4 +767,5 @@ onUnmounted(() => {
     background: #DBDBDB;
     opacity: 0.4;
 }
+
 </style>

@@ -231,7 +231,7 @@
    "link_fieldname": "folio_number"
   }
  ],
- "modified": "2023-07-04 14:45:20.130036",
+ "modified": "2023-08-04 16:15:15.033862",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",
@@ -286,6 +286,7 @@
    "write": 1
   }
  ],
+ "search_fields": "rooms, guest_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

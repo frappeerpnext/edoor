@@ -87,6 +87,22 @@
                         </div>   
                     </div>
                 <!-- /City Ledger -->
+                <!-- Folio Transfer -->
+                <div v-if="account_code.require_select_a_folio == 1 && doc?.account_code" class="col-12">
+                    <div class="grid">
+                        <div class="col-12">
+                            <label>Folio Transfer {{doc.transaction_number}}</label>
+                            <ComAutoComplete :disabled="!canEdit" v-model="doc.folio_number" placeholder="Select Folio" doctype="Reservation Folio"
+                            class="auto__Com_Cus w-full" :filters="{'property':doc.property, status:'Open','name':['!=',doc.transaction_number]}"/>
+                        </div>
+                        <div v-if="doc.folio_number" class="col-12 -mt-2">
+                            <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
+                                <span class="text-500 font-italic">You Selected</span> {{ doc.folio_number }} 
+                            </div>
+                        </div>
+                    </div>   
+                </div>
+            <!-- /Folio Transfer -->
                 </div>
             </div>
             <!-- end input -->
@@ -266,6 +282,7 @@ const isSaving = ref(false)
 
 const account_code = ref({});
 const city_ledger = ref({});
+const folio_number = ref({})
 const balance = ref(0);
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -455,6 +472,7 @@ function onSelectAccountCode(data) {
         total_amount.value = 0
         doc.value.city_ledger = ''
         doc.value.city_ledger_name = ''
+        doc.value.folio_number = ''
     }
 }
 function onSelectCityLedger(data) {
@@ -473,6 +491,8 @@ function onSelectCityLedger(data) {
     
 
 }
+
+
 function onSave() {
     isSaving.value = true
     

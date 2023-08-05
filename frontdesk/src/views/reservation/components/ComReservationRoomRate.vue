@@ -37,7 +37,7 @@
 
       <Column field="room_number" header="Room">
         <template #body="slotProps">
-          <div class="rounded-xl px-2 me-1 bg-gray-edoor inline"> 
+          <div> 
             <span v-tooltip.top="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
           </div>
           <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
@@ -153,7 +153,7 @@ function onEditRoomRate(room_rate = null){
         const result = options.data;
         if(result){
             rs.room_rates = result
-            rs.getReservationDetail(rs.reservationStay.name);
+            rs.getReservationDetail(rs.reservation.name);
            
         }
     }

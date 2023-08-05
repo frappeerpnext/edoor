@@ -190,9 +190,12 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
     if reservation_stay:
         except_stay = " AND reservation_stay <> '{}'".format(reservation_stay)
     sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
-
+    
     room_occupy = frappe.db.sql(sql)
- 
+    return {
+        'row':room_occupy[0][0],
+        'sql': sql
+    }
     return room_occupy[0][0]
 
 
@@ -956,7 +959,7 @@ def change_stay(data):
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
-
+    return room_occupy
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
