@@ -5,94 +5,22 @@
             mode="indeterminate">
         </ProgressBar>
  
-
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
-                <div class="header-logo flex-auto h-full">
+                <div class="header-logo flex-auto h-full"> 
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-                        <template v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')"
-                            :key="index">
-                            <ComHeaderBarItemButton :title="m.menu_title" :current-page="m.menu_name"
-                                @onClick="onRoute(m.menu_name)">
+                        <template v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')" :key="index">
+                            <ComHeaderBarItemButton
+                                :data="m"
+                                @onClick="onRoute">
                                 <template #icon>
-                                    <img :src="iconEdoorDashboard" />
+                                    <span v-html="m.icon"></span>
                                 </template>
                                 <template #defualt>
-                                    <p>{{ m.menu_text }}</p>
+                                    <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group" class="pi pi-angle-down"></i></p>
                                 </template>
                             </ComHeaderBarItemButton>
-                       
-                        </template>
-                        <!-- <ComHeaderBarItemButton title="eDoor Dashboard" current-page="Dashboard"
-                            @onClick="onRoute('Dashboard')">
-                            <template #icon>
-                                <img :src="iconEdoorDashboard" />
-                            </template>
-                            <template #defualt>
-                                <p>eDoor</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Front Desk" current-page="Frontdesk" @onClick="onRoute('Frontdesk')">
-                            <template #icon>
-                                <img :src="iconEdoorFrontdesk">
-                            </template>
-                            <template #defualt>
-                                <p>Front Desk</p>
-                            </template>
-                        </ComHeaderBarItemButton> -->
-                        <ComHeaderBarItemButton title="Reservations" current-page="ReservationList"
-                            @onClick="onRoute('ReservationList')">
-                            <template #icon>
-                                <img :src="iconEdoorReservation">
-                            </template>
-                            <template #defualt>
-                                <p title="Reservations">Reservations</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="GuestDatabase" title="Guest Database"
-                            @onClick="onRoute('GuestDatabase')">
-                            <template #icon>
-                                <img :src="iconEdoorGuestDatabase">
-                            </template>
-                            <template #defualt>
-                                <p title="Guest Database">Guest Database</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="Housekeeping" title="Housekeeping" icon="pi-users"
-                            @onClick="onRoute('Housekeeping')">
-                            <template #icon>
-                                <img :src="iconEdoorHouseKeeping">
-                            </template>
-                            <template #defualt>
-                                <p title="Housekeeping">Housekeeping</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton current-page="Guest Ledger" title="Guest Ledger"
-                            @onClick="onLink('guest-ledger')">
-                            <template #icon>
-                                <img :src="iconGuestLedger">
-                            </template>
-                            <template #defualt>
-                                <p title="Guest Ledger">Guest Ledger</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="City Ledger" @onClick="onLink('city-ledger')"
-                            class="hidden xl:block">
-                            <template #icon>
-                                <img :src="iconEdoorCityLedger">
-                            </template>
-                            <template #defualt>
-                                <p title="City Ledger">City Ledger</p>
-                            </template>
-                        </ComHeaderBarItemButton>
-                        <ComHeaderBarItemButton title="Reports" @onClick="onLink('reports')" class="hidden xl:block">
-                            <template #icon>
-                                <img :src="iconEdoorReport">
-                            </template>
-                            <template #defualt>
-                                <p title="Reports">Reports</p>
-                            </template>
-                        </ComHeaderBarItemButton>
+                        </template> 
 
                         <!-- <ComHeaderBarItemButtonMore /> -->
                     </div>
@@ -160,9 +88,13 @@
         
         <div>
             <div class="wrap-page-content -mb-2 px-2">
-                <template v-for="(sm, index) in subMenus" :key="index">
-                    <Button   @click="onRoute(sm.menu_name)">{{sm.menu_text}}</Button>
-                </template>
+                <!-- <Menu id="sub_menu_dropdown_l" :popup="false" style="width: 190px;">
+                    <template #end>
+                        <template v-for="(sm, index) in subMenus" :key="index">
+                            <Button class="border-none bg-transparent text-black-alpha-90" @click="onRoute(sm.menu_name)">{{sm.menu_text}}</Button>
+                        </template>
+                    </template>
+                </Menu> -->
                 <router-view />
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
@@ -174,20 +106,9 @@
 
 <script setup>
 import { ref, inject, useToast, useRouter, useRoute, onMounted, computed } from '@/plugin'
-import ComAvatar from '../form/ComAvatar.vue';
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar';
 import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue';
-import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
-import ComHeaderBarItemButtonMore from './components/ComHeaderBarItemButtonMore.vue';
-import iconGuestLedger from '../../assets/svg/icon-guest-ledger.svg'
-import iconEdoorDashboard from '../../assets/svg/icon-edoor-dashboard.svg'
-import iconEdoorReservation from '../../assets/svg/icon-reservation.svg'
-import iconEdoorFrontdesk from '../../assets/svg/icon-frontdesk.svg'
-import iconEdoorCityLedger from '../../assets/svg/icon-city-ledger.svg'
-import iconEdoorGuestDatabase from '../../assets/svg/icon-guest-database.svg'
-import iconEdoorHouseKeeping from '../../assets/svg/icon-house-keeping.svg'
-import iconEdoorReport from '../../assets/svg/icon-report.svg'
 import Search from '@/views/search/Search.vue';
 import Property from '@/views/user_property/Property.vue';
 import { useDialog } from 'primevue/usedialog';
@@ -199,7 +120,7 @@ import iconOpenCashierShift from '@/assets/svg/icon-open-cashier-shift.svg'
 import iconViewShiftDetail from '@/assets/svg/icon-view-cashier-shift.svg'
 import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
-
+import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue';
 const dialog = useDialog();
 
 const router = useRouter()
@@ -289,7 +210,6 @@ function onRunNightAudit() {
 
 
 function onRoute(route) {
- 
     router.push({ name: route })
 }
 

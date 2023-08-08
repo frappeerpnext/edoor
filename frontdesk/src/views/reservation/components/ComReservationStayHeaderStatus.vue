@@ -12,6 +12,7 @@
             </ComTagReservation>
             <ComTagReservation title="ROOMS#:" class="bg-card-info p-1px" v-if="rs.reservationStay">
                 <div class="inline" v-if="rs.reservationStay?.stays">
+                    
                     <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)" :key="index">
                         <span v-if="index != 0"> , </span>
                         <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' +

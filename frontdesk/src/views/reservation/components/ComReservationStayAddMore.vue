@@ -20,16 +20,15 @@
                             <th class="text-left px-2">
                                 <label class="px-2">Room Name</label>
                             </th>
-                            <th class="text-right px-2">
-                                <label>Rate</label>
-                            </th>
                             <th>
                                 <label class="text-center ">Adults</label>
                             </th>
                             <th>
                                 <label class="text-center">Children</label>
                             </th>
-                            
+                            <th class="text-right px-2">
+                                <label>Rate</label>
+                            </th>
                             <th class="text-right px-2">
                                 <label>Amount</label>
                             </th>
@@ -44,7 +43,7 @@
                             <td class="px-2 w-11rem"> 
                                 <Calendar inputClass="w-7rem" showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
-                            <td class="px-2 w-5rem">
+                            <td class="px-2 w-3rem">
                                 <InputNumber v-model="d.room_nights" @update:modelValue="onNight($event,d)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
                             </td>
                             <td class="px-2 w-15rem">
@@ -53,22 +52,35 @@
                             <td class="px-2 w-10rem">
                                 <ComSelectRoomAvailability showClear v-model="d.room_id" :except="list.map(r => r.room_id).join(',')" :start-date="d.arrival_date" :end-date="d.departure_date" :roomType="d.room_type_id" />
                             </td>
-                            <td class="p-2 text-right w-10rem">
-                                <button @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                    <span class="link_line_action"><CurrencyFormat :value="d.rate" /></span>
-                                </button>
+                        
+                            <td class="px-2 w-3rem">
+                                <InputNumber v-model="d.adult" style="width: -webkit-fill-available;" inputClass="w-3rem" inputId="stacked-buttons" showButtons :min="1" :max="100"/>
                             </td>
-                            <td class="px-2 w-5rem">
-                                <InputNumber v-model="d.adult" style="width: -webkit-fill-available;" inputClass="w-5rem" inputId="stacked-buttons" showButtons :min="1" :max="100"/>
+                            <td class="px-2 w-3rem">
+                                <InputNumber v-model="d.child" style="width: -webkit-fill-available;" inputClass="w-3rem" inputId="stacked-buttons" showButtons :min="0" :max="100"/>
                             </td>
-                            <td class="px-2 w-5rem">
-                                <InputNumber v-model="d.child" style="width: -webkit-fill-available;" inputClass="w-5rem" inputId="stacked-buttons" showButtons :min="0" :max="100"/>
+                            <td class="p-2 text-right w-15rem">
+                                <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
+                                    <div  v-tooltip.top = "(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan' ">
+                                        
+                                        <button @click="onOpenChangeRate($event, d)" class="text-right w-full color-purple-edoor text-md font-italic ">
+                                            <div class="flex justify-between link_line_action">
+                                                <div>
+                                                <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
+                                                <span class="text-sm" v-else>(Plan)</span>
+                                                </div>
+                                                <span ><CurrencyFormat :value="d.rate" /></span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
                             </td> 
-                            <td class="px-2 w-10rem">
+                            <td class="px-2 w-15rem">
                                 <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12">
                                     <CurrencyFormat  :value="(d.room_nights ?? 0) * (d.rate ?? 0)" />
                                 </div>
-                            </td>
+                            </td>   
+                            
                             <td v-if="list.length > 1" class="pl-2 text-end">
                                 <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12" aria-label="Filter" />
                             </td>

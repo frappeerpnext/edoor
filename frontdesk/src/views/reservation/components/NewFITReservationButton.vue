@@ -28,6 +28,7 @@ function onClick() {
             position: "top"
         },
         onClose: (options) => {
+             
             const data = options.data;
             if (data != undefined) {
                 onViewReservationDetail(data.name)
@@ -54,7 +55,8 @@ function onViewReservationDetail(name) {
             },
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            position:"top"
         },
         onClose: (options) => {
             console.log(options)

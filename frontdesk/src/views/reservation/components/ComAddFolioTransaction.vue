@@ -91,13 +91,14 @@
                 <div v-if="account_code.require_select_a_folio == 1 && doc?.account_code" class="col-12">
                     <div class="grid">
                         <div class="col-12">
-                            <label>Folio Transfer {{doc.transaction_number}}</label>
-                            <ComAutoComplete :disabled="!canEdit" v-model="doc.folio_number" placeholder="Select Folio" doctype="Reservation Folio"
+                            <label>Folio Number</label>
+                            <ComAutoComplete :disabled="!canEdit"  @onSelected="onSelectFolioNumber" v-model="doc.folio_number" placeholder="Select Folio" doctype="Reservation Folio"
                             class="auto__Com_Cus w-full" :filters="{'property':doc.property, status:'Open','name':['!=',doc.transaction_number]}"/>
                         </div>
                         <div v-if="doc.folio_number" class="col-12 -mt-2">
                             <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                                <span class="text-500 font-italic">You Selected</span> {{ doc.folio_number }} 
+                                
+                                <span class="text-500 font-italic">You Selected</span> {{ doc.folio_number }}, {{ doc.selected_folio_number_description }}  
                             </div>
                         </div>
                     </div>   
@@ -430,6 +431,7 @@ function onSelectAccountCode(data) {
             doc.value.rate_include_tax = d.rate_include_tax
             doc.value.bank_fee = (d.bank_fee || 0)
             doc.value.require_city_ledger_account = d.require_city_ledger_account
+            doc.value.require_select_a_folio = d.require_select_a_folio
             doc.value.account_name = d.account_name
             doc.value.type = d.type
             doc.value.account_code = d.name
@@ -490,6 +492,9 @@ function onSelectCityLedger(data) {
     }
     
 
+}
+function onSelectFolioNumber(data) {
+   doc.value.selected_folio_number_description = data.description
 }
 
 

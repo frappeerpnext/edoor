@@ -116,11 +116,15 @@ def get_folio_detail(name):
     return {"doc":doc, "account_code": account_code}
 
 @frappe.whitelist()
-def check_room_availability(property,room_type_id=None,start_date=None,end_date=None):
+def check_room_availability(property,room_type_id=None,start_date=None,end_date=None,exception=None):
     working_day = get_working_day(property)
     end_date = add_to_date(end_date,days=-1)
+    sql_except = ''
     if not room_type_id:
         room_type_id = ''
+    if exception:
+        exception = json.loads(exception)
+        sql_except = "and {0} != '{1}'".format(exception['field'], exception['value'])
 
     sql = """
         select 
@@ -139,7 +143,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
                     coalesce(room_id,'') 
                 from `tabTemp Room Occupy` 
                 where
-                    date between '{2}' and '{3}' 
+                    date between '{2}' and '{3}' {4}
             )   
     """
     #check if arrival date is equal to current system date then check room availabityy is check with house keeping status
@@ -147,8 +151,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     if str(start_date) == str(working_day["date_working_day"]):
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
 
-    sql = sql.format(property,room_type_id,start_date, end_date)
-     
+    sql = sql.format(property,room_type_id,start_date, end_date,sql_except)
     data = frappe.db.sql(sql,as_dict=1)
     return data
 
@@ -192,10 +195,6 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
     sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
     
     room_occupy = frappe.db.sql(sql)
-    return {
-        'row':room_occupy[0][0],
-        'sql': sql
-    }
     return room_occupy[0][0]
 
 
@@ -863,7 +862,7 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
                     season = '{}' and 
                     rate_type = '{}' 
                 """.format(property, season_id, rate_type)
-     
+ 
         if business_source:
             sql_with_business_source = "{} and business_source = '{}'".format(sql, business_source)
             data = frappe.db.sql(sql_with_business_source, as_dict=1)
@@ -873,13 +872,17 @@ def get_room_rate(property, rate_type, room_type, business_source, date):
         if rate ==0:
             #check rate from rate that dont have business source
             sql = "{} and ifnull(business_source,'') = '' ".format(sql) 
+           
             data = frappe.db.sql(sql, as_dict=1)
             rate = data[0]["rate"] or 0
 
-            
+  
     if rate == 0:
         #if still rate = 0 the  get rate from room type
-        rate = room_type_rate
+        
+        if (frappe.db.get_value("Rate Type",rate_type,"disable_get_rate_room_room_type") or 0)==0:
+            rate = room_type_rate
+
     return rate
 
 
@@ -959,7 +962,6 @@ def change_stay(data):
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
-    return room_occupy
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
@@ -1412,6 +1414,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
 
     if reservation_stays:
         for s in reservation_stays:
+          
             status = frappe.db.get_value("Reservation Stay",s,"reservation_status")
             if frappe.db.get_value("Reservation Status",status, "allow_user_to_edit_information")==0:
                 frappe.throw("Reservation Stay: {0} is {1}. {1} reservation is not allow to change information".format(s, status) )
@@ -1434,8 +1437,13 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
 
     #update to reservation stay
     #using enqure process 
+    #loop from stays list to update room charge summary to reservation stay
+    if reservation_stays:
+        for s in reservation_stays:
+            update_reservation_stay(name=s, run_commit=False)
+    else:
+        update_reservation_stay(name=data["reservation_stay"], run_commit=False)
 
-    update_reservation_stay(name=data["reservation_stay"], run_commit=False)
     update_reservation(name=data["reservation"], run_commit=False)
     #frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=data["reservation_stay"], doc=None, run_commit=False)
 

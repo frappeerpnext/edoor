@@ -11,7 +11,7 @@
                     v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
                     
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconCrownBlack" style="height: 12px;" />
                     <span class="ml-2">Mark as Master Room </span>
                 </button>
                 <button @click="onUndoCheckIn()"
@@ -23,14 +23,14 @@
                 <button @click="OnUndoCheckOut()"
                     v-if="rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-undo" />
                     <span class="ml-2">Undo Check Out</span>
                 </button>
                 
                 <button @click="onNoShowReservationStay()"
                     v-if="(rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-eye-slash" />
                     <span class="ml-2">No Show</span>
                 </button>
               
@@ -40,7 +40,7 @@
                             rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length == 0
                             "
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-calendar-plus" />
                     <span class="ml-2">Reserve Room</span>
                 </button>
                 <button @click="onUnReservedRoom()"
@@ -49,32 +49,37 @@
                         rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0
                         "
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-calendar-times" />
                     <span class="ml-2">Unreserve Room</span>
                 </button>
                 
                 <button @click="onCancelReservationStay()"
                     v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-user-minus" />
                     <span class="ml-2">Cancel Reservation Stay</span>
                 </button>
                 <button @click="onVoidReservationStay()"
                     v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-file-excel" />
                     <span class="ml-2">Void Reservation Stay</span>
                 </button>
             
                     <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" @click="onUnmarkasPaybyCityLedger()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-file-edit" />
+                        <i class="pi pi-building" />
                         <span class="ml-2"> Unmark as Bill to City Ledger </span>
                     </button>
                     <button @click="onMarkasPaybyCityLedger()" v-else-if="!rs.reservationStay.pay_by_company && !rs.reservationStay.is_master"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-file-edit" />
+                        <i class="pi pi-building" />
                         <span class="ml-2"> Mark as Bill to City Ledger </span>
+                    </button>
+                    <button 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-building" />
+                    <span class="ml-2"> Mark as Bill to Master Room </span>
                     </button>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
@@ -88,9 +93,14 @@
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
+                <button @click="onCancel"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-user-minus" />
+                    <span class="ml-2">Cancel</span>
+                </button>
                 <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-history" />
                     <span class="ml-2">Audit Trail</span>
                 </button>
             </template>
@@ -453,11 +463,10 @@ function onMarkasFITReservation() {
     });
 }
 
-
-
-
-
 function onAuditTrail() {
     emit('onAuditTrail')
+}
+function onCancel() {
+    alert()
 }
 </script>

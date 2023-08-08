@@ -29,6 +29,20 @@ export function getDocList(doctype, option){
         });
     })
 }
+export function getCount(doctype, filters){
+    const frappe = new FrappeApp()
+    const db = frappe.db()
+    return new Promise((resolve, reject)=>{
+        db.getCount(doctype, filters)
+        .then((doc) => {
+            resolve(doc)
+        })
+        .catch((error) => {
+            reject(error)
+            window.postMessage('show_error|' + 'Server Error', '*')
+        });
+    })
+}
 export function updateDoc(doctype, name, data, message){
     const frappe = new FrappeApp()
     const db = frappe.db()

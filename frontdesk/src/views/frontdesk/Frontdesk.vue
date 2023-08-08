@@ -14,10 +14,7 @@
             </template>
             <template #end>
                 <div class="flex gap-2 justify-content-end">
-                    <Button class="bg-yellow-500 border-none" @click="showNote=!showNote">
-                        <ComIcon icon="iconNoteWhite" class="me-2" style="height: 16px;" />
-                        Upcoming Note
-                    </Button>
+                    <Button label='Uncoming Note' :badge="totalNotes" badgeClass="p-badge-success" class="bg-yellow-500 border-none" @click="showNote=!showNote"/>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
                   
@@ -104,7 +101,7 @@
     </div>
   </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi,getCount,provide } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -154,6 +151,11 @@ const reservation = ref({})
 const isLoading = ref(true)
 const showSummary = ref(true)
 const showNote = ref(false)
+const totalNotes = ref(0)
+provide('get_count_note', {
+    getTotalNote
+})
+
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
@@ -345,12 +347,12 @@ const calendarOptions = reactive({
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
-                                            <tr><td>Block Number</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start_date)}</td></tr>  
+                                            <tr><td>Block Number</td><td class="px-3">:</td><td>${event.extendedProps?.name || ''}</td></tr>  
                                             <tr><td>Start Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start_date)}</td></tr>
                                             <tr><td>Release Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end_date)}</td></tr>
-                                            <tr><td>Blocked by</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end_date)}</td></tr>
+                                            <tr><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.modified_by || ''}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
-                                            <tr ><td colspan="3" ><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.end_date}</div></td></tr>
+                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>
                                             </tbody>
                                         </table>
                                     </div>`
@@ -641,7 +643,7 @@ function onPrevNext(key) {
 const onRefresh = () => {
     const cal = fullCalendar.value.getApi()
     cal.refetchEvents()
-
+    getTotalNote()
 
 }
 
@@ -721,6 +723,12 @@ function onSearch(key) {
     // cal.setOption({now:"2023-05-18"})
 }
 
+function getTotalNote(){ 
+	getCount('Frontdesk Note', [["note_date",">=", working_day.date_working_day]]).then((docs) => {
+        totalNotes.value = docs	
+	}) 
+}
+
 onMounted(() => {
 
     onInitialDate()
@@ -729,8 +737,9 @@ onMounted(() => {
         const currentViewChart = JSON.parse(sessionStorage.getItem('reservation_chart'))
         selectedDate.value = new Date(moment(currentViewChart.start_date).add(1, 'days'))
     }
-
+    getTotalNote()
 })
+
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })

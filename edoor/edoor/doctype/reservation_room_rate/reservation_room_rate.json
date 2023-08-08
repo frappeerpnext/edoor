@@ -295,7 +295,7 @@
    "options": "Customer"
   },
   {
-   "fetch_from": "guest.customer_name_en",
+   "fetch_from": "reservation_stay.guest_name",
    "fieldname": "guest_name",
    "fieldtype": "Data",
    "label": "Guest Name"
@@ -310,7 +310,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-20 13:59:59.341523",
+ "modified": "2023-08-05 11:32:14.418392",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

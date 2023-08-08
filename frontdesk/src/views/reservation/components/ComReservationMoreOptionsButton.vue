@@ -15,7 +15,7 @@
                 
                 <button @click="onChangeStatus('No Show')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-eye-slash" />
                     <span class="ml-2">Group No Show</span>
                 </button>
                 
@@ -26,12 +26,12 @@
                 </button>
                 <button @click=" onChangeStatus('void')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-file-excel" />
                     <span class="ml-2">Group Void</span>
                 </button>
                 <button @click=" onGroupCheckIn(true)" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="checkin-black" style="height: 14px;" />
                     <span class="ml-2">Group Check-In</span>
                 </button>
                 <button @click="onGroupCheckIn(false)" 
@@ -83,14 +83,20 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Group Change Stay Date</span>
                 </button>
-                <button @click="onMarkAsReservationType()" 
+                <button @click="onGroupChangeStayDate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
+                    <span class="ml-2">Stay To Other Reservation</span>
+                </button>
+                <button @click="onStayToOtherReservation()" 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <ComIcon v-if="rs.reservation.reservation_type == 'GIT'" icon="userGif" style="height: 15px;" />
+                    <ComIcon v-else icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as <span v-if="rs.reservation.reservation_type == 'GIT'">FIT</span><span v-else>GIT</span> Reservation</span>
                 </button>
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-history" />
                     <span class="ml-2">Audit Trail</span>
                 </button>
                 
@@ -285,5 +291,8 @@ function onGroupChangeRate(){
 
 function onGroupChangeStayDate(){
     alert("Group Change Stay Date")
+}
+function onStayToOtherReservation(){
+    alert("onStayToOtherReservation")
 }
 </script>

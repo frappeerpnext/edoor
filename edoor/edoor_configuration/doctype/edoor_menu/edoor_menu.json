@@ -34,7 +34,7 @@
   },
   {
    "fieldname": "icon",
-   "fieldtype": "Small Text",
+   "fieldtype": "Code",
    "label": "Icon"
   },
   {
@@ -90,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-08-03 16:07:02.158704",
+ "modified": "2023-08-05 16:44:52.966645",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Menu",

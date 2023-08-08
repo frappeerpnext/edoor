@@ -3,7 +3,7 @@
         <template #content>
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
-                    <Column field="start_date" header="Stay Date" >
+                    <Column class="w-15rem" field="start_date" header="Stay Date" >
                         <template #body="{ data }">
                             <span v-tooltip.top="'Arrival Date'">
                             {{gv.dateFormat(data.start_date) }}
@@ -15,7 +15,7 @@
                         </template>
                     </Column>
                    
-                    <Column field="room_nights" header="Nights"></Column>
+                    <Column class="text-center w-10rem" field="room_nights" header="Nights"></Column>
                     <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">
                         <div> 

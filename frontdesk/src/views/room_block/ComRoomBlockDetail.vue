@@ -20,85 +20,93 @@
         </div>
             
         <template #footer-right>
-        <!-- <Button  @click="onEditBlockRoom" >Edit</Button> -->
-            <Button label="Edit " @click="visible = true" />
-            <Button  @click="onUnBlockRoom">Unblock </Button> 
+
+            <Button label="Edit" @click="onEdit" />
+            <Button label="Unblock" @click="onUnblock" />
+
         </template>
     </ComDialogContent>
-    <Dialog v-model:visible="visible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }">
-        <ComDialogContent @onClose="visible = false" @onOK="onSave">
-            {{ data }}
-        Block Date
+    <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }">
+        <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()">
+            Unblock Date
+        <div class="card flex justify-content-left"> 
+            <Calendar class="w-14rem" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
+        </div><br>
+        Housekeeping Status
+        <div>
+        <ComSelect  v-model="data.unblock_housekeeping_status" doctype="Housekeeping Status" />
+        </div><br>
+            Unblock Note
         <div class="card flex justify-content-left">
-            <Calendar v-model="data.block_date" />
+            <Textarea v-model="data.unblock_note" rows="5" cols="30" />
         </div>
-        Start Date
-        <div class="card flex justify-content-left">
-            <Calendar v-model="data.start_date" />
-        </div>
-        Release Date
-        <div class="card flex justify-content-left">
-            <Calendar v-model="data.end_date" showIcon />
-        </div>
-        Room Number
-        <div class="card flex justify-content-left">
-            <InputText type="text" v-model="data.room_number" />    
-        </div>
-            Room Type
-        <div class="card flex justify-content-left">
-            <InputText type="text" v-model="data.room_type" />    
-        </div>
-        Reason
-        <div class="card flex justify-content-left">
-            <Textarea v-model="data.reason" rows="5" cols="30" />
-        </div>
+
     </ComDialogContent> 
     </Dialog>
+
 </template>
+
 <script setup>
 import {ref,getDoc,onMounted,inject,useDialog, updateDoc } from "@/plugin"
+import ComEditRoomBlock from "./components/ComEditRoomBlock.vue";
+ 
+const unblockvisible = ref(false);
 
-const visible = ref(false);
 const dialogRef = inject("dialogRef");
 const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
+const moment = inject('$moment');
 const dialog = useDialog()
 const data = ref()
+const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 
-// db.getDoc('DocType', 'My DocType Name')
-//   .then((doc) => console.log(doc))
-//   .catch((error) => console.error(error));
 
-// function onEditBlockRoom(){
-// alert("hello")
-// };
-
-function onUnBlockRoom(){
-    alert("How are you?");
+function onEdit(){
+    const dialogRef = dialog.open(ComEditRoomBlock, {
+        data:doc.value,
+        props: {
+            header: 'Edit Room Block ' + doc.value.name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            const result = options.data;
+            if(result){
+                data.value = result
+            }
+        }
+    })
 }
-
-function onCancel (){
-    // alert("cancel")
-}
-
 function onSave (){
     loading.value = true
-    updateDoc('Room Block', data.value.name, data.value).then((r)=>{
-        doc.value = r
-        doc.value.start_date = gv.dateFormat(r.start_date)
-        doc.value.end_date = gv.dateFormat(r.end_date) 
-        data.value = JSON.parse(JSON.stringify(r))
+    var savedData = {
+        name: data.value.name,
+        unblock_date: gv.dateApiFormat(data.value.unblock_date),
+        unblock_housekeeping_status: data.value.unblock_housekeeping_status,
+        unblock_note: data.value.unblock_note
+    }
+    updateDoc('Room Block', data.value.name, savedData).then((r)=>{
+        dialogRef.value.close(r)
         loading.value = false
     })
 }
+
+function onUnblock(){
+    data.value = JSON.parse(JSON.stringify(doc.value))
+    unblockvisible.value = true
+}
+
 onMounted(() => {
     loading.value = true
     getDoc("Room Block",dialogRef.value.data.name ).then((r)=>{
         doc.value = r
+        console.log(r)
         doc.value.start_date = gv.dateFormat(r.start_date)
-        doc.value.end_date = gv.dateFormat(r.end_date) 
-        data.value = JSON.parse(JSON.stringify(r))
+        doc.value.end_date = gv.dateFormat(r.end_date)
         loading.value = false
     }).catch((err)=>{
         loading.value = false

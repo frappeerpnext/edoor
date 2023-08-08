@@ -24,14 +24,16 @@
      
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
-      <Column field="date" header="Date">
+      <Column field="date" header="Date" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
-      <Column field="reservation_stay" header="Res Stay#">
+      <Column field="reservation_stay" header="Stay #" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
-          <span>{{ slotProps.data?.reservation_stay }}</span>
+          <button @click="showReservationStayDetail(slotProps.data?.reservation_stay)" class="link_line_action w-auto">
+            {{slotProps.data?.reservation_stay}}
+        </button>
         </template>
       </Column>
 
@@ -45,7 +47,9 @@
       </Column>
       <Column field="guest_name" header="Guest Name">
         <template #body="slotProps">
-          <span>{{ slotProps.data?.guest_name }}</span>
+          <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest)" link>
+            {{slotProps.data.guest_name}}
+         </Button>
         </template>
       </Column>
       <Column field="rate_type" header="Rate Type" bodyClass="text-center" headerClass="text-center">
@@ -79,12 +83,12 @@
       <ColumnGroup type="footer">
         <Row>
           <Column footer="Total:" :colspan="5" footerStyle="text-align:right" />
-          <Column >
+          <Column footerStyle="text-align:center">
             <template #footer>
               {{ rs?.room_rates?.length }} Room Night(s)
             </template>
           </Column>
-          <Column footerStyle="text-align:center">
+          <Column footerStyle="text-align:right">
             <template #footer>
               <CurrencyFormat :value="getTotal('rate')" />
             </template>
@@ -114,6 +118,8 @@
 import {inject, ref, onMounted,useDialog} from "@/plugin"
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
+import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue";
+import GuestDetail from "@/views/guest/GuestDetail.vue";
 const rs = inject('$reservation')
 const dialog = useDialog();
  
@@ -152,7 +158,7 @@ function onEditRoomRate(room_rate = null){
       onClose: (options) => {
         const result = options.data;
         if(result){
-            rs.room_rates = result
+            rs.getRoomRate(rs.reservation.name)
             rs.getReservationDetail(rs.reservation.name);
            
         }
@@ -180,7 +186,7 @@ function onEditRoomRate(room_rate = null){
         const result = options.data;
         
         if(result){
-          rs.room_rates = result
+          rs.getRoomRate(rs.reservation.name)
           rs.selectedRoomRates = []
           rs.getReservationDetail(rs.reservation.name);
            
@@ -192,6 +198,31 @@ function onEditRoomRate(room_rate = null){
     toast.add({ severity: 'warn', summary: 'Edit Room Rate', detail: "Please select room to edit.", life: 3000 })
     return 
   }
+}
+function showReservationStayDetail(selected) {
+    let stayName = selected
+    if(selected.data && selected.data?.reservation_stay){
+        stayName = selected.data?.reservation_stay
+    }
+    const dialogRef = dialog.open(ReservationStayDetail, {
+        data: {
+            name: stayName
+        },
+        props: {
+            header: 'Reservation Stay Detail',
+            contentClass: 'ex-pedd',
+            style: {
+                width: '80vw',
+            },
+            maximizable: true,
+            modal: true,
+            closeOnEscape: false,
+            position:"top"
+        }, 
+    });
+}
+function onViewCustomerDetail(name) {
+    window.postMessage('view_guest_detail|' + name, '*')
 }
  
 onMounted(() => {

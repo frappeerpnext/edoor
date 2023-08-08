@@ -27,6 +27,18 @@ class FolioTransaction(Document):
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
 		
+		if self.require_select_a_folio==1:
+			if not self.folio_number:
+				frappe.throw("Please select a folio number")
+			if self.is_new():
+				target_folio_doc = frappe.get_doc("Reservation Folio",self.folio_number)
+				if target_folio_doc.status =='Closed':
+					frappe.throw("Target Folio Number {} is already closed".format(target_folio_doc.name))
+				self.note =   "{} Folio balance transfer to folio # {}, room:{} ".format(self.note or "", target_folio_doc.name, target_folio_doc.rooms),
+			else:
+				frappe.throw("You cannot edit {} transaction".format(self.account_name))
+	
+				
 		#validate working day  
 		if self.is_new():
 			ref_doc = frappe.get_doc(self.transaction_type, self.transaction_number)
@@ -76,8 +88,10 @@ class FolioTransaction(Document):
 							self.room_number =room_rate_data[0].room_number 
 							self.room_type =room_rate_data[0].room_type
 					#end update room type and room number
-		
-
+		else:
+			if self.is_auto_post ==1:
+				frappe.throw("You cannot edit auto post transaction")
+			 
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 
 		if self.discount_type =="Percent" and self.discount>100:
@@ -165,6 +179,8 @@ class FolioTransaction(Document):
 			update_sub_account_description(self)
 	def after_insert(self):
 		update_folio_transaction(self)
+				
+
 
 	def on_update(self):
 		if not self.is_new():
@@ -174,13 +190,24 @@ class FolioTransaction(Document):
 	def on_trash(self):
 		#if this transaction is auto post 
 		if self.is_auto_post:
-	
 			if (frappe.db.get_default("allow_user_to_delete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
 		
+		#validate delete folio transaction that have reference to folio transaction like folio transfer or city ledget
+		account_doc = frappe.get_doc("Account Code",self.account_code)
+		if account_doc.require_select_a_folio:
+			sql = "select name, transaction_number from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
+			
+			target_folio_transaction = frappe.db.sql(sql,as_dict=1)
+
+			if target_folio_transaction:
+				#validate folio status
+				if frappe.get_value("Reservation Folio", target_folio_transaction[0]["transaction_number"], "status")=="Closed":
+					frappe.throw("You cannot delete this record. Because reference to Folio number {} and this folio is already closed".format( target_folio_transaction[0]["transaction_number"]))
+				
 
 		#use for validate record prevent user to delete record
 
@@ -188,10 +215,32 @@ class FolioTransaction(Document):
 	def after_delete(self):
 	
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
-		if self.folio_number:
-			update_reservation_folio(self.folio_number, None, False)
+		
+
+		if self.transaction_type=='Reservation Folio':
+			update_reservation_folio(self.transaction_number, None, False)
+
+
 		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 		frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
+
+		#update reservation stay and reservation of target folio transfer after delete
+		sql = "select distinct transaction_type, transaction_number, reservation, reservation_stay from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
+		data = frappe.db.sql(sql,as_dict=1)
+
+
+		frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
+		for d in data:
+			if d["transaction_type"] =="Reservation Folio":
+				frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
+			
+			frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=d["reservation_stay"], doc=None, run_commit=False)
+			frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=d["reservation"], doc=None, run_commit=False)
+	
+
+			
+
+		 
 
 def update_folio_transaction(self):
 	#we use this method add folio transaction breakown
@@ -225,9 +274,7 @@ def update_folio_transaction(self):
 				
 	add_sub_account_to_folio_transaction(self,account_doc.bank_fee_account, self.bank_fee_amount,"Credit card processing fee")
 
-	if account_doc.require_select_a_folio==1: 
-		if self.folio_number:
-			transfer_folio_balance(self)
+	
 	
 
 	#update folio transaction to reservation folio
@@ -242,6 +289,13 @@ def update_folio_transaction(self):
 		
 		# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 		# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
+	
+	#check if it is is folio transfer then queue add record to folio transaction
+	if self.require_select_a_folio==1: 
+			if self.folio_number and  self.is_auto_post==0:
+				frappe.enqueue("edoor.edoor.doctype.folio_transaction.folio_transaction.transfer_folio_balance", queue='short', self=self)
+	
+	
 
 def update_sub_account_description(self):
 	if self.discount_account:
@@ -321,21 +375,20 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"note":note,
 						"parent_reference":self.name,
 						"is_auto_post":self.is_auto_post
-
 					}).insert()
 
 
-
+@frappe.whitelist()
 def transfer_folio_balance(self):
- 
+	folio_doc = frappe.get_doc("Reservation Folio", self.folio_number)
 	doc = frappe.get_doc({
 		'doctype': 'Folio Transaction',
 		'transaction_type':self.transaction_type,
 		'transaction_number':self.folio_number,
-		'reference_number': self.reference_number,
-		'property': self.property,
-		'reservation': self.reservation,
-		'reservation_stay': self.reservation_stay,
+		'reference_number': self.name,
+		'property': folio_doc.property,
+		'reservation': folio_doc.reservation,
+		'reservation_stay': folio_doc.reservation_stay,
 		'posting_date': self.posting_date,
 		'working_day': self.working_day,
 		'cashier_shift': self.cashier_shift,
@@ -344,6 +397,8 @@ def transfer_folio_balance(self):
 		'type': "Credit" if self.type =='Debit' else 'Debit', 
 		"quantity":1,
 		'input_amount': self.input_amount,
-		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.name, self.room_number),
-		"is_auto_post":1
+		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.transaction_number, self.room_number),
+		"is_auto_post":1,
+		"require_select_a_folio": 0,
+		"reference_folio_transaction":self.name
 	}).insert()

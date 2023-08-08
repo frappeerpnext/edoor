@@ -38,7 +38,7 @@
         getApi("reservation.check_room_type_availability", {
             property: property,
             start_date: moment(start_date).format("yyyy-MM-DD"),
-            end_date: moment(end_date).format("yyyy-MM-DD"),
+            end_date: moment(start_date).format("yyyy-MM-DD"),
             rate_type: rate_type,
             business_source: business_source,
             room_type_id: ""
@@ -51,11 +51,12 @@
     }
     
     watch(()=> [props.startDate,props.endDate, props.rateType, props.businessSource], ([newStartDate,newEndDate,newRateType,newBusinessSource],[oldStartDate,oldEndDate,oldRateType,oldBusinessSource])=>{
-        isWatchWork.value = true
-        getRoomType(property.name, newStartDate, newEndDate, newRateType,newBusinessSource)
+        if(newStartDate != oldStartDate || newEndDate != oldEndDate){
+            isWatchWork.value = true
+            getRoomType(property.name, newStartDate, newEndDate, newRateType,newBusinessSource)
+        }
     }) 
     if(!isWatchWork.value && props.startDate && props.endDate){
-        
         getRoomType(property.name, props.startDate, props.endDate, props.rateType,props.businessSource)
     }
  

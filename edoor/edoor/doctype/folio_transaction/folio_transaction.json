@@ -116,7 +116,9 @@
   "column_break_91",
   "bank_fee_description",
   "is_auto_post",
-  "payment_type_group"
+  "payment_type_group",
+  "require_select_a_folio",
+  "reference_folio_transaction"
  ],
  "fields": [
   {
@@ -721,11 +723,22 @@
    "fieldname": "transaction_number",
    "fieldtype": "Data",
    "label": "Transaction Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_select_a_folio",
+   "fieldtype": "Check",
+   "label": "Require Select a Folio"
+  },
+  {
+   "fieldname": "reference_folio_transaction",
+   "fieldtype": "Data",
+   "label": "Reference Folio Transaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-26 08:39:24.577574",
+ "modified": "2023-08-06 11:15:17.769846",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

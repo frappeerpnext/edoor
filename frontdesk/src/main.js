@@ -277,7 +277,7 @@ const apiCall = frappe.call()
 			} else {
 	 
 				if (to?.name){
-					if (setting.edoor_menu.filter((r)=>r.menu_name==to.name).length>0 || ["NoPermission"].includes(to.name)){
+					if (setting.edoor_menu.filter((r)=>r.menu_name==to.name).length>0 || ["NoPermission","ReservationStayDetail","ReservationDetail"].includes(to.name)){
 					next();
 				}else{
 					next({ name: 'NoPermission' });

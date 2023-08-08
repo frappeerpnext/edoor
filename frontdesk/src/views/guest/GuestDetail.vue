@@ -33,15 +33,16 @@
             </iframe>
         </TabPanel>
     </TabView></div>
-    <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" />
+    <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" @click="onEditGuest"/>
 </template>
 <script setup>
 
-import { inject, ref, onMounted,computed } from '@/plugin'
+import { inject, ref, onMounted,computed,useDialog } from '@/plugin'
+import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 const dialogRef = inject("dialogRef");
 const setting =JSON.parse( localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-
+const dialog = useDialog()
 const name = ref("")
 
 function onIframeLoaded(id){
@@ -71,8 +72,26 @@ const folioUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Reservation%20Folio&no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
-
-
+function onEditGuest() { 
+    dialog.open(ComAddGuest, {
+        props: {
+            header: `Edit Guest`,
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        data:{
+            name: name.value,
+        },
+    });  
+}
 onMounted(() => {
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;

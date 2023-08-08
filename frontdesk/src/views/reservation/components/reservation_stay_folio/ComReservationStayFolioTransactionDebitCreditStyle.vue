@@ -1,4 +1,5 @@
 <template>
+   
     <ComPlaceholder 
         text="There is no Folio transactions" 
         :loading="loading" 
@@ -9,7 +10,7 @@
      tableStyle="min-width: 50rem" 
     :rowClass="rowStyleClass"
     paginator  
-            stateKey="folo_transaction_credit_debit_table_state"
+            :stateKey="'folo_transaction_credit_debit_table_state_' + rs.selectedFolio.name "
             :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
     >
         <Column selectionMode="multiple" headerStyle="width: 3rem">

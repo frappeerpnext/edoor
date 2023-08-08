@@ -9,7 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "rate_type",
-  "note"
+  "note",
+  "account_code",
+  "disable_get_rate_room_room_type"
  ],
  "fields": [
   {
@@ -22,11 +24,27 @@
    "fieldname": "note",
    "fieldtype": "Data",
    "label": "Note"
+  },
+  {
+   "description": "Room Revenue Account Code. We use this account to auto post room charge to guest folio when night audit",
+   "fieldname": "account_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Account Code",
+   "options": "Account Code",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "description": "Disable get rate from room type when rate plan is 0",
+   "fieldname": "disable_get_rate_room_room_type",
+   "fieldtype": "Check",
+   "label": "Disable get rate from room type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-03 17:35:34.570379",
+ "modified": "2023-08-05 15:58:30.947427",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

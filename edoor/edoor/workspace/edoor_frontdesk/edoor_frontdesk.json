@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"spacer\",\"data\":{\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}}]",
+ "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "docstatus": 0,
  "doctype": "Workspace",
@@ -10,7 +10,7 @@
  "idx": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-08-04 11:24:59.846191",
+ "modified": "2023-08-07 09:55:41.882843",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",

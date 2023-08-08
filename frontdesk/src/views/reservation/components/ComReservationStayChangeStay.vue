@@ -103,7 +103,9 @@
     })
     
     function onStartDate(newValue){
-        if(moment(newValue).isSame(stay.value.end_date) || moment(newValue).isAfter(stay.value.end_date)){
+        let end_date = moment(stay.value.end_date).format("YYYY-MM-DD")
+        end_date = moment(end_date).toDate()
+        if(moment(newValue).isSame(end_date) || moment(newValue).isAfter(end_date)){
             stay.value.end_date = moment(stay.value.end_date).add(1,'days').toDate()
         }
         stay.value.room_nights = moment(stay.value.end_date).diff(moment(newValue), 'days') 

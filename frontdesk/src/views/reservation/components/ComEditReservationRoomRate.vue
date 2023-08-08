@@ -1,17 +1,38 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
        <div class="grid justify-between" v-if="stay">
-        <div class="col-6">
+        <div class="col-12 xl:col-6 overflow-auto">
         <table>
             <tbody>
                 <ComStayInfoNoBox  label="Res Stay. No" :value="stay?.name" />
                 <ComStayInfoNoBox  label="Business Source" :value="stay?.business_source" />
-                <ComStayInfoNoBox  label="Room" :value="stay?.room_type_alias + '/' + stay?.rooms" />
+                <!-- <ComStayInfoNoBox  label="Room x" :value="stay?.room_type_alias + '/' + stay?.rooms" /> -->
+                <tr>
+                    <th class="w-auto border-1 p-2 text-start" style="background: rgb(243, 243, 243);" >
+                        <label class="font-normal white-space-nowrap">Room</label>
+                    </th>
+                    <td class="w-full border-1 p-2">
+                        <span v-for="(i, index) in roomData" :key="index">
+                            <div class="inline font-semibold text-right" v-if="index < 3">
+                                <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
+                                <span v-tooltip.top="i.room_type">{{i.room_type_alias}}  </span>
+                                <span v-if="i.room_number">/{{ i.room_number }}  
+                                </span>
+                                </div>
+                            </div>
+                        </span>   
+                        <span v-if="roomData.length > 3"
+                                v-tooltip.top="{ value: getTooltip() , escape: true, class: 'max-w-30rem' }"
+                                class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer whitespace-nowrap">
+                                {{roomData.length - 3}} Mores
+                        </span>
+                    </td>
+                </tr>
                 <ComStayInfoNoBox  label="Date" :value="moment(stay?.arrival_date).format('DD-MM-yyyy')"/>
             </tbody>
         </table> 
         </div>
-        <div class="col-6">
+        <div class="col-12 xl:col-6">
             <table>
                 <tbody>
                 <ComStayInfoNoBox  label="Guest" :value="stay?.guest_name +' ('+ stay?.guest+')' "/> 
@@ -218,7 +239,26 @@ const stay_reservation = ref({})
 const showCheckUpdateFutureStayRoomRate = ref(false)
 const updateFutureRoomRate = ref(false)
 const futureRoomRates = ref([])
-let arrival_date = moment(stay_reservation?.value.arrival_datee).format("YYYY-MM-DD")
+const roomData = computed(()=>{
+    if(stay.value?.rooms_data){
+        return JSON.parse(stay.value?.rooms_data)
+    }
+    return []
+})
+function getTooltip(){ 
+   var html = ''
+   var index = 0
+   roomData.value.forEach(e => {
+        index = index + 1
+        if(index > 3){
+            html = html + ` ${e.room_type}/${e.room_number ?  e.room_number : ''}\n`
+        }
+        
+   });
+    return `<div class='tooltip-room-stay'>${html}</div>`
+ 
+}
+let arrival_date = moment(stay_reservation?.value.arrival_date).format("YYYY-MM-DD")
     arrival_date =  moment(arrival_date).toDate()
 const tax_rule = computed(() => {
     if (doc.value?.tax_rule_data) {
@@ -394,11 +434,8 @@ function onSave() {
             reservation_stays: reservation_stay_names
         },"Edit room rate successfully")
         .then((doc) => {
-            
             isSaving.value = false;
-            
             socket.emit("RefreshNightAuditStep", JSON.parse(localStorage.getItem("edoor_property")).name);
-
             dialogRef.value.close(doc.message);
         })
         .catch((error) => {

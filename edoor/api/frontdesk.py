@@ -232,13 +232,7 @@ def get_edoor_setting(property = None):
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
     edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","icon"], order_by="sort_order")
-    room_revenue_code = frappe.db.get_default("room_revenue_code")
- 
-    if room_revenue_code:
-        account_code = frappe.get_doc("Account Code", room_revenue_code)
- 
-        if account_code.tax_rule:
-            edoor_setting["room_tax"]  = frappe.get_doc("Tax Rule",account_code.tax_rule)
+
 
     return {
         "user":get_logged_user(),
@@ -833,7 +827,7 @@ def update_room_status(working_day=None):
 @frappe.whitelist()
 def post_room_change_to_folio(working_day):
     
-    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"property":working_day.business_branch,"date":working_day.posting_date})
+    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date})
     for r in room_rates:
         
         folio = None

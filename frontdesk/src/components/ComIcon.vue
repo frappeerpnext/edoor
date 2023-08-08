@@ -11,6 +11,7 @@
     <img v-else-if="icon == 'iconNote'" :class="class" :src="iconNote"/>
     <img v-else-if="icon == 'iconNoteBlue'" :class="class" :src="iconNoteBlue"/>
     <img v-else-if="icon == 'iconCrown'" :class="class" :src="iconCrown"/>
+    <img v-else-if="icon == 'iconCrownBlack'" :class="class" :src="iconCrownBlack"/>
     <img v-else-if="icon == 'iconFIT'" :class="class" :src="iconFIT"/>
     <img v-else-if="icon == 'iconUserGroup'" :class="class" :src="iconUserGroup"/>
     <img v-else-if="icon == 'iconBedPurple'" :class="class" :src="iconBedPurple"/>
@@ -22,6 +23,8 @@
     <img v-else-if="icon == 'userFitWhite'" :class="class" :src="userFitWhite"/>
     <img v-else-if="icon == 'userGif'" :class="class" :src="userGif"/>
     <img v-else-if="icon == 'NotDisturb'" :class="class" :src="NotDisturb"/>
+    <img v-else-if="icon == 'City'" :class="class" :src="City"/>
+    <img v-else-if="icon == 'checkin-black'" :class="class" :src="BtnCheckinIconBlack"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -39,6 +42,7 @@ import reservation from '../assets/svg/icon-reservation.svg'
 import frontdesk from '../assets/svg/icon-frontdesk.svg'
 import iconBed from '../assets/svg/icon-bed.svg'
 import BtnCheckinIcon from '@/assets/svg/icon-check-in.svg'
+import BtnCheckinIconBlack from '@/assets/svg/icon-check-in-black.svg'
 import BtnCheckoutIcon from '@/assets/svg/icon-check-out.svg'
 import BirthdayIcon from '@/assets/svg/birthday-icon.svg'
 import ViewDetailIcon from '@/assets/svg/change-room-icon.svg'
@@ -46,6 +50,7 @@ import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
 import iconNote from '@/assets/svg/icon-note-paper-pen.svg'
 import iconNoteBlue from '@/assets/svg/icon-note-paper-pen-blue.svg'
 import iconCrown from '@/assets/svg/icon-crown.svg'
+import iconCrownBlack from '@/assets/svg/icon-crown-black.svg'
 import iconFIT from '@/assets/svg/user-icon-profile.svg'
 import iconUserGroup from '@/assets/svg/icon-user-group.svg'
 import pushPin from '@/assets/svg/push_pin.svg'
@@ -57,6 +62,7 @@ import userGroupWhite from '@/assets/svg/icon-user-group-white.svg'
 import userFitWhite from '@/assets/svg/icon-user-fit.svg'
 import userGif from '@/assets/svg/icon-user-group.svg'
 import NotDisturb from '@/assets/svg/icon-do-not-disturb.svg'
+import City from '@/assets/svg/icon-change-property.svg'
 
 
 </script>

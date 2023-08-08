@@ -18,7 +18,7 @@
     </div>
 </template>
 <script setup>
-    import {ref, useConfirm,deleteDoc } from "@/plugin";
+    import {ref, useConfirm,deleteDoc,inject } from "@/plugin";
     const confirm = useConfirm()
     const props = defineProps({
         data: Object
@@ -27,6 +27,7 @@
     const emit = defineEmits(['onEdit','onDeleted'])
     const show = ref()
     const deleteNote = ref()
+    const { getTotalNote } = inject('get_count_note')
     const toggle = (event) => {
         show.value.toggle(event);
     };
@@ -47,11 +48,11 @@
                  .then(() =>{
                     deleteNote.value = props.data.name
                     emit('onDeleted')
+                    getTotalNote()
                     loading.value = true
 
                  } )               
         },
-
     });
     }
 </script>

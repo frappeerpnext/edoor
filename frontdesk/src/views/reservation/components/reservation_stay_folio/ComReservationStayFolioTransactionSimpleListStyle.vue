@@ -28,11 +28,11 @@
             </Column>
             <Column header="Qty" class="text-right">
                 <template #body="slotProps">
-                    <span v-if="slotProps?.data?.account_name == 'Loundry'">{{slotProps.data.quantity}}</span>
+                    <span v-if="slotProps?.data.allow_enter_quantity==1">{{slotProps.data.quantity}}</span>
 
                 </template>
             </Column>
-            <Column field="price" header="Amount/Rate" class="text-right" style="min-width: 70px;">
+            <Column frozen  field="price" header="Amount/Rate" class="text-right" style="min-width: 70px;"  >
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.price" :class="slotProps.data.price<0?'white-space-nowrap text-green-700':'white-space-nowrap'" />
                 </template>

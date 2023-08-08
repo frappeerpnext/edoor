@@ -9,7 +9,6 @@
  "field_order": [
   "room_block_status",
   "room_block_color",
-  "room_revenue_code",
   "shift_name_after_run_night_audit",
   "folio_transaction_style_credit_debit",
   "allow_user_to_add_back_date_transaction",
@@ -44,12 +43,6 @@
    "fieldname": "room_block_color",
    "fieldtype": "Color",
    "label": "Room Block Color"
-  },
-  {
-   "fieldname": "room_revenue_code",
-   "fieldtype": "Link",
-   "label": "Room Revenue Code",
-   "options": "Account Code"
   },
   {
    "default": "0",
@@ -165,7 +158,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-07-27 22:11:18.513165",
+ "modified": "2023-08-05 13:50:45.521107",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

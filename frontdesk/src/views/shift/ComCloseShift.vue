@@ -67,7 +67,7 @@
             </div>
         </div>
         <template #footer-right>
-            <Button v-if="doc.is_closed == 0" @click="onCloseShift">Close Shift</Button>
+            <Button class="border-none" v-if="doc.is_closed == 0" @click="onCloseShift">Close Shift</Button>
         </template>
     </ComDialogContent>
 </template>

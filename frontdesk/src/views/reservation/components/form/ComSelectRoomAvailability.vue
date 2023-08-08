@@ -11,6 +11,14 @@
         endDate: String,
         roomType:String,
         except:String,
+        exceptField:{
+            type: String,
+            default: ''
+        },
+        exceptValue:{
+            type: String,
+            default: ''
+        },
         showClear:{
             type:Boolean,
             default: false
@@ -55,11 +63,18 @@
            
     })
     const getRoom = (start_date,end_date) => { 
-        getApi("reservation.check_room_availability", {
+        const filter = ref({
             property: property.name,
             start_date: moment(start_date).format("yyyy-MM-DD"),
             end_date: moment(end_date).format("yyyy-MM-DD")
         })
+        if(props.exceptField && props.exceptValue){
+           filter.value.exception = {
+                field: props.exceptField,
+                value: props.exceptValue
+            } 
+        }
+        getApi("reservation.check_room_availability", filter.value)
         .then((result) => { 
             data.value = result.message; 
         })

@@ -1,6 +1,7 @@
 <template>
 <div>
 	<div>
+		
 		<div class="flex justify-end items-center">
 			<div class="flex items-center mt-3 mb-1">
 				<!-- <ComAddNote :name="name"></ComAddNote> -->
@@ -8,14 +9,12 @@
 					<i class="pi pi-plus text-lg  me-2"></i>
 					Add Note
 				</Button>
-				<div class="card flex flex-wrap justify-content-center gap-3">
-        <span class="p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText v-model="keyword" placeholder="Search" @input="onSearch"/>
-            </span>
-    		</div>
 			</div>
 		</div>
+		<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
+            <i class="pi pi-search" />
+            <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
+        </div>
 		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 pb-4 mt-3 content-global-note">
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
@@ -82,6 +81,7 @@ import ComFolioTransactionDetail from '@/views/reservation/components/reservatio
 import Enumerable from 'linq'
 
 const frappe = inject('$frappe');
+const { getTotalNote } = inject('get_count_note')
 const gv = inject('$gv');
 const db = frappe.db();
 const dialog = useDialog()
@@ -112,6 +112,8 @@ function onEdit(name){
                 const data = options.data;
                 if(data){
 					onLoadData()
+					// update bage total notes
+					getTotalNote()
 				}
             }
         });

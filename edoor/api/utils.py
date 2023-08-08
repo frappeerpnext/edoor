@@ -472,8 +472,9 @@ def remove_temp_room_occupy(reservation):
     frappe.db.commit()
 
 def add_room_charge_to_folio(folio,rate):
-    account_code = frappe.get_doc("Account Code",frappe.db.get_default("room_revenue_code"))
-    doc = frappe.get_doc({
+    rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
+ 
+    frappe.get_doc({
         "doctype":"Folio Transaction",
         "transaction_type":"Reservation Folio",
         "posting_date":rate.date,
@@ -482,8 +483,8 @@ def add_room_charge_to_folio(folio,rate):
         "room_id":rate.room_id,
         "room_id":rate.room_id,
         "input_amount":rate.input_rate,
-        "account_code":account_code.name,
-        "tax_rule":account_code.tax_rule,
+        "account_code":rate_type_doc.account_code,
+        "tax_rule":rate.tax_rule,
         "discount_type":rate.discount_type,
         "discount":rate.discount,
         "tax_1_rate":rate.tax_1_rate,
@@ -538,3 +539,19 @@ def clear_reservation():
     
     frappe.db.commit()
     return "done"
+
+@frappe.whitelist()
+def get_rate_type_info(name):
+    doc = frappe.get_doc("Rate Type", name)
+    if not doc.account_code:
+        frappe.throw("This account does not have account code")
+    
+    account_doc =frappe.get_doc("Account Code", doc.account_code)
+    tax_rule=None
+    if account_doc.tax_rule:
+        tax_rule = frappe.get_doc("Tax Rule",account_doc.tax_rule)
+    
+    return {
+        "name": name,
+        "tax_rule":tax_rule
+    }

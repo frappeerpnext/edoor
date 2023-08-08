@@ -84,9 +84,9 @@
                                 </div>
                             </div>
                             <div class=" col-12 lg:col-2">
-                                <div class="pt-2 rounded-lg cursor-pointer" style="height: 43px;">
+                                <div class="pt-2 rounded-lg cursor-pointer" style="height: 44px;">
                                 <label>Group Color</label>  
-                                 <div class="w-full h-full rounded-lg border-2 border-gray-500" @click="toggleColor" :style="{background:doc.reservation.group_color}"></div>
+                                 <div class="w-full h-full rounded-lg border-1" style="border-color: #a0bde0;" @click="toggleColor" :style="{background:doc.reservation.group_color}"></div>
                                 </div>
                                 <OverlayPanel ref="opColor">
                                     <ComColorPicker v-model="doc.reservation.group_color"/>
@@ -196,50 +196,48 @@
             </div>
         </div>
 
-        <div class="grid pt-2" v-if="setting.room_tax && (setting.room_tax.tax_1_rate + setting.room_tax.tax_2_rate + setting.room_tax.tax_3_rate) > 0">
+        <div class="grid pt-2" v-if="room_tax && (room_tax.tax_1_rate + room_tax.tax_2_rate + room_tax.tax_3_rate) > 0">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
-                   
-                    <div class="flex gap-2" >
-                        <div class="flex gap-2 align-items-center relative w-11rem">
-                            <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
-                            <span class="absolute right-0 w-full">
-                                <Checkbox input-id="rate_tax" class="w-full flex justify-end" v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
-                            </span>
-                        </div>
-                        <div class="flex gap-3">
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem"> 
-                                    <label class="font-medium">{{setting.room_tax.tax_1_name}} {{setting.room_tax.tax_1_rate}}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-1-rate" class="w-full flex justify-end" v-model="useTax.use_tax_1" @input="onUseTax1Change" :binary="true" />
+                    <div class="flex gap-2 align-items-center relative my-3" style="width: 12.7rem;">
+                        <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <span class="absolute right-0 w-full">
+                            <Checkbox input-id="rate_tax" class="w-full flex justify-end" v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
+                        </span>
+                    </div>
+                    <div class="">
+                        <div class="flex gap-3 flex-wrap">
+                            <div class="flex gap-3 relative">
+                                <label for="tax-1-rate" class="font-medium flex align-items-center h-full">{{room_tax.tax_1_name}} {{room_tax.tax_1_rate}}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem"> 
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1" @input="onUseTax1Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                                    <CurrencyFormat :value="totalTax1Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax1Amount" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem">
-                                    <label class="font-medium">{{setting.room_tax.tax_2_name}} {{setting.room_tax.tax_2_rate}}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-2-rate" class="w-full flex justify-end" v-model="useTax.use_tax_2" @input="onUseTax2Change" :binary="true" />
+                            <div class="flex gap-3 relative">
+                                <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{room_tax.tax_2_name}} {{room_tax.tax_2_rate}}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2" @input="onUseTax2Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                 
-                                    <CurrencyFormat :value="totalTax2Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax2Amount" />
+                                    </div>
                                 </div>
                             </div>
-                            <div class="p-inputtext-pt text-center border-1 border-white h-auto w-auto">
-                                <div class="border-bottom-1 py-2 flex gap-2 relative w-12rem">
-                                    <label class="font-medium">{{setting.room_tax.tax_3_name}} {{setting.room_tax.tax_3_rate}}%</label>
-                                    <span class="absolute right-0 w-full">
-                                        <Checkbox input-id="tax-3-rate" class="w-full flex justify-end" v-model="useTax.use_tax_3" @input="onUseTax3Change" :binary="true" />
+                            <div class="flex gap-3 relative">
+                                <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{room_tax.tax_3_name}} {{room_tax.tax_3_rate}}%</label>
+                                <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
+                                    <span class="w-full">
+                                        <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3" @input="onUseTax3Change" :binary="true" />
                                     </span>
-                                </div>
-                                <div class="text-end py-2">
-                                    <CurrencyFormat :value="totalTax3Amount" />
+                                    <div class="white-space-nowrap">
+                                        <CurrencyFormat :value="totalTax3Amount" />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -364,25 +362,21 @@
 
     
 
-            <Button @click="onSave(true)" v-if="!doc.auto_assign_room">Create Reservation & Assign Room</Button>
+            <Button class="border-none" @click="onSave(true)" v-if="!doc.auto_assign_room">Create Reservation & Assign Room</Button>
         </template>
     </ComDialogContent>
 </template>
 <script setup>
+import { ref, inject, computed, onMounted, postApi , getApi,getDoc } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
-import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
+
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
-import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
- 
 
 
-import { ref, inject, computed, onMounted, postApi } from "@/plugin"
+
 import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
 const toast = useToast();
-const frappe = inject('$frappe')
-const db = frappe.db();
-const call = frappe.call();
 const moment = inject("$moment")
 const socket = inject("$socket")
 const isSaving = ref(false)
@@ -402,7 +396,7 @@ const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
 const group_color= ref("#" + generateRandomColor())
-
+const room_tax = ref()
 
 const onOpenChangeRate = (event, stay) => {
     
@@ -423,7 +417,7 @@ const doc = ref({
         adult: 1,
         child: 0,
         reservation_status: 'Reserved',
-        tax_rule: setting.room_tax?.name,
+        tax_rule: room_tax.value?.name,
         pay_by_company: 1,
         group_code:"",
         group_name:"",
@@ -436,20 +430,22 @@ const doc = ref({
     },
     reservation_stay: [{ rate: 0, adult: 1, child: 0, is_manual_rate: false, is_master: 0 },],
     tax_rule: {
-        rate_include_tax: setting.room_tax?.is_rate_include_tax ? "Yes" : "No",
-        tax_1_rate: setting.room_tax?.tax_1_rate || 0,
-        tax_2_rate: setting.room_tax?.tax_2_rate || 0,
-        tax_3_rate: setting.room_tax?.tax_3_rate || 0,
+        rate_include_tax: room_tax.value?.is_rate_include_tax ? "Yes" : "No",
+        tax_1_rate: room_tax.value?.tax_1_rate || 0,
+        tax_2_rate: room_tax.value?.tax_2_rate || 0,
+        tax_3_rate: room_tax.value?.tax_3_rate || 0,
     }
 })
 
 const gender_list = ["Not Set", "Male", "Female"]
 
-const useTax = ref({
-    use_tax_1: (setting.room_tax?.tax_1_rate || 0) > 0,
-    use_tax_2: (setting.room_tax?.tax_2_rate || 0) > 0,
-    use_tax_3: (setting.room_tax?.tax_3_rate || 0) > 0,
-
+const useTax = computed(()=>{
+    return {
+        use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
+        use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
+        use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0    
+    }
+    
 })
 
 const roomRateTax = ref((d) => {
@@ -460,9 +456,9 @@ const roomRateTax = ref((d) => {
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
 const rateTax = ref((d) => {
-    if(setting.room_tax){
+    if(room_tax.value){
         if(doc.value.tax_rule.rate_include_tax == 'Yes'){
-            return gv.getRateBeforeTax((d.new_rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+            return gv.getRateBeforeTax((d.new_rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
         }else{
             return d.new_rate
         }
@@ -473,10 +469,10 @@ const rateTax = ref((d) => {
 
 function getTax1Amount(rate) { 
 
-    if (setting.room_tax) {
-        if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
+    if (room_tax.value) {
+        if (room_tax.value.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
 
-            rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+            rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
 
         } else {
             rate = rate
@@ -492,15 +488,15 @@ function getTax1Amount(rate) {
 }
 function getTax2Amount(rate) {
 
-    if (setting.room_tax) {
-        if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+    if (room_tax.value) {
+        if (room_tax.value.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
+            rate = rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
              
         } else {
             rate = rate
              
         }
-        if (setting.room_tax.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
+        if (room_tax.value.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
             rate = rate
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
         console.log("tax 2 rate amount " ,  rate)
@@ -512,18 +508,18 @@ function getTax2Amount(rate) {
     } 
 }
 function getTax3Amount(rate) {
-    if (setting.room_tax) {
-        if (setting.room_tax.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
-            rate = rate = gv.getRateBeforeTax((rate || 0), setting.room_tax, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+    if (room_tax.value) {
+        if (room_tax.value.calculate_tax_1_after_discount == 0 || doc.value.tax_rule.rate_include_tax == 'Yes') {
+            rate = rate = gv.getRateBeforeTax((rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
              
         } else {
             rate = rate
              
         }
-        if (setting.room_tax.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
+        if (room_tax.value.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
             rate = rate
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
-        if (setting.room_tax.calculate_tax_3_after_adding_tax_2 == 0 || (rate * (doc.value.tax_rule.tax_2_rate / 100)) == 0 ) {
+        if (room_tax.value.calculate_tax_3_after_adding_tax_2 == 0 || (rate * (doc.value.tax_rule.tax_2_rate / 100)) == 0 ) {
             rate = rate
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_2_rate / 100))}
         return (rate || 0) * (doc.value.tax_rule.tax_3_rate / 100 || 0)
@@ -581,10 +577,8 @@ const onDateSelect = (date) => {
         getRoomType()
 }
 
-
 const getRoomType = () => {
- 
-    call.get("edoor.api.reservation.check_room_type_availability", {
+    getApi("reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(doc.value.reservation.arrival_date).format("yyyy-MM-DD"),
         end_date: moment(doc.value.reservation.departure_date).format("yyyy-MM-DD"),
@@ -618,7 +612,7 @@ const getRoomType = () => {
 
 function onSelectedCustomer(event) {
     if (event.value) {
-        db.getDoc('Customer', event.value)
+        getDoc('Customer', event.value)
             .then((d) => {
                 
                 doc.value.guest_info = d
@@ -642,13 +636,13 @@ const onRoomNightChanged = (event) => {
 }
 
 const onUseTax1Change = (value) => {
-    doc.value.tax_rule.tax_1_rate = value ? setting.room_tax.tax_1_rate : 0
+    doc.value.tax_rule.tax_1_rate = value ? room_tax.value.tax_1_rate : 0
 }
 const onUseTax2Change = (value) => {
-    doc.value.tax_rule.tax_2_rate = value ? setting.room_tax.tax_2_rate : 0
+    doc.value.tax_rule.tax_2_rate = value ? room_tax.value.tax_2_rate : 0
 }
 const onUseTax3Change = (value) => {
-    doc.value.tax_rule.tax_3_rate = value ? setting.room_tax.tax_3_rate : 0
+    doc.value.tax_rule.tax_3_rate = value ? room_tax.value.tax_3_rate : 0
 }
 
  
@@ -719,8 +713,7 @@ function generateRandomColor() {
 onMounted(() => {
     
     doc.value.guest_info.expired_date = moment().toDate()
-
-    call.get("edoor.api.frontdesk.get_working_day", {
+    getApi("frontdesk.get_working_day", {
         property: property.name
 
     }).then((result) => {
@@ -785,6 +778,22 @@ const onBusinessSourceChange = (source) => {
 }
 const onRateTypeChange = (rate_type) => {
     if (rate_type) {
+        getApi("utils.get_rate_type_info", { name: rate_type.value }).then((result) => {
+            //check if rate type change then resert room revenue code and tax
+
+            doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
+            const tax_rule = result.message.tax_rule
+            doc.value.tax_rule = {
+                rate_include_tax: tax_rule?.is_rate_include_tax ? "Yes" : "No",
+                tax_1_rate: tax_rule?.tax_1_rate || 0,
+                tax_2_rate: tax_rule?.tax_2_rate || 0,
+                tax_3_rate: tax_rule?.tax_3_rate || 0,
+            }
+            room_tax.value = tax_rule
+            doc.value.reservation.rate_type = rate_type.value
+
+        })
+
         doc.value.reservation.rate_type = rate_type.value
     }
 

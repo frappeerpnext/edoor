@@ -13,7 +13,7 @@
         <ComReservationStayPanel title="Stay Guests">
             <template #btn>
                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded  aria-controls="menu_stay_guest" @click="onMenuStayGuest"/>
-                <Menu ref="menuStayGuest" id="menu_stay_guest" :model="menuStayGuestList" :popup="true" />
+                <Menu ref="menuStayGuest" id="menu_stay_guest" :model="((rs.masterGuest?.name != rs.guest?.name) ? menuStayGuestList : menuStayOneGuest)" :popup="true" />
             </template>
             <template #content>
                 <ComCardProfileGuest @onClick="onViewGuestDetail(rs.guest.name)" :dob="rs?.guest?.date_of_birth" :photo="rs?.guest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.guest?.customer_name_en" :phoneNumber2="rs?.guest?.phone_number_2"  :phoneNumber1="rs?.guest?.phone_number" :email="rs?.guest?.email_address" >
@@ -42,13 +42,11 @@ import ComCardProfileGuest from './ComCardProfileGuest.vue';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
 import ComReservationStayTransportationLabel from './ComReservationStayTransportationLabel.vue'
-import ComAddGuest from '../../guest/components/ComAddGuest.vue';
+import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
+
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
-
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');
-
 const dialog = useDialog()
 const dialogConfirm = useConfirm()
 const frappe = inject('$frappe')
@@ -100,6 +98,29 @@ const menuStayGuestList = ref([
         }
     }
 ])
+const menuStayOneGuest = ref([
+    {
+        label: 'Add Additional Guest',
+        icon:'pi pi-fw pi-user-plus',
+        command: () =>{
+            onAdvancedSearch('additional_guest')
+        }
+    },
+    {
+        label: 'Add Stay Guest',
+        icon:'pi pi-fw pi-user-edit',
+        command: () =>{
+            onAdvancedSearch('stay_guest')
+        }
+    },
+    {
+        label: 'Edit Guest',
+        icon:'pi pi-fw pi-user-edit',
+        command: () =>{
+            onEditGuest('stay_guest')
+        }
+    }
+])
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
     {
@@ -120,7 +141,7 @@ const menuAdditionalGuestList = ref([
         label: 'Delete',
         icon:'pi pi-fw  pi-trash',
         class:'delete-text-color',
-        command: ($event) =>{
+        command: () =>{
             onDeleteAdditionalGuest()
         }
     }

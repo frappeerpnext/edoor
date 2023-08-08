@@ -34,7 +34,13 @@
       </Column>
       <Column field="rate" header="Rate" bodyStyle="text-align:right" headerStyle="text-align:right">
           <template #body="{ data }">
-            <CurrencyFormat @click="onEditRoomRate(data)" :value="data.rate" class="p-0 link_line_action1"/>
+            <button @click="onEditRoomRate(data)" class="link_line_action1 w-12rem">
+              <div class="flex justify-between w-full items-center">
+              <span class="text-sm" v-if="data.is_manual_rate"> (Manual) </span>
+                                  <span class="text-sm" v-else>(Plan)</span>
+              <CurrencyFormat  :value="data.rate" class="p-0 "/>
+            </div>
+            </button>
           </template>
       </Column>
 
