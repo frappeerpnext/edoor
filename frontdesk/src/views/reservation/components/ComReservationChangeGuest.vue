@@ -134,9 +134,8 @@ function onOK(){
     }
 }
 function onStayGuestSave() {
-    loading.value = true
-    console.log(rs)
-    if (rs.reservationStay.name) {
+    loading.value = true 
+    if (rs.reservation.name) {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'
         }
@@ -150,15 +149,15 @@ function onStayGuestSave() {
         }).then((r)=>{
             if (r) {
                 loading.value = false
-                if(isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest){
-                    // is_guest_stay
-                    rs.guest = guest.value
-                }
-                if(isApplyMasterGuest.value){
-                    // master guest
-                    rs.masterGuest = guest.value
-                }
-                dialogRef.value.close();
+                // if(isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest){
+                //     // is_guest_stay
+                //     rs.guest = guest.value
+                // }   
+                // if(isApplyMasterGuest.value){
+                //     // master guest
+                //     rs.masterGuest = guest.value
+                // }
+                dialogRef.value.close(r);
             }
         }).catch(()=>{
             loading.value = false

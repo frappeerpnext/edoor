@@ -1,27 +1,38 @@
 <template lang="">
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-        
-        Block Date
-        <div class="card flex justify-content-left">
-            <Calendar class="w-14rem" showIcon v-model="data.block_date" disabled dateFormat="dd-mm-yy"/>
+        <div class="grid">
+        <div class="col-12 p-0">
+            <div class="w-6 col">
+                <label>Block Date</label>
+            <div class="card flex justify-content-left">
+                <Calendar class="w-full" showIcon v-model="data.block_date" disabled dateFormat="dd-mm-yy"/>
+            </div>
+            </div>
         </div>
-        Start Date
-        <div class="card flex justify-content-left">
-            <Calendar class="w-14rem" showIcon v-model="data.start_date" disabled dateFormat="dd-mm-yy"/>
+        <div class="col-12 lg:col-6">
+            <label>Start Date</label>
+            <div class="card flex justify-content-left">
+                <Calendar class="w-full" showIcon v-model="data.start_date" disabled dateFormat="dd-mm-yy"/>
+            </div>
         </div>
-        Release Date
-        <div class="card flex justify-content-left"> 
-            <Calendar class="w-14rem" showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
+        <div class="col-12 lg:col-6">
+            <label>Release Date</label>
+            <div class="card flex justify-content-left"> 
+                <Calendar class="w-full" showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
+            </div>
         </div>
-        Room Type
-        <div class="card flex justify-content-left"> 
+        <div class="col-12 lg:col-6">
+        <label>Room Type</label>
+        <div class="card w-full flex justify-content-left"> 
             <ComSelectRoomTypeAvailability 
                 v-model="data.room_type_id"
                 :start-date="data.start_date"
                 :end-date="data.end_date"/>
         </div>
-        Room Number
-        <div class="card flex justify-content-left">
+        </div>
+        <div class="col-12 lg:col-6">
+        <label> Room Name </label>
+        <div class="w-full card flex justify-content-left">
             <ComSelectRoomAvailability 
                 v-model="data.room_id"
                 :start-date="data.start_date"
@@ -30,10 +41,14 @@
                 exceptField="stay_room_id"
                 :exceptValue="data.name"/>
         </div>
-        Reason
-        <div class="card flex justify-content-left">
-            <Textarea v-model="data.reason" rows="5" cols="30" />
         </div>
+        <div class="col-12">
+            <label>Reason</label>
+        <div class=" card w-full flex justify-content-left">
+            <Textarea class="w-full" v-model="data.reason" />
+        </div>
+        </div>
+    </div>
     </ComDialogContent>
 </template>
 <script setup>

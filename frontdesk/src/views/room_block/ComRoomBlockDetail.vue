@@ -5,10 +5,10 @@
                 <td colspan="2" class="bg-slate-200 p-2 font-medium text-center border-1">Room Block</td>
             </tr>
             <ComStayInfoNoBox label="Block Number" v-if="doc?.name" :value="doc?.name"/>
-            <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc?.room_number"/>
+            <ComStayInfoNoBox label="Room Name" v-if="doc?.room_number" :value="doc?.room_number"/>
             <ComStayInfoNoBox label="Room Type" v-if="doc?.room_type" :value="doc?.room_type"/>
             <ComStayInfoNoBox label="Start Date" v-if="doc?.start_date" :value="gv.dateFormat(doc?.start_date)"/>
-            <ComStayInfoNoBox label="Release Date" v-if="doc?.end_date" :value=" gv.dateFormat(doc?.end_date)"/>
+            <ComStayInfoNoBox label="Release Date" v-if="doc?.end_date" :value="gv.dateFormat(doc?.end_date)"/>
             <ComStayInfoNoBox label="Blocked by" v-if="doc?.modified_by" :value="doc?.modified_by"/>
             <ComStayInfoNoBox label="Block Date" v-if="doc?.modified" :value="gv.datetimeFormat(doc?.modified)"/>
         </table>
@@ -21,29 +21,35 @@
             
         <template #footer-right>
 
-            <Button label="Edit" @click="onEdit" />
-            <Button label="Unblock" @click="onUnblock" />
+            <Button icon="pi pi-pencil text-sm" label="Edit" @click="onEdit" />
+            <Button icon="pi pi-lock-open text-sm" label="Unblock" @click="onUnblock" />
 
         </template>
     </ComDialogContent>
     <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }">
         <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()">
-            Unblock Date
-        <div class="card flex justify-content-left"> 
-            <Calendar class="w-14rem" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
-        </div><br>
-        Housekeeping Status
-        <div>
-        <ComSelect  v-model="data.unblock_housekeeping_status" doctype="Housekeeping Status" />
-        </div><br>
-            Unblock Note
-        <div class="card flex justify-content-left">
-            <Textarea v-model="data.unblock_note" rows="5" cols="30" />
-        </div>
-
+            <div class="grid">
+                <div class="col-12 lg:col-6">
+                    <label>Unblock Date</label>
+                    <div class="card flex justify-content-left"> 
+                        <Calendar class="w-full" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
+                    </div>
+                </div>
+                <div class="col-12 lg:col-6">
+                    <label>Housekeeping Status</label>
+                    <div class="w-full">
+                    <ComSelect class="w-full" v-model="data.unblock_housekeeping_status" doctype="Housekeeping Status" />
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label>Unblock Note</label>
+                    <div class="w-full card flex justify-content-left">
+                        <Textarea class="w-full" v-model="data.unblock_note"  />
+                    </div>
+                </div>
+            </div>
     </ComDialogContent> 
     </Dialog>
-
 </template>
 
 <script setup>
@@ -60,7 +66,6 @@ const moment = inject('$moment');
 const dialog = useDialog()
 const data = ref()
 const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
-
 
 function onEdit(){
     const dialogRef = dialog.open(ComEditRoomBlock, {

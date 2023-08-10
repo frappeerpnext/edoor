@@ -1,7 +1,7 @@
 <template>
     <div>
         <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
-            @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[20, 50, 100]">
+            @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[10, 50, 100]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column class="text-center" field="room_number" header="Room #"></Column>
             <Column  header="Status" headerClass="text-center" bodyClass="text-center">
@@ -29,7 +29,7 @@
             </Column>
             <Column field="reservation_status" header="Reservation Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <ComReservationStatus :statusName="slotProps.data.reservation_status"/>
+                    <ComReservationStatus v-if="slotProps.data.guest" :statusName="slotProps.data.reservation_status"/>
                 </template>
             </Column>
             <Column field="housekeeper" header="Housekeeper">

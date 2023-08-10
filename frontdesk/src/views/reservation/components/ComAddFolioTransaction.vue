@@ -214,7 +214,7 @@
                         <div class="grid">
                             <div class="col-6">
                                 <label >Bank Fee</label>
-                                <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%" :readonly="!account_code.allow_user_to_change_bank_fee" />
+                                <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%" :maxFractionDigits="2" :readonly="!account_code.allow_user_to_change_bank_fee" />
                             </div>
                             <div class="col-6">
                                 <label >Bank Fee Amount</label>

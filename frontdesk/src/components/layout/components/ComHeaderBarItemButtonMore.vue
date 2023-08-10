@@ -7,7 +7,7 @@
             Mores
         </template>
     </ComHeaderBarItemButton>
-    <Menu ref="show" id="overlay_menu_more" :popup="true" style="min-width: 180px;">
+    <!-- <Menu ref="show" id="overlay_menu_more" :popup="true" style="min-width: 180px;">
         <template #end>
             <button @click="onLink('city-ledger')"
                 class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround xl:hidden">
@@ -30,7 +30,7 @@
                 <span class="ml-2">Misc. Sale</span>
             </button>
         </template>
-    </Menu>
+    </Menu> -->
 </template>
 <script setup>
 import { ref } from '@/plugin'

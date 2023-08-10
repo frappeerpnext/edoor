@@ -8,16 +8,16 @@
                 <ComSelect placeholder="All Room Group" v-model="filter.room_type_group" doctype="Room Type Group" optionLabel="room_type_group" optionValue="name"></ComSelect>
             </div>
             <div>
-                <ComSelect placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
+                <ComSelect  :filters="[['property', '=', edoor_property.name]]" placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
             </div>
             <div>
-                <ComSelect placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
+                <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
             </div>
             <div>
-                <ComSelect placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
+                <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
             </div>
             <div>
-                <ComSelect placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
+                <ComSelect  :filters="[['property', '=', edoor_property.name]]" placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
             </div>
             <div>
                 <span class="p-input-icon-left">
@@ -32,6 +32,7 @@
 import { reactive,watch,ref } from 'vue';
 const emit = defineEmits(["onFilterResource","onSearch"])
 const keyword = ref("")
+const edoor_property = JSON.parse(localStorage.getItem('edoor_property'))
 const filter = reactive({
     room_type: "",
     room_number: "",

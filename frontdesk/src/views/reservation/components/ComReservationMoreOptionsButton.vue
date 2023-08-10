@@ -36,56 +36,56 @@
                 </button>
                 <button @click="onGroupCheckIn(false)" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-undo" />
                     <span class="ml-2">Group Undo Check-In</span>
                 </button>
                 <button @click=" onGroupCheckOut(true)" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="checkoutBlack" style="height: 12px;" />
                     <span class="ml-2">Group Check Out</span>
                 </button>
                 <button @click="onGroupCheckOut(false)" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-undo" />
                     <span class="ml-2">Group Undo Check Out</span>
                 </button>
 
                 <button @click="onGroupBuildToCompany" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Build To Company</span>
                 </button>
                 
                 <button @click="onGroupBuildToMasterGroup " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Build To Master Group </span>
                 </button>
 
                 <button @click="onGroupBuildToGuest " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Build To Guest</span>
                 </button>
                 <button @click="onGroupBuildToRoomandTaxtoCompany " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Build To Room and Tax to Company, Extra to Guest</span>
                 </button>
          
                 <button @click="onGroupChangeRate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Change Rate</span>
                 </button>
                 <button @click="onGroupChangeStayDate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Group Change Stay Date</span>
                 </button>
                 <button @click="onGroupChangeStayDate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Stay To Other Reservation</span>
                 </button>
                 <button @click="onStayToOtherReservation()" 
@@ -173,12 +173,13 @@ function validateSelectReservation(){
         return false
     }
 }
-function onSaveGroupStatus(txt){ 
+function onSaveGroupStatus(r){ 
     const data = {
         reservation: rs.reservation.name,
         stays:rs.selecteds,
         status:note.value.reservation_status,
-        note:txt
+        note:r.note,
+        reserved_room: r.reserved_room
     } 
     postApi('reservation.update_reservation_status',data).then((r)=>{
         onCloseNote()

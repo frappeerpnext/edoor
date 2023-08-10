@@ -16,17 +16,18 @@
                             </template>
                         </Column>
                         <Column field="title" header="Title"></Column>
-                        <Column field="description" header="Description"></Column>
                         <Column field="attached_to_name" header="Attach Name">
                             <template #body="slotProps"> 
                                 <Button v-if="doctype != slotProps.data.attached_to_doctype" @click="onDetail(slotProps.data)" :label="slotProps.data.attached_to_name" link size="small"/>
                             </template>
                         </Column>
+                        <Column field="description" header="Description"></Column>
                         <Column field="" header="Action">
-                            <template #body="slotProps"> 
-                                <Button @click="downloadURI(slotProps.data.file_url, slotProps.data.file_name)" text size="small" icon="pi pi-download" severity="success" /> 
+                            <template #body="slotProps">
+                                <ComDocumentButtonAction :data="slotProps.data" @onDownload="onDownload" @onEdit="onEdit" @onDelete="onRemove"/>
+                                <!-- <Button @click="downloadURI(slotProps.data.file_url, slotProps.data.file_name)" text size="small" icon="pi pi-download" severity="success" /> 
                                 <Button :loading="loading" text size="small" icon="pi pi-file-edit" @click="onEdit($event,slotProps.data)" severity="primary" />
-                                <Button :loading="deleting" text size="small" icon="pi pi-trash" @click="onRemove(slotProps.data.name)" severity="danger" />
+                                <Button :loading="deleting" text size="small" icon="pi pi-trash" @click="onRemove(slotProps.data.name)" severity="danger" /> -->
                             </template>
                         </Column>
                     </DataTable>
@@ -57,6 +58,7 @@
 <script setup>
 import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog} from '@/plugin'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
+import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 const props = defineProps({
     doctype:{
         type: String,
@@ -149,8 +151,10 @@ const dialogRef = dialog.open(ReservationStayDetail, {
     }
 });
 }
-
-function onRemove(name){
+function onDownload(data){
+    downloadURI(data.file_url, data.file_name)
+}
+function onRemove(selected){
     dialogConfirm.require({
         message: 'Do you want to delete this record?',
         header: 'Delete Confirmation',
@@ -161,7 +165,7 @@ function onRemove(name){
         acceptLabel: 'Ok',
         accept: () => {
             deleting.value = true
-            deleteDoc('File', name).then((doc) => {
+            deleteDoc('File', selected.name).then((doc) => {
                 if(doc){
                     deleting.value = false
                     onLoad()

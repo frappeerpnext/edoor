@@ -18,7 +18,9 @@
   "is_group",
   "old_parent",
   "parent_edoor_menu",
-  "sort_order"
+  "sort_order",
+  "hidden_in_sm",
+  "hidden_in_lg"
  ],
  "fields": [
   {
@@ -85,12 +87,24 @@
    "fieldname": "sort_order",
    "fieldtype": "Int",
    "label": "Sort Order"
+  },
+  {
+   "default": "0",
+   "fieldname": "hidden_in_sm",
+   "fieldtype": "Check",
+   "label": "Hidden In Small Screen"
+  },
+  {
+   "default": "0",
+   "fieldname": "hidden_in_lg",
+   "fieldtype": "Check",
+   "label": "Hidden In Large Screen"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2023-08-05 16:44:52.966645",
+ "modified": "2023-08-09 14:48:08.009900",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Menu",

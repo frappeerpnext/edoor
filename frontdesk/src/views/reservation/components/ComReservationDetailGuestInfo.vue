@@ -141,7 +141,7 @@ function onAdvancedSearch(guest_type) {
         onClose(r) {
             if(r.data){
                 loading.value = true
-
+                rs.LoadReservation(rs.reservation.name)
                 socket.emit("RefresheDoorDashboard", property.name);
             
                 gv.toast('success', 'Updated Successful')

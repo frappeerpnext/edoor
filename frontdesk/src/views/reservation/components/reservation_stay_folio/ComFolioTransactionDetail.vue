@@ -97,13 +97,14 @@
             <table class="">
               <tbody>
                 <ComStayInfoNoBox label="Folio" :value="doc?.name"/>
-                <ComStayInfoNoBox label="Ref. No" v-if="setting.folio_transaction_style_credit_debit == 1" isSlot :fill="false">
-                  <Button class="p-0 link_line_action1" @click="changeRef($event)" link>
+                <ComStayInfoNoBox label="Ref. No" isSlot :fill="false" :value="doc?.reference_number ? doc?.reference_number : ''">
+                  <Button v-if="!doc?.reference_number && doc?.is_auto_post != 1" class="p-0 link_line_action1" @click="changeRef($event)" link>
                     <span v-if="doc?.reference_number">{{doc?.reference_number}}</span>
                     <span v-else>Add Ref. No</span>
                   </Button>
+                  <span v-else-if="!doc?.reference_number">N/A</span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox v-else-if="doc?.reference_number" label="Ref. No" :value="doc?.reference_number"/>
+                <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
                 <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')"/>
                 <ComStayInfoNoBox label="Created Date" :value="gv.datetimeFormat(doc?.creation)"/>
                 <ComStayInfoNoBox label="Made By" :value="doc?.owner"/>

@@ -1,8 +1,5 @@
 <template>
-
-    <!-- <Button label="Add Note" @click="visible = true" /> -->
-  <ComDialogContent @onOK="onSave" :loading="loading" @onClose="visible = false">
-    <!-- {{ data }} -->
+  <ComDialogContent @onOK="onSave" :loading="loading" @onClose="onClose">
     <div class="grid">
       <div class="col-12">
         <div class="w-6">
@@ -13,18 +10,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="col-6">
-        <label for="Reference Doctype">Reference Doctype</label>
-        <div class="card flex justify-content-left">
-        <InputText class="w-full" type="text" v-model="data.reference_doctype" />
-        </div>
-      </div>
-      <div class="col-6">
-         <label for="Reference Name">Reference Name</label>
-          <div class="card flex justify-content-left">
-          <InputText class="w-full" type="text" v-model="data.reference_name" />
-          </div>
-      </div> -->
       <div class="col-6"> 
         <label for="Reservation">Reservation</label>
         <div class="card flex justify-content-left"> 
@@ -80,4 +65,7 @@ onMounted(() => {
   }
 })
 
+function onClose(){
+    dialogRef.value.close()
+}
 </script>

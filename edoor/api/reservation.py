@@ -191,9 +191,8 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
     end_date = add_to_date(end_date,days=-1)
     except_stay = ""
     if reservation_stay:
-        except_stay = " AND reservation_stay <> '{}'".format(reservation_stay)
+        except_stay = " AND coalesce(reservation_stay,'') <> '{}'".format(reservation_stay)
     sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
-    
     room_occupy = frappe.db.sql(sql)
     return room_occupy[0][0]
 
@@ -677,9 +676,15 @@ def check_out(reservation,reservation_stays=None):
             room_doc.guest = None
             room_doc.reservation_stay = None 
             room_doc.save()
+        
+        #close all open folio
+        frappe.db.sql("update `tabReservation Folio` set status = 'Closed' where reservation_stay='{}' and status='Open'".format(s))
+
 
     doc = update_reservation(name=reservation,run_commit=False)
 
+    
+    #close all open folio 
     
     
     frappe.db.commit()
@@ -734,6 +739,10 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None):
 
         else:
             frappe.throw("This reservation stay {}, room {} is not allow to undo check out".format(stay_doc.name, stay_doc.rooms))
+    
+        #reopen master folio
+        frappe.db.sql("update `tabReservation Folio` set status = 'Open' where reservation_stay='{}' and status='Closed' and is_master=1".format(s))
+
     if reservation:
         update_reservation(name=reservation,run_commit=False)
     else:
@@ -948,9 +957,9 @@ def get_current_room_reservation(room_id):
 @frappe.whitelist()
 def get_reservation_comment_note(doctype, docname):
     sql = """
-        SELECT `name`, creation, reference_doctype, reference_name,`owner`, content, 'Notice' AS note_type FROM `tabFrontdesk Note` WHERE reference_doctype ='{0}' AND reference_name = '{1}'
+        SELECT `name`, creation,note_date, reference_doctype, reference_name,`owner`, content, 'Notice' AS note_type FROM `tabFrontdesk Note` WHERE reference_doctype ='{0}' AND reference_name = '{1}'
         UNION
-        SELECT `name`, creation, reference_doctype, reference_name,comment_by AS owner, content, 'Comment' AS note_type FROM `tabComment` WHERE comment_type = 'Comment' AND reference_doctype ='{0}' AND reference_name = '{1}'
+        SELECT `name`, creation ,NULL as note_date, reference_doctype, reference_name,comment_by AS owner, content, 'Comment' AS note_type FROM `tabComment` WHERE comment_type = 'Comment' AND reference_doctype ='{0}' AND reference_name = '{1}'
     """
     sql = sql.format(doctype, docname)
     data = frappe.db.sql(sql, as_dict=1)
@@ -962,6 +971,7 @@ def change_stay(data):
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
+
     if room_occupy:
         frappe.throw("Room not avaible")
     else:
@@ -1073,7 +1083,8 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
             frappe.throw("You can {} on Confirmed and Reserved reservation only".format(status))
         stay = frappe.get_doc('Reservation Stay', s['name'])
         #check if currentr working day is not equal to arrival date
-        if getdate( stay.arrival_date) != getdate(working_day["date_working_day"]):
+ 
+        if getdate( stay.arrival_date) != getdate(working_day["date_working_day"]) and status=="No Show":
             frappe.throw("Reservation stay {}, room {}, Arrival date of date of No Show reservation must be equal to current working date".format(stay.name,stay.rooms ))
         
         #validate folio balance
@@ -1084,12 +1095,12 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         stay.reservation_status = status
         stay.reservation_status_note = note
         stay.is_active_reservation = False
+
         if status=="No Show" and reserved_room:
             for stay_room in stay.stays:
                 stay_room.reserved_room = reserved_room
-     
+        
         stay.save()
-
         #update is active reservation to room rate 
         frappe.db.sql("update `tabReservation Room Rate` set is_active_reservation = 0 where reservation_stay='{}'".format(s['name']))
         if status!="No Show":
@@ -1097,6 +1108,10 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         else:
             if not reserved_room:
                 change_room_occupy(stay)
+
+        #close all folio
+        if status in ["Cancelled","No Show","Voided"]:
+            frappe.db.sql("update `tabReservation Folio` set status = 'Closed' where reservation_stay='{}' and status='Open'".format(stay.name))
         
     update_reservation(reservation, run_commit=False)
     frappe.db.commit()

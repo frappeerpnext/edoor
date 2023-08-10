@@ -196,7 +196,7 @@ button span {
     font-size: 24px;
 }
 
-.wrap-pro-bar .progress-bar:not(:last-child) {
+.wrap-pro-bar .wrapper-menu-bar_b:not(:last-child) {
     border-right: 1px solid #ffffff2b;
 }
 
@@ -205,7 +205,7 @@ button span {
 }
 
 .top-pro-bar-cus .progress-bar:hover,
-.top-pro-bar-cus .progress-bar.active {
+.top-pro-bar-cus .wrapper-menu-bar_b:not(:last-child) .progress-bar.active {
     background-color: #2a4f7c !important;
 }
 
@@ -1097,8 +1097,10 @@ p.text-center.small.page-number.visible-pdf {
 .reason-box-style{
     border:1px solid var(--bg-gray-10);
     color:rgb(184, 184, 184);
-    height:10rem;
-    overflow: auto;
+    height:auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 10rem;
 }
 .p-toast{
     z-index: 200000 !important;
@@ -1112,4 +1114,17 @@ p.text-center.small.page-number.visible-pdf {
 }
 .add-room-reserv{
     min-width: 1200px;
+}
+.table-rs-de{
+    white-space: nowrap;
+}
+.table-rs-de td:nth-child(3){
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.wrap-pro-bar .wrapper-menu-bar_b:last-child .progress-bar.active{
+    background-color: unset !important;
 }

@@ -8,7 +8,7 @@
 </Dropdown>
 </template>
 <script setup>
-import { useToast, ref, inject, reactive, computed, watch, onMounted } from '@/plugin'
+import { useToast, ref, inject, reactive, computed, watch, onMounted,getDocList } from '@/plugin'
 const emit = defineEmits(['update:modelValue', 'onSelected', 'onSelectedValue'])
 const props = defineProps({
     doctype: String,
@@ -159,7 +159,7 @@ function onDocList() {
     if (props.groupFilterField) {
         fields.push(props.groupFilterField)
     }
-    db.getDocList(props.doctype, { filters: props.filters, fields: fields, limit: 1000 }).then((r) => {
+    getDocList(props.doctype, { filters: props.filters, fields: fields, limit: 1000 }).then((r) => {
         data.value = r
         dataOptions.value = data.value
         if (props.default && data.value && data.value.length > 0) {
@@ -169,18 +169,7 @@ function onDocList() {
         }
 
     }).catch((error) => {
-       
-       
-        if (error._server_messages) {
-            const _server_messages = JSON.parse(message._server_messages)
-            _server_messages.forEach(r => {
-                window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ", ""), '*')
-            });
-        }else if(error._error_message){
-            toast.add({ severity: 'error', summary: error.httpStatusText, detail: error._error_message, life: 3000 });
-        }else{
-            toast.add({ severity: 'error', summary: error.httpStatusText, detail: error.message, life: 3000 });
-        }
+        
         data.value = []
     });
 }

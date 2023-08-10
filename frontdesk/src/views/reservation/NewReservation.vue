@@ -42,6 +42,7 @@
                             </div>
                             <div class="arr_wfit col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
+                                {{  doc.reservation.departure_date }}
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
                                     v-model="doc.reservation.departure_date" placeholder="Departure Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon

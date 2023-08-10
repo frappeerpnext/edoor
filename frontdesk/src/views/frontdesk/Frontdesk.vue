@@ -1,12 +1,11 @@
 <template lang="">
     <div>
-        
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk  </div>
+                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
                         <div class="ml-8 header-title text-2xl" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                         <div class="ml-8 header-title text-2xl" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
@@ -14,7 +13,7 @@
             </template>
             <template #end>
                 <div class="flex gap-2 justify-content-end">
-                    <Button label='Uncoming Note' :badge="totalNotes" badgeClass="p-badge-success" class="bg-yellow-500 border-none" @click="showNote=!showNote"/>
+                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote"/>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
                   
@@ -57,7 +56,10 @@
                         <Sidebar v-model:visible="showNote" class="top-20 -mt-1 w-3" style="padding-bottom: 82px;" position="right">
                             <template #header>
                                 <div class="flex justify-between items-center me-2">
-                                    <div class="absolute left-5 text-xl"> Notes </div>
+                                    <div class="absolute left-5 line-height-1">
+                                        <div class="text-sm">Uncomming</div>    
+                                        <div class="text-xl">Notes</div>
+                                    </div>
                                 </div>
                             </template>
                             <hr class="left-0 fixed w-full">
@@ -70,6 +72,7 @@
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
                                         <div class="flex">
+                                            <!-- <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event?.extendedProps?.group_color}" v-if="event?.extendedProps?.group_color"></span> -->
                                             <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 
                                             </span>
@@ -319,21 +322,25 @@ const calendarOptions = reactive({
                                         <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
                                         <table class="tip_description_stay_table m-1 pt-3">
                                             <tbody>
-                                            <tr><td>Res. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
-                                            <tr><td>Res Stay. No</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
-                                            <tr><td>Ref. No</td><td class="px-3">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
-                                            <tr><td>Int. No</td><td class="px-3">:</td><td>${event.extendedProps?.internal_reference_number ?? ''}</td></tr>
-                                            <tr><td>Ref. type</td><td class="px-3">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( '+ event.extendedProps?.group_code +' )' : ''}</td></tr>    
-                                            <tr><td>Guest</td><td class="px-3">:</td><td>${event.title}</td></tr>
-                                            <tr><td>Arrival</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)} - ${gv.timeFormat(event.extendedProps?.start_time)}</td></tr>
-                                            <tr><td>Departure</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)} - ${gv.timeFormat(event.extendedProps?.end_time)}</td></tr>
-                                            <tr><td>Room</td><td class="px-3">:</td><td>${event.extendedProps?.room_number}</td></tr>
-                                            <tr><td>Pax</td><td class="px-3">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
-                                            <tr><td>Source</td><td class="px-3">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
-                                            <tr><td>Total Room Rate</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_room_rate)}</td></tr>
-                                            <tr><td>Total Debit</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
-                                            <tr><td>Total Credit</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
-                                            <tr><td>Balance</td><td class="px-3">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
+                                            <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
+                                            <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
+                                            <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>${event.extendedProps?.internal_reference_number ?? ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( '+ event.extendedProps?.group_code +' )' : ''}</td></tr>    
+                                            <tr class="table-rs-de"><td>Guest</td><td class="px-2">:</td><td>${event.title}</td></tr>
+                                            <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)} - ${gv.timeFormat(event.extendedProps?.start_time)}</td></tr>
+                                            <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)} - ${gv.timeFormat(event.extendedProps?.end_time)}</td></tr>
+                                            <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>${event.extendedProps?.room_number}</td></tr>
+                                            <tr class="table-rs-de"><td>Pax</td><td class="px-2">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
+                                            <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Total Room Rate</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_room_rate)}</td></tr>
+                                            <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
+                                            <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
+                                            <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
+                                            ${event.extendedProps?.note != "None" && event.extendedProps?.note != "" ? `
+                                            <tr><td><span class="mt-2">Note</span></td></tr>
+                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note.length > 220 ? event.extendedProps?.note.substring(0, 220) + '...' : event.extendedProps?.note}</div></td></tr>
+                                            ` : ''}
                                             </tbody>
                                         </table>
                                     </div>`
@@ -344,13 +351,14 @@ const calendarOptions = reactive({
             })
         }else if (event.extendedProps.type == "room_block"){
             const description = `<div class="w-full p-2">
+                
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
-                                            <tr><td>Block Number</td><td class="px-3">:</td><td>${event.extendedProps?.name || ''}</td></tr>  
-                                            <tr><td>Start Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start_date)}</td></tr>
-                                            <tr><td>Release Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end_date)}</td></tr>
-                                            <tr><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.modified_by || ''}</td></tr>
+                                            <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td>${event?.publicId || ''}</td></tr>  
+                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.start)}</td></tr>
+                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.end)}</td></tr>
+                                            <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.modified_by || ''}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>
                                             </tbody>

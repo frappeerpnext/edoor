@@ -25,6 +25,8 @@
     <img v-else-if="icon == 'NotDisturb'" :class="class" :src="NotDisturb"/>
     <img v-else-if="icon == 'City'" :class="class" :src="City"/>
     <img v-else-if="icon == 'checkin-black'" :class="class" :src="BtnCheckinIconBlack"/>
+    <img v-else-if="icon == 'checkoutBlack'" :class="class" :src="BtnCheckoutIconBlack"/>
+    <img v-else-if="icon == 'iconGeneralList'" :class="class" :src="iconGeneralList"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -44,6 +46,7 @@ import iconBed from '../assets/svg/icon-bed.svg'
 import BtnCheckinIcon from '@/assets/svg/icon-check-in.svg'
 import BtnCheckinIconBlack from '@/assets/svg/icon-check-in-black.svg'
 import BtnCheckoutIcon from '@/assets/svg/icon-check-out.svg'
+import BtnCheckoutIconBlack from '@/assets/svg/icon-check-out-black.svg'
 import BirthdayIcon from '@/assets/svg/birthday-icon.svg'
 import ViewDetailIcon from '@/assets/svg/change-room-icon.svg'
 import iconOpenBrower from '@/assets/svg/icon-open-brower.svg'
@@ -63,6 +66,7 @@ import userFitWhite from '@/assets/svg/icon-user-fit.svg'
 import userGif from '@/assets/svg/icon-user-group.svg'
 import NotDisturb from '@/assets/svg/icon-do-not-disturb.svg'
 import City from '@/assets/svg/icon-change-property.svg'
+import iconGeneralList from '@/assets/svg/icon-general-list.svg'
 
 
 </script>

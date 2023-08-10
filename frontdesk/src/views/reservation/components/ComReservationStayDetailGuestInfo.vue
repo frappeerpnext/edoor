@@ -99,18 +99,19 @@ const menuStayGuestList = ref([
     }
 ])
 const menuStayOneGuest = ref([
-    {
-        label: 'Add Additional Guest',
-        icon:'pi pi-fw pi-user-plus',
-        command: () =>{
-            onAdvancedSearch('additional_guest')
-        }
-    },
+    
     {
         label: 'Add Stay Guest',
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('stay_guest')
+        }
+    },
+    {
+        label: 'Add Additional Guest',
+        icon:'pi pi-fw pi-user-plus',
+        command: () =>{
+            onAdvancedSearch('additional_guest')
         }
     },
     {
@@ -210,8 +211,8 @@ function onAdvancedSearch(guest_type) {
         },
         onClose(r) {
             if(r.data){ 
-                socket.emit("RefresheDoorDashboard", property.name);
-            
+                socket.emit("RefresheDoorDashboard", property.name); 
+                rs.getReservationDetail(rs.reservationStay.name)
                 gv.toast('success', 'Updated Successful')
             }
         }

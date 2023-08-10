@@ -1,7 +1,7 @@
 <template>
+	{{ i }}
 <div>
 	<div>
-		
 		<div class="flex justify-end items-center">
 			<div class="flex items-center mt-3 mb-1">
 				<!-- <ComAddNote :name="name"></ComAddNote> -->
@@ -15,39 +15,31 @@
             <i class="pi pi-search" />
             <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
         </div>
-		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 pb-4 mt-3 content-global-note">
+		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
 					<div class="font-medium">
-						{{ i.reference_doctype }}
+						<!-- {{ i }} -->
+						<span class="text-lg">{{ i.reference_doctype }}</span>
+						<!-- {{ i.creation }} -->
+						<!-- {{ i.modified_by }} -->
 						<span v-if="i.reference_doctype && i.reference_name"> - </span>
-						<span class="link_line_action w-auto border-none p-0" @click="showReservationStayDetail(i?.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
+						<span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
 							{{i.reference_name}}
 						</span>
-						<span class="link_line_action w-auto border-none p-0" @click="showReservationDetail(i?.reference_name)" v-if="i.reference_doctype == 'Reservation'">
-							{{i.reference_name}}
-						</span>
+						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') && i.reservation">
+							{{i.reservation}} 
+						</div>
 						<span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
 							{{i.reference_name}}
 						</span>
-						<div class="text-sm">
-							<div v-if="i?.reservation || i?.reservation_stay" class="inline me-1">
-							<span @click="showReservationDetail(i?.reservation)" class="link_line_action w-auto border-none p-0">
-								{{ i?.reservation }} 
+						<div >
+							<span v-if="i.note_date" class="font-italic text-500 text-sm ">
+								Note Date: {{ gv.dateFormat(i.note_date) }}
 							</span>
-							<span v-if="i?.reservation && i?.reservation_stay">
-								-
-							</span>
-							<span @click="showReservationStayDetail(i?.reservation_stay)" class="link_line_action w-auto border-none p-0" v-if="i?.reservation_stay">
-								{{ i?.reservation_stay }}
-							</span>
-							</div>
-						</div> 
+						</div>
 					</div>
 					<div> 	
-					</div>
-					<div class="flex items-center mt-1 text-500 font-italic">
-						<span class="text-sm"> {{gv.dateFormat(i.note_date)}}</span>
 					</div>
 					
 				</div>
@@ -59,12 +51,20 @@
 					<Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
 						<ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
 						<ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
-						
 					</Button>
 				</div>
 			</div>
-			<div v-if="i.content" class="mt-1 max-h-28 whitespace-pre-wrap break-words overflow-auto">
+			<div v-if="i.content" class="mt-1 mb-2 max-h-28 whitespace-pre-wrap break-words overflow-auto ">
 				{{ i.content }}
+			</div>
+			<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
+			<div class="flex flex-col text-sm my-2 font-italic  line-height-1">
+				<div>
+					Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
+				</div>
+				<div v-if="i.modified_by">
+					Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - {{gv.datetimeFormat(i.modified_date)}}</span>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -72,13 +72,14 @@
 </template>
 
 <script setup>
-import { ref, inject,useDialog,onMounted,updateDoc } from '@/plugin';
+import { ref, inject,useDialog,onMounted,updateDoc,useConfirm } from '@/plugin';
 import ComAddNote from './ComAddNote.vue';
 import ComNoteGlobalButtonMore from './ComNoteGlobalButtonMore.vue';
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
+const confirm = useConfirm()
 
 const frappe = inject('$frappe');
 const { getTotalNote } = inject('get_count_note')
@@ -143,25 +144,11 @@ const dialogRef = dialog.open(ComFolioTransactionDetail, {
 });
 
 }
-
-function showReservationStayDetail(selected) {
-    let stayName = selected
-    const dialogRef = dialog.open(ReservationStayDetail, {
-        data: {
-            name: stayName
-        },
-        props: {
-            header: 'Reservation Stay Detail',
-			contentClass: 'ex-pedd',
-            style: {
-                width: '80vw',
-            },
-            maximizable: true,
-            modal: true,
-            closeOnEscape: false,
-            position:"top"
-        }, 
-    });
+function onViewDetailReservationStay(rs){
+    window.postMessage("view_reservation_stay_detail|"+rs, '*')
+}
+function onViewDetailReservation(rs){
+    window.postMessage("view_reservation_detail|"+rs, '*')
 }
 
 function showReservationDetail(selected) {
@@ -192,7 +179,7 @@ function onLoadData(){
 		filters.push(["content","like", '%' + keyword.value + '%'])
 	}
 	db.getDocList('Frontdesk Note', {
-		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content"],
+		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content","modified_by",'modified','owner','creation'],
 		filters:filters,
 		orderBy: {
 			field: 'creation',

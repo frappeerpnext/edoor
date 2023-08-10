@@ -6,8 +6,8 @@
             </template>
             <template #end>
                 <NewFITReservationButton />
-                <NewGITReservationButton/>
-                
+                <NewGITReservationButton />
+
             </template>
         </ComHeader>
         <div class="mb-3">
@@ -46,63 +46,152 @@
                 <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
                     v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                     placeholder="Select Date Range" />
+                <ComOrderBy doctype="Reservation" @onOrderBy="onOrderBy" />
             </div>
         </div>
-        <DataTable :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationDetail">
-            <Column field="name" header="Document Number" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps"> 
-                    <Button class="p-0 link_line_action1" @click="onViewReservationDetail(slotProps.data.name)" link>
-                        {{ slotProps.data.name }}
+        
+       
+
+<Button   label="Show Column" @click="toggleShowColumn" />
+<Button   label="Reset List" @click="onResetTable" />
+
+ 
+        <DataTable   stateStorage="local" stateKey="table_reservation_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.header)" :key="c.fieldname" :field="c.fieldname" :header="c.header" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+            :frozen="c.frozen" 
+            >
+                <template #body="slotProps" >
+                    <Button v-if="c.fieldtype=='link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                        {{ slotProps.data[c.fieldname] }} 
+                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
                     </Button>
-                </template>
-            </Column>
-            <Column field="reference_number" header="Ref. #"></Column>
-            <Column field="guest_name" header="Guest Name">
-                <template #body="slotProps">
-                    <Button class="p-0 link_line_action1" @click="onViewCustomerDetail(slotProps.data.guest)" link>
-                        {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
-                    </Button>
-                </template>
-            </Column>
-            <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps">
-                    <span>{{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{ moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}</span>
-                </template>
-            </Column>
-            
-            <Column field="room_numbers" header="Room No">
-                <template #body="slotProps">
-                    <div class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num" v-if="slotProps?.data && slotProps?.data?.room_numbers">
-                        <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
-                            <span>{{ item }}</span>
-                            <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">, </span>
-                        </template>
+                    <span v-else-if="c.fieldtype=='date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                    <Timeago v-else-if="c.fieldtype=='timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                    <div v-else-if="c.fieldtype=='room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                    v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                    <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
+                        <span>{{ item }}</span>
+                        <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">, </span>
+                    </template>
                     </div>
+                    <CurrencyFormat  v-else-if="c.fieldtype=='currency'" :value="slotProps.data[c.fieldname]" />
+                    <span v-else>
+                        {{ slotProps.data[c.fieldname] }}
+                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                    </span>
                 </template>
             </Column>
-            <Column field="business_source" header="Business Source"></Column>
-            <Column field="guest_type" header="Guest Type"></Column>
+  
             <Column header="Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <span class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl" :style="{backgroundColor: slotProps.data.status_color}">{{ slotProps.data.reservation_status }}</span>
+                    <span class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
+                        :style="{ backgroundColor: slotProps.data.status_color }">{{ slotProps.data.reservation_status
+                        }}</span>
                 </template>
             </Column>
         </DataTable>
     </div>
+ 
+    <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+        @page="pageChange">
+        <template #start="slotProps">
+            Total Records: {{ pageState.totalRecords }}
+        </template>
+    </Paginator>
+
+<OverlayPanel ref="opShowColumn">
+    <div v-for="(c, index) in columns.filter(r=>r.header)" :key="index">
+        
+        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
+        <label :for="c.fieldname">{{ c.header }}</label>
+    </div>
+    <Button @click="OnSaveColumn">Save</Button>
+</OverlayPanel>
+
 </template>
 <script setup>
-import { inject, ref, reactive, useToast } from '@/plugin'
-import GuestDetail from "@/views/guest/GuestDetail.vue"
-import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi } from '@/plugin'
+ 
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
+import Paginator from 'primevue/paginator';
+import ComOrderBy from '@/components/ComOrderBy.vue';
+import {Timeago} from 'vue2-timeago'
 
-const dates = ref()
-const frappe = inject('$frappe')
 const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
+const opShowColumn = ref();
+const socket = inject("$socket")
+socket.on("RefresheDoorDashboard", (arg) => {
+
+if (arg == property.name) {
+    loadData()
+     
+}
+})
+
+
+
+const columns = ref([
+    { fieldname: 'name', header: 'Reservation #', fieldtype:"link",post_message_action:"view_reservation_detail",default:true },
+    { fieldname: 'reference_number', header: 'Ref. #' },
+    { fieldname: 'reservation_type', header: 'Res. Type' ,default:true},
+    { fieldname: 'reservation_date', header: 'Res. Date', fieldtype:"date", frozen:true,default:true },
+    { fieldname: 'arrival_date', header: 'Arrival', fieldtype:"date",header_class:"text-center",default:true },
+    { fieldname: 'departure_date', header: 'Departure', fieldtype:"date",header_class:"text-center" ,default:true},
+    { fieldname: 'room_nights',  header: 'Room Nights',default:true},
+    { fieldname: 'room_numbers',  header: 'Rooms',fieldtype:"room" ,default:true},
+    { fieldname: 'adult',  header: 'Pax(A/C)',extra_field:"child", extra_field_separator:"/", header_class:"text-center" ,default:true},
+    { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  header: 'Guest',fieldtype:"link", post_message_action:"view_guest_detail"  ,default:true},
+    { fieldname: 'guest_type' ,  header: 'Guest Type '  ,default:true},
+    { fieldname: 'business_source' ,  header: 'Business Source'  ,default:true},
+    { fieldname: 'adr' ,  header: 'ADR', fieldtype:"currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'total_room_rate' ,  header: 'Total Room Rate', fieldtype:"currency" , header_class:"text-right",default:true },
+    { fieldname: 'total_debit' ,  header: 'Debit', fieldtype:"currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'total_credit' ,  header: 'Credit', fieldtype:"currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'balance' ,  header: 'Balance', fieldtype:"currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'owner' ,  header: 'Created By'},
+    { fieldname: 'creation' , fieldtype:"timeago",  header: 'Creation', header_class:"text-center", default:true},
+    { fieldname: 'modified_by' ,  header: 'Modified By'},
+    { fieldname: 'modified' , fieldtype:"timeago",  header: 'Last Modified', header_class:"text-center"},
+    { fieldname: 'reservation_status' },
+    { fieldname: 'status_color' },
+])
+ 
+
+const selectedColumns = ref([]);
+
+const toggleShowColumn = (event) => {
+    opShowColumn.value.toggle(event);
+}
+
+function OnSaveColumn(event){
+    selectedColumns.value = columns.value.filter(r=>r.selected).map(x=>x.fieldname)
+    pageState.value.selectedColumns = selectedColumns.value
+    localStorage.setItem("page_state_reservation", JSON.stringify(pageState.value) )
+    opShowColumn.value.toggle(event);
+}
+
+
+function onResetTable(){
+    localStorage.removeItem("page_state_reservation")
+    localStorage.removeItem("table_reservation_list_state")
+    selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname)
+    
+    columns.value.forEach(r=>r.selected = selectedColumns.value.includes(r.fieldname))
+    pageState.value.page =0
+    pageState.value.rows=20
+
+    loadData()
+
+}
+
+ 
+
 
 const dataTypeOptions = reactive([
     { label: 'Search Date', value: '' },
@@ -110,20 +199,26 @@ const dataTypeOptions = reactive([
     { label: 'Departure Date', value: 'departure_date' },
     { label: 'Reservation Date', value: 'reservation_date' }])
 const data = ref([])
-const db = frappe.db();
-const call = frappe.call();
+
 const filter = ref({})
 let dateRange = reactive({
     start: '',
     end: ''
 })
-const working_date = ref('')
-    const property = JSON.parse(localStorage.getItem("edoor_property"))
-const dialog = useDialog();
-loadData();
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 
+const working_date = ref('')
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+const dialog = useDialog();
+
+ 
+
+function onOpenLink(column, data){
+    window.postMessage(column.post_message_action + "|" + data[column.fieldname] , '*')
+}
 
 function Refresh() {
+    pageState.value.page = 0
     loadData()
 }
 function onDateSelect() {
@@ -133,10 +228,19 @@ function onDateSelect() {
         loadData()
     }
 }
+function pageChange(page) {
+    pageState.value.page = page.page
+    pageState.value.rows = page.rows
+
+    loadData()
+}
+
+
+
 function loadData() {
     gv.loading = true
     let filters = [
-        ["property", '=', property.name]
+        [ "property", '=', property.name]
     ]
     if (filter.value?.keyword) {
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
@@ -152,34 +256,32 @@ function loadData() {
     }
 
     if (filter.value?.selected_room_type) {
-        filters.push(["business_source", '=', filter.value.selected_room_type])
+        filters.push(["room_types", "=", filter.value.selected_room_type])
     }
     if (filter.value?.selected_room_number) {
-        filters.push(["reservation_status", '=', filter.value.selected_room_number])
+        filters.push(["room_numbers", "=", filter.value.selected_room_number])
     }
 
     if (filter.value?.search_date_type && filter.value.date_range != null) {
         filters.push([filter.value.search_date_type, '>=', dateRange.start])
         filters.push([filter.value.search_date_type, '<=', dateRange.end])
     }
-    db.getDocList('Reservation', {
-        fields: [
-            'name',
-            'creation',
-            'reference_number',
-            'guest',
-            'guest_name',
-            'business_source',
-            'room_numbers',
-            'reservation_status',
-            'arrival_date',
-            'departure_date',
-            'guest_type',
-            'status_color',
-            'room_types',
-            'room_type_alias'
-        ],
-        filters: filters
+    
+    let fields = [...columns.value.map(r=>r.fieldname),  ...columns.value.map(r=>r.extra_field)]
+    fields = [...fields , ...selectedColumns.value]
+
+    fields =  [...new Set(fields.filter(x=>x))]
+ 
+    getDocList('Reservation', {
+
+        fields: fields,
+        orderBy: {
+            field: '`tabReservation`.' + pageState.value.order_by,
+            order: pageState.value.order_type,
+        },
+        filters: filters,
+        limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
+        limit: pageState.value?.rows || 20,
     })
         .then((doc) => {
             data.value = doc
@@ -189,15 +291,31 @@ function loadData() {
             gv.loading = false
             toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
         });
+    getTotalRecord(filters)
+
+    localStorage.setItem("page_state_reservation", JSON.stringify(pageState.value))
 
 }
+function getTotalRecord(filters) {
+
+    getCount('Reservation', filters)
+        .then((count) => pageState.value.totalRecords = count || 0)
+
+}
+function onOrderBy(data) {
+    pageState.value.order_by = data.order_by
+    pageState.value.order_type = data.order_type
+    pageState.value.page = 0
+    loadData()
+
+}
+
 function onSelectFilterDate(event) {
     filter.value.search_date_type = event
     if (filter.value.search_date_type == '')
         filter.value.date_range = null
     loadData()
 }
-
 
 
 const onSearch = debouncer(() => {
@@ -216,71 +334,59 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
+ 
 
-
-function onViewReservationDetail(event) { 
-    var name = event
-    if(event.data && event.data.name){
-        name = event.data.name
-    }
-    const dialogRef = dialog.open(ReservationDetail, {
-        data: {
-            name: name
-        },
-        props: {
-            header: 'Reservation Detail',
-            contentClass: 'ex-pedd',
-            style: {
-                width: '80vw',
-            },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position:"top"
-        },
-        onClose: (options) => {
-            console.log(options)
-        }
-    });
-}
-
-
-
-function onViewCustomerDetail(name) {
-    const dialogRef = dialog.open(GuestDetail, {
-        data: {
-            name: name
-        },
-        props: {
-            header: 'Guest Detail',
-            style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position: 'top'
-        },
-        onClose: (options) => {
-            console.log(options)
-        }
-    });
-}
-
-call.get('edoor.api.frontdesk.get_working_day', {
+getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
     working_date.value = r.message?.date_working_day
     // const startDate = moment(working_date.value)
     // const endDate = moment(working_date.value).add(1, 'days')
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
+})
+
+ 
+
+
+onMounted(() => {
+    let state = localStorage.getItem("page_state_reservation")
+    if (state) {
+        state = JSON.parse(state)
+        state.page = 0
+        pageState.value = state
+        if( state.selectedColumns){
+            selectedColumns.value = state.selectedColumns
+            
+        }else {
+            selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname)
+        }
+    }else {
+         selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname) 
+    }
+    columns.value.forEach(r => {
+        r.selected = selectedColumns.value.includes(r.fieldname)
+    });
+    loadData()
+    getApi("frontdesk.get_meta",{doctype:"Reservation"}).then((result)=>{
+        console.log(result.message)
+        result.message.fields.filter(r=>r.in_list_view==1 && !columns.value.map(x=>x.fieldname).includes(r.fieldname)).forEach(r=>{
+            let header_class = ""
+             
+            if (["Date","Int"].includes(r.fieldtype)){
+                header_class ="text-center"
+            }else if(["Currency"].includes(r.fieldtype)){
+                header_class ="text-right"
+            }
+             
+            columns.value.push({
+                fieldname:r.fieldname,
+                header:r.label,
+                fieldtype:r.fieldtype.toLowerCase(),
+                header_class:header_class,
+                selected:selectedColumns.value.includes(r.fieldname)
+            })
+        })
+    })
+
 })
 </script>

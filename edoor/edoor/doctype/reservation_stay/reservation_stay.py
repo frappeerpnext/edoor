@@ -160,13 +160,14 @@ class ReservationStay(Document):
 		frappe.db.sql("""
 			update `tabReservation Stay Room` 
 			set rooms='{}',
+			note='{}',
 			total_credit='{}',
 			total_debit='{}',
 			balance='{}',
 			total_room_rate='{}',
 			internal_reference_number = '{}',
 			arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
-		""".format(self.rooms,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
+		""".format(self.rooms,self.note,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
 
 
 def update_note(self):

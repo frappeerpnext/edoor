@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"  dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"  dateFormat="dd-mm-yy" :selectOtherMonths="true"/>
                     </div>
                     <!-- guest.date_of_birth -->
                    
@@ -104,6 +104,7 @@ import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugi
 import ComBoxStayInformation from '../../reservation/components/ComBoxStayInformation.vue';
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
+import Calendar from 'primevue/calendar';
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 let loading = ref(false)
@@ -118,8 +119,8 @@ function onLoad() {
     getDoc('Customer', dialogRef.value.data.name)
         .then((doc) => {
             guest.value = doc
-            guest.value.date_of_birth = new Date(doc.date_of_birth)
-            guest.value.expired_date = new Date(doc.expired_date)
+            guest.value.date_of_birth = moment(doc.date_of_birth).toDate()
+            guest.value.expired_date = moment(doc.expired_date).toDate()
             console.log(guest.value)
             loading.value = false
         })

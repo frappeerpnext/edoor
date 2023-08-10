@@ -2,7 +2,17 @@
     <div>
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.note_type}}</label><br/>
-            <!-- <span v-if="create.note_type == 'Notice'">{{ gv.dateFormat(create.note_date) }}</span> -->
+            <div v-if="create.note_type=='Notice'">
+            <label  class="mt-1" >Note date</label>
+            <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
+                                 placeholder="Note Date"
+                                 v-model="create.note_date"
+                                  dateFormat="dd-mm-yy" showIcon showButtonBar />
+            
+            </div>
+            <div class="-mb-2 mt-1 " v-if="create.note_type=='Notice'">
+                <label>Note</label>
+            </div>
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
             </div>
@@ -32,7 +42,9 @@
             <div class="ms-1 text-sm">
                 <span class="font-italic">{{i.note_type}} by:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.creation).format("DD-MM-yy h:ss a") }}, </span>
                 <span class="font-italic">Last Modified:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
-            </div>  
+            </div> 
+           
+          
         </div>
         <div class="gap-2 flex">
             <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onAddEdit($event,i)"></Button>
@@ -40,13 +52,26 @@
         </div>
     </div>
         <div class="whitespace-pre-wrap break-words py-1" v-html="i.content"></div>
+        <div class="text-500 font-italic  text-sm" v-if="i.note_date">
+        Note Date: {{moment(i.note_date).format("DD-MM-YYYY")}} 
+        </div>
     </div>
     </ComPlaceholder>
     <OverlayPanel ref="op">
     <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
-    <label for="textnote">{{edit.note_type}}</label><br/>
+    <span class="font-semibold text-lg mb-3" for="textnote">{{edit.note_type}}</span>
+    <div class="mb-2" v-if="edit.note_type=='Notice'">
+    <label>Note Date</label>
+    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
+    placeholder="Note Date"
+    v-model="edit.note_date"
+     dateFormat="dd-mm-yy" showIcon showButtonBar />
+    </div>
+    <div>
+    <label v-if="edit.note_type=='Notice'">Note</label>
     <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />
+    </div>
     </div>
     </ComOverlayPanelContent>
     </OverlayPanel>
@@ -77,7 +102,7 @@ const currentUser = JSON.parse(localStorage.getItem('edoor_user'))
 const create = ref({
     note_type: 'Comment',
     content: '',
-    
+    note_date:moment().toDate()
 })
 const edit = ref({
     note_type: 'Comment',
@@ -85,6 +110,7 @@ const edit = ref({
 })
 const list = ref([])
 onMounted(() => {
+ 
     onLoad()
 })
 function onLoad() {
@@ -107,8 +133,10 @@ function onClose() {
     op.value.hide()
 }
 function onAddEdit($event, selected) {
+     
     if (selected) {
         edit.value = JSON.parse(JSON.stringify(selected))
+        edit.value.note_date =moment(edit.value.note_date ).toDate() 
     } else {
         edit.value = {
             note_type: 'Comment',
@@ -119,17 +147,31 @@ function onAddEdit($event, selected) {
     op.value.toggle($event)
 }
 function onCreate() {
+    op.value = {}
+    let note_data =  JSON.parse(JSON.stringify(create.value))
+    if (note_data.note_date){
+        note_data.note_date = moment(note_data.note_date).format("YYYY-MM-DD")
+    } 
+    
+ 
     if (create.value.note_type == 'Notice') {
-        onSaveNote('Frontdesk Note', create.value)
+        onSaveNote('Frontdesk Note', note_data)
     } else {
-        onSaveNote('Comment', create.value)
+        onSaveNote('Comment', note_data)
     }
 }
+
 function onSave() {
-    if (edit.value.note_type == 'Notice') {
-        onSaveNote('Frontdesk Note', edit.value)
+    let note_data =JSON.parse(JSON.stringify(edit.value))
+    
+    if (note_data.note_date){
+        note_data.note_date = moment(note_data.note_date).format("YYYY-MM-DD")
+    }
+    
+    if (note_data.note_type == 'Notice') {
+        onSaveNote('Frontdesk Note', note_data)
     } else {
-        onSaveNote('Comment', edit.value)
+        onSaveNote('Comment', note_data)
     }
 }
 function onSaveNote(doctype, data) {
@@ -151,11 +193,13 @@ function onSaveNote(doctype, data) {
     data.comment_type = 'Comment'
     data.comment_by = currentUser.name
     data.name = op.value.data?.name || ''
+ 
     createUpdateDoc(doctype, { data: data }).then((r) => {
         saving.value = false
         create.value = {
             note_type: 'Comment',
-            content: ''
+            content: '',
+            note_date:moment().toDate()
         }
         edit.value = data.value
         op.value.hide()
@@ -186,6 +230,8 @@ function onRemove(selected) {
         }
     })
 }
+
+ 
 </script>
 <style scoped>
 .bg-yellow-notice-bg {

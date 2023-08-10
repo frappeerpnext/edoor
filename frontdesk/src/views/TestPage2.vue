@@ -37,11 +37,6 @@ const vMyDirective = {
   }
 }
  
-function onClick(){
-    test.value = 'ww'
-}
- 
-
 </script>
 <style scoped>
 

@@ -93,11 +93,6 @@
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
-                <button @click="onCancel"
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-user-minus" />
-                    <span class="ml-2">Cancel</span>
-                </button>
                 <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />

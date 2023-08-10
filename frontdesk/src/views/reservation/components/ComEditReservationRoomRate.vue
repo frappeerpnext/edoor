@@ -42,6 +42,7 @@
             </table>
         </div>
         </div>
+        
         <div class="grid justify-between" v-if="stay_reservation">
             <div class="col-6">
             <table>
@@ -63,7 +64,12 @@
                 </table>
             </div>
         </div>
-        <div v-if="current_date >= arrival_date">
+        <div v-if="current_date >= moment(stay?.arrival_date).toDate() && stay?.reservation_status == 'In-house'">
+            <Message severity="info">Changes to room rates made to past or current dates will not 
+                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            </Message>
+        </div>
+        <div v-if="current_date >= moment(stay_reservation?.arrival_date).toDate() && stay_reservation?.reservation_status == 'In-house'">
             <Message severity="info">Changes to room rates made to past or current dates will not 
                 automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
             </Message>
@@ -209,9 +215,8 @@
         </div>
        
         <hr />
-      
-    </div> 
 
+    </div> 
     </ComDialogContent>
 </template>
 <script setup>
@@ -245,6 +250,7 @@ const roomData = computed(()=>{
     }
     return []
 })
+
 function getTooltip(){ 
    var html = ''
    var index = 0

@@ -20,8 +20,7 @@
                                     <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group" class="pi pi-angle-down"></i></p>
                                 </template>
                             </ComHeaderBarItemButton>
-                        </template> 
-
+                        </template>  
                         <!-- <ComHeaderBarItemButtonMore /> -->
                     </div>
                 </div>
@@ -105,8 +104,10 @@
 </template>
 
 <script setup>
-import { ref, inject, useToast, useRouter, useRoute, onMounted, computed } from '@/plugin'
+import { ref, inject, useToast, useRouter, useRoute, computed } from '@/plugin'
+import { useScreen, useGrid } from 'vue-screen'
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
+// import ComHeaderBarItemButtonMore from './components/ComHeaderBarItemButtonMore.vue';
 import ProgressBar from 'primevue/progressbar';
 import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue';
 import Search from '@/views/search/Search.vue';
@@ -121,12 +122,13 @@ import iconViewShiftDetail from '@/assets/svg/icon-view-cashier-shift.svg'
 import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue';
-const dialog = useDialog();
 
+const dialog = useDialog();
 const router = useRouter()
 const route = useRoute()
 const frappe = inject('$frappe')
 const gv = inject('$gv')
+const screen = useScreen()
 const auth = frappe.auth()
 const user = ref(JSON.parse(localStorage.getItem('edoor_user')))
 const show = ref()
@@ -136,8 +138,16 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 const moment = inject("$moment")
-const eDoorMenu = ref([])
-
+// const eDoorMenu = ref([])
+const eDoorMenu = computed(()=>{ 
+    const menu = ref(setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != ""))
+    //menu.value = menu.value.filter(r => r.parent_edoor_menu == 'All Menus')
+    if(screen.width <= 1346){
+        return menu.value.filter(r => r.hidden_in_sm == false)
+    }else{
+        return menu.value
+    }
+})
 const currentRouteName = computed(() => route.name.replace(/"/g, ''));
 
 const subMenus = computed(() => {
@@ -286,7 +296,9 @@ function onCloseCashierShift() {
     window.postMessage('close_shift', '*')
 }
 
-onMounted(() => {
-    eDoorMenu.value = setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != "")
-})
+// onMounted(() => {
+//     eDoorMenu.value = setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != "")
+ 
+// })
+ 
 </script>
