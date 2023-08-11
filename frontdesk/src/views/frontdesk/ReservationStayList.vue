@@ -26,6 +26,9 @@
                     optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
                     placeholder="Business Source" doctype="Business Source" />
 
+                <ComSelect v-model="filter.selected_reservation_type"
+                    @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
+
                 <ComSelect optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
                     @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
 
@@ -56,26 +59,36 @@
 <Button   label="Reset List" @click="onResetTable" />
 
  
-        <DataTable   stateStorage="local" stateKey="table_reservation_stay_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
-            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.header)" :key="c.fieldname" :field="c.fieldname" :header="c.header" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+        <DataTable 
+            resizableColumns 
+            columnResizeMode="fit" 
+            showGridlines   
+            stateStorage="local" 
+            stateKey="table_reservation_stay_list_state" 
+            scrollable 
+            :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" >
+            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
                 <template #body="slotProps" >
-                    <Button v-if="c.fieldtype=='link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                    <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                         {{ slotProps.data[c.fieldname] }} 
                         <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
                         <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
                     </Button>
-                    <span v-else-if="c.fieldtype=='date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                    <Timeago v-else-if="c.fieldtype=='timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                    <span v-else-if="c.fieldtype=='Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                    <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                    <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                     v-if="slotProps?.data && slotProps?.data?.rooms">
                     <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
                         <span>{{ item }}</span>
                         <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                     </template>
                     </div>
-                    <CurrencyFormat  v-else-if="c.fieldtype=='currency'" :value="slotProps.data[c.fieldname]" />
+                    <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
+                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
+                    :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                    }}</span>
                     <span v-else>
                         {{ slotProps.data[c.fieldname] }}
                         <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
@@ -84,13 +97,7 @@
                 </template>
             </Column>
   
-            <Column header="Status" headerClass="text-center" bodyClass="text-center">
-                <template #body="slotProps">
-                    <span class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
-                        :style="{ backgroundColor: slotProps.data.status_color }">{{ slotProps.data.reservation_status
-                        }}</span>
-                </template>
-            </Column>
+            
         </DataTable>
     </div>
  
@@ -102,17 +109,18 @@
     </Paginator>
 
 <OverlayPanel ref="opShowColumn">
-    <div v-for="(c, index) in columns.filter(r=>r.header)" :key="index">
+    <InputText v-model="filter.search_field" placeholder="Search" />
+    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
         
         <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.header }}</label>
+        <label :for="c.fieldname">{{ c.label }}</label>
     </div>
     <Button @click="OnSaveColumn">Save</Button>
 </OverlayPanel>
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi, computed } from '@/plugin'
  
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
@@ -137,32 +145,38 @@ if (arg == property.name) {
 
 
 const columns = ref([
-    { fieldname: 'reservation', header: 'Reservation #', fieldtype:"link",post_message_action:"view_reservation_detail",default:true },
-    { fieldname: 'name', header: 'Stay #', fieldtype:"link",post_message_action:"view_reservation_stay_detail" ,default:true},
-    { fieldname: 'reference_number', header: 'Ref. #' },
-    { fieldname: 'reservation_type', header: 'Res. Type' ,default:true},
-    { fieldname: 'reservation_date', header: 'Res. Date', fieldtype:"date", frozen:true,default:true },
-    { fieldname: 'arrival_date', header: 'Arrival', fieldtype:"date",header_class:"text-center",default:true },
-    { fieldname: 'departure_date', header: 'Departure', fieldtype:"date",header_class:"text-center" ,default:true},
-    { fieldname: 'room_nights', header: 'Room Nights',header_class:"text-center" ,default:true},
-    { fieldname: 'rooms',  header: 'Rooms',fieldtype:"room", header_class:"text-center" ,default:true},
-    { fieldname: 'adult',  header: 'Pax(A/C)',extra_field:"child", extra_field_separator:"/", header_class:"text-center" ,default:true},
-    { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  header: 'Guest',fieldtype:"link", post_message_action:"view_guest_detail"  ,default:true},
-    { fieldname: 'business_source' ,  header: 'Business Source'  ,default:true},
-    { fieldname: 'adr' ,  header: 'ADR', fieldtype:"currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'total_room_rate' ,  header: 'Total Room Rate', fieldtype:"currency" , header_class:"text-right",default:true },
-    { fieldname: 'total_debit' ,  header: 'Debit', fieldtype:"currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'total_credit' ,  header: 'Credit', fieldtype:"currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'balance' ,  header: 'Balance', fieldtype:"currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'owner' ,  header: 'Created By'},
-    { fieldname: 'creation' , fieldtype:"timeago",  header: 'Creation', header_class:"text-center", default:true},
-    { fieldname: 'modified_by' ,  header: 'Modified By'},
-    { fieldname: 'modified' , fieldtype:"timeago",  header: 'Last Modified', header_class:"text-center"},
-    { fieldname: 'reservation_status' },
+    { fieldname: 'reservation', label: 'Reservation #', fieldtype:"Link",post_message_action:"view_reservation_detail",default:true },
+    { fieldname: 'name', label: 'Stay #', fieldtype:"Link",post_message_action:"view_reservation_stay_detail" ,default:true},
+    { fieldname: 'reference_number', label: 'Ref. #' },
+    { fieldname: 'reservation_type', label: 'Res. Type' ,default:true},
+    { fieldname: 'reservation_date', label: 'Res. Date', fieldtype:"Date", frozen:true,default:true },
+    { fieldname: 'arrival_date', label: 'Arrival', fieldtype:"Date",header_class:"text-center",default:true },
+    { fieldname: 'departure_date', label: 'Departure', fieldtype:"Date",header_class:"text-center" ,default:true},
+    { fieldname: 'room_nights', label: 'Room Nights',header_class:"text-center" ,default:true},
+    { fieldname: 'rooms',  label: 'Rooms',fieldtype:"Room", header_class:"text-center" ,default:true},
+    { fieldname: 'adult',  label: 'Pax(A/C)',extra_field:"child", extra_field_separator:"/", header_class:"text-center" ,default:true},
+    { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  label: 'Guest',fieldtype:"Link", post_message_action:"view_guest_detail"  ,default:true},
+    { fieldname: 'business_source' ,  label: 'Business Source'  ,default:true},
+    { fieldname: 'adr' ,  label: 'ADR', fieldtype:"Currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'total_room_rate' ,  label: 'Total Room Rate', fieldtype:"Currency" , header_class:"text-right",default:true },
+    { fieldname: 'total_debit' ,  label: 'Debit', fieldtype:"Currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'total_credit' ,  label: 'Credit', fieldtype:"Currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'balance' ,  label: 'Balance', fieldtype:"Currency" , header_class:"text-right" ,default:true},
+    { fieldname: 'owner' ,  label: 'Created By'},
+    { fieldname: 'creation' , fieldtype:"Timeago",  label: 'Creation', header_class:"text-center", default:true},
+    { fieldname: 'modified_by' ,  label: 'Modified By'},
+    { fieldname: 'modified' , fieldtype:"Timeago",  label: 'Last Modified', header_class:"text-center"},
+    { fieldname: 'reservation_status', fieldtype:"Status", label:"Status" ,header_class:"text-center" },
     { fieldname: 'status_color' },
 ])
  
-
+const getColumns = computed(()=>{
+    if (filter.value.search_field){ 
+        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+    }else {
+        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
+    }
+})
 const selectedColumns = ref([]);
 
 const toggleShowColumn = (event) => {
@@ -180,13 +194,7 @@ function OnSaveColumn(event){
 function onResetTable(){
     localStorage.removeItem("page_state_reservation_stay")
     localStorage.removeItem("table_reservation_stay_list_state")
-    selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname)
-    
-    columns.value.forEach(r=>r.selected = selectedColumns.value.includes(r.fieldname))
-    pageState.value.page =0
-    pageState.value.rows=20
-
-    loadData()
+   window.location.reload()
 
 }
 
@@ -253,6 +261,9 @@ function loadData() {
     }
     if (filter.value?.selected_reservation_status) {
         filters.push(["reservation_status", '=', filter.value.selected_reservation_status])
+    }
+    if (filter.value?.selected_reservation_type) {
+        filters.push(["reservation_type", '=', filter.value.selected_reservation_type])
     }
 
     if (filter.value?.selected_room_type) {

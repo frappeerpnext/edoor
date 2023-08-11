@@ -310,7 +310,7 @@ function openFolio() {
                 .then((doc) => {
                     rs.selectedFolio.status = doc.status;
                     // toast.add({ severity: 'success', summary: 'Open Folio', detail: 'Open Folio successfully', life: 3000 });
-
+                    rs.onLoadReservationFolios()
                 })
         },
 
@@ -335,6 +335,7 @@ function closeFolio() {
             })
                 .then((doc) => {
                     rs.selectedFolio.status = doc.status;
+                    rs.onLoadReservationFolios()
                 })
         },
 

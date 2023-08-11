@@ -524,6 +524,7 @@ const viewSummary = (name) => {
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })
+
  
 
 </script>

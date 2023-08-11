@@ -33,7 +33,7 @@ export function getCount(doctype, filters){
     const frappe = new FrappeApp()
     const db = frappe.db()
     return new Promise((resolve, reject)=>{
-        db.getCount(doctype, filters,true,false)
+        db.getCount(doctype, filters,false,false)
         .then((doc) => {
             resolve(doc)
         })

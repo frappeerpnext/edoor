@@ -19,10 +19,7 @@
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
 					<div class="font-medium">
-						<!-- {{ i }} -->
 						<span class="text-lg">{{ i.reference_doctype }}</span>
-						<!-- {{ i.creation }} -->
-						<!-- {{ i.modified_by }} -->
 						<span v-if="i.reference_doctype && i.reference_name"> - </span>
 						<span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
 							{{i.reference_name}}
@@ -54,11 +51,11 @@
 					</Button>
 				</div>
 			</div>
-			<div v-if="i.content" class="mt-1 mb-2 max-h-28 whitespace-pre-wrap break-words overflow-auto ">
+			<div v-if="i.content" class="mt-1 mb-2 max-h-28 whitespace-pre-wrap break-words overflow-auto py-3">
 				{{ i.content }}
 			</div>
 			<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
-			<div class="flex flex-col text-sm my-2 font-italic  line-height-1">
+			<div class="flex flex-col text-sm my-2 font-italic  line-height-1 py-3">
 				<div>
 					Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
 				</div>

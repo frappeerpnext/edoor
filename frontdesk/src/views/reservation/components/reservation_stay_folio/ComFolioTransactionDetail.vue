@@ -6,6 +6,7 @@
             <h2 data-v-c02f7a3a="" class="h-title mb-2">Transaction Detail</h2>
             <table class="">
               <tbody>
+                <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number"/>
                 <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type"/>
                 <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
                 <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number" :value="doc?.credit_card_number" />
@@ -89,6 +90,9 @@
                       </div>
                     </OverlayPanel>
                 </ComStayInfoNoBox>
+                <ComStayInfoNoBox v-if="doc?.account_name == 'Folio Transfer'" :fill="false" :label="doc?.account_name == 'Folio Transfer' && doc?.type == 'Credit' ? 'Folio Transfer to' : 'Folio transferred from'" isSlot>
+                  <Button class="p-0 link_line_action1" @click="onOpenFolioDetail(doc.folio_number)" link>{{ doc.folio_number }}</Button>
+                </ComStayInfoNoBox>
               </tbody>
             </table>
           </div>
@@ -96,7 +100,7 @@
             <h2 data-v-c02f7a3a="" class="h-title mb-2">Creation</h2>
             <table class="">
               <tbody>
-                <ComStayInfoNoBox label="Folio" :value="doc?.name"/>
+                <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name"/>
                 <ComStayInfoNoBox label="Ref. No" isSlot :fill="false" :value="doc?.reference_number ? doc?.reference_number : ''">
                   <Button v-if="!doc?.reference_number && doc?.is_auto_post != 1" class="p-0 link_line_action1" @click="changeRef($event)" link>
                     <span v-if="doc?.reference_number">{{doc?.reference_number}}</span>
@@ -140,7 +144,8 @@
         </div>
       </div>
       <div class="mt-3"> 
-        <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" :reservation="doc.reservation" :reservationStay="reservation_stay"/>
+        {{ doc.reservation_stay }}
+        <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" :reservation="doc.reservation" :reservationStay="doc?.reservation_stay"/>
       </div>
 
     <template #footer-left>
@@ -237,6 +242,9 @@ const onOpenNote = ($event) =>{
 const onCloseNote = ($event) =>{
   openNote.value.hide()
 }
+
+
+
 function onSaveNote(){
   saving.value = true
   const data = JSON.parse(JSON.stringify(doc.value))
@@ -274,6 +282,11 @@ function onAuditTrail() {
         }
     });
 }
+
+function onOpenFolioDetail(name){
+  window.parent.postMessage('view_folio_detail|' + name, '*')
+}
+
 onMounted(() => {
 
   if (dialogRef.value.data.folio_transaction_number) {

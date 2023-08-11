@@ -14,6 +14,8 @@
   "allow_user_to_add_back_date_transaction",
   "show_account_code_in_folio_transaction",
   "allow_user_to_delete_auto_post_transaction",
+  "section_break_8",
+  "guest_ledger_report_name",
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
   "housekeeping_status_after_run_night_audit",
@@ -153,12 +155,23 @@
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check Out",
    "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "We use this report as api request url for frontdesk operation",
+   "fieldname": "guest_ledger_report_name",
+   "fieldtype": "Link",
+   "label": "Guest Ledger Report Name",
+   "options": "Report"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-05 13:50:45.521107",
+ "modified": "2023-08-10 16:00:52.150533",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

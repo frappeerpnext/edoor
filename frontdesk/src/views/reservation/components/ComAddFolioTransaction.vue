@@ -3,7 +3,7 @@
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
-                <div class="col-6">
+                <div class="col-6 pl-0">
                     <label for="room">Room</label>
                     <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_number" placeholder="Select Room" doctype="Room"
                         class="auto__Com_Cus w-full" :filters="{ 'property' : doc.property }" />
@@ -292,7 +292,7 @@ const use_tax = ref({})
 const toast = useToast()
 const doc = ref({});
 const rs = inject('$reservation_stay')
-
+const socket = inject("$socket")
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
 }
@@ -508,6 +508,7 @@ function onSave() {
             .then((doc) => {
             isSaving.value = false;
                 dialogRef.value.close(doc);
+                socket.emit("RefresheDoorDashboard", doc.property);
 
             }).catch((err) => {
             

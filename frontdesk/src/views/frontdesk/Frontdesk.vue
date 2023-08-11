@@ -308,6 +308,7 @@ const calendarOptions = reactive({
             showReservationStayDetail(data.reservation_stay)
         } else {
              info.event._def.date = info.event.start;
+            alert(JSON.stringify(info.event._def))
              window.postMessage(info.event._def, '*')
         }
 
@@ -356,9 +357,9 @@ const calendarOptions = reactive({
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td>${event?.publicId || ''}</td></tr>  
-                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.start)}</td></tr>
-                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.end)}</td></tr>
-                                            <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.modified_by || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start)}</td></tr>
+                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end)}</td></tr>
+                                            <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.block_by || ''}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>
                                             </tbody>

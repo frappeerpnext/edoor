@@ -309,6 +309,7 @@
   {
    "fieldname": "total_reservation_stay",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Reservation Stay"
   },
   {
@@ -354,6 +355,7 @@
   {
    "fieldname": "room_nights",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Room Nights"
   },
   {
@@ -363,6 +365,7 @@
   {
    "fieldname": "total_active_reservation_stay",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Active Reservation Stay"
   },
   {
@@ -372,11 +375,13 @@
   {
    "fieldname": "total_checked_in",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Checked In"
   },
   {
    "fieldname": "total_checked_out",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Checked Out"
   },
   {
@@ -404,24 +409,28 @@
    "default": "0",
    "fieldname": "total_no_show",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total No Show"
   },
   {
    "default": "0",
    "fieldname": "total_void",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Void"
   },
   {
    "default": "0",
    "fieldname": "reserved",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Reserved"
   },
   {
    "default": "0",
    "fieldname": "total_cancelled",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Cancelled"
   },
   {
@@ -645,6 +654,7 @@
   {
    "fieldname": "total_confirmed",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Total Confirmed"
   },
   {
@@ -661,7 +671,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-07-22 09:47:53.051700",
+ "modified": "2023-08-11 09:53:38.787866",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

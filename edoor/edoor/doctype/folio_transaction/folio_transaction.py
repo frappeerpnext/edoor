@@ -41,12 +41,15 @@ class FolioTransaction(Document):
 				
 		#validate working day  
 		if self.is_new():
+			
 			ref_doc = frappe.get_doc(self.transaction_type, self.transaction_number)
 			if self.transaction_type =="Reservation Folio":
 				self.property = ref_doc.property
 				self.reservation = ref_doc.reservation
 				self.reservation_stay = ref_doc.reservation_stay
-				
+				self.is_master_folio = ref_doc.is_master
+				 
+
 			elif self.transaction_type == "Reservation":
 				self.property = ref_doc.property
 			
@@ -72,8 +75,9 @@ class FolioTransaction(Document):
 				#get room info
 				#1 get room from reservation room rate
 				if self.reservation_stay:
+				 	
 					room_rate_data = frappe.get_list("Reservation Room Rate", fields=["room_type_id","room_id","room_type","room_number"],filters={"reservation_stay":self.reservation_stay,"date":self.posting_date})
-				
+
 					if room_rate_data:
 						self.room_type_id =room_rate_data[0].room_type_id
 						self.room_id =room_rate_data[0].room_id 
@@ -385,6 +389,7 @@ def transfer_folio_balance(self):
 		'doctype': 'Folio Transaction',
 		'transaction_type':self.transaction_type,
 		'transaction_number':self.folio_number,
+		'folio_number':self.transaction_number,
 		'reference_number': self.name,
 		'property': folio_doc.property,
 		'reservation': folio_doc.reservation,

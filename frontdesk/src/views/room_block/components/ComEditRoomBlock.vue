@@ -52,13 +52,17 @@
     </ComDialogContent>
 </template>
 <script setup>
-import {inject,ref, updateDoc} from '@/plugin'
+import {inject,ref, updateDoc, getDoc} from '@/plugin'
 const dialogRef = inject('dialogRef');
-const moment = inject('$moment');
 const gv = inject('$gv');
+const moment = inject('$moment');
 const data = ref({})
 const loading = ref(false)
-data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
+if(dialogRef.value.data){
+    data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
+    data.value.start_date = new Date(data.value.start_date)
+    data.value.end_date = new Date(data.value.end_date)
+}
 function onSave (){
     loading.value = true
     var savedData = {
@@ -76,6 +80,7 @@ function onSave (){
 function onClose(){
     dialogRef.value.close()
 }
+
 </script>
 <style lang="">
     

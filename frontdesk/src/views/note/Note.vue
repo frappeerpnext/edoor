@@ -14,11 +14,13 @@
             </div>
         </div>
         <div class="col p-0">
-            <div class="flex ">
-                    <Calendar class="w-full" hideOnRangeSelection  dateFormat="dd-mm-yy" v-model="filter.date_range"
+            <div class="flex relative">
+                    <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection  dateFormat="dd-mm-yy" v-model="filter.date_range"
                 selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                 placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon  />
-                <Checkbox  v-model="filter.search_by_date" :binary="true" @change="onChecked"/>
+                <div class="check-box-filter">
+                    <Checkbox  v-model="filter.search_by_date" :binary="true" @change="onChecked"/>
+                </div>
             </div>
         </div>
         <div class="col p-0">
@@ -26,22 +28,58 @@
         </div>
          
     </div>
-        
- 
- 
-
-    
-
-    <div>
+    <div class="w-ful flex justify-end">
     <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
     </div>
-    
-
-    <div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
-      {{ i }}
-       <Button label="Edit" @click="onEdit(i.name)"/>
-       <Button @click="onDelete(i.name)">Delete</Button>
+<div class="grid-cs-note grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-2">
+    <div v-for="i in notes" :key="index"  class="border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative" >
+        <div class="flex flex-col">
+            <div class="line-height-1 w-full flex justify-between ">
+                <div class="my-auto">
+                    <div class="text-xl font-medium inline " >{{ i.reference_doctype }} </div>
+                    <span v-if="i.reference_doctype && i.reference_name"> - </span>
+                                <span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
+                                    {{i.reference_name}}
+                                </span>
+                                <div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') && i.reservation">
+                                    {{i.reservation}} 
+                                </div>
+                                <span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
+                                    {{i.reference_name}}
+                    </span>
+                </div>
+            <div class="">     
+                <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note absolute right-3" text rounded @click="onPin(i)">
+                    <ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
+                    <ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
+                </Button>
+                </div>
+            </div>
+            <div class="text-500 text-sm ">{{ i.note_date }}</div>
+        </div> 
+        <div v-if="i.content" class="mt-1 mb-5 max-h-28 whitespace-pre-wrap break-words overflow-auto pb-4">
+            {{ i.content }} 
+        </div>
+        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs" style="font-size:10px;">
+            <div>
+                Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
+            </div>
+            <div v-if="i.modified_by">
+                Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - {{gv.datetimeFormat(i.modified)}}</span>
+            </div>
+        </div>
+        <div class="w-full flex justify-end ">
+            <Button class="absolute right-2 bottom-2" text rounded aria-label="Filter">
+                <i class="pi pi-ellipsis-v" style="height: 20px;" />
+            </Button>
+        </div>
+        <div>
+       <!-- <Button label="Edit" @click="onEdit(i.name)"/>
+       <Button @click="onDelete(i.name)" icon="pi pi-trash" outlined aria-label="Delete" /> -->
+        </div>
+       <!-- <Button @click="onDelete(i.name)">Delete</Button> -->
     </div>
+</div>
   
  
     <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30,40,50]"    @page="pageChange" ></Paginator>
@@ -62,7 +100,12 @@ const gv = inject('$gv');
 const moment = inject("$moment")
 
 const filter = ref({})
-
+function onViewDetailReservationStay(rs){
+    window.postMessage("view_reservation_stay_detail|"+rs, '*')
+}
+function onViewDetailReservation(rs){
+    window.postMessage("view_reservation_detail|"+rs, '*')
+}
 function onEdit(name){
 	const dialogRef = dialog.open(ComAddNote, {
             data: {

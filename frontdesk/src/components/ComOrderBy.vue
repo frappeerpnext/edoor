@@ -1,11 +1,17 @@
 <template>
- 
+<div>
+    <div class="flex gap-2">
     <ComSelect optionLabel="label" optionValue="fieldname"
       placeholder="Sort By" v-model="data.order_by" :clear="false" @onSelected="onSelectOrderBy"
     :options="sortOptions" />
-
-    <Button @click="onOrderTypeClick">{{data.order_type}}</Button>
-
+    
+    <Button @click="onOrderTypeClick">
+      <i v-if="data.order_type == 'desc'" class="pi pi-sort-numeric-down-alt me-2" /> 
+    <i v-if="data.order_type == 'asc'" class="pi pi-sort-numeric-down me-2" />  
+    {{data.order_type}}
+    </Button>
+    </div>
+</div>
 </template>
 <script setup>
 import {getApi,ref, onMounted} from "@/plugin"
@@ -14,7 +20,8 @@ const data= ref({order_by:"modified", order_type:"desc"})
 const emit = defineEmits(['onOrderBy'])
 
 const props = defineProps({
-    doctype:String
+    doctype:String,
+    
 })
 const state = JSON.parse(localStorage.getItem("page_state_" + props.doctype.toLowerCase().replaceAll(" ","_")))
 if(state){

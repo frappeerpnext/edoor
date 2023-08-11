@@ -76,15 +76,18 @@ function onEdit(){
                 width: '50vw',
             },
             modal: true,
+            position:'top',
             closeOnEscape: false
         },
         onClose: (options) => {
             const result = options.data;
             if(result){
-                data.value = result
+                doc.value = result
+                gv.loading = false
             }
         }
     })
+    
 }
 function onSave (){
     loading.value = true
@@ -98,6 +101,7 @@ function onSave (){
         dialogRef.value.close(r)
         loading.value = false
     })
+    
 }
 
 function onUnblock(){
@@ -109,9 +113,6 @@ onMounted(() => {
     loading.value = true
     getDoc("Room Block",dialogRef.value.data.name ).then((r)=>{
         doc.value = r
-        console.log(r)
-        doc.value.start_date = gv.dateFormat(r.start_date)
-        doc.value.end_date = gv.dateFormat(r.end_date)
         loading.value = false
     }).catch((err)=>{
         loading.value = false

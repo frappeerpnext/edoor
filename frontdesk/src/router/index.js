@@ -15,6 +15,7 @@ import DeskFolio from "@/views/desk_folio/DeskFolio.vue";
 import Note from "@/views/note/Note.vue";
 import NoPermission from "@/views/other/driver/NoPermission.vue";
 import GuestLedger from "@/views/guest_ledger/GuestLedger.vue";
+import RoomBlock from "@/views/room_block/RoomBlockList.vue";
 import CityLedger from "@/views/city_ledger/CityLedger.vue";
 import Reports from "@/views/report/Reports.vue";
 import authRoutes from './auth';
@@ -30,6 +31,7 @@ const routes = [
   { path: "/frontdesk/desk-folio", name: "DeskFolio", component: DeskFolio, meta: { layout: 'main_layout', title: 'Desk Folio' } },
   { path: "/frontdesk/no-permission", name: "NoPermission", component:NoPermission, meta: { layout: 'main_layout', title: 'Access Denied' } },
   { path: "/frontdesk/note", name: "Note", component: Note, meta: { layout: 'main_layout', title: 'Note' } },
+  { path: "/frontdesk/room-block", name: "RoomBlock", component: RoomBlock, meta: { layout: 'main_layout', title: 'Room Block' } },
   { path: "/frontdesk/housekeeping", name: "Housekeeping", component: Housekeeping, meta: { layout: 'main_layout', title: 'Housekeeping' } },
   { path: "/frontdesk/stay-detail/:name?", name: "ReservationStayDetail", component:ReservationStayDetail, meta: { layout: 'main_layout', title: 'Reservation Stay Detail' } },
   { path: "/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout', title: 'Reservation Detail' } },

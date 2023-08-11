@@ -175,6 +175,7 @@ def get_edoor_setting(property = None):
     edoor_setting  =  {
         "edoor_menu": edoor_menus,
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
+        "guest_ledger_report_name":edoor_setting_doc.guest_ledger_report_name,
         
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
@@ -450,6 +451,7 @@ def get_room_block_event(start,end,property):
             status_color as color,
             reason,
             'room_block' as type,
+            owner as block_by,
             0 as editable
 
         from 

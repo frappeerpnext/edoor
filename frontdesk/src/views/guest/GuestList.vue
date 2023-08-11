@@ -37,8 +37,8 @@
 <Button   label="Reset List" @click="onResetTable" />
 
  
-        <DataTable   stateStorage="local" stateKey="table_reservation_stay_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
-            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.header)" :key="c.fieldname" :field="c.fieldname" :header="c.header" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+        <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local" stateKey="table_reservation_stay_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
                 <template #body="slotProps" >
@@ -77,27 +77,33 @@
     </Paginator>
 
 <OverlayPanel ref="opShowColumn">
-    <div v-for="(c, index) in columns.filter(r=>r.header)" :key="index">
+    <InputText v-model="filter.search_field" placeholder="Search" />
+    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
         
         <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.header }}</label>
+        <label :for="c.fieldname">{{ c.label }}</label>
     </div>
     <Button @click="OnSaveColumn">Save</Button>
 </OverlayPanel>
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,useDialog } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
+
 const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 const socket = inject("$socket")
+const data = ref([])
+const filter = ref({})
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 socket.on("RefreshGuestDatabase", (arg) => {
 
 if (arg == property.name) {
@@ -106,27 +112,24 @@ if (arg == property.name) {
 }
 })
 
-
-
 const columns = ref([
-    { fieldname: 'name', header: 'Customer Code', fieldtype:"link",post_message_action:"view_guest_detail" ,default:true},
-    { fieldname: 'customer_name_en', header: 'Customer Name' ,default:true},
-    { fieldname: 'gender', header: 'Gender' ,default:true},
-    { fieldname: 'date_of_birth', fieldtype:"date", header: 'Birthdate' ,default:true},
-    { fieldname: 'company_name', header: 'Company' ,default:true},
-    { fieldname: 'country', header: 'Country' ,default:true},
-    { fieldname: 'customer_group', header: 'Guest Type' ,default:true},
-    { fieldname: 'phone_number', header: 'Phone Number' ,default:true},
-    { fieldname: 'email_address', header: 'Email' ,default:true},
-    { fieldname: 'identity_type', header: 'Identity Type' ,default:true},
-    { fieldname: 'owner' ,  header: 'Created By'},
-    { fieldname: 'creation' , fieldtype:"timeago",  header: 'Creation', header_class:"text-center", default:true},
-    { fieldname: 'modified_by' ,  header: 'Modified By'},
-    { fieldname: 'modified' , fieldtype:"timeago",  header: 'Last Modified', header_class:"text-center"},
+    { fieldname: 'name', label: 'Customer Code', fieldtype:"link",post_message_action:"view_guest_detail" ,default:true},
+    { fieldname: 'customer_name_en', label: 'Customer Name' ,default:true},
+    { fieldname: 'gender', label: 'Gender' ,default:true},
+    { fieldname: 'date_of_birth', fieldtype:"date", label: 'Birthdate' ,default:true},
+    { fieldname: 'company_name', label: 'Company' ,default:true},
+    { fieldname: 'country', label: 'Country' ,default:true},
+    { fieldname: 'customer_group', label: 'Guest Type' ,default:true},
+    { fieldname: 'phone_number', label: 'Phone Number' ,default:true},
+    { fieldname: 'email_address', label: 'Email' ,default:true},
+    { fieldname: 'identity_type', label: 'Identity Type' ,default:true},
+    { fieldname: 'owner' ,  label: 'Created By'},
+    { fieldname: 'creation' , fieldtype:"timeago",  label: 'Creation', header_class:"text-center", default:true},
+    { fieldname: 'modified_by' ,  label: 'Modified By'},
+    { fieldname: 'modified' , fieldtype:"timeago",  label: 'Last Modified', header_class:"text-center"},
   
 ])
  
-
 const selectedColumns = ref([]);
 
 const toggleShowColumn = (event) => {
@@ -153,19 +156,13 @@ function onResetTable(){
     loadData()
 
 }
-
- 
-
-
- 
-const data = ref([])
-
-const filter = ref({})
- 
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
-
- 
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+const getColumns = computed(()=>{
+    if (filter.value.search_field){ 
+        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+    }else {
+        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
+    }
+})
  
   
 function onOpenLink(column, data){
@@ -305,7 +302,7 @@ onMounted(() => {
              
             columns.value.push({
                 fieldname:r.fieldname,
-                header:r.label,
+                label:r.label,
                 fieldtype:r.fieldtype.toLowerCase(),
                 header_class:header_class,
                 selected:selectedColumns.value.includes(r.fieldname)
@@ -334,11 +331,11 @@ function onAddNewGuest(){
             position: 'top'
         },
         onClose:(options) => {
-                const data = options.data;
-                if(data){
-					loadData()
-				}
-            }
+            const data = options.data;
+            if(data){
+				loadData()
+			}
+        }
     });  
 }
 </script>

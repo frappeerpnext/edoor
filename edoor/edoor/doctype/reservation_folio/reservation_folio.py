@@ -32,6 +32,8 @@ class ReservationFolio(Document):
 			if self.reservation_stay:
 				if not frappe.db.exists("Reservation Folio",{"reservation_stay":self.reservation_stay}):
 					self.is_master = 1
+				#udpate business source 
+				self.business_source = frappe.db.get_value("Reservation Stay", self.reservation_stay, "business_source")
 		else:
 			if self.is_master == 1 and self.status == 'Closed':
 				frappe.throw("Master folio is not allow to close")

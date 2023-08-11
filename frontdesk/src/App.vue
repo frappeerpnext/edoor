@@ -96,6 +96,9 @@ const actionClickHandler = async function (e) {
             else if (data[0] == "assign_room") {
                 onAssignRoom(data[1], data[2])
             }
+            else if (data[0] == "view_room_block_detail") {
+                showRoomBlockDetail(data[1])
+            }
             else if (data[0] == "show_alert") {
                 toast.add({ severity: 'warn', summary: data[1], detail: '', life: 3000 })
             }

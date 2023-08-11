@@ -22,7 +22,7 @@
                             </template>
                         </Column>
                         <Column field="description" header="Description"></Column>
-                        <Column field="" header="Action">
+                        <Column field="" header="">
                             <template #body="slotProps">
                                 <ComDocumentButtonAction :data="slotProps.data" @onDownload="onDownload" @onEdit="onEdit" @onDelete="onRemove"/>
                                 <!-- <Button @click="downloadURI(slotProps.data.file_url, slotProps.data.file_name)" text size="small" icon="pi pi-download" severity="success" /> 

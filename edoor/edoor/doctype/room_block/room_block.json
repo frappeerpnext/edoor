@@ -27,7 +27,8 @@
   "unblock_note",
   "amended_from",
   "housekeeping_status",
-  "status_color"
+  "status_color",
+  "keyword"
  ],
  "fields": [
   {
@@ -165,12 +166,17 @@
    "label": "Housekeeping Status",
    "mandatory_depends_on": "eval:doc.is_unblock==1",
    "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-07-28 01:41:39.903029",
+ "modified": "2023-08-11 12:02:12.564210",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",
@@ -190,6 +196,7 @@
    "write": 1
   }
  ],
+ "search_fields": "room_number,room_type,reason",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

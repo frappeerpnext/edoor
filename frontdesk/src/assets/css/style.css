@@ -217,7 +217,8 @@ button span {
 #overlay_menu_more,
 #overlay_menu,
 #overlay_menu_user,
-.p-dialog {
+.p-dialog,
+.menu-ref-line {
     border-radius: 0 !important;
     border-top: 2px solid var(--primary-border-color) !important;
     background-color: rgb(255, 255, 255);
@@ -963,7 +964,7 @@ p.text-center.small.page-number.visible-pdf {
 .iframe-view iframe{
     overflow: auto;
 }
-.content-global-note:hover .btn-in-note , .more-btn-note:hover .btn-in-note   {
+.content-global-note:hover .btn-in-note , .more-btn-note:hover .btn-in-note ,.note-content-box:hover .btn-in-note   {
     display: inline !important;
 }
 .wrape-step-night-audit{
@@ -1127,4 +1128,22 @@ p.text-center.small.page-number.visible-pdf {
 }
 .wrap-pro-bar .wrapper-menu-bar_b:last-child .progress-bar.active{
     background-color: unset !important;
+}
+.check-box-filter{
+    position: absolute;
+    left: 9px;
+    top: 8px;
+}
+.grid-cs-note{
+    display: grid;
+}
+.modifiad-note-cs{
+    font-size: 10px;
+    background: var(--bg-gray-10);
+    width: 100%;
+    left: 0;
+    padding: 10px;
+    bottom: 0;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
 }
