@@ -34,8 +34,9 @@
             </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
-                    <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper ? slotProps.data.housekeeper : 'Assign'" link
-                        size="small" class="link_line_action1 no-underline"></Button>
+                    <Button @click="onAssignHousekeeper($event, slotProps.data)" link size="small" class="link_line_action1 no-underline">
+                        <span v-if="slotProps.data.housekeeper">{{slotProps.data.housekeeper}}</span>
+                    </Button>
                 </template>
             </Column>
         </DataTable>

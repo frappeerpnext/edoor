@@ -121,7 +121,8 @@
   "require_select_a_folio",
   "reference_folio_transaction",
   "is_master_folio",
-  "business_source"
+  "business_source",
+  "keyword"
  ],
  "fields": [
   {
@@ -756,11 +757,17 @@
    "fieldname": "city_ledger_type",
    "fieldtype": "Data",
    "label": "City Ledger Type"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-14 17:52:44.660690",
+ "modified": "2023-08-15 10:13:38.353142",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -815,6 +822,7 @@
    "write": 1
   }
  ],
+ "search_fields": "folio_number, transaction_number,guest_name, room_number,account_code,account_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

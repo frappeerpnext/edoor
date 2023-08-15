@@ -1137,6 +1137,9 @@ p.text-center.small.page-number.visible-pdf {
 .grid-cs-note{
     display: grid;
 }
+.grid-cs-ed{
+    display: grid;
+}
 .modifiad-note-cs{
     font-size: 10px;
     background: var(--bg-yellow-op-10);

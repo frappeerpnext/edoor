@@ -19,7 +19,10 @@
                     </span>
                 </div>
                 <div>
-                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
+                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
+                </div>
+                <div v-if="Object.keys(filter).length > 0">
+                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
                 <div>
                     <ComOrderBy doctype="Reservation Stay" @onOrderBy="onOrderBy" />
@@ -83,22 +86,24 @@
     </Paginator>
 
 <OverlayPanel ref="opShowColumn">
-    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
-        <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+    <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
+        <template #top>
+            <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+        </template>
         <ul class="res__hideshow">
             <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
                 <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
                 <label :for="c.fieldname">{{ c.label }}</label>
             </li>
         </ul>
-        <template #af-cancel-position>
+        <template #footer-left>
             <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
         </template>
     </ComOverlayPanelContent>
 </OverlayPanel>
 
 <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearAdanceSearch" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">    
             <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                             v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
@@ -130,9 +135,9 @@
                 @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
 
             <div class="col-3" v-if="filter.search_date_type">
-                <Calendar hideOnRangeSelection dateFormat="dd-MM-yy"
+                <Calendar hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full"
                 v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-                placeholder="Select Date Range" />
+                placeholder="Select Date Range" showIcon/>
             </div>
         </div>
     </ComOverlayPanelContent>
@@ -423,10 +428,10 @@ onMounted(() => {
 
 })
 
-const advanceSearch = (event) => {
+const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
-const onClearAdanceSearch = () => {
+const onClearFilter = () => {
     filter.value={}
     loadData()
     showAdvanceSearch.value.hide()

@@ -1,6 +1,7 @@
 <template>
     
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+   
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
                 <div class="col-6 pl-0">
@@ -77,7 +78,7 @@
                             <div class="col-12">
                                 <label>City Ledger Name</label>
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.city_ledger" placeholder="Select City Ledger Name" doctype="City Ledger"
-                                class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" />
+                                class="auto__Com_Cus w-full" @onSelected="onSelectCityLedger" :filters="{property:doc.property}" />
                             </div>
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">

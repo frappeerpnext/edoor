@@ -1,9 +1,13 @@
 <template>
     <div class="">
         <div :style="[{minWidth: width}, {maxWidth: width}]">
-            <span class="font-semibold text-lg mb-3">{{ title }}</span>
+            <slot name="top"></slot>
+            <h1 class="font-semibold text-lg" :class="ttl_header">{{ title }}</h1>
             <slot name="default"></slot>
             <ComOverlayPanelFooter :titleButtonCancel="titleButtonCancel" :icon="icon" :hideButtonOK="hideButtonOK" :titleButtonSave="titleButtonSave" :hideButtonClose="hideButtonClose" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
+                <template #footer-left>
+                    <slot name="footer-left"></slot>
+                </template>
                 <template #footer-right>
                     <slot name="footer-right"></slot>
                 </template>
@@ -17,6 +21,7 @@
 <script setup>
     const emit = defineEmits(['onSave', 'onCancel'])
     const props = defineProps({
+        ttl_header: String,
         hideFooter: {
             type: Boolean,
             default: false

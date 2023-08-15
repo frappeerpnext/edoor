@@ -1,20 +1,28 @@
 <template> 
     <ComDialogContent @onClose="onClose" @onOK="onSave">
-        <div>
-            <label>City Ledger Name</label><br />
-            <InputText v-model="data.city_ledger_name" type="text" placeholder="City Ledger Name" :maxlength="50" />
-        </div>
-        <div>
-            <ComSelect v-model="data.city_ledger_type" placeholder="City Ledger Type" doctype="City Ledger Type" />
-        </div>
-        <div>
-            <ComSelect v-model="data.business_source" placeholder="Business Source" doctype="Business Source" />
-        </div>
-        <div>
-            <label>Company Name</label><br />
-            <InputText v-model="data.company_name" type="text"  placeholder="Company Name" :maxlength="50" />
-        </div>
-        <div>
+        <ComReservationStayPanel title="City Ledger Information">
+            <template #content>
+                <div class="grid">
+                <div class="col-6">
+                    <label>City Ledger Name</label>
+                    <InputText class="w-full" v-model="data.city_ledger_name" type="text" placeholder="City Ledger Name" :maxlength="50" />
+                </div>
+                <div class="col-6">
+                    <label>City Ledger Type</label>
+                    <ComSelect class="w-full" v-model="data.city_ledger_type" placeholder="City Ledger Type" doctype="City Ledger Type" />
+                </div>
+                <div class="col-6">
+                    <label>Business Source</label>
+                    <ComSelect class="w-full" v-model="data.business_source" placeholder="Business Source" doctype="Business Source" />
+                </div>
+                <div class="col-6">
+                    <label>Company Name</label><br />
+                    <InputText class="w-full" v-model="data.company_name" type="text"  placeholder="Company Name" :maxlength="50" />
+                </div>
+                </div>
+            </template>
+        </ComReservationStayPanel>
+        <div class="col-6">
             <label>Phone Number</label><br />
             <InputText v-model="data.phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
         </div>
@@ -56,19 +64,20 @@
                 <Textarea v-model="data.address"  rows="3"  style="width: 100%;" />
             </div>
           </div>
+       
     </ComDialogContent>
 </template>
 <script setup>
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
- 
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const loading = ref(false);
-const data = ref({})
+
 const socket = inject("$socket")
 
 const property = JSON.parse(localStorage.getItem( "edoor_property"))
-
+const data = ref({property:property.name})
 function onClose(){
     dialogRef.value.close()
 }

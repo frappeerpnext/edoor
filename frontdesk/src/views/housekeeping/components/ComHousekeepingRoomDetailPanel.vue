@@ -1,5 +1,4 @@
 <template>
-    <h1>hello</h1>
     <div class="pb-20">
        <div class="">
         <div class="line-height-1 absolute top-4">
@@ -69,39 +68,40 @@
         </table>
         
         </div>
-        <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>
-        <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by " class="mb-5 leading-5 text-sm ">
-           <!-- {{ hk.reservationStay }}  -->
-           <div class="mt-auto">
-           <span class="italic">Created by: </span>
-           <span class="text-500 font-italic">
-               {{ hk.reservationStay?.owner }} {{ gv.datetimeFormat(hk.reservationStay?.creation) }}
-           </span>
-            </div>
+        <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
+            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>
+            <div class="mb-5 leading-5 text-sm ">
+            <!-- {{ hk.reservationStay }}  -->
             <div class="mt-auto">
-                <span class="italic"> Last Modified: </span>
-                <span class="text-500 font-italic">
-                    {{ hk.reservationStay?.modified_by }} {{ gv.datetimeFormat(hk.reservationStay?.modified) }}
-                </span>
-            </div>
-            <div>
-                <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_out_by">
-                    <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
-                    <span class="italic">Checked-in by: </span>
+            <span class="italic">Created by: </span>
+            <span class="text-500 font-italic">
+                {{ hk.reservationStay?.owner }} {{ gv.datetimeFormat(hk.reservationStay?.creation) }}
+            </span>
+                </div>
+                <div class="mt-auto">
+                    <span class="italic"> Last Modified: </span>
                     <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.checked_in_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_in_date) }}
+                        {{ hk.reservationStay?.modified_by }} {{ gv.datetimeFormat(hk.reservationStay?.modified) }}
                     </span>
-                    </div>
-                    <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
-                    <span class="italic"> Checked-out by: </span>
-                    <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_out_date) }}
-                    </span>
+                </div>
+                <div>
+                    <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_out_by">
+                        <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
+                        <span class="italic">Checked-in by: </span>
+                        <span class="text-500 font-italic">
+                            {{ hk.reservationStay?.checked_in_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_in_date) }}
+                        </span>
+                        </div>
+                        <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
+                        <span class="italic"> Checked-out by: </span>
+                        <span class="text-500 font-italic">
+                            {{ hk.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(hk.reservationStay?.checked_out_date) }}
+                        </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        
     </div>
 </template>
 <script setup>

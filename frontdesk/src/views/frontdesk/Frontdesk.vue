@@ -21,7 +21,13 @@
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro">
-        
+            <div>
+                <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
+                    <template #date>
+                        <Calendar v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showIcon showButtonBar/>
+                    </template>
+                </ComRoomChartFilterSelect>
+            </div>
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
             </div>
@@ -333,9 +339,9 @@ const calendarOptions = reactive({
                                             <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
                                             <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
-                                            ${event.extendedProps?.note == "Null" || event.extendedProps?.note != "" ? `
+                                            ${ (event.extendedProps?.note != "null" && event.extendedProps?.note) ? `
                                             <tr><td><span class="mt-2">Note</span></td></tr>
-                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note}</div></td></tr>
+                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note.length > 220 ? event.extendedProps?.note.substring(0, 220) + '...' : event.extendedProps?.note}</div></td></tr>
                                             ` : ''}
                                             </tbody>
                                         </table>
@@ -716,6 +722,7 @@ function onFilterResource(f) {
         room_number: f.room_number,
         view_type: filter.view_type // room_type = true or room = false
     }
+    console.log(roomChartResourceFilter)
     const cal = fullCalendar.value.getApi()
     cal.refetchResources()
 }

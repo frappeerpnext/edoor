@@ -16,10 +16,11 @@
                 </span>
 
                 <ComSelect 
-                    v-model="filter.selected_city_ledger_type" @onSelected="onSearch" placeholder="City Ledger Type"
+                    :filters="[['property', '=', property.name]]" v-model="filter.selected_city_ledger_type" @onSelected="onSearch" placeholder="City Ledger Type"
                     doctype="City Ledger Type" />
               
                 <ComSelect 
+                    :filters="[['property', '=', property.name]]"
                     v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source"
                     doctype="Business Source" />
               
@@ -38,26 +39,26 @@
         <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
             stateKey="table_city_ledger_list_state" :reorderableColumns="true"
                :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
-            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
                 <template #body="slotProps" >
-                    <Button v-if="c.fieldtype=='link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                    <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                         {{ slotProps.data[c.fieldname] }} 
                         <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
                         <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
                     </Button>
-                    <span v-else-if="c.fieldtype=='date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                    <span v-else-if="c.fieldtype=='datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
-                    <Timeago v-else-if="c.fieldtype=='timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                    <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                    <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
+                    <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                    <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                     v-if="slotProps?.data && slotProps?.data?.rooms">
                     <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
                         <span>{{ item }}</span>
                         <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                     </template>
                     </div>
-                    <CurrencyFormat  v-else-if="c.fieldtype=='currency'" :value="slotProps.data[c.fieldname]" />
+                    <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
                     <span v-else>
                         {{ slotProps.data[c.fieldname] }}
                         <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
@@ -116,7 +117,7 @@ socket.on("RefreshData", (arg) => {
 })
 
 const columns = ref([
-    { fieldname: 'name', label: 'City Ledger Code', fieldtype:"link",post_message_action:"view_city_ledger_detail" ,default:true},
+    { fieldname: 'name', label: 'City Ledger Code', fieldtype:"Link",post_message_action:"view_city_ledger_detail" ,default:true},
     { fieldname: 'city_ledger_name', label: 'City Ledger Name' ,default:true},
     { fieldname: 'city_ledger_type', label: 'City Ledger Type' ,default:true},
     { fieldname: 'business_source', label: 'Business Source' ,default:true},
@@ -125,9 +126,9 @@ const columns = ref([
     { fieldname: 'email_address', label: 'Email Address' ,default:true},
     { fieldname: 'contact_name', label: 'Contact Name' ,default:true},
     { fieldname: 'contact_phone_number', label: 'Contact Phone Number' ,default:true},
-    { fieldname: 'total_debit', label: 'Total Debit' ,default:true,header_class:"text-right"},
-    { fieldname: 'total_credit', label: 'Total Credit' ,default:true,header_class:"text-right"},
-    { fieldname: 'balance', label: 'Balance' ,default:true,header_class:"text-right"},
+    { fieldname: 'total_debit', label: 'Total Debit' , fieldtype:"Currency",default:true,header_class:"text-right"},
+    { fieldname: 'total_credit', label: 'Total Credit', fieldtype:"Currency" ,default:true,header_class:"text-right"},
+    { fieldname: 'balance', label: 'Balance', fieldtype:"Currency" ,default:true,header_class:"text-right"},
     
   
 ])
@@ -180,7 +181,9 @@ function pageChange(page) {
 
 function loadData() {
     gv.loading = true
-    let filters = []
+    let filters = [
+    ["property","=",property.name]
+    ]
     if (filter.value?.keyword) {
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
     }

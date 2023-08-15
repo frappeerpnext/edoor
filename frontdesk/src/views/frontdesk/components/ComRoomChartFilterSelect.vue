@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <div>
         <div class="flex flex-wrap gap-2">
             <div>
@@ -12,6 +12,12 @@
             </div>
             <div>
                 <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
+                <div>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search" />
+                        <InputText class="btn-set__h" v-model="room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
+                    </span>
+                </div>
             </div>
             <div>
                 <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
@@ -40,9 +46,13 @@ const filter = reactive({
     building: "",
     floor: ""
 })
+const room_number = ref('')
 watch(filter, (newValue, oldValue) => {
     emit("onFilterResource",newValue)
 })
+function onSearchRoom(key){
+    filter.room_number = key
+}
 function onSearch(key){
     emit("onSearch", key)
 }

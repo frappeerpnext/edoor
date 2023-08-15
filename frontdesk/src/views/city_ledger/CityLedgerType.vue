@@ -1,5 +1,5 @@
 <template>
-    <div>
+ 
         <ComHeader isRefresh @onRefresh="loadData()">
             <template #start>
                 <div class="text-2xl">City Ledger Account Type</div>
@@ -22,41 +22,25 @@
             <Column field="owner" header="Owner"></Column>
             <Column header="">
              <template #body="slotProps">
-                <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit"/>
+                <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit(slotProps.data.name)"/>
                 <i class="pi pi-trash" @click="onDelete(slotProps.data.name)"/>
             </template>
         </Column>
         </DataTable>
-
-        <Dialog v-model:visible="visible" modal header="Add New City Ledger Account Type" :style="{ width: '50vw' }">
-            <ComDialogContent :loading="loading" @onClose="visible = false" @onOK="onSave()">
-                City Ledger Type
-            <div class="card flex justify-content-left">
-                <InputText type="text" v-model="accountType.city_ledger_type" />
-            </div><br>
-            Note
-            <div class="card flex justify-left">
-                 <Textarea v-model="accountType.note" rows="5" cols="50" />
-            </div><br>
-        </ComDialogContent> 
-        </Dialog>
-    </div>
+       
 </template>
 <script setup>
-import { inject, ref, useToast, getDocList, onMounted, createUpdateDoc,deleteDoc,useConfirm } from '@/plugin'
-const moment = inject("$moment")
+import { inject, ref, getDocList, onMounted,deleteDoc,useConfirm,useDialog } from '@/plugin'
+import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedgerType.vue"
 const gv = inject("$gv")
-const toast = useToast()
 const data = ref([])
 const filter = ref({})
-const visible = ref(false);
-const accountType = ref({});
-const loading = ref(false)
-const frappe = inject('$frappe');
 const confirm = useConfirm()
+const dialog = useDialog()
 
-function onEdit (){ 
- dialog.open(ComDialogContent, {
+function onEdit (name){ 
+
+ dialog.open(ComAddCityLedgerType, {
     props: {
         header: `Edit City Ledger Type`,
         style: {
@@ -71,8 +55,14 @@ function onEdit (){
         position: 'top'
     },
     data:{
-        name: name.value,
+        name: name,
     },
+    onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData()
+			}
+        }
 });  
 }
 
@@ -86,31 +76,16 @@ function onDelete (name){
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            loading.value = true
+            // loading.value = false
              deleteDoc('City Ledger Type',name)
                  .then(() =>{
-                    
+                    loadData()
                     loading.value = false
                  } ).catch((err)=>{
                     loading.value = false
                  })         
         },
     });
-}
-
-function onSave(){
-  if(!accountType.value.city_ledger_type){
-    gv.toast('warn','Please input guest type.')
-    return
-  }
-  loading.value = true
-  createUpdateDoc("City Ledger Type", {data: accountType.value}).then((r)=>{
-    loading.value = false
-    visible.value = false
-    loadData()
-  }).catch((err)=>{
-    loading.value = false
-  })
 }
 
 function loadData() {
@@ -129,8 +104,23 @@ function loadData() {
         });
 }
 function onAddCityLedgerAccountType(){
-    accountType.value = {}
-    visible.value = true;
+    dialog.open(ComAddCityLedgerType, {
+        props: {
+            header: `Add New City Ledger Type`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData()
+			}
+        }
+    });  
 }
 onMounted(() => {
     loadData()

@@ -42,26 +42,29 @@
             :frozen="c.frozen" 
             >
                 <template #body="slotProps" >
-                    <Button v-if="c.fieldtype=='link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                    <Button  v-if="c.fieldtype=='Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                         {{ slotProps.data[c.fieldname] }} 
                         <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
                         <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
                     </Button>
-                    <span v-else-if="c.fieldtype=='date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                    <span v-else-if="c.fieldtype=='datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
-                    <Timeago v-else-if="c.fieldtype=='timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                    <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                    <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
+                    <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                    <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                     v-if="slotProps?.data && slotProps?.data?.rooms">
                     <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
                         <span>{{ item }}</span>
                         <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                     </template>
                     </div>
-                    <CurrencyFormat  v-else-if="c.fieldtype=='currency'" :value="slotProps.data[c.fieldname]" />
+                    <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
                     <span v-else>
-                        {{ slotProps.data[c.fieldname] }}
-                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                        <div v-if="slotProps.data[c.fieldname]">
+                            {{ slotProps.data[c.fieldname] }}
+                            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                            <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                        </div>
+                    
                     </span>
                 </template>
             </Column>
@@ -119,12 +122,14 @@ socket.on("RefreshData", (arg) => {
 })
 
 const columns = ref([
-    { fieldname: 'name', label: 'Folio Transaction Code', fieldtype:"link",post_message_action:"view_city_ledger_detail" ,default:true},
-    { fieldname: 'naming_series', label: 'Folio Transaction  Number' ,default:true},
-    { fieldname: 'account_code', label: 'Account Code' ,default:true},
-    // { fieldname: 'business_source', label: 'Business Source' ,default:true},
-    // { fieldname: 'company_name', label: 'Company Name' ,default:true},
-    // { fieldname: 'phone_number', label: 'Phone Number' ,default:true},
+    { fieldname: 'name', label: 'Folio Transaction Code', fieldtype:"Link",post_message_action:"view_folio_transaction_detail" ,default:true},
+    { fieldname: 'posting_date', label: 'Date',fieldtype: "Date ", default:true },
+    { fieldname: 'room_number', label: 'Room Number' ,default:true},
+    { fieldname: 'account_code' , extra_field:"account_name", extra_field_separator:"-",  label: 'Account Code',default:true},
+    { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  label: 'Guest',fieldtype:"Link", post_message_action:"view_guest_detail"  ,default:true},
+    { fieldname: 'total_amount', label: 'Amount',fieldtype:"Currency",default:true,header_class:"text-right"},
+    { fieldname: 'owner', label: 'User' ,default:true},
+    { fieldname: 'note', label: 'Note' ,default:true},
     // { fieldname: 'email_address', label: 'Email Address' ,default:true},
     // { fieldname: 'contact_name', label: 'Contact Name' ,default:true},
     // { fieldname: 'contact_phone_number', label: 'Contact Phone Number' ,default:true},
@@ -308,7 +313,7 @@ function onAddCityLedgerTransaction(){
             // name: name.value,
         },
         props: {
-            header: `Add New Folio Transaction`,
+            header: `Add New City Ledger Transaction`,
             style: {
                 width: '50vw',
             },

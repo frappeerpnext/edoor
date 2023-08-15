@@ -74,9 +74,9 @@
         <div v-if="i.content" class="mt-3 mb-5 max-h-28 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
             {{ i.content }} 
         </div>
-        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs text-sm">
+        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs" style="font-size: 10px;">
             <div>
-                 <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
+                Noted by <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
             </div>
             <div v-if="i.modified_by">
                 Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - {{gv.datetimeFormat(i.modified)}}</span>

@@ -9,6 +9,7 @@
                 <NewGITReservationButton />
             </template>
         </ComHeader>
+        {{ filter }}
         <div class="mb-3 flex justify-between">
             <div class="flex gap-2">
                 <div>
@@ -19,6 +20,9 @@
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
+                </div>
+                <div v-if="Object.keys(filter).length > 0">
+                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
                 <div>
                     <ComOrderBy doctype="Reservation" @onOrderBy="onOrderBy" />
@@ -79,21 +83,23 @@
         </template>
     </Paginator>
 <OverlayPanel ref="opShowColumn" id="res_list_hideshow">
-    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
-        <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
+        <template #top>
+            <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+        </template>
         <ul class="res__hideshow">
             <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
                 <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"/>
                 <label :for="c.fieldname">{{ c.label }}</label>
             </li>
         </ul>
-        <template #af-cancel-position>
+        <template #footer-left>
             <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
         </template>
     </ComOverlayPanelContent>
 </OverlayPanel>
 <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearAdanceSearch" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
             <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                             v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
@@ -113,11 +119,11 @@
                 @onSelected="onSearch" placeholder="Building" doctype="Building" />
 
             <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
-                @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
+                @onSelected="onSelectRoomType" placeholder="Room Type" doctype="Room Type" :filters="{property:property.name}"></ComSelect>
 
             <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
                 optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
-                @onSelected="onSearch" placeholder="Room Name" doctype="Room"></ComSelect>
+                @onSelected="onSelectRoom"  placeholder="Room Name" doctype="Room" :filters="{property:property.name}" ></ComSelect>
 
             <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
                 optionValue="value" placeholder="Search Date Type" :clear="false"
@@ -277,10 +283,10 @@ function loadData() {
     }
 
     if (filter.value?.selected_room_type) {
-        filters.push(["Reservation","room_types", "like", "%" + filter.value.selected_room_type + "%"])
+        filters.push(["room_types", "like", "%" + filter.value.room_type + "%"])
     }
     if (filter.value?.selected_room_number) {
-        filters.push(["Reservation", "room_numbers", 'like','%'+ filter.value.selected_room_number + '%'])
+        filters.push([ "room_numbers", 'like','%'+ filter.value.room_number + '%'])
     }
 
     if (filter.value?.search_date_type && filter.value.date_range != null) {
@@ -336,6 +342,24 @@ function onSelectFilterDate(event) {
     if (filter.value.search_date_type == '')
         filter.value.date_range = null
     loadData()
+}
+
+function onSelectRoomType(d){
+    if(d){
+        filter.value.room_type = d.room_type
+    
+    }
+    onSearch()
+    
+}
+function onSelectRoom(d){
+    if(d){
+        filter.value.room_number = d.room_number
+    
+    }
+    onSearch()
+    
+    
 }
 
 
@@ -421,7 +445,7 @@ function onResetTable(){
 const advanceSearch = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
-const onClearAdanceSearch = () => {
+const onClearFilter = () => {
     filter.value={}
     loadData()
     showAdvanceSearch.value.hide()
@@ -429,5 +453,4 @@ const onClearAdanceSearch = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
-
 </script>

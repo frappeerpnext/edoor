@@ -1,17 +1,17 @@
 <template>
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
-  City Ledger Type
-<div class="card flex justify-content-left">
-  <InputText type="text" v-model="accountType.city_ledger_type" />
-</div><br>
-Note
-<div class="card flex justify-left">
-   <Textarea v-model="accountType.note" rows="5" cols="50" />
-</div><br>
-</ComDialogContent> 
+     Guest Type
+   <div class="card flex justify-content-left">
+      <InputText type="text" v-model="guestType.customer_group_en" />
+    </div><br>
+      Note
+    <div class="card flex justify-left">
+      <Textarea v-model="guestType.note" rows="5" cols="50" />
+    </div><br>
+  </ComDialogContent>
 </template>
 
-<script setup>
+<script setup> 
 import { onMounted,ref,inject,createUpdateDoc,getDoc  } from '@/plugin';
 const dialogRef = inject('dialogRef')
 const accountType = ref({})
@@ -19,17 +19,18 @@ const loading = ref(false)
 
 function onSave(){
   loading.value = true
-  createUpdateDoc("City Ledger Type", {data: accountType.value}).then((r)=>{
+  createUpdateDoc("Customer Group", {data: guestType.value}).then((r)=>{
     dialogRef.value.close(r)
-
+    
   }).catch((err)=>{
     loading.value = false
   })
-
 }
+
 function onClose(){
   dialogRef.value.close()
 }
+
 onMounted(() => {
   if(dialogRef.value.data?.name){
     loading.value = true

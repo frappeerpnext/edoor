@@ -671,7 +671,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-08-11 09:53:38.787866",
+ "modified": "2023-08-15 11:07:12.543943",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
@@ -739,7 +739,7 @@
    "write": 1
   }
  ],
- "search_fields": "reference_number,guest,guest_name,phone_number,email_address",
+ "search_fields": "reference_number,guest,guest_name,phone_number,email_address,room_numbers, group_code, group_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

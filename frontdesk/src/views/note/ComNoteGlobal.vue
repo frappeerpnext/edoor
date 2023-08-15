@@ -2,6 +2,10 @@
 	{{ i }}
 <div>
 	<div>
+		<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
+            <i class="pi pi-search" />
+            <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
+        </div>
 		<div class="flex justify-end items-center">
 			<div class="flex items-center mt-3 mb-1">
 				<!-- <ComAddNote :name="name"></ComAddNote> -->
@@ -11,11 +15,7 @@
 				</Button>
 			</div>
 		</div>
-		<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
-            <i class="pi pi-search" />
-            <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
-        </div>
-		<!-- <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0"> -->
+		<ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0">
 		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
@@ -66,7 +66,7 @@
 				{{ i.content }}
 			</div>
 			<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
-			<div class="flex flex-col text-sm my-1 font-italic  line-height-1 py-1">
+			<div class="flex flex-col my-1 font-italic  line-height-1 py-1" style="font-size: 10px;">
 				<div>
 					Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
 				</div>
@@ -75,7 +75,7 @@
 				</div>
 			</div>
 		</div>
-	<!-- </ComPlaceholder> -->
+	</ComPlaceholder>
 	</div>
 </div>
 </template>

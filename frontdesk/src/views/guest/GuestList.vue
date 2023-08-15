@@ -5,9 +5,10 @@
                 <div class="text-2xl">Guest Database</div>
             </template>
             <template #end>
-              <Button @click="onAddNewGuest">Add New Guest</Button>
+              <Button class="border-none" @click="onAddNewGuest">Add New Guest</Button>
             </template>
         </ComHeader>
+        {{ filter }}
         <div class="mb-3">
             <div class="flex flex-wrap gap-2">
                 <span class="p-input-icon-left">

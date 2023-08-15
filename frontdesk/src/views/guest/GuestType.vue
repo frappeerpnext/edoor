@@ -27,19 +27,7 @@
             </template>
         </Column>
         </DataTable>
-        <Dialog v-model:visible="visible" modal header="Add Guest Type" :style="{ width: '50vw' }">
-            
-            <ComDialogContent :loading="loading" @onClose="visible = false" @onOK="onSave()">
-            Guest Type
-            <div class="card flex justify-content-left">
-                <InputText type="text" v-model="guestType.customer_group_en" />
-            </div><br>
-            Note
-            <div class="card flex justify-left">
-                 <Textarea v-model="guestType.note" rows="5" cols="50" />
-            </div><br>
-        </ComDialogContent> 
-        </Dialog>
+
     </div>
 </template>
 <script setup>
@@ -62,21 +50,6 @@ function onEdit(){
     visible.value = true
 }
 
-function onSave(){
-  if(!guestType.value.customer_group_en){
-    gv.toast('warn','Please input guest type.')
-    return
-  }
-  loading.value = true
-  createUpdateDoc("Customer Group", {data: guestType.value}).then((r)=>{
-    loading.value = false
-    visible.value = false
-    loadData()
-  }).catch((err)=>{
-    loading.value = false
-  })
-}
-
 function loadData() {
     gv.loading = true
     getDocList('Customer Group', {
@@ -93,8 +66,8 @@ function loadData() {
         });
 }
 function onAdGuestType(){
-    guestType.value = {}
-    visible.value = true;
+    alert()
+
 }
 
 onMounted(() => {

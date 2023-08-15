@@ -5,12 +5,12 @@
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
         
         <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
-        <tippy :content="' Total Arrival ' + (data?.arrival|| 0) + ' and ' + ((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in '   ">
+        <tippy :content="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in ' + ' and ' +  ' Total Arrival ' + (data?.arrival|| 0)  ">
         <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival" :value="((data.arrival || 0) -(data.arrival_remaining || 0))">
             <span>{{ (data?.arrival || 0) -(data?.arrival_remaining || 0) }}</span>/<span>{{ (data?.arrival || 0) }}</span>
         </ComTodaySummarySep>
         </tippy>
-        <tippy :content="'Total Departure ' +  (data?.departure ||0) + ' and '+  ((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out'  ">
+        <tippy :content="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out' + ' and '+ 'Total Departure ' +  (data?.departure ||0)   ">
         <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure" :value="data.departure - data?.departure_remaining">
         <span title="Departure">{{ (data?.departure ||0) - (data?.departure_remaining ||0) }}</span>/<span titel="Departure Remain">{{ data?.departure || 0 }}</span>
         </ComTodaySummarySep>
