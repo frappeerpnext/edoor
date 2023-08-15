@@ -125,9 +125,11 @@ const call = frappe.call()
 const gv = inject('$gv');
 if(housekeeping_status.value.length > 0){
     housekeeping_status.value.forEach(h => {
+
         items.value.push({
             label: h.status,
             command: () => {
+               
                 onSelected(h)
             }
         })
@@ -139,9 +141,22 @@ const toggle = (event) => {
     show.value.toggle(event);
 };
 function onSelected($event){
+
+
+
     if (!hk.selectedRow) {
     toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select roow to change housekeeping status", life: 3000 })
 } else {
+
+ if($event.is_room_occupy==0 && hk.selectedRow.reservation_stay){
+    toast.add({ severity: 'warn', summary: "Change Status", detail: "you cannot assign room have guest to " + $event.status, life: 3000 })
+    return
+ }
+ if($event.is_room_occupy==1 && !hk.selectedRow.reservation_stay){
+    toast.add({ severity: 'warn', summary: "Change Status", detail: "you cannot assign room have guest to " + $event.status, life: 3000 })
+    return
+ }
+
     db.updateDoc('Room', hk.selectedRow.name, {
         housekeeping_status: $event.status,
         status_color : $event.status_color,
@@ -174,7 +189,7 @@ function onSaveAssignHousekeeper($event) {
     })
     .then((doc) =>{
         hk.selectedRow.housekeeper = doc.housekeeper
-        toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
+        toast.add({ severity: 'success', summary: "Assign housekeeping", detail: "Assign housekeeping status successfully", life: 3000 })
         hk.loadData()
         submitLoading.value = false
         opHousekeeper.value.hide()

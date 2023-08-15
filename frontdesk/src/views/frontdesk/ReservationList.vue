@@ -9,56 +9,31 @@
                 <NewGITReservationButton />
             </template>
         </ComHeader>
-        <div class="mb-3">
-            <div class="flex flex-wrap gap-2">
-                <span class="p-input-icon-left">
-                    <i class="pi pi-search" />
-                    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                </span>
-
-                <ComSelect optionLabel="business_source_type" optionValue="name"
-                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                    doctype="Business Source Type" />
-
-                <ComSelect isFilter groupFilterField="business_source_type"
-                    :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
-                    optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                    placeholder="Business Source" doctype="Business Source" />
-
-                <ComSelect v-model="filter.selected_reservation_type"
-                    @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
-
-                <ComSelect optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
-                    @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
-
-                <ComSelect optionLabel="building" optionValue="name" v-model="filter.selected_building"
-                    @onSelected="onSearch" placeholder="Building" doctype="Building" />
-
-                <ComSelect isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
-                    @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
-
-                <ComSelect isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
-                    optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
-                    @onSelected="onSearch" placeholder="Room Name" doctype="Room"></ComSelect>
-
-                <ComSelect v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
-                    optionValue="value" placeholder="Search Date Type" :clear="false"
-                    @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-
-                <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
-                    v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-                    placeholder="Select Date Range" />
-                <ComOrderBy doctype="Reservation" @onOrderBy="onOrderBy" />
+        <div class="mb-3 flex justify-between">
+            <div class="flex gap-2">
+                <div>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search" />
+                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                    </span>
+                </div>
+                <div>
+                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
+                </div>
+                <div>
+                    <ComOrderBy doctype="Reservation" @onOrderBy="onOrderBy" />
+                </div>
+            </div>
+            <div>
+                <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                    <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                </Button>
             </div>
         </div>
         
-       
-
-<Button class="border-none" label="Show Column" @click="toggleShowColumn" />
-<Button class="border-none" label="Reset List" @click="onResetTable" />
-
         <DataTable 
-            resizableColumns 
+            class="res_list_scroll"
+            :resizableColumns="true" 
             columnResizeMode="fit" 
             showGridlines  
             stateStorage="local" 
@@ -77,7 +52,7 @@
                     </Button>
                     <span v-else-if="c.fieldtype=='Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
                     <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                    <div v-else-if="c.fieldtype=='Room'"
                     v-if="slotProps?.data && slotProps?.data?.room_numbers">
                     <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
                         <span>{{ item }}</span>
@@ -85,7 +60,7 @@
                     </template>
                     </div>
                     <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
+                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg text-white p-1px border-round-3xl"
                     :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
                     }}</span>
                     <span v-else>
@@ -95,25 +70,66 @@
                     </span>
                 </template>
             </Column>
-  
         </DataTable>
     </div>
- 
     <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
-            Total Records: {{ pageState.totalRecords }}
+            <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
         </template>
     </Paginator>
+<OverlayPanel ref="opShowColumn" id="res_list_hideshow">
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
+        <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+        <ul class="res__hideshow">
+            <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
+                <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"/>
+                <label :for="c.fieldname">{{ c.label }}</label>
+            </li>
+        </ul>
+        <template #af-cancel-position>
+            <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
+        </template>
+    </ComOverlayPanelContent>
+</OverlayPanel>
+<OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearAdanceSearch" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+        <div class="grid">
+            <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
+                            v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
+                            doctype="Business Source Type" />
+            <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
+                :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
+                optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
+                placeholder="Business Source" doctype="Business Source" />
 
-<OverlayPanel ref="opShowColumn">
-    <InputText v-model="filter.search_field" placeholder="Search" />
-    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-        
-        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.label }}</label>
-    </div>
-    <Button @click="OnSaveColumn">Save</Button>
+            <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type"
+                @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
+
+            <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
+                @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
+
+            <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name" v-model="filter.selected_building"
+                @onSelected="onSearch" placeholder="Building" doctype="Building" />
+
+            <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
+                @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
+
+            <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
+                optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
+                @onSelected="onSearch" placeholder="Room Name" doctype="Room"></ComSelect>
+
+            <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
+                optionValue="value" placeholder="Search Date Type" :clear="false"
+                @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+
+            <div class="col-3" v-if="filter.search_date_type">
+                <Calendar class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
+                v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                placeholder="Select Date Range" showIcon/>
+            </div>
+        </div>
+    </ComOverlayPanelContent>
 </OverlayPanel>
 
 </template>
@@ -127,6 +143,7 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
 
+const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
@@ -140,8 +157,6 @@ if (arg == property.name) {
 }
 })
 
-
-
 const columns = ref([
     { fieldname: 'name', label: 'Reservation #', fieldtype:"Link",post_message_action:"view_reservation_detail",default:true },
     { fieldname: 'reference_number', label: 'Ref. #' },
@@ -150,7 +165,7 @@ const columns = ref([
     { fieldname: 'arrival_date', label: 'Arrival', fieldtype:"Date",header_class:"text-center",default:true },
     { fieldname: 'departure_date', label: 'Departure', fieldtype:"Date",header_class:"text-center" ,default:true},
     { fieldname: 'room_nights',  label: 'Room Nights', header_class:"text-center", default:true},
-    { fieldname: 'room_type_alias' ,  label: 'Room Type'  ,default:true},
+    { fieldname: 'room_type_alias' ,  label: 'Room Type', default:true},
     { fieldname: 'room_numbers',  label: 'Rooms',fieldtype:"Room" ,default:true},
     { fieldname: 'adult',  label: 'Pax(A/C)',extra_field:"child", extra_field_separator:"/", header_class:"text-center" ,default:true},
     { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  label: 'Guest',fieldtype:"Link", post_message_action:"view_guest_detail"  ,default:true},
@@ -185,13 +200,6 @@ const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
 
-function onResetTable(){
-    localStorage.removeItem("page_state_reservation")
-    localStorage.removeItem("table_reservation_list_state")
-   window.location.reload()
-
-}
-
 function OnSaveColumn(event){
     selectedColumns.value = columns.value.filter(r=>r.selected).map(x=>x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
@@ -199,7 +207,9 @@ function OnSaveColumn(event){
     opShowColumn.value.toggle(event);
     loadData()
 }
-
+const onCloseColumn = () => {
+    opShowColumn.value.hide()
+}
 
 const dataTypeOptions = reactive([
     { label: 'Search Date', value: '' },
@@ -400,4 +410,24 @@ onMounted(() => {
     })
 
 })
+
+function onResetTable(){
+    localStorage.removeItem("page_state_reservation")
+    localStorage.removeItem("table_reservation_list_state")
+   
+   window.location.reload()
+}
+
+const advanceSearch = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
+const onClearAdanceSearch = () => {
+    filter.value={}
+    loadData()
+    showAdvanceSearch.value.hide()
+}
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
+
 </script>

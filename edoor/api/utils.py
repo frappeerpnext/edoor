@@ -116,6 +116,7 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
 
     # Return the generated dates.
     return dates
+
 @frappe.whitelist()
 def update_reservation(name=None,doc=None, run_commit = True):
     if name or doc:
@@ -371,6 +372,35 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             if run_commit:
                 frappe.db.commit()
         return doc
+
+
+@frappe.whitelist()
+def update_city_ledger(name=None,doc=None, run_commit = True):
+    if name:
+        doc = frappe.get_doc("City Ledger",name)
+    sql = """
+        select 
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                transaction_type = 'City Ledger' and 
+                transaction_number = '{}'
+        """.format(
+                doc.name
+            )
+
+    folio_data = frappe.db.sql(sql, as_dict=1)
+
+    doc.total_debit =  folio_data[0]["debit"]
+    doc.total_credit=folio_data[0]["credit"]
+    doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
+    
+    doc.save()
+    if run_commit:
+        frappe.db.commit()
+        
+    return doc
 
 @frappe.whitelist()
 def get_room_rate(property, rate_type, room_type, business_source, date):

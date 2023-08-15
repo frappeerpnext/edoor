@@ -5,7 +5,7 @@
         <div class="text-2xl">Block Room</div>
       </template>
       <template #end>
-        <Button @click="onAddNewGuest">Add New Unblock Room</Button>
+        <Button @click="onAddNewRommBlock()">Add New Room Block</Button>
       </template>
     </ComHeader>
     <div class="mb-3">
@@ -60,6 +60,13 @@
               <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
             </template>
           </div>
+          <template v-else-if="c.fieldtype == 'Status'">
+             
+            <Chip v-if="slotProps.data[c.fieldname]==1">
+              Unblock
+            </Chip>
+            <Chip v-else>Block</Chip>
+          </template>
           <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
           <span v-else>
             {{ slotProps.data[c.fieldname] }}
@@ -118,16 +125,16 @@ socket.on("RefreshGuestDatabase", (arg) => {
 })
 
 const columns = ref([
-  { fieldname: 'name', header: 'Customer Code', fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
+  { fieldname: 'name', header: 'Room Block Code', fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
   { fieldname: 'block_date', header: 'Block Date', fieldtype: "Date", default: true },
-  { fieldname: 'start_date', header: 'Start Date', fieldtype: "Date", default: true },
+  { fieldname: 'start_date', header: 'Start Date', fieldtype: "Date ", default: true },
   { fieldname: 'end_date', header: 'Release Date', fieldtype: "Date", default: true },
   { fieldname: 'room_number', header: 'Room Number', default: true },
   { fieldname: 'room_type', header: 'Room Type', default: true },
   { fieldname: 'reason', header: 'Reason', default: true },
   { fieldname: 'unblock_date', header: 'Unblock Date', fieldtype: "Date", default: true },
   { fieldname: 'unblock_note', header: 'Unblock Note', default: true },
-
+  { fieldname: 'is_unblock', fieldtype:"Status", header: 'Status', default: true },
 
 ])
 
@@ -170,7 +177,7 @@ function OnSaveColumn(event) {
 
 function onResetTable() {
   localStorage.removeItem("page_state_room_block")
-  localStorage.removeItem("table_guest_room_block_list_state")
+  localStorage.removeItem("table_room_block_list_state")
   window.location.reload
 
 
@@ -319,12 +326,13 @@ onMounted(() => {
   })
 
 })
-
-function onAddNewGuest() {
-    const dialogRef = dialog.open(ComEditRoomBlock, {
-        data:doc.value,
+function onAddNewRommBlock() {
+    dialog.open(ComEditRoomBlock, {
+        data:{
+          
+        },
         props: {
-            header: 'Edit Room Block ' + data.value.name,
+            header: 'Add New Room Block ',
             style: {
                 width: '50vw',
             },
@@ -335,8 +343,7 @@ function onAddNewGuest() {
         onClose: (options) => {
             const result = options.data;
             if(result){
-                data.value = result
-                gv.loading = false
+                loadData()
             }
         }
     })

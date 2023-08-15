@@ -1,11 +1,13 @@
 <template>
-    <MultiSelect display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
-        :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
-        @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
-    <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
-        :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
-        :placeholder="placeholder">
-</Dropdown>
+    <div :class="class">
+        <MultiSelect class="w-full" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+            :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
+            @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
+        <Dropdown v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
+            :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
+            :placeholder="placeholder">
+        </Dropdown>
+    </div>
 </template>
 <script setup>
 import { useToast, ref, inject, reactive, computed, watch, onMounted,getDocList } from '@/plugin'
@@ -37,7 +39,7 @@ const props = defineProps({
     },
     width: {
         type: String,
-        default: '140px'
+        default: '100%'
     },
     clear: {
         type: Boolean,
@@ -59,7 +61,8 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    maxSelectLabel: Number
+    maxSelectLabel: Number,
+    class: String
 })
 const toast = useToast();
 const frappe = inject('$frappe')

@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_reservation_folio, update_reservation_stay,update_reservation,get_base_rate
+from edoor.api.utils import update_city_ledger, update_reservation_folio, update_reservation_stay,update_reservation,get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import now
 
@@ -18,11 +18,13 @@ class FolioTransaction(Document):
 		if not self.input_amount:
 			if not hasattr(self,"valiate_input_amount"):
 				frappe.throw("Please enter amount")
-
+ 
 		if self.require_city_ledger_account==1:
-			if not self.city_ledger:
-				frappe.throw("Please select city ledger account")
-
+			if self.is_new():
+				if not self.city_ledger:
+					frappe.throw("Please select city ledger account")
+			else:
+				frappe.throw("You cannot edit {} transaction.".format(self.account_name))
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
@@ -183,7 +185,9 @@ class FolioTransaction(Document):
 			update_sub_account_description(self)
 	def after_insert(self):
 		update_folio_transaction(self)
-				
+
+		if self.require_city_ledger_account==1 and  self.city_ledger :
+			post_to_city_ledger(self)
 
 
 	def on_update(self):
@@ -212,10 +216,12 @@ class FolioTransaction(Document):
 				if frappe.get_value("Reservation Folio", target_folio_transaction[0]["transaction_number"], "status")=="Closed":
 					frappe.throw("You cannot delete this record. Because reference to Folio number {} and this folio is already closed".format( target_folio_transaction[0]["transaction_number"]))
 				
+				
 
 		#use for validate record prevent user to delete record
 
 		#frappe.throw("You cannot delete me")
+	
 	def after_delete(self):
 	
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
@@ -240,7 +246,12 @@ class FolioTransaction(Document):
 			
 			frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=d["reservation_stay"], doc=None, run_commit=False)
 			frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=d["reservation"], doc=None, run_commit=False)
-	
+		
+		#check if folio transaction is city ledger then update city leder summary
+		if self.city_ledger:
+			frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
+			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.city_ledger, doc=None, run_commit=False)
+		
 
 			
 
@@ -286,20 +297,23 @@ def update_folio_transaction(self):
 		update_reservation_folio(self.transaction_number, None, False)
 	
 	#update to reservation stay and reservation
-	if not self.parent_reference:	 
-		update_reservation_stay(self.reservation_stay,None, False)
-		
-		update_reservation(self.reservation,None, False)
+	if not self.parent_reference:	
+		if self.transaction_type=="Reservation Folio": 
+			update_reservation_stay(self.reservation_stay,None, False)
+			update_reservation(self.reservation,None, False)
 		
 		# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
 		# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
 	
+	if self.transaction_type =="City Ledger":
+		update_city_ledger(self.transaction_number, None, False)
+
 	#check if it is is folio transfer then queue add record to folio transaction
 	if self.require_select_a_folio==1: 
 			if self.folio_number and  self.is_auto_post==0:
 				frappe.enqueue("edoor.edoor.doctype.folio_transaction.folio_transaction.transfer_folio_balance", queue='short', self=self)
-	
-	
+
+
 
 def update_sub_account_description(self):
 	if self.discount_account:
@@ -407,3 +421,30 @@ def transfer_folio_balance(self):
 		"require_select_a_folio": 0,
 		"reference_folio_transaction":self.name
 	}).insert()
+
+	
+@frappe.whitelist()
+def post_to_city_ledger(self):
+	doc = frappe.get_doc({
+		'doctype': 'Folio Transaction',
+		'transaction_type':"City Ledger",
+		'transaction_number':self.city_ledger,
+		'folio_number':self.transaction_number,
+		'reference_number': self.name,
+		'property': self.property,
+		'posting_date': self.posting_date,
+		'working_day': self.working_day,
+		'cashier_shift': self.cashier_shift,
+		'working_date': self.working_date,
+		'account_code': self.account_code,
+		'type': "Credit" if self.type =='Debit' else 'Debit', 
+		"quantity":1,
+		'input_amount': self.input_amount,
+		"note":"City Ledger transfer from folio # {}, room:{} ".format(self.transaction_number, self.room_number),
+		"is_auto_post":1,
+		"require_city_ledger_account": 0,
+		"reference_folio_transaction":self.name
+	}).insert()
+
+
+	

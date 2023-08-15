@@ -22,7 +22,7 @@
             
             <Column field="guest_name" header="Guest Name">
                 <template #body="slotProps">
-                    <Button class="color-purple-edoor p-0 no-underline" v-if="slotProps.data.guest" @click="onViewCustomerDetail(slotProps.data.guest)" link>
+                    <Button v-if="slotProps.data.guest" class="color-purple-edoor p-0 no-underline" @click="onViewCustomerDetail(slotProps.data.guest)" link>
                         <span class="link_line_action">{{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}</span>
                     </Button>
                 </template>
@@ -34,7 +34,7 @@
             </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
-                    <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper" link
+                    <Button @click="onAssignHousekeeper($event, slotProps.data)" :label="slotProps.data.housekeeper ? slotProps.data.housekeeper : 'Assign'" link
                         size="small" class="link_line_action1 no-underline"></Button>
                 </template>
             </Column>

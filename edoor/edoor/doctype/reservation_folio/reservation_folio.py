@@ -21,8 +21,6 @@ class ReservationFolio(Document):
 			
 			if not working_day["cashier_shift"]["name"]:
 				frappe.throw("Please start cashier shift")
-			
-
 			self.working_day = working_day["name"]
 			self.working_date = working_day["date_working_day"]
 			self.posting_date = self.working_date
@@ -33,7 +31,9 @@ class ReservationFolio(Document):
 				if not frappe.db.exists("Reservation Folio",{"reservation_stay":self.reservation_stay}):
 					self.is_master = 1
 				#udpate business source 
+				
 				self.business_source = frappe.db.get_value("Reservation Stay", self.reservation_stay, "business_source")
+				#self.reservation_status_color = frappe.db.get_value("Reservation Stay", self.reservation_stay, "business_source")
 		else:
 			if self.is_master == 1 and self.status == 'Closed':
 				frappe.throw("Master folio is not allow to close")

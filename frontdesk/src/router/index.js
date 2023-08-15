@@ -8,6 +8,7 @@ import Housekeeping from "../views/housekeeping/Housekeeping.vue";
 import ReservationStayDetail from "../views/reservation/ReservationStayDetail.vue";
 import ReservationDetail from "../views/reservation/ReservationDetail.vue";
 import GuestList from "../views/guest/GuestList.vue";
+import GuestType from "../views/guest/GuestType.vue";
 import TestPage from "../views/TestPage.vue";
 import TestPage2 from "../views/TestPage2.vue";
 import RoomInventory from "@/views/frontdesk/RoomInventory.vue";
@@ -15,8 +16,11 @@ import DeskFolio from "@/views/desk_folio/DeskFolio.vue";
 import Note from "@/views/note/Note.vue";
 import NoPermission from "@/views/other/driver/NoPermission.vue";
 import GuestLedger from "@/views/guest_ledger/GuestLedger.vue";
+import GuestLedgerTransaction from "@/views/guest_ledger/GuestLedgerTransaction.vue";
 import RoomBlock from "@/views/room_block/RoomBlockList.vue";
 import CityLedger from "@/views/city_ledger/CityLedger.vue";
+import CityLedgerAccount from "@/views/city_ledger/CityLedgerAccount.vue";
+import CityLedgerType from "@/views/city_ledger/CityLedgerType.vue";
 import Reports from "@/views/report/Reports.vue";
 import authRoutes from './auth';
 
@@ -36,9 +40,14 @@ const routes = [
   { path: "/frontdesk/stay-detail/:name?", name: "ReservationStayDetail", component:ReservationStayDetail, meta: { layout: 'main_layout', title: 'Reservation Stay Detail' } },
   { path: "/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout', title: 'Reservation Detail' } },
   { path: "/frontdesk/guest-database", name: "GuestDatabase", component:GuestList, meta: { layout: 'main_layout', title:"Guest Database" } },
+  { path: "/frontdesk/guest-type", name: "GuestType", component:GuestType, meta: { layout: 'main_layout', title:"Guest Type" } },
   { path: "/frontdesk/guest-ledger", name: "GuestLedger", component:GuestLedger, meta: { layout: 'main_layout', title:"Guest Ledger" } },
   { path: "/frontdesk/city-ledger", name: "CityLedger", component:CityLedger, meta: { layout: 'main_layout', title:"City Ledger" } },
+  { path: "/frontdesk/city-ledger-type", name: "CityLedgerType", component:CityLedgerType, meta: { layout: 'main_layout', title:"City Ledger Account Type" } },
+  { path: "/frontdesk/city-ledger-account", name: "CityLedgerAccount", component:CityLedgerAccount, meta: { layout: 'main_layout', title:"City Ledger Account" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
+  { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
+  { path: "/frontdesk/guest-ledger-transaction", name: "GuestLedgerTransaction", component:GuestLedgerTransaction, meta: { layout: 'main_layout', title:"Guest Ledger Transaction" } },
  
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   ...authRoutes,

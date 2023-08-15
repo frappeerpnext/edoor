@@ -27,10 +27,10 @@
                     <tbody>
                         <tr> 
                             <td class="pe-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.start_date" :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                                <Calendar class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.end_date" :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
+                                <Calendar class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
                                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />

@@ -96,15 +96,16 @@ def get_reservation_charge_summary(reservation = None, reservation_stay = None,f
             sum(amount * if(type='Debit',1,-1)) as amount 
         from `tabFolio Transaction` 
         where 
-            {} = '{}' 
+            {} = '{}' and 
+            transaction_type='Reservation Folio'
         group by 
             account_category 
-        order by account_category_sort_order
+        order by account_category_sort_order 
      """.format(
         search_field,
         search_value
     )
-   
+  
 
     return frappe.db.sql(sql, as_dict=1)
 
@@ -394,6 +395,8 @@ def stay_add_more_rooms(reservation=None, data=None):
             }]
         }
         frappe.get_doc(stay).insert()
+        frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=reservation.name, doc=None, run_commit=True)
+
     frappe.db.commit()
     return reservation
 @frappe.whitelist(methods="POST")

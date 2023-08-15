@@ -6683,7 +6683,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 
 .p-toast .p-toast-message .p-toast-message-content {
   padding: 1rem;
-  border-width: 0 0 0 6px;
+  border-width: 0 0 0 0px;
 }
 
 .p-toast .p-toast-message .p-toast-message-content .p-toast-message-text {
@@ -6706,7 +6706,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-toast .p-toast-message .p-toast-message-content .p-toast-detail {
   margin: 0.5rem 0 0 0;
 }
-
+.p-toast-message-content , .p-toast-message-content div {
+  display: flex;
+  justify-items: center;
+  justify-content:space-between;
+}
+.p-toast-message-content strong{
+  margin-top: 4px;
+}
 .p-toast .p-toast-message .p-toast-icon-close {
   width: 2rem;
   height: 2rem;

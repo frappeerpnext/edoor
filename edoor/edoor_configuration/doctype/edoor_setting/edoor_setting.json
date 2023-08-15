@@ -16,14 +16,19 @@
   "allow_user_to_delete_auto_post_transaction",
   "section_break_8",
   "guest_ledger_report_name",
+  "guest_ledger_transaction_report",
+  "column_break_11",
+  "city_ledger_report_name",
+  "section_break_13",
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
-  "housekeeping_status_after_run_night_audit",
-  "column_break_10",
   "housekeeping_status_after_check_out",
+  "column_break_10",
   "housekeeping_status_after_undo_check_in",
+  "housekeeping_status_after_run_night_audit",
   "section_break_15",
   "housekeeping_status_after_cancel_room_block",
+  "hk_status_rb_release_after_audit",
   "column_break_17",
   "housekeeping_status_after_undo_check_out",
   "permission_and_role_tab",
@@ -166,12 +171,38 @@
    "fieldtype": "Link",
    "label": "Guest Ledger Report Name",
    "options": "Report"
+  },
+  {
+   "fieldname": "guest_ledger_transaction_report",
+   "fieldtype": "Link",
+   "label": "Guest Ledger Transaction Report",
+   "options": "Report"
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city_ledger_report_name",
+   "fieldtype": "Link",
+   "label": "City Ledger Report Name",
+   "options": "Report"
+  },
+  {
+   "fieldname": "section_break_13",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "hk_status_rb_release_after_audit",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status of Release Room Block After Run Night Audit",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-10 16:00:52.150533",
+ "modified": "2023-08-14 18:39:02.798277",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

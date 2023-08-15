@@ -10,7 +10,7 @@
             <span>{{ (data?.arrival || 0) -(data?.arrival_remaining || 0) }}</span>/<span>{{ (data?.arrival || 0) }}</span>
         </ComTodaySummarySep>
         </tippy>
-        <tippy :content="'Total Departure ' +  (data?.departure ||0) + ' And '+  ((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out'  ">
+        <tippy :content="'Total Departure ' +  (data?.departure ||0) + ' and '+  ((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out'  ">
         <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure" :value="data.departure - data?.departure_remaining">
         <span title="Departure">{{ (data?.departure ||0) - (data?.departure_remaining ||0) }}</span>/<span titel="Departure Remain">{{ data?.departure || 0 }}</span>
         </ComTodaySummarySep>

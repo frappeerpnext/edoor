@@ -1139,11 +1139,42 @@ p.text-center.small.page-number.visible-pdf {
 }
 .modifiad-note-cs{
     font-size: 10px;
-    background: var(--bg-gray-10);
+    background: var(--bg-yellow-op-10);
     width: 100%;
+    padding-left: 2rem !important;
     left: 0;
     padding: 10px;
     bottom: 0;
     border-bottom-right-radius: 6px;
     border-bottom-left-radius: 6px;
+}
+#res_list_hideshow{
+    /* height: auto; */
+    overflow: auto;
+}
+ul.res__hideshow{
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+}
+.content_btn_b {
+    line-height: 1.5;
+    background: var(--bg-btn-dialog-inside);
+    border-color: var(--bg-purple-cs);
+    color: var(--bg-purple-cs);
+    transition: all 0.3s;
+}
+.content_btn_b:hover{
+    background: #dfddff !important;
+    color: var(--bg-purple-cs) !important;
+}
+.res_list_scroll {
+    position: sticky;
+    overflow: hidden;
+}
+.res_list_scroll .p-datatable-wrapper{
+    height: 70vh;
+}
+.ttl-column_re{
+    color: var(--bg-og-color-hover);
 }

@@ -34,7 +34,7 @@
                                 <span class="box-input-detail">{{gv.dateFormat(lastStay.start_date)}}</span>
                             </td>
                             <td class="px-2 w-14rem"> 
-                                <Calendar class="w-14rem" showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
+                                <Calendar class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2 text-left">
                                 <div class="box-input-detail flex"><span v-tooltip.top="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
@@ -94,7 +94,7 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem">
-                                <Calendar showIcon v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar showIcon selectOtherMonths v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-16rem"> 
                                 <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :businessSource="rs.reservationStay.business_source" :rate-type="rs.reservationStay.rate_type" :start-date="newRoom.start_date" :end-date="newRoom.end_date"/>

@@ -10,10 +10,10 @@
                 </div>
                 <div class="flex gap-2">
                     <slot name="footer-right"></slot>
-                    <Button class="border-none btn-close" icon="pi pi-times" v-if="!hideButtonClose" @click="onClose()" :label="titleButtonCancel"
-                        :disabled="loading" ><img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Cancel </Button>
+                    <Button class="border-none btn-close" v-if="!hideButtonClose" @click="onClose()" 
+                        :disabled="loading" ><img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{titleButtonCancel}} </Button>
                     <slot name="af-cancel-position"></slot>
-                    <Button class="border-none" icon="pi pi-save" v-if="!hideButtonOK" @click="onSave()" :label="titleButtonSave"
+                    <Button class="border-none" :icon="icon" v-if="!hideButtonOK" @click="onSave()" :label="titleButtonSave"
                         :loading="loading"></Button>
                 </div>
             </div>
@@ -42,6 +42,10 @@ import BtnCloseIcon from '@/assets/svg/icon-close.svg'
         titleButtonCancel:{
             type: Boolean,
             default: 'Cancel'
+        },
+        icon: {
+            type: String,
+            default: 'pi pi-save'
         }
     })
     const emit = defineEmits(['onCancel','onSave'])

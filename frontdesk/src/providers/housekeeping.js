@@ -2,7 +2,6 @@ import { inject } from "vue"
 import { FrappeApp } from 'frappe-js-sdk'; 
 const frappe = new FrappeApp();
 const db = frappe.db();
-
 export default class Housekeeping {
 constructor() {
 	this.view_type ="table"//table, kanban
@@ -11,12 +10,14 @@ constructor() {
 	this.selectedRooms = []
 	this.selectredRow = {}
 	this.reservationStay = {}
-	
+	this.property = JSON.parse(localStorage.getItem("edoor_property"))
 	
 }
 loadData() {
 	return new Promise((resolve, reject) => {
-	let filters = []
+	let filters = [
+		["property","=",this.property.name]
+	]
 	if (this.filter.selected_room_type && this.filter.selected_room_type.length > 0) {
 		filters.push(["room_type_id", 'in', this.filter.selected_room_type])
 

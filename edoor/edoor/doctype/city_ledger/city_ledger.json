@@ -8,18 +8,35 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "property",
   "naming_series",
   "city_ledger_name",
   "city_ledger_type",
   "business_source",
   "company_name",
+  "column_break_5",
   "phone_number",
+  "email_address",
   "address",
   "contact_info_section",
   "contact_name",
+  "column_break_12",
   "contact_phone_number",
+  "summary_section",
+  "total_debit",
+  "column_break_14",
+  "total_credit",
+  "column_break_16",
+  "balance",
   "section_break_11",
-  "note"
+  "keyword",
+  "available_property_section",
+  "note",
+  "bank_account_information_tab",
+  "bank_account_number",
+  "bank_account_name",
+  "column_break_24",
+  "bank_name"
  ],
  "fields": [
   {
@@ -31,17 +48,20 @@
   {
    "fieldname": "city_ledger_name",
    "fieldtype": "Data",
-   "label": "City Ledger Name"
+   "label": "City Ledger Name",
+   "reqd": 1
   },
   {
    "fieldname": "city_ledger_type",
    "fieldtype": "Link",
    "label": "City Ledger Type",
-   "options": "City Ledger Type"
+   "options": "City Ledger Type",
+   "reqd": 1
   },
   {
    "fieldname": "business_source",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Business Source",
    "options": "Business Source"
   },
@@ -83,11 +103,99 @@
    "fieldname": "note",
    "fieldtype": "Small Text",
    "label": "Note"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "keyword"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "label": "Email Address"
+  },
+  {
+   "fieldname": "summary_section",
+   "fieldtype": "Section Break",
+   "label": "Summary"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "column_break_14",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "column_break_16",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
+  },
+  {
+   "fieldname": "bank_account_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Bank Account Information"
+  },
+  {
+   "fieldname": "bank_account_number",
+   "fieldtype": "Data",
+   "label": "Bank Account Number"
+  },
+  {
+   "fieldname": "bank_account_name",
+   "fieldtype": "Data",
+   "label": "Bank Account Name"
+  },
+  {
+   "fieldname": "column_break_24",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "available_property_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2023-06-19 18:07:56.856869",
+ "links": [
+  {
+   "group": "Transaction",
+   "link_doctype": "Folio Transaction",
+   "link_fieldname": "transaction_number"
+  }
+ ],
+ "modified": "2023-08-15 08:42:07.762467",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger",
@@ -105,9 +213,21 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "eDoor Admin",
+   "share": 1,
+   "write": 1
   }
  ],
- "search_fields": "city_ledger_name",
+ "search_fields": "city_ledger_name,company_name, phone_number, email_address",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

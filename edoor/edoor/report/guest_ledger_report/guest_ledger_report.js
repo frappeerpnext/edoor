@@ -28,21 +28,37 @@ frappe.query_reports["Guest Ledger Report"] = {
 			"reqd": 1
 			
 		} ,
-	 
+		{
+			"fieldname": "reservation",
+			"label": __("Reservation"),
+			"fieldtype": "Link",
+			"options":"Reservation",
+		} ,
 		
+		{
+			"fieldname": "reservation_staty",
+			"label": __("Reservation Stay"),
+			"fieldtype": "Link",
+			"options":"Reservation Stay",
+		} ,
 		{
 			"fieldname": "business_source",
 			"label": __("Business Source"),
 			"fieldtype": "Link",
 			"options":"Business Source",
-			
-		} 
-	,	
+		} ,
 		{
 			"fieldname": "guest",
 			"label": __("Guest"),
 			"fieldtype": "Link",
 			"options":"Customer",
+			
+		}, 
+		{
+			"fieldname": "reservation_status",
+			"label": __("Reservation Status"),
+			"fieldtype": "Link",
+			"options":"Reservation Status",
 			
 		}, 
 		{

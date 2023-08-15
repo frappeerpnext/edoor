@@ -21,11 +21,7 @@
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro">
-            <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
-                <template #date>
-                    <Calendar class="btn-set__h" panelClass="room-chart-celendar" v-model="selectedDate" dateFormat="dd-mm-yy" @date-select="onFilterDate" showButtonBar showIcon />
-                </template>
-            </ComRoomChartFilterSelect>
+        
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
             </div>
@@ -53,7 +49,7 @@
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                        
-                        <Sidebar v-model:visible="showNote" class="top-20 -mt-1 w-3" style="padding-bottom: 82px;" position="right">
+                        <Sidebar v-model:visible="showNote" class="top-20 -mt-1 lg:w-5 w-full xl:w-3" style="padding-bottom: 82px;" position="right">
                             <template #header>
                                 <div class="flex justify-between items-center me-2">
                                     <div class="absolute left-5 line-height-1">
@@ -318,7 +314,6 @@ const calendarOptions = reactive({
 
         if (event.extendedProps.type == "stay" ) {
             
-            
             const description = `<div class="p-2 w-full">
                                         <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
                                         <table class="tip_description_stay_table m-1 pt-3">
@@ -338,9 +333,9 @@ const calendarOptions = reactive({
                                             <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
                                             <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
-                                            ${event.extendedProps?.note != "None" && event.extendedProps?.note != "" ? `
+                                            ${event.extendedProps?.note == "Null" || event.extendedProps?.note != "" ? `
                                             <tr><td><span class="mt-2">Note</span></td></tr>
-                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note.length > 220 ? event.extendedProps?.note.substring(0, 220) + '...' : event.extendedProps?.note}</div></td></tr>
+                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note}</div></td></tr>
                                             ` : ''}
                                             </tbody>
                                         </table>
@@ -352,13 +347,12 @@ const calendarOptions = reactive({
             })
         }else if (event.extendedProps.type == "room_block"){
             const description = `<div class="w-full p-2">
-                
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td>${event?.publicId || ''}</td></tr>  
-                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.start)}</td></tr>
-                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.dateFormat(event.extendedProps?.end)}</td></tr>
+                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.extendedProps.start)}</td></tr>
+                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.extendedProps?.end)}</td></tr>
                                             <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.block_by || ''}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>

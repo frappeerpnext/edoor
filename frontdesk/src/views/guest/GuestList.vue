@@ -37,7 +37,8 @@
 <Button   label="Reset List" @click="onResetTable" />
 
  
-        <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local" stateKey="table_reservation_stay_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+        <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
+         stateKey="table_customer_list_state" :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
@@ -79,7 +80,6 @@
 <OverlayPanel ref="opShowColumn">
     <InputText v-model="filter.search_field" placeholder="Search" />
     <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-        
         <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
         <label :for="c.fieldname">{{ c.label }}</label>
     </div>
@@ -147,14 +147,7 @@ function OnSaveColumn(event){
 function onResetTable(){
     localStorage.removeItem("page_state_customer")
     localStorage.removeItem("table_guest_customer_list_state")
-    selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname)
-    
-    columns.value.forEach(r=>r.selected = selectedColumns.value.includes(r.fieldname))
-    pageState.value.page =0
-    pageState.value.rows=20
-
-    loadData()
-
+    window.location.reload()
 }
 const getColumns = computed(()=>{
     if (filter.value.search_field){ 
@@ -242,13 +235,7 @@ function onOrderBy(data) {
 
 }
 
-function onSelectFilterDate(event) {
-    filter.value.search_date_type = event
-    if (filter.value.search_date_type == '')
-        filter.value.date_range = null
-    loadData()
-}
-
+ 
 
 const onSearch = debouncer(() => {
     loadData();

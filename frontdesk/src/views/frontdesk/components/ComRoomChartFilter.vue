@@ -8,10 +8,10 @@
             <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
             <Menu ref="menu" id="peroid_menu" :popup="true" :model="items">
                 <template #item="data">
-                    <button @click="onFilter('week')"
+                    <button
                         :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <span class="ml-2">{{data.item.label}}</span>
+                        <span class="ml-2">{{data.item.label}} </span>
                     </button>
                 </template>
             </Menu>
@@ -33,7 +33,7 @@ const iconChangeRoomStatus = ref({
 const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))
 const active = ref(reservation_chart.value.peroid)
 
-const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday'])
+const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday',])
 const props = defineProps({
     viewType: {
         type: String,
@@ -46,28 +46,28 @@ const items = ref([
         label: 'Week',
         key: 'week',
         command: () => {
-            onFilter('week')
+            onSearch('week')
         }
     },
     {
         label: '14 Days',
         key: '14_days',
         command: () => {
-            onFilter('14_days')
+            onSearch('14_days')
         }
     },
     {
         label: 'Month',
         key: 'month',
         command: () => {
-            onFilter('month')
+            onSearch('month')
         }
     }
 ]);
 function onToday() {
     emit('onToday')
 }
-function onFilter(key) {
+function onSearch(key) {
     active.value = key
     emit('onFilter', key)
 }

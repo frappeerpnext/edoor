@@ -105,4 +105,17 @@ export default class Gv {
 		return  price
 	 
 	}
+
+	getCustomPrintFormat(name){
+		 
+		const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
+		if(setting?.custom_print_format){
+			const custom = setting?.custom_print_format?.filter(r=>r.name==name)
+			if(custom){
+				return  encodeURIComponent( custom[0].print_format)
+			}
+		}
+	
+		return encodeURIComponent(name) 
+	}
 }

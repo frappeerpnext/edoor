@@ -2,8 +2,16 @@
     <main-layout v-if="hasProperty" />
     <Property v-else />
     <DynamicDialog />
-    <Toast />
+    <Toast>
+        <template #message="slotProps">
+            <div class="flex flex-column" style="flex: 1">
+                <strong class="mb-1" v-if="slotProps.message.summary" v-html="slotProps.message.summary"></strong>
+                <p v-if="slotProps.message.detail" v-html="slotProps.message.detail"></p>
+            </div>
+        </template>
+    </Toast>
     <ConfirmDialog></ConfirmDialog>
+    
 </template>
 
 
@@ -25,6 +33,7 @@ import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
 import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
+import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 const socket = inject("$socket");
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -92,6 +101,9 @@ const actionClickHandler = async function (e) {
                 showCashierShiftDetail(data[1])
             } else if (data[0] == "close_shift") {
                 openCloseShift()
+          
+            } else if (data[0] == "view_city_ledger_detail") {
+                showCityLedgerDetail(data[1])
             }
             else if (data[0] == "assign_room") {
                 onAssignRoom(data[1], data[2])
@@ -299,6 +311,24 @@ function showFolioTransactionDetail(name) {
             header: 'Folio Transaction Detail - ' + name,
             style: {
                 width: '50vw',
+            },
+            modal: true,
+            position:"top",
+            closeOnEscape: false
+        },
+    });
+}
+
+function showCityLedgerDetail(name) {
+
+    const dialogRef = dialog.open(ComCityLedgerDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'City Ledger - ' + name,
+            style: {
+                width: '80vw',
             },
             modal: true,
             position:"top",

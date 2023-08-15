@@ -17,6 +17,8 @@
   "room_type",
   "type",
   "property",
+  "is_arrival",
+  "is_departure",
   "adult",
   "child",
   "pax",
@@ -108,11 +110,23 @@
    "fieldtype": "Small Text",
    "hidden": 1,
    "label": "Data Keyword"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_arrival",
+   "fieldtype": "Check",
+   "label": "Is Arrival"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_departure",
+   "fieldtype": "Check",
+   "label": "Is Departure"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-03 14:32:30.161442",
+ "modified": "2023-08-13 20:29:06.662461",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

@@ -1,15 +1,15 @@
 <template>
 <div>
-    <ComSelect v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
+    <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
 </div>
 <div>
     <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" />
 </div>
 <div>
-    <ComSelect v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
+    <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
 </div>
 <div>
-    <ComSelect class="linelight-edor" :isMultipleSelect="true" 
+    <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor" :isMultipleSelect="true" 
                 isFilter
                 groupFilterField="room_type_group"
                 :groupFilterValue="hk.filter.selected_room_type_group"  
@@ -22,11 +22,11 @@
                 ></ComSelect>
 </div>
 <div>
-    <ComSelect class="linelight-edor" :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
+    <ComSelect  :filters="[['property', '=', hk.property.name]]" class="linelight-edor" :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
         placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
 </div>
 <div>
-    <ComSelect isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
+    <ComSelect  :filters="[['property', '=', hk.property.name]]" isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
         @onSelected="onSearch" />
 </div>  
     

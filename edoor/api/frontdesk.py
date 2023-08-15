@@ -162,7 +162,7 @@ def get_edoor_setting(property = None):
     edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'hidden_in_sm','hidden_in_lg'],order_by="sort_order asc")
 
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
-    housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order'],  order_by='sort_order asc')
+    housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
@@ -170,18 +170,21 @@ def get_edoor_setting(property = None):
  
 
     epos_setting = frappe.get_doc('ePOS Settings')
+
+    custom_print_format = frappe.db.sql("select name, print_format from `tabCustom Print Format` where ifnull(property,'')='' or property='{}'".format(property),as_dict=1)
     
     
     edoor_setting  =  {
         "edoor_menu": edoor_menus,
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
         "guest_ledger_report_name":edoor_setting_doc.guest_ledger_report_name,
-        
+        "guest_ledger_transaction_report":edoor_setting_doc.guest_ledger_transaction_report,
+        "city_ledger_report_name":edoor_setting_doc.city_ledger_report_name,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
         "backend_port":epos_setting.backend_port,
-        
+        "custom_print_format":custom_print_format,
         "currency":{
             "name":currency.name,
             "locale":currency.locale,
@@ -283,7 +286,7 @@ def get_working_day(property = ''):
 
 
 
-    
+
 @frappe.whitelist()
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
     
@@ -365,6 +368,46 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
 
 
 @frappe.whitelist()
+def get_room_inventory_resource(property = ''):
+    
+    resources = []
+
+    resources = frappe.db.sql("select name as id,room_type as title,alias,(select count(name) from `tabRoom` where room_type_id=t.name) as total_room ,sort_order from `tabRoom Type` t where property='{0}'  order by sort_order".format(property),as_dict=1)
+    
+    resources.append({
+        "id": "vacant_room",
+        "title": "Vacant Room",
+        "sort_order":1000
+    })
+    
+    resources.append({
+        "id": "occupany",
+        "title": "Occupancy",
+        "sort_order":1001
+    })
+  
+    resources.append({
+        "id": "out_of_order",
+        "title": "Out of Order",
+        "sort_order":1002
+    })
+    
+    resources.append({
+        "id": "arrival_departure",
+        "title": "Arrival/Departure",
+        "sort_order":1003
+    })
+    resources.append({
+        "id": "pax",
+        "title": "PAX (A/C)",
+        "sort_order":1004
+    })
+
+
+    return resources
+ 
+
+@frappe.whitelist()
 def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
     events = []
     sql = """
@@ -437,6 +480,15 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
 
     return events
 
+@frappe.whitelist()
+def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None):
+    events = []
+    sql = "select room_type_id, date, count(name) as total, sum(if(type='Block',1,0)) as block, sum(is_arrival) as arrival, sum(is_departure) as departure,sum(adult) as adult, sum(child) as child from `tabRoom Occupy` where property='{}' and date between '{}' and '{}' group by room_type_id, date".format(property,start,end)
+    data = {
+        "room_occupy": frappe.db.sql(sql,as_dict=1)
+    }
+    return data
+   
 
 @frappe.whitelist()
 def get_room_block_event(start,end,property):
@@ -814,6 +866,17 @@ def update_room_status(working_day=None):
         room_doc.housekeeping_status = room_status
         room_doc.save()
 
+    #update room status that end block
+    sql = "select room_id from `tabRoom Block` where docstatus=1 and is_unblock=0 and end_date='{}' and property='{}'".format(working_day.posting_date ,working_day.business_branch)
+    data = frappe.db.sql(sql,as_dict=1)
+
+
+    for d in data:
+        room_doc = frappe.get_doc("Room", d["room_id"])
+        room_doc.housekeeping_status = frappe.db.get_default("hk_status_rb_release_after_audit")
+        room_doc.save()
+    
+
     #2 update room status of room block
     room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property='{}' and date='{}'".format(working_day.business_branch, working_day.posting_date),as_dict=1)
     
@@ -822,6 +885,9 @@ def update_room_status(working_day=None):
         room_doc = frappe.get_doc("Room", r["room_id"])
         room_doc.housekeeping_status = room_status
         room_doc.save()
+
+    
+
     
    
     frappe.db.commit()
@@ -831,18 +897,20 @@ def update_room_status(working_day=None):
 def post_room_change_to_folio(working_day):
     
     room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date})
+
     for r in room_rates:
-        
-        folio = None
-        if frappe.db.get_value("Reservation Stay",r.reservation_stay,"pay_by_company") == 0:
-            master_folios = frappe.db.get_list("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1})
-            if master_folios:
-                folio = master_folios[0]
-        else:
-            folio = get_master_folio(r.reservation)
-        
-        if folio:
-            add_room_charge_to_folio(folio, r)
+        stay_doc = frappe.get_doc("Reservation Stay",r.reservation_stay)
+        if stay_doc.is_active_reservation==1:
+            folio = None
+            if stay_doc.pay_by_company == 0:
+                master_folios = frappe.db.get_list("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1})
+                if master_folios:
+                    folio = master_folios[0]
+            else:
+                folio = get_master_folio(r.reservation)
+            
+            if folio:
+                add_room_charge_to_folio(folio, r)
 
     
     #verify if reservation stay and and reservation is update balance

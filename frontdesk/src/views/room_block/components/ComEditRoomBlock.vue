@@ -1,5 +1,7 @@
 <template lang="">
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+         
+       {{data}}
         <div class="grid">
         <div class="col-12 p-0">
             <div class="w-6 col">
@@ -18,28 +20,18 @@
         <div class="col-12 lg:col-6">
             <label>Release Date</label>
             <div class="card flex justify-content-left"> 
-                <Calendar class="w-full" showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
+                <Calendar class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
             </div>
         </div>
-        <div class="col-12 lg:col-6">
-        <label>Room Type</label>
-        <div class="card w-full flex justify-content-left"> 
-            <ComSelectRoomTypeAvailability 
-                v-model="data.room_type_id"
-                :start-date="data.start_date"
-                :end-date="data.end_date"/>
-        </div>
+        <div class="col-12">
+ 
+      
         </div>
         <div class="col-12 lg:col-6">
         <label> Room Name </label>
         <div class="w-full card flex justify-content-left">
-            <ComSelectRoomAvailability 
-                v-model="data.room_id"
-                :start-date="data.start_date"
-                :end-date="data.end_date"
-                :roomType="data.room_type_id" 
-                exceptField="stay_room_id"
-                :exceptValue="data.name"/>
+            <ComAutoComplete  v-model="data.room_id" class="pb-2"  doctype="Room"
+            @onSelected="onSearch" :filters="['property','=',property.name]" />
         </div>
         </div>
         <div class="col-12">
@@ -52,17 +44,14 @@
     </ComDialogContent>
 </template>
 <script setup>
-import {inject,ref, updateDoc, getDoc} from '@/plugin'
+import {inject,ref, updateDoc, getDoc, onMounted} from '@/plugin'
 const dialogRef = inject('dialogRef');
 const gv = inject('$gv');
 const moment = inject('$moment');
 const data = ref({})
 const loading = ref(false)
-if(dialogRef.value.data){
-    data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
-    data.value.start_date = new Date(data.value.start_date)
-    data.value.end_date = new Date(data.value.end_date)
-}
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+ 
 function onSave (){
     loading.value = true
     var savedData = {
@@ -75,12 +64,28 @@ function onSave (){
     updateDoc('Room Block', data.value.name, savedData).then((r)=>{
         dialogRef.value.close(r)
         loading.value = false
+    }).catch((err)=>{
+        loading.value = false
     })
 }
 function onClose(){
+
     dialogRef.value.close()
 }
 
+onMounted(()=>{
+
+    if(dialogRef.value.data.name){
+       
+        data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
+        data.value.start_date =moment(data.value.start_date).toDate()
+        data.value.end_date = moment(data.value.end_date).toDate()
+        data.value.block_date = moment(data.value.block_date).toDate()
+      
+    }else {
+    alert("u add r4oom block")
+    }
+})
 </script>
 <style lang="">
     

@@ -7,22 +7,21 @@
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
-                <Calendar class="w-full" v-model="stay.arrival_time" timeOnly />
+                <Calendar selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar hideOnDateTimeSelect showIcon v-model="stay.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Departure Time</label>
-                <Calendar class="w-full" v-model="stay.departure_time" timeOnly /> 
+                <Calendar selectOtherMonths class="w-full" v-model="stay.departure_time" timeOnly /> 
             </div>
             <div class="col-6">
                 <label>Nights</label>
                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight($event)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
             </div>
         </div>
-
     </ComOverlayPanelContent>
 </template>
 <script setup>

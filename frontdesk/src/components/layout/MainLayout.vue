@@ -87,13 +87,6 @@
         
         <div>
             <div class="wrap-page-content -mb-2 px-2">
-                <!-- <Menu id="sub_menu_dropdown_l" :popup="false" style="width: 190px;">
-                    <template #end>
-                        <template v-for="(sm, index) in subMenus" :key="index">
-                            <Button class="border-none bg-transparent text-black-alpha-90" @click="onRoute(sm.menu_name)">{{sm.menu_text}}</Button>
-                        </template>
-                    </template>
-                </Menu> -->
                 <router-view />
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>

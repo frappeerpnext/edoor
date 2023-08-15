@@ -24,6 +24,7 @@ class RoomBlock(Document):
 	def before_submit(self):
 		sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id = '{}' and date between '{}' and '{}' and property='{}' limit 1"
 		sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1), self.property)
+		 
 		data = frappe.db.sql(sql, as_dict=1)
 		if data:
 			frappe.throw("Room {} is already occupy or block on date {}".format( self.room_number,data[0]["date"].strftime("%d-%m-%Y")))

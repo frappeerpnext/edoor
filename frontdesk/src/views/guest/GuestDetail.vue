@@ -1,50 +1,56 @@
 <template>
-    <div class="iframe-view">
-    <TabView  lazy>
-        
-        <TabPanel header="General Information">
-            
-            <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
-                :src="generalInfoUrl">
-            </iframe>
-        </TabPanel>
-        <TabPanel header="Stay History">
-            <iframe  @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
-                :src="stayHistoryUrl">
-            </iframe>
-        </TabPanel>
-        <TabPanel header="POS/Misc. Sale">
-            <div style="margin-right:-1rem;">
-            <iframe style="height:500px; width: 100%;"
-                :src="posMiscSaleUrl">
-            </iframe>
-            </div>
-        </TabPanel>
+    <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
+        <div class="iframe-view">
+        <TabView  lazy>
+            <TabPanel header="General Information">
+                {{ name }}
+                <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
+                    :src="generalInfoUrl">
+                </iframe>
+            </TabPanel>
+            <TabPanel header="Stay History">
+                <iframe  @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
+                    :src="stayHistoryUrl">
+                </iframe>
+            </TabPanel>
+            <TabPanel header="POS/Misc. Sale">
+                <div style="margin-right:-1rem;">
+                <iframe style="height:500px; width: 100%;"
+                    :src="posMiscSaleUrl">
+                </iframe>
+                </div>
+            </TabPanel>
 
-        <TabPanel header="Note">
-            <iframe @load="onIframeLoaded('note')" id="note" style="width: 100%;"
-                :src="noteUrl">
+            <TabPanel header="Note">
+                <iframe @load="onIframeLoaded('note')" id="note" style="width: 100%;"
+                    :src="noteUrl">
 
-            </iframe>
-        </TabPanel>
-        <TabPanel header="Folio">
-            <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;"
-                :src="folioUrl">
-            </iframe>
-        </TabPanel>
-    </TabView></div>
-    <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" @click="onEditGuest"/>
+                </iframe>
+            </TabPanel>
+            <TabPanel header="Folio">
+                <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;"
+                    :src="folioUrl">
+                </iframe>
+            </TabPanel>
+        </TabView></div>
+        <template #footer-left>
+            <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" @click="onEditGuest"/>
+            <Button class="border-none" label="Delete Guest" icon="pi pi-trash" @click="onDeleteGuest(name)"/>
+        </template>
+    </ComDialogContent>
+
 </template>
 <script setup>
 
-import { inject, ref, onMounted,computed,useDialog } from '@/plugin'
+import { inject, ref, onMounted,computed,useDialog,deleteDoc,useConfirm } from '@/plugin'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
+const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
 const setting =JSON.parse( localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const dialog = useDialog()
 const name = ref("")
-
+const loading = ref(false)
 function onIframeLoaded(id){
  
  const iframe = document.getElementById(id);
@@ -92,6 +98,28 @@ function onEditGuest() {
         },
     });  
 }
+
+function onDeleteGuest (name){
+        confirm.require({
+        message: 'Are you sure you want to delete guest?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            loading.value = true
+             deleteDoc('Customer',name)
+                 .then(() =>{
+                    loading.value = false
+                 } ).catch((err)=>{
+                    loading.value = false
+                 })         
+        },
+    });
+ }
+ 
 onMounted(() => {
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
@@ -100,7 +128,9 @@ onMounted(() => {
     }
 });
 
-console.log(dialogRef)
+const onClose = () => {
+    dialogRef.value.close()
+}
 </script>
 <style scoped>
 .iframe-view{

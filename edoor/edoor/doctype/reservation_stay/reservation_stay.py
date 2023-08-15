@@ -157,17 +157,56 @@ class ReservationStay(Document):
 		generate_room_rate(self, is_update_reservation_stay=True)
 
 	def on_update(self):
+		data_for_udpate = {
+			"rooms":self.rooms,
+			"note":self.note,
+			"total_credit": self.total_credit or 0,
+			"total_debit": self.total_debit or 0,
+			"balance":self.balance or 0,
+			"total_room_rate":self.total_room_rate or 0,
+			"internal_reference_number":self.internal_reference_number or '',
+			"arrival_date":self.arrival_date,
+			"departure_date":self.departure_date,
+			"is_master":self.is_master,
+			"reservation_color":self.reservation_color or '',
+			"group_color":self.group_color or '',
+			"group_code":self.group_code or '',
+			"group_name":self.group_name or '',
+			"reservation_type":self.reservation_type,
+			"pay_by_company":self.pay_by_company,
+			"name": self.name
+		}
 		frappe.db.sql("""
 			update `tabReservation Stay Room` 
-			set rooms='{}',
-			note='{}',
-			total_credit='{}',
-			total_debit='{}',
-			balance='{}',
-			total_room_rate='{}',
-			internal_reference_number = '{}',
-			arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
-		""".format(self.rooms,self.note,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
+			set rooms=%(rooms)s,
+			note=%(note)s,
+			total_credit=%(total_credit)s,
+			total_debit=%(total_debit)s,
+			balance=%(balance)s,
+			total_room_rate=%(total_room_rate)s,
+			internal_reference_number = %(internal_reference_number)s,
+			arrival_date=%(arrival_date)s,
+			departure_date=%(departure_date)s,
+			is_master=%(is_master)s,
+		 	reservation_color=%(reservation_color)s,
+			group_color=%(group_color)s,
+			group_code=%(group_code)s,
+			group_name=%(group_name)s,
+			reservation_type=%(reservation_type)s,
+			pay_by_company=%(pay_by_company)s
+		 where parent=%(name)s
+		""",data_for_udpate)
+		# frappe.db.sql("""
+		# 	update `tabReservation Stay Room` 
+		# 	set rooms='{}',
+		# 	note='{}',
+		# 	total_credit='{}',
+		# 	total_debit='{}',
+		# 	balance='{}',
+		# 	total_room_rate='{}',
+		# 	internal_reference_number = '{}',
+		# 	arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
+		# """.format(self.rooms,self.note,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
 
 
 def update_note(self):
@@ -197,7 +236,10 @@ def generate_room_occupy(self):
 				"stay_room_id":stay.name,
 				"adult":self.adult,
 				"child":self.child,
-				"pax":self.pax
+				"pax":self.pax,
+				"is_arrival":1 if d==self.arrival_date else 0,
+				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+
 
 			}).insert()
 
@@ -215,7 +257,10 @@ def generate_room_occupy(self):
 				"reservation_stay":self.name,
 				"adult":self.adult,
 				"child":self.child,
-				"pax":self.pax
+				"pax":self.pax,
+				"is_arrival":1 if d==self.arrival_date else 0,
+				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+
 			}).insert()
 
 def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True): 
@@ -315,7 +360,9 @@ def generate_stay_room_occupy(self):
 				"stay_room_id":stay.name,
 				"adult":self.adult,
 				"child":self.child,
-				"pax":self.pax
+				"pax":self.pax,
+				"is_arrival":1 if d==self.arrival_date else 0,
+				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
 
 			}).insert()
 
@@ -333,5 +380,8 @@ def generate_stay_room_occupy(self):
 				"reservation_stay":self.name,
 				"adult":self.adult,
 				"child":self.child,
-				"pax":self.pax
+				"pax":self.pax,
+				"is_arrival":1 if d==self.arrival_date else 0,
+				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+				
 			}).insert()

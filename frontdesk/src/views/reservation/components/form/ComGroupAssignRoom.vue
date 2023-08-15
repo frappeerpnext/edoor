@@ -1,5 +1,5 @@
 <template >
-    <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+    <ComDialogContent :hideButtonOK="data?.length == 0 ? true : false" :hideButtonClose="data?.length == 0 ? true : false"  @onClose="onClose" @onOK="onSave" :loading="loading">
     <ComReservationStayPanel title="Group Assign Room">
         <template #content> 
     <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
@@ -8,7 +8,6 @@
             <td>Stay Date</td>
             <td>Guest</td>
             <td>Rate Type</td>
-            <!-- <td>Book Room Type</td> -->
             <td>Room Type</td>
             <td>Room Name</td>
             <td class="text-center">Nights</td>
@@ -32,11 +31,6 @@
                     {{ d.rate_type }}
                 </div>
             </td>
-            <!-- <td>
-                <div class="box-input  px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
-                {{ d.room_type }}
-            </div>
-            </td> -->
             <td class="pr-2 select-room-type-style"  >
 
                 <Dropdown class="w-full" v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"

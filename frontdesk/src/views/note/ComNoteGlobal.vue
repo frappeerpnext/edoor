@@ -15,6 +15,7 @@
             <i class="pi pi-search" />
             <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
         </div>
+		<!-- <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0"> -->
 		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-1" > 
@@ -27,9 +28,20 @@
 						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') && i.reservation">
 							{{i.reservation}} 
 						</div>
+						<div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
 						<span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
 							{{i.reference_name}}
 						</span>
+						<div class="w-full">
+							<span v-if="i.reservation_stay" class="link_line_action border-none p-0 text-sm w-auto" @click="onViewDetailReservationStay(i.reservation_stay)" >
+							{{i.reservation_stay}}
+							</span>
+							<span> - </span>
+							<span v-if="i.reservation" class="link_line_action  border-none p-0 text-sm w-auto" @click="onViewDetailReservation(i.reservation)" >
+								{{i.reservation}} 
+							</span> 
+						</div>
+						</div>
 						<div >
 							<span v-if="i.note_date" class="font-italic text-500 text-sm ">
 								Note Date: {{ gv.dateFormat(i.note_date) }}
@@ -38,7 +50,6 @@
 					</div>
 					<div> 	
 					</div>
-					
 				</div>
 				
 				<div class="flex">
@@ -55,7 +66,7 @@
 				{{ i.content }}
 			</div>
 			<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
-			<div class="flex flex-col text-sm my-2 font-italic  line-height-1 py-3">
+			<div class="flex flex-col text-sm my-1 font-italic  line-height-1 py-1">
 				<div>
 					Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
 				</div>
@@ -64,6 +75,7 @@
 				</div>
 			</div>
 		</div>
+	<!-- </ComPlaceholder> -->
 	</div>
 </div>
 </template>

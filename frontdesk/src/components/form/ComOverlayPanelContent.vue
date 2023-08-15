@@ -3,7 +3,7 @@
         <div :style="[{minWidth: width}, {maxWidth: width}]">
             <span class="font-semibold text-lg mb-3">{{ title }}</span>
             <slot name="default"></slot>
-            <ComOverlayPanelFooter :hideButtonOK="hideButtonOK" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
+            <ComOverlayPanelFooter :titleButtonCancel="titleButtonCancel" :icon="icon" :hideButtonOK="hideButtonOK" :titleButtonSave="titleButtonSave" :hideButtonClose="hideButtonClose" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
                 <template #footer-right>
                     <slot name="footer-right"></slot>
                 </template>
@@ -25,6 +25,14 @@
             type: Boolean,
             default: false
         },
+        hideButtonClose: {
+            type: Boolean,
+            default: false
+        },
+        titleButtonSave: {
+            type: String,
+            default: 'Save'
+        },
         loading: {
             type: Boolean,
             defualt: false
@@ -33,6 +41,14 @@
         width:{
             type: String,
             defualt: '250px'
+        },
+        icon: {
+            type: String,
+            default: 'pi pi-save'
+        },
+        titleButtonCancel: {
+            type: String,
+            default: 'Close'
         }
     })
     const onClickSave = () => {

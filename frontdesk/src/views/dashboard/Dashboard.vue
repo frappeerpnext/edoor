@@ -192,7 +192,7 @@ const checked = ref(false);
 
 function getArrivalUrl() {
 
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format=eDoor%20Dashboard%20Arrival%20Guest&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format="+ gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest") +"&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
     url = url + "&date=" + selected_date.value
 
     return url;

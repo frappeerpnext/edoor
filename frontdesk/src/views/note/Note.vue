@@ -7,13 +7,13 @@
         </template>
     </ComHeader>
     <div class="flex flex-wrap gap-2 items-center">
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
                 <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch"/>
             </div>
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
             <div class="flex relative">
                     <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection  dateFormat="dd-mm-yy" v-model="filter.date_range"
                 selectionMode="range" :manualInput="false" @date-select="onDateSelect"
@@ -23,30 +23,44 @@
                 </div>
             </div>
         </div>
-        <div class="col p-0">
+        <div class="col-2 p-0">
                 <ComOrderBy doctype="Frontdesk Note" @onOrderBy="onOrderBy"/>
         </div>
          
     </div>
-    <div class="w-ful flex justify-end">
+    <div class="w-ful flex justify-start mb-3 mt-3">
     <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
     </div>
+    <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0">
 <div class="grid-cs-note grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-2">
+    
     <div v-for="i in notes" :key="index"  class="border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative" >
         <div class="flex flex-col">
             <div class="line-height-1 w-full flex justify-between ">
                 <div class="my-auto">
                     <div class="text-xl font-medium inline " >{{ i.reference_doctype }} </div>
                     <span v-if="i.reference_doctype && i.reference_name"> - </span>
+                                <div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
+                                <span class="link_line_action  border-none p-0 w-auto" @click="onViewFolioDetail(i?.reference_name)"  >
+                                    {{i.reference_name}}
+                                </span>
+                                <div class="w-full">
+                                    <span v-if="i.reservation_stay" class="link_line_action border-none p-0 text-sm w-auto" @click="onViewDetailReservationStay(i.reservation_stay)" >
+                                    {{i.reservation_stay}}
+                                    </span>
+                                    <span> - </span>
+                                    <span v-if="i.reservation" class="link_line_action  border-none p-0 text-sm w-auto" @click="onViewDetailReservation(i.reservation)" >
+                                        {{i.reservation}} 
+                                    </span> 
+                                </div>
+                                </div>
                                 <span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
                                     {{i.reference_name}}
                                 </span>
                                 <div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') && i.reservation">
                                     {{i.reservation}} 
                                 </div>
-                                <span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
-                                    {{i.reference_name}}
-                    </span>
+                                
                 </div>
             <div class="">     
                 <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note absolute right-3" text rounded @click="onPin(i)">
@@ -55,35 +69,37 @@
                 </Button>
                 </div>
             </div>
-            <div class="text-500 text-sm ">{{ i.note_date }}</div>
+            <div class="text-500 text-sm ">Note Date: {{ i.note_date }}</div>
         </div> 
-        <div v-if="i.content" class="mt-1 mb-5 max-h-28 whitespace-pre-wrap break-words overflow-auto pb-4">
+        <div v-if="i.content" class="mt-3 mb-5 max-h-28 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
             {{ i.content }} 
         </div>
-        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs" style="font-size:10px;">
+        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs text-sm">
             <div>
-                Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
+                 <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
             </div>
             <div v-if="i.modified_by">
                 Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - {{gv.datetimeFormat(i.modified)}}</span>
             </div>
         </div>
         <div class="w-full flex justify-end ">
-            <Button class="absolute right-2 bottom-2" text rounded aria-label="Filter">
-                <i class="pi pi-ellipsis-v" style="height: 20px;" />
+            <div class="absolute right-2 flex justify-center items-center bottom-2 ">
+            <Button class="w-2rem h-2rem flex justify-center items-center" text outlined label="Edit" @click="onEdit(i.name)">
+                <i class="pi pi-pencil text-blue-500"></i>
             </Button>
+            <Button class="w-2rem h-2rem flex justify-center items-center" @click="onDelete(i.name)" text outlined aria-label="Delete" >
+                <i class="pi pi-trash text-red-500"></i>
+            </Button>
+            </div>
         </div>
         <div>
-       <!-- <Button label="Edit" @click="onEdit(i.name)"/>
-       <Button @click="onDelete(i.name)" icon="pi pi-trash" outlined aria-label="Delete" /> -->
         </div>
-       <!-- <Button @click="onDelete(i.name)">Delete</Button> -->
     </div>
 </div>
-  
- 
+</ComPlaceholder>  
+<div class="mt-2">
     <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30,40,50]"    @page="pageChange" ></Paginator>
-
+</div>
 
 </template>
 <script setup>
@@ -92,10 +108,14 @@ import { ref, inject,onMounted,reactive,useDialog,getDocList,getCount,useConfirm
 import ComAddNote from './ComAddNote.vue';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
+import ComNoteGlobalButtonMore from './ComNoteGlobalButtonMore.vue';
+import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+
 const confirm = useConfirm()
 const notes = ref([]);
 const dialog = useDialog()
 const loading = ref(false);
+
 const gv = inject('$gv');
 const moment = inject("$moment")
 
@@ -105,6 +125,25 @@ function onViewDetailReservationStay(rs){
 }
 function onViewDetailReservation(rs){
     window.postMessage("view_reservation_detail|"+rs, '*')
+}
+function onViewFolioDetail (selected) {
+
+const dialogRef = dialog.open(ComFolioTransactionDetail, {
+	data: {
+		folio_transaction_number: selected
+	},
+	props: {
+		header: 'Folio Transaction Detail - ' + selected,
+		style: {
+			width: '50vw',
+		},
+		modal: true,
+		position:'top',
+		closeOnEscape: false
+	},
+
+});
+
 }
 function onEdit(name){
 	const dialogRef = dialog.open(ComAddNote, {
@@ -280,5 +319,23 @@ function onAddNote(name){
         });
 
 }
+
+const items = ref([]);
+let grid = null;
+let rowHeight = 0;
+let rowGap = 0;
+
+function resizeGridItem(item) {
+  rowHeight = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-auto-rows'));
+  rowGap = parseInt(window.getComputedStyle(grid).getPropertyValue('grid-row-gap'));
+  const contentHeight = item.querySelector('.content').getBoundingClientRect().height;
+  const rowSpan = Math.ceil((contentHeight + rowGap) / (rowHeight + rowGap));
+  item.style.gridRowEnd = `span ${rowSpan}`;
+}
+
+function resizeAllGridItems() {
+  items.value.forEach((item) => resizeGridItem(item));
+}
+
 
 </script>
