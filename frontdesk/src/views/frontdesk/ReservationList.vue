@@ -9,9 +9,8 @@
                 <NewGITReservationButton />
             </template>
         </ComHeader>
-        {{ filter }}
         <div class="mb-3 flex justify-between">
-            <div class="flex gap-2">
+            <div class="flex gap-3">
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -34,7 +33,7 @@
                 </Button>
             </div>
         </div>
-        
+        <ComPlaceholder text="No Data" height="70vh" :loading="loading"  :is-not-empty="data.length > 0">
         <DataTable 
             class="res_list_scroll"
             :resizableColumns="true" 
@@ -44,7 +43,8 @@
             stateKey="table_reservation_list_state" 
             :reorderableColumns="true"   
             :value="data" tableStyle="min-width: 50rem" 
-            @row-dblclick="onViewReservationStayDetail">
+            @row-dblclick="onViewReservationStayDetail"
+            scrollHeight="70vh">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
@@ -75,8 +75,9 @@
                 </template>
             </Column>
         </DataTable>
+    </ComPlaceholder>
     </div>
-    <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+    <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
             <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
@@ -85,7 +86,10 @@
 <OverlayPanel ref="opShowColumn" id="res_list_hideshow">
     <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
         <template #top>
-            <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+            <span class="p-input-icon-left w-full mb-3">
+                <i class="pi pi-search" />
+                <InputText v-model="filter.search_field" placeholder="Search" class="w-full"/>
+            </span>    
         </template>
         <ul class="res__hideshow">
             <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
@@ -129,7 +133,7 @@
                 optionValue="value" placeholder="Search Date Type" :clear="false"
                 @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
 
-            <div class="col-3" v-if="filter.search_date_type">
+            <div class="col-6" v-if="filter.search_date_type">
                 <Calendar class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
                 v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                 placeholder="Select Date Range" showIcon/>

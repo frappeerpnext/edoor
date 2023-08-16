@@ -59,15 +59,31 @@ export function updateDoc(doctype, name, data, message){
         });
     })
 }
-export function createUpdateDoc(doctype, data, message){ 
+export function createUpdateDoc(doctype, data, message, rename=null){ 
     const frappe = new FrappeApp()
     const db = frappe.db() 
     return new Promise((resolve, reject)=>{
         if(data.data.name){
             db.updateDoc(doctype, data.data.name, data)
             .then((doc) => {
-                resolve(doc) 
-                window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                // rename
+                if(rename && (rename.old_name != rename.new_name)){
+                    var update_name = {
+                        doctype: doctype,
+                        old_name: rename.old_name,
+                        new_name: rename.new_name
+                    }
+                    postApi('utils.rename_doc', { data: update_name },'', false).then((r)=>{
+                        resolve(doc)
+                        window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                    }).catch((err)=>{
+                        reject(err)
+                    })
+                }
+                else{
+                    resolve(doc) 
+                    window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
+                }
             })
             .catch((error) => {
                 const message = handleServerMessage(error)
@@ -122,6 +138,7 @@ export function postApi(api, params = Object, message,show_message=true){
     const call = frappe.call()
     return new Promise((resolve, reject)=>{
         call.post(`edoor.api.${api}`, params).then((result) => {
+            if(show_message == true){
                 if(show_message && !result.hasOwnProperty("_server_messages")){
                     window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
                 }else{
@@ -133,9 +150,7 @@ export function postApi(api, params = Object, message,show_message=true){
                     }
                    
                 }
-                
-          
-            
+            }
             resolve(result)
         }).catch((error) =>{
             handleServerMessage(error)
@@ -172,6 +187,23 @@ export function deleteApi(api, params = Object, message){
             handleServerMessage(error)
             reject(error)
         })
+    })
+}
+export function renameDoc(doctype, old_name,new_name){
+    let doc = {
+        doctype: doctype,
+        old_name: old_name,
+        new_name: new_name
+    }
+
+    return new Promise((resolve, reject)=>{
+        if(doc.old_name != doc.new_name){
+            postApi('utils.rename_doc', { data: doc }).then((r)=>{
+                resolve(r.message)
+            }).catch((err)=>{
+                reject(err)
+            }) 
+        }
     })
 }
 export function uploadFiles(files, fileArgs = Object){

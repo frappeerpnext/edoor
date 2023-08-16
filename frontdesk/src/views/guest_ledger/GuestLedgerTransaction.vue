@@ -12,9 +12,13 @@
     <ComAutoComplete isIconSearch v-model="filter.guest" class="pb-2" placeholder="Guest" doctype="Customer"
         @onSelected="onSearch" />
         <ComAutoComplete  v-model="filter.reservation" class="pb-2" placeholder="Reservation #" doctype="Reservation"
-        @onSelected="onSearch" :filters="['property','=',property.name]" />
+        @onSelected="onSearch" :filters="{property:property.name}"  />
     <ComAutoComplete  v-model="filter.reservation_stay" class="pb-2" placeholder="Reservation Stay #" doctype="Reservation Stay"
-        @onSelected="onSearch" :filters="['property','=',property.name]" />
+        @onSelected="onSearch" :filters="{property:property.name}"  />
+    <ComAutoComplete  v-model="filter.account_name" class="pb-2" placeholder="Account Name" doctype="Account Code"
+        @onSelected="onSearch" :filters="{property:property.name}"  />
+    <ComAutoComplete  v-model="filter.parent_account_name" class="pb-2" placeholder="Parent Acount Name" doctype="Reservation"
+        @onSelected="onSearch" :filters="{property:property.name}"  />
 Show Master Folio Only
         <Checkbox 
         @change="onSearch"
@@ -37,7 +41,7 @@ Show Master Folio Only
     <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
         stateKey="table_guest_ledger_state" :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" paginator
         :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]">
-        <Column v-for="c of columns?.filter(r => r.label )" :key="c.fieldname" :field="c.fieldname" :header="c.label"
+        <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
             :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
             <template #body="slotProps">
                 <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
@@ -81,6 +85,7 @@ const call = frappe.call();
 const socket = inject("$socket")
 const columns = ref()
 const summary = ref()
+const selectedColumns = ref([])
 const moment = inject("$moment")
 const filter = ref({ start_date: moment().startOf('month').toDate(),end_date:moment().toDate(),guest:"", order_by:"modified",order_type:"desc" })
 const loading = ref(false)
@@ -133,8 +138,7 @@ function onDateSelect(d){
     onSearch()
 }
 
-const onSearch = debouncer(() => {
- 
+const onSearch = debouncer(() => { 
     loadData();
 }, 500);
 
@@ -150,6 +154,8 @@ function loadData() {
             property:property.name,
             guest:filter.value?.guest || "",
             business_source:filter.value?.business_source || "",
+            reservation:filter.value?.reservation || "",
+            reservation_stay:filter.value?.reservation_stay || "",
             keyword:filter.value?.keyword || "",
             order_by:filter.value.order_by,
             order_type:filter.value.order_type,
@@ -164,7 +170,6 @@ function loadData() {
 
     }).catch((err) => {
         loading.value = false
-
         if (err._server_messages) {
 
             const _server_messages = JSON.parse(err._server_messages)
@@ -181,6 +186,15 @@ function loadData() {
 }
 
 onMounted(() => {
+    let state =JSON.parse( localStorage.getItem("page_state_guest_ledger"))
+    
+    if (state) {
+        if( state.selectedColumns){
+          
+            selectedColumns.value = state.selectedColumns   
+        }
+    }
+
     loadData()
 })
 onUnmounted(() => {

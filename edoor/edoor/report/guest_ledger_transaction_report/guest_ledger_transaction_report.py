@@ -9,21 +9,21 @@ def execute(filters=None):
 	if filters.start_date and filters.end_date:
 		if filters.start_date > filters.end_date:
 			frappe.throw("The 'Start Date' ({}) must be before the 'End Date' ({})".format(filters.start_date, filters.end_date))
-	return get_columns(), get_report_data(filters),None, None,get_report_summary(filters)
-
-def validate(filters):
-	if filters.start_date and filters.end_date:	
-		if filters.start_date > filters.end_date:
+		if (filters.end_date - filters.start_date).days > 30:
 			frappe.throw("The 'Start Date' ({}) must be before the 'End Date' ({})".format(filters.start_date, filters.end_date))
+	return get_columns(filters), get_report_data(filters),None, None,get_report_summary(filters)
 
-def get_columns():
+
+
+def get_columns(filters):
 	return [
 		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'align':'center',"header_class":'text-center','post_message_action':"view_folio_transaction_detail","default":True},
-		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
-		{'fieldname':'account_name','label':'Account Name',"default":True},
 		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True},
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True},
+		{'fieldname':'account_name','label':'Account Name',"default":True},
+		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
+		{'fieldname':'guest','label':'Stay #','fieldtype':'Link','options':"Customer",'align':'center',"header_class":'text-center','post_message_action':"view_guest_detail","default":True},
 		# {'fieldname':'business_source','label':'Source',"default":True},
 		# {'fieldname':'room_types','label':'Room Type',"default":True},
 		#   {'fieldname':'rooms','label':'Rooms',"align":'center',"header_class":'text-center',"default":True},
@@ -48,7 +48,12 @@ def get_report_data(filters):
 			type,
 			amount,
 			reservation,
-			reservation_stay
+			reservation_stay,
+			business_source,
+			guest,
+			guest_name,
+			parent_account_name,
+			reservation_status
 		from `tabFolio Transaction` 
 		where
 			transaction_type='Reservation Folio'

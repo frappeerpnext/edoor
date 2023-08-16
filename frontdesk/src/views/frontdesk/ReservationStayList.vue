@@ -7,11 +7,10 @@
             <template #end>
                 <NewFITReservationButton />
                 <NewGITReservationButton />
-
             </template>
         </ComHeader>
         <div class="mb-3 flex justify-between">
-            <div class="flex gap-2">
+            <div class="flex gap-3">
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -43,7 +42,8 @@
             stateStorage="local" 
             stateKey="table_reservation_stay_list_state" 
             scrollable 
-            :reorderableColumns="true"   :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" >
+            :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" 
+            scrollHeight="70vh">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
@@ -63,7 +63,7 @@
                     </template>
                     </div>
                     <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
+                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg text-white p-1px border-round-3xl"
                     :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
                     }}</span>
                     <span v-else>
@@ -78,7 +78,7 @@
         </DataTable>
     </div>
  
-    <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+    <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
             <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
@@ -88,7 +88,10 @@
 <OverlayPanel ref="opShowColumn">
     <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
         <template #top>
-            <InputText v-model="filter.search_field" placeholder="Search" class="mb-3 w-full"/>
+            <span class="p-input-icon-left w-full mb-3">
+                <i class="pi pi-search" />
+                <InputText v-model="filter.search_field" placeholder="Search" class="w-full"/>
+            </span>
         </template>
         <ul class="res__hideshow">
             <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">

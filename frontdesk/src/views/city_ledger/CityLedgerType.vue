@@ -5,28 +5,36 @@
                 <div class="text-2xl">City Ledger Account Type</div>
             </template>
             <template #end>
-              <Button label=" Add New City Ledger Account Type" icon="pi pi-plus" severity="warning" outlined @click="onAddCityLedgerAccountType" />
+              <Button label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
             </template>
         </ComHeader>
-        <div class="mb-3">
-            <div class="flex flex-wrap gap-2">
-                <span class="p-input-icon-left">
+        <div class="mb-3 w-20rem">
+            <div class="flex w-full flex-wrap gap-2">
+                <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                </span>
+                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                </div>
             </div>
         </div>
-        <DataTable  :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
-            <Column field="city_ledger_type" header="City Ledger Type"></Column>
-            <Column field="note" header="Note"></Column>
-            <Column field="owner" header="Owner"></Column>
-            <Column header="">
-             <template #body="slotProps">
-                <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit(slotProps.data.name)"/>
-                <i class="pi pi-trash" @click="onDelete(slotProps.data.name)"/>
-            </template>
-        </Column>
-        </DataTable>
+        <div class="p-2 bg-white rounded-xl">
+            <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
+            <DataTable  :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+                <Column field="city_ledger_type" header="City Ledger Type"></Column>
+                <Column field="note" header="Note"></Column>
+                <Column field="owner" header="Owner"></Column>
+                <Column header="">
+                <template #body="slotProps">
+                    <div class="flex gap-2 justify-end">
+                    <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
+                    <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
+                    </div>
+                    <!-- <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit(slotProps.data.name)"/>
+                    <i class="pi pi-trash" @click="onDelete(slotProps.data.name)"/> -->
+                </template>
+            </Column>
+            </DataTable>
+            </ComPlaceholder>
+        </div>
        
 </template>
 <script setup>
@@ -38,8 +46,7 @@ const filter = ref({})
 const confirm = useConfirm()
 const dialog = useDialog()
 
-function onEdit (name){ 
-
+function onEdit (selected){ 
  dialog.open(ComAddCityLedgerType, {
     props: {
         header: `Edit City Ledger Type`,
@@ -54,9 +61,7 @@ function onEdit (name){
         closeOnEscape: false,
         position: 'top'
     },
-    data:{
-        name: name,
-    },
+    data:selected,
     onClose:(options) => {
             const data = options.data;
             if(data){
@@ -91,7 +96,7 @@ function onDelete (name){
 function loadData() {
     gv.loading = true
     getDocList('City Ledger Type', {
-        fields: ['name','city_ledger_type', 'note','owner',],
+        fields: ['name','city_ledger_type', 'note','owner'],
         limit: 10000,
     })
         .then((doc) => {
@@ -106,7 +111,7 @@ function loadData() {
 function onAddCityLedgerAccountType(){
     dialog.open(ComAddCityLedgerType, {
         props: {
-            header: `Add New City Ledger Type`,
+            header: `Add New City Ledger Account Type`,
             style: {
                 width: '50vw',
             },

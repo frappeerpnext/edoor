@@ -14,7 +14,7 @@
                 <slot name="empty"></slot>
             </template>
             <div v-else>
-                <div class="p-6 text-center" :class="classColor">
+                <div class="p-6 text-center" :class="classColor" :style="{height: height}" >
                     <div><img :src="iconNoData" style="width: 150px; margin: 0 auto;"></div>
                     <div class="mt-2 text-sm italic">{{ text }}</div>
                 </div>
@@ -46,6 +46,11 @@ const props = defineProps({
     classColor: {
         type: String,
         default: 'text-gray-400'
+    }
+    ,
+    height: {
+        type: String,
+        default: ''
     }
 })
 </script>

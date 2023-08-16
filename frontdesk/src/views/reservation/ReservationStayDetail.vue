@@ -40,6 +40,8 @@
                             We reserved room for this reservation.
                         </span>
                         <Button @click="onUnreservedRoom" class="conten-btn border-1" serverity="waring">Unreserve Room</Button>
+ 
+                        
                     </div>
                     <div class="flex items-center gap-3" v-else>
                         <span>We do not reserved room for this reservation.</span>

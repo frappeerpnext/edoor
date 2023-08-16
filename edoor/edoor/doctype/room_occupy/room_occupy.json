@@ -22,7 +22,8 @@
   "adult",
   "child",
   "pax",
-  "data_keyword"
+  "data_keyword",
+  "reservation_status"
  ],
  "fields": [
   {
@@ -44,9 +45,10 @@
   },
   {
    "fieldname": "reservation_stay",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Reservation Stay"
+   "label": "Reservation Stay",
+   "options": "Reservation Stay"
   },
   {
    "fieldname": "room_id",
@@ -122,11 +124,17 @@
    "fieldname": "is_departure",
    "fieldtype": "Check",
    "label": "Is Departure"
+  },
+  {
+   "fetch_from": "reservation_stay.reservation_status",
+   "fieldname": "reservation_status",
+   "fieldtype": "Data",
+   "label": "reservation_status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-13 20:29:06.662461",
+ "modified": "2023-08-15 16:22:53.836296",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

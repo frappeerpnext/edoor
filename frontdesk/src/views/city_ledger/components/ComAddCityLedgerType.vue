@@ -1,45 +1,47 @@
 <template>
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
-  City Ledger Type
-<div class="card flex justify-content-left">
-  <InputText type="text" v-model="accountType.city_ledger_type" />
-</div><br>
-Note
-<div class="card flex justify-left">
-   <Textarea v-model="accountType.note" rows="5" cols="50" />
-</div><br>
+    <div class="grid">
+      <div class="col-6">
+          <label>City Ledger Type</label>
+          <InputText class="w-full" type="text" v-model="accountType.city_ledger_type" />
+      </div>
+      <div class="col-12">
+        <label>Note</label>
+        <Textarea class="w-full" v-model="accountType.note" rows="5" cols="50" />
+      </div>
+    </div>
 </ComDialogContent> 
 </template>
 
 <script setup>
-import { onMounted,ref,inject,createUpdateDoc,getDoc  } from '@/plugin';
+import { onMounted,ref,inject,createUpdateDoc  } from '@/plugin';
 const dialogRef = inject('dialogRef')
 const accountType = ref({})
 const loading = ref(false)
-
+const rename = ref(null)
+ 
 function onSave(){
   loading.value = true
-  createUpdateDoc("City Ledger Type", {data: accountType.value}).then((r)=>{
+  rename.value = null
+  if(dialogRef.value.data){
+    rename.value = {
+      old_name: dialogRef.value.data.name,
+      new_name: accountType.value.city_ledger_type
+    } 
+  }
+  createUpdateDoc('City Ledger Type', {data:accountType.value},null,rename.value).then((r)=>{
     dialogRef.value.close(r)
-
-  }).catch((err)=>{
+    loading.value = false
+  }).catch((er)=>{
     loading.value = false
   })
-
 }
 function onClose(){
   dialogRef.value.close()
 }
 onMounted(() => {
-  if(dialogRef.value.data?.name){
-    loading.value = true
-    getDoc("City Ledger Type",dialogRef.value.data?.name).then((doc)=>{
-      accountType.value = doc
-      loading.value = false
-    }).catch((err)=>{
-      loading.value = false    
-    })
+  if(dialogRef.value.data){
+    accountType.value = JSON.parse(JSON.stringify(dialogRef.value.data))
   }
 })
-
 </script>

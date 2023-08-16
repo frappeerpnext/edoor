@@ -1,6 +1,7 @@
 <template>
     <h1>Guest ledger</h1>
 {{ loading }}
+ 
 
     <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
     <Calendar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy" @date-select="onDateSelect"
@@ -13,9 +14,9 @@
         @onSelected="onSearch" />
 
     <ComAutoComplete  v-model="filter.reservation" class="pb-2" placeholder="Reservation #" doctype="Reservation"
-        @onSelected="onSearch" :filters="['property','=',property.name]" />
+        @onSelected="onSearch" :filters="{property:property.name}" />
     <ComAutoComplete  v-model="filter.reservation_stay" class="pb-2" placeholder="Reservation Stay #" doctype="Reservation Stay"
-        @onSelected="onSearch" :filters="['property','=',property.name]" />
+        @onSelected="onSearch" :filters="{property:property.name}" />
 
 
 Show Master Folio Only
@@ -134,6 +135,7 @@ const getColumns = computed(()=>{
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
+ 
 
 socket.on("RefresheDoorDashboard", (arg) => {
 if (arg == property.name) {

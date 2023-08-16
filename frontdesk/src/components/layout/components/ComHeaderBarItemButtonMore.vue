@@ -7,30 +7,6 @@
             Mores
         </template>
     </ComHeaderBarItemButton>
-    <!-- <Menu ref="show" id="overlay_menu_more" :popup="true" style="min-width: 180px;">
-        <template #end>
-            <button @click="onLink('city-ledger')"
-                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround xl:hidden">
-                <span class="ml-2">City Ledger</span>
-            </button>
-            <button @click="onLink('reports')"
-                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround xl:hidden">
-                <span class="ml-2">Reports</span>
-            </button>
-            <button @click="onLink('cashier-shift')"
-                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <span class="ml-2">Cashier Report</span>
-            </button>
-            <button @click="onLink('sale/view/list')"
-                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <span class="ml-2">Payout</span>
-            </button>
-            <button @click="onLink('expense/view/list')"
-                class="w-full flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <span class="ml-2">Misc. Sale</span>
-            </button>
-        </template>
-    </Menu> -->
 </template>
 <script setup>
 import { ref } from '@/plugin'

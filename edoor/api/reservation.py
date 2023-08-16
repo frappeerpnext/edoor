@@ -445,13 +445,19 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
         if Enumerable(stay.stays).where(lambda x: (x.room_id or "") =="").count()>=1:
             frappe.throw("Please asign room to reservation stay #{}.".format(s))
 
-        if stay.reservation_status in("In-house","Void","No Show","Cancelled","Checked In","Checked Out") and not is_undo:
+        if stay.reservation_status in("In-house","Void","Cancelled","Checked In","Checked Out") and not is_undo:
             frappe.throw("Stay # {}. Room {}. This room is already {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
         if is_undo and not stay.reservation_status in("In-house","Checked In"):
             frappe.throw("Stay # {}. Room {}. This room is {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
       
         if frappe.utils.getdate(stay.arrival_date) > working_day["date_working_day"]:
             frappe.throw("Stay # {}. Room {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
+        
+        if stay.reservation_status =="No Show":
+            if stay.is_active_reservation == 1:
+                frappe.throw("You cannot Check In  No Show reservation # {}. Because this reservation don't have a reserve room.".format(stay.name))
+                
+
         #validate check if current room is still have guest in house
 
         room_id = stay.stays[0].room_id
@@ -486,11 +492,13 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
                 folio =create_folio(stay)
             else:
                 folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
+                folio.status="Open"
+                folio.save()
                 
             if folio:
                 #get first rate from reservation room rate
                 
-                room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1)
+                room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date desc",page_length=1)
                 if (room_rates):
                     for r  in room_rates:
                         add_room_charge_to_folio(folio,r )
@@ -1099,9 +1107,8 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         stay.reservation_status_note = note
         stay.is_active_reservation = False
 
-        if status=="No Show" and reserved_room:
-            for stay_room in stay.stays:
-                stay_room.reserved_room = reserved_room
+        if status=="No Show":
+            stay.is_reserved_room = (1 if reserved_room ==True else 0)
         
         stay.save()
         #update is active reservation to room rate 
@@ -1695,6 +1702,9 @@ def unreserved_room(property, reservation_stay):
     if getdate(stay.departure_date)<= getdate(working_day["date_working_day"]):
         frappe.throw("Departure date must be greater than current working date")
     
+    stay.is_reserved_room=0
+    stay.save()
+
     frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 0 where parent='{}'".format(stay.name))
     frappe.db.sql("delete from `tabTemp Room Occupy`  where reservation_stay='{}'".format(stay.name))
     frappe.db.sql("delete from `tabRoom Occupy`  where reservation_stay='{}'".format(stay.name))
@@ -1709,11 +1719,13 @@ def reserved_room(property, reservation_stay):
         frappe.throw("Please start cashier shift first")   
     
     stay = frappe.get_doc("Reservation Stay", reservation_stay)
+
     if stay.reservation_status !="No Show":
         frappe.throw("You cannot reserved room for {} reservation".format(stay.reservation_status))
     
     if getdate(stay.departure_date)<= getdate(working_day["date_working_day"]):
         frappe.throw("Departure date must be greater than current working date")
+
 
     #validate room availability
     #check room type first
@@ -1735,11 +1747,14 @@ def reserved_room(property, reservation_stay):
             if data:
                 frappe.throw("Room {} is not available now".format(s.room_number))
     
-    
+    stay.is_reserved_room=1
+    stay.save()
+
     frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay='{}'".format(stay.name))
     frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}'".format(stay.name))
 
     
+
 
     dates = get_date_range(working_day["date_working_day"], stay.departure_date)
     for s in stay.stays: 

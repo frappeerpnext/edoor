@@ -3,6 +3,7 @@ import frappe
 import json
 from py_linq import Enumerable
 from frappe import local
+from frappe.utils.data import getdate
 def successful_login(login_manager):
     pass
  
@@ -584,4 +585,54 @@ def get_rate_type_info(name):
     return {
         "name": name,
         "tax_rule":tax_rule
+    }
+
+@frappe.whitelist("POST")
+def rename_doc(data):
+    doc = frappe.rename_doc(data['doctype'], data['old_name'], data['new_name'])
+    if doc:
+        return {
+            'name': data['new_name']
+        }
+    
+@frappe.whitelist()
+def get_city_ledger_amount_summary(filters):
+    filters = json.loads(filters)
+    filters["start_date"] =getdate(filters["end_date"]).replace(day=1)
+ 
+    sql = """
+            select 
+                sum(total_amount*(if(type='Debit',1,-1))) as amount 
+            from `tabFolio Transaction`
+            where
+                transaction_type='City Ledger' and 
+                transaction_number = %(city_ledger)s and 
+                posting_date < %(start_date)s  
+        """
+    data = frappe.db.sql(sql,filters,as_dict=1)
+    opening_balance = 0
+    if data:
+        opening_balance = data[0]["amount"] or 0
+    debit = 0
+    credit = 0
+    sql = """
+            select 
+                sum(if(type='Debit',total_amount,0 )) as debit,
+                sum(if(type='Credit',total_amount,0 )) as credit 
+            from `tabFolio Transaction`
+            where
+                transaction_type='City Ledger' and 
+                transaction_number = %(city_ledger)s and 
+                posting_date between  %(start_date)s and %(end_date)s  
+        """
+    data = frappe.db.sql(sql,filters,as_dict=1)
+    if data:
+        debit = data[0]["debit"] or 0
+        credit= data[0]["credit"] or 0
+
+    return {
+        "opening_balance": opening_balance,
+        "debit":debit,
+        "credit":credit,
+        "balance": opening_balance + (debit - credit)
     }

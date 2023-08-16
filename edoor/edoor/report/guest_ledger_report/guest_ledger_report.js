@@ -36,7 +36,7 @@ frappe.query_reports["Guest Ledger Report"] = {
 		} ,
 		
 		{
-			"fieldname": "reservation_staty",
+			"fieldname": "reservation_stay",
 			"label": __("Reservation Stay"),
 			"fieldtype": "Link",
 			"options":"Reservation Stay",

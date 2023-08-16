@@ -16,7 +16,6 @@
                     <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote"/>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                  
                 </div>
             </template>
         </ComHeader>

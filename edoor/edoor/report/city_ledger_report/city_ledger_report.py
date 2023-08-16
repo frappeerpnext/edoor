@@ -63,7 +63,7 @@ def get_folio_transaction_amount(filters):
 			transaction_number
 	""".format(filters.start_date,filters.end_date,filters.property)
 
-	frappe.throw(sql)
+ 
 	 
 	return frappe.db.sql(sql, as_dict=1)
 
@@ -87,7 +87,8 @@ def get_report_data(folio_transaction_amount,filters):
 				concat(name,' ', city_ledger_name) like '%{0}%' and 
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(city_ledger_type,'') = if(%(city_ledger_type)s='',ifnull(city_ledger_type,''),%(city_ledger_type)s)  and 
-				name in %(city_ledger_codes)s 
+				name in %(city_ledger_codes)s  and 
+				property=%(property)s
 		""".format(filters.keyword or '')
 		
 		data = frappe.db.sql(sql,filters,as_dict=1)

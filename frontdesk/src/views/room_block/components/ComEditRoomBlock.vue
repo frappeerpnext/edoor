@@ -1,7 +1,5 @@
 <template lang="">
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-         
-       {{data}}
         <div class="grid">
         <div class="col-12 p-0">
             <div class="w-6 col">
@@ -83,7 +81,6 @@ onMounted(()=>{
         data.value.block_date = moment(data.value.block_date).toDate()
       
     }else {
-    alert("u add r4oom block")
     }
 })
 </script>

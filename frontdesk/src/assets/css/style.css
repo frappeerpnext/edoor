@@ -1175,9 +1175,14 @@ ul.res__hideshow{
     position: sticky;
     overflow: hidden;
 }
-.res_list_scroll .p-datatable-wrapper{
-    height: 70vh;
-}
+
 .ttl-column_re{
     color: var(--bg-og-color-hover);
+}
+
+.p__paginator .p-paginator.p-component{
+    position: fixed;
+    bottom: 29px;
+    width: 100%;
+    left: 0;
 }

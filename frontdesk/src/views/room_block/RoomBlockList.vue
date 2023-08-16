@@ -50,7 +50,7 @@
           </Button>
           <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
             moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-          <span v-else-if="c.fieldtype == 'datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }}
+          <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }}
           </span>
           <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
           <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
@@ -178,7 +178,7 @@ function OnSaveColumn(event) {
 function onResetTable() {
   localStorage.removeItem("page_state_room_block")
   localStorage.removeItem("table_room_block_list_state")
-  window.location.reload
+  window.location.reload()
 
 
 }

@@ -161,7 +161,8 @@ function onEdit(name){
                 },
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                position:'top'
             },
             onClose: (options) => {
                 const data = options.data;
@@ -305,7 +306,8 @@ function onAddNote(name){
                 },
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                position:'top'
             },
             onClose:(options) => {
                 const data = options.data;

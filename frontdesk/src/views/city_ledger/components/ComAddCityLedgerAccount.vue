@@ -1,5 +1,6 @@
 <template> 
     <ComDialogContent @onClose="onClose" @onOK="onSave">
+    <div class="flex flex-col gap-3">
         <ComReservationStayPanel title="City Ledger Information">
             <template #content>
                 <div class="grid">
@@ -18,53 +19,71 @@
                 <div class="col-6">
                     <label>Company Name</label><br />
                     <InputText class="w-full" v-model="data.company_name" type="text"  placeholder="Company Name" :maxlength="50" />
+                </div>  
+              
+                
+                <div class="col-6">
+                    <label>Phone Number</label><br />
+                    <InputText class="w-full" v-model="data.phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
                 </div>
+                <div class="col-6">
+                    <label>Email Address</label><br />
+                    <InputText class="w-full" v-model="data.email_address" type="text"  placeholder="Email Address" :maxlength="50" />
+                </div>
+                <div class="col-12">
+                    <label>Address</label>
+                    <div class="card flex justify-content-left">
+                        <Textarea v-model="data.address"  rows="3"  style="width: 100%;" />
+                    </div>
+                </div> 
                 </div>
             </template>
         </ComReservationStayPanel>
-        <div class="col-6">
-            <label>Phone Number</label><br />
-            <InputText v-model="data.phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
-        </div>
-        <div>
-            <label>Email Address</label><br />
-            <InputText v-model="data.email_address" type="text"  placeholder="Email Address" :maxlength="50" />
-        </div>
-        <b>Contact Info</b>
-        <div>
-            <label>Contact Name</label><br />
-            <InputText v-model="data.contact_name" type="text"  placeholder="Contact Name" :maxlength="50" />
-        </div>
-        <div>
-            <label>Phone Number</label><br />
-            <InputText v-model="data.contact_phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
-        </div>
-        <div>
-            <label>Bank Account Number</label><br />
-            <InputText v-model="data.bank_account_number" type="number"  placeholder="Bank Account Number" :maxlength="50" />
-        </div>
-        <div>
-            <label>Bank Account Name</label><br />
-            <InputText v-model="data.bank_account_name" type="text"  placeholder="Bank Account Name" :maxlength="50" />
-        </div>
-        <div>
-            <label>Bank Name</label><br />
-            <InputText v-model="data.bank_name" type="text"  placeholder="Bank Name" :maxlength="50" />
-        </div>
-        
-        <div class="col-12">
-            <label>Note</label>
-            <div class="card flex justify-content-left">
-                <Textarea v-model="data.note"  rows="3"  style="width: 100%;" />
+        <ComReservationStayPanel title="Bank Information">
+            <template #content>
+                <div class="grid">
+                    <div class="col-12">
+                            <div class="w-50">
+                            <label>Bank Name</label><br />
+                            <InputText class="w-full" v-model="data.bank_name" type="text"  placeholder="Bank Name" :maxlength="50" />
+                            </div>
+                        </div>  
+                        <div class="col-6">
+                            <label>Bank Account Number</label><br />
+                            <InputText class="w-full" v-model="data.bank_account_number" type="number"  placeholder="Bank Account Number" :maxlength="50" />
+                        </div >
+                        <div class="col-6">
+                            <label>Bank Account Name</label><br />
+                            <InputText class="w-full" v-model="data.bank_account_name" type="text"  placeholder="Bank Account Name" :maxlength="50" />
+                        </div>
+                </div>
+            </template>
+        </ComReservationStayPanel>  
+        <ComReservationStayPanel title="Contact Person Information">
+            <template #content>
+                <div class="grid">
+                <div class="col-6">
+                    <label>Contact Name</label><br />
+                    <InputText class="w-full" v-model="data.contact_name" type="text"  placeholder="Contact Name" :maxlength="50" />
+                </div>
+                <div class="col-6">
+                    <label>Phone Number</label><br />
+                    <InputText class="w-full"  v-model="data.contact_phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
+                </div>                
+            
+                </div>
+        </template>
+    </ComReservationStayPanel>  
+    <ComReservationStayPanel title="Note">
+        <template #content> 
+            <div class="col-12 -mt-3 w-full px-0">
+                    <div class="card flex justify-content-left">
+                        <Textarea v-model="data.note"  rows="3"  style="width: 100%;" />
+                    </div>
             </div>
-        </div>
-        <div class="col-12">
-            <label>Address</label>
-            <div class="card flex justify-content-left">
-                <Textarea v-model="data.address"  rows="3"  style="width: 100%;" />
-            </div>
-          </div>
-       
+        </template>
+    </ComReservationStayPanel>
+</div>
     </ComDialogContent>
 </template>
 <script setup>

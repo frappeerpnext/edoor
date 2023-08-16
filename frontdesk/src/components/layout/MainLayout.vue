@@ -21,7 +21,6 @@
                                 </template>
                             </ComHeaderBarItemButton>
                         </template>  
-                        <!-- <ComHeaderBarItemButtonMore /> -->
                     </div>
                 </div>
                 <div class="flex-grow">
@@ -100,13 +99,12 @@
 import { ref, inject, useToast, useRouter, useRoute, computed } from '@/plugin'
 import { useScreen, useGrid } from 'vue-screen'
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
-// import ComHeaderBarItemButtonMore from './components/ComHeaderBarItemButtonMore.vue';
-import ProgressBar from 'primevue/progressbar';
-import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue';
-import Search from '@/views/search/Search.vue';
-import Property from '@/views/user_property/Property.vue';
-import { useDialog } from 'primevue/usedialog';
-import ComFooter from '../../components/layout/components/ComFooter.vue';
+import ProgressBar from 'primevue/progressbar'
+import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue'
+import Search from '@/views/search/Search.vue'
+import Property from '@/views/user_property/Property.vue'
+import { useDialog } from 'primevue/usedialog'
+import ComFooter from '../../components/layout/components/ComFooter.vue'
 import OpenShift from "@/views/shift/OpenShift.vue"
 import runNightAuditSvgIcon from '@/assets/svg/icon-run-night-audit.svg'
 import iconCloseCashierShift from '@/assets/svg/icon-close-cashier-shift.svg'
@@ -114,7 +112,7 @@ import iconOpenCashierShift from '@/assets/svg/icon-open-cashier-shift.svg'
 import iconViewShiftDetail from '@/assets/svg/icon-view-cashier-shift.svg'
 import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
-import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue';
+import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 
 const dialog = useDialog();
 const router = useRouter()
@@ -136,7 +134,7 @@ const eDoorMenu = computed(()=>{
     const menu = ref(setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != ""))
     //menu.value = menu.value.filter(r => r.parent_edoor_menu == 'All Menus')
     if(screen.width <= 1346){
-        return menu.value.filter(r => r.hidden_in_sm == false)
+        return menu.value.filter(r => r.move_to_more == false)
     }else{
         return menu.value
     }

@@ -53,21 +53,39 @@ def get_dashboard_data(property = None,date = None):
 
 
     # get reservation stay
+    #filter base on arrival date
+    stay = []
     stay_sql = """SELECT 
-                    SUM(if(arrival_date = '{0}' AND reservation_status = 'No Show',1,0)) AS `total_no_show`, 
-                    SUM(if(arrival_date = '{0}' AND reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
-                    SUM(if(reservation_status in ('Reserved','Confirmed') AND arrival_date = '{0}',1,0)) AS `arrival_remaining`,
-                    SUM(if(reservation_status = 'In-house' AND departure_date = '{0}',1,0)) AS `departure_remaining`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND arrival_date = '{0}'  AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND arrival_date = '{0}' and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
-                    SUM(if(require_pickup = 1 AND arrival_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `pick_up`,
-                    sum(if(departure_date = '{0}'   and is_active_reservation = 1, 1, 0)) AS `total_departure`,
-                    SUM(if(require_drop_off = 1 AND departure_date = '{0}' AND  is_active_reservation = 1, 1, 0)) AS `drop_off` ,
-                    sum(if(  '{0}'>arrival_date and '{0}'< departure_date  AND is_active_reservation = 1, 1, 0)) AS `total_stay_over`
-                FROM `tabReservation Stay` WHERE property = '{1}';""".format(date,property)
+                    SUM(if(reservation_status = 'No Show',1,0)) AS `total_no_show`, 
+                    SUM(if(reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
+                    SUM(if(reservation_status in ('Reserved','Confirmed'),1,0)) AS `arrival_remaining`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house')   and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
+                    SUM(if(require_pickup = 1 AND  is_active_reservation = 1, 1, 0)) AS `pick_up`
+                FROM `tabReservation Stay` WHERE  arrival_date='{0}' and property = '{1}';""".format(date,property)
+    
+    stay = frappe.db.sql(stay_sql, as_dict=1)
+    
+
+    #filter base on departure date
+    stay_sql = """SELECT 
+                    SUM(if(reservation_status = 'In-house',1,0)) AS `departure_remaining`,
+                    sum(if(is_active_reservation = 1, 1, 0)) AS `total_departure`,
+                    SUM(if(require_drop_off = 1  AND  is_active_reservation = 1, 1, 0)) AS `drop_off`
+                FROM `tabReservation Stay` WHERE departure_date = '{0}' and  property = '{1}';""".format(date,property)
+    
+    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+
+
+    #get stay over
+    stay_sql = """SELECT 
+                    sum(if( is_active_reservation = 1, 1, 0)) AS `total_stay_over`
+                FROM `tabReservation Stay` WHERE   '{0}'> arrival_date and '{0}'< departure_date  AND  property = '{1}';""".format(date,property)
+    
  
 
-    stay = frappe.db.sql(stay_sql, as_dict=1)
+    stay = [stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+    
 
     git_reservation_sql = """
                         select 
@@ -159,7 +177,7 @@ def get_server_port():
 
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
-    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'hidden_in_sm','hidden_in_lg'],order_by="sort_order asc")
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more'],order_by="sort_order asc")
 
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
@@ -235,7 +253,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
-    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","icon"], order_by="sort_order")
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","show_in_city_ledger","icon"], order_by="sort_order")
 
 
     return {
@@ -839,13 +857,21 @@ def run_night_audit(property, working_day):
         }
     ).insert()
 
-    
+    #Remove room occupy for no show folio that reserved room
+
+    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":property, "date":doc_working_day.posting_date})
+    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":property, "date":doc_working_day.posting_date})
+
     #queue post room change to folio
-    post_room_change_to_folio(new_working_day)
+
+    #post_room_change_to_folio(new_working_day)
+    frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='short', working_day=new_working_day)
 
     #update room status after runight auit
-    update_room_status(new_working_day)
+    # update_room_status(new_working_day)
+    frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='short', working_day=new_working_day)
 
+    
     return property
 
 @frappe.whitelist()

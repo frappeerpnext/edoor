@@ -1,59 +1,97 @@
 <template>
-    <div>
+    <div> 
         <ComHeader isRefresh @onRefresh="loadData()">
             <template #start>
                 <div class="text-2xl">Guest Type</div>
-            </template>
+            </template>me
             <template #end>
-              <Button label="Add Guest Type" icon="pi pi-plus" severity="warning" outlined @click="onAdGuestType" />
+              <Button label="Add New Guest Type" icon="pi pi-plus"  @click="onAddNewGuestType" />
             </template>
         </ComHeader>
-        <div class="mb-3">
-            <div class="flex flex-wrap gap-2">
-                <span class="p-input-icon-left">
+        <div class="mb-3 w-20rem">
+            <div class="flex w-full flex-wrap gap-2 ">
+                <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                </span>
+                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                </div>
             </div>
         </div>
-        <DataTable  :value="data?.filter((r)=>r.customer_group_en.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+        <div class="p-2 bg-white rounded-xl">
+        <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="(data?.filter((r)=>r.customer_group_en.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
+        <DataTable  :value="data?.filter((r)=>r.customer_group_en.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" " >
             <Column field="customer_group_en" header="Guest type"></Column>
-            <Column field="note" header="Note"></Column>
             <Column field="owner" header="Owner"></Column>
+            <Column field="note" class="w-6" header="Note"></Column>
             <Column header="">
              <template #body="slotProps">
-                <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit"/>
-                <i class="pi pi-trash" @click="onDelete"/>
-            </template>
+                <div class="flex gap-2 justify-end">
+                <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
+                <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
+                </div>
+        </template>
         </Column>
         </DataTable>
-
+        </ComPlaceholder>
+        </div>
     </div>
 </template>
 <script setup>
-import { inject, ref, useToast, getDocList, onMounted,useDialog, createUpdateDoc } from '@/plugin'
-const moment = inject("$moment")
+import { inject, ref, getDocList, onMounted,useDialog,useConfirm,deleteDoc } from '@/plugin' 
+import ComAddGuestType from "@/views/guest/components/ComAddGuestType.vue"
 const gv = inject("$gv")
-const toast = useToast()
 const dialog = useDialog()
 const data = ref([])
 const filter = ref({})
-const visible = ref(false);
-const guestType = ref({});
 const loading = ref(false)
-
-function onDelete(){
-    alert()
+const confirm = useConfirm()
+function onDelete (name){
+        confirm.require({
+        message: 'Are you sure you want to delete guest type?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+             deleteDoc('Customer Group',name)
+                 .then(() =>{
+                    loadData()
+                    loading.value = false
+                 } ).catch((err)=>{
+                    loading.value = false
+                 })         
+        },
+    });
 }
-
-function onEdit(){
-    visible.value = true
+function onEdit (edit){ 
+ dialog.open(ComAddGuestType, {
+    props: {
+        header: `Edit City Ledger Type`,
+        style: {
+            width: '50vw',
+        },
+        breakpoints: {
+            '960px': '75vw',
+            '640px': '90vw'
+        },
+        modal: true,
+        closeOnEscape: false,
+        position: 'top'
+    },
+    data: edit,
+    onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData()
+			}
+        }
+});  
 }
-
 function loadData() {
     gv.loading = true
     getDocList('Customer Group', {
-        fields: ['customer_group_en', 'note','owner',],
+        fields: ['customer_group_en', 'note','owner','name'],
         limit: 10000,
     })
         .then((doc) => {
@@ -65,9 +103,24 @@ function loadData() {
          
         });
 }
-function onAdGuestType(){
-    alert()
-
+function onAddNewGuestType(){
+    dialog.open(ComAddGuestType, {
+        props: {
+            header: `Add New Guest Type`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        onClose:(options) => {
+            const data = options.data;
+            if(data){
+				loadData()
+			}
+        }
+    }); 
 }
 
 onMounted(() => {

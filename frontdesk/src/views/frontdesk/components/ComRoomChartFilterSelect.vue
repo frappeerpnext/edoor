@@ -11,10 +11,10 @@
                 <ComSelect  :filters="[['property', '=', edoor_property.name]]" placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
             </div>
             <div>
-                <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect>
+                <!-- <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect> -->
                 <div>
                     <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
+                        <i class="pi pi-filter" />
                         <InputText class="btn-set__h" v-model="room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
                     </span>
                 </div>
@@ -35,7 +35,7 @@
     </div>
 </template>
 <script setup> 
-import { reactive,watch,ref } from 'vue';
+import { reactive,watch,ref,getDocList } from '@/plugin';
 const emit = defineEmits(["onFilterResource","onSearch"])
 const keyword = ref("")
 const edoor_property = JSON.parse(localStorage.getItem('edoor_property'))
@@ -51,7 +51,21 @@ watch(filter, (newValue, oldValue) => {
     emit("onFilterResource",newValue)
 })
 function onSearchRoom(key){
-    filter.room_number = key
+    if(key){
+        getDocList('Room', {
+            filters: [['room_number', '=', key]]
+        }).then((r)=>{
+            if(r.length > 0)
+                filter.room_number = r[0].name 
+            else
+                filter.room_number = 'None'
+        }).catch((er)=>{
+            filter.room_number = 'None'
+        })
+    }
+    else{
+        filter.room_number = ''
+    }
 }
 function onSearch(key){
     emit("onSearch", key)

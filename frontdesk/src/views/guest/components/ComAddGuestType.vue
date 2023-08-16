@@ -1,28 +1,42 @@
 <template>
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
-     Guest Type
-   <div class="card flex justify-content-left">
-      <InputText type="text" v-model="guestType.customer_group_en" />
-    </div><br>
-      Note
-    <div class="card flex justify-left">
-      <Textarea v-model="guestType.note" rows="5" cols="50" />
-    </div><br>
+    <div class="grid">
+      <div class="col-6">
+      <label>
+      Guest Type
+      </label>
+      <InputText class="w-full" type="text" v-model="guestType.customer_group_en" />
+      </div>
+      <div class="col-12">
+        <label>
+          Note
+        </label>
+        <Textarea class="w-full" v-model="guestType.note" rows="5" cols="50" />
+      </div>
+    </div>
   </ComDialogContent>
 </template>
 
 <script setup> 
-import { onMounted,ref,inject,createUpdateDoc,getDoc  } from '@/plugin';
-const dialogRef = inject('dialogRef')
-const accountType = ref({})
+import { onMounted,ref,inject,createUpdateDoc } from '@/plugin';
+const dialogRef = inject('dialogRef') 
 const loading = ref(false)
+const rename = ref(null)
+const guestType = ref({});
 
 function onSave(){
   loading.value = true
-  createUpdateDoc("Customer Group", {data: guestType.value}).then((r)=>{
+  rename.value = null
+  if(dialogRef.value.data){
+    rename.value = {
+      old_name: dialogRef.value.data.name,
+      new_name: guestType.value.customer_group_en
+    } 
+  }
+  createUpdateDoc('Customer Group', {data:guestType.value},null,rename.value).then((r)=>{
     dialogRef.value.close(r)
-    
-  }).catch((err)=>{
+    loading.value = false
+  }).catch((er)=>{
     loading.value = false
   })
 }
@@ -32,14 +46,8 @@ function onClose(){
 }
 
 onMounted(() => {
-  if(dialogRef.value.data?.name){
-    loading.value = true
-    getDoc("City Ledger Type",dialogRef.value.data?.name).then((doc)=>{
-      accountType.value = doc
-      loading.value = false
-    }).catch((err)=>{
-      loading.value = false    
-    })
+  if(dialogRef.value.data){
+    guestType.value = JSON.parse(JSON.stringify(dialogRef.value.data)) 
   }
 })
 

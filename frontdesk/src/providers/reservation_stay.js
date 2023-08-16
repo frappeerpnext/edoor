@@ -252,8 +252,9 @@ export default class ReservationStay {
 
 	canCheckIn() {
 		const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-		return this.reservationStay?.reservation_status == 'Reserved' &&
-			this.reservationStay.arrival_date <= working_day.date_working_day
+		
+		return (this.reservationStay?.reservation_status == 'Reserved' && this.reservationStay.arrival_date <= working_day.date_working_day ) || 
+				(this.reservationStay?.is_reserved_room ==1 && this.reservationStay.arrival_date <= working_day.date_working_day && this.reservationStay.departure_date >= working_day.date_working_day )
 	}
 
 	clear() {

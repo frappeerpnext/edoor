@@ -87,12 +87,15 @@ class ReservationStay(Document):
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
 
-			if hasattr(d, "reserved_room"):
+			if self.is_reserved_room:
 			 
-				d.show_in_room_chart = d.reserved_room
+				d.show_in_room_chart  = self.is_reserved_room
 			else:
 				 
 				d.show_in_room_chart = reservation_status.show_in_room_chart
+			
+			if self.is_reserved_room==1:
+				d.is_active_reservation = 1
 
 		 
 			d.status_color = self.status_color

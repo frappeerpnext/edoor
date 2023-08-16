@@ -46,7 +46,19 @@ frappe.query_reports["Guest Ledger Transaction Report"] = {
 			"fieldtype": "Link",
 			"options":"Customer",
 			
-		},
+		},{
+			"fieldname": "reservation",
+			"label": __("Reservation"),
+			"fieldtype": "Link",
+			"options":"Reservation",
+		} ,
+		
+		{
+			"fieldname": "reservation_stay",
+			"label": __("Reservation Stay"),
+			"fieldtype": "Link",
+			"options":"Reservation Stay",
+		} ,
 
 	],
 	"formatter": function(value, row, column, data, default_formatter) {

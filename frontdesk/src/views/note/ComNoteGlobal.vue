@@ -2,11 +2,13 @@
 	{{ i }}
 <div>
 	<div>
-		<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
+		
+		<div class="flex justify-end items-center gap-2">
+			
+			<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
             <i class="pi pi-search" />
             <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
-        </div>
-		<div class="flex justify-end items-center">
+        	</div>
 			<div class="flex items-center mt-3 mb-1">
 				<!-- <ComAddNote :name="name"></ComAddNote> -->
 				<Button @click="onEdit('')" class="conten-btn bg-yellow-50 white-space-nowrap text-yellow-500 border-yellow-500">
@@ -116,7 +118,8 @@ function onEdit(name){
                 },
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+				position:'top'
             },
             onClose: (options) => {
                 const data = options.data;

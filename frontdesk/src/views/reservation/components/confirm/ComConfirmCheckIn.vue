@@ -1,21 +1,30 @@
 <template>
     <ComDialogContent :hideButtonClose="true" :hideButtonOK="true">
- 
-        <div v-if="rs.room_rates?.length > 0 && reservationStays?.length==0">
-            <Message severity="info"> Room rate on {{ moment(rs.room_rates[0].date).format('DD-MM-YYYY') }} is
-                <CurrencyFormat :value="rs.room_rates[0].total_rate" />
-                <br />
-                Please make sure your room rate is correct.
-            </Message>
-        </div>
-        <div v-else>
+        <template v-if="rs.reservationStay.reservation_status=='No Show'">
             <Message severity="info">
-                Your are about to check in {{ reservationStays.length }} room(s).
-                <br />
-                Please make sure that you assign room, guest and set room rate correctly.
+                This reservation is a No Show reservation. If there is a No Show charge, please adjust it in the folio after check-in. Room revenue will only be included from today onward.
             </Message>
+        </template>
+        <template v-else>
+            <div v-if="rs.room_rates?.length > 0 && reservationStays?.length==0">
+                <Message severity="info"> Room rate on {{ moment(rs.room_rates[0].date).format('DD-MM-YYYY') }} is
+                    <CurrencyFormat :value="rs.room_rates[0].total_rate" />
+                    <br />
+                    Please make sure your room rate is correct.
+                </Message>
+            </div>
+            <div v-else>
+                <Message severity="info">
+                    Your are about to check in {{ reservationStays.length }} room(s).
+                    <br />
+                    Please make sure that you assign room, guest and set room rate correctly.
+                </Message>
+    
+            </div>
+    
+        </template>
+ 
 
-        </div>
 
         <div class="relative">
             <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>

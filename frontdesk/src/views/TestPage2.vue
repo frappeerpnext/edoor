@@ -7,6 +7,7 @@
             </template>
         </TestPage>
         <Button v-my-directive type="button" @click="updateLocation">trueFalse : {{!trueFalse}}</Button>  -->
+ 
     </div>
 </template>
 <script setup> 
@@ -25,6 +26,7 @@ provide('location',{
     location,
     updateLocation
 })
+ 
 const vMyDirective = {
   beforeMount: (para) => {
     // do something with the element

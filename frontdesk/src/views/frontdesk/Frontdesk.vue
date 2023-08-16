@@ -13,7 +13,12 @@
             </template>
             <template #end>
                 <div class="flex gap-2 justify-content-end">
-                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote"/>
+                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote">
+                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />  Uncomming Note <Badge
+                      style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
+                      severity="warning">
+                  </Badge>
+                    </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
                   
@@ -22,6 +27,7 @@
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro">
             <div>
+                
                 <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
                     <template #date>
                         <Calendar v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showIcon showButtonBar/>
@@ -136,7 +142,7 @@ const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
     view_type: '',
-    date: '',
+    date: moment().toDate(),
     end_date: ''
 })
 const selectedDate = ref()
@@ -152,8 +158,7 @@ const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_sum
 const initialDate = onInitialDate()
 let fullcalendarInitialDate = ref(initialDate.start)
 let showTooltip = ref(false)
-const reservation = ref({})
-const isLoading = ref(true)
+ 
 const showSummary = ref(true)
 const showNote = ref(false)
 const totalNotes = ref(0)
@@ -165,12 +170,6 @@ if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
 
-let eventInfo = reactive({
-    isShow: false,
-    left: 0,
-    top: 0,
-    data: null
-})
 let roomChartResourceFilter = reactive({
     property: property.name,
     view_type: filter.view_type // room_type = true or room = false
@@ -189,13 +188,11 @@ socket.on("RefresheDoorDashboard", (arg) => {
 
 
 watch(() => filter.date, (newValue, oldValue) => {
+   
     selectedDate.value = new Date(newValue)
 })
 
-function dateFormat(date) {
-    return moment(date).format("MMM DD, YYYY")
-}
-
+ 
 const calendarOptions = reactive({
     plugins: [
         interactionPlugin,
@@ -395,7 +392,8 @@ const calendarOptions = reactive({
 function getRoomChartlocationStorage() {
     if (sessionStorage.getItem('reservation_chart')) {
         const result = JSON.parse(sessionStorage.getItem('reservation_chart'))
-        filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+        filter.date = moment(result.start_date).add(1, 'days').toDate()
+        
         filter.end_date = result.end_date
         return result;
 
@@ -411,7 +409,7 @@ function getRoomChartlocationStorage() {
         sessionStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
         if (sessionStorage.getItem('reservation_chart')) {
             const result = JSON.parse(sessionStorage.getItem('reservation_chart'))
-            filter.date = moment(result.start_date).add(1, 'days').format("yyyy-MM-DD")
+            filter.date = moment(result.start_date).add(1, 'days').toDate()
             filter.end_date = result.end_date
             return result
         }
@@ -436,7 +434,8 @@ function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', 
 
     sessionStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
 
-    filter.date = moment(dataStorage.start_date).add(1, 'days').format("yyyy-MM-DD")
+    filter.date = moment(dataStorage.start_date).add(1, 'days').toDate()
+     
     filter.end_date = dataStorage.end_date
 
     return dataStorage
@@ -627,6 +626,7 @@ function onFilter(key) {
 }
 
 function onFilterDate(event) {
+
     filter.date = event
     const filter_date = moment(event).add(-1, 'days').format("yyyy-MM-DD")
     const setViewChart = setRoomChartlocationStorage(filter_date, '', '', '', '')
@@ -740,9 +740,10 @@ function getTotalNote(){
 }
 
 onMounted(() => {
+    
 
     onInitialDate()
-
+  
     if (!selectedDate.value) {
         const currentViewChart = JSON.parse(sessionStorage.getItem('reservation_chart'))
         selectedDate.value = new Date(moment(currentViewChart.start_date).add(1, 'days'))

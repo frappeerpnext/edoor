@@ -126,7 +126,8 @@
   "no_show_by",
   "no_show_date",
   "no_show_note",
-  "rooms_data"
+  "rooms_data",
+  "is_reserved_room"
  ],
  "fields": [
   {
@@ -798,6 +799,12 @@
    "fieldname": "allow_user_to_edit_information",
    "fieldtype": "Check",
    "label": "Allow user to edit information"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_reserved_room",
+   "fieldtype": "Check",
+   "label": "Is Reserved Room"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -808,7 +815,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-07-22 08:54:55.667495",
+ "modified": "2023-08-15 15:05:43.477666",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

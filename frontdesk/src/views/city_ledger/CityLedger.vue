@@ -2,6 +2,8 @@
     <h1>City ledger</h1>
 {{ loading }}
 
+ 
+
     <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
     <Calendar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy" @date-select="onDateSelect"
         showIcon />
@@ -85,7 +87,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted,onUnmounted, inject,computed ,useDialog} from '@/plugin'
+import { ref, onMounted,onUnmounted, inject,computed ,useDialog,getApi} from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 const dialog = useDialog();
@@ -121,6 +123,8 @@ const getColumns = computed(()=>{
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
+
+ 
 
 socket.on("RefresheDoorDashboard", (arg) => {
 if (arg == property.name) {
