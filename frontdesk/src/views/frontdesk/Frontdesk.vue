@@ -1,11 +1,11 @@
-<template lang="">
+<template lang=""> 
     <div>
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div>
+                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
                         <div class="ml-8 header-title text-2xl" v-if="moment(filter.date).format('yyyy') != moment(filter.end_date).format('yyyy')">{{moment(filter.date).format('MMM DD, yyyy')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                         <div class="ml-8 header-title text-2xl" v-else>{{moment(filter.date).format('MMM DD')}} - {{moment(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
@@ -21,18 +21,35 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                  
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-between mb-3 filter-calen-fro">
-            <div>
+        <div class="flex justify-between mb-3 filter-calen-fro"> 
+            <div class="flex gap-2">
+                <div>
+                    <Calendar class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showIcon showButtonBar/>
+                </div>
                 
-                <ComRoomChartFilterSelect @onFilterResource="onFilterResource" @onSearch="onSearch">
-                    <template #date>
-                        <Calendar v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showIcon showButtonBar/>
-                    </template>
-                </ComRoomChartFilterSelect>
+                <div>
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-search" />
+                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
+                    </span>
+                </div>
+
+                <div>
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-search" />
+                        <InputText class="btn-set__h w-full" v-model="keyword.guest" placeholder="Guest Name" v-debounce="onSearch"/>
+                    </span>
+                </div>
+                
+                <div>
+                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="onOpenAdvanceSearch"/>
+                </div>
+                <div v-if="isFilter">
+                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                </div>
             </div>
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
@@ -103,16 +120,20 @@
                                     </div>
                             </template> 
                         </FullCalendar>
-
-                    
                     </div>
                 </div>
             </div>
         </div>
     </div>
-  </template>
+
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+        <!-- <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onOpenAdvanceSearch"> -->
+            <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
+        <!-- </ComOverlayPanelContent> -->
+    </OverlayPanel>
+    </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi,getCount,provide } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi,getCount,provide,computed,getDocList } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -146,6 +167,7 @@ const filter = reactive({
     end_date: ''
 })
 const selectedDate = ref()
+const showAdvanceSearch = ref()
 const titleStartEndDate = reactive({})
 const fullCalendar = ref(null)
 const gv = inject("$gv")
@@ -158,13 +180,34 @@ const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_sum
 const initialDate = onInitialDate()
 let fullcalendarInitialDate = ref(initialDate.start)
 let showTooltip = ref(false)
- 
+const keyword = ref({
+    guest: '',
+    room_number: ''
+})
 const showSummary = ref(true)
 const showNote = ref(false)
 const totalNotes = ref(0)
+let advanceFilter = ref({
+    room_type: "",
+    room_number: "",
+    room_type_group: "",
+    building: "",
+    floor: ""
+})
+const isFilter = computed(()=>{
+    if(gv.dateFormat(filter.date) != gv.dateFormat(working_day.date_working_day)){
+        return true
+    }
+    else if(eventKeyword.value || gv.isNotEmpty(advanceFilter.value, 'property')){
+        return true
+    }else{
+        return false
+    }
+})
 provide('get_count_note', {
     getTotalNote
 })
+
 
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
@@ -269,12 +312,15 @@ const calendarOptions = reactive({
     },
 
     resourceLabelDidMount: function (info) {
+         
         setTimeout(() => {
             const el = document.querySelector("#room_status_" + info.resource._resource.id)
-
-            useTippy(el, {
+            if (el){
+                useTippy(el, {
                 content: el.getAttribute("data-title")
             })
+            }
+           
         }, 1000);
     },
     slotLabelDidMount: function (info) {
@@ -354,8 +400,8 @@ const calendarOptions = reactive({
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td>${event?.publicId || ''}</td></tr>  
-                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.extendedProps.start)}</td></tr>
-                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event.extendedProps?.end)}</td></tr>
+                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.start)}</td></tr>
+                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.end)}</td></tr>
                                             <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.block_by || ''}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>
@@ -722,7 +768,7 @@ function onFilterResource(f) {
         room_number: f.room_number,
         view_type: filter.view_type // room_type = true or room = false
     }
-    console.log(roomChartResourceFilter)
+    advanceFilter.value = roomChartResourceFilter
     const cal = fullCalendar.value.getApi()
     cal.refetchResources()
 }
@@ -754,6 +800,36 @@ onMounted(() => {
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })
+
+const onOpenAdvanceSearch = (event) => {
+    if(event==false){
+        showAdvanceSearch.value.hide()
+    }
+    else{
+        showAdvanceSearch.value.toggle(event);
+    }
+}
+
+const onClearFilter = () => {
+    keyword.value.guest = ''
+    keyword.value.room_number = ''
+    onSearch('')
+    onFilterResource({})
+    onFilterToday()
+    onOpenAdvanceSearch(false)
+}
+function onSearchRoom(key){
+    advanceFilter.value.room_number = key
+    onFilterResource(advanceFilter.value)
+    
+}
+provide('advance_filter',{
+    onOpenAdvanceSearch,
+    advanceFilter,
+    onFilterResource,
+    onClearFilter
+})
+ 
 </script>
 <style>
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {

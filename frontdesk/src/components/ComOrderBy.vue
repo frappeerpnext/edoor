@@ -1,5 +1,5 @@
 <template>
-<div class="flex gap-3 h-full">
+<div class="flex gap-2 h-full">
     <ComSelect width="100%" optionLabel="label" optionValue="fieldname"
       placeholder="Sort By" v-model="data.order_by" :clear="false" @onSelected="onSelectOrderBy"
     :options="sortOptions" />

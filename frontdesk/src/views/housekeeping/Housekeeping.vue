@@ -9,56 +9,40 @@
                     </div>
                 </template>
             </ComHeader>
-            <div class="grid">
-                <div class="col-12">
-                    <div class="flex justify-between">
-                        <div class="flex gap-2">
+            <div class="flex justify-between mb-4">
+                <div>
+                    <div class="flex gap-2 ">
+                        <div class="flex w-full gap-2">
                             <ComHousekeepingFilter />
-                        </div>
-                        <!-- <div class="flex gap-3">
-                    <ComHousekeepingActionButton/>
-                </div> -->
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="flex justify-end gap-3">
-                        <div v-if="showSummary" class="col-2"></div>
-                        <div class="col px-0 pt-0">
-                            <div class="w-full flex justify-between my-2">
-                                <div class="flex gap-2">
-                                    <ComHousekeepingActionButton />
-                                </div>
-                                <div
-                                    class="flex justify-center items-center bg-gray-100 shadow-lg overflow-hidden rounded-lg">
-                                    <button type="button" @click="hk.view_type = 'table'"
-                                        :class="(hk.view_type == 'table') ? 'bg-blue-500  text-white ' : 'bg-white'"
-                                        class="border-blue-100 border-2 border-round-left-lg py-2 px-3 "><i
-                                            :class="(hk.view_type == 'table') ? 'text-white' : ''"
-                                            class="pi pi-list me-2" />Table</button>
-                                    <button @click="hk.view_type = 'kanban'"
-                                        :class="(hk.view_type == 'kanban') ? 'bg-blue-500   text-white ' : 'bg-white'"
-                                        class="border-blue-100 border-2 border-round-right-lg py-2 px-3"><i
-                                            :class="(hk.view_type == 'kanban') ? 'text-white' : ''"
-                                            class="pi pi-th-large me-2" />Kanban</button>
-                                </div>
-                            </div>
+                            <ComHousekeepingActionButton />
                         </div>
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="grid gap-3">
-                        <div v-if="showSummary" class="col-2 p-0 rounded-xl">
-                            <ComHousekeepingStatistic />
-                        </div>
-                        <div class="col bg-white rounded-xl">
-                            <ComHousekeepingRoomList v-if="hk.view_type == 'table'" />
-                            <ComHousekeepingRoomKanbanView v-else />
-                        </div>
+                <div>
+                    <div class="flex justify-center items-center overflow-hidden rounded-lg h-full">
+                        <button type="button" @click="hk.view_type = 'table'"
+                            :class="(hk.view_type == 'table') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                                <i :class="(hk.view_type == 'table') ? 'text-white' : ''"
+                                class="pi pi-list me-2" />Table
+                        </button>
+                        <button @click="hk.view_type = 'kanban'"
+                            :class="(hk.view_type == 'kanban') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                                <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''"
+                                class="pi pi-th-large me-2" />Kanban
+                        </button>
                     </div>
                 </div>
-                <!-- <div class="col-2">
-            detail
-        </div> -->
+            </div>
+            <div>
+                <div class="grid gap-2">
+                    <div v-if="showSummary" class="col-2 p-0 rounded-xl">
+                        <ComHousekeepingStatistic />
+                    </div>
+                    <div class="col rounded-xl p-0">
+                        <ComHousekeepingRoomList v-if="hk.view_type == 'table'" />
+                        <ComHousekeepingRoomKanbanView v-else />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -74,7 +58,7 @@ import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
- 
+
 const showSummary = ref(true)
 const db = frappe.db()
 const call = frappe.call()
@@ -89,16 +73,16 @@ function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_hhowhousekeeping_summary", showSummary.value ? "1" : "0")
 }
-function onRefresh(){
+function onRefresh() {
     isLoading.value = true
-    hk.loadData().then((data)=>{
+    hk.loadData().then((data) => {
         isLoading.value = false
-    }).catch((err)=>{
+    }).catch((err) => {
         isLoading.value = false
 
     })
 
-   
+
 }
 onMounted(() => {
 

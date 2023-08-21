@@ -65,7 +65,6 @@
                     <i class="pi pi-file-excel" />
                     <span class="ml-2">Void Reservation Stay</span>
                 </button>
-            
                     <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" @click="onUnmarkasPaybyCityLedger()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-building" />
@@ -78,7 +77,7 @@
                     </button>
                     <button 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-building" />
+                    <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
                     <span class="ml-2"> Mark as Bill to Master Room </span>
                     </button>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"

@@ -1,5 +1,4 @@
 <template lang="">
-    
     <div> 
     <div class="flex items-center justify-end">
         <div class="res_btn_st">

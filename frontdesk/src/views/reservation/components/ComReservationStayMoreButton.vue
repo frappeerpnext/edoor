@@ -6,37 +6,47 @@
             </div>
             <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #end> 
-                        <button @click="onClickDetail" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onClickDetail" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <i class="pi pi-eye me-2" />
                             View Reservation Stay
                         </button>
                         <template v-if="data.reservation_status == 'Reserved' || data.reservation_status == 'Confirmed'">
-                            <button @click="onChangeStatus('No Show')" v-if="data.reservation_status == 'Reserved'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            <button @click="onChangeStatus('No Show')" v-if="data.reservation_status == 'Reserved'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                                <i class="pi pi-eye-slash me-2" />
                                 No Show
                             </button>
-                            <button @click="onChangeStatus('Cancelled')" v-if="data.reservation_status != 'Cancelled'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            <button @click="onChangeStatus('Cancelled')" v-if="data.reservation_status != 'Cancelled'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                                <i class="pi pi-user-minus me-2" />
                                 Cancel
                             </button>
-                            <button @click="onChangeStatus('Void')" v-if="data.reservation_status != 'Void'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            <button @click="onChangeStatus('Void')" v-if="data.reservation_status != 'Void'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                                <i class="pi pi-file-excel me-2" />
                                 Void
                             </button>
-                            <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                            <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                                <ComIcon icon="checkin-black" class="me-2" style="height: 14px;" />
                                 Check-In
                             </button>
                         </template>
-                        <button v-if="data.reservation_status == 'Checked In' || data.reservation_status == 'In-house'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button v-if="data.reservation_status == 'Checked In' || data.reservation_status == 'In-house'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <ComIcon icon="checkoutBlack" class="me-2" style="height: 12px;" />
                             Check Out
                         </button>
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Build To Company
+                        <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
+                            Bill To Company
                         </button>
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Build To Master Group 
+                        <button class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
+                            <ComIcon  icon="BilltoMasterRoom" class="me-2" style="height:15px;" ></ComIcon>
+                            Bill To Master Group 
                         </button>
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Build To Guest
+                        <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <ComIcon  icon="IconBillToGuest" class="me-2" style="height:15px;" ></ComIcon>
+                            Bill To Guest
                         </button>
-                        <button class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Build To Room and Tax to Company, Extra to Guest
+                        <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <i class="pi pi-money-bill me-2" />
+                            Bill To Room and Tax to Company, Extra to Guest
                         </button>
                         
                 </template>

@@ -122,7 +122,8 @@
   "reference_folio_transaction",
   "is_master_folio",
   "business_source",
-  "keyword"
+  "keyword",
+  "is_housekeeping_account"
  ],
  "fields": [
   {
@@ -763,11 +764,18 @@
    "fieldtype": "Small Text",
    "hidden": 1,
    "label": "Keyword"
+  },
+  {
+   "default": "0",
+   "fetch_from": "account_code.is_housekeeping_account",
+   "fieldname": "is_housekeeping_account",
+   "fieldtype": "Check",
+   "label": "Is Housekeeping Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-15 10:13:38.353142",
+ "modified": "2023-08-21 14:50:10.691063",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

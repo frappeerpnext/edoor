@@ -1,5 +1,4 @@
 <template>
-	{{ i }}
 <div>
 	<div>
 		
@@ -45,7 +44,7 @@
 						</div>
 						</div>
 						<div >
-							<span v-if="i.note_date" class="font-italic text-500 text-sm ">
+							<span v-if="i.note_date" :class=" i.reference_doctype ? 'font-italic text-500 text-sm' : ''">
 								Note Date: {{ gv.dateFormat(i.note_date) }}
 							</span>
 						</div>
@@ -68,7 +67,7 @@
 				{{ i.content }}
 			</div>
 			<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
-			<div class="flex flex-col my-1 font-italic  line-height-1 py-1" style="font-size: 10px;">
+			<div class="flex flex-col my-1 font-italic  line-height-2 py-1" style="font-size: 10px;">
 				<div>
 					Noted by : <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
 				</div>

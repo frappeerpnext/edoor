@@ -106,12 +106,31 @@ export default class Gv {
 	 
 	}
 
+	isNotEmpty(obj, except_properties = '', except_object= {}){
+		 
+		var notEmpty = 0
+		if(Object.keys(obj).length > 0){ 
+			Object.entries(obj).forEach(([key, value]) => {
+				if(except_object[key] != value){
+					if((!except_properties.split(',').filter(r=>r == key).length > 0) && (value != '' && value != undefined && value != null && String(value) != '{}' && String(value) != '[]')){
+						console.log(except_properties.split(',').filter(r=>r != key))
+						notEmpty ++;
+					}
+				}
+				
+			});
+		}
+		
+		return notEmpty > 0;
+		
+	}
 	getCustomPrintFormat(name){
 		 
 		const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
 		if(setting?.custom_print_format){
 			const custom = setting?.custom_print_format?.filter(r=>r.name==name)
-			if(custom){
+ 
+			if(custom && custom.length>0){
 				return  encodeURIComponent( custom[0].print_format)
 			}
 		}

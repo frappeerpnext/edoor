@@ -144,7 +144,6 @@
         </div>
       </div>
       <div class="mt-3"> 
-        {{ doc.reservation_stay }}
         <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" :reservation="doc.reservation" :reservationStay="doc?.reservation_stay"/>
       </div>
 

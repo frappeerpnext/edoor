@@ -9,39 +9,58 @@
             </template>
         </ComHeader>
         <div class="mb-3">
-            <div class="flex flex-wrap gap-2">
-                <span class="p-input-icon-left">
+            <div class="flex justify-between">
+                <div class="flex flex-wrap gap-3">
+                <div class="w-20rem">
+                <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                </span>
-
-                <ComSelect 
+                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                </div>
+                </div>
+                <div>
+                <div class="flex gap-3">
+                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
+                    <div v-if="Object.keys(filter).length > 0">
+                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    </div>
+                </div>
+                </div>
+                <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+                    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">    
+                     <div class="grid">
+                        <div class="col-6">
+                        <ComSelect 
                     :filters="[['property', '=', property.name]]" v-model="filter.selected_city_ledger_type" @onSelected="onSearch" placeholder="City Ledger Type"
                     doctype="City Ledger Type" />
-              
-                <ComSelect 
+                        </div>
+                        <div class="col-6">
+                    <ComSelect 
                     :filters="[['property', '=', property.name]]"
                     v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source"
                     doctype="Business Source" />
-              
-                 
-         
-                <ComOrderBy doctype="City Ledger" @onOrderBy="onOrderBy" />
+                    </div>
+                    </div>
+                    </ComOverlayPanelContent>
+                </OverlayPanel>  
+                <div>
+                <ComOrderBy doctype="City Ledger" @onOrderBy="onOrderBy" />   
+                </div>
+                </div>
+                <div>
+                    <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                        <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                    </Button>
+                </div>
             </div>
-        </div>
-        
-       
-
-<Button   label="Show Column" @click="toggleShowColumn" />
-<Button   label="Reset List" @click="onResetTable" />
-
- 
+        </div>  
+        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data.length > 0">
         <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
             stateKey="table_city_ledger_list_state" :reorderableColumns="true"
                :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
+           
                 <template #body="slotProps" >
                     <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                         {{ slotProps.data[c.fieldname] }} 
@@ -65,28 +84,40 @@
                         <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
                     </span>
                 </template>
+            
             </Column>
    
         </DataTable>
+    </ComPlaceholder>
     </div>
  
-    <Paginator :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+    <Paginator v-if="data.length > 10" class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[10,20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
             Total Records: {{ pageState.totalRecords }}
         </template>
     </Paginator>
-
-<OverlayPanel ref="opShowColumn">
-    <InputText v-model="filter.search_field" placeholder="Search" />
-    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-        
-        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.label }}</label>
-    </div>
-    <Button @click="OnSaveColumn">Save</Button>
+<OverlayPanel ref="opShowColumn" style="width:35rem;">
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
+        <template #top>
+                <div class="p-input-icon-left mb-3 w-full">
+                    <i class="pi pi-search" />
+                    <InputText class="w-full" v-model="filter.search_field" placeholder="Search"  />
+                </div>
+        </template>    
+        <div class="grid">
+            <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
+                
+                <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
+                <label :for="c.fieldname">{{ c.label }}</label>
+            </div>
+        </div>
+        <template #footer-left>
+            <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
+        </template>
+    </ComOverlayPanelContent>
+    <!-- <Button @click="OnSaveColumn">Save</Button> -->
 </OverlayPanel>
-
 </template>
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, onUnmounted,getApi,useDialog, computed } from '@/plugin'
@@ -332,4 +363,16 @@ function onAddCityLedgerAccount(){
 onUnmounted(()=>{
     socket.off("RefreshData");
 })
+const showAdvanceSearch = ref()
+const advanceFilter = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
+const onClearFilter = () => {
+    filter.value = {};
+    loadData();
+    showAdvanceSearch.value.hide()
+}
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
 </script>

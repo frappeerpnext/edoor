@@ -21,13 +21,11 @@
         </div>
             
         <template #footer-right>
-
-            <Button icon="pi pi-pencil text-sm" label="Edit" @click="onEdit" />
-            <Button icon="pi pi-lock-open text-sm" label="Unblock" @click="onUnblock" />
-
+            <Button class="border-none" icon="pi pi-pencil text-sm" label="Edit" @click="onEdit" />
+            <Button class="border-none" icon="pi pi-lock-open text-sm" label="Unblock" @click="onUnblock" />
         </template>
     </ComDialogContent>
-    <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }">
+    <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }" position="top">
         <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()">
             <div class="grid">
                 <div class="col-12 lg:col-6">
@@ -49,7 +47,7 @@
                     </div>
                 </div>
             </div>
-    </ComDialogContent> 
+        </ComDialogContent> 
     </Dialog>
 </template>
 

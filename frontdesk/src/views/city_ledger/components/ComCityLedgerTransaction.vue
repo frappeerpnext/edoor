@@ -3,21 +3,73 @@
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #start>
                 
-                <div class="text-2xl"> {{name}}</div>City Ledger Transaction
             </template>
             <template #end>
-                <Button @click="AddTransaction(d)" v-for="(d, index) in setting.account_group.filter(r=>r.show_in_city_ledger==1)" :key="index">Post {{d.account_name}}</Button>
- 
-          
+                <Button class="conten-btn" @click="AddTransaction(d)" v-for="(d, index) in setting.account_group.filter(r=>r.show_in_city_ledger==1)" :key="index">Post {{d.account_name}}</Button>
+                <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
             </template>
         </ComHeader>
-        <div class="mb-3">
-            <div class="flex flex-wrap gap-2">
-                <span class="p-input-icon-left">
+        
+        <div class="flex justify-between mb-3">
+            <div class="flex gap-3 col-10 pl-0">
+                <div class="w-3">
+                <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText  v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                </span>
-                <div class="col-2 p-0">
+                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                </div>
+                </div>
+                <div class="w-3">
+                <ComAutoComplete class="w-full" v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest"
+                    doctype="Customer" isFilter />
+                </div>
+                    <div class="flex gap-3">
+                        <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
+                        <div v-if="Object.keys(filter).length > 0">
+                            <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                        </div>
+                    </div>
+                    <div>
+                        <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
+                    </div>
+            </div>
+            <div class="col-fixed">
+                <!-- <Button   label="Show Column" @click="toggleShowColumn" /> -->
+                <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                    <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                </Button>
+            </div>
+        </div>
+        <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+            <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+                <div class="grid">
+                <div class="col-6">
+                    <ComAutoComplete class="w-full"
+                     v-model="filter.selected_reservation" @onSelected="onSearch" placeholder="Reservation #"
+                    doctype="Reservation" :filters="{property:property.name}"/>    
+                </div>
+                <div class="col-6">
+                    <ComAutoComplete class="w-full"
+                    v-model="filter.selected_reservation_stay" @onSelected="onSearch" placeholder="Reservation Stay"
+                    doctype="Reservation Stay" :filters="{property:property.name}"/>
+                </div>
+                <div class="col-6">
+                    <ComSelect :filters="[['property','=',property.name]]"  v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type"
+                    doctype="Room Type" isFilter optionLabel="room_type" optionValue="name"
+                    />
+                </div>
+                <div class="col-6">
+                    <ComSelect class="w-full" :filters="[['property','=',property.name]]" optionLabel="room_number" optionValue="name" v-model="filter.selected_room" @onSelected="onSearch"
+                    placeholder="Room" doctype="Room" isFilter />
+                </div>
+                <div class="col-6">
+                    <ComAutoComplete class="w-full" @onSelected="onSearch" v-model="filter.selected_account_code" placeholder="Account Code"
+                    doctype="Account Code" isFilter />
+                </div>
+                <div class="col-6">
+                    <ComSelect class="w-full" @onSelected="onSearch" v-model="filter.selected_account_category" placeholder="Account Category"
+                    doctype="Account Category" isFilter />
+                </div>
+                <div class="col-6">
                     <div class="flex relative">
                             <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection  dateFormat="dd-mm-yy" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"
@@ -27,42 +79,36 @@
                         </div>
                     </div>
                 </div>
-                <ComAutoComplete
-                     v-model="filter.selected_reservation" @onSelected="onSearch" placeholder="Reservation #"
-                    doctype="Reservation" :filters="{property:property.name}"/>
-              
-                <ComAutoComplete 
-                    v-model="filter.selected_reservation_stay" @onSelected="onSearch" placeholder="Reservation Stay"
-                    doctype="Reservation Stay" :filters="{property:property.name}"/>
-                <ComSelect :filters="[['property','=',property.name]]"  v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type"
-                    doctype="Room Type" isFilter optionLabel="room_type" optionValue="name"
-                    />
-                <ComSelect :filters="[['property','=',property.name]]" optionLabel="room_number" optionValue="name" v-model="filter.selected_room" @onSelected="onSearch"
-                    placeholder="Room" doctype="Room" isFilter />
-                
-                <ComAutoComplete v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest"
-                    doctype="Customer" isFilter 
-                    />
-                <ComAutoComplete @onSelected="onSearch" v-model="filter.selected_account_code" placeholder="Account Code"
-                    doctype="Account Code" isFilter 
-                    />
-                <ComAutoComplete @onSelected="onSearch" v-model="filter.selected_account_category" placeholder="Account Category"
-                    doctype="Account Category" isFilter 
-                    />
-               
-                <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
-            </div>
+                </div>
+            </ComOverlayPanelContent>
+        </OverlayPanel>   
+
+<div v-if="cityLedgerAmountSummary">
+    <div class="flex w-full gap-3 mb-3">
+        <div class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border">
+            <span class="text-500 uppercase text-sm text-end">opening Balance</span><span class="text-xl line-height-2 font-semibold text-end">
+            <span><CurrencyFormat :value="cityLedgerAmountSummary?.opening_balance" /></span></span>
         </div>
-        
-       
-
-<Button   label="Show Column" @click="toggleShowColumn" />
-<Button   label="Reset List" @click="onResetTable" />
-
-
+        <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total border">
+            <span class="text-500 uppercase text-sm text-end">total debit</span><span class="text-xl line-height-2 font-semibold text-end">
+            <span><CurrencyFormat :value="cityLedgerAmountSummary?.debit" /></span></span>
+        </div>
+        <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total  border">
+            <span class="text-500 uppercase text-sm text-end">total credit</span><span class="text-xl line-height-2 font-semibold text-end">
+            <span><CurrencyFormat :value="cityLedgerAmountSummary.credit" /></span></span>
+            </div> 
+        <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total bg-green-50 border border-green-edoor">
+                <span class="text-500 uppercase text-sm text-end">balance</span><span class="text-xl line-height-2 font-semibold text-end">
+                <span><CurrencyFormat :value="cityLedgerAmountSummary.balance" /></span></span>
+        </div> 
+    </div>
+</div>
+<div  style="min-height:42rem;">
+<ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data.length > 0">
+    
         <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
             stateKey="table_folio_transaction_list_state" :reorderableColumns="true"
-               :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+               :value="data" tableStyle="min-width: 50rem;" @row-dblclick="onViewReservationStayDetail">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
             :frozen="c.frozen" 
             >
@@ -105,35 +151,53 @@
                 
             </Column>
             <Column>
-                <template #body="slotProps">
-                        <Button @click="onEdit">Edit</Button>
-                        <Button>Delete</Button>
+                <template #body="slotProps"> 
+                    <div class="flex gap-2">
+                    <Button @click="onEditFolioTransaction(slotProps.data.name, slotProps.data.reference_folio_transaction)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
+                    <Button @click="onDeleteCityLedgerTransaction(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
+                        <!-- <Button label="Edit" @click="onEditFolioTransaction(slotProps.data.name, slotProps.data.reference_folio_transaction)"></Button> -->
+                        <!-- <Button label="Delete" @click="onDeleteCityLedgerTransaction(slotProps.data.name)" /> -->
+                    </div>
                 </template>
             </Column>
 
         </DataTable>
+</ComPlaceholder>
+</div>
     </div>
  
-    <Paginator :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+    <Paginator :rows="pageState.rows"   :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
             Total Records: {{ pageState.totalRecords }}
         </template>
     </Paginator>
 
-<OverlayPanel ref="opShowColumn">
-    <InputText v-model="filter.search_field" placeholder="Search" />
-    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-        
-        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.label }}</label>
-    </div>
-    <Button @click="OnSaveColumn">Save</Button>
+<OverlayPanel ref="opShowColumn" style="width:30rem;">
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
+        <template #top>
+                <div class="p-input-icon-left mb-3 w-full">
+                    <i class="pi pi-search" />
+                    <InputText class="w-full" v-model="filter.search_field" placeholder="Search"  />
+                </div>
+        </template>    
+        <div class="grid">
+            <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
+                
+                <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
+                <label :for="c.fieldname">{{ c.label }}</label>
+            </div>
+        </div>
+        <template #footer-left>
+            <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
+        </template>
+    </ComOverlayPanelContent>
+    <!-- <Button @click="OnSaveColumn">Save</Button> -->
 </OverlayPanel>
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, onUnmounted,getApi,useDialog, computed } from '@/plugin'
+import { inject, ref, useConfirm, useToast, getCount, getDocList, onMounted, onUnmounted,getApi,useDialog, computed,deleteDoc } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
@@ -142,20 +206,20 @@ import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTr
 const props = defineProps({
     name:String
 })
-
+const confirm = useConfirm()
 const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
-
+const cityLedgerAmountSummary = ref()
 const socket = inject("$socket")
-
 const data = ref([])
 const filter = ref({})
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
 
 socket.on("RefreshData", (arg) => {
@@ -185,9 +249,6 @@ const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
 
-function onEdit(){
-    alert(123)
-}
 function OnSaveColumn(event){
     selectedColumns.value = columns.value.filter(r=>r.selected).map(x=>x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
@@ -239,11 +300,56 @@ function AddTransaction(account_code){
 
             }
         })
+}
+function onEditFolioTransaction(name,disabled) {
+    if(disabled){
+        gv.toast("warn","city ledger transaction can't edit")
+        return
+    }
+    const dialogRef = dialog.open(ComAddFolioTransaction, {
+        data: {
+            folio_transaction_number: name
+        },
+        props: {
+            header: 'Edit City Ledger Transaction - ' + name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            position:'top',
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+                loadData()
+            }
 
- 
-
+        }
+    })
 }
   
+function onDeleteCityLedgerTransaction (name){
+        confirm.require({
+        message: 'Are you sure you want to delete city ledger transaction?',
+        header: 'Confirmation ' + name,
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            gv.loading = true
+             deleteDoc('Folio Transaction',name)
+                 .then(() =>{
+                    loadData()
+                 } ).catch((err)=>{
+                    gv.loading = false
+                 })         
+        },
+    });
+    }
+
 function onOpenLink(column, data){
     window.postMessage(column.post_message_action + "|" + data[column.fieldname] , '*')
 }
@@ -312,7 +418,7 @@ function loadData() {
     fields = [...fields , ...selectedColumns.value]
 
     fields =  [...new Set(fields.filter(x=>x))]
- 
+    fields.push('reference_folio_transaction')
     getDocList('Folio Transaction', {
 
         fields: fields,
@@ -395,7 +501,6 @@ onMounted(() => {
     });
     loadData()
     getApi("frontdesk.get_meta",{doctype:"Folio Transaction"}).then((result)=>{
-        console.log(result.message)
         result.message.fields.filter(r=>r.in_list_view==1 && !columns.value.map(x=>x.fieldname).includes(r.fieldname)).forEach(r=>{
             let header_class = ""
              
@@ -421,4 +526,29 @@ onMounted(() => {
 onUnmounted(()=>{
     socket.off("RefreshData");
 })
+
+getApi("utils.get_city_ledger_amount_summary",{
+        filters:{
+            end_date:working_day.date_working_day,
+            city_ledger:props.name
+        }
+    }).then((result)=>{
+        cityLedgerAmountSummary.value=result.message
+    })
+
+    // Filter 
+const showAdvanceSearch = ref()
+const advanceFilter = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
+const onClearFilter = () => {
+    filter.value = {};
+    loadData();
+    showAdvanceSearch.value.hide()
+}
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
+
+
 </script>

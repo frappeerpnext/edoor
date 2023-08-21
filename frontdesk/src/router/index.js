@@ -22,6 +22,8 @@ import CityLedger from "@/views/city_ledger/CityLedger.vue";
 import CityLedgerAccount from "@/views/city_ledger/CityLedgerAccount.vue";
 import CityLedgerType from "@/views/city_ledger/CityLedgerType.vue";
 import Reports from "@/views/report/Reports.vue";
+import BusinessSource from "@/views/business_source/BusinessSource.vue";
+import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import authRoutes from './auth';
 
 const routes = [
@@ -48,6 +50,8 @@ const routes = [
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
   { path: "/frontdesk/guest-ledger-transaction", name: "GuestLedgerTransaction", component:GuestLedgerTransaction, meta: { layout: 'main_layout', title:"Guest Ledger Transaction" } },
+  { path: "/frontdesk/business-source", name: "BusinessSource", component:BusinessSource, meta: { layout: 'main_layout', title:"Business Source" } },
+  { path: "/frontdesk/business-source-type", name: "BusinessSourceType", component:BusinessSourceType, meta: { layout: 'main_layout', title:"Business Source Type" } },
  
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   ...authRoutes,

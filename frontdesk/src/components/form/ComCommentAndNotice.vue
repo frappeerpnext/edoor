@@ -3,7 +3,6 @@
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.note_type}}</label><br/>
             <div v-if="create.note_type=='Notice'">
-            <label  class="mt-1" >Note date</label>
             <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
                                  placeholder="Note Date"
                                  v-model="create.note_date"
@@ -11,7 +10,6 @@
             
             </div>
             <div class="-mb-2 mt-1 " v-if="create.note_type=='Notice'">
-                <label>Note</label>
             </div>
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
@@ -62,14 +60,12 @@
     <div>
     <span class="font-semibold text-lg mb-3" for="textnote">{{edit.note_type}}</span>
     <div class="mb-2" v-if="edit.note_type=='Notice'">
-    <label>Note Date</label>
     <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
     placeholder="Note Date"
     v-model="edit.note_date"
      dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
     <div>
-    <label v-if="edit.note_type=='Notice'">Note</label>
     <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />
     </div>
     </div>

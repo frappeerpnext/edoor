@@ -1,76 +1,31 @@
 <template>
-    <div>
-        <div class="flex flex-wrap gap-2">
-            <div>
-                <slot name="date"></slot>
-            </div>
-            <div>
-                <ComSelect placeholder="All Room Group" v-model="filter.room_type_group" doctype="Room Type Group" optionLabel="room_type_group" optionValue="name"></ComSelect>
-            </div>
-            <div>
-                <ComSelect  :filters="[['property', '=', edoor_property.name]]" placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
-            </div>
-            <div>
-                <!-- <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Rooms" isFilter v-model="filter.room_number" doctype="Room" :groupFilterValue="filter.room_type" groupFilterField="room_type_id" optionLabel="room_number" optionValue="name"></ComSelect> -->
-                <div>
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-filter" />
-                        <InputText class="btn-set__h" v-model="room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
-                    </span>
-                </div>
-            </div>
-            <div>
-                <ComSelect :filters="[['property', '=', edoor_property.name]]" placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
-            </div>
-            <div>
-                <ComSelect  :filters="[['property', '=', edoor_property.name]]" placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
-            </div>
-            <div>
-                <span class="p-input-icon-left">
-                    <i class="pi pi-search" />
-                    <InputText class="btn-set__h" v-model="keyword" placeholder="Guest Name" v-debounce="onSearch"/>
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onOpenAdvanceSearch(false)">
+        <div :class="headerClass" v-if="filter">
+            <ComSelect class="col-4" width="100%" placeholder="All Room Group" v-model="filter.room_type_group" doctype="Room Type Group" optionLabel="room_type_group" optionValue="name"></ComSelect>
+            <ComSelect class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Room Types" v-model="filter.room_type" doctype="Room Type" :groupFilterValue="filter.room_type_group" groupFilterField="room_type_group" optionLabel="room_type" optionValue="name"></ComSelect>
+            <!-- <div :class="bodyClass">
+                <span class="p-input-icon-left w-full">
+                    <i class="pi pi-filter" />
+                    <InputText class="btn-set__h w-full" v-model="room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
                 </span>
-            </div>
+            </div> -->
+            <ComSelect class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
+            <ComSelect class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
         </div>
-    </div>
+    </ComOverlayPanelContent>
 </template>
 <script setup> 
-import { reactive,watch,ref,getDocList } from '@/plugin';
-const emit = defineEmits(["onFilterResource","onSearch"])
-const keyword = ref("")
+import { watch,ref,inject } from '@/plugin';
+const emit = defineEmits(["onFilterResource"])
 const edoor_property = JSON.parse(localStorage.getItem('edoor_property'))
-const filter = reactive({
-    room_type: "",
-    room_number: "",
-    room_type_group: "",
-    building: "",
-    floor: ""
+const props = defineProps({
+    headerClass: String,
+    bodyClass: String
 })
+const { onFilterResource, advanceFilter,onOpenAdvanceSearch,onClearFilter } = inject('advance_filter')
 const room_number = ref('')
-watch(filter, (newValue, oldValue) => {
-    emit("onFilterResource",newValue)
-})
-function onSearchRoom(key){
-    if(key){
-        getDocList('Room', {
-            filters: [['room_number', '=', key]]
-        }).then((r)=>{
-            if(r.length > 0)
-                filter.room_number = r[0].name 
-            else
-                filter.room_number = 'None'
-        }).catch((er)=>{
-            filter.room_number = 'None'
-        })
-    }
-    else{
-        filter.room_number = ''
-    }
-}
-function onSearch(key){
-    emit("onSearch", key)
-}
+const filter = ref(JSON.parse(JSON.stringify(advanceFilter.value)))
+watch(filter.value, (newValue, oldValue) => {
+    onFilterResource(newValue)
+}) 
 </script>
-<style lang="">
-    
-</style>

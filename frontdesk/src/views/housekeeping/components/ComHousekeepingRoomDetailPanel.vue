@@ -35,17 +35,24 @@
         <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
         <table>
-            <ComStayInfoNoBox  label="Res No" :value="hk?.reservationStay?.reservation" />  
-            <ComStayInfoNoBox  label="Res Stay No" :value="hk?.reservationStay?.name" />
+            <ComStayInfoNoBox label="Res No">
+                <Button @click="onViewReservationDetail(hk?.reservationStay?.reservation)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.reservation }}</Button>
+            
+            </ComStayInfoNoBox>
+            <ComStayInfoNoBox label="Res Stay No">
+                <Button @click="onViewReservationStayDetail(hk?.reservationStay?.name)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.name }}</Button>
+            </ComStayInfoNoBox>
             <ComStayInfoNoBox  label="Type" :value="hk?.reservationStay?.reservation_type" />
             <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'"  label="Group" :value="hk?.reservationStay?.group_code + ' / ' + hk?.reservationStay?.group_name" />
             <ComStayInfoNoBox  label="Status">
                 <span class="-ms-3 font-semibold" :style="{color:hk.reservationStay?.status_color}">{{ hk?.reservationStay?.reservation_status }}</span>
             </ComStayInfoNoBox>
-            <ComStayInfoNoBox  label="Guest Name" :value="hk?.reservationStay?.guest_name" />
+            <ComStayInfoNoBox label="Guest Name">
+                <Button @click="onViewCustomerDetail(hk?.reservationStay?.guest)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.guest }} - {{ hk?.reservationStay?.guest_name }}</Button>
+            </ComStayInfoNoBox>
             <ComStayInfoNoBox  label="Nationality" :value="hk?.reservationStay?.nationality" /> 
-            <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
-            <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />  
+            <!-- <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
+            <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />   -->
             
             <ComStayInfoNoBox  label="PAX" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" /> 
             <ComStayInfoNoBox  label="Arrival">
@@ -106,6 +113,7 @@
 </template>
 <script setup>
 import { inject, ref, useToast} from '@/plugin';
+import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ComReservationNote from '@/views/reservation/components/ComReservationNote.vue';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
@@ -201,5 +209,16 @@ function onSaveAssignHousekeeper($event) {
 }
 function whatup($event){
     alert("Hello ")
+}
+function onViewCustomerDetail(name) {
+    window.postMessage('view_guest_detail|'+name, '*')
+}
+function onViewReservationStayDetail(rs){
+    window.postMessage('view_reservation_stay_detail|'+rs, '*')
+
+}
+function onViewReservationDetail(rs){
+    window.postMessage('view_reservation_detail|'+rs, '*')
+
 }
 </script>

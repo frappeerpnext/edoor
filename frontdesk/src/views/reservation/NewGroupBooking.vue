@@ -54,9 +54,9 @@
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2">
                                     <label>Business Source<span class="text-red-500">*</span></label><br />
-                                    <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
+                                    <ComAutoComplete  v-model="doc.reservation.business_source" placeholder="Business Source"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" />
+                                        class="auto__Com_Cus w-full" :filters="{property:property.name}" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -301,7 +301,7 @@
                                 <span @click="onOpenChangeRate($event, d)"
                                 class="text-right w-full color-purple-edoor text-md font-italic ">
                                 
-                                <div v-tooltip.top = "(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan' " class="link_line_action flex justify-between">
+                                <div v-tooltip.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan' " class="link_line_action flex justify-between">
                                     <div class="text-left inline">
                                 <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
                                 <span class="text-sm" v-else>(Plan)</span>
@@ -327,7 +327,7 @@
                                 </div>
                             </div>
                             </td>
-                            <td class="p-2 w-12rem text-right">
+                            <td class="p-2 w-12rem text-center">
                                 <InputNumber v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0" :max="d.total_vacant_room"
                                 class="child-adults-txt" />
                             </td>

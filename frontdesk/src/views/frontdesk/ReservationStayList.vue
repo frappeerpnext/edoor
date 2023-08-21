@@ -10,7 +10,7 @@
             </template>
         </ComHeader>
         <div class="mb-3 flex justify-between">
-            <div class="flex gap-3">
+            <div class="flex gap-2">
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -19,8 +19,8 @@
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
-                </div>
-                <div v-if="Object.keys(filter).length > 0">
+                </div> 
+                <div v-if="gv.isNotEmpty(filter,'search_date_type')">
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
                 <div>
@@ -33,7 +33,7 @@
                 </Button>
             </div>
         </div>
-        
+        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data?.length > 0">         
         <DataTable 
             class="res_list_scroll"
             :resizableColumns="true"
@@ -73,9 +73,8 @@
                     </span>
                 </template>
             </Column>
-  
-            
         </DataTable>
+        </ComPlaceholder>
     </div>
  
     <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
@@ -115,7 +114,8 @@
             <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
                 :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                 optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                placeholder="Business Source" doctype="Business Source" />
+                placeholder="Business Source" doctype="Business Source"
+                :filters="[['property', '=', property.name]]" />
 
             <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type"
                 @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
@@ -137,7 +137,7 @@
                 optionValue="value" placeholder="Search Date Type" :clear="false"
                 @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
 
-            <div class="col-3" v-if="filter.search_date_type">
+            <div class="col-6" v-if="filter.search_date_type">
                 <Calendar hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full"
                 v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                 placeholder="Select Date Range" showIcon/>

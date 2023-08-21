@@ -74,6 +74,7 @@ export function createUpdateDoc(doctype, data, message, rename=null){
                         new_name: rename.new_name
                     }
                     postApi('utils.rename_doc', { data: update_name },'', false).then((r)=>{
+                        doc.name = rename.new_name
                         resolve(doc)
                         window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
                     }).catch((err)=>{

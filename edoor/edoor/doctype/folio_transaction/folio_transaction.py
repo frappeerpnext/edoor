@@ -129,6 +129,9 @@ class FolioTransaction(Document):
 			self.tax_1_account = tax_rule.tax_1_account
 			self.tax_2_account = tax_rule.tax_2_account
 			self.tax_3_account = tax_rule.tax_3_account
+			self.tax_1_rate = self.tax_1_rate or 0
+			self.tax_2_rate = self.tax_2_rate or 0
+			self.tax_3_rate = self.tax_3_rate or 0
 
 			if self.rate_include_tax== "Yes":
 				price = get_base_rate((self.input_amount )- (self.discount_amount/ self.quantity) ,tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
@@ -198,7 +201,7 @@ class FolioTransaction(Document):
 	def on_trash(self):
 		#if this transaction is auto post 
 		if self.is_auto_post:
-			if (frappe.db.get_default("allow_user_to_delete_auto_post_transaction") or 0)==0:
+			if (frappe.db.get_default("allow_user_to_daddelete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
@@ -358,6 +361,7 @@ def update_sub_account_description(self):
 		
 
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
+		
 		if account_code:
 			docs = frappe.db.get_list("Folio Transaction",filters={"account_code": account_code,"parent_reference":self.name })
 			if docs:

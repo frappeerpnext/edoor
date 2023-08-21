@@ -2,8 +2,7 @@
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="font-bold">{{ property.name }}</div>
-            <div class="txt-st__det">ID: {{ property.property_code }}, {{ property.province }}</div>
-             
+            <div class="txt-st__det" v-if="property.property_code">ID: {{ property.property_code }}, {{ property.province }}</div>
         </template>
         <template #center>
             <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
@@ -414,7 +413,7 @@ function getData(loading=true) {
 
         })
         .catch((error) => {
-            toast.add({ severity: 'error', summary: 'Waring', detail: error.exception.split(":")[1], life: 3000 })
+            toast.add({ severity: 'error', summary: 'Waring', detail: error.exception ? error.exception.split(":")[1] : '', life: 3000 })
             gv.loading = false;
 
         });

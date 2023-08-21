@@ -1,20 +1,21 @@
 <template>
+    <!-- {{ isCurrentPage }} -->
     <template v-for="(item, index) in data" :key="index">
         <button class="text-left py-2 px-3 hover:surface-200 w-full"
             @click="onClick(item.menu_name)"
             :class="[current_page == item.menu_name ? 'bg-gray-300' : '']">
             <div class="flex gap-2">
                 <span v-if="item?.icon" v-html="item?.icon"></span>
-                <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text">{{ item.menu_text }}</span>
+                <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ item.menu_text }}</span>
             </div> 
        </button>
        <template v-if="setting.edoor_menu.filter(r=>r.parent_edoor_menu == item.name).length > 0">
             <button v-for="(child, index) in setting.edoor_menu.filter(r=>r.parent_edoor_menu == item.name)" :key="index" class="text-left py-2 px-4 hover:surface-200 w-full"
                 @click="onClick(child.menu_name)"
                 :class="[current_page == child.menu_name ? 'bg-gray-300' : '']">
-                <div class="flex gap-2">
+                <div class="flex gap-2 ml-3">
                     <span v-if="child?.icon" v-html="child?.icon"></span>
-                    <ComIcon v-else icon="iconGeneralList"></ComIcon> * <span class="sub-menu-text">{{ child.menu_text }}</span>
+                    <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ child.menu_text }}</span>
                 </div> 
             </button>
        </template> 

@@ -57,7 +57,7 @@
                                     <label>Business Source<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" />
+                                        class="auto__Com_Cus w-full" :filters="{property:property.name}" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -242,19 +242,16 @@
                             <th class="text-right">
                                 <label class="px-2">Amount</label>
                             </th>
-
                         </tr>
                     </thead>
                     <tbody>
-
-
                         <tr v-for="(  d, index  ) in   doc.reservation_stay" :key="index">
-                            <td class="pr-2">
+                            <td class="pr-2 min-w-5rem">
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
                                     @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type"
                                     class="w-full" />
                             </td>
-                            <td class="p-2">
+                            <td class="p-2 min-w-5rem">
                                 <Dropdown v-model="d.room_id"
                                     :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
@@ -280,17 +277,17 @@
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
                             </td>
-                            <td class="p-2 w-5rem">
-                                <InputNumber v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
+                            <td class="p-2 w-4rem">
+                                <InputNumber inputClass="w-4rem" v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
                                     class="child-adults-txt" />
                             </td>
-                            <td class="p-2 w-5rem">
-                                <InputNumber v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
+                            <td class="p-2 w-4rem">
+                                <InputNumber inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
                                     class="child-adults-txt" />
                             </td>
 
                             <td class="p-2 w-8rem">
-                                <div class="box-input-detail">{{
+                                <div class="box-input-detail text-center">{{
                                     doc.reservation.room_night
                                 }}</div>
                             </td>

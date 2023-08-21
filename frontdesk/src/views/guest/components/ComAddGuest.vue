@@ -101,7 +101,6 @@
 </template>
 <script setup>
 import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugin'
-import ComBoxStayInformation from '../../reservation/components/ComBoxStayInformation.vue';
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 import Calendar from 'primevue/calendar';

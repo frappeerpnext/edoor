@@ -21,7 +21,7 @@
                 
                 <button @click="onChangeStatus('Group Cancel')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <i class="pi pi-file-edit" />
+                    <i class="pi pi-user-minus" />
                     <span class="ml-2">Group Cancel</span>
                 </button>
                 <button @click=" onChangeStatus('void')" 
@@ -52,25 +52,25 @@
 
                 <button @click="onGroupBuildToCompany" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Build To Company</span>
+                    <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
+                    <span class="ml-2">Group Bill To Company</span>
                 </button>
                 
                 <button @click="onGroupBuildToMasterGroup " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Build To Master Group </span>
+                    <ComIcon  icon="BilltoMasterRoom" class="me-2" style="height:15px;" ></ComIcon>
+                    <span class="ml-2">Group Bill To Master Group </span>
                 </button>
 
                 <button @click="onGroupBuildToGuest " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Build To Guest</span>
+                    <ComIcon  icon="IconBillToGuest" class="me-2" style="height:15px;" ></ComIcon>
+                    <span class="ml-2">Group Bill To Guest</span>
                 </button>
                 <button @click="onGroupBuildToRoomandTaxtoCompany " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Build To Room and Tax to Company, Extra to Guest</span>
+                    <span class="ml-2">Group Bill To Room and Tax to Company, Extra to Guest</span>
                 </button>
          
                 <button @click="onGroupChangeRate" 
@@ -245,19 +245,19 @@ function onGroupAssignRoom(){
 }
 
 function onGroupBuildToCompany (){
-    alert('kk')
+    alert()
 }
 
 function onGroupBuildToMasterGroup (){
-    alert('xx')
+    alert()
 }
 
 function onGroupBuildToGuest (){
-    alert('vv')
+    alert()
 }
 
 function onGroupBuildToRoomandTaxtoCompany (){
-    alert('oo')
+    alert()
 }
 
 function onAuditTrail() {
@@ -287,13 +287,13 @@ function onAuditTrail() {
 }
 
 function onGroupChangeRate(){
-    alert("onGroupChangeRate")
+    alert()
 }
 
 function onGroupChangeStayDate(){
-    alert("Group Change Stay Date")
+    alert()
 }
 function onStayToOtherReservation(){
-    alert("onStayToOtherReservation")
+    alert()
 }
 </script>

@@ -1407,11 +1407,12 @@
 
 .p-listbox .p-listbox-list .p-listbox-item {
   margin: 0;
-  padding: 0.5rem 0 0;
+  padding: 0.5rem 1.25rem;
   border: 0 none;
   color: #495057;
   transition: box-shadow 0.2s;
   border-radius: 0;
+  white-space: nowrap;
 }
 
 .p-listbox .p-listbox-list .p-listbox-item.p-highlight {
@@ -4731,7 +4732,7 @@
 }
 
 .p-accordion .p-accordion-content {
-  padding: 1.25rem;
+  padding: .25rem;
   border: 1px solid #dee2e6;
   background: #ffffff;
   color: #495057;
@@ -4740,6 +4741,7 @@
   border-top-left-radius: 0;
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
+  
 }
 
 .p-accordion .p-accordion-tab {

@@ -15,7 +15,7 @@
                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded  aria-controls="menu_stay_guest" @click="onMenuStayGuest"/>
                 <Menu ref="menuStayGuest" id="menu_stay_guest" :model="((rs.masterGuest?.name != rs.guest?.name) ? menuStayGuestList : menuStayOneGuest)" :popup="true" />
             </template>
-            <template #content>
+            <template #content> 
                 <ComCardProfileGuest @onClick="onViewGuestDetail(rs.guest.name)" :dob="rs?.guest?.date_of_birth" :photo="rs?.guest?.photo" :color-status="rs?.reservationStay?.status_color" :name="rs?.guest?.customer_name_en" :phoneNumber2="rs?.guest?.phone_number_2"  :phoneNumber1="rs?.guest?.phone_number" :email="rs?.guest?.email_address" >
                     <template #footer>
                         <ComReservationStayTransportationLabel/>
@@ -23,7 +23,7 @@
                 </ComCardProfileGuest>
                 <div class="border-t mt-2" v-if="rs.reservationStay && rs.reservationStay.additional_guests && rs.reservationStay.additional_guests.length > 0">
                     <div class="py-2" v-for="(ad, index) in rs.reservationStay.additional_guests" :key="index">
-                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
+                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number" :email="ad.email_address" >
                             <template #end>
                                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name,ad.guest)"/>
                             </template>

@@ -5,14 +5,13 @@
                 <div class="text-2xl">Guest Database</div>
             </template>
             <template #end>
-                <!-- <Button class="border-none" @click="onAddNewGuest">Add New Guest</Button> -->
                 <Button v-tooltip.left="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
-                    <ComIcon class="mr-2" icon="iconGeneralList"></ComIcon>Add New Guest
+                    <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>Add New Guest
                 </Button>
             </template>
-        </ComHeader>
+        </ComHeader> 
         <div class="mb-3 flex justify-between">
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2">
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -22,7 +21,7 @@
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
                 </div>
-                <div v-if="Object.keys(filter).length > 0">
+                <div v-if="gv.isNotEmpty(filter)">
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
                 <div>
@@ -35,13 +34,15 @@
                 </Button>
             </div>
         </div>
-        
+        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data?.length > 0">       
         <DataTable 
         class="res_list_scroll"
         :resizableColumns="true"  
         columnResizeMode="fit" 
-        showGridlines stateStorage="local"
+        showGridlines 
+        stateStorage="local"
         stateKey="table_customer_list_state" 
+        scrollable 
         :reorderableColumns="true"   
         :value="data" tableStyle="min-width: 50rem" 
         @row-dblclick="onViewReservationStayDetail"
@@ -75,8 +76,9 @@
             </Column>
    
         </DataTable>
-    </div>
- 
+        
+    
+</ComPlaceholder> 
     <Paginator class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
@@ -84,6 +86,7 @@
         </template>
     </Paginator>
 
+</div>
 <OverlayPanel ref="opShowColumn">
     <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
         <template #top>
@@ -104,7 +107,7 @@
     </ComOverlayPanelContent>
 </OverlayPanel>
 
-<OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+<OverlayPanel ref="showAdvanceSearch" style="width:70rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
             <ComSelect class="col-4" width="100%" optionLabel="customer_group_en" optionValue="name"

@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "property",
   "business_source_type",
   "business_source",
   "country",
@@ -18,7 +19,8 @@
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
-  "card_holder_name"
+  "card_holder_name",
+  "keyword"
  ],
  "fields": [
   {
@@ -80,11 +82,23 @@
    "fieldname": "card_holder_name",
    "fieldtype": "Data",
    "label": "Card Holder Name"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "Keyword "
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-03 17:34:32.902671",
+ "modified": "2023-08-17 15:26:44.357701",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",
@@ -134,6 +148,7 @@
    "share": 1
   }
  ],
+ "search_fields": "contact_name,phone_number",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

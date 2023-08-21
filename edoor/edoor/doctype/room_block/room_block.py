@@ -15,10 +15,10 @@ class RoomBlock(Document):
 		# if datetime.strptime(self.start_date, "%Y-%m-%d").date() < datetime.now().date():
 		# 	frappe.throw("Start date cannot be less than current date")
 		
-		if datetime.strptime(self.end_date, "%Y-%m-%d").date() < datetime.now().date():
+		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() < datetime.now().date():
 			frappe.throw("End date cannot be less than current date")
 		
-		if datetime.strptime(self.end_date, "%Y-%m-%d").date() < datetime.strptime(self.start_date, "%Y-%m-%d").date():
+		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() < datetime.strptime(str(self.start_date), "%Y-%m-%d").date():
 			frappe.throw("End date cannot be less than start date")
 		
 	def before_submit(self):
@@ -53,8 +53,6 @@ class RoomBlock(Document):
 					frappe.throw("Room {} is already occupy or block on date {}".format( self.room_number,data[0]["date"].strftime("%d-%m-%Y")))
 
 				generate_block_date(self)
-				 
-
 
 
 	def on_cancel(self):

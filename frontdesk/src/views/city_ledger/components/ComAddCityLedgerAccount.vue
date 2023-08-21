@@ -90,11 +90,8 @@
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
-const gv = inject('$gv')
 const loading = ref(false);
-
 const socket = inject("$socket")
-
 const property = JSON.parse(localStorage.getItem( "edoor_property"))
 const data = ref({property:property.name})
 function onClose(){

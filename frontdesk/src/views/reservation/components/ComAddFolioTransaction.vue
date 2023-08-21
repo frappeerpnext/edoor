@@ -1,12 +1,11 @@
 <template>
     
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-   
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
                 <div class="col-6 pl-0">
                     <label for="room">Room</label>
-                    <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_number" placeholder="Select Room" doctype="Room"
+                    <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
                         class="auto__Com_Cus w-full" :filters="{ 'property' : doc.property }" />
                 </div>
                 <div class="grid">
@@ -520,10 +519,6 @@ function onSave() {
 }
 
 onMounted(() => {
-     
-    
-
-
     balance.value = dialogRef.value.data.balance
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
@@ -553,7 +548,7 @@ onMounted(() => {
         
     } else {
               doc.value  = dialogRef.value.data.new_doc
-        doc.value.posting_date = moment(working_day.date_working_day).toDate();
+        // doc.value.posting_date = moment(working_day.date_working_day).toDate();
    
 
     }

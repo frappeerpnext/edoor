@@ -76,29 +76,23 @@
         </div>
     <hr class="my-1">
     <div class="grid">  
-        <div class="col-12 mt-2 -mb-3 p-0">
+        <div class="col mt-2 ">
             <div class="grid">
                 <div class="col-6">
-                    <div class="flex">
-                    <label for="manual_rate"  class="col-6 font-medium cursor-pointer">Use Manually Update Rate</label>
-                    <div class="inline col-6 text-left px-3">
-                            <Checkbox input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1" :falseValue="0" :binary="true" @input="onUseManualRate"/>
-                    </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="grid">
-                <div class="col-6">
-                    <div>
+                    <div >
                         <label>Rate Type</label>
                         <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type" @onSelected="onSelectRateType" :clear="false"/>
+
                     </div>
                 </div> 
                 <div class="col-6">
-                    <label>Room Rate</label>                
-                        <ComInputCurrency classCss="w-full" v-model="doc.input_rate" :disabled="doc.is_manual_rate==0"/>
+                    <div class="relative">
+                        <label>Room Rate</label>                
+                        <ComInputCurrency classCss="w-full" v-model="doc.input_rate" :disabled="doc.is_manual_rate==0"/>    
+                        <div  v-tippy="'Use Manually Update Rate'" class="absolute right-2 top-2/4 mb-2">
+                        <Checkbox input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1" :falseValue="0" :binary="true" @input="onUseManualRate"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-4">
                         <label>Discount Type</label>
@@ -140,7 +134,7 @@
             <div class="grid justify-end ">
                 <div class="col-12">
             <div class="flex justify-end text-end" v-if="tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
-                <label for="rate_tax"  class="col-6 font-medium cursor-pointer">Rate Incldue Tax</label>
+                <label for="rate_tax"  class="col-6 font-medium cursor-pointer">Rate Include Tax</label>
                 <div class="inline col-6 text-left px-3">
                 <Checkbox input-id="rate_tax" class="" v-model="doc.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
                 </div>

@@ -2,16 +2,16 @@
         <div class="col-12">
     <ComReservationStayPanel title="Charge Summary">
       <template #content>
-        <div class="flex mb-2 mt-2 gap-2">
-            <div class="grow p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+        <div class="flex mb-2 mt-2 gap-2 text-right">
+            <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
                 <div class="text-500 uppercase text-sm">Total Debit</div>
                 <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_debit"></CurrencyFormat></div>
             </div>
-            <div class="col-4 p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                <div class="text-500 uppercase text-sm">Total Credit</div>
+            <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                <div class=" text-500 uppercase text-sm">Total Credit</div>
                 <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_credit"></CurrencyFormat></div>
             </div>
-            <div class="grow p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
+            <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                 <div class="text-500 uppercase text-sm">Balance</div>
                 <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservationStay?.balance"></CurrencyFormat></div>
             </div>

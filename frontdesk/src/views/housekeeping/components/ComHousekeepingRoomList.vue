@@ -1,7 +1,20 @@
 <template>
-    <div>
-        <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer" dataKey="name" :value="hk.room_list" @row-dblclick="onDblClick"
-            @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[10, 50, 100]">
+    <div class=""> <!-- hk-pagination -->
+        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="hk.room_list?.length > 0"> 
+        <DataTable 
+        v-model:selection="hk.selectedRooms" 
+        class="cursor-pointer res_list_scroll" 
+        dataKey="name" 
+        :value="hk.room_list" 
+        stateStorage="local"
+        stateKey="table_house_keeping_room_state"
+        @row-dblclick="onDblClick"
+        @row-click="onRowSelect" 
+        tableStyle="min-width: 50rem" 
+        paginator 
+        showGridlines 
+        :rows="20" 
+        :rowsPerPageOptions="[20, 30, 40, 50]">
             <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
             <Column class="text-center" field="room_number" header="Room #"></Column>
             <Column  header="Status" headerClass="text-center" bodyClass="text-center">
@@ -39,7 +52,11 @@
                     </Button>
                 </template>
             </Column>
+            <div class="absolute bottom-6 left-4">
+                <strong>Total Records: <span class="ttl-column_re">{{hk.room_list.length}}</span></strong>
+            </div>
         </DataTable>
+        </ComPlaceholder>
         <OverlayPanel ref="opHousekeeper">
             <ComOverlayPanelContent :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
                 @onSave="onSaveAssignHousekeeper">

@@ -5,15 +5,18 @@
         <template #start>
             <div class="text-2xl">Note list</div>
         </template>
+        <template #end>
+            <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
+        </template>
     </ComHeader>
-    <div class="flex flex-wrap gap-2 items-center">
+    <div class="flex gap-2">
         <div class="col-2 p-0">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
                 <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch"/>
             </div>
         </div>
-        <div class="col-2 p-0">
+        <div class="col-3 p-0">
             <div class="flex relative">
                     <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection  dateFormat="dd-mm-yy" v-model="filter.date_range"
                 selectionMode="range" :manualInput="false" @date-select="onDateSelect"
@@ -23,18 +26,16 @@
                 </div>
             </div>
         </div>
-        <div class="col-2 p-0">
+            <div>
                 <ComOrderBy doctype="Frontdesk Note" @onOrderBy="onOrderBy"/>
-        </div>
+            </div>
          
     </div>
-    <div class="w-ful flex justify-start mb-3 mt-3">
-    <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
-    </div>
+<div class="mt-3">
     <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0">
-<div class="grid-cs-note grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-2">
-    
-    <div v-for="i in notes" :key="index"  class="border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative" >
+
+<div class="grid-cs-note">
+    <div v-for="(i, index) in notes" :key="index" :style="{order:index}" class="item-cs-note border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative" >
         <div class="flex flex-col">
             <div class="line-height-1 w-full flex justify-between ">
                 <div class="my-auto">
@@ -62,45 +63,48 @@
                                 </div>
                                 
                 </div>
-            <div class="">     
-                <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note absolute right-3" text rounded @click="onPin(i)">
+            <div class="flex absolute right-3 gap-2"> 
+                <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
                     <ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
                     <ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
-                </Button>
-                </div>
+                </Button>      
             </div>
-            <div class="text-500 text-sm ">Note Date: {{ i.note_date }}</div>
+            </div>
+            <div :class="i.reference_doctype ? 'text-500 text-sm ' : ''" >Note Date: {{ i.note_date }}</div>
         </div> 
-        <div v-if="i.content" class="mt-3 mb-5 max-h-28 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
+        <div v-if="i.content" class="mt-3 mb-6 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
             {{ i.content }} 
         </div>
-        <div class="flex flex-col font-italic  line-height-1 absolute bottom-2 modifiad-note-cs" style="font-size: 10px;">
+ 
+        <div class="flex flex-col font-italic  line-height-2 absolute bottom-2 modifiad-note-cs" style="font-size: 10px;">
             <div>
                 Noted by <span class=" text-500 "> {{ i.owner }} - {{gv.datetimeFormat(i.creation)}}</span>
             </div>
             <div v-if="i.modified_by">
                 Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - {{gv.datetimeFormat(i.modified)}}</span>
+            </div>        
+            <div class="absolute right-2">
+                <div class="flex">
+                <Button class="w-2rem h-2rem flex justify-center items-center " text rounded outlined label="Edit" @click="onEdit(i.name)">
+                    <i class="pi pi-pencil text-blue-500"></i>
+                </Button>
+                <Button class="w-2rem h-2rem flex justify-center items-center " @click="onDelete(i.name)" text rounded outlined aria-label="Delete" >
+                    <i class="pi pi-trash text-red-500"></i>
+                </Button>
+                </div> 
             </div>
         </div>
-        <div class="w-full flex justify-end ">
-            <div class="absolute right-2 flex justify-center items-center bottom-2 ">
-            <Button class="w-2rem h-2rem flex justify-center items-center" text outlined label="Edit" @click="onEdit(i.name)">
-                <i class="pi pi-pencil text-blue-500"></i>
-            </Button>
-            <Button class="w-2rem h-2rem flex justify-center items-center" @click="onDelete(i.name)" text outlined aria-label="Delete" >
-                <i class="pi pi-trash text-red-500"></i>
-            </Button>
-            </div>
-        </div>
+
         <div>
         </div>
     </div>
 </div>
+
 </ComPlaceholder>  
 <div class="mt-2">
     <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30,40,50]"    @page="pageChange" ></Paginator>
 </div>
-
+</div>
 </template>
 <script setup>
 import { ref, inject,onMounted,reactive,useDialog,getDocList,getCount,useConfirm,deleteDoc } from '@/plugin';

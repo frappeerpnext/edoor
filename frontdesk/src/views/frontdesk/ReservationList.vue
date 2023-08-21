@@ -10,7 +10,7 @@
             </template>
         </ComHeader>
         <div class="mb-3 flex justify-between">
-            <div class="flex gap-3">
+            <div class="flex gap-2"> 
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -19,8 +19,8 @@
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
-                </div>
-                <div v-if="Object.keys(filter).length > 0">
+                </div> 
+                <div v-if="gv.isNotEmpty(filter,'search_date_type')">
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
                 <div>
@@ -42,7 +42,8 @@
             stateStorage="local" 
             stateKey="table_reservation_list_state" 
             :reorderableColumns="true"   
-            :value="data" tableStyle="min-width: 50rem" 
+            :value="data" 
+            tableStyle="min-width: 50rem" 
             @row-dblclick="onViewReservationStayDetail"
             scrollHeight="70vh">
             <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'" :bodyClass="c.header_class || ''" 
@@ -108,26 +109,25 @@
             <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                             v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                             doctype="Business Source Type" />
-            <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
+            <ComSelect  
+                class="col-3" width="100%" isFilter groupFilterField="business_source_type"
                 :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                 optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                placeholder="Business Source" doctype="Business Source" />
+                placeholder="Business Source" doctype="Business Source"
+                :filters="[['property', '=', property.name]]"
+                 />
 
             <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type"
                 @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
 
             <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
                 @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
-
-            <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name" v-model="filter.selected_building"
-                @onSelected="onSearch" placeholder="Building" doctype="Building" />
-
             <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
-                @onSelected="onSelectRoomType" placeholder="Room Type" doctype="Room Type" :filters="{property:property.name}"></ComSelect>
+                @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="{property:property.name}"></ComSelect>
 
             <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
                 optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
-                @onSelected="onSelectRoom"  placeholder="Room Name" doctype="Room" :filters="{property:property.name}" ></ComSelect>
+                @onSelected="onSearch"  placeholder="Room Name" doctype="Room" :filters="{property:property.name}" ></ComSelect>
 
             <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
                 optionValue="value" placeholder="Search Date Type" :clear="false"
@@ -144,7 +144,7 @@
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,computed } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,computed,watch } from '@/plugin'
  
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
@@ -233,6 +233,7 @@ let dateRange = reactive({
     start: '',
     end: ''
 })
+
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 
 const working_date = ref('')
@@ -287,10 +288,10 @@ function loadData() {
     }
 
     if (filter.value?.selected_room_type) {
-        filters.push(["room_types", "like", "%" + filter.value.room_type + "%"])
+        filters.push(["room_types", "like", "%" + filter.value.selected_room_type + "%"])
     }
     if (filter.value?.selected_room_number) {
-        filters.push([ "room_numbers", 'like','%'+ filter.value.room_number + '%'])
+        filters.push([ "room_numbers", 'like','%'+ filter.value.selected_room_number + '%'])
     }
 
     if (filter.value?.search_date_type && filter.value.date_range != null) {
@@ -348,25 +349,6 @@ function onSelectFilterDate(event) {
     loadData()
 }
 
-function onSelectRoomType(d){
-    if(d){
-        filter.value.room_type = d.room_type
-    
-    }
-    onSearch()
-    
-}
-function onSelectRoom(d){
-    if(d){
-        filter.value.room_number = d.room_number
-    
-    }
-    onSearch()
-    
-    
-}
-
-
 const onSearch = debouncer(() => {
     loadData();
 }, 500);
@@ -416,8 +398,7 @@ onMounted(() => {
         r.selected = selectedColumns.value.includes(r.fieldname)
     });
     loadData()
-    getApi("frontdesk.get_meta",{doctype:"Reservation"}).then((result)=>{
-        console.log(result.message)
+    getApi("frontdesk.get_meta",{doctype:"Reservation"}).then((result)=>{ 
         result.message.fields.filter(r=>r.in_list_view==1 && !columns.value.map(x=>x.fieldname).includes(r.fieldname)).forEach(r=>{
             let header_class = ""
              

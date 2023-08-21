@@ -35,7 +35,7 @@
         </TabView></div>
         <template #footer-left>
             <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" @click="onEditGuest"/>
-            <Button class="border-none" label="Delete Guest" icon="pi pi-trash" @click="onDeleteGuest(name)"/>
+            <Button class="border-none bg-red-500" label="Delete Guest" icon="pi pi-trash" @click="onDeleteGuest(name)"/>
         </template>
     </ComDialogContent>
 

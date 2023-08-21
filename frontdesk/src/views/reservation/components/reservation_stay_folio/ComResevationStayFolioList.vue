@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ rs.folioTransactions }} -->
     <div class="col-fixed relative pl-0 pr-0 py-0" style="width: 250px;">
 
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">

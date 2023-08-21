@@ -8,7 +8,7 @@
         </div>
         <div class="flex gap-2">
             <slot name="end"></slot>
-            <div class="border-left-1 border-primary-100 mx-2"></div>
+            <div class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b"></Button>
         </div>
     </div>

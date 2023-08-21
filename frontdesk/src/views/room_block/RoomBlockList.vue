@@ -5,42 +5,47 @@
         <div class="text-2xl">Block Room</div>
       </template>
       <template #end>
-        <Button @click="onAddNewRommBlock()">Add New Room Block</Button>
+        <Button class="border-none" @click="onAddNewRommBlock()">Add New Room Block</Button>
       </template>
     </ComHeader>
-    <div class="mb-3">
-      <div class="flex flex-wrap gap-2">
-        <span class="p-input-icon-left">
-          <i class="pi pi-search" />
-          <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-        </span>
-        <div class="col p-0">
-          <ComSelect v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
-          optionValue="value" placeholder="Search Date Type" :clear="false"
-          @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-          <Calendar hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
-          v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-          placeholder="Select Date Range" />
-
-
-          <ComSelect :filters="[['property', '=', property.name]]" optionLabel="room_number" optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch"
-            placeholder="Room" doctype="Room" isFilter />
-          <ComSelect :filters="[['property', '=', property.name]]" v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type"
-            doctype="Room Type" isFilter 
-            optionLabel="room_type" optionValue="name"
-            />
+    <div class="mb-3 flex justify-between">
+      <div class="flex gap-2">
+        <div class="w-20rem">
+          <div class="w-full p-input-icon-left">
+            <i class="pi pi-search" />
+            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+          </div>
+        </div>
+        <div>
+          <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
+        </div>
+        <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
+          <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
         </div>
         <ComOrderBy doctype="Room Block" @onOrderBy="onOrderBy" />
       </div>
+      <div>
+        <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+            <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+        </Button>
+      </div>
     </div>
-    <Button label="Show Column" @click="toggleShowColumn" />
-    <Button label="Reset List" @click="onResetTable" />
-
-    <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
-      stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem"
-      @row-dblclick="onViewReservationStayDetail">
-      <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.header)" :key="c.fieldname"
-        :field="c.fieldname" :header="c.header" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
+    
+    <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data.length > 0">
+    <DataTable
+    class="res_list_scroll" 
+    :resizableColumns="true"
+    columnResizeMode="fit"
+    showGridlines 
+    stateStorage="local"
+    stateKey="table_room_block_list_state"
+    :reorderableColumns="true" 
+    :value="data" 
+    tableStyle="min-width: 50rem"
+    @row-dblclick="onViewReservationStayDetail"
+    scrollHeight="70vh">
+    <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
+        :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
         :frozen="c.frozen">
         <template #body="slotProps">
           <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
@@ -50,7 +55,8 @@
           </Button>
           <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
             moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-          <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }}
+          <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
+          }}
           </span>
           <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
           <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
@@ -61,11 +67,12 @@
             </template>
           </div>
           <template v-else-if="c.fieldtype == 'Status'">
-             
-            <Chip v-if="slotProps.data[c.fieldname]==1">
+
+            <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
+              <i class="pi pi-lock-open me-2"/>
               Unblock
             </Chip>
-            <Chip v-else>Block</Chip>
+            <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else><i class="pi pi-lock me-2"/>Block</Chip>
           </template>
           <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
           <span v-else>
@@ -77,24 +84,55 @@
       </Column>
 
     </DataTable>
+  </ComPlaceholder>
   </div>
 
-  <Paginator :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+  <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
     @page="pageChange">
     <template #start="slotProps">
-      Total Records: {{ pageState.totalRecords }}
+      <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
     </template>
   </Paginator>
 
   <OverlayPanel ref="opShowColumn">
-    <InputText v-model="filter.search_field" placeholder="Search" />
-    <div v-for="(c, index) in getColumns.filter(r => r.header)" :key="index">
-
-      <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-      <label :for="c.fieldname">{{ c.header }}</label>
-    </div>
-    <Button @click="OnSaveColumn">Save</Button>
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
+    <template #top>
+      <span class="p-input-icon-left w-full mb-3">
+        <i class="pi pi-search" />
+        <InputText class="w-full flex-nowrap" v-model="filter.search_field" placeholder="Search" />
+      </span>
+    </template>
+    <ul class="res__hideshow">
+      <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
+        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
+        <label :for="c.fieldname">{{ c.label }}</label>
+      </li>
+    </ul>
+    <template #footer-left>
+      <Button class="border-none" label="Reset List" @click="onResetTable" />
+    </template>
+    </ComOverlayPanelContent>
   </OverlayPanel>
+
+  <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+      <div class="grid">
+      
+        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number" optionValue="name"
+          v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room" isFilter />
+        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" v-model="filter.selected_room_type"
+          @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" isFilter optionLabel="room_type"
+          optionValue="name" />  
+        <ComSelect class="col-6" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label" optionValue="value"
+          placeholder="Search Date Type" :clear="false" @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+        <div class="col-6" v-if="filter.search_date_type"> 
+          <Calendar class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy" v-model="filter.date_range"
+          selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
+        </div>
+      </div>
+    </ComOverlayPanelContent>
+  </OverlayPanel>
+
 </template>
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
@@ -111,6 +149,7 @@ const opShowColumn = ref();
 const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
+const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -125,44 +164,44 @@ socket.on("RefreshGuestDatabase", (arg) => {
 })
 
 const columns = ref([
-  { fieldname: 'name', header: 'Room Block Code', fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
-  { fieldname: 'block_date', header: 'Block Date', fieldtype: "Date", default: true },
-  { fieldname: 'start_date', header: 'Start Date', fieldtype: "Date ", default: true },
-  { fieldname: 'end_date', header: 'Release Date', fieldtype: "Date", default: true },
-  { fieldname: 'room_number', header: 'Room Number', default: true },
-  { fieldname: 'room_type', header: 'Room Type', default: true },
-  { fieldname: 'reason', header: 'Reason', default: true },
-  { fieldname: 'unblock_date', header: 'Unblock Date', fieldtype: "Date", default: true },
-  { fieldname: 'unblock_note', header: 'Unblock Note', default: true },
-  { fieldname: 'is_unblock', fieldtype:"Status", header: 'Status', default: true },
+  { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
+  { fieldname: 'block_date', label: 'Block Date', header_class: "text-center", fieldtype: "Date", default: true },
+  { fieldname: 'start_date', label: 'Start Date', header_class: "text-center", fieldtype: "Date ", default: true },
+  { fieldname: 'end_date', label: 'Release Date', header_class: "text-center", fieldtype: "Date", default: true },
+  { fieldname: 'room_number', label: 'Room Number', header_class: "text-center", default: true },
+  { fieldname: 'room_type', label: 'Room Type', default: true },
+  { fieldname: 'reason', label: 'Reason', default: true },
+  { fieldname: 'unblock_date', label: 'Unblock Date', fieldtype: "Date", header_class: "text-center", default: true },
+  { fieldname: 'unblock_note', label: 'Unblock Note', default: true },
+  { fieldname: 'is_unblock', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
 
 ])
 
-const getColumns = computed(()=>{
-    if (filter.value.search_field){ 
-        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
-    }else {
-        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
-    }
+const getColumns = computed(() => {
+  if (filter.value.search_field) {
+    return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+  } else {
+    return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
+  }
 })
 
 let dateRange = reactive({
-    start: '',
-    end: ''
+  start: '',
+  end: ''
 })
 const dataTypeOptions = reactive([
-    { label: 'Search Date', value: '' },
-    { label: 'Block Date', value: 'block_date' },
-    { label: 'Start Date', value: 'start_date' },
-    { label: 'Release Date', value: 'end_date' },
-    { label: 'Unblock Date', value: 'unblock_date' },
-  ])
-  function onDateSelect() {
-    if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
-        dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
-        dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
-        loadData()
-    }
+  { label: 'Search Date', value: '' },
+  { label: 'Block Date', value: 'block_date' },
+  { label: 'Start Date', value: 'start_date' },
+  { label: 'Release Date', value: 'end_date' },
+  { label: 'Unblock Date', value: 'unblock_date' },
+])
+function onDateSelect() {
+  if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
+    dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
+    dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
+    loadData()
+  }
 }
 const toggleShowColumn = (event) => {
   opShowColumn.value.toggle(event);
@@ -202,21 +241,21 @@ function pageChange(page) {
 function loadData() {
   gv.loading = true
   let filters = [
-    ["property","=",property.name]
+    ["property", "=", property.name]
   ]
-    if (filter.value?.keyword) {
-        filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
-    }
+  if (filter.value?.keyword) {
+    filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
+  }
   if (filter.value?.selected_room_id) {
     filters.push(["room_id", '=', filter.value.selected_room_id])
   }
   if (filter.value?.selected_room_type) {
-      filters.push(["room_type_id", '=', filter.value.selected_room_type])
+    filters.push(["room_type_id", '=', filter.value.selected_room_type])
   }
   if (filter.value?.search_date_type && filter.value.date_range != null) {
-        filters.push([filter.value.search_date_type, '>=', dateRange.start])
-        filters.push([filter.value.search_date_type, '<=', dateRange.end])
-    }
+    filters.push([filter.value.search_date_type, '>=', dateRange.start])
+    filters.push([filter.value.search_date_type, '<=', dateRange.end])
+  }
   let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
   fields = [...fields, ...selectedColumns.value]
   fields = [...new Set(fields.filter(x => x))]
@@ -249,8 +288,8 @@ function getTotalRecord(filters) {
 
   getCount('Room Block', filters)
 
-    .then((count) => { 
-      pageState.value.totalRecords = count || 0 
+    .then((count) => {
+      pageState.value.totalRecords = count || 0
     })
 
 }
@@ -326,26 +365,41 @@ onMounted(() => {
   })
 
 })
-function onAddNewRommBlock() {
-    dialog.open(ComEditRoomBlock, {
-        data:{
-          
-        },
-        props: {
-            header: 'Add New Room Block ',
-            style: {
-                width: '50vw',
-            },
-            modal: true,
-            position:'top',
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            const result = options.data;
-            if(result){
-                loadData()
-            }
-        }
-    })
+function onAddNewRommBlock(room_block) {
+  dialog.open(ComEditRoomBlock, {
+    data: { name: room_block },
+    props: {
+      header: 'Add New Room Block ',
+      style: {
+        width: '50vw',
+      },
+      modal: true,
+      position: 'top',
+      closeOnEscape: false
+    },
+    onClose: (options) => {
+      const result = options.data;
+      if (result) {
+        loadData()
+      }
+    }
+  })
+}
+
+const advanceSearch = (event) => {
+  showAdvanceSearch.value.toggle(event);
+}
+const onClearFilter = () => {
+    filter.value={}
+    loadData()
+    showAdvanceSearch.value.hide()
+}
+
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
+
+const onCloseColumn = () => {
+    opShowColumn.value.hide()
 }
 </script>

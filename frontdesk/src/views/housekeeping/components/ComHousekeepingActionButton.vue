@@ -1,11 +1,20 @@
 <template>
-    
-    <Button label=" Change Housekeeping Status" class="p-button p-component conten-btn " severity="warning" @click="onChangeHousekeepingStatus" >
-        Change Housekeeping Status 
-        <span v-if="hk.selectedRooms.length > 0">
-            ({{ hk.selectedRooms.length }}) 
-        </span>
-    </Button>
+    <div class="flex gap-2">
+        <div>
+            <Button label=" Change Housekeeping Status" class="p-button h-full p-component conten-btn " severity="warning" @click="onChangeHousekeepingStatus" >
+                Change Housekeeping Status 
+                <Badge style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="hk?.selectedRooms?.length" severity="warning"></Badge>
+            </Button>
+        </div>
+        <div>
+            <Button label="Assign Housekeeper" class="p-button h-full p-component conten-btn border-r-orange-300" @click="AssingnHousekeeper" >
+                Assign Housekeeper
+                <Badge style="font-weight: 600 !important;color:#4338ca;border-color:#4338ca;" class="border-1 bg-transparent flex justify-center items-center" :value="hk?.selectedRooms?.length"
+                severity="warning">
+                </Badge>
+            </Button>
+        </div>
+    </div>
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
         :style="{ width: '30vw' }" position="top">
         <div>
@@ -17,14 +26,6 @@
                 :loading="submitLoading" />
         </template>
     </Dialog>
-
-    <Button label="Assign Housekeeper" class="p-button p-component conten-btn border-r-orange-300" @click="AssingnHousekeeper" >
-        Assign Housekeeper
-        <span v-if="hk.selectedRooms.length > 0">
-            ({{ hk.selectedRooms.length }}) 
-        </span>
-    </Button>
-
     <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }" position="top">
         <div>
             <ComSelect isFilter v-model="selectedHousekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper" />

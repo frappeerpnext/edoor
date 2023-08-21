@@ -176,7 +176,7 @@ function onDocList() {
         data.value = []
     });
 }
-function onUpdate(r) {
+function onUpdate(r) { 
     let result = null
     if (props.isMultipleSelect) {
         result = []

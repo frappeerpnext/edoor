@@ -1431,6 +1431,24 @@ def get_folio_transaction_summary(folio_number):
     
     return summary_data
 
+
+@frappe.whitelist()
+def get_reservation_housekeeping_charge_summary(reservation_stay):
+    data  = frappe.db.sql("""
+                    select 
+                        sum(if(type='Credit',amount,0)) as credit,
+                        sum(if(type='Debit',amount,0)) as debit
+                    from `tabFolio Transaction` 
+                    where 
+                        reservation_stay = '{}' 
+                    """.format(reservation_stay),as_dict=1)
+ 
+    if data:
+        return  {"credit":data[0]["credit"] or 0, "debit":data[0]["debit"] or 0}
+        
+    return {"credit":0, "debit":0}
+
+
 @frappe.whitelist(methods="POST")
 def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     

@@ -69,7 +69,7 @@ def get_dashboard_data(property = None,date = None):
 
     #filter base on departure date
     stay_sql = """SELECT 
-                    SUM(if(reservation_status = 'In-house',1,0)) AS `departure_remaining`,
+                    SUM(if(reservation_status in ('In-house','Reserved','Confirmed'),1,0)) AS `departure_remaining`,
                     sum(if(is_active_reservation = 1, 1, 0)) AS `total_departure`,
                     SUM(if(require_drop_off = 1  AND  is_active_reservation = 1, 1, 0)) AS `drop_off`
                 FROM `tabReservation Stay` WHERE departure_date = '{0}' and  property = '{1}';""".format(date,property)
@@ -266,7 +266,9 @@ def get_edoor_setting(property = None):
 @frappe.whitelist()
 def get_logged_user():
     data = frappe.get_doc('User',frappe.session.user)
+ 
     property = frappe.get_list("Business Branch",fields=["name","property_code","province","email","phone_number_1","photo"])
+     
     return {
         "name":data.name,
         "full_name":data.full_name,
@@ -274,7 +276,8 @@ def get_logged_user():
         "phone_number":data.phone,
         "photo":data.user_image,
         "property":property,
-        "roles":frappe.get_roles(frappe.session.user)
+        "roles":frappe.get_roles(frappe.session.user),
+        "language":data.language
     }
 
 @frappe.whitelist()
@@ -311,7 +314,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
     resources = []
     filters = ""
     if room_number:
-        filters = filters + " AND `name` = '{}'".format(room_number)
+        filters = filters + " AND `room_number` like '%{}%'".format(room_number)
     if building:
         filters = filters + " AND building = '{}'".format(building)
     if floor:
@@ -336,6 +339,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
             
         """
         sql=sql.format(property,filter_room_type)
+    
         room_types = frappe.db.sql(sql, as_dict=1)
         for t in room_types:
             rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)

@@ -26,8 +26,16 @@
     <img v-else-if="icon == 'City'" :style="{'height' : height}" :class="class" :src="City"/>
     <img v-else-if="icon == 'checkin-black'" :style="{'height' : height}" :class="class" :src="BtnCheckinIconBlack"/>
     <img v-else-if="icon == 'checkoutBlack'" :style="{'height' : height}" :class="class" :src="BtnCheckoutIconBlack"/>
-    <img v-else-if="icon == 'iconGeneralList'" :style="{'height' : height}" :class="class" :src="iconGeneralList"/>
     <img v-else-if="icon == 'iconEditGrid'" :style="{'height' : height}" :class="class" :src="iconEditGrid"/>
+    <img v-else-if="icon == 'iconAddNewGuest'" :style="{'height' : height}" :class="class" :src="iconAddNewGuest"/>
+    <!-- default Icon -->
+    <img v-else-if="icon == 'iconGeneralList'" :style="{'height' : height}" :class="class" :src="iconGeneralList"/>
+    <img v-else-if="icon == 'BilltoMasterRoom'" :style="{'height' : height}" :class="class" :src="BilltoMasterRoom"/>
+    <img v-else-if="icon == 'IconBillToCompany'" :style="{'height' : height}" :class="class" :src="IconBillToCompany"/>
+    <img v-else-if="icon == 'IconBillToGuest'" :style="{'height' : height}" :class="class" :src="IconBillToGuest"/>
+    
+    
+
 </template>
 <script setup>
 const props = defineProps({
@@ -70,7 +78,9 @@ import NotDisturb from '@/assets/svg/icon-do-not-disturb.svg'
 import City from '@/assets/svg/icon-change-property.svg'
 import iconGeneralList from '@/assets/svg/icon-general-list.svg'
 import iconEditGrid from '@/assets/svg/icon-edit-grid.svg'
-
-
+import iconAddNewGuest from '@/assets/svg/icon-add-guest-white.svg'
+import BilltoMasterRoom from '@/assets/svg/icon-bill-to-master-room.svg'
+import IconBillToCompany from '@/assets/svg/icon-bill-to-company.svg'
+import IconBillToGuest from '@/assets/svg/icon-bill-to-guest.svg'
 </script>
  

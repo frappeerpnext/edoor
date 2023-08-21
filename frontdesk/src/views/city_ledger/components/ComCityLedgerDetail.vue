@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="true">
+    <ComDialogContent hideButtonOK :hideButtonClose="true" style="max-height: 80vh;">
         <TabView>
             <TabPanel header="Account Information">  
                 <table class="w-full mt-3">
@@ -36,27 +36,43 @@
                                 <ComStayInfoNoBox label="Address" :value="data?.address"/> 
                            
                             </table>
-                    <table class="mt-3">
-                        <tr >
-                            <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Bank Information</td>
-                        </tr>
-                        <ComStayInfoNoBox label="Bank Name" :value="data?.bank_name"/>
-                        <ComStayInfoNoBox label="Bank Account Number" :value="data?.bank_account_number"/>
-                        <ComStayInfoNoBox label="Bank Account Name" :value="data?.bank_account_name"/>
-                    </table>
-                    <table class="mt-3">
-                        <tr >
-                            <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Contact Person Information</td>
-                        </tr>
-                        <ComStayInfoNoBox label="Contact Name" :value="data?.contact_name"/>
-                        <ComStayInfoNoBox label="Contact Phone Number" :value="data?.contact_phone_number"/>
-                    </table>
+                    <div class="grid">
+                        <div class="col-6">
+                            <table class="mt-3">
+                                <tr >
+                                    <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Bank Information</td>
+                                </tr>
+                                <ComStayInfoNoBox label="Bank Name" :value="data?.bank_name"/>
+                                <ComStayInfoNoBox label="Bank Account Number" :value="data?.bank_account_number"/>
+                                <ComStayInfoNoBox label="Bank Account Name" :value="data?.bank_account_name"/>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="mt-3">
+                                <tr >
+                                    <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Contact Person Information</td>
+                                </tr>
+                                <ComStayInfoNoBox label="Contact Name" :value="data?.contact_name"/>
+                                <ComStayInfoNoBox label="Contact Phone Number" :value="data?.contact_phone_number"/>
+                            </table>
+                        </div>
+                    </div>
                     <div class="w-full mt-3">
                         <label>Note</label>
                         <div class="w-full bg-slate-100 rounded-lg p-3 h-10rem overflow-auto ">
                             {{ data?.note }}
                         </div>
                     </div>
+                </div>
+                <div class="w-full flex justify-end mt-3">
+                    <span class="italic">Created by: </span>
+                    <span class="text-500 font-italic">
+                        {{ data?.owner }} {{ gv.datetimeFormat(data?.creation) }}
+                    </span>
+                    <span class="italic ms-2"> Last Modified: </span>
+                    <span class="text-500 font-italic">
+                        {{ data?.modified_by }} {{ gv.datetimeFormat(data?.modified) }}
+                    </span>
                 </div>
             </TabPanel>
             <TabPanel header="City Ledger Transaction">
@@ -65,7 +81,7 @@
             </TabPanel>
             <TabPanel header="Document">
                 <div>
-                    Document
+                    <ComDocument doctype="City Ledger" :docname="data?.name" v-if="!loading" />
                 </div>
             </TabPanel>
         </TabView>
@@ -85,6 +101,7 @@ import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLe
 import ComCityLedgerTransaction from '@/views/city_ledger/components/ComCityLedgerTransaction.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject("dialogRef")
+const gv = inject('$gv');
 const dialog = useDialog()
 const data = ref()
 const loading = ref(false)
