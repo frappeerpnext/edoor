@@ -1,7 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
         <div class="mb-3">
-            {{ guest.attach }}
             <div class="flex justify-center items-center flex-col">
                 <ComUploadProfile @loadingChange="updateLoadingStatus" @getFileName="refreshGuestDetail" doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
             </div>
@@ -37,8 +36,8 @@
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
                         <div class="flex align-items-center">
-                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="true" inputId="disabled" />
-                            <label for="disabled"> Disabled</label>
+                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="1" inputId="disabled" />
+                            <label for="disabled"> Disabled {{guest.disabled}}</label>
                         </div>
                     </div>
                 </div>

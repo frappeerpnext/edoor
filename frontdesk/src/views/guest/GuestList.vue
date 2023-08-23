@@ -212,8 +212,6 @@ function pageChange(page) {
     loadData()
 }
 
-
-
 function loadData() {
     gv.loading = true
     let filters = []
@@ -252,33 +250,25 @@ function loadData() {
         })
         .catch((error) => {
             gv.loading = false
-         
         });
     getTotalRecord(filters)
-
     localStorage.setItem("page_state_customer", JSON.stringify(pageState.value))
-
 }
 function getTotalRecord(filters) {
 
     getCount('Customer', filters)
-        .then((count) => pageState.value.totalRecords = count || 0)
-
+    .then((count) => pageState.value.totalRecords = count || 0)
 }
 function onOrderBy(data) {
     pageState.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
-
- 
 
 const onSearch = debouncer(() => {
     loadData();
 }, 500);
-
 
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -319,8 +309,7 @@ onMounted(() => {
                 header_class ="text-center"
             }else if(["Currency"].includes(r.fieldtype)){
                 header_class ="text-right"
-            }
-             
+            }  
             columns.value.push({
                 fieldname:r.fieldname,
                 label:r.label,

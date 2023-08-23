@@ -160,7 +160,6 @@
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    {{ filter }}
 </template>
 
 <script setup>
