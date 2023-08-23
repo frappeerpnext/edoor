@@ -36,9 +36,6 @@
                 <span class="text-xs block font-light">Nights</span>
               </ComBoxStayInformation>
             </div>
-            <!-- <div class="flex mt-2 gap-2">
-                <ComBoxStayInformation isCurrency title="Total Before Tax" :value="rs?.reservationStay?.room_rate_discount" valueClass="col-6 text-right" titleClass="grow" ></ComBoxStayInformation>
-            </div>  -->
           <div class="flex mt-2 gap-2">
               <ComBoxStayInformation isCurrency title="Discount" :value="rs?.reservationStay?.room_rate_discount" valueClass="grow text-right" titleClass="col-4" >
               </ComBoxStayInformation>

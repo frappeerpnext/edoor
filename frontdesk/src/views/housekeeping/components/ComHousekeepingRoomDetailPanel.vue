@@ -67,10 +67,11 @@
             </ComStayInfoNoBox> 
             <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 
         </table>
-        <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div>
-        <table class="w-full">
-            <ComStayInfoNoBox  label="TOTAL DEBIT" :value="''" />  
-            <ComStayInfoNoBox  label="TOTAL CREDIT" :value="''" />  
+        <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div> 
+ 
+        <table class="w-full" v-if="hk.selectedRow.summary">
+            <ComStayInfoNoBox  label="TOTAL DEBIT" :value="gv.currencyFormat(hk.selectedRow.summary.debit)" />  
+            <ComStayInfoNoBox  label="TOTAL CREDIT" :value="gv.currencyFormat(hk.selectedRow.summary.credit)" />  
             <ComStayInfoNoBox  label="BALANCE" :value="''" />
         </table>
         
@@ -117,6 +118,7 @@ import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ComReservationNote from '@/views/reservation/components/ComReservationNote.vue';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
+import { onUnmounted } from 'vue';
 const hk = inject("$housekeeping")
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)
@@ -128,9 +130,9 @@ const  submitLoading = ref(false)
 const items = ref([])
 const show = ref()
 const frappe = inject("$frappe")
-const db = frappe.db()
-const call = frappe.call()
+const db = frappe.db() 
 const gv = inject('$gv');
+
 if(housekeeping_status.value.length > 0){
     housekeeping_status.value.forEach(h => {
 

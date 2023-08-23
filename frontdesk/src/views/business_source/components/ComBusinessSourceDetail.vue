@@ -33,19 +33,18 @@ const url =  computed(() => {
 })
 
 function onIframeLoaded(){
- 
  const iframe = document.getElementById("iframe");
  iframe.height = iframe.contentWindow.document.body.scrollHeight;
 
 }
 
-function onEdit() {
+function onEdit() { 
     dialog.open(ComAddBusinessSource, {
         data: {
-            name: data.value.name,
+            name: name.value
         },
         props: {
-            header: `Edit Business Source: ${data.value.name}`,
+            header: `Edit Business Source: ${name.value}`,
             style: {
                 width: '50vw',
             },
@@ -76,7 +75,7 @@ function onDelete() {
         acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
-             deleteDoc('Business Source',data.value.name)
+             deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
                     // socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
                     dialogRef.value.close(r)
@@ -88,8 +87,6 @@ function onDelete() {
 }
 function loadData() {
     loading.value = true
-     
-        
     getDoc('Business Source', name.value)
         .then((r) => {
             data.value = r
@@ -101,8 +98,6 @@ function loadData() {
 
 onMounted(() => {
     name.value = dialogRef.value.data.name
-    
-
 })
 
 </script>

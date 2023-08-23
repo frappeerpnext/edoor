@@ -108,7 +108,9 @@ def check_field(doc, key):
 def get_date_range(start_date, end_date, exlude_last_date=True):
     # Create an empty list to store the generated dates.
     dates = []
+     
     for i in range((end_date - start_date).days + 1):
+        
         if start_date + datetime.timedelta(days=i) == end_date:
             if not exlude_last_date:
                 dates.append(start_date + datetime.timedelta(days=i))    
@@ -636,3 +638,7 @@ def get_city_ledger_amount_summary(filters):
         "credit":credit,
         "balance": opening_balance + (debit - credit)
     }
+@frappe.whitelist(methods="POST")
+def update_photo(data):
+    frappe.db.sql("update `tab{}` set photo=%(photo)s where name=%(name)s".format(data["doctype"]), data)
+    frappe.msgprint("Upload photo successfully")

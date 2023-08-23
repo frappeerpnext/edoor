@@ -82,7 +82,6 @@
                 </div>
             </ComOverlayPanelContent>
         </OverlayPanel>   
-
 <div v-if="cityLedgerAmountSummary">
     <div class="flex w-full gap-3 mb-3">
         <div class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border">
@@ -95,11 +94,11 @@
         </div>
         <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total  border">
             <span class="text-500 uppercase text-sm text-end">total credit</span><span class="text-xl line-height-2 font-semibold text-end">
-            <span><CurrencyFormat :value="cityLedgerAmountSummary.credit" /></span></span>
+            <span><CurrencyFormat :value="cityLedgerAmountSummary?.credit" /></span></span>
             </div> 
         <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total bg-green-50 border border-green-edoor">
                 <span class="text-500 uppercase text-sm text-end">balance</span><span class="text-xl line-height-2 font-semibold text-end">
-                <span><CurrencyFormat :value="cityLedgerAmountSummary.balance" /></span></span>
+                <span><CurrencyFormat :value="cityLedgerAmountSummary?.balance" /></span></span>
         </div> 
     </div>
 </div>
@@ -151,12 +150,12 @@
                 
             </Column>
             <Column>
-                <template #body="slotProps"> 
-                    <div class="flex gap-2">
-                    <Button @click="onEditFolioTransaction(slotProps.data.name, slotProps.data.reference_folio_transaction)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
-                    <Button @click="onDeleteCityLedgerTransaction(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
+                <template #body="slotProps">
+                    <div class="flex gap-2" v-if="!slotProps.data.parent_reference">
+                    <Button  @click="onEditFolioTransaction(slotProps.data.name)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
+                    <Button  @click="onDeleteCityLedgerTransaction(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
                         <!-- <Button label="Edit" @click="onEditFolioTransaction(slotProps.data.name, slotProps.data.reference_folio_transaction)"></Button> -->
-                        <!-- <Button label="Delete" @click="onDeleteCityLedgerTransaction(slotProps.data.name)" /> -->
+                       <!-- <Button label="Delete" @click="onDeleteCityLedgerTransaction(slotProps.data.name)" /> -->
                     </div>
                 </template>
             </Column>
@@ -194,7 +193,6 @@
     </ComOverlayPanelContent>
     <!-- <Button @click="OnSaveColumn">Save</Button> -->
 </OverlayPanel>
-
 </template>
 <script setup>
 import { inject, ref, useConfirm, useToast, getCount, getDocList, onMounted, onUnmounted,getApi,useDialog, computed,deleteDoc } from '@/plugin'
@@ -241,6 +239,7 @@ const columns = ref([
     { fieldname: 'owner', label: 'User' ,default:true},
     { fieldname: 'note', label: 'Note' ,default:true},
     { fieldname: 'type',default:true},
+    { fieldname: 'parent_reference'},
 ])
  
 const selectedColumns = ref([]);
@@ -301,11 +300,11 @@ function AddTransaction(account_code){
             }
         })
 }
-function onEditFolioTransaction(name,disabled) {
-    if(disabled){
-        gv.toast("warn","city ledger transaction can't edit")
-        return
-    }
+function onEditFolioTransaction(name) {
+    // if(disabled){
+    //     gv.toast("warn","city ledger transaction can't edit")
+    //     return
+    // }
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             folio_transaction_number: name
@@ -320,8 +319,8 @@ function onEditFolioTransaction(name,disabled) {
             closeOnEscape: false
         },
         onClose: (options) => {
-            const data = options.data;
-            if (data) {
+            const doc = options.data;
+            if (doc) {
                 loadData()
             }
 
@@ -441,6 +440,15 @@ function loadData() {
     getTotalRecord(filters)
 
     localStorage.setItem("page_state_folio_transaction", JSON.stringify(pageState.value))
+    
+    getApi("utils.get_city_ledger_amount_summary",{
+        filters:{
+            end_date:working_day.date_working_day,
+            city_ledger:props.name
+        }
+    }).then((result)=>{
+        cityLedgerAmountSummary.value = result.message
+    })
 
 }
 function getTotalRecord(filters) {
@@ -508,8 +516,7 @@ onMounted(() => {
                 header_class ="text-center"
             }else if(["Currency"].includes(r.fieldtype)){
                 header_class ="text-right"
-            }
-             
+            } 
             columns.value.push({
                 fieldname:r.fieldname,
                 label:r.label,
@@ -519,23 +526,11 @@ onMounted(() => {
             })
         })
     })
-
 })
 
- 
 onUnmounted(()=>{
     socket.off("RefreshData");
 })
-
-getApi("utils.get_city_ledger_amount_summary",{
-        filters:{
-            end_date:working_day.date_working_day,
-            city_ledger:props.name
-        }
-    }).then((result)=>{
-        cityLedgerAmountSummary.value=result.message
-    })
-
     // Filter 
 const showAdvanceSearch = ref()
 const advanceFilter = (event) => {

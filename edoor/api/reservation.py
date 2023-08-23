@@ -365,15 +365,16 @@ def validate_room_type_availability(doc):
 @frappe.whitelist(methods="POST")
 def stay_add_more_rooms(reservation=None, data=None):
     reservation = frappe.get_doc("Reservation", reservation)
+    
     for d in data:
+         
         if d['departure_date'] <= d['arrival_date']:
             frappe.throw("Departure date cannot less than or equal to arrival date")
         stay = {
             "doctype":"Reservation Stay",
             "reservation":reservation.name,
-            "update_reservation":True,
-            "update_room_occupy":True,
-            "reservation_status":"Reserved",
+            "reservation_status":"Reserved" if d["room_id"]  else "Confirmed",
+
             "arrival_time":reservation.arrival_time,
             "departure_time":reservation.departure_time,
             "note":reservation.note,
@@ -382,7 +383,7 @@ def stay_add_more_rooms(reservation=None, data=None):
             "stays": [{
                 "room_type_id": d["room_type_id"],
                 "room_id":d["room_id"] or None,
-                "rate":d["rate"] or 0,
+                "input_rate":d["rate"] or 0,
                 "guest":reservation.guest,
                 "reservation_status":"Reserved",
                 "start_date":d["arrival_date"],

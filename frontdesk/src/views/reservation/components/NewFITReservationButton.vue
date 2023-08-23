@@ -11,7 +11,9 @@ import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
 
 const dialog = useDialog();
 
+
 function onClick() {
+   
     const dialogRef = dialog.open(NewReservation, {
         props: {
             header: 'New FIT Reservation',

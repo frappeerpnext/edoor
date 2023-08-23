@@ -5,7 +5,7 @@
             @click="onClick(item.menu_name)"
             :class="[current_page == item.menu_name ? 'bg-gray-300' : '']">
             <div class="flex gap-2">
-                <span v-if="item?.icon" v-html="item?.icon"></span>
+                <span v-if="item?.sub_menu_icon" v-html="item?.sub_menu_icon"></span>
                 <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ item.menu_text }}</span>
             </div> 
        </button>
@@ -14,7 +14,7 @@
                 @click="onClick(child.menu_name)"
                 :class="[current_page == child.menu_name ? 'bg-gray-300' : '']">
                 <div class="flex gap-2 ml-3">
-                    <span v-if="child?.icon" v-html="child?.icon"></span>
+                    <span v-if="child?.sub_menu_icon" v-html="child?.sub_menu_icon"></span>
                     <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ child.menu_text }}</span>
                 </div> 
             </button>

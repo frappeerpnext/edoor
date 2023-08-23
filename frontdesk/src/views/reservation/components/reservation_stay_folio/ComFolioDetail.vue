@@ -1,10 +1,12 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true">
-    <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
-    <template #footer-left>
-        <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
-    </template>
-  </ComDialogContent>
+    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" style="max-height: 80vh;">
+        <div>
+            <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
+        </div>
+        <template #footer-left>
+            <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
+        </template>
+    </ComDialogContent>
 </template>
 <script setup>
 import { ref, getApi, onMounted, inject, getDoc,useDialog } from "@/plugin"

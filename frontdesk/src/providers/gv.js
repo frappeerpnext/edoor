@@ -113,7 +113,6 @@ export default class Gv {
 			Object.entries(obj).forEach(([key, value]) => {
 				if(except_object[key] != value){
 					if((!except_properties.split(',').filter(r=>r == key).length > 0) && (value != '' && value != undefined && value != null && String(value) != '{}' && String(value) != '[]')){
-						console.log(except_properties.split(',').filter(r=>r != key))
 						notEmpty ++;
 					}
 				}
@@ -123,6 +122,18 @@ export default class Gv {
 		
 		return notEmpty > 0;
 		
+	}
+	search(data=[], keyword='', properties){
+		if(data.length > 0 && !properties){
+			properties = String(Object.keys(data[0]))
+		}
+		return data.filter(function(r){
+			var value = ''
+			properties.trim().split(',').forEach(p => {
+				value = value + String(r[p] || '') + ' '
+			}); 
+			return value.toLowerCase().includes((keyword).toLowerCase())
+		})
 	}
 	getCustomPrintFormat(name){
 		 

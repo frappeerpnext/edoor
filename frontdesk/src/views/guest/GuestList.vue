@@ -78,14 +78,14 @@
         </DataTable>
         
     
-</ComPlaceholder> 
+
     <Paginator class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
         @page="pageChange">
         <template #start="slotProps">
             <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
         </template>
     </Paginator>
-
+</ComPlaceholder> 
 </div>
 <OverlayPanel ref="opShowColumn">
     <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
@@ -291,10 +291,6 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
- 
- 
-
-
 onMounted(() => {
     let state = localStorage.getItem("page_state_customer")
     if (state) {

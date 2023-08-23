@@ -408,7 +408,7 @@ function showRoomBlockDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: true
+            closeOnEscape: false
         }
        
     });

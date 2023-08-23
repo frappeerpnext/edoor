@@ -36,11 +36,11 @@
                 <Dropdown class="w-full" v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"
                     @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" />
 
-                <!-- <Message v-if="d.room_type_id != d.new_room_type_id">
+                <Message v-if="d.room_type_id != d.new_room_type_id">
                     <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0" />
                     <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
                         regenerate rate</label>
-                </Message> -->
+                </Message>
             </td>
             <td class="p-2 select-room-number-style">
                 <Dropdown class="w-full" v-model="d.room_id" :options="get_rooms(d)" optionValue="name" 

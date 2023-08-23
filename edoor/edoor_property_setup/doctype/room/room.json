@@ -33,7 +33,8 @@
   "guest",
   "guest_name",
   "show_in_room_availability",
-  "is_block"
+  "is_block",
+  "keyword"
  ],
  "fields": [
   {
@@ -204,11 +205,16 @@
    "fieldname": "reservation_status",
    "fieldtype": "Data",
    "label": "Reservation Status"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-03 16:26:54.921646",
+ "modified": "2023-08-22 09:09:57.512162",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",
@@ -258,7 +264,7 @@
    "share": 1
   }
  ],
- "search_fields": "property,room_type,housekeeping_status",
+ "search_fields": "room_number,property,room_type,housekeeping_status,guest_name,reservation_stay",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

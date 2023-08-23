@@ -2,76 +2,153 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe.utils import date_diff,today 
+from frappe.utils.data import strip
+import datetime
+from frappe import _
+
+def execute(filters=None): 
+	filters.order_by = filters.order_by or 'modified'
+	filters.order_type = filters.order_type or 'desc'
+	filters.is_master = filters.is_master or 0
+	filters.guest = filters.guest or ''
+	filters.business_source= filters.business_source or ''
+	filters.reservation= filters.reservation or ''
+	filters.reservation_stay= filters.reservation_stay or ''
+	filters.account_code = filters.account_code or ''
+	filters.room_id = filters.room_id or ''
 
 
-def execute(filters=None):
-	#validate 
+
+	validate(filters)
+	report_data = []
+	skip_total_row=False
+	message=None
+
+
+	folio_transaction_amount_data =  get_folio_transaction_amount(filters)
+	report_data = get_report_data(folio_transaction_amount_data,filters) 
+	return get_columns(	), report_data, message, None, get_report_summary(folio_transaction_amount_data,filters),skip_total_row
+ 
+def validate(filters):
+	datediff = date_diff(filters.end_date, filters.start_date)
 	if filters.start_date and filters.end_date:
 		if filters.start_date > filters.end_date:
 			frappe.throw("The 'Start Date' ({}) must be before the 'End Date' ({})".format(filters.start_date, filters.end_date))
-		if (filters.end_date - filters.start_date).days > 30:
-			frappe.throw("The 'Start Date' ({}) must be before the 'End Date' ({})".format(filters.start_date, filters.end_date))
-	return get_columns(filters), get_report_data(filters),None, None,get_report_summary(filters)
+		if datediff > 30:
+			frappe.throw("Your Max date for viewing transaction is only One Month.".format(filters.start_date, filters.end_date))
 
 
-
-def get_columns(filters):
+def get_columns():
 	return [
 		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'align':'center',"header_class":'text-center','post_message_action':"view_folio_transaction_detail","default":True},
 		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True},
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True},
-		{'fieldname':'account_name','label':'Account Name',"default":True},
+		{'fieldname': 'account_code', 'label': 'Account Code','extra_field':"account_name", 'extra_field_separator':"-",'header_class':"text-left" ,'default':True},
 		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
-		{'fieldname':'guest','label':'Stay #','fieldtype':'Link','options':"Customer",'align':'center',"header_class":'text-center','post_message_action':"view_guest_detail","default":True},
-		# {'fieldname':'business_source','label':'Source',"default":True},
-		# {'fieldname':'room_types','label':'Room Type',"default":True},
-		#   {'fieldname':'rooms','label':'Rooms',"align":'center',"header_class":'text-center',"default":True},
-		#  {'fieldname':'guest','label':'Guest','fieldtype':'Link',"options":"Customer","align":'center','extra_field':'guest_name', 'extra_field_separator':'-','post_message_action':"view_guest_detail","default":True},
-		#  {'fieldname':'guest_name','label':'Guest Name'},
-		# {'fieldname':'phone_number','label':'Phone #',"default":True},
-		# {'fieldname':'email','label':'Email',"default":True},
+		{'fieldname':'business_source','label':'Business Source', "header_class":'text-left',"default":True},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		
-		# {'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		# {'fieldname':'is_master','label':'Master Folio',"fieldtype":"check","default":True}
 	]
 
-def get_report_data(filters):
-	sql ="""
+def get_folio_transaction_amount(filters):
+	sql="""
 		select 
-			name ,
-			posting_date,
-			room_number,
-			account_name,
-			type,
-			amount,
-			reservation,
-			reservation_stay,
-			business_source,
-			guest,
-			guest_name,
-			parent_account_name,
-			reservation_status
-		from `tabFolio Transaction` 
+			transaction_number,
+			sum(if(type='Debit',0,amount)) as credit,
+			sum(if(type='Credit',0,amount)) as debit
+		from `tabFolio Transaction`
 		where
-			transaction_type='Reservation Folio'
-	"""
-	data = frappe.db.sql(sql, as_dict=1)
-	for d in data:
-		if d["type"]=="Debit":
-			d["debit"] = d["amount"] or 0
-		else:
-			d["credit"] = d["amount"] or 0
+			posting_date between '{}' and '{}' and 
+			transaction_type='Reservation Folio' 
+		group by
+			transaction_number
+	""".format(filters.start_date,filters.end_date)
 
-	return data
+ 
+	 
+	return frappe.db.sql(sql, as_dict=1)
 
-def get_report_summary(filters):
+def get_report_data(folio_transaction_amount,filters):
+	#get folio number from folio folio transaction
+	folio_numbers = set([d["transaction_number"] for d in folio_transaction_amount])
+	filters.folio_numbers = folio_numbers or []
+	if filters.folio_numbers:
+		sql ="""
+			select 
+				name ,
+				modified,
+				creation,
+				owner,
+				posting_date,
+				room_number,
+				room_id,
+				account_name,
+				account_code,
+				type,
+				amount,
+				reservation,
+				business_source,
+				reservation_stay,
+				is_master_folio,
+				guest,
+				guest_name,
+				parent_account_name,
+				reservation_status
+			from `tabFolio Transaction` 
+			where
+				property = %(property)s and 
 
-	return[
-		{"label":"Opening Balance","value":150},
-		{"label":"Debit","value":150,"indicator":"red"},
-		{"label":"Credit","value":150},
-		{"label":"Ending Balance","value":150},
-	] 
+				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
+				ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
+				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
+				ifnull(account_code,'') = if(%(account_code)s='',ifnull(account_code,''),%(account_code)s)  and
+				ifnull(room_id,'') = if(%(room_id)s='',ifnull(room_id,''),%(room_id)s)  and
+				is_master_folio = if(%(is_master)s=0,is_master_folio,1) and 
+				transaction_type='Reservation Folio'
+		""".format(filters.keyword or '')
+		data = frappe.db.sql(sql,filters,as_dict=1)
+		for d in data:
+			if d["type"]=="Debit":
+				d["debit"] = d["amount"] or 0
+			else:
+				d["credit"] = d["amount"] or 0
+
+		return  sorted(data, key=lambda k: k[filters.order_by], reverse=True if filters.order_type=='desc' else False)
+	return []
+
+def get_report_summary(filio_transaction_amount,filters):
+
+	report_summary=[]
+	
+	sql="""
+		select 
+			sum(amount * if(type='Credit',-1,1)) as amount 
+		from `tabFolio Transaction` 
+		where 
+			transaction_type='Reservation Folio' and
+			property = %(property)s and 
+			ifnull(business_source,'') = if(%(business_source)s='',ifnull(business_source,''),%(business_source)s)  and 
+			ifnull(guest,'') = if(%(guest)s='',ifnull(guest,''),%(guest)s)  and 
+			is_master_folio = if(%(is_master)s=0,is_master_folio,1) and 
+			posting_date < %(start_date)s
+		"""
+	data = frappe.db.sql(sql,filters,as_dict=1) 
+	opening_balance = 0.00
+	credit = sum([d["credit"] for d in filio_transaction_amount]) or 0
+	debit = sum([d["debit"] for d in filio_transaction_amount]) or 0
+
+	if data:
+		opening_balance= data[0]["amount"] or 0
+	
+	balance = opening_balance + debit
+	balance = balance - credit
+	
+	report_summary.append({"label":"Opening Balance","value":frappe.format_value(opening_balance or 0,"Currency"),"indicator":"red"})	
+	report_summary.append({"label":"Debit","value":frappe.format_value(debit or 0,"Currency"),"indicator":"blue"})	
+	report_summary.append({"label":"Credit","value":frappe.format_value(credit or 0,"Currency"),"indicator":"blue"})	
+	report_summary.append({"label":"Ending Balance","value":frappe.format_value(balance or 0,"Currency"),"indicator":"green"})	
+	
+
+	return report_summary

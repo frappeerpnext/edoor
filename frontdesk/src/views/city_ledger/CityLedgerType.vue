@@ -5,7 +5,7 @@
                 <div class="text-2xl">City Ledger Account Type</div>
             </template>
             <template #end>
-              <Button label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
+              <Button class="border-none" label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -16,20 +16,18 @@
                 </div>
             </div>
         </div>
-        <div class="p-2 bg-white rounded-xl">
+        <div>
             <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
             <DataTable  :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
                 <Column field="city_ledger_type" header="City Ledger Type"></Column>
-                <Column field="note" header="Note"></Column>
                 <Column field="owner" header="Owner"></Column>
+                <Column field="note" class="w-6" header="Note"></Column>
                 <Column header="">
                 <template #body="slotProps">
                     <div class="flex gap-2 justify-end">
-                    <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem" label="Edit" rounded />
-                    <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem" label="Delete" rounded />
+                    <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
+                    <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
                     </div>
-                    <!-- <i class="pi pi-pencil" style="margin-right: 10px;" @click="onEdit(slotProps.data.name)"/>
-                    <i class="pi pi-trash" @click="onDelete(slotProps.data.name)"/> -->
                 </template>
             </Column>
             </DataTable>

@@ -19,7 +19,7 @@
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-between mb-3 filter-calen-fro">
+        <div class="flex justify-end mb-3 filter-calen-fro">
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type"   @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
             </div>

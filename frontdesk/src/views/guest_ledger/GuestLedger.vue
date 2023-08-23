@@ -169,7 +169,6 @@
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    
 </template>
 
 <script setup>

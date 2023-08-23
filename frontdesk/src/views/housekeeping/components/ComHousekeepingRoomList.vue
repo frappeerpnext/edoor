@@ -1,11 +1,11 @@
 <template>
     <div class=""> <!-- hk-pagination -->
-        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="hk.room_list?.length > 0"> 
+        <ComPlaceholder text="No Data"  :loading="loading" :is-not-empty="data.length > 0"> 
         <DataTable 
         v-model:selection="hk.selectedRooms" 
         class="cursor-pointer res_list_scroll" 
         dataKey="name" 
-        :value="hk.room_list" 
+        :value="data" 
         stateStorage="local"
         stateKey="table_house_keeping_room_state"
         @row-dblclick="onDblClick"
@@ -80,7 +80,7 @@
 
 <script setup>
 
-import { ref, inject } from '@/plugin';
+import { ref, inject,postApi,computed } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import { useDialog } from 'primevue/usedialog';
@@ -98,7 +98,9 @@ const frappe = inject("$frappe")
 const call = frappe.call()
 const visibleRight = ref(false);
 const db = frappe.db()
-
+const data = computed(()=>{
+    return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
+})
 function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
 }
@@ -130,9 +132,6 @@ function SidebarClose() {
         });
     }
 function onRowSelect(r) {
-    
-       
-    console.log(r)    
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
         visibleRight.value = false;
@@ -149,6 +148,7 @@ function onRowSelect(r) {
 
     hk.selectedRow = r.data
     if(hk.selectedRow.reservation_stay){
+        getHKSummary()
         db.getDoc('Reservation Stay', hk.selectedRow.reservation_stay)
         .then((doc) => {
             hk.reservationStay = doc
@@ -158,7 +158,13 @@ function onRowSelect(r) {
     else{
         hk.reservationStay = {} 
     }
-
+}
+function getHKSummary(){ 
+    postApi('reservation.get_reservation_housekeeping_charge_summary',{ reservation_stay :hk.selectedRow.reservation_stay},'',false)  
+    .then((doc) => {
+        hk.selectedRow.summary = doc.message
+    })
+  .catch((error) => console.error(error));
 }
 
 function onDblClick(r) {

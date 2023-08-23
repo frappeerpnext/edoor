@@ -11,7 +11,7 @@
             </template>
         </ComHeader>
         <div class="mb-3 flex justify-between">
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-2">
                 <div>
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
@@ -34,55 +34,58 @@
                 </Button>
             </div>
         </div>
-        <DataTable 
-        class="res_list_scroll"
-        :resizableColumns="true"  
-        columnResizeMode="fit" 
-        showGridlines 
-        stateStorage="local"
-        stateKey="table_business_source_list_state" 
-        scrollable 
-        :reorderableColumns="true"   
-        :value="data" tableStyle="min-width: 50rem" 
-        @row-dblclick="onViewReservationStayDetail"
-        scrollHeight="70vh">
-            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
-            :frozen="c.frozen" 
-            >
-                <template #body="slotProps" >
-                    <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
-                        {{ slotProps.data[c.fieldname] }} 
-                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                    </Button>
-                    <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                    <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
-                    <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-                    v-if="slotProps?.data && slotProps?.data?.rooms">
-                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                        <span>{{ item }}</span>
-                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+        <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="true">
+            <DataTable 
+            class="res_list_scroll"
+            :resizableColumns="true"  
+            columnResizeMode="fit" 
+            showGridlines 
+            stateStorage="local"
+            stateKey="table_business_source_list_state" 
+            scrollable 
+            :reorderableColumns="true"   
+            :value="data" tableStyle="min-width: 50rem" 
+            @row-dblclick="onViewReservationStayDetail"
+            scrollHeight="70vh">
+                <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+                :frozen="c.frozen" 
+                >
+                    <template #body="slotProps" >
+                        <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                            {{ slotProps.data[c.fieldname] }} 
+                            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                            <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                        </Button>
+                        <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                        <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
+                        <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                        <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                        v-if="slotProps?.data && slotProps?.data?.rooms">
+                        <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                            <span>{{ item }}</span>
+                            <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                        </template>
+                        </div>
+                        <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
+                        <span v-else>
+                            {{ slotProps.data[c.fieldname] }}
+                            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                            <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                        </span>
                     </template>
-                    </div>
-                    <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                    <span v-else>
-                        {{ slotProps.data[c.fieldname] }}
-                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                    </span>
+                </Column>
+    
+            </DataTable>
+            <Paginator class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+                @page="pageChange">
+                <template #start="slotProps">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
-            </Column>
-   
-        </DataTable>
+            </Paginator>
+        </ComPlaceholder>
     </div>
  
-    <Paginator class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
-        @page="pageChange">
-        <template #start="slotProps">
-            <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-        </template>
-    </Paginator>
+    
 
 <OverlayPanel ref="opShowColumn">
     <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
@@ -93,7 +96,7 @@
             </span>
         </template>
         <ul class="res__hideshow">
-            <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
+            <li class="mb-2 white-space-nowrap" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
                 <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
                 <label :for="c.fieldname">{{ c.label }}</label>
             </li>
@@ -182,7 +185,8 @@ const getColumns = computed(()=>{
 })
  
   
-function onOpenLink(column, data){ 
+function onOpenLink(column, data){
+    
     const dialogRef = dialog.open(ComBusinessSourceDetail, {
         data: {
             name: data.name

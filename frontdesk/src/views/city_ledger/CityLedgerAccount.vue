@@ -5,12 +5,12 @@
                 <div class="text-2xl">City Ledger Account</div>
             </template>
             <template #end>
-              <Button @click="onAddCityLedgerAccount">Add New City Ledger Account</Button>
+              <Button class="border-none" @click="onAddCityLedgerAccount">Add New City Ledger Account</Button>
             </template>
         </ComHeader>
         <div class="mb-3">
             <div class="flex justify-between">
-                <div class="flex flex-wrap gap-3">
+                <div class="flex flex-wrap gap-2">
                 <div class="w-20rem">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
@@ -20,7 +20,7 @@
                 <div>
                 <div class="flex gap-3">
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
-                    <div v-if="Object.keys(filter).length > 0">
+                    <div v-if="gv.isNotEmpty(filter)">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                     </div>
                 </div>
@@ -148,7 +148,7 @@ socket.on("RefreshData", (arg) => {
 })
 
 const columns = ref([
-    { fieldname: 'name', label: 'City Ledger Code', fieldtype:"Link",post_message_action:"view_city_ledger_detail" ,default:true},
+    { fieldname: 'name', label: 'City Ledger Code', header_class:'text-center', fieldtype:"Link",post_message_action:"view_city_ledger_detail" ,default:true},
     { fieldname: 'city_ledger_name', label: 'City Ledger Name' ,default:true},
     { fieldname: 'city_ledger_type', label: 'City Ledger Type' ,default:true},
     { fieldname: 'business_source', label: 'Business Source' ,default:true},

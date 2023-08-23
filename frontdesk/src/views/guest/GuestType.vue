@@ -22,8 +22,6 @@
                 <DataTable
                     :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"
                     tableStyle="min-width: 50rem" 
-                    
-                    @row-click="" 
                     showGridlines>
                     <Column field="customer_group_en" header="Guest type"></Column>
                     <Column field="owner" header="Owner"></Column>
@@ -136,3 +134,5 @@ onMounted(() => {
 })
 
 </script>
+
+ 

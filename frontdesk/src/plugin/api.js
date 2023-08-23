@@ -29,6 +29,7 @@ export function getDocList(doctype, option){
         });
     })
 }
+ 
 export function getCount(doctype, filters){
     const frappe = new FrappeApp()
     const db = frappe.db()

@@ -280,7 +280,7 @@ const call = frappe.call()
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
-
+const cityLedgerAmountSummary = ref()
 const account_code = ref({});
 const city_ledger = ref({});
 const folio_number = ref({})
@@ -548,7 +548,7 @@ onMounted(() => {
         
     } else {
               doc.value  = dialogRef.value.data.new_doc
-        // doc.value.posting_date = moment(working_day.date_working_day).toDate();
+        doc.value.posting_date = moment(working_day.date_working_day).toDate();
    
 
     }

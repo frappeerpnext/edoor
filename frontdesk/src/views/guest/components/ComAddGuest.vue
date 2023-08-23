@@ -1,8 +1,9 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
         <div class="mb-3">
-            <div class="flex justify-center items-center">
-                <ComUploadProfile doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
+            {{ guest.attach }}
+            <div class="flex justify-center items-center flex-col">
+                <ComUploadProfile @loadingChange="updateLoadingStatus" @getFileName="refreshGuestDetail" doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
             </div>
         </div>
         <ComReservationStayPanel class="mb-3" title="Guest Information">
@@ -12,6 +13,11 @@
                         <label>Guest Name<span class="text-red-500">*</span></label><br />
                         <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Guest Name"
                             v-model="guest.customer_name_en" :maxlength="50" />
+                    </div>
+                    <div class="col-12 pt-2">
+                        <label>Company<span class="text-red-500">*</span></label><br />
+                        <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Company"
+                            v-model="guest.company_name" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Guest Type<span class="text-red-500">*</span></label><br />
@@ -120,14 +126,18 @@ function onLoad() {
             guest.value = doc
             guest.value.date_of_birth = moment(doc.date_of_birth).toDate()
             guest.value.expired_date = moment(doc.expired_date).toDate()
-            console.log(guest.value)
             loading.value = false
         })
         .catch((error) => {
             loading.value = false
         });
 }
-
+function refreshGuestDetail(){
+ setTimeout(function(){ 
+    window.postMessage("refresh_guest_detail",'*')
+},1000)
+  
+}
 function onClose(param = false) {
     dialogRef.value.close(param)
 }
@@ -150,11 +160,12 @@ function onOK() {
     var data = JSON.parse(JSON.stringify(guest.value))
     data.date_of_birth = moment(data.date_of_birth).format("YYYY-MM-DD")
     data.expired_date = moment(data.expired_date).format("YYYY-MM-DD")
- 
+    data.photo = data.attach
     createUpdateDoc('Customer', {data:data}).then((r) => {
         if (r.name) {
             getDoc('Customer', r.name).then((g) => {
                 onClose(g)
+                window.postMessage("refresh_guest_detail",'*')
                 loading.value = false
             })
         }
@@ -162,7 +173,9 @@ function onOK() {
         loading.value = false
     })
 }
-
+const updateLoadingStatus = (isLoading) => {
+  loading.value = isLoading;
+};
 onMounted(() => {
     getMeta() 
     if (dialogRef.value.data.name) {

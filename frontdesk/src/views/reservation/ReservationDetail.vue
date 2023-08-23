@@ -109,11 +109,9 @@
                 <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->
                 <ComReservationMoreOptionsButton />
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
-                <Button class="border-none" label="Edit Booking" icon="pi pi-file-edit" />
             </div>
         </template>
         <template #footer-right>
-             
             <Button v-if="canCheckIn" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
                 Check In</Button>
@@ -281,8 +279,13 @@ function onAddRoomMore(){
         },
         onClose: (options) => {
             const data = options.data;
+           
             if (data) {
-                rs.LoadReservation(data.name)
+                setTimeout(() => {
+                    
+                    rs.LoadReservation(data.name,false)
+                }, 1000);
+               
             }
         }
     });

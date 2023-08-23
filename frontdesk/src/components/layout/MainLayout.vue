@@ -9,6 +9,7 @@
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full"> 
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
+                        <!-- {{ eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus') }} -->
                         <template v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')" :key="index">
                             <ComHeaderBarItemButton
                                 :data="m"

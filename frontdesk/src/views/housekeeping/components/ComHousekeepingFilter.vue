@@ -1,5 +1,11 @@
 <template>
     <div class="flex gap-2">
+        <div class="p-0">
+            <div class="p-input-icon-left w-full">
+                <i class="pi pi-search" />
+                <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
+            </div>
+        </div>
         <div class="max-w-20rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
                         isFilter

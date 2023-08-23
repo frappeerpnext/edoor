@@ -38,10 +38,10 @@
                     <tbody>  
                         <tr v-for="(d, index) in list" :key="index"> 
                             <td class="pr-2 w-11rem"> 
-                                <Calendar inputClass="w-7rem" showIcon v-model="d.arrival_date" :max-date="new Date(moment(d.departure_date))" :min-date="new Date(moment(rs.reservation.arrival_date))" @update:modelValue="onStartDate($event,d)" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar  :selectOtherMonths="true" inputClass="w-7rem" showIcon v-model="d.arrival_date"  :min-date="moment(edoor_working_day.date_working_day).toDate()" @update:modelValue="onStartDate($event,d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-11rem"> 
-                                <Calendar inputClass="w-7rem" showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar  :selectOtherMonths="true" inputClass="w-7rem" showIcon v-model="d.departure_date"  :min-date="new Date(moment(d.arrival_date).add(1,'days'))" @update:modelValue="onEndDate($event, d)" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-3rem">
                                 <InputNumber v-model="d.room_nights" @update:modelValue="onNight($event,d)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
@@ -104,22 +104,20 @@
 import ComReservationStayChangeRate from "./ComReservationStayChangeRate.vue"
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import { ref, inject, postApi, onMounted } from "@/plugin"
-import { useToast } from "primevue/usetoast";
+
 const dialogRef = inject("dialogRef");
-const toast = useToast();
-const frappe = inject('$frappe')
-const db = frappe.db();
-const call = frappe.call();
+
+ 
 const moment = inject("$moment")
-const socket = inject("$socket")
+ 
 const rs = inject("$reservation")
 const isSaving = ref(false)
 const gv = inject("$gv")
 
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+ 
 const edoor_working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const rooms = ref([])
-const working_day = ref({})
+ 
+ 
 const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
@@ -173,8 +171,7 @@ const onSave = () => {
         
         if(r){
             isSaving.value = false
-            rs.LoadReservation(rs.reservation.name)
-            dialogRef.value.close()
+            dialogRef.value.close(r)
         }
         
     }).catch((er)=>{

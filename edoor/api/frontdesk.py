@@ -177,7 +177,7 @@ def get_server_port():
 
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
-    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more'],order_by="sort_order asc")
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],order_by="sort_order asc")
 
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
@@ -338,7 +338,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
             where property='{0}'{1}
             
         """
-        sql=sql.format(property,filter_room_type)
+        sql=sql.format(property,filter_room_type)       
     
         room_types = frappe.db.sql(sql, as_dict=1)
         for t in room_types:
@@ -488,7 +488,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
     data = frappe.db.sql(sql, as_dict=1)
  
     for d in data:
-        d["can_resize"]  = d["can_resize"] ==0
+        d["can_resize"]  = d["can_resize"] == 1
     events = data
    
 

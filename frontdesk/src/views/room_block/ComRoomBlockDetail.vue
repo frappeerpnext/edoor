@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK :hideButtonClose="true">
+    <ComDialogContent @onClose="onClose" :loading="isSaving" hideButtonOK>
        
         <table>
             <tr>
@@ -118,5 +118,9 @@ onMounted(() => {
         loading.value = false
     })
 });
+
+const onClose = () => {
+    dialogRef.value.close()
+}
 
 </script>

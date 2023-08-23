@@ -1,9 +1,9 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
+        
         <div class="iframe-view">
         <TabView  lazy>
             <TabPanel header="General Information">
-                {{ name }}
                 <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
                     :src="generalInfoUrl">
                 </iframe>
@@ -42,7 +42,7 @@
 </template>
 <script setup>
 
-import { inject, ref, onMounted,computed,useDialog,deleteDoc,useConfirm } from '@/plugin'
+import { inject, ref, onMounted,computed,useDialog,deleteDoc,useConfirm,onUnmounted } from '@/plugin'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
@@ -57,6 +57,12 @@ function onIframeLoaded(id){
 iframe.height = iframe.contentWindow.document.body.scrollHeight;
 
 }
+
+function loadIframe() {
+    const url  = generalInfoUrl.value + "&refresh=" + (Math.random() * 16)
+    document.getElementById("general").contentWindow.location.replace(url)
+}
+
 
 const generalInfoUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Guest%20Detail%20General%20Information&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
@@ -123,14 +129,33 @@ function onDeleteGuest (name){
 onMounted(() => {
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
-    } else {
-        alert(111)
-    }
+    } 
 });
 
 const onClose = () => {
     dialogRef.value.close()
 }
+
+const refreshPageHandler = async function (e) {
+
+    if (e.isTrusted && typeof (e.data) == 'string') {
+         if (e.data=="refresh_guest_detail"){
+            loadIframe()
+         }
+           
+        }
+};
+
+
+window.addEventListener('message', refreshPageHandler, false);
+
+
+
+onUnmounted(() => {
+    window.removeEventListener('message', refreshPageHandler, false);
+
+})
+
 </script>
 <style scoped>
 .iframe-view{

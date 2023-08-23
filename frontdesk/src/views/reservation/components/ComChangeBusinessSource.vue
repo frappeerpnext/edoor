@@ -1,7 +1,7 @@
 <template>
     <ComOverlayPanelContent title="Change Business Source" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
         <div class="my-2">
-        <ComAutoComplete v-model="businessSource" placeholder="Business Source" doctype="Business Source"
+        <ComAutoComplete :filters="{property:property.name}" v-model="businessSource" placeholder="Business Source" doctype="Business Source"
             class="auto__Com_Cus w-full" />
         </div>
         <div class="flex gap-2 my-2">
@@ -16,7 +16,10 @@
 import { ref, inject,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 
-
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+let filters = [
+    ["property", "=", property.name]
+]
 
 const emit = defineEmits(['onClose','onSave'])
 const props = defineProps({

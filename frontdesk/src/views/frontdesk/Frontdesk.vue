@@ -146,6 +146,7 @@ import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.sv
 import NewReservation from '@/views/reservation/NewReservation.vue';
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
+import ComConfirmChangeStay from "@/views/frontdesk/components/ComConfirmChangeStay.vue"
 import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
@@ -290,9 +291,8 @@ const calendarOptions = reactive({
             });
     },
     eventAllow: function (dropInfo, draggedEvent) {
-
-
-        return draggedEvent._def.extendedProps.can_resize
+        console.log(draggedEvent._def.extendedProps)
+        return draggedEvent._def.extendedProps.can_resize ==1
     },
     selectable: true,
     editable: true,
@@ -343,8 +343,31 @@ const calendarOptions = reactive({
 
         onSelectedDate($event)
     }),
-    eventResizeStop: (($event) => {
-        console.log($event)
+    eventResizeStop: ((event) => {
+  
+        const dialogRef = dialog.open(ComConfirmChangeStay, {
+            data: event.event._def,
+            props: {
+                header: 'Change Stay',
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                closeOnEscape: false,
+                position: 'top'
+            },
+            onClose: (options) => {
+                event.revert();
+                const data = options.data;
+                if (data != undefined) {
+
+                    onRefresh()
+                }else {
+                    event.revert();
+                }
+            }
+        });
+       
     }),
     eventClick: ((info) => {
  

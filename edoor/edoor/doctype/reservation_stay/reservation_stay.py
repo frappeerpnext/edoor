@@ -64,23 +64,15 @@ class ReservationStay(Document):
 		
 
 
-
+		rooms_data = []
 		self.pax = self.adult + self.child 	
 		if self.stays:
 			
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
-			# json stay room
-			rooms_data = []
-			for s in self.stays:
-				rooms_data.append({
-					"name": s.name,
-					"room_number": s.room_number or '',
-					"room_type_alias": s.room_type_alias,
-					"room_type": s.room_type
-				})
-			self.rooms_data = json.dumps(rooms_data)
+
+				
 		for d in self.stays:
 			
 			d.property = self.property
@@ -118,6 +110,15 @@ class ReservationStay(Document):
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
+			#generate room data
+			rooms_data.append({
+					"name": d.name,
+					"room_number": d.room_number or '',
+					"room_type_alias": d.room_type_alias,
+					"room_type": d.room_type
+				})
+			
+		self.rooms_data = json.dumps(rooms_data)
 
 		#update stay summary
 		self.room_nights = Enumerable(self.stays).sum(lambda x: x.room_nights)
@@ -130,9 +131,9 @@ class ReservationStay(Document):
 		self.total_room_rate_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
 		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
-
-		self.arrival_date = Enumerable(self.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
-		self.departure_date = Enumerable(self.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
+ 
+		self.arrival_date = Enumerable(self.stays).min(lambda x:getdate(x.start_date))
+		self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
 
@@ -271,15 +272,15 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 	date_avaliables = ""
 	self.update_room_rate = False
 	for stay in self.stays:
-		start_date = datetime.strptime(str(stay.start_date), '%Y-%m-%d')
-		end_date = datetime.strptime(str(stay.end_date), '%Y-%m-%d')
+		start_date =getdate(stay.start_date)
+		end_date = getdate(stay.end_date)
 		dates = get_date_range(start_date=start_date, end_date=end_date)
 		
 		for d in dates:
 			date_avaliables = date_avaliables + ("'{}',".format(d.strftime("%Y-%m-%d")))
 			# validate room old rate update only new rate
 			room_rate = frappe.db.count("Reservation Room Rate", filters={'reservation_stay':self.name,'date':d})
-			
+		 
 			if room_rate == 0:
 				#generate room to reservation room rate
 				is_manual_rate = stay.is_manual_rate
