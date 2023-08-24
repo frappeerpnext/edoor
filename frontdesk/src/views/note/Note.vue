@@ -197,6 +197,7 @@ function onDateSelect() {
 }
 function onChecked(){
     if(!filter.value.search_by_date){
+        filter.value.date_range = null
         onLoadData()
     }else{
         onDateSelect()
@@ -212,6 +213,7 @@ function pageChange(page){
 function onLoadData(){
  
 	loading.value = true
+    gv.loading = true
 	let filters = []
 	
 	if (filter.value.keyword){
@@ -237,9 +239,12 @@ function onLoadData(){
 
 	}).then((docs) => {
 		notes.value = docs;
-		loading.value = false			
-	})
-
+		loading.value = false
+        gv.loading = false
+	}).catch(()=>{
+        gv.loading = false
+        loading = false
+    })
     getTotalRecord(filters)
 }
 

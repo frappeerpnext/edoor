@@ -16,17 +16,17 @@
                 <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"  placeholder="Sort By" @change="onSelectOrderBy"/>
                 <Button @click="onOrderTypeClick">{{filter.order_type}}</Button>
             </div>
-
-            <Button v-for="(s, index) in summary" :key="index" label="s.label">
-                {{s.label}}
-                {{ s.value }}
-            </Button>
-        
+        </div>
+        <div>
             <Button   label="Show Column" @click="toggleShowColumn" />
             <Button   label="Reset List" @click="onResetTable" />
             <Button   label="Print" @click="onPrint" />
         </div>
     </div>
+    <Button v-for="(s, index) in summary" :key="index" label="s.label">
+        {{s.label}}
+        {{ s.value }}
+    </Button>
 
     <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
         stateKey="table_guest_ledger_state" :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" paginator
@@ -76,6 +76,21 @@
         <label :for="c.fieldname">{{ c.label }}</label>
     </div>
     <Button @click="OnSaveColumn">Save</Button>
+</OverlayPanel>
+
+<OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch"> 
+        <Calendar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy" @date-select="onDateSelect"
+                        showIcon />
+        <Calendar :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy" showIcon  @date-select="onDateSelect" />
+        <ComAutoComplete  v-model="filter.business_source" class="pb-2" placeholder="Business Source"
+            doctype="Business Source" @onSelected="onSearch" />
+            {{ filter.guest }}
+        <ComAutoComplete  v-model="filter.city_ledger_type" class="pb-2" placeholder="City Ledger Type" doctype="City Ledger Type"
+            @onSelected="onSearch" :filters="['property','=',property.name]" />
+        <Button @click="onSearch">Refresh</Button>
+    </ComOverlayPanelContent>
 </OverlayPanel>
 
 </template>
