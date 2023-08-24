@@ -107,7 +107,7 @@
 </div>
 </template>
 <script setup>
-import { ref, inject,onMounted,reactive,useDialog,getDocList,getCount,useConfirm,deleteDoc } from '@/plugin';
+import { ref, inject,onMounted,updateDoc,reactive,useDialog,getDocList,getCount,useConfirm,deleteDoc } from '@/plugin';
 
 import ComAddNote from './ComAddNote.vue';
 import Paginator from 'primevue/paginator';
@@ -130,8 +130,10 @@ function onViewDetailReservationStay(rs){
 function onViewDetailReservation(rs){
     window.postMessage("view_reservation_detail|"+rs, '*')
 }
+const Refresh = () => {
+    onLoadData()
+}
 function onViewFolioDetail (selected) {
-
 const dialogRef = dialog.open(ComFolioTransactionDetail, {
 	data: {
 		folio_transaction_number: selected
@@ -181,7 +183,12 @@ function onEdit(name){
  
 const pageState = ref({order_by:"modified", order_type:"desc",page:0,rows:20,totalRecords:0})
 
- 
+ function onPin(i){
+	i.is_pin = !i.is_pin
+	updateDoc('Frontdesk Note', i.name, i).then((r)=>{
+		onLoadData()
+	})
+}
 
 function onDateSelect() {
     if(filter.value.date_range && filter.value.date_range[1]){

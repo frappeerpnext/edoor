@@ -1,6 +1,6 @@
 <template>
-    <div class=""> <!-- hk-pagination -->
-        <ComPlaceholder text="No Data"  :loading="loading" :is-not-empty="data.length > 0"> 
+    <div class="">
+        <ComPlaceholder text="No Data"  :loading="hk.loading" :is-not-empty="data.length > 0"> 
         <DataTable 
         v-model:selection="hk.selectedRooms" 
         class="cursor-pointer res_list_scroll" 
@@ -47,7 +47,7 @@
             </Column>
             <Column field="housekeeper" header="Housekeeper">
                 <template #body="slotProps">
-                    <Button @click="onAssignHousekeeper($event, slotProps.data)" link size="small" class="link_line_action1 no-underline">
+                    <Button v-if="slotProps.data.housekeeper" @click="onAssignHousekeeper($event, slotProps.data)" link size="small" class="link_line_action1 no-underline">
                         <span v-if="slotProps.data.housekeeper">{{slotProps.data.housekeeper}}</span>
                     </Button>
                 </template>
@@ -101,6 +101,7 @@ const db = frappe.db()
 const data = computed(()=>{
     return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
 })
+ 
 function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
 }

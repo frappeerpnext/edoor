@@ -14,7 +14,7 @@
                 </Badge>
             </Button>
         </div>
-    </div>
+    </div> 
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status"
         :style="{ width: '30vw' }" position="top">
         <div>
@@ -76,9 +76,8 @@ function onSaveChangeHousekeepingStatus() {
         rooms: rooms,
         status: selectedStatus.value
     }).then((result) => {
+        hk.clearSelected()
         visibleHousekeepingStatus.value = false
-        hk.selectedRooms = []
-     
         hk.loadData()
         submitLoading.value = false
         selectedStatus.value = ""

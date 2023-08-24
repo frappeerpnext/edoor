@@ -7,14 +7,14 @@
                 </div>
             </div>
         </template>
-        <template #end>
+        <!-- <template #end>
             <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />
-        </template>
+        </template> -->
     </ComHeader>
     <div class="flex justify-between">
         <div>
             <div class="flex gap-2">
-                <div class="col-3 p-0">
+                <div class="p-0">
                     <div class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
                         <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />

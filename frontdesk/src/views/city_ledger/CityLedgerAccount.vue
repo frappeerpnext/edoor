@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>  
-        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data.length > 0">
+        <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data.length > 0">
         <DataTable  resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
             stateKey="table_city_ledger_list_state" :reorderableColumns="true"
                :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">

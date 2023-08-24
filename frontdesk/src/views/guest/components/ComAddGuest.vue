@@ -36,8 +36,8 @@
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
                         <div class="flex align-items-center">
-                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="1" inputId="disabled" />
-                            <label for="disabled"> Disabled {{guest.disabled}}</label>
+                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="true" :false-value="0" :trueValue="1" inputId="disabled" />
+                            <label for="disabled"> Disabled</label>
                         </div>
                     </div>
                 </div>

@@ -17,7 +17,7 @@
             </div>
         </div>
         <div>
-            <ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
+            <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
             <DataTable  :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
                 <Column field="city_ledger_type" header="City Ledger Type"></Column>
                 <Column field="owner" header="Owner"></Column>

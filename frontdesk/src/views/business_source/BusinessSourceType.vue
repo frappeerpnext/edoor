@@ -21,8 +21,8 @@
       <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase())) -->
       <DataTable  :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
           <Column field="business_source_type" header="Business Source Type"></Column>
+          <Column field="owner" header="Owner"></Column>
           <Column field="note" class="w-6" header="Note"></Column>
-          <Column field="owner" header="Created By"></Column>
           <Column header="">
            <template #body="slotProps">
               <div class="flex gap-2 justify-end">

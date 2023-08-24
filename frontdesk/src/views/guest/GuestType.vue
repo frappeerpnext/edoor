@@ -3,7 +3,7 @@
         <ComHeader isRefresh @onRefresh="loadData()">
             <template #start>
                 <div class="text-2xl">Guest Type</div>
-            </template>me
+            </template>
             <template #end>
                 <Button class="border-none" label="Add New Guest Type" icon="pi pi-plus" @click="onAddNewGuestType" />
             </template>
@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="rounded-xl">
-            <ComPlaceholder text="No Data" :loading="loading"
+            <ComPlaceholder text="No Data" :loading="gv.loading"
                 :is-not-empty="(data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))).length > 0">
                 <DataTable
                     :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"

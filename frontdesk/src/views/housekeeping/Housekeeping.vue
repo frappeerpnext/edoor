@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="px-2">
-            <ComHeader isRefresh @onRefresh="onRefresh()" v-if="!isLoading">
+            <ComHeader isRefresh @onRefresh="onRefresh()">
                 <template #start>
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
@@ -64,8 +64,6 @@ const db = frappe.db()
 const call = frappe.call()
 const toast = useToast();
 const filter = ref({})
-const isLoading = ref(false)
-
 if (edoorShowhousekeepingSummary) {
     showSummary.value = edoorShowhousekeepingSummary == "1";
 }
@@ -74,15 +72,7 @@ function onShowSummary() {
     localStorage.setItem("edoor_hhowhousekeeping_summary", showSummary.value ? "1" : "0")
 }
 function onRefresh() {
-    isLoading.value = true
-    hk.loadData().then((data) => {
-        isLoading.value = false
-    }).catch((err) => {
-        isLoading.value = false
-
-    })
-
-
+    hk.loadData()
 }
 onMounted(() => {
 

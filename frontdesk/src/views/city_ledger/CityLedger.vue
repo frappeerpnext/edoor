@@ -1,39 +1,33 @@
 <template>
-    <h1>City ledger</h1>
-{{ loading }}
+    <ComHeader isRefresh @onRefresh="onRefresh()">
+        <template #start>
+            <div class="text-2xl">City Ledger</div>
+        </template>
+    </ComHeader>
+    <!-- <h1>City ledger</h1> -->
+    <!-- {{ loading }} -->
+    <div class="flex justify-between">
+        <div>
+            <div class="flex gap-2">
 
- 
+                <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                
+                <hr />
+                <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"  placeholder="Sort By" @change="onSelectOrderBy"/>
+                <Button @click="onOrderTypeClick">{{filter.order_type}}</Button>
+            </div>
 
-    <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-    <Calendar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy" @date-select="onDateSelect"
-        showIcon />
-    <Calendar :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy" showIcon  @date-select="onDateSelect" />
-    <ComAutoComplete  v-model="filter.business_source" class="pb-2" placeholder="Business Source"
-        doctype="Business Source" @onSelected="onSearch" />
-        {{ filter.guest }}
-      <ComAutoComplete  v-model="filter.city_ledger_type" class="pb-2" placeholder="City Ledger Type" doctype="City Ledger Type"
-        @onSelected="onSearch" :filters="['property','=',property.name]" />
- 
+            <Button v-for="(s, index) in summary" :key="index" label="s.label">
+                {{s.label}}
+                {{ s.value }}
+            </Button>
+        
+            <Button   label="Show Column" @click="toggleShowColumn" />
+            <Button   label="Reset List" @click="onResetTable" />
+            <Button   label="Print" @click="onPrint" />
+        </div>
+    </div>
 
-<Button @click="onSearch">Refresh</Button>
-    <hr />
-    <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"  placeholder="Sort By" @change="onSelectOrderBy"/>
-
- 
-
-  <Button @click="onOrderTypeClick">{{filter.order_type}}</Button>
-
-    <hr />
-    <Button v-for="(s, index) in summary" :key="index" label="s.label">
-        {{s.label}}
-        {{ s.value }}
-    </Button>
-    
-<Button   label="Show Column" @click="toggleShowColumn" />
-<Button   label="Reset List" @click="onResetTable" />
-<Button   label="Print" @click="onPrint" />
-
- 
     <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
         stateKey="table_guest_ledger_state" :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" paginator
         :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]">

@@ -63,7 +63,7 @@
                 </div>
                 <div class="col flex justify-end">
                     <div class="">
-                        <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon border-none h-full"></Button>
+                        <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b h-full"></Button>
                     </div>
                 </div>
             </div> 

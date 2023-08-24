@@ -75,11 +75,18 @@
                         <i class="pi pi-building" />
                         <span class="ml-2"> Mark as Bill to City Ledger </span>
                     </button>
-                    <button 
+                    <div v-if="!rs.reservationStay.is_master">
+                    <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
+                    <span class="ml-2"> Unmark as Bill to Master Room </span>
+                    </button>
+                    <button v-else-if="!rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
                     <span class="ml-2"> Mark as Bill to Master Room </span>
                     </button>
+                    </div>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
                     <ComIcon icon="userGif" style="height: 15px;" />
