@@ -177,7 +177,7 @@ class ReservationStay(Document):
 			"group_code":self.group_code or '',
 			"group_name":self.group_name or '',
 			"reservation_type":self.reservation_type,
-			"pay_by_company":self.pay_by_company,
+			"paid_by_master_room":self.paid_by_master_room,
 			"name": self.name
 		}
 		frappe.db.sql("""
@@ -197,22 +197,10 @@ class ReservationStay(Document):
 			group_code=%(group_code)s,
 			group_name=%(group_name)s,
 			reservation_type=%(reservation_type)s,
-			pay_by_company=%(pay_by_company)s
+			paid_by_master_room=%(paid_by_master_room)s
 		 where parent=%(name)s
 		""",data_for_udpate)
-		# frappe.db.sql("""
-		# 	update `tabReservation Stay Room` 
-		# 	set rooms='{}',
-		# 	note='{}',
-		# 	total_credit='{}',
-		# 	total_debit='{}',
-		# 	balance='{}',
-		# 	total_room_rate='{}',
-		# 	internal_reference_number = '{}',
-		# 	arrival_date='{}',departure_date='{}', is_master='{}', reservation_color='{}',group_color='{}',group_code='{}',group_name='{}',reservation_type='{}', pay_by_company='{}' where parent='{}'
-		# """.format(self.rooms,self.note,self.total_credit or 0,self.total_debit or 0,self.balance or 0,self.total_room_rate or 0,self.internal_reference_number or '',self.arrival_date,self.departure_date,self.is_master,self.reservation_color or '',self.group_color or '',self.group_code or '',self.group_name or '',self.reservation_type,self.pay_by_company, self.name))
-
-
+	
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()

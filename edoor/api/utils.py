@@ -106,6 +106,7 @@ def check_field(doc, key):
     return False 
 
 def get_date_range(start_date, end_date, exlude_last_date=True):
+ 
     # Create an empty list to store the generated dates.
     dates = []
      

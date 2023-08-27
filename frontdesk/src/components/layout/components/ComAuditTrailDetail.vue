@@ -48,7 +48,6 @@ import ComAuditTrailDetailAddRemoveRow from './ComAuditTrailDetailAddRemoveRow.v
 import ComAuditTrailDetailDeletedDoc from './ComAuditTrailDetailDeletedDoc.vue';
 import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
 import ComAuditTrailDetailChangedRow from './ComAuditTrailDetailChangedRow.vue';
-const emit = defineEmits('onClose')
 const props = defineProps({
     data: Object
 })
@@ -67,9 +66,6 @@ if(props.data){
     }
 }
 
-function onClose(){
-    emit('onClose')
-}
 </script>
 <style scoped>
     .h-title{

@@ -1,15 +1,12 @@
 <template>
     <div>
- 
         <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" /> -->
         <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="folio_menu" />
         <Menu ref="folio_menu" id="folio_menu" :popup="true">
             <template #end>
                 <button @click="onMarkAsMasterRoom()"
-
                     v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
-                    
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconCrownBlack" style="height: 12px;" />
                     <span class="ml-2">Mark as Master Room </span>
@@ -63,28 +60,29 @@
                     v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-excel" />
-                    <span class="ml-2">Void Reservation Stay</span>
+                    <span class="ml-2">Void Reservation Stay </span>
                 </button>
-                    <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" @click="onUnmarkasPaybyCityLedger()"
+                    <button v-if="rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master" @click="onUnmarkasPaidbyMasterRoom()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-building" />
-                        <span class="ml-2"> Unmark as Bill to City Ledger </span>
+                        <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
+                        <span class="ml-2"> Unmark as Paid by Master Room </span>
                     </button>
-                    <button @click="onMarkasPaybyCityLedger()" v-else-if="!rs.reservationStay.pay_by_company && !rs.reservationStay.is_master"
+                    <button @click="onMarkasPaidbyMasterRoom()" v-else-if="!rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-building" />
-                        <span class="ml-2"> Mark as Bill to City Ledger </span>
+                        
+                        <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
+                        <span class="ml-2">  Mark as Paid by Master Room </span>
                     </button>
-                    <div v-if="!rs.reservationStay.is_master">
-                    <button v-if="rs.reservationStay.pay_by_company && !rs.reservationStay.is_master"
+                    <div>
+                    <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onUnallowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-                    <span class="ml-2"> Unmark as Bill to Master Room </span>
+                    <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
+                    <span> Unallow Post to City Ledger </span>
                     </button>
-                    <button v-else-if="!rs.reservationStay.pay_by_company && !rs.reservationStay.is_master" 
+                    <button v-else @click="onAllowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-                    <span class="ml-2"> Mark as Bill to Master Room </span>
+                    <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
+                    <span> Allow Post to City Ledger </span>
                     </button>
                     </div>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
@@ -109,11 +107,9 @@
     </div>
 
     <ComDialogNote :confirm_message="note.confirm_message" :show_reserved_room="note.show_reserved_room" :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
-
 </template>
 <script setup>
 import { inject, ref, useConfirm, useToast, postApi } from "@/plugin";
-import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
 const socket = inject("$socket")
 const moment = inject("$moment")
 const confirm = useConfirm()
@@ -361,9 +357,9 @@ function onUnReservedRoom() {
 
 }
 
-function onMarkasPaybyCityLedger() {
+function onMarkasPaidbyMasterRoom() {
     confirm.require({
-        message: 'Are you sure you want to Mark as Bill to City Ledger?',
+        message: 'Are you sure you want to Mark as Piad by Master Room?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -372,14 +368,14 @@ function onMarkasPaybyCityLedger() {
         acceptLabel: 'Ok',
         accept: () => {
             db.updateDoc('Reservation Stay', rs.reservationStay.name, {
-                pay_by_company: 1,
+                paid_by_master_room: 1,
             })
                 .then((doc) => {
 
-                    rs.reservationStay.pay_by_company = doc.pay_by_company;
+                    rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
-                        severity: 'success', summary: 'Mark as Bill to City Ledger',
-                        detail: 'Mark as Bill to City Ledger Successfully', life: 3000
+                        severity: 'success', summary: 'Mark as Piad by Master Room',
+                        detail: 'Mark as Piad by Master Room Successfully', life: 3000
                     });
                 })
 
@@ -388,9 +384,9 @@ function onMarkasPaybyCityLedger() {
     });
 
 }
-function onUnmarkasPaybyCityLedger() {
+function onUnmarkasPaidbyMasterRoom() {
     confirm.require({
-        message: 'Are you sure you want to Unmark as Bill to City Ledger?',
+        message: 'Are you sure you want to Unmark as Paid by Master Room?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -399,13 +395,13 @@ function onUnmarkasPaybyCityLedger() {
         acceptLabel: 'Ok',
         accept: () => {
             db.updateDoc('Reservation Stay', rs.reservationStay.name, {
-                pay_by_company: 0,
+                paid_by_master_room: 0,
             })
                 .then((doc) => {
-                    rs.reservationStay.pay_by_company = doc.pay_by_company;
+                    rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
-                        severity: 'success', summary: 'Unmark as Bill to City Ledger ',
-                        detail: 'Unmark as Bill to City Ledger Successfully', life: 3000
+                        severity: 'success', summary: 'Unmark as Paid by Master Room ',
+                        detail: 'Unmark as Paid by Master Room Successfully', life: 3000
                     });
                 })
         },
@@ -413,6 +409,55 @@ function onUnmarkasPaybyCityLedger() {
     });
 
 }
+function onUnallowPosttoCityLedger(){
+    confirm.require({
+        message: 'Are you sure you want to Unallow Post to City Ledger?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                allow_post_to_city_ledger: 0,
+            })
+                .then((doc) => {
+                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
+                    toast.add({
+                        severity: 'success', summary: 'Unallow Post to City Ledger',
+                        detail: 'Unallow Post to City Ledger Successfully', life: 3000
+                    });
+                })
+        },
+
+    });
+}
+function onAllowPosttoCityLedger(){
+    confirm.require({
+        message: 'Are you sure you want to Allow Post to City Ledger?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                allow_post_to_city_ledger: 1,
+            })
+                .then((doc) => {
+                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
+                    toast.add({
+                        severity: 'success', summary: 'Allow Post to City Ledger',
+                        detail: 'Allow Post to City Ledger Successfully', life: 3000
+                    });
+                })
+        },
+
+    });
+}
+
 function onMarkasGITReservation() {
     confirm.require({
         message: 'Are you sure you want to Mark as GIT Reservation',

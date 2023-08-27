@@ -26,6 +26,14 @@
                     </div>
                 </div>
             </ComTagReservation>
+            <div v-tooltip.top="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
+                class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
+                <ComIcon  icon="IconBillToCompany" style="height:15px;width:15px;" ></ComIcon>
+            </div>
+            <div v-tooltip.top="'Paid By Master Room'" v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room"
+                class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
+                <ComIcon  icon="BilltoMasterRoom" style="height:15px;" ></ComIcon>
+            </div>
             <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay && rs.reservationStay.is_master"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />

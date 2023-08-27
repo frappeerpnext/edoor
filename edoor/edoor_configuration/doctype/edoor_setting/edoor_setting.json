@@ -14,6 +14,8 @@
   "allow_user_to_add_back_date_transaction",
   "show_account_code_in_folio_transaction",
   "allow_user_to_delete_auto_post_transaction",
+  "cb_177",
+  "show_summary_under_room_chart_calendar",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -197,12 +199,22 @@
    "fieldtype": "Link",
    "label": "Housekeeping Status of Release Room Block After Run Night Audit",
    "options": "Housekeeping Status"
+  },
+  {
+   "fieldname": "cb_177",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_summary_under_room_chart_calendar",
+   "fieldtype": "Check",
+   "label": "Show summary under room chart calendar"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-14 18:39:02.798277",
+ "modified": "2023-08-26 09:48:56.314351",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

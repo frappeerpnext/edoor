@@ -1,19 +1,27 @@
 <template>
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-3">
         <div>
-            <Button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab==1)" :key="index"
-                @click="onAddFolioTransaction(d)" class="conten-btn mr-1">Post {{ d.account_name }}</Button>
-
+            
+             <template v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab==1)" :key="index">
+                <Button 
+                    @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
+v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) == 1 && (rs.reservationStay.allow_post_to_city_ledger || 0)==1 )" 
+                    >Post {{ d.account_name }}</Button>
+             </template>    
+        
             <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
-                <template #end>
-                    <button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab==1)"
-                        :key="index" @click="onAddFolioTransaction(d)"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i :class="d.icon" />
-                        <span class="ml-2 ">Post {{ d.account_name }}</span>
-                    </button>
+                <template #end> 
+                    <template v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab==1)" :key="index">
+                        <button
+                            v-if="d.is_city_ledger_account == 0 || (d.is_city_ledger_account == 1 && rs.reservationStay.allow_post_to_city_ledger == 1)"
+                            @click="onAddFolioTransaction(d)"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i :class="d.icon" />
+                            <span class="ml-2 ">Post {{ d.account_name }}</span>
+                        </button>
+                    </template>
                     <button v-if="!rs.selectedFolio.is_master" @click="MarkasMasterFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-verified" />

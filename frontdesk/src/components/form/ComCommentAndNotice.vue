@@ -189,7 +189,7 @@ function onSaveNote(doctype, data) {
     data.comment_type = 'Comment'
     data.comment_by = currentUser.name
     data.name = op.value.data?.name || ''
- 
+    console.log(data)
     createUpdateDoc(doctype, { data: data }).then((r) => {
         saving.value = false
         create.value = {

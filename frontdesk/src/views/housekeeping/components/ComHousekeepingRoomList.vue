@@ -199,9 +199,6 @@ function onViewReservationStayDetail(rs){
     window.postMessage('view_reservation_stay_detail|'+rs, '*')
 
 }
-function onReservationStatus (){
-   
-}
 </script>
 <style scoped>
 .p-sidebar-mask.p-component-overlay{

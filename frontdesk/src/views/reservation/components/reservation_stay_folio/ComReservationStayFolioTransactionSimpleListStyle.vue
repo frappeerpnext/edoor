@@ -66,7 +66,7 @@
                     </div>
                 </template>
             </Column>
-            <Column field="owner" header="Made By"></Column>
+            <Column field="owner" header="Owner"></Column>
             <Column field="creation" header="Created">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.creation">{{ gv.datetimeFormat(slotProps.data.creation) }}</span>

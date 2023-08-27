@@ -18,13 +18,13 @@
         </div>
         <div>
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
-            <DataTable  :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+            <DataTable showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
                 <Column field="city_ledger_type" header="City Ledger Type"></Column>
                 <Column field="owner" header="Owner"></Column>
                 <Column field="note" class="w-6" header="Note"></Column>
-                <Column header="">
+                <Column header="Action" class="text-center w-10rem">
                 <template #body="slotProps">
-                    <div class="flex gap-2 justify-end">
+                    <div class="flex gap-2 justify-center">
                     <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
                     <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
                     </div>

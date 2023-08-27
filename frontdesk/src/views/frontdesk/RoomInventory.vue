@@ -1,6 +1,7 @@
 <template lang="">
     <div>
         <ComHeader isRefresh @onRefresh="onRefresh()">
+        
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
@@ -82,7 +83,7 @@
                                             </span>
                                             <div class="geust-title">
                                                 {{event.title}}
-                                                <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
+                                               
                                             </div>
                                         </div>
                                     </div>
@@ -117,7 +118,6 @@ import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
-
 
 
 

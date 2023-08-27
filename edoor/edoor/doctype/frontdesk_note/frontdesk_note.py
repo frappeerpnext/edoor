@@ -14,7 +14,7 @@ class FrontdeskNote(Document):
 			if not hasattr(self, 'note_date') and self.note_date:
 				self.note_date = now()
 			if self.reference_doctype == 'Reservation Stay' or self.reference_doctype == 'Reservation':
-				if self.reference_doctype == 'Reservation Stay' or not self.reservation_stay:
+				if self.reference_doctype == 'Reservation Stay' and self.reservation_stay:
 					self.reservation_stay = self.reference_name
 				elif self.reference_doctype == 'Reservation' and not self.reservation:
 					self.reservation = self.reference_name 

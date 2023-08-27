@@ -85,7 +85,7 @@
                             </div>
                             <div class=" col-12 lg:col-2">
                                 <div class="pt-2 rounded-lg cursor-pointer" style="height: 44px;">
-                                <label>Group Color</label>  
+                                <label class="white-space-nowrap overflow-hidden">Group Color</label>  
                                  <div class="w-full h-full rounded-lg border-1" style="border-color: #a0bde0;" @click="toggleColor" :style="{background:doc.reservation.group_color}"></div>
                                 </div>
                                 <OverlayPanel ref="opColor">
@@ -93,20 +93,7 @@
                                 </OverlayPanel>
                             </div>
                         </div>
-                            <!-- <div class="flex align-items-center">
-                                 Group Color
-                                <input type="color" v-model="group_color"   />
-                    
-                            </div> -->
-                     <div class=" flex justify-between"> 
-                            <div class="flex align-items-center">
-                                <label 
-                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
-                                    for="paidby" class="font-medium cursor-pointer me-2">Paid by Company</label>
-                                    <Checkbox 
-                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
-                                    class="" inputId="paidby"  v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1" :falseValue="0" />
-                            </div>
+                     <div class=" flex justify-end"> 
                             <div class="flex justify-end gap-3 pt-2" >
                             <div>
                                 <div class="text-center">
@@ -127,8 +114,24 @@
                                 class="child-adults-txt" />
                             </div>
                             </div>
-                        
-                    
+                        </div>
+                        <div class="w-full flex justify-end mt-4 gap-3">
+                            <div class="flex align-items-center">
+                                <label 
+                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                    for="paidby" class="font-medium cursor-pointer me-2">Paid by Master Room</label>
+                                    <Checkbox 
+                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                    class="" inputId="paidby"  v-model="doc.reservation.paid_by_master_room" :binary="true" :trueValue="1" :falseValue="0" />
+                            </div>
+                            <div class="flex align-items-center">
+                                <label 
+                                    v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
+                                    for="paidcity" class="font-medium cursor-pointer me-2">Allow Post to City Ledger</label>
+                                    <Checkbox 
+                                    v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
+                                    class="" inputId="paidcity"  v-model="doc.reservation.allow_post_to_city_ledger" :binary="true" :trueValue="1" :falseValue="0" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -418,11 +421,12 @@ const doc = ref({
         child: 0,
         reservation_status: 'Reserved',
         tax_rule: room_tax.value?.name,
-        pay_by_company: 1,
+        paid_by_master_room: 1,
         group_code:"",
         group_name:"",
         auto_assign_room: false,
-        group_color: group_color.value
+        group_color: group_color.value,
+        allow_post_to_city_ledger:1
     },
     guest_info: {
         "doctype": "Customer",

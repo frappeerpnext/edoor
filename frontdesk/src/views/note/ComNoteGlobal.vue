@@ -23,10 +23,11 @@
 					<div class="font-medium">
 						<span class="text-lg">{{ i.reference_doctype }}</span>
 						<span v-if="i.reference_doctype && i.reference_name"> - </span>
-						<span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay'">
-							{{i.reference_name}}
+						<span class="link_line_action w-auto border-none p-0" @click="onViewDetailReservationStay(i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
+							{{i.reference_name || i.reservation_stay}}
 						</span>
-						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') && i.reservation">
+						<span v-if="!(i.reference_doctype) && ( i.reservation_stay && i.reservation ) "> - </span>
+						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="i.reservation">
 							{{i.reservation}} 
 						</div>
 						<div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">

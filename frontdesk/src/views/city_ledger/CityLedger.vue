@@ -1,102 +1,176 @@
 <template>
-    <ComHeader isRefresh @onRefresh="onRefresh()">
-        <template #start>
-            <div class="text-2xl">City Ledger</div>
-        </template>
-    </ComHeader>
-    <!-- <h1>City ledger</h1> -->
-    <!-- {{ loading }} -->
-    <div class="flex justify-between">
+    <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <div class="flex gap-2">
+            <ComHeader isRefresh @onRefresh="loadData()">
+                <template #start>
+                    <div class="text-2xl">City Ledger</div>
+                </template>
+                <template #end>
+                    <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />
+                </template>
+            </ComHeader>
+            <div class="flex justify-between">
+                <div>
+                    <div class="flex gap-2">
+                        <div class="p-0">
+                            <div class="p-input-icon-left w-full">
+                                <i class="pi pi-search" />
+                                <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex gap-2">
+                                <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
 
-                <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                
-                <hr />
-                <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"  placeholder="Sort By" @change="onSelectOrderBy"/>
-                <Button @click="onOrderTypeClick">{{filter.order_type}}</Button>
+                                <div v-if="isFilter">
+                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter"
+                                        icon="pi pi-filter-slash" @click="onClearFilter" />
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <Dropdown v-model="order.order_by" :options="sortOptions" optionValue="fieldname"
+                                optionLabel="label" placeholder="Sort By" @change="onSelectOrderBy" />
+                        </div>
+                        <div>
+                            <!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
+                            <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">
+                                <i v-if="order.order_type == 'desc'" class="pi pi-sort-alpha-down" />
+                                <i v-if="order.order_type == 'asc'" class="pi pi-sort-alpha-up" />
+                            </Button>
+                        </div>
+
+                    </div>
+                </div>
+                <div>
+                    <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                        <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                    </Button>
+                </div>
+            </div>
+            <div>
+                <div class="flex w-full gap-3 mb-3 mt-3">
+                    <div :class="(index === summary.length - 1) ? 'bg-green-50 border-green-edoor' : 'bg-white'"
+                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border"
+                        v-for="(s, index) in summary" :key="index">
+                        <span class="text-500 uppercase text-sm text-end">{{ s.label }}</span>
+                        <span class="text-xl line-height-2 font-semibold text-end">
+                            <span>{{ s.value }}</span>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-            <Button   label="Show Column" @click="toggleShowColumn" />
-            <Button   label="Reset List" @click="onResetTable" />
-            <Button   label="Print" @click="onPrint" />
+        <div class="overflow-auto h-full">
+            <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data && data.length > 0">
+                <DataTable 
+                class="tb-cs-datatable"
+                :resizableColumns="true"
+                columnResizeMode="fit" 
+                showGridlines 
+                stateStorage="local"
+                stateKey="table_guest_ledger_state" 
+                :reorderableColumns="true" :value="data"
+                tableStyle="min-width: 50rem" 
+                paginator 
+                :rows="20" 
+                :rowsPerPageOptions="[20, 30, 40, 50]">
+                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))"
+                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :bodyClass="c.header_class || ''">
+                        <template #body="slotProps">
+                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                @click="onOpenLink(c, slotProps.data)" link>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </Button>
+                            <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                            <span v-else-if="c.fieldtype == 'Datetime'">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
+                            }} </span>
+                            <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
+                            </Timeago>
+                            <div v-else-if="c.fieldtype == 'Room'"
+                                class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                                v-if="slotProps?.data && slotProps?.data?.rooms">
+                                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                    <span>{{ item }}</span>
+                                    <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                                </template>
+                            </div>
+                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                            <span v-else-if="c.fieldtype == 'ReservationStatus'"
+                                class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
+                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{
+                                    slotProps.data[c.fieldname]
+                                }}</span>
+                            <span v-else>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </span>
+                        </template>
+                    </Column>
+
+                </DataTable>
+            </ComPlaceholder>
         </div>
+        <div></div>
     </div>
-    <Button v-for="(s, index) in summary" :key="index" label="s.label">
-        {{s.label}}
-        {{ s.value }}
-    </Button>
 
-    <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
-        stateKey="table_guest_ledger_state" :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" paginator
-        :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]">
-        <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
-            :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
-            <template #body="slotProps">
-                <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
-                    link>
-                    {{ slotProps.data[c.fieldname] }}
-                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                </Button>
-                <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
-                    moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
-                }} </span>
-                <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
-                <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-                    v-if="slotProps?.data && slotProps?.data?.rooms">
-                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                        <span>{{ item }}</span>
-                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                    </template>
+    <OverlayPanel ref="opShowColumn" style="width:30rem;">
+        <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
+            @onCancel="onCloseColumn">
+            <template #top>
+                <div class="p-input-icon-left mb-3 w-full">
+                    <i class="pi pi-search" />
+                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
                 </div>
-                <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-                <span v-else-if="c.fieldtype=='ReservationStatus'"  class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
-                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]
-                }}</span>
-                <span v-else>
-                    {{ slotProps.data[c.fieldname] }}
-                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                    
-                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                </span>
             </template>
-        </Column>
+            <div class="grid">
+                <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
+                    <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
+                    <label :for="c.fieldname">{{ c.label }}</label>
+                </div>
+            </div>
+            <template #footer-left>
+                <Button class="border-none" icon="pi pi-replay" label="Reset List" @click="onResetTable" />
+            </template>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 
-    </DataTable>
-
-    
-<OverlayPanel ref="opShowColumn">
-    <InputText v-model="filter.search_field" placeholder="Search" />
-    <div v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-        
-        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-        <label :for="c.fieldname">{{ c.label }}</label>
-    </div>
-    <Button @click="OnSaveColumn">Save</Button>
-</OverlayPanel>
-
-<OverlayPanel ref="showAdvanceSearch" style="width:70rem">
-    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
-            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch"> 
-        <Calendar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy" @date-select="onDateSelect"
-                        showIcon />
-        <Calendar :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy" showIcon  @date-select="onDateSelect" />
-        <ComAutoComplete  v-model="filter.business_source" class="pb-2" placeholder="Business Source"
-            doctype="Business Source" @onSelected="onSearch" />
-            {{ filter.guest }}
-        <ComAutoComplete  v-model="filter.city_ledger_type" class="pb-2" placeholder="City Ledger Type" doctype="City Ledger Type"
-            @onSelected="onSearch" :filters="['property','=',property.name]" />
-        <Button @click="onSearch">Refresh</Button>
-    </ComOverlayPanelContent>
-</OverlayPanel>
-
+    <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="grid">
+                <div class="col-4">
+                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
+                        dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
+                </div>
+                <div class="col-4">
+                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
+                        dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
+                </div>
+                <div class="col-4">
+                    <ComAutoComplete v-model="filter.business_source" class="pb-2 w-full" placeholder="Business Source"
+                        doctype="Business Source" @onSelected="onSearch" />
+                    {{ filter.guest }}
+                </div>
+                <div class="col-4">
+                    <ComAutoComplete v-model="filter.city_ledger_type" class="pb-2 w-full" placeholder="City Ledger Type"
+                        doctype="City Ledger Type" @onSelected="onSearch" :filters="['property', '=', property.name]" />
+                </div>
+                <!-- <Button @click="onSearch">Refresh</Button> -->
+            </div>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 </template>
 
 <script setup>
-import { ref, onMounted,onUnmounted, inject,computed ,useDialog,getApi} from '@/plugin'
+import { ref, onMounted, onUnmounted, inject, computed, useDialog, getApi } from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 const dialog = useDialog();
@@ -104,28 +178,32 @@ const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const data = ref()
 const frappe = inject('$frappe');
+const gv = inject('$gv');
 const call = frappe.call();
 const socket = inject("$socket")
 const columns = ref()
 const summary = ref()
+const showAdvanceSearch = ref()
 const moment = inject("$moment")
-const filter = ref({status:'All Status', start_date: moment().startOf('month').toDate(),end_date:moment().toDate(),guest:"", order_by:"modified",order_type:"desc" })
+const filter = ref({ start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "" })
+const order = ref({ order_by: "modified", order_type: "desc" })
+const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const loading = ref(false)
 const selectedColumns = ref([])
 const sortOptions = ref([
-    {"fieldname":"modified", label:"Last Update On"},
-    {"fieldname":"creation", label:"Created On"},
-    {"fieldname":"name", label:"ID"}
+    { "fieldname": "modified", label: "Last Update On" },
+    { "fieldname": "creation", label: "Created On" },
+    { "fieldname": "name", label: "ID" }
 ])
 const pageState = ref({})
 
 const opShowColumn = ref();
 
-const getColumns = computed(()=>{
-    if (filter.value.search_field){ 
-        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
-    }else {
-        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
+const getColumns = computed(() => {
+    if (filter.value.search_field) {
+        return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+    } else {
+        return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
 
@@ -133,55 +211,55 @@ function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 
- 
+
 
 socket.on("RefresheDoorDashboard", (arg) => {
-if (arg == property.name) {
-    setTimeout(function(){
-        loadData()
-    },3000)
-}
+    if (arg == property.name) {
+        setTimeout(function () {
+            loadData()
+        }, 3000)
+    }
 })
 
 const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
 
-function OnSaveColumn(event){
-    selectedColumns.value = columns.value.filter(r=>r.selected).map(x=>x.fieldname)
+function OnSaveColumn(event) {
+    selectedColumns.value = columns.value.filter(r => r.selected).map(x => x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
-    localStorage.setItem("page_state_guest_ledger", JSON.stringify(pageState.value) )
+    localStorage.setItem("page_state_guest_ledger", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
 }
 
 
-function onResetTable(){
+function onResetTable() {
     localStorage.removeItem("page_state_guest_ledger")
     localStorage.removeItem("table_guest_ledger_state")
     window.location.reload()
 }
 
-function onPrint(){
+function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
 
-data: {
-    "doctype": "Customer",
-    name: property.name,
-    report_name: "xx",
-    fullheight: true
-},
-props: {
-    header:"U print me",
-    style: {
-        width: '90vw',
-    },
-    position:"top",
-    modal: true,
-    maximizable: true,
-    closeOnEscape: false
-}
+        data: {
+            "doctype": "Customer",
+            name: property.name,
+            report_name: "xx",
+            fullheight: true
+        },
+        props: {
+            header: "U print me",
+            style: {
+                width: '90vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
 
-});
+    });
 }
 
 function debouncer(fn, delay) {
@@ -196,60 +274,62 @@ function debouncer(fn, delay) {
     };
 }
 
-function onOrderTypeClick(){
-    filter.value.order_type = filter.value.order_type =="desc"?"asc":"desc"
+function onOrderTypeClick() {
+    order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
     loadData()
 }
-function onSelectOrderBy(){
- 
+function onSelectOrderBy() {
+
     loadData()
 }
 
-function onDateSelect(d){
+function onDateSelect(d) {
     onSearch()
 }
 
 const onSearch = debouncer(() => {
- 
+
     loadData();
 }, 500);
 
 
 function loadData() {
-    loading.value = true
+    gv.loading = true
     const filters = JSON.parse(JSON.stringify(filter.value))
     filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
     filters.property = property.name
-    call.get("frappe.desk.query_report.run",{
-        report_name:edoor_setting.city_ledger_report_name,
+    filters.order_by = order.value.order_by
+    filters.order_type = order.value.order_type
+    call.get("frappe.desk.query_report.run", {
+        report_name: edoor_setting.city_ledger_report_name,
         filters: filters
     }).then((result) => {
         columns.value = result.message.columns
-        if (selectedColumns.value && selectedColumns.value.length==0){
-          selectedColumns.value = columns.value.filter(r=>r.default).map(r=>r.fieldname)
-        }  
+        if (selectedColumns.value && selectedColumns.value.length == 0) {
+            selectedColumns.value = columns.value.filter(r => r.default).map(r => r.fieldname)
+        }
         columns.value.forEach(r => {
-                r.selected = selectedColumns.value.includes(r.fieldname)
+            r.selected = selectedColumns.value.includes(r.fieldname)
         });
 
         data.value = result.message.result.slice(0, -1)
         summary.value = result.message.report_summary
         sortOptions.value = [...sortOptions.value, ...columns.value]
-        loading.value = false
+        gv.loading = false
 
     }).catch((err) => {
-        loading.value = false
+        gv.loading = false
 
         if (err._server_messages) {
 
             const _server_messages = JSON.parse(err._server_messages)
- 
+
             _server_messages.forEach(r => {
                 window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ", ""), '*')
             });
-        }else{
-            window.postMessage('show_alert|' + err.exception , '*')
+        } else {
+            window.postMessage('show_alert|' + err.exception, '*')
         }
 
 
@@ -257,12 +337,12 @@ function loadData() {
 }
 
 onMounted(() => {
-    let state =JSON.parse( localStorage.getItem("page_state_guest_ledger"))
-    
+    let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
+
     if (state) {
-        if( state.selectedColumns){
-          
-            selectedColumns.value = state.selectedColumns   
+        if (state.selectedColumns) {
+
+            selectedColumns.value = state.selectedColumns
         }
     }
 
@@ -272,5 +352,33 @@ onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
 })
 
+const advanceFilter = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
 
+const onCloseColumn = () => {
+    opShowColumn.value.hide()
+}
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
+
+const onClearFilter = () => {
+    filter.value = JSON.parse(JSON.stringify(defaultFilter))
+    filter.value.start_date = gv.dateApiFormat(filter.value.start_date)
+    filter.value.end_date = gv.dateApiFormat(filter.value.end_date)
+    loadData()
+    showAdvanceSearch.value.hide()
+}
+
+const isFilter = computed(() => {
+
+    if (moment().startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
+        console.log('deferece date')
+        return true
+    }
+    else {
+        return gv.isNotEmpty(filter.value, 'start_date,end_date')
+    }
+})
 </script>

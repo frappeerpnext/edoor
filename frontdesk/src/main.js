@@ -264,31 +264,36 @@ const apiCall = frappe.call()
 
 	// Configure route gaurds
 	router.beforeEach(async (to, from, next) => {
-		
+		 
 		document.title = (to.meta.title || '') + ' | eDoor Front Desk'
 		if (to.matched.some((record) => !record.meta.isLoginPage)) {
+		 
 			// this route requires auth, check if logged in
 			// if not, redirect to login page.
 			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-			if (getCookie("user_id")=="Guest") {
-				  
+			if (!getCookie("user_id") || getCookie("user_id")=="Guest"  ) {
+			 
 				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
  
 				window.location.replace(serverUrl)
 			} else {
-	 
+			 
 				if (to?.name){
+					 
 					if (setting.edoor_menu.filter((r)=>r.menu_name==to.name).length>0 || ["NoPermission","ReservationStayDetail","ReservationDetail"].includes(to.name)){
 					next();
 				}else{
+				 
 					next({ name: 'NoPermission' });
 				}
 				}
-				
+				 
 				
 			}
 		} else {
+			  
 			if (getCookie("user_id")!="Guest") {
+				 
 				//find first record of edoor menu 
 				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
 				let edoorMenu = setting?.edoor_menu?.filter(r=>r.menu_name!='All Menus' && r.parent_edoor_menu=='All Menus')
@@ -296,16 +301,17 @@ const apiCall = frappe.call()
 					return a.sort_order - b.sort_order;
 				});  
 				if(edoorMenu){
-				 
+					 
 					next({ name: edoorMenu[0].menu_name });
 				}else {
+					 
 					next({ name: 'Dashboard' });
 				}
 		
-				
+				 
 
 			} else {
- 
+				 
 				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
 				if (setting?.backend_port){
 					  

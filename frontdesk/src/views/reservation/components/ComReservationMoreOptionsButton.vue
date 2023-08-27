@@ -1,6 +1,5 @@
 <template>
     <div>
- 
         <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" /> -->
         <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="menu" />
@@ -52,13 +51,13 @@
 
                 <button @click="onGroupBuildToCompany" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
+                    <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
                     <span class="ml-2">Group Bill To Company</span>
                 </button>
                 
                 <button @click="onGroupBuildToMasterGroup " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="BilltoMasterRoom" class="me-2" style="height:15px;" ></ComIcon>
+                    <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
                     <span class="ml-2">Group Bill To Master Group </span>
                 </button>
 
@@ -88,11 +87,17 @@
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Stay To Other Reservation</span>
                 </button>
-                <button @click="onStayToOtherReservation()" 
+                <button  v-if="rs.reservation.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
+                    <ComIcon icon="userGif" style="height: 15px;" />
+                    <span class="ml-2">Mark as GIT Reservation</span>
+                </button>
+
+                <button v-else  @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon v-if="rs.reservation.reservation_type == 'GIT'" icon="userGif" style="height: 15px;" />
-                    <ComIcon v-else icon="userProfile"  style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Mark as <span v-if="rs.reservation.reservation_type == 'GIT'">FIT</span><span v-else>GIT</span> Reservation</span>
+                    
+                    <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
+                    <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -294,6 +299,55 @@ function onGroupChangeStayDate(){
     alert()
 }
 function onStayToOtherReservation(){
-    alert()
+   
+}
+function onMarkasGITReservation() {
+    confirm.require({
+        message: 'Are you sure you want to Mark as GIT Reservation',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation', rs.reservation?.name, {
+                reservation_type: "GIT",
+            })
+                .then((doc) => {
+                    rs.reservation.reservation_type = doc.reservation_type,
+                        toast.add({
+                            severity: 'success', summary: 'Mark as GIT Reservation',
+                            detail: 'Mark as GIT Reservation Successfully', life: 3000
+                        });
+                })
+        },
+
+    });
+
+}
+function onMarkasFITReservation() {
+    confirm.require({
+        message: 'Are you sure you want to Mark as FIT Reservation',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+            db.updateDoc('Reservation', rs.reservation?.name, {
+                reservation_type: "FIT",
+            })
+                .then((doc) => {
+                    rs.reservation.reservation_type = doc.reservation_type,
+                        toast.add({
+                            severity: 'success', summary: 'Mark as FIT Reservation',
+                            detail: 'Mark as FIT Reservation Successfully', life: 3000
+                        });
+                })
+        },
+
+    });
 }
 </script>

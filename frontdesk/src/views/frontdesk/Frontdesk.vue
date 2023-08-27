@@ -1,5 +1,6 @@
 <template lang=""> 
     <div>
+      
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
@@ -11,13 +12,13 @@
                     </div>
                 </div>
             </template>
-            <template #end>
+            <template #end> 
                 <div class="flex gap-2 justify-content-end">
                     <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote">
                       <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />  Uncomming Note <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
-                  </Badge>
+                    </Badge>
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
@@ -27,7 +28,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro"> 
             <div class="flex gap-2">
                 <div>
-                    <Calendar class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showIcon showButtonBar/>
+                    <Calendar class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
                 
                 <div>
@@ -40,13 +41,13 @@
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full" v-model="keyword.guest" placeholder="Guest Name" v-debounce="onSearch"/>
+                        <InputText class="btn-set__h w-full"  placeholder="Keyword" v-debounce="onSearch"/>
                     </span>
                 </div>
                 
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="onOpenAdvanceSearch"/>
-                </div>
+                </div> 
                 <div v-if="isFilter">
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
@@ -114,7 +115,6 @@
                                             </span>
                                             <div class="geust-title">
                                                 {{event.title}}
-                                                <span v-if="event.extendedProps.pay_by_company">Pay by company</span>
                                             </div>
                                         </div>
                                     </div>
@@ -125,7 +125,7 @@
             </div>
         </div>
     </div>
-
+{{events}}
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <!-- <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onOpenAdvanceSearch"> -->
             <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
@@ -133,7 +133,7 @@
     </OverlayPanel>
     </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch,getApi,getCount,provide,computed,getDocList } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -152,14 +152,16 @@ import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingS
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
-import Tooltip from 'primevue/tooltip'
+
 import { useTippy } from 'vue-tippy'
-import { initCustomFormatter } from 'vue';
+
+
+const resources = ref([])
+const events = ref([])
 
 
 const socket = inject("$socket");
-const frappe = inject('$frappe')
-const call = frappe.call();
+
 const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
@@ -169,7 +171,7 @@ const filter = reactive({
 })
 const selectedDate = ref()
 const showAdvanceSearch = ref()
-const titleStartEndDate = reactive({})
+
 const fullCalendar = ref(null)
 const gv = inject("$gv")
 
@@ -180,7 +182,7 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
 const initialDate = onInitialDate()
 let fullcalendarInitialDate = ref(initialDate.start)
-let showTooltip = ref(false)
+
 const keyword = ref({
     guest: '',
     room_number: ''
@@ -195,13 +197,13 @@ let advanceFilter = ref({
     building: "",
     floor: ""
 })
-const isFilter = computed(()=>{
-    if(gv.dateFormat(filter.date) != gv.dateFormat(working_day.date_working_day)){
+const isFilter = computed(() => {
+    if (gv.dateFormat(filter.date) != gv.dateFormat(working_day.date_working_day)) {
         return true
     }
-    else if(eventKeyword.value || gv.isNotEmpty(advanceFilter.value, 'property')){
+    else if (eventKeyword.value || gv.isNotEmpty(advanceFilter.value, 'property')) {
         return true
-    }else{
+    } else {
         return false
     }
 })
@@ -232,11 +234,21 @@ socket.on("RefresheDoorDashboard", (arg) => {
 
 
 watch(() => filter.date, (newValue, oldValue) => {
-   
+
     selectedDate.value = new Date(newValue)
 })
 
- 
+
+const calendarEvents = computed(() => {
+    if (keyword.value.keyword) {
+
+        return events.value.filter(r => (r.title || "").toLowerCase().includes((keyword.value.keyword || "").toLowerCase()))
+    } else {
+        return events.value
+    }
+
+})
+
 const calendarOptions = reactive({
     plugins: [
         interactionPlugin,
@@ -264,35 +276,11 @@ const calendarOptions = reactive({
     },
     resourceAreaColumns: resourceColumn(),
 
-    resources: function (info, successCallback, failureCallback) {
-        getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
-            successCallback(result.message)
-            const room_status = document.getElementsByClassName("room-status")
-            for (let i = 0; i < room_status.length; i++) {
-
-                useTippy(room_status[i], {
-                    content: room_status[i].getAttribute("data-title")
-                })
-            }
-        })
-    },
-    events: function (info, successCallback, failureCallback) {
-
-        call.get('edoor.api.frontdesk.get_room_chart_calendar_event', {
-            start: info.start,
-            end: info.end,
-            property: property.name,
-            keyword: eventKeyword.value,
-        }).then((result) => {
-            successCallback(result.message)
-        })
-            .catch((error) => {
-                alert("load data fiale")
-            });
-    },
+    resources: resources,
+    events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-        console.log(draggedEvent._def.extendedProps)
-        return draggedEvent._def.extendedProps.can_resize ==1
+        
+        return draggedEvent._def.extendedProps.can_resize == 1
     },
     selectable: true,
     editable: true,
@@ -311,18 +299,6 @@ const calendarOptions = reactive({
         return " "
     },
 
-    resourceLabelDidMount: function (info) {
-         
-        setTimeout(() => {
-            const el = document.querySelector("#room_status_" + info.resource._resource.id)
-            if (el){
-                useTippy(el, {
-                content: el.getAttribute("data-title")
-            })
-            }
-           
-        }, 1000);
-    },
     slotLabelDidMount: function (info) {
 
         const d = moment(info.date).format("DD")
@@ -343,10 +319,11 @@ const calendarOptions = reactive({
 
         onSelectedDate($event)
     }),
-    eventResizeStop: ((event) => {
-  
+
+     eventResize: (($event) => {  
+        
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: event.event._def,
+            data: $event.event,
             props: {
                 header: 'Change Stay',
                 style: {
@@ -357,35 +334,35 @@ const calendarOptions = reactive({
                 position: 'top'
             },
             onClose: (options) => {
-                event.revert();
+              
                 const data = options.data;
                 if (data != undefined) {
-
                     onRefresh()
-                }else {
-                    event.revert();
+                } else {
+                    $event.revert()
+
                 }
             }
         });
-       
+
     }),
     eventClick: ((info) => {
- 
+
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
-             info.event._def.date = info.event.start;
+            info.event._def.date = info.event.start;
             alert(JSON.stringify(info.event._def))
-             window.postMessage(info.event._def, '*')
+            window.postMessage(info.event._def, '*')
         }
 
     }),
     eventMouseEnter: (($event) => {
         const event = $event.event._def
 
-        if (event.extendedProps.type == "stay" ) {
-            
+        if (event.extendedProps.type == "stay") {
+
             const description = `<div class="p-2 w-full">
                                         <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
                                         <table class="tip_description_stay_table m-1 pt-3">
@@ -394,7 +371,7 @@ const calendarOptions = reactive({
                                             <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
                                             <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
                                             <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>${event.extendedProps?.internal_reference_number ?? ''}</td></tr>
-                                            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( '+ event.extendedProps?.group_code +' )' : ''}</td></tr>    
+                                            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}</td></tr>    
                                             <tr class="table-rs-de"><td>Guest</td><td class="px-2">:</td><td>${event.title}</td></tr>
                                             <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)} - ${gv.timeFormat(event.extendedProps?.start_time)}</td></tr>
                                             <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)} - ${gv.timeFormat(event.extendedProps?.end_time)}</td></tr>
@@ -405,7 +382,7 @@ const calendarOptions = reactive({
                                             <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
                                             <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
-                                            ${ (event.extendedProps?.note != "null" && event.extendedProps?.note) ? `
+                                            ${(event.extendedProps?.note != "null" && event.extendedProps?.note) ? `
                                             <tr><td><span class="mt-2">Note</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note.length > 220 ? event.extendedProps?.note.substring(0, 220) + '...' : event.extendedProps?.note}</div></td></tr>
                                             ` : ''}
@@ -417,7 +394,7 @@ const calendarOptions = reactive({
             const { tippyInstance } = useTippy($event.el, {
                 content: description,
             })
-        }else if (event.extendedProps.type == "room_block"){
+        } else if (event.extendedProps.type == "room_block") {
             const description = `<div class="w-full p-2">
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
@@ -435,13 +412,13 @@ const calendarOptions = reactive({
                 content: description,
             })
         }
-         else if (event.extendedProps.type == "available_room"){
+        else if (event.extendedProps.type == "available_room") {
             const description = `<div class="pt-1"> Available Room ${event.title} </div> `
             const { tippyInstance } = useTippy($event.el, {
                 content: description,
             })
-        } else if (event.extendedProps.type == "unassign_room"){
-            const description =`<div class="pt-1"> Unassign Room ${event.title} </div> `
+        } else if (event.extendedProps.type == "unassign_room") {
+            const description = `<div class="pt-1"> Unassign Room ${event.title} </div> `
             const { tippyInstance } = useTippy($event.el, {
                 content: description,
             })
@@ -458,11 +435,13 @@ const calendarOptions = reactive({
 
 })
 
+
+
 function getRoomChartlocationStorage() {
     if (sessionStorage.getItem('reservation_chart')) {
         const result = JSON.parse(sessionStorage.getItem('reservation_chart'))
         filter.date = moment(result.start_date).add(1, 'days').toDate()
-        
+
         filter.end_date = result.end_date
         return result;
 
@@ -504,13 +483,12 @@ function setRoomChartlocationStorage(start_date = '', end_date = '', view = '', 
     sessionStorage.setItem('reservation_chart', JSON.stringify(dataStorage))
 
     filter.date = moment(dataStorage.start_date).add(1, 'days').toDate()
-     
+
     filter.end_date = dataStorage.end_date
 
     return dataStorage
 
 }
-
 function onFilterToday() {
     const startDate = moment(working_day.date_working_day).subtract(1, 'days').format("yyyy-MM-DD")
     const currentViewChart = setRoomChartlocationStorage(startDate, '', '', '')
@@ -656,11 +634,14 @@ function onShowSummary() {
 
 function onView() {
     filter.view_type = filter.view_type == 'room_type' ? 'room' : 'room_type'
+
     roomChartResourceFilter.view_type = filter.view_type
+
     setRoomChartlocationStorage('', '', filter.view_type, '')
-    const cal = fullCalendar.value.getApi()
-    cal.setOption('resourceAreaColumns', resourceColumn())
-    cal.refetchResources()
+
+    getResource()
+
+
 
 }
 
@@ -692,6 +673,7 @@ function onFilter(key) {
         cal.changeView('resourceTimeline', { start: moment(setViewChart.start_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss'), end: moment(setViewChart.end_date).add(12, 'hours').format('YYYY-MM-DD hh:mm:ss') });
         // cal.changeView('resourceTimeline', { start: setViewChart.start_date, end: setViewChart.end_date });
     }
+    getEvent()
 }
 
 function onFilterDate(event) {
@@ -719,8 +701,7 @@ function onPrevNext(key) {
 }
 
 const onRefresh = () => {
-    const cal = fullCalendar.value.getApi()
-    cal.refetchEvents()
+    getEvent()
     getTotalNote()
 
 }
@@ -792,31 +773,84 @@ function onFilterResource(f) {
         view_type: filter.view_type // room_type = true or room = false
     }
     advanceFilter.value = roomChartResourceFilter
-    const cal = fullCalendar.value.getApi()
-    cal.refetchResources()
+    getResource()
 }
 // search event
 function onSearch(key) {
-    eventKeyword.value = key
-    onRefresh()
-    // cal.setOption({now:"2023-05-18"})
+
+    keyword.value.keyword = key
 }
 
-function getTotalNote(){ 
-	getCount('Frontdesk Note', [["note_date",">=", working_day.date_working_day]]).then((docs) => {
-        totalNotes.value = docs	
-	}) 
+function getTotalNote() {
+    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day]]).then((docs) => {
+        totalNotes.value = docs
+    })
 }
+
+function getResource(get_event = false) {
+
+    getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
+        resources.value = result.message
+        const cal = fullCalendar.value.getApi()
+        cal.setOption('resourceAreaColumns', resourceColumn())
+        if (get_event == true) {
+            getEvent()
+        }
+
+        setTimeout(() => {
+
+            const room_status = document.getElementsByClassName("room-status")
+            for (let i = 0; i < room_status.length; i++) {
+                let el = room_status[i]
+                useTippy(el, {
+                    content: el.getAttribute("data-title")
+                })
+            }
+        }, 3000);
+
+    })
+}
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
+
+
+const getEvent = debouncer(() => {
+
+    const cal = fullCalendar.value.getApi()
+
+    getApi('frontdesk.get_room_chart_calendar_event', {
+        start: moment(cal.view.currentStart).format("YYYY-MM-DD"),
+        end: moment(cal.view.currentEnd).format("YYYY-MM-DD"),
+        property: property.name,
+        keyword: eventKeyword.value,
+    }).then((result) => {
+        events.value = (result.message)
+    })
+
+}, 500);
+
+
 
 onMounted(() => {
-    
+
 
     onInitialDate()
-  
+
     if (!selectedDate.value) {
         const currentViewChart = JSON.parse(sessionStorage.getItem('reservation_chart'))
         selectedDate.value = new Date(moment(currentViewChart.start_date).add(1, 'days'))
     }
+    getResource(true)
+
     getTotalNote()
 })
 
@@ -825,10 +859,10 @@ onUnmounted(() => {
 })
 
 const onOpenAdvanceSearch = (event) => {
-    if(event==false){
+    if (event == false) {
         showAdvanceSearch.value.hide()
     }
-    else{
+    else {
         showAdvanceSearch.value.toggle(event);
     }
 }
@@ -841,26 +875,28 @@ const onClearFilter = () => {
     onFilterToday()
     onOpenAdvanceSearch(false)
 }
-function onSearchRoom(key){
+function onSearchRoom(key) {
     advanceFilter.value.room_number = key
     onFilterResource(advanceFilter.value)
-    
+
 }
-provide('advance_filter',{
+provide('advance_filter', {
     onOpenAdvanceSearch,
     advanceFilter,
     onFilterResource,
     onClearFilter
 })
- 
+
 </script>
 <style>
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
     justify-content: center !important
 }
-.fc.fc-theme-standard > .room-status {
+
+.fc.fc-theme-standard>.room-status {
     display: none;
 }
+
 .current_day {
     background: #5b029f;
     color: #fff;
@@ -886,5 +922,4 @@ provide('advance_filter',{
     background: #DBDBDB;
     opacity: 0.4;
 }
-
 </style>

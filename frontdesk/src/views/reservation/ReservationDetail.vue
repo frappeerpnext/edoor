@@ -6,27 +6,25 @@
                     <div class="flex justify-between">
                         <div class="flex align-items-center">
                             <div class="flex">
-
                                 <ComTagReservation title="RS#:" :value="rs.reservation?.name" class="bg-card-info p-1px">
                                     <span class="res__bagde ml-1">
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                
-                                        <div v-tooltip.top="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
-                                            <span class="">
-                                                <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
-                                            </span>
-                                        </div>
-                                        <div v-tooltip.top="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
-                                            <span>
-                                                <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
-                                            </span>
-                                        </div>
-                                    <span class="px-2 rounded-lg me-2 text-white p-1px"
-                                    :style="{ background: rs.reservation?.status_color }">{{
-                                        rs.reservation?.reservation_status }}
+                                <div v-tooltip.top="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                                    <span class="">
+                                        <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
+                                </div>
+                                <div v-tooltip.top="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                                    <span>
+                                        <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
+                                    </span>
+                                </div>
+                                <span class="px-2 rounded-lg me-2 text-white p-1px"
+                                :style="{ background: rs.reservation?.status_color }">{{
+                                    rs.reservation?.reservation_status }}
+                                </span>
                             </div>
                         </div>
                         <div class="flex gap-2">
@@ -36,7 +34,7 @@
                                 </icon>
                             </button>
                             <button @click="onRoute" v-tooltip.left="'Open New Window'" v-if="!isPage"
-                                class="rounded-lg conten-btn " link>
+                                class="rounded-lg conten-btn" link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
                         </div>

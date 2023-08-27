@@ -1,139 +1,136 @@
 <template>
-  <div>
-    <ComHeader isRefresh @onRefresh="Refresh()">
-      <template #start>
-        <div class="text-2xl">Block Room</div>
-      </template>
-      <template #end>
-        <Button class="border-none" @click="onAddNewRommBlock()">Add New Room Block</Button>
-      </template>
-    </ComHeader>
-    <div class="mb-3 flex justify-between">
-      <div class="flex gap-2">
-        <div class="w-20rem">
-          <div class="w-full p-input-icon-left">
-            <i class="pi pi-search" />
-            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+  <div class="flex-col flex" style="height: calc(100vh - 92px);">
+    <div>
+      <ComHeader isRefresh @onRefresh="Refresh()">
+        <template #start>
+          <div class="text-2xl">Block Room</div>
+        </template>
+        <template #end>
+          <Button class="border-none" @click="onAddNewRommBlock()">Add New Room Block</Button>
+        </template>
+      </ComHeader>
+      <div class="mb-3 flex justify-between">
+        <div class="flex gap-2">
+          <div class="w-20rem">
+            <div class="w-full p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+            </div>
           </div>
+          <div>
+            <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
+          </div>
+          <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
+            <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+          </div>
+          <ComOrderBy doctype="Room Block" @onOrderBy="onOrderBy" />
         </div>
         <div>
-          <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch"/>
-        </div>
-        <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-          <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
-        </div>
-        <ComOrderBy doctype="Room Block" @onOrderBy="onOrderBy" />
-      </div>
-      <div>
-        <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+          <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
             <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
-        </Button>
+          </Button>
+        </div>
       </div>
     </div>
-    
-    <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data.length > 0">
-    <DataTable
-    class="res_list_scroll" 
-    :resizableColumns="true"
-    columnResizeMode="fit"
-    showGridlines 
-    stateStorage="local"
-    stateKey="table_room_block_list_state"
-    :reorderableColumns="true" 
-    :value="data" 
-    tableStyle="min-width: 50rem"
-    @row-dblclick="onViewReservationStayDetail"
-    scrollHeight="70vh">
-    <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
-        :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
-        :frozen="c.frozen">
-        <template #body="slotProps">
-          <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
-            {{ slotProps.data[c.fieldname] }}
-            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-            <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-          </Button>
-          <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
-            moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-          <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
-          }}
-          </span>
-          <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
-          <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-            v-if="slotProps?.data && slotProps?.data?.rooms">
-            <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-              <span>{{ item }}</span>
-              <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+    <div class="overflow-auto h-full">
+      <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
+        <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+          stateStorage="local" stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
+          tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
+          <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
+            :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
+            :frozen="c.frozen">
+            <template #body="slotProps">
+              <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
+                link>
+                {{ slotProps.data[c.fieldname] }}
+                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+              </Button>
+              <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
+                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+              <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
+              }}
+              </span>
+              <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
+              <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                v-if="slotProps?.data && slotProps?.data?.rooms">
+                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                  <span>{{ item }}</span>
+                  <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                </template>
+              </div>
+              <template v-else-if="c.fieldtype == 'Status'">
+
+                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
+                  <i class="pi pi-lock-open me-2" />
+                  Unblock
+                </Chip>
+                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else><i class="pi pi-lock me-2" />Block</Chip>
+              </template>
+              <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+              <span v-else>
+                {{ slotProps.data[c.fieldname] }}
+                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+              </span>
             </template>
-          </div>
-          <template v-else-if="c.fieldtype == 'Status'">
+          </Column>
 
-            <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
-              <i class="pi pi-lock-open me-2"/>
-              Unblock
-            </Chip>
-            <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else><i class="pi pi-lock me-2"/>Block</Chip>
+        </DataTable>
+      </ComPlaceholder>
+    </div>
+    <div>
+        <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
+          :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+          <template #start="slotProps">
+            <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
           </template>
-          <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-          <span v-else>
-            {{ slotProps.data[c.fieldname] }}
-            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-            <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-          </span>
-        </template>
-      </Column>
-
-    </DataTable>
-  
-  
-
-  <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
-    @page="pageChange">
-    <template #start="slotProps">
-      <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-    </template>
-  </Paginator>
-</ComPlaceholder>
-</div>
-  <OverlayPanel ref="opShowColumn">
-    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
-    <template #top>
-      <span class="p-input-icon-left w-full mb-3">
-        <i class="pi pi-search" />
-        <InputText class="w-full flex-nowrap" v-model="filter.search_field" placeholder="Search" />
-      </span>
-    </template>
-    <ul class="res__hideshow">
-      <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
-        <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-        <label :for="c.fieldname">{{ c.label }}</label>
-      </li>
-    </ul>
-    <template #footer-left>
-      <Button class="border-none" label="Reset List" @click="onResetTable" />
-    </template>
+        </Paginator>
+    </div>
+  </div>
+  <OverlayPanel ref="opShowColumn" style="width:30rem;">
+    <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
+      @onCancel="onCloseColumn">
+      <template #top>
+        <span class="p-input-icon-left w-full mb-3">
+          <i class="pi pi-search" />
+          <InputText class="w-full flex-nowrap" v-model="filter.search_field" placeholder="Search" />
+        </span>
+      </template>
+      <div class="grid">
+        <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
+          <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
+          <label :for="c.fieldname">{{ c.label }}</label>
+        </div>
+      </div>
+      <template #footer-left>
+        <Button class="border-none" label="Reset List" @click="onResetTable" />
+      </template>
     </ComOverlayPanelContent>
   </OverlayPanel>
 
   <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
-    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+      icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
       <div class="grid">
-      
-        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number" optionValue="name"
-          v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room" isFilter />
-        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" v-model="filter.selected_room_type"
-          @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" isFilter optionLabel="room_type"
-          optionValue="name" />  
-        <ComSelect class="col-6" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label" optionValue="value"
-          placeholder="Search Date Type" :clear="false" @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-        <div class="col-6" v-if="filter.search_date_type"> 
+
+        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
+          optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
+          isFilter />
+        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]"
+          v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" isFilter
+          optionLabel="room_type" optionValue="name" />
+        <ComSelect class="col-6" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
+          optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
+          @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+        <div class="col-6" v-if="filter.search_date_type">
           <Calendar class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy" v-model="filter.date_range"
-          selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
+            selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
         </div>
       </div>
     </ComOverlayPanelContent>
   </OverlayPanel>
-
 </template>
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
@@ -152,7 +149,7 @@ const data = ref([])
 const filter = ref({})
 const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 
@@ -391,16 +388,16 @@ const advanceSearch = (event) => {
   showAdvanceSearch.value.toggle(event);
 }
 const onClearFilter = () => {
-    filter.value={}
-    loadData()
-    showAdvanceSearch.value.hide()
+  filter.value = {}
+  loadData()
+  showAdvanceSearch.value.hide()
 }
 
 const onCloseAdvanceSearch = () => {
-    showAdvanceSearch.value.hide()
+  showAdvanceSearch.value.hide()
 }
 
 const onCloseColumn = () => {
-    opShowColumn.value.hide()
+  opShowColumn.value.hide()
 }
 </script>

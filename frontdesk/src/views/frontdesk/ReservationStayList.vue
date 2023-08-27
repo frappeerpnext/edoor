@@ -1,161 +1,174 @@
 <template>
-    <div>
-        <ComHeader isRefresh @onRefresh="Refresh()">
-            <template #start>
-                <div class="text-2xl">Reservation Stay List</div>
-            </template>
-            <template #end>
-                <NewFITReservationButton />
-                <NewGITReservationButton />
-            </template>
-        </ComHeader>
-        <div class="mb-3 flex justify-between">
-            <div class="flex gap-2">
-                <div>
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                    </span>
-                </div>
-                <div>
-                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
-                </div> 
-                <div v-if="gv.isNotEmpty(filter,'search_date_type')">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
-                </div>
-                <div>
-                    <ComOrderBy doctype="Reservation Stay" @onOrderBy="onOrderBy" />
-                </div>
-            </div>
-            <div>
-                <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
-                    <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
-                </Button>
-            </div>
-        </div>
-        <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data?.length > 0">         
-        <DataTable 
-            class="res_list_scroll"
-            :resizableColumns="true"
-            columnResizeMode="fit" 
-            showGridlines   
-            stateStorage="local" 
-            stateKey="table_reservation_stay_list_state" 
-            scrollable 
-            :reorderableColumns="true" :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" 
-            scrollHeight="70vh">
-            <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
-            :frozen="c.frozen" 
-            >
-                <template #body="slotProps" >
-                    <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
-                        {{ slotProps.data[c.fieldname] }} 
-                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                    </Button>
-                    <span v-else-if="c.fieldtype=='Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                    <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                    <div v-else-if="c.fieldtype=='Room'"
-                    v-if="slotProps?.data && slotProps?.data?.rooms">
-                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                        <span>{{ item }}</span>
-                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                    </template>
-                    </div>
-                    <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                    <span v-else-if="c.fieldtype=='Status'"  class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                    :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                    }}</span>
-                    <span v-else>
-                        {{ slotProps.data[c.fieldname] }}
-                        <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                        <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                    </span>
+    <div class="flex-col flex" style="height: calc(100vh - 92px);">
+        <div>
+            <ComHeader isRefresh @onRefresh="Refresh()">
+                <template #start>
+                    <div class="text-2xl">Reservation Stay List</div>
                 </template>
-            </Column>
-        </DataTable>
-        </ComPlaceholder>
-    </div>
- 
-    <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
-        @page="pageChange">
-        <template #start="slotProps">
-            <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-        </template>
-    </Paginator>
-
-<OverlayPanel ref="opShowColumn">
-    <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save" @onCancel="onCloseColumn">
-        <template #top>
-            <span class="p-input-icon-left w-full mb-3">
-                <i class="pi pi-search" />
-                <InputText v-model="filter.search_field" placeholder="Search" class="w-full"/>
-            </span>
-        </template>
-        <ul class="res__hideshow">
-            <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
-                <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-                <label :for="c.fieldname">{{ c.label }}</label>
-            </li>
-        </ul>
-        <template #footer-left>
-            <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
-        </template>
-    </ComOverlayPanelContent>
-</OverlayPanel>
-
-<OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-    <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-        <div class="grid">    
-            <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
-                            v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                            doctype="Business Source Type" />
-
-            <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
-                :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
-                optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                placeholder="Business Source" doctype="Business Source"
-                :filters="[['property', '=', property.name]]" />
-
-            <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type"
-                @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']"/>
-
-            <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name" v-model="filter.selected_reservation_status"
-                @onSelected="onSearch" placeholder="Reservation Status" doctype="Reservation Status" />
-
-            <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name" v-model="filter.selected_building"
-                @onSelected="onSearch" placeholder="Building" doctype="Building" />
-
-            <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
-                @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"></ComSelect>
-
-            <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
-                optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
-                @onSelected="onSearch" placeholder="Room Name" doctype="Room"></ComSelect>
-
-            <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
-                optionValue="value" placeholder="Search Date Type" :clear="false"
-                @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-
-            <div class="col-6" v-if="filter.search_date_type">
-                <Calendar hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full"
-                v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-                placeholder="Select Date Range" showIcon/>
+                <template #end>
+                    <NewFITReservationButton />
+                    <NewGITReservationButton />
+                </template>
+            </ComHeader>
+            <div class="mb-3 flex justify-between">
+                <div class="flex gap-2">
+                    <div>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        </span>
+                    </div>
+                    <div>
+                        <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
+                    </div>
+                    <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
+                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
+                            @click="onClearFilter" />
+                    </div>
+                    <div>
+                        <ComOrderBy doctype="Reservation Stay" @onOrderBy="onOrderBy" />
+                    </div>
+                </div>
+                <div>
+                    <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                        <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                    </Button>
+                </div>
             </div>
         </div>
-    </ComOverlayPanelContent>
-</OverlayPanel>
+        <div class="overflow-auto h-full">
+            <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data?.length > 0">
+                <DataTable 
+                class="res_list_scroll" 
+                :resizableColumns="true" 
+                columnResizeMode="fit" 
+                showGridlines
+                stateStorage="local" 
+                stateKey="table_reservation_stay_list_state" 
+                scrollable 
+                :reorderableColumns="true"
+                :value="data" 
+                tableStyle="min-width: 50rem" 
+                @row-dblclick="onViewReservationStayDetail">
+                    <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
+                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                        <template #body="slotProps">
+                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                @click="onOpenLink(c, slotProps.data)" link>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </Button>
+                            <span v-else-if="c.fieldtype == 'Date'">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                            <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
+                            </Timeago>
+                            <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.rooms">
+                                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                    <span>{{ item }}</span>
+                                    <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                                </template>
+                            </div>
+                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                            <span v-else-if="c.fieldtype == 'Status'"
+                                class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                                }}</span>
+                            <span v-else>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </span>
+                        </template>
+                    </Column>
+                </DataTable>
+            </ComPlaceholder>
+        </div>
+        <div>
+            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
+                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                <template #start="slotProps">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </template>
+            </Paginator>
+        </div>
+    </div>
+    <OverlayPanel ref="opShowColumn" style="width:30rem;">
+        <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save"
+            @onCancel="onCloseColumn">
+            <template #top>
+                <span class="p-input-icon-left w-full mb-3">
+                    <i class="pi pi-search" />
+                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                </span>
+            </template>
+            <div class="grid">
+                <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
+                    <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
+                    <label :for="c.fieldname">{{ c.label }}</label>
+                </div>
+            </div>
+            <template #footer-left>
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+            </template>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="grid">
+                <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
+                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
+                    doctype="Business Source Type" />
+
+                <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
+                    :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
+                    optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
+                    placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" />
+
+                <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
+                    placeholder="Reservation Type" :options="['GIT', 'FIT']" />
+
+                <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
+                    v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
+                    doctype="Reservation Status" />
+
+                <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name"
+                    v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
+
+                <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
+                    v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type">
+                </ComSelect>
+
+                <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
+                    :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
+                    v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room">
+                </ComSelect>
+
+                <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
+                    optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
+                    @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+
+                <div class="col-6" v-if="filter.search_date_type">
+                    <Calendar hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
+                        selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                        placeholder="Select Date Range" showIcon />
+                </div>
+            </div>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi, computed } from '@/plugin'
- 
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed } from '@/plugin'
+
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import {Timeago} from 'vue2-timeago'
+import { Timeago } from 'vue2-timeago'
 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
@@ -165,45 +178,45 @@ const opShowColumn = ref();
 const socket = inject("$socket")
 socket.on("RefresheDoorDashboard", (arg) => {
 
-if (arg == property.name) {
-    loadData()
-     
-}
+    if (arg == property.name) {
+        loadData()
+
+    }
 })
 
 
 
 const columns = ref([
-    { fieldname: 'reservation', label: 'Reservation #', header_class:"text-center", fieldtype:"Link",post_message_action:"view_reservation_detail",default:true },
-    { fieldname: 'name', label: 'Stay #', header_class:"text-center", fieldtype:"Link",post_message_action:"view_reservation_stay_detail" ,default:true},
+    { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
+    { fieldname: 'name', label: 'Stay #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_stay_detail", default: true },
     { fieldname: 'reference_number', label: 'Ref. #', },
-    { fieldname: 'reservation_type', label: 'Res. Type', header_class:"text-center", default:true},
-    { fieldname: 'reservation_date', label: 'Res. Date', header_class:"text-center", fieldtype:"Date", frozen:true,default:true },
-    { fieldname: 'arrival_date', label: 'Arrival', fieldtype:"Date",header_class:"text-center",default:true },
-    { fieldname: 'departure_date', label: 'Departure', fieldtype:"Date",header_class:"text-center" ,default:true},
-    { fieldname: 'room_nights', label: 'Room Nights',header_class:"text-center" ,default:true},
-    { fieldname: 'rooms',  label: 'Rooms',fieldtype:"Room", header_class:"text-center", default:true},
-    { fieldname: 'adult',  label: 'Pax(A/C)',extra_field:"child", extra_field_separator:"/", header_class:"text-center" ,default:true},
-    { fieldname: 'guest' , extra_field:"guest_name", extra_field_separator:"-",  label: 'Guest',fieldtype:"Link", post_message_action:"view_guest_detail"  ,default:true},
-    { fieldname: 'business_source' ,  label: 'Business Source'  ,default:true},
-    { fieldname: 'adr' ,  label: 'ADR', fieldtype:"Currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'total_room_rate' ,  label: 'Total Room Rate', fieldtype:"Currency" , header_class:"text-right",default:true },
-    { fieldname: 'total_debit' ,  label: 'Debit', fieldtype:"Currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'total_credit' ,  label: 'Credit', fieldtype:"Currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'balance' ,  label: 'Balance', fieldtype:"Currency" , header_class:"text-right" ,default:true},
-    { fieldname: 'owner' ,  label: 'Created By'},
-    { fieldname: 'creation' , fieldtype:"Timeago",  label: 'Creation', header_class:"text-center", default:true},
-    { fieldname: 'modified_by' ,  label: 'Modified By'},
-    { fieldname: 'modified' , fieldtype:"Timeago",  label: 'Last Modified', header_class:"text-center"},
-    { fieldname: 'reservation_status', fieldtype:"Status", label:"Status" ,header_class:"text-center" },
+    { fieldname: 'reservation_type', label: 'Res. Type', header_class: "text-center", default: true },
+    { fieldname: 'reservation_date', label: 'Res. Date', header_class: "text-center", fieldtype: "Date", frozen: true, default: true },
+    { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
+    { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
+    { fieldname: 'room_nights', label: 'Room Nights', header_class: "text-center", default: true },
+    { fieldname: 'rooms', label: 'Rooms', fieldtype: "Room", header_class: "text-center", default: true },
+    { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
+    { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'business_source', label: 'Business Source', default: true },
+    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'owner', label: 'Created By' },
+    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
+    { fieldname: 'modified_by', label: 'Modified By' },
+    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
+    { fieldname: 'reservation_status', fieldtype: "Status", label: "Status", header_class: "text-center" },
     { fieldname: 'status_color' },
 ])
- 
-const getColumns = computed(()=>{
-    if (filter.value.search_field){ 
-        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
-    }else {
-        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
+
+const getColumns = computed(() => {
+    if (filter.value.search_field) {
+        return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+    } else {
+        return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
 const selectedColumns = ref([]);
@@ -212,18 +225,18 @@ const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
 
-function OnSaveColumn(event){
-    selectedColumns.value = columns.value.filter(r=>r.selected).map(x=>x.fieldname)
+function OnSaveColumn(event) {
+    selectedColumns.value = columns.value.filter(r => r.selected).map(x => x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
-    localStorage.setItem("page_state_reservation_stay", JSON.stringify(pageState.value) )
+    localStorage.setItem("page_state_reservation_stay", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
 }
 
 
-function onResetTable(){
+function onResetTable() {
     localStorage.removeItem("page_state_reservation_stay")
     localStorage.removeItem("table_reservation_stay_list_state")
-   window.location.reload()
+    window.location.reload()
 
 }
 
@@ -243,16 +256,16 @@ let dateRange = reactive({
     start: '',
     end: ''
 })
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 
 const working_date = ref('')
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const dialog = useDialog();
 
- 
 
-function onOpenLink(column, data){
-    window.postMessage(column.post_message_action + "|" + data[column.fieldname] , '*')
+
+function onOpenLink(column, data) {
+    window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 
 function Refresh() {
@@ -307,12 +320,12 @@ function loadData() {
         filters.push([filter.value.search_date_type, '>=', dateRange.start])
         filters.push([filter.value.search_date_type, '<=', dateRange.end])
     }
-    
-    let fields = [...columns.value.map(r=>r.fieldname),  ...columns.value.map(r=>r.extra_field)]
-    fields = [...fields , ...selectedColumns.value]
 
-    fields =  [...new Set(fields.filter(x=>x))]
- 
+    let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
+    fields = [...fields, ...selectedColumns.value]
+
+    fields = [...new Set(fields.filter(x => x))]
+
     getDocList('Reservation Stay', {
 
         fields: fields,
@@ -375,7 +388,7 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
- 
+
 
 getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
@@ -386,7 +399,7 @@ getApi('frontdesk.get_working_day', {
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
 
- 
+
 
 
 onMounted(() => {
@@ -395,36 +408,36 @@ onMounted(() => {
         state = JSON.parse(state)
         state.page = 0
         pageState.value = state
-        if( state.selectedColumns){
+        if (state.selectedColumns) {
             selectedColumns.value = state.selectedColumns
-            
-        }else {
-            selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname)
+
+        } else {
+            selectedColumns.value = columns.value.filter(r => r.default).map(x => x.fieldname)
         }
-    }else {
-         selectedColumns.value = columns.value.filter(r=>r.default).map(x=>x.fieldname) 
+    } else {
+        selectedColumns.value = columns.value.filter(r => r.default).map(x => x.fieldname)
     }
     columns.value.forEach(r => {
         r.selected = selectedColumns.value.includes(r.fieldname)
     });
     loadData()
-    getApi("frontdesk.get_meta",{doctype:"Reservation Stay"}).then((result)=>{
+    getApi("frontdesk.get_meta", { doctype: "Reservation Stay" }).then((result) => {
         console.log(result.message)
-        result.message.fields.filter(r=>r.in_list_view==1 && !columns.value.map(x=>x.fieldname).includes(r.fieldname)).forEach(r=>{
+        result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
-             
-            if (["Date","Int"].includes(r.fieldtype)){
-                header_class ="text-center"
-            }else if(["Currency"].includes(r.fieldtype)){
-                header_class ="text-right"
+
+            if (["Date", "Int"].includes(r.fieldtype)) {
+                header_class = "text-center"
+            } else if (["Currency"].includes(r.fieldtype)) {
+                header_class = "text-right"
             }
-             
+
             columns.value.push({
-                fieldname:r.fieldname,
-                header:r.label,
-                fieldtype:r.fieldtype.toLowerCase(),
-                header_class:header_class,
-                selected:selectedColumns.value.includes(r.fieldname)
+                fieldname: r.fieldname,
+                header: r.label,
+                fieldtype: r.fieldtype.toLowerCase(),
+                header_class: header_class,
+                selected: selectedColumns.value.includes(r.fieldname)
             })
         })
     })
@@ -435,7 +448,7 @@ const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
 const onClearFilter = () => {
-    filter.value={}
+    filter.value = {}
     loadData()
     showAdvanceSearch.value.hide()
 }

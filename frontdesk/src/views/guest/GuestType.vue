@@ -19,16 +19,16 @@
         <div class="rounded-xl">
             <ComPlaceholder text="No Data" :loading="gv.loading"
                 :is-not-empty="(data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))).length > 0">
-                <DataTable
-                    :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"
-                    tableStyle="min-width: 50rem" 
-                    showGridlines>
+                <DataTable 
+                showGridlines
+                :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"
+                tableStyle="min-width: 50rem">
                     <Column field="customer_group_en" header="Guest type"></Column>
                     <Column field="owner" header="Owner"></Column>
                     <Column field="note" class="w-6" header="Note"></Column>
-                    <Column header="Action" headerClass="text-right">
+                    <Column header="Action" headerClass="text-center w-10rem">
                         <template #body="slotProps">
-                            <div class="flex gap-2 justify-end">
+                            <div class="flex gap-2 justify-center">
                                 <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right"
                                     class="h-2rem border-none" label="Edit" rounded />
                                 <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm"

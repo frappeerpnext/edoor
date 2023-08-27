@@ -59,7 +59,7 @@
 
               </ComBoxStayInformation>
           </div>
-          <div v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.pay_by_company">
+          <div v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room">
             <div @click="onClick" class="cursor-pointer px-4 mt-3 py-2 bg-indigo-100 rounded-r-lg border-l-4 border-indigo-500 text-indigo-500"> Room Charge Paid by Master Room </div>
           </div>
         </template>

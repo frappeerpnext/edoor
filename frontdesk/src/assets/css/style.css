@@ -448,16 +448,16 @@ span.p-button-icon.pi.pi-ellipsis-h {
     box-shadow: unset !important;
 }
 
-.p-datepicker-buttonbar button[aria-label="Clear"] {
+.no-btn-clear .p-datepicker-buttonbar button[aria-label="Clear"] {
     display: none !important;
 }
 
-.p-datepicker-buttonbar button[aria-label="Today"] {
+.no-btn-clear .p-datepicker-buttonbar button[aria-label="Today"] {
     background: #EEF2FF;
     width: 100% !important;
 }
 
-.p-datepicker-buttonbar {
+.no-btn-clear .p-datepicker-buttonbar {
     justify-content: center !important;
 }
 
@@ -631,8 +631,6 @@ span.p-button-icon.pi.pi-ellipsis-h {
 .fc .fc-event-main .geust-title{
     display: inline-block;
     white-space: nowrap;
-    min-width: 60px;
-    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -1199,4 +1197,16 @@ ul.res__hideshow{
 }
 .profile{
     object-fit: cover !important;
+}
+.bg-ed-paging .p-paginator{
+    background-color: #f8f9fa;
+}
+.w-50-ed .p-tooltip-text{
+    width: 13.5rem;
+}
+.tb-cs-datatable{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
 }

@@ -1,12 +1,12 @@
 <template lang="">
     <div class="flex">
         <template v-if="route.name != 'RoomInventory'">
-            <Button class="border-y-none border-left-none border-noround-right" @click="onView()">
+            <Button class="border-y-none border-left-none border-noround-right" v-tooltip.left="viewType == 'room_type' ? 'Room List View' : 'Room Type View'" @click="onView()">
                 <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
                 <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
             </Button>
             <div class="mr-2 relative h-full">
-                <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down" @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
+                <Button type="button" class="h-full border-none border-noround-left btn-set__h" icon="pi pi-angle-down"  @click="toggle" aria-haspopup="true" aria-controls="peroid_menu" />
                 <Menu ref="menu" id="peroid_menu" :popup="true" :model="items">
                     <template #item="data">
                         <button
@@ -18,9 +18,9 @@
                 </Menu>
             </div>
         </template>
-        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" class="border-noround-right border-y-none border-left-none"></Button>
-        <Button @click="onToday('today')" class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
-        <Button @click="onPrevNext('next')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tooltip.left="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
+        <Button @click="onToday('today')" v-tooltip.left="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
+        <Button @click="onPrevNext('next')" v-tooltip.left="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
     </div>
 </template> 
 <script setup>

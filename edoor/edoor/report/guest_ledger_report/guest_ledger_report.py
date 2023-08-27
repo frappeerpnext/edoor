@@ -56,7 +56,7 @@ def get_columns(filters):
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		{'fieldname':'is_master','label':'Master Folio',"fieldtype":"check","default":True},
+		{'fieldname':'is_master','label':'Master Folio','fieldtype':'Check',"header_class":'text-center',"default":True},
 		{'fieldname':'status','label':'Status',"fieldtype":"status","default":True},
 		{'fieldname':'reservation_status','label':'Res. Status',"fieldtype":"ReservationStatus","default":True},
 		{'fieldname':'reservation_status_color' }

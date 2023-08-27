@@ -29,7 +29,7 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"  dateFormat="dd-mm-yy" :selectOtherMonths="true"/>
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth" showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true"/>
                     </div>
                     <!-- guest.date_of_birth -->
                    
@@ -78,12 +78,11 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label class="white-space-nowrap">ID/Passport Number</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
-                            v-model="guest.id_card_number" :maxlength="50" />
+                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number" v-model="guest.id_card_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date" dateFormat="dd-mm-yy" showButtonBar showIcon/>
                     </div>
                 </div>
             </template>
@@ -123,8 +122,8 @@ function onLoad() {
     getDoc('Customer', dialogRef.value.data.name)
         .then((doc) => {
             guest.value = doc
-            guest.value.date_of_birth = moment(doc.date_of_birth).toDate()
-            guest.value.expired_date = moment(doc.expired_date).toDate()
+            guest.value.date_of_birth = doc.date_of_birth ? moment(doc.date_of_birth).toDate() : ''
+            guest.value.expired_date = doc.expired_date ? moment(doc.expired_date).toDate() : ''
             loading.value = false
         })
         .catch((error) => {
@@ -157,8 +156,8 @@ function onOK() {
     loading.value = true
     
     var data = JSON.parse(JSON.stringify(guest.value))
-    data.date_of_birth = moment(data.date_of_birth).format("YYYY-MM-DD")
-    data.expired_date = moment(data.expired_date).format("YYYY-MM-DD")
+    data.date_of_birth = data.date_of_birth ? moment(data.date_of_birth).format("YYYY-MM-DD") : ''
+    data.expired_date = data.expired_date ? moment(data.expired_date).format("YYYY-MM-DD") : ''
     data.photo = data.attach
     createUpdateDoc('Customer', {data:data}).then((r) => {
         if (r.name) {

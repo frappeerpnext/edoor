@@ -1,88 +1,91 @@
 <template>
-    <div>
-        <ComHeader isRefresh @onRefresh="Refresh()">
-            <template #start>
-                <div class="text-2xl">Business Source</div>
-            </template>
-            <template #end>
-                <Button v-tooltip.left="'Add New Business Source'" @click="onAddNewBusinessSource" label="Add New Business Source" class="d-bg-set btn-inner-set-icon border-none">
-                    <ComIcon class="mr-2" icon="iconGeneralList"></ComIcon>Add New Business Source
-                </Button>
-            </template>
-        </ComHeader>
-        <div class="mb-3 flex justify-between">
-            <div class="flex flex-wrap gap-2">
-                <div>
-                    <span class="p-input-icon-left">
-                        <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
-                    </span>
+    <div class="flex-col flex" style="height: calc(100vh - 92px);">
+        <div>
+            <ComHeader isRefresh @onRefresh="Refresh()">
+                <template #start>
+                    <div class="text-2xl">Business Source</div>
+                </template>
+                <template #end>
+                    <Button class="border-none" label="Add New Business Source" icon="pi pi-plus"  @click="onAddNewBusinessSource" />
+                </template>
+            </ComHeader>
+            <div class="mb-3 flex justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <div>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        </span>
+                    </div>
+                    <div>
+                        <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
+                    </div>
+                    <div v-if="gv.isNotEmpty(filter)">
+                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    </div>
+                    <div>
+                        <ComOrderBy doctype="Business Source" @onOrderBy="onOrderBy" />
+                    </div>
                 </div>
                 <div>
-                    <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
+                    <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                        <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
+                    </Button>
                 </div>
-                <div v-if="gv.isNotEmpty(filter)">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
-                </div>
-                <div>
-                    <ComOrderBy doctype="Business Source" @onOrderBy="onOrderBy" />
-                </div>
-            </div>
-            <div>
-                <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
-                    <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
-                </Button>
             </div>
         </div>
-        <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="true">
-            <DataTable 
-            class="res_list_scroll"
-            :resizableColumns="true"  
-            columnResizeMode="fit" 
-            showGridlines 
-            stateStorage="local"
-            stateKey="table_business_source_list_state" 
-            scrollable 
-            :reorderableColumns="true"   
-            :value="data" tableStyle="min-width: 50rem" 
-            @row-dblclick="onViewReservationStayDetail"
-            scrollHeight="70vh">
-                <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
-                :frozen="c.frozen" 
-                >
-                    <template #body="slotProps" >
-                        <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
-                            {{ slotProps.data[c.fieldname] }} 
-                            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                            <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                        </Button>
-                        <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                        <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
-                        <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                        <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-                        v-if="slotProps?.data && slotProps?.data?.rooms">
-                        <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                            <span>{{ item }}</span>
-                            <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+        <div class="overflow-auto h-full">
+            <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="pageState.totalRecords > 0">
+                <DataTable 
+                class="res_list_scroll"
+                :resizableColumns="true"  
+                columnResizeMode="fit" 
+                showGridlines 
+                stateStorage="local"
+                stateKey="table_business_source_list_state" 
+                scrollable 
+                :reorderableColumns="true"   
+                :value="data" tableStyle="min-width: 50rem" 
+                @row-dblclick="onViewReservationStayDetail"
+                scrollHeight="70vh">
+                    <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+                    :frozen="c.frozen" 
+                    >
+                        <template #body="slotProps" >
+                            <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                                {{ slotProps.data[c.fieldname] }} 
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                                <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                            </Button>
+                            <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                            <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
+                            <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                            <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                            v-if="slotProps?.data && slotProps?.data?.rooms">
+                            <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                <span>{{ item }}</span>
+                                <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                            </template>
+                            </div>
+                            <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
+                            <span v-else>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                                <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                            </span>
                         </template>
-                        </div>
-                        <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                        <span v-else>
-                            {{ slotProps.data[c.fieldname] }}
-                            <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                            <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                        </span>
-                    </template>
-                </Column>
-    
-            </DataTable>
+                    </Column>
+                </DataTable>
+            </ComPlaceholder>
+        </div>
+        <div>
             <Paginator class="p__paginator" :rows="pageState.rows"  :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
-                @page="pageChange">
+                    @page="pageChange">
                 <template #start="slotProps">
                     <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
-        </ComPlaceholder>
+        </div>
     </div>
  
     
@@ -95,19 +98,19 @@
                 <InputText v-model="filter.search_field" placeholder="Search" class="w-full"/>
             </span>
         </template>
-        <ul class="res__hideshow">
-            <li class="mb-2 white-space-nowrap" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
+        <div class="grid">
+            <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
                 <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
                 <label :for="c.fieldname">{{ c.label }}</label>
-            </li>
-        </ul>
+            </div>
+        </div>
         <template #footer-left>
             <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List"/>
         </template>
     </ComOverlayPanelContent>
 </OverlayPanel>
 
-<OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+<OverlayPanel ref="showAdvanceSearch" style="width:40rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
             <ComSelect class="col-6" width="100%" 

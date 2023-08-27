@@ -28,7 +28,7 @@ def execute(filters=None):
 
 	folio_transaction_amount_data =  get_folio_transaction_amount(filters)
 	report_data = get_report_data(folio_transaction_amount_data,filters) 
-	return get_columns(	), report_data, message, None, get_report_summary(folio_transaction_amount_data,filters),skip_total_row
+	return get_columns(), report_data, message, None, get_report_summary(folio_transaction_amount_data,filters),skip_total_row
  
 def validate(filters):
 	datediff = date_diff(filters.end_date, filters.start_date)
@@ -41,15 +41,18 @@ def validate(filters):
 
 def get_columns():
 	return [
-		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'align':'center',"header_class":'text-center','post_message_action':"view_folio_transaction_detail","default":True},
-		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True},
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True},
-		{'fieldname': 'account_code', 'label': 'Account Code','extra_field':"account_name", 'extra_field_separator':"-",'header_class':"text-left" ,'default':True},
+		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'post_message_action':"view_folio_transaction_detail","default":True},
+		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
-		{'fieldname':'business_source','label':'Business Source', "header_class":'text-left',"default":True},
+		{'fieldname':'room_type','label':'Room Type',"default":True},
+		{'fieldname': 'account_code', 'label': 'Account Code','extra_field':"account_name", 'extra_field_separator':"-",'header_class':"text-left" ,'default':True},
+		{'fieldname':'business_source','label':'Source',"default":True},
+		{'fieldname':'parent_account_name','label':'Parent Account Name'},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
+		
 	]
 
 def get_folio_transaction_amount(filters):
@@ -84,6 +87,7 @@ def get_report_data(folio_transaction_amount,filters):
 				posting_date,
 				room_number,
 				room_id,
+				room_type,
 				account_name,
 				account_code,
 				type,
@@ -99,7 +103,7 @@ def get_report_data(folio_transaction_amount,filters):
 			from `tabFolio Transaction` 
 			where
 				property = %(property)s and 
-
+				concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(room_number,'')) like '%{0}%' and
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 

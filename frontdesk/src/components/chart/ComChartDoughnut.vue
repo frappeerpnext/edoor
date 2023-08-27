@@ -1,5 +1,5 @@
 <template>
-
+{{ percentage }} {{ data }}
     <div class="relative">
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
             <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>

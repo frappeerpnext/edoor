@@ -105,7 +105,8 @@
   "housekeeping_note_by",
   "housekeeping_note_modified",
   "housekeeping_note",
-  "pay_by_company",
+  "paid_by_master_room",
+  "allow_post_to_city_ledger",
   "summary_data",
   "tax_section",
   "tax_rule",
@@ -572,12 +573,6 @@
    "label": "Housekeeping Note Modified"
   },
   {
-   "default": "0",
-   "fieldname": "pay_by_company",
-   "fieldtype": "Check",
-   "label": "Pay by Company"
-  },
-  {
    "fieldname": "total_debit",
    "fieldtype": "Currency",
    "label": "Total Debit"
@@ -805,6 +800,18 @@
    "fieldname": "is_reserved_room",
    "fieldtype": "Check",
    "label": "Is Reserved Room"
+  },
+  {
+   "default": "0",
+   "fieldname": "paid_by_master_room",
+   "fieldtype": "Check",
+   "label": "Paid by Master Room"
+  },
+  {
+   "default": "1",
+   "fieldname": "allow_post_to_city_ledger",
+   "fieldtype": "Check",
+   "label": "Allow Post to City Ledger"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -815,7 +822,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-08-15 15:05:43.477666",
+ "modified": "2023-08-24 14:57:06.031271",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

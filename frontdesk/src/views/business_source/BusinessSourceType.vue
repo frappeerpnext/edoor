@@ -19,13 +19,13 @@
       <div class="">
       <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="gv.search(data, filter.keyword).length > 0">
       <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase())) -->
-      <DataTable  :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
+      <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
           <Column field="business_source_type" header="Business Source Type"></Column>
           <Column field="owner" header="Owner"></Column>
           <Column field="note" class="w-6" header="Note"></Column>
-          <Column header="">
+          <Column header="Action" class="text-center w-10rem">
            <template #body="slotProps">
-              <div class="flex gap-2 justify-end">
+              <div class="flex gap-2 justify-center">
               <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
               <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
               </div>

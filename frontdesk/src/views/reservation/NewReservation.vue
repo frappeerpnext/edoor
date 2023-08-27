@@ -71,14 +71,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="pt-2 flex justify-between">
-                            <div class="flex align-items-center relative w-11rem">
-                                <label for="include-tax" class="font-medium cursor-pointer me-2">Paid by Company</label>
-                                <Checkbox class="absolute right-0 w-full flex justify-end mt-1"
-                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
-                                    v-model="doc.reservation.pay_by_company" :binary="true" :trueValue="1"
-                                    :falseValue="0" />
-                            </div>
+                        <div class="pt-2 flex justify-end">
+                          
                             <div>
                                 <div class="text-center">
                                     <label class="text-center">Total Pax</label><br>
@@ -86,6 +80,24 @@
                                 <div class="p-inputtext-pt text-center border-1 border-white h-12 w-7rem">{{
                                     doc.reservation_stay.reduce((n, d) => n + d.adult, 0) }} /
                                     {{ doc.reservation_stay.reduce((n, d) => n + d.child, 0) }}</div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-4">
+                            <div class="flex align-items-center relative gap-2">
+                                <label for="allowmaster" class="font-medium cursor-pointer ">Mark as Paid by Master Room</label>
+                                <Checkbox 
+                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                    v-model="doc.reservation.paid_by_master_room" :binary="true" :trueValue="1"
+                                    inputId="allowmaster"
+                                    :falseValue="0" />
+                            </div>
+                            <div class="flex align-items-center relative gap-2">
+                                <label for="allowcity" class="font-medium cursor-pointer">Allow Post to City Ledger</label>
+                                <Checkbox 
+                                    v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
+                                    v-model="doc.reservation.allow_post_to_city_ledger" :binary="true" :trueValue="1"
+                                    inputId="allowcity"
+                                    :falseValue="0" />
                             </div>
                         </div>
                     </div>
@@ -380,9 +392,10 @@ const doc = ref({
         child: 0,
         reservation_status: 'Reserved',
         tax_rule: room_tax.value?.name,
-        pay_by_company: 0,
+        paid_by_master_room: 0,
         group_code: "",
-        group_name: ""
+        group_name: "",
+        allow_post_to_city_ledger:1
 
     },
     guest_info: {

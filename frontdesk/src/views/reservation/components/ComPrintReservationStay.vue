@@ -1,13 +1,11 @@
 <template>
-    <div class=" view-table-iframe-dialog -mr-3 pr-2" style="height: 75vh;">
-   <div class="mb-2">
-    <Dropdown v-model="selected_folio" :options="folios" optionLabel="folio" optionValue="name"
-        placeholder="Select Folio" class="w-full md:w-14rem mr-2" @change="refreshReport" 
-       
-        />
-    <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport"/>  
-</div>
-    <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
+    <div class="view-table-iframe-dialog -mr-3 pr-2" style="height: 75vh;">
+        <div class="mb-3 flex gap-2">
+            <Dropdown v-model="selected_folio" :options="folios" optionLabel="folio" optionValue="name"
+                placeholder="Select Folio" class="w-full md:w-14rem" @change="refreshReport" />
+            <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport" />
+        </div>
+        <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
     </div>
 </template>
 
@@ -16,7 +14,7 @@ import { ref, onMounted, inject } from "@/plugin"
 const dialogRef = inject("dialogRef");
 const frappe = inject("$frappe")
 const call = frappe.call()
-const letterHead= ref("")
+const letterHead = ref("")
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
@@ -29,14 +27,14 @@ const report_name = ref("")
 letterHead.value = setting.property.default_letter_head
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" +  report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=1"
-     
-    if (selected_folio.value){
+    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=1"
+
+    if (selected_folio.value) {
         url.value = url.value + "&folio=" + selected_folio.value
     }
 
     document.getElementById("report-view").contentWindow.location.replace(url.value)
-    
+
 }
 function onIframeLoaded() {
     const iframe = document.getElementById("report-view");
@@ -44,7 +42,7 @@ function onIframeLoaded() {
     // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 onMounted(() => {
-    if (dialogRef)  {
+    if (dialogRef) {
         const params = dialogRef.value.data
         reservation_stay.value = params.reservation_stay
         report_name.value = params.report_name
@@ -56,12 +54,12 @@ onMounted(() => {
             .then((result) => {
                 folios.value = result.message
                 if (!params.folio_number) {
-                   
-                        selected_folio.value = folios.value[0].name
+
+                    selected_folio.value = folios.value[0].name
                 } else {
-                   
-                    selected_folio.value =params.folio_number
-                   
+
+                    selected_folio.value = params.folio_number
+
                 }
                 refreshReport()
             })
