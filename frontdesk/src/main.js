@@ -260,14 +260,13 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
- 
 
 	// Configure route gaurds
 	router.beforeEach(async (to, from, next) => {
 		 
 		document.title = (to.meta.title || '') + ' | eDoor Front Desk'
 		if (to.matched.some((record) => !record.meta.isLoginPage)) {
-		 
+		
 			// this route requires auth, check if logged in
 			// if not, redirect to login page.
 			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
@@ -291,23 +290,24 @@ const apiCall = frappe.call()
 				
 			}
 		} else {
-			  
+
 			if (getCookie("user_id")!="Guest") {
-				 
+			 
 				//find first record of edoor menu 
 				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-				let edoorMenu = setting?.edoor_menu?.filter(r=>r.menu_name!='All Menus' && r.parent_edoor_menu=='All Menus')
-				edoorMenu = edoorMenu.sort((a, b) => {
-					return a.sort_order - b.sort_order;
-				});  
-				if(edoorMenu){
-					 
-					next({ name: edoorMenu[0].menu_name });
-				}else {
-					 
-					next({ name: 'Dashboard' });
+				if (setting){
+					let edoorMenu = setting?.edoor_menu?.filter(r=>r.menu_name!='All Menus' && r.parent_edoor_menu=='All Menus')
+					edoorMenu = edoorMenu.sort((a, b) => {
+						return a.sort_order - b.sort_order;
+					});  
+					if(edoorMenu){
+						 
+						next({ name: edoorMenu[0].menu_name });
+					}else {
+						 
+						next({ name: 'Dashboard' });
+					}
 				}
-		
 				 
 
 			} else {
@@ -333,42 +333,43 @@ const apiCall = frappe.call()
 		}
 	});
 
-	
  
 	if (auth.isLoggedIn) {
-		 
-		apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
-			property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
-		}).then((r) => {
-		 
-			const data = r.message
-			if (data.user.name == "Guest") {
-				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + data.edoor_setting.backend_port;
  
-				window.location.replace(serverUrl)
-			} else {
-				localStorage.setItem('edoor_user', JSON.stringify(data.user))
-				localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
-				gv.setting = data.edoor_setting
-				if (r.message.property == "Invalid Property") {
-					localStorage.removeItem("edoor_property")
-				}
-				else {
-					localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-
-					if (r.message.property) {
-						if (r.message.property.length == 1) {
-							localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+			apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
+				property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
+			}).then((r) => {
+			 
+				const data = r.message
+				if (data.user.name == "Guest") {
+					const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + data.edoor_setting.backend_port;
+	 
+					window.location.replace(serverUrl)
+				} else {
+					localStorage.setItem('edoor_user', JSON.stringify(data.user))
+					localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
+					gv.setting = data.edoor_setting
+					if (r.message.property == "Invalid Property") {
+						localStorage.removeItem("edoor_property")
+					}
+					else {
+						localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
+	
+						if (r.message.property) {
+							if (r.message.property.length == 1) {
+								localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+							}
 						}
 					}
+				 
+					app.mount("#app");
 				}
-			 
-				app.mount("#app");
-			}
-
-		}).catch((error) => {
-			console.log(error)
-		})
+	
+			}).catch((error) => {
+				console.log(error)
+			})
+	 
+		
 	} 
 
  

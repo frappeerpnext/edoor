@@ -180,14 +180,18 @@ def get_server_port():
 
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
-    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],order_by="sort_order asc")
 
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],order_by="sort_order asc")
+    
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
+ 
+    
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
-  
+    
+
  
 
     epos_setting = frappe.get_doc('ePOS Settings')
@@ -208,14 +212,16 @@ def get_edoor_setting(property = None):
         "custom_print_format":custom_print_format,
         "currency":{
             "name":currency.name,
-            "locale":currency.locale,
-            "precision":  currency.currency_precision,
+            "locale":currency.custom_locale,
+            "precision":  currency.custom_currency_precision,
             "symbol": currency.symbol,
-            "pos_currency_format": currency.pos_currency_format
+            "pos_currency_format": currency.custom_pos_currency_format
         },
         "housekeeping_status":housekeeping_status,
         'reservation_status':reservation_status,
     }
+
+    
     
     user = get_logged_user()
     if not frappe.db.exists("Business Branch", property):
@@ -228,6 +234,7 @@ def get_edoor_setting(property = None):
     else:
         if len(user["property"])==1:
              working_day = get_working_day(user["property"][0]["name"])
+ 
 
     property = frappe.get_doc("Business Branch", property)
     
