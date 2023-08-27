@@ -227,6 +227,7 @@ fixtures = [
     {"dt": "Reservation Status"},
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
+    {"dt": "Account Category"},
 ]
 
 # website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
