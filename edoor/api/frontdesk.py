@@ -107,12 +107,14 @@ def get_dashboard_data(property = None,date = None):
     sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block';".format(date,property)
     total_room_block = frappe.db.sql(sql,as_dict=1)
 
-
+    vacant_room = (total_room or 0) - (total_room_occupy or 0) - (total_room_block[0]["total_room_block"] or 0)
+    if vacant_room<0:
+        vacant_room = 0
     return {
         "working_date":working_date,
         "total_room":total_room or 0,
         "total_room_occupy":total_room_occupy or 0,
-        "total_room_vacant": (total_room or 0) - (total_room_occupy or 0) - (total_room_block[0]["total_room_block"] or 0),
+        "total_room_vacant": vacant_room,
         "arrival":stay[0]["total_arrival"] or 0,
         "arrival_remaining": stay[0]["arrival_remaining"] or 0,
         "departure":stay[0]["total_departure"] or 0,
@@ -125,7 +127,8 @@ def get_dashboard_data(property = None,date = None):
         "stay_over":stay[0]["total_stay_over"] or 0,
         "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
         "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
-        "upcoming_note":upcoming_note[0]["total"] or 0
+        "upcoming_note":upcoming_note[0]["total"] or 0,
+        
         
     }
 
@@ -253,7 +256,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
-    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","show_in_city_ledger","icon"], order_by="sort_order")
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","show_in_city_ledger","icon","is_city_ledger_account"], order_by="sort_order")
 
 
     return {
@@ -310,7 +313,7 @@ def get_working_day(property = ''):
 
 @frappe.whitelist()
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
-    
+     
     resources = []
     filters = ""
     if room_number:
@@ -355,34 +358,35 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
     else:
         resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
     
-    resources.append({
-        "id": "vacant_room",
-        "title": "Vacant Room",
-        "sort_order":1000
-    })
+    if frappe.db.get_default("show_summary_under_room_chart_calendar")==1:
+        resources.append({
+            "id": "vacant_room",
+            "title": "Vacant Room",
+            "sort_order":1000
+        })
+        
+        resources.append({
+            "id": "occupany",
+            "title": "Occupancy",
+            "sort_order":1001
+        })
     
-    resources.append({
-        "id": "occupany",
-        "title": "Occupancy",
-        "sort_order":1001
-    })
-  
-    resources.append({
-        "id": "out_of_order",
-        "title": "Out of Order",
-        "sort_order":1002
-    })
-    
-    resources.append({
-        "id": "arrival_departure",
-        "title": "Arrival/Departure",
-        "sort_order":1003
-    })
-    resources.append({
-        "id": "pax",
-        "title": "PAX",
-        "sort_order":1004
-    })
+        resources.append({
+            "id": "out_of_order",
+            "title": "Out of Order",
+            "sort_order":1002
+        })
+        
+        resources.append({
+            "id": "arrival_departure",
+            "title": "Arrival/Departure",
+            "sort_order":1003
+        })
+        resources.append({
+            "id": "pax",
+            "title": "PAX",
+            "sort_order":1004
+        })
 
 
     return resources
@@ -430,12 +434,14 @@ def get_room_inventory_resource(property = ''):
  
 
 @frappe.whitelist()
-def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
+def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None):
     events = []
     sql = """
         select 
             name as id, 
             room_id as resourceId,
+            room_id,
+            room_type_id,
             room_number,
             concat(start_date,'T',start_time) as start ,
             concat(end_date,'T',end_time) as end,
@@ -462,7 +468,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
             group_color,
             group_name,
             group_code,
-            pay_by_company,
+            paid_by_master_room,
             total_debit,
             balance,
             total_credit,
@@ -479,8 +485,8 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
 
     """
     sql = sql.format(
-            datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'), 
-            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'),
+            getdate(start), 
+            getdate(end),
             "AND data_keyword LIKE '%{}%'".format(keyword) if keyword else "",
             property)
   
@@ -493,8 +499,9 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None):
    
 
     # check if room chart view is group by room type then add event to room type resource
-    room_type_events = get_calendar_event_for_room_type_resource(start=start,end=end,property=property)
-    events = events + room_type_events
+    if view_type =="room_type":
+        room_type_events = get_calendar_event_for_room_type_resource(start=start,end=end,property=property)
+        events = events + room_type_events
 
     #get event from room block
     events = events +  get_room_block_event(start,end,property)
@@ -540,8 +547,8 @@ def get_room_block_event(start,end,property):
 
     """
     sql = sql.format(
-            datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d'), 
-            datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%Y-%m-%d')
+            getdate(start), 
+            getdate(end)
             ,property)
   
     data = frappe.db.sql(sql, as_dict=1)
@@ -561,9 +568,12 @@ def get_calendar_event_for_room_type_resource(start,end,property):
     """
     events = []
     working_day = get_working_day(property=property)
-    dates = get_date_range( datetime.strptime(start, "%Y-%m-%dT%H:%M:%S.%fZ"),datetime.strptime(end, "%Y-%m-%dT%H:%M:%S.%fZ"),False)
-    future_dates =  [d for d in dates if d.date() >= working_day["date_working_day"]]
-    past_dates =  [d for d in dates if d.date() < working_day["date_working_day"]]
+    dates = get_date_range( getdate(start),getdate(end),False)
+
+
+
+    future_dates =  [d for d in dates if d >= working_day["date_working_day"]]
+    past_dates =  [d for d in dates if d < working_day["date_working_day"]]
     
     #1. get date for future date by from temp room occupy
     if future_dates:
@@ -636,93 +646,10 @@ def get_calendar_event_for_room_type_resource(start,end,property):
                                 future_dates[0].strftime('%Y-%m-%d'),
                                 future_dates[len(future_dates)-1].strftime('%Y-%m-%d')
                             )
-        
-
-
-        for x in future_dates:
-                
-                events.append(      
-                {
-                    "resourceId": "vacant_room",
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": total_room - Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: (r.total_occupy or 0) + (r.total_block or 0)),
-                    "color": "#ccce45",
-                    "type":"vacant_room"
-                })
-
-                #add event for room occupy
-                events.append(      
-                {
-                    "resourceId": "occupany",
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0),
-                    "color": "#ccce45",
-                    "type":"occupany"
-                })
-                #add event for room occupy percentage
-                events.append(      
-                {
-                    "resourceId": "occupany",
-                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title":  str.format("{:.0%}", Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_occupy or 0) / total_room) ,
-                    "color": "#ddce45",
-                    "type":"occupany"
-                })
-                
-                #add event for total block
-                total_block =Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_block or 0) 
-                events.append(      
-                {
-                    "resourceId": "out_of_order",
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": total_block,
-                    "color": "red" if total_block>0 else '#ccc',
-                    "type":"out_of_order"
-                })
-
-                #append arrival data to event for future date
-                events.append(      
-                {
-                    "resourceId": "arrival_departure",
-                    "start": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": Enumerable(future_arrival_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_room or 0) ,
-                    "color": "blue",
-                    "type":"arrival"
-                })
-                
-                #append depareture data to event for future date
-                events.append(      
-                {
-                    "resourceId": "arrival_departure",
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T12:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title": Enumerable(future_departure_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.total_room or 0) ,
-                    "color": "teal",
-                    "type":"departure"
-                })
-
-                #add event for total pax
-                events.append(      
-                {
-                    "resourceId": "pax",
-                    "start": "{}T00:00:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "end": "{}T23:59:00.000000".format(x.strftime('%Y-%m-%d')),
-                    "title":  Enumerable(temp_occupy_data).where(lambda r:r.date.strftime('%Y-%m-%d') == x.strftime('%Y-%m-%d')).sum(lambda r: r.pax or 0),
-                    "color": "green",
-                    "type":"pax"
-                })
-                
-      
-        
-
 
     return events
 
+ 
 def get_future_arrival_data(property,start,end):
     #get arrival and departure event
     sql = """
@@ -932,7 +859,7 @@ def post_room_change_to_folio(working_day):
         stay_doc = frappe.get_doc("Reservation Stay",r.reservation_stay)
         if stay_doc.is_active_reservation==1:
             folio = None
-            if stay_doc.pay_by_company == 0:
+            if stay_doc.paid_by_master_room == 0:
                 master_folios = frappe.db.get_list("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1})
                 if master_folios:
                     folio = master_folios[0]
