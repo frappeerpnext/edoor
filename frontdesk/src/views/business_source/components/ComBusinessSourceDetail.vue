@@ -32,9 +32,9 @@ const url =  computed(() => {
     return url
 })
 
-function onIframeLoaded(){
- const iframe = document.getElementById("iframe");
- iframe.height = iframe.contentWindow.document.body.scrollHeight;
+function onIframeLoaded(){ 
+    const iframe = document.getElementById("iframe");
+    iframe.height = iframe.contentWindow.document.body.scrollHeight;
 
 }
 
@@ -60,7 +60,6 @@ function onEdit() {
             const data = options.data;
             if (data) {
                 name.value = data
-                onIframeLoaded()
             }
         }
     });
@@ -78,23 +77,14 @@ function onDelete() {
             loading.value = true
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
-                    socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
                     dialogRef.value.close(r)
+                    socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
+                    
                  } ).catch((err)=>{
                     loading.value = false
                  })         
         },
     });
-}
-function loadData() {
-    loading.value = true
-    getDoc('Business Source', name.value)
-        .then((r) => {
-            data.value = r
-            loading.value = false
-        }).catch((err) => {
-            loading.value = false
-        })
 }
 
 onMounted(() => {

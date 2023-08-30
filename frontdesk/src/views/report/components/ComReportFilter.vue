@@ -1,22 +1,22 @@
 <template>
     <div class="flex justify-between">
         <div class="grid">
-            <div class="col-6" v-if="hasFilter('start_date')">
+            <div class="col-3" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-6" v-if="hasFilter('end_date')">
+            <div class="col-3" v-if="hasFilter('end_date')">
                 <label>End date</label><br>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-6"  v-if="hasFilter('business_source')">
+            <div class="col-3"  v-if="hasFilter('business_source')">
                 <label>Business Source</label><br>
                 <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
                 class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
             </div>
-            <div class="col-6"  v-if="hasFilter('room_type')">
+            <div class="col-3"  v-if="hasFilter('room_type')">
                 <label>Room Type</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
@@ -25,14 +25,11 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
-
-            
-             
-            <div class="col-6">
+            <div class="col-3">
                 <label>Letter Head</label><br>
                 <ComSelect :clear="false" v-model="filter.letterhead" doctype="Letter Head" />
             </div>
-            <div class="col-6">
+            <div class="col-3">
                 <label>Language</label><br>
                 <ComSelect :clear="false" v-model="filter._lang" doctype="Language" optionLabel="language_name" optionValue="name"
                 :filters="[['enabled', '=', 1]]" />

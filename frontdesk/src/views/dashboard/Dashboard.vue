@@ -313,7 +313,10 @@ function onViewNoShowReservation(){
 
 function getDepartureUrl() {
     
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Departure%20Guest&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Departure Guest") +  "&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
+   
+    
+
     url = url + "&date=" + selected_date.value
  
     return url;
@@ -321,7 +324,7 @@ function getDepartureUrl() {
 }
 
 function getInhouseGuestUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Dashboard%20Stay%20Over%20Guest&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Stay Over Guest") +  "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     url = url + "&date=" + selected_date.value
     return url;
 
