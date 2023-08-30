@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @onClose="onClose" @onOK="onSave">
+    <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
         <div class="grid">
             <div class="col-12">
                 <ComReservationStayPanel title="Business Source Information">
@@ -94,7 +94,7 @@ function onSave(){
     }
     createUpdateDoc("Business Source", {data: data.value}, '', rename).then((r)=>{
         socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
-        dialogRef.value.close(r)
+        dialogRef.value.close(rename.new_name)
         
     }).catch((err)=>{
         loading.value = false

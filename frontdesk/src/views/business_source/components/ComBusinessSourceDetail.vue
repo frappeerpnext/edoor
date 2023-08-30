@@ -59,7 +59,8 @@ function onEdit() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                loadData(data.name)
+                name.value = data
+                onIframeLoaded()
             }
         }
     });
@@ -77,7 +78,7 @@ function onDelete() {
             loading.value = true
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
-                    // socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
+                    socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
                     dialogRef.value.close(r)
                  } ).catch((err)=>{
                     loading.value = false

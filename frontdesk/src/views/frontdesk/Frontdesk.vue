@@ -108,9 +108,9 @@
                                                 <span v-if="event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
                                                     <ComIcon style="height: 12px;" icon="iconUserGroup"/>
                                                 </span>
-                                                <span v-if="event.extendedProps.reservation_type=='FIT'" class="stay-bar-status">
+                                                <!-- <span v-if="event.extendedProps.reservation_type=='FIT'" class="stay-bar-status">
                                                     <ComIcon style="height: 12px;" icon="iconFIT"/>
-                                                </span>
+                                                </span> -->
                                             </span>
                                             <div class="geust-title">
                                                 {{event.title}}
