@@ -29,7 +29,7 @@
                 <label>Arrival Mode</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
-                    v-model="filter.transportation_mode"   placeholder="Arrival Mode" doctype="Transportation Mode"
+                    v-model="filter.arrival_mode"   placeholder="Arrival Mode" doctype="Transportation Mode"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
             <div class="col-3">

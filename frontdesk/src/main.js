@@ -261,11 +261,11 @@ app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
 
-// const config = await getConfigData()
-// if (!auth.isLoggedIn) {
-// 	const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
-// 	window.location.replace(serverUrl)
-// }
+const config = await getConfigData()
+if (!auth.isLoggedIn) {
+	const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
+	window.location.replace(serverUrl)
+}
  
 router.beforeEach(async (to, from, next) => {
 	 

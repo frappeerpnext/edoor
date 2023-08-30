@@ -18,6 +18,7 @@ export default defineConfig({
 	build: {
 		outDir: '../edoor/public/frontdesk',
 		emptyOutDir: true,
-		target: 'es2015',
+		target: 'esnext'
+		// target: 'es2015',
 	},
 });
