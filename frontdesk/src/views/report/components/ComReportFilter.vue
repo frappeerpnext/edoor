@@ -1,6 +1,6 @@
 <template>
     <div class="flex justify-between">
-        <div class="flex-grow-1">
+        <div class="col-10">
         <div class="grid">
             <div class="col-3" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
@@ -35,7 +35,7 @@
             </div>
         </div>
         </div>
-        <div class="flex-grow-1 items-center mt-3 flex justify-end">
+        <div class="col-2 items-center mt-3 flex justify-end">
             <div class="flex justify-end gap-2">
                 <Button class= "white-space-nowrap content_btn_b w-3rem justify-center"  @click="customReport" ><i class="pi pi-cog text-xl "/></Button>
                 <div class="border-left-1 border-primary-100"></div>
