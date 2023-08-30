@@ -50,8 +50,9 @@ const isCurrentPage = computed(()=>{
     return currentMenuRoute.value
 })
 
-function onClick(name){ 
-    emit('onClick', name)
+function onClick(name){
+    if(name != 'Mores')
+        emit('onClick', name)
 }
 provide('on_header_menu',{
     onClick

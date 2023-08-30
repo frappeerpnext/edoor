@@ -1,4 +1,5 @@
 <template>
+    iframe dymic is already fix here. pls delete me in future
     <div class="wrap-dialog" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
@@ -90,6 +91,7 @@ const view = ref("")
 const extra_params = ref([])
 const filter_options = ref([]) // list array string like ["keyword","business_source","room_type"]
 const toast = useToast()
+const gv = inject("$gv")
 
 const socket = inject("$socket");
  
@@ -131,24 +133,16 @@ function onIframeLoaded() {
 
     iframe.style.height = '0px';
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-    // if (windowWidth >= 1800){
-    //     iframe.style.minWidth = 100 + '%'
-    // }
-    // else{
-    //     const dialog_widht = document.querySelector('.widht-ifame');
-    //     dialog_widht.style.width = contentWidth + 'px';
-    //     iframe.style.width = contentWidth  + 'px';
-    // }
-    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
+
 }
 
 function loadIframe() {
- 
+   
     if (view.value) {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + dialogRef.value.data.report_name +  "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
+        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 
     } else {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + dialogRef.value.data.report_name +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=1"
+        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=1"
     }
 
 

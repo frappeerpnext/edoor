@@ -1,5 +1,5 @@
 <template>
-    <div class="flex justify-between">
+    <div class="flex flex-col">
         <div class="grid">
             <div class="col-3" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
@@ -25,6 +25,13 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
+            <div class="col-3"  v-if="hasFilter('arrival_mode')">
+                <label>Arrival Mode</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                    v-model="filter.transportation_mode"   placeholder="Arrival Mode" doctype="Transportation Mode"
+                    :filters="{ property: property.name }"></ComSelect>
+            </div>
             <div class="col-3">
                 <label>Letter Head</label><br>
                 <ComSelect :clear="false" v-model="filter.letterhead" doctype="Letter Head" />
@@ -35,10 +42,13 @@
                 :filters="[['enabled', '=', 1]]" />
             </div>
         </div>
-        <div class="flex align-items-end">
-            <Button class="border-none white-space-nowrap" @click="onSearch">Preview Report</Button>
-        </div>
+        
     </div>
+        <div class="flex justify-end gap-2">
+            <Button class= "white-space-nowrap content_btn_b "><i class="pi pi-cog text-xl "/></Button>
+            <div class="border-left-1 border-primary-100"></div>
+            <Button class= "white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2"/> Preview Report</Button>
+        </div>
 </template>
 <script setup>
 import { ref, inject } from "@/plugin"
