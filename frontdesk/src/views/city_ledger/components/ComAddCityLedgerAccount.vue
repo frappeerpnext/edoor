@@ -24,7 +24,7 @@
                 
                 <div class="col-6">
                     <label>Phone Number</label><br />
-                    <InputText class="w-full" v-model="data.phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
+                    <InputText class="w-full" v-model="data.phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
                 </div>
                 <div class="col-6">
                     <label>Email Address</label><br />

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComChartDoughnut :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
+        <ComChartDoughnut :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
     </div>
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
         
@@ -27,8 +27,13 @@
     </div>
 </template>
 <script setup>
-import { ref, getApi,watch, inject,onMounted } from "@/plugin"
+import { ref, getApi,watch, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+
+const socket = inject("$socket")
+
+
 const props = defineProps({
     date: ""
 })
@@ -40,9 +45,24 @@ const chartData = ref([])
 watch(()=> [props.date], ([newValue])=>{
     loadData(newValue)
 })
+
+
+socket.on("RefresheDoorDashboard", (arg) => {
+
+if (arg == property.name) {
+    loadData(props.date)
+
+}
+})
+
 onMounted(() => {
     loadData(props.date)
 })
+
+onUnmounted(() => {
+    socket.off("RefresheDoorDashboard");
+})
+
 function loadData(date){ 
     chartData.value = []
     const currentDate = ref(working_day?.date_working_day)
@@ -50,7 +70,7 @@ function loadData(date){
         currentDate.value = gv.dateApiFormat(date)
     }
     getApi('frontdesk.get_dashboard_data', {
-        property: JSON.parse(localStorage.getItem("edoor_property")).name,
+        property: property.name,
         date: currentDate.value
     }).then((result) => {
         data.value = result.message

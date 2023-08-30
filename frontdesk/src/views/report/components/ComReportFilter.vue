@@ -7,22 +7,34 @@
                     showIcon />
             </div>
             <div class="col-6" v-if="hasFilter('end_date')">
-                <label>end date</label><br>
+                <label>End date</label><br>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-6">
+            <div class="col-6"  v-if="hasFilter('business_source')">
                 <label>Business Source</label><br>
                 <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
-                class="auto__Com_Cus w-full" :filters="{ property: property.name }" v-if="hasFilter('business_source')" />
+                class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
             </div>
+            <div class="col-6"  v-if="hasFilter('room_type')">
+                <label>Room Type</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="room_type" optionValue="room_type"
+                extraFields="room_type"
+                    v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
+                    :filters="{ property: property.name }"></ComSelect>
+            </div>
+
+            
+             
             <div class="col-6">
                 <label>Letter Head</label><br>
-                <ComSelect v-model="filter.letterhead" doctype="Letter Head" />
+                <ComSelect :clear="false" v-model="filter.letterhead" doctype="Letter Head" />
             </div>
             <div class="col-6">
                 <label>Language</label><br>
-                <ComSelect v-model="filter._lang" doctype="Language" optionLabel="language_name" optionValue="name"
+                <ComSelect :clear="false" v-model="filter._lang" doctype="Language" optionLabel="language_name" optionValue="name"
                 :filters="[['enabled', '=', 1]]" />
             </div>
         </div>
@@ -48,7 +60,7 @@ const filter = ref({
     letterhead: setting.property.default_letter_head,
     _lang: user.language || "en",
     start_date: moment().toDate(),
-    end_date: moment().toDate()
+    end_date: moment().toDate(),
 })
 
 const hasFilter = ref((f) => {

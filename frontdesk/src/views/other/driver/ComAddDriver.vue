@@ -49,8 +49,8 @@
                     </div>
                     <div class="col-12 lg:col-6  pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar inputClass="w-full" class="p-inputtext-sm w-full" v-model="driver.expired_date" placeholder="ID Expire Date"
-                            dateFormat="dd-mm-yy" />
+                        {{ driver.expired_date }}
+                        <Calendar inputClass="w-full" class="p-inputtext-sm w-full" v-model="driver.expired_date" showIcon showButtonBar placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
                     </div>
                 </div>
             </template>
@@ -81,6 +81,7 @@ const driver = ref({})
 const optionGender = ref(['Not Set', 'Male', 'Female'])
 const gv = inject('$gv')
 const rs = inject('$reservation_stay');
+const moment = inject('$moment');
 function onClose(param = false) {
     dialogRef.value.close(param)
 }
@@ -90,7 +91,10 @@ function onGetFile(file) {
 function onOK() {
     loading.value = true
     var data = JSON.parse(JSON.stringify(driver.value))
-    data.expired_date = gv.dateApiFormat(driver.value.expired_date)
+    if(driver.value.expired_date)
+        data.expired_date =  gv.dateApiFormat(driver.value.expired_date)
+    else
+        data.expired_date = ''
     createUpdateDoc('Drivers', { data: data }).then((r) => {
         onClose(r)
         loading.value = false
@@ -102,7 +106,7 @@ onMounted(() => {
     if(dialogRef.value.data && dialogRef.value.data.drivername){
         getDoc("Drivers", dialogRef.value.data.drivername).then((r)=>{
             driver.value = r
-            driver.value.expired_date = gv.dateFormat(r.expired_date)
+            driver.value.expired_date = moment(r.expired_date).toDate()
         })
     }
 })

@@ -19,7 +19,7 @@
             <Column class="text-center" field="room_number" header="Room #"></Column>
             <Column  header="Status" headerClass="text-center" bodyClass="text-center">
                 <template #body="{ data }">
-                    <span class="rounded-pill py-1 px-2 text-white border-round-3xl border-round-3xl white-space-nowrap " :style="{ background: data.status_color }">
+                    <span v-if="data?.housekeeping_status" class="rounded-pill py-1 px-2 text-white border-round-3xl border-round-3xl white-space-nowrap " :style="{ background: data.status_color }">
                         {{ data.housekeeping_status }}
                     </span> 
                 </template>

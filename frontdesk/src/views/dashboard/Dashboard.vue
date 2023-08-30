@@ -9,7 +9,7 @@
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
             <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 das-calendar" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+            <Calendar v-model="date" class="w-48 das-calendar"  panelClass="no-btn-clear" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </template>
         <template #end>
             <div class="flex gap-2 justify-content-end">
@@ -27,7 +27,7 @@
                 <ComPanel title="Occupancy">
                     <div class="grid">
                         <div class="col-6 flex align-items-center justify-content-center mt-3">
-                            <ComChartDoughnut show-percentage="Occupied" :showPercentageInteger="true" :is-legend="false" :data="chartOccupancy"
+                            <ComChartDoughnut :total_room="data?.total_room"  show-percentage="Occupied" :showPercentageInteger="true" :is-legend="false" :data="chartOccupancy"
                                 v-if="chartOccupancy.length > 0" />
                             <Skeleton v-else shape="circle" size="18rem"></Skeleton>
 
@@ -397,6 +397,7 @@ function getData(loading=true) {
             const documentStyle = getComputedStyle(document.body);
             chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
             chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
+            
            
             if (!selected_date.value) {
                 date.value = moment(data.value.working_date).format("DD-MM-YYYY")

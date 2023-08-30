@@ -76,7 +76,6 @@ function onSaveChangeHousekeepingStatus() {
         rooms: rooms,
         status: selectedStatus.value
     }).then((result) => {
-        hk.clearSelected()
         visibleHousekeepingStatus.value = false
         hk.loadData()
         submitLoading.value = false
@@ -86,7 +85,6 @@ function onSaveChangeHousekeepingStatus() {
             submitLoading.value = false
         })
 }
-
 function onSaveAssignHousekeeper() {
     submitLoading.value = true;
     const rooms = hk.selectedRooms.map(r => r.name).join(",");

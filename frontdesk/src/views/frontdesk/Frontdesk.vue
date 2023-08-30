@@ -1,6 +1,5 @@
 <template lang=""> 
     <div>
-      
         <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="flex">
@@ -125,11 +124,11 @@
             </div>
         </div>
     </div>
-{{events}}
+
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-        <!-- <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onOpenAdvanceSearch"> -->
+        
             <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
-        <!-- </ComOverlayPanelContent> -->
+      
     </OverlayPanel>
     </template>
 <script setup>
@@ -336,9 +335,7 @@ const calendarOptions = reactive({
             onClose: (options) => {
               
                 const data = options.data;
-                if (data != undefined) {
-                    onRefresh()
-                } else {
+                if (!data) {
                     $event.revert()
 
                 }

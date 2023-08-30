@@ -360,7 +360,7 @@ function resourceColumn() {
                 const item = arg.resource.extendedProps
 
                 if (arg.fieldValue) {
-                    el.innerHTML = "<div style='text-align:center'>" + arg.fieldValue + "</div>"
+                    el.innerHTML = "<div style='text-align:center;display:none'>" + arg.fieldValue + "</div>"
                 }
                 else {
                     el.innerHTML = ''
@@ -379,7 +379,7 @@ function resourceColumn() {
                 const item = arg.resource.extendedProps
 
                 if (arg.fieldValue) {
-                    el.innerHTML = "<div style='text-align:center'>" + arg.fieldValue + "</div>"
+                    el.innerHTML = "<div style='text-align:center;display:none'>" + arg.fieldValue + "</div>"
                 }
                 else {
                     el.innerHTML = ''

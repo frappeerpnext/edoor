@@ -8,6 +8,12 @@ from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
 
+@frappe.whitelist(allow_guest=True)
+def get_config_data():
+    backend_port = frappe.db.get_default("backend_port")
+    return {
+        "backend_port":backend_port
+    }
 
 @frappe.whitelist()
 def get_meta(doctype=None):

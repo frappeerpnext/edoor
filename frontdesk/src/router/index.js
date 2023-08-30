@@ -27,7 +27,7 @@ import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import authRoutes from './auth';
 
 const routes = [
-  { path: "/", redirect: '/frontdesk' }, 
+  { path: "/", redirect: '/frontdesk/dashboard' }, 
   { path: "/frontdesk", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk' } },

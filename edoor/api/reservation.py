@@ -1961,3 +1961,21 @@ def get_reservation_room_rate(reservation):
     data = frappe.db.sql(sql.format(reservation),as_dict=1)
     return data
     
+    
+@frappe.whitelist(methods="POST")
+def update_mark_as_paid_by_master_room(stays, paid_by_master_room):
+    for s in stays:
+        frappe.db.set_value("Reservation Stay", s,"paid_by_master_room",paid_by_master_room)
+    if paid_by_master_room==1:
+        frappe.msgprint("Update mark as paid by master room successfully")
+    else:
+        frappe.msgprint("Update unmark as paid by master room successfully")
+    
+@frappe.whitelist(methods="POST")
+def update_allow_post_to_city_ledger(stays, allow_post_to_city_ledger):
+    for s in stays:
+        frappe.db.set_value("Reservation Stay", s,"allow_post_to_city_ledger",allow_post_to_city_ledger)
+    if allow_post_to_city_ledger==1:
+        frappe.msgprint("Allow post to city ledger successfully")
+    else:
+        frappe.msgprint("Unallow post to city ledger successfully")

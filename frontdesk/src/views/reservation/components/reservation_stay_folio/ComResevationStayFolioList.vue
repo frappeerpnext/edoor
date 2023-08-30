@@ -1,5 +1,4 @@
 <template>
-    <!-- {{ rs.folioTransactions }} -->
     <div class="col-fixed relative pl-0 pr-0 py-0" style="width: 250px;">
 
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
@@ -24,18 +23,25 @@
                                     <CurrencyFormat :value="item.balance" class="white-space-nowrap" />
                                 </span>
                             </span>
-                            <span class="flex text-left line-height-2">
-                                <span style="display:inline-block;max-width: 165px;" v-tooltip="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
-                                    font-italic text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
-                                    <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
-                                    {{ item.guest_name }}
+                            <span class="flex justify-content-between w-full">
+                                <span class="flex text-left line-height-2">
+                                    <span style="display:inline-block;max-width: 95px;" v-tooltip="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
+                                        font-italic text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
+                                        <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
+                                        <span class="ms-1">{{ item.guest_name }}</span>
+                                    </span>
+                                    <span style="display:inline-block;"
+                                        class="text-orange-700 line-height-2 font-italic text-sm folio-remark me-1"
+                                        v-if="item.status == 'Closed'">Closed</span>
+                                    <span style="display:inline-block;"
+                                        class="line-height-2 text-green-700 font-italic text-sm folio-remark me-1"
+                                        v-else>Open</span>
                                 </span>
-                                <span style="display:inline-block;"
-                                    class="text-orange-700 line-height-2 font-italic text-sm folio-remark me-1"
-                                    v-if="item.status == 'Closed'">Closed</span>
-                                <span style="display:inline-block;"
-                                    class="line-height-2 text-green-700 font-italic text-sm folio-remark me-1"
-                                    v-else>Open</span>
+                                <span class="flex align-items-end h-full">
+                                    <span class="text-xs">
+                                        {{ moment(item.creation).format("DD-MM-YYYY") }}
+                                    </span>
+                                </span>
                             </span>
                         </span>
                     </Button>
@@ -86,6 +92,8 @@ import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
 const rs = inject('$reservation_stay');
 const dialog = useDialog();
 const toast = useToast();
+const gv = inject('$gv')
+const moment = inject('$moment')
 
 function onClick(data) {
     rs.onLoadFolioTransaction(data)

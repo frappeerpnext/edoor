@@ -16,7 +16,7 @@
         <SplitterPanel class="pa-4">
             <div v-if="selectedReport" class="p-2">
                 <ComReportFilter @onFilter="onFilter" :selectedReport="selectedReport" />
-                <hr class="mt-2 mb-3"/>
+                <hr class="my-3"/>
                 <!-- {{ url }}{{ selectedReport.report_name }} -->
                 <iframe @load="onIframeLoaded()" style="height:700px" id="iframe" width="100%" :src="url"></iframe>
             </div>

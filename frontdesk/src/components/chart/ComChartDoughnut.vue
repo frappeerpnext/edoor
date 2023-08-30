@@ -1,5 +1,4 @@
 <template>
-{{ percentage }} {{ data }}
     <div class="relative">
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
             <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
@@ -12,6 +11,7 @@
 import { ref, computed, inject } from 'vue'
 const gv = inject('$gv')
 const props = defineProps({
+    total_room:Number,
     data: {
         type: Array,
         default: []
@@ -67,7 +67,8 @@ const chartData = computed(() => {
             }
         })
         // calculate
-        const percent = (percentage.value.field_show / percentage.value.total) * 100
+        const total_room = (props.total_room ?? 0) == 0? 1: props.total_room
+        const percent = (percentage.value.field_show / total_room) * 100
 
         percentage.value.percent = gv.numberFormat(percent)
         return {

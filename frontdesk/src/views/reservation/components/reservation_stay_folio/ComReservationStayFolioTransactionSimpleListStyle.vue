@@ -8,17 +8,17 @@
             :value="rs.folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem"
             :rowClass="onRowClass">
             <Column selectionMode="multiple" headerStyle="width: 3rem" />
-            <Column field="name" header="No. ">
+            <Column field="name" header="No." headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1">{{slotProps.data?.name}}</button>
                 </template>
             </Column>
-            <Column field="posting_date" header="Date">
+            <Column field="posting_date" header="Date" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
-            <Column field="room_number" header="Room #"></Column>
+            <Column field="room_number" header="Room #" headerClass="text-center" bodyClass="text-center"></Column>
             <Column field="account_name" header="Account" style="min-width: 160px;">
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
@@ -26,7 +26,7 @@
                     <span>{{ slotProps.data.account_name }}</span>
                 </template>
             </Column>
-            <Column header="Qty" class="text-right">
+            <Column header="Qty" class="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps?.data.allow_enter_quantity==1">{{slotProps.data.quantity}}</span>
 
@@ -82,7 +82,7 @@
             <ColumnGroup type="footer">
                 <Row>
                     <Column footer="Total:" :colspan="5" footerStyle="text-align:right" />
-                    <Column footerStyle="text-align:right">
+                    <Column footerStyle="text-align:center">
                         <template #footer>
 
                             {{ getTotal('quantity') }}

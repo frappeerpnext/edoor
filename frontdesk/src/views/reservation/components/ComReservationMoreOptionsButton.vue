@@ -49,27 +49,27 @@
                     <span class="ml-2">Group Undo Check Out</span>
                 </button>
 
-                <button @click="onGroupBuildToCompany" 
+                <button @click="onMarkAsPaidbyMasterroom" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Group Bill To Company</span>
+                    <span class="ml-2">Mark As Paid by Master room</span>
                 </button>
                 
-                <button @click="onGroupBuildToMasterGroup " 
+                <button @click="onUnMarkAsPaidbyMasterroom " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">Group Bill To Master Group </span>
+                    <span class="ml-2">UnMark As Paid by Master room </span>
                 </button>
 
-                <button @click="onGroupBuildToGuest " 
+                <button @click="onAllowPostToCityLedger" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToGuest" class="me-2" style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Group Bill To Guest</span>
+                    <span class="ml-2">Allow Post To City Ledger</span>
                 </button>
-                <button @click="onGroupBuildToRoomandTaxtoCompany " 
+                <button @click="onUnAllowPostToCityLedger " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Bill To Room and Tax to Company, Extra to Guest</span>
+                    <span class="ml-2">UnAllow Post To City Ledger</span>
                 </button>
          
                 <button @click="onGroupChangeRate" 
@@ -116,7 +116,6 @@ import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.v
 import ComGroupAssignRoom from "./form/ComGroupAssignRoom.vue";
  
 const dialog = useDialog();
-
 
 const socket = inject("$socket")
 const moment = inject("$moment")
@@ -249,27 +248,107 @@ function onGroupAssignRoom(){
     });
 }
 
-function onGroupBuildToCompany (){
-    alert()
+function onMarkAsPaidbyMasterroom (){
+    confirm.require({
+        message: 'Are you sure you want to Mark As Paid by Master room?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+    postApi("reservation.update_mark_as_paid_by_master_room", {
+        stays: rs.selecteds.map(x=>x.name),
+        paid_by_master_room: 1
+    }).then((result) => {
+     
+    })
+      .catch((err) => {
+            submitLoading.value = false
+        }) 
+    },
+
+}); 
 }
 
-function onGroupBuildToMasterGroup (){
-    alert()
+function onUnMarkAsPaidbyMasterroom (){
+    confirm.require({
+        message: 'Are you sure you want to UnMark As Paid by Master room?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+    postApi("reservation.update_mark_as_paid_by_master_room", {
+        stays: rs.selecteds.map(x=>x.name),
+        paid_by_master_room: 0
+    }).then((result) => {
+     
+    })
+      .catch((err) => {
+            submitLoading.value = false
+        }) 
+    },
+
+}); 
 }
 
-function onGroupBuildToGuest (){
-    alert()
+function onAllowPostToCityLedger (){
+    confirm.require({
+        message: 'Are you sure you want to allow post to city ledger?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+    postApi("reservation.update_allow_post_to_city_ledger", {
+        stays: rs.selecteds.map(x=>x.name),
+        allow_post_to_city_ledger: 1
+    }).then((result) => {
+
+    })
+      .catch((err) => {
+            submitLoading.value = false
+        }) 
+    },
+
+}); 
 }
 
-function onGroupBuildToRoomandTaxtoCompany (){
-    alert()
+function onUnAllowPostToCityLedger (){
+       confirm.require({
+        message: 'Are you sure you want to un allow post to city ledger?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
+        accept: () => {
+    postApi("reservation.update_allow_post_to_city_ledger", {
+        stays: rs.selecteds.map(x=>x.name),
+        allow_post_to_city_ledger: 0
+    }).then((result) => {
+        
+    })
+      .catch((err) => {
+            submitLoading.value = false
+        }) 
+    },
+
+}); 
 }
 
 function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
             doctype: 'Reservation',
-            docname: name.value
+            docname: rs.reservation.name
         },
         props: {
             header: 'Audit Trail',

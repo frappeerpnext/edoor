@@ -16,13 +16,13 @@
         <Column selectionMode="multiple" headerStyle="width: 3rem">
             
         </Column>
-        <Column field="name" header="Name">
+        <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" class="link_line_action1">{{slotProps.data?.name}}</button>
             </template>
         </Column>
-        <Column field="room_number" header="Room"></Column>
-        <Column field="posting_date" header="Post Date">
+        <Column field="room_number" header="Room #" headerClass="text-center" bodyClass="text-center"></Column>
+        <Column field="posting_date" header="Post Date" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <span v-if="slotProps.data?.posting_date">{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
             </template>

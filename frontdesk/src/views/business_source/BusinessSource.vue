@@ -1,5 +1,6 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
+        <Button @click="rename">Test</Button>
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
@@ -46,8 +47,7 @@
                 scrollable 
                 :reorderableColumns="true"   
                 :value="data" tableStyle="min-width: 50rem" 
-                @row-dblclick="onViewReservationStayDetail"
-                scrollHeight="70vh">
+                @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
                     :frozen="c.frozen" 
                     >
@@ -124,7 +124,7 @@
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
+import { inject, ref, postApi, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
@@ -148,9 +148,21 @@ socket.on("RefreshGuestDatabase", (arg) => {
         loadData()
 }
 })
+function rename(){
+    const doc = {
+        doctype: "Business Source",
+        old_name:"agoda 2",
+        new_name: "new agoda"
+    }
+    postApi('utils.rename_doc', { data: doc }).then((r)=>{
+        resolve(r.message)
+    }).catch((err)=>{
+        reject(err)
+    }) 
 
+}
 const columns = ref([
-    { fieldname: 'name', label: 'Business Source', header_class:"text-center", fieldtype:"Link",default:true},
+    { fieldname: 'name', label: 'Business Source', fieldtype:"Link",default:true},
     { fieldname: 'business_source_type', label:'Business Source Type', default:true},
     { fieldname: 'country', label: 'Country' , default:true},
     { fieldname: 'city', label: 'City' , default:true},

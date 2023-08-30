@@ -1,19 +1,27 @@
 {
  "charts": [],
- "content": "[{\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheme\",\"col\":3}}]",
+ "content": "[{\"id\":\"smq1qjL1AN\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Frontdesk\",\"col\":12}},{\"id\":\"y1cYHiaMZa\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"id\":\"p5hRVYMpJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"id\":\"sfPPB5mQgJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"id\":\"o4jUJXGbjW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"l_VQLNAWYG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheme\",\"col\":3}}]",
  "creation": "2023-04-27 15:51:56.916990",
+ "custom_blocks": [
+  {
+   "custom_block_name": "eDoor Frontdesk",
+   "label": "eDoor Frontdesk"
+  }
+ ],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
  "hide_custom": 0,
  "icon": "message",
  "idx": 0,
+ "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-08-22 13:46:27.117476",
+ "modified": "2023-08-28 16:33:01.372166",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

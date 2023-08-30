@@ -133,6 +133,8 @@
         }  
     })
     async function onLoad(doctype, docname){
+        console.log(doctype)
+        console.log(docname)
         if(doctype && docname){
             loading.value = true
             await getApi('reservation.get_audit_trail',{

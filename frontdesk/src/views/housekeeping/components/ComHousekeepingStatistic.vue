@@ -2,7 +2,7 @@
        <div>
               <ComPanel title="Today Statistic" class=" pb-3">
                 <!-- <ComDonutFrontdesk/>  -->
-                <ComChartDoughnut :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
+                <ComChartDoughnut :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
                 <ComHousekeepingTodaySummary :isHousekeeping="true"/>   
               </ComPanel>
               <ComPanel title="Housekeeping Statistic" class="mt-3 pb-3">

@@ -15,7 +15,7 @@
                 </div>
                 <div class="col-6">
                     <label>Country</label>
-                    <ComSelect v-model="data.country" class="w-full"  placeholder="Country" doctype="Country"  />
+                    <ComAutoComplete v-model="data.country" class="w-full"  placeholder="Country" doctype="Country"  />
                 </div>
                 <div class="col-6">
                     <label>City</label>

@@ -137,7 +137,7 @@ export default class ReservationStay {
 		
 		return new Promise((resolve, reject) => {
 			db.getDocList('Reservation Folio', {
-				fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance"],
+				fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation"],
 				filters: [['reservation_stay', '=', reservation_stay ? reservation_stay : this.reservationStay?.name]],
 				limit: 1000
 			})
