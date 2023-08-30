@@ -2,12 +2,12 @@
     <div class="flex justify-between">
         <div class="col-10">
         <div class="grid">
-            <div class="col-3" v-if="hasFilter('start_date')">
+            <div class="col" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-3" v-if="hasFilter('end_date')">
+            <div class="col" v-if="hasFilter('end_date')">
                 <label>End date</label><br>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
@@ -45,7 +45,7 @@
     </div>
         <OverlayPanel ref="showCustomReport" style="width:50rem">
         <ComOverlayPanelContent title="Advance Custom Report" @onSave="onClearFilter" titleButtonSave="Default setting"
-            icon="pi pi-refresh" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            icon="pi pi-refresh" :hideButtonClose="false" @onCancel="onCloseCustomReport">
             <div class="grid">
             <div class="col-6">
                 <label>Letter Head</label><br>
@@ -71,12 +71,14 @@ const moment = inject("$moment")
 const props = defineProps({
     selectedReport: Object,
     filter: Object
-
 })
 const showCustomReport = ref()
 
 const customReport = (event) => {
     showCustomReport.value.toggle(event);
+}
+const onCloseCustomReport = () => {
+    showCustomReport.value.hide()
 }
 const showAdvanceSearch = ref()
 const advanceFilter = (event) => {

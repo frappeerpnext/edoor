@@ -6,7 +6,6 @@
                     <div @click="onRefresh()" class="text-2xl">Reports</div>
                 </div>
             </div>
-            <button @click="clearReportSpliterState">Clear State</button>
         </template>
     </ComHeader>
     <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
@@ -39,9 +38,7 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const url = ref("")
 const gv = inject("$gv")
 
-const clearReportSpliterState = () => {
-  localStorage.removeItem('report_spliter_state');
-};
+
 
 const selectedReport = ref()
 const filters = ref({})

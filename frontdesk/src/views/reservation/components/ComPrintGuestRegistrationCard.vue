@@ -15,6 +15,7 @@ import { ref, onMounted, inject } from "@/plugin"
 const dialogRef = inject("dialogRef");
 const frappe = inject("$frappe")
 const call = frappe.call()
+const gv = inject("$gv")
 
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -34,7 +35,7 @@ function onIframeLoaded() {
 }
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format=eDoor%20Guest%20Registration%20Card&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
+    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format="+gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
     document.getElementById("report-view").contentWindow.location.replace(url.value)
 }
 

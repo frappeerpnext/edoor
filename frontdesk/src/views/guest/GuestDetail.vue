@@ -73,9 +73,13 @@ const stayHistoryUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Stay History") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
+// const posMiscSaleUrl =  computed(() => {
+//     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eeDoor Guest POS FMisc. Sale") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+//     return url
+// })
 const posMiscSaleUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + 
-"&format="+gv.getCustomPrintFormat("eDoor Guest POS FMisc. Sale")+"&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value +                                                              
+"&format=eDoor%20Guest%20POS%2FMisc.%20Sale&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
 const noteUrl =  computed(() => {

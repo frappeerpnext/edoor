@@ -55,6 +55,7 @@ const url = ref("")
 const socket = inject("$socket")
 const confirm = useConfirm()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const gv = inject("$gv")
 
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
@@ -204,7 +205,7 @@ function onIframeLoaded() {
 
 const refreshReport = () => {
     loading.value = true
-    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=eDoor%20Run%20Night%20Audit%20Step&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
+    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=" +gv.getCustomPrintFormat("eDoor Run Night Audit Step")+"&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
     url.value = url.value + "&step=" + currentStep.value
 
     document.getElementById("iframe_run_night_audit").contentWindow.location.replace(url.value)
