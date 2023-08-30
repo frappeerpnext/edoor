@@ -260,6 +260,8 @@ app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 // get global data
 const apiCall = frappe.call()
+ 
+
 
 const config = await getConfigData()
 if (!auth.isLoggedIn) {

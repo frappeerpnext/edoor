@@ -60,15 +60,6 @@
                                 Unallow Post to City Ledger 
                             </button>
                         </div>
-                        
-                        <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
-                            <ComIcon  icon="IconBillToGuest" class="me-2" style="height:15px;" ></ComIcon>
-                            Bill To Guest
-                        </button>
-                        <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
-                            <i class="pi pi-money-bill me-2" />
-                            Bill To Room and Tax to Company, Extra to Guest
-                        </button>
                 </template>
             </Menu>
         </div>

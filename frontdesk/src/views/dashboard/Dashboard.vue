@@ -15,6 +15,7 @@
             <div class="flex gap-2 justify-content-end">
                 <NewFITReservationButton/>
                 <NewGITReservationButton/>
+                <Button @click="test">Test</Button>
             </div>
         </template>
     </ComHeader>
@@ -153,6 +154,7 @@ import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
  
+import io from 'socket.io-client';
 
 
 const toast = useToast();
@@ -162,8 +164,13 @@ const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
  
 
-socket.on("RefresheDoorDashboard", (arg) => {
+function test(){
+    io("http://192.168.10.19:9000").emit("RefresheDoorDashboard","xxx")
+   alert(123)
+}
 
+socket.on("RefresheDoorDashboard", (arg) => {
+    alert(11111)
     if(arg ==property.name){
         getData(false)
         toast.add({ severity: 'info', summary: 'Info', detail: "Dashboard is updated " + arg, life: 3000 })
@@ -331,7 +338,9 @@ function getInhouseGuestUrl() {
 }
 
 function getUpCommingNoteUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=eDoor%20Up%20Coming%20Note&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format="
+    + gv.getCustomPrintFormat("eDoor Up Coming Note") +  
+ "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     url = url + "&date=" + selected_date.value
     return url;
 

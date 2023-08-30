@@ -1,22 +1,43 @@
 <template>
-    <div class="flex flex-col">
+    <div class="flex">
+        <div class="col-8">
         <div class="grid">
-            <div class="col-3" v-if="hasFilter('start_date')">
+            <div class="col-6" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-3" v-if="hasFilter('end_date')">
+            <div class="col-6" v-if="hasFilter('end_date')">
                 <label>End date</label><br>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col-3"  v-if="hasFilter('business_source')">
+      
+        </div>
+        </div>
+        <div class="col-4">
+            <div class="flex justify-end gap-2">
+                <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
+                <div v-if="isFilter" >
+                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter" icon="pi pi-filter-slash"
+                                            @click="onClearFilter" />
+                </div>
+                <Button class= "white-space-nowrap content_btn_b w-3rem justify-center"  @click="customReport" ><i class="pi pi-cog text-xl "/></Button>
+                <div class="border-left-1 border-primary-100"></div>
+                <Button class= "white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2"/> Preview Report</Button>
+            </div>
+        </div>
+    </div>
+        <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="grid">
+                      <div class="col"  v-if="hasFilter('business_source')">
                 <label>Business Source</label><br>
                 <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
                 class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
             </div>
-            <div class="col-3"  v-if="hasFilter('room_type')">
+            <div class="col"  v-if="hasFilter('room_type')">
                 <label>Room Type</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
@@ -25,30 +46,32 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
-            <div class="col-3"  v-if="hasFilter('arrival_mode')">
+            <div class="col-4"  v-if="hasFilter('arrival_mode')">
                 <label>Arrival Mode</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
                     v-model="filter.arrival_mode"   placeholder="Arrival Mode" doctype="Transportation Mode"
-                    :filters="{ property: property.name }"></ComSelect>
+                    ></ComSelect>
             </div>
-            <div class="col-3">
+            </div>
+        </ComOverlayPanelContent>
+        </OverlayPanel>
+        <OverlayPanel ref="showCustomReport" style="width:50rem">
+        <ComOverlayPanelContent title="Advance Custom Report" @onSave="onClearFilter" titleButtonSave="Default setting"
+            icon="pi pi-refresh" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="grid">
+            <div class="col-6">
                 <label>Letter Head</label><br>
                 <ComSelect :clear="false" v-model="filter.letterhead" doctype="Letter Head" />
             </div>
-            <div class="col-3">
+            <div class="col-6">
                 <label>Language</label><br>
                 <ComSelect :clear="false" v-model="filter._lang" doctype="Language" optionLabel="language_name" optionValue="name"
                 :filters="[['enabled', '=', 1]]" />
             </div>
-        </div>
-        
-    </div>
-        <div class="flex justify-end gap-2">
-            <Button class= "white-space-nowrap content_btn_b "><i class="pi pi-cog text-xl "/></Button>
-            <div class="border-left-1 border-primary-100"></div>
-            <Button class= "white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2"/> Preview Report</Button>
-        </div>
+            </div>
+        </ComOverlayPanelContent>
+        </OverlayPanel>
 </template>
 <script setup>
 import { ref, inject } from "@/plugin"
@@ -63,6 +86,15 @@ const props = defineProps({
     filter: Object
 
 })
+const showCustomReport = ref()
+
+const customReport = (event) => {
+    showCustomReport.value.toggle(event);
+}
+const showAdvanceSearch = ref()
+const advanceFilter = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
 const filter = ref({
     letterhead: setting.property.default_letter_head,
     _lang: user.language || "en",
