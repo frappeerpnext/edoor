@@ -19,7 +19,7 @@
 		<ComPlaceholder text="No Data" :loading="loading"  :is-not-empty="notes.length > 0">
 		<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 			<div class="flex justify-between items-center " style="min-height: 26px;">
-				<div class="line-height-1" > 
+				<div class="line-height-2" > 
 					<div class="font-medium">
 						<span class="text-lg">{{ i.reference_doctype }}</span>
 						<span v-if="i.reference_doctype && i.reference_name"> - </span>

@@ -12,7 +12,7 @@
                         <button
                             :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <span class="ml-2">{{data.item.label}} </span>
+                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 12px;" /> {{data.item.label}} </div>
                         </button>
                     </template>
                 </Menu>
@@ -48,6 +48,7 @@ const items = ref([
     {
         label: 'Week',
         key: 'week',
+        icon:'iconWeekCalendar',
         command: () => {
             onSearch('week')
         }
@@ -55,6 +56,7 @@ const items = ref([
     {
         label: '14 Days',
         key: '14_days',
+        icon:'icon14Day',
         command: () => {
             onSearch('14_days')
         }
@@ -62,6 +64,7 @@ const items = ref([
     {
         label: 'Month',
         key: 'month',
+        icon:'iconMonth',
         command: () => {
             onSearch('month')
         }

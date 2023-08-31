@@ -984,7 +984,7 @@ def change_stay(data):
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
     # when we change stay date from drap and drop in room chart calendar we allow to overlap
-    if not data["ignore_check_room_occupy"]==1: 
+    if 'ignore_check_room_occupy' in data and not data["ignore_check_room_occupy"]==1: 
         room_occupy = check_room_occupy(property=data['property'],room_type_id=data["room_type_id"],room_id=room_id,start_date=data['start_date'],end_date=data['end_date'],reservation_stay=data['parent'])
         if room_occupy:
             frappe.throw("Room not avaible")

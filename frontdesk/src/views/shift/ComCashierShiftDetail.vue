@@ -24,6 +24,8 @@ const doc = ref({})
 const dialog = useDialog();
 const loading = ref(false)
 const print_menus = ref([])
+const gv = inject("$gv")
+
 
 function viewFolioSummaryReport(){
     
@@ -105,7 +107,7 @@ function onIframeLoaded() {
 
 const refreshReport = () => {
             
-    url.value = serverUrl + "/printview?doctype=Cashier%20Shift&name=" + name.value + "&format=eDoor%20Cashier%20Shift%20Detail%20UI&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url.value = serverUrl + "/printview?doctype=Cashier%20Shift&name=" + name.value + "&format="+gv.getCustomPrintFormat("eDoor Cashier Shift Detail UI") +"&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     document.getElementById("iframe").contentWindow.location.replace(url.value)
 
 }

@@ -1,6 +1,6 @@
 <template>
     <ComOverlayPanelContent title="Change Color" :loading="loading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div>
+        <div> 
             <ComColorPicker v-model="color"/>
         </div>
     </ComOverlayPanelContent> 
@@ -20,7 +20,7 @@ function onSave(){
         return
     }
     loading.value = true
-    stay.value.reservation_color = color.value == "#000000" ? '' : color.value
+    stay.value.reservation_color = color.value
     postApi('reservation.update_reservation_color',{data: stay.value}).then((r)=>{
         rs.reservationStay = r.message
         loading.value = false

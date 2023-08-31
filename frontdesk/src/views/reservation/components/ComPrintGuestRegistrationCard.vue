@@ -35,7 +35,7 @@ function onIframeLoaded() {
 }
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format="+gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
+    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
     document.getElementById("report-view").contentWindow.location.replace(url.value)
 }
 

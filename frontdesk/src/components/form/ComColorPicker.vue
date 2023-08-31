@@ -9,7 +9,7 @@
   /> 
 </template>
 <script setup>
-    import {ref, computed} from 'vue'
+    import {computed} from 'vue'
     import { ColorPicker } from 'vue-color-kit'
     import 'vue-color-kit/dist/vue-color-kit.css'
     const emit = defineEmits(['update:modelValue'])
@@ -28,8 +28,11 @@
         suckerCanvas: null,
         suckerArea: []
     }
-    function changeColor(color) {
-        emit('update:modelValue', color.hex)
+    function changeColor(color){ 
+        if (color && color.rgba.r == 0 && color.rgba.g == 0 && color.rgba.b == 0 && color.rgba.a == 0)
+            emit('update:modelValue', "")
+        else
+            emit('update:modelValue', color.hex)
     }
 </script>
 <style>

@@ -291,7 +291,6 @@ const calendarOptions = reactive({
     },
 
     slotLabelFormat: function (date) {
-
         return " "
     },
 

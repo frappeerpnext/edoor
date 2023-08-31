@@ -95,6 +95,7 @@ function onSave(){
     createUpdateDoc("Business Source", {data: data.value}, '', rename).then((r)=>{
         socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
         dialogRef.value.close(rename.new_name)
+        onLoad()
         
     }).catch((err)=>{
         loading.value = false

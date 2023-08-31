@@ -101,7 +101,7 @@ function onIframeLoaded() {
 
 const refreshReport = () => {
             
-    url.value = serverUrl + "/printview?doctype=Reservation%20Folio&name=" + name.value + "&format=eDoor%20Folio%20Detail%20UI&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url.value = serverUrl + "/printview?doctype=Reservation%20Folio&name=" + name.value + "&format="+gv.getCustomPrintFormat("eDoor Folio Detail UI")+"&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     document.getElementById("iframe").contentWindow.location.replace(url.value)
 
 }

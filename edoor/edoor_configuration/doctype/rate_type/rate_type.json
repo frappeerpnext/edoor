@@ -9,9 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "rate_type",
-  "note",
   "account_code",
-  "disable_get_rate_room_room_type"
+  "disable_get_rate_room_room_type",
+  "note"
  ],
  "fields": [
   {
@@ -22,7 +22,7 @@
   },
   {
    "fieldname": "note",
-   "fieldtype": "Data",
+   "fieldtype": "Small Text",
    "label": "Note"
   },
   {
@@ -44,7 +44,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-05 15:58:30.947427",
+ "modified": "2023-08-31 09:34:36.288567",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

@@ -50,7 +50,7 @@
                         </div>  
                         <div class="col-6">
                             <label>Bank Account Number</label><br />
-                            <InputText class="w-full" v-model="data.bank_account_number" type="number"  placeholder="Bank Account Number" :maxlength="50" />
+                            <InputText class="w-full" v-model="data.bank_account_number" type="text"  placeholder="Bank Account Number" :maxlength="50" />
                         </div >
                         <div class="col-6">
                             <label>Bank Account Name</label><br />
@@ -68,7 +68,7 @@
                 </div>
                 <div class="col-6">
                     <label>Phone Number</label><br />
-                    <InputText class="w-full"  v-model="data.contact_phone_number" type="number"  placeholder="Phone Number" :maxlength="50" />
+                    <InputText class="w-full"  v-model="data.contact_phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
                 </div>                
             
                 </div>

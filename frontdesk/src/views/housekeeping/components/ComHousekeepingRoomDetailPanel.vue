@@ -72,7 +72,7 @@
         <table class="w-full" v-if="hk.selectedRow.summary">
             <ComStayInfoNoBox  label="TOTAL DEBIT" :value="gv.currencyFormat(hk.selectedRow.summary.debit)" />  
             <ComStayInfoNoBox  label="TOTAL CREDIT" :value="gv.currencyFormat(hk.selectedRow.summary.credit)" />  
-            <ComStayInfoNoBox  label="BALANCE" :value="''" />
+            <ComStayInfoNoBox  label="BALANCE" :value="gv.currencyFormat(hk.selectedRow.summary.debit-hk.selectedRow.summary.credit)" />
         </table>
         
         </div>

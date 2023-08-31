@@ -33,9 +33,9 @@
     <img v-else-if="icon == 'BilltoMasterRoom'" :style="{'height' : height}" :class="class" :src="BilltoMasterRoom"/>
     <img v-else-if="icon == 'IconBillToCompany'" :style="{'height' : height}" :class="class" :src="IconBillToCompany"/>
     <img v-else-if="icon == 'IconBillToGuest'" :style="{'height' : height}" :class="class" :src="IconBillToGuest"/>
-    
-    
-
+    <img v-else-if="icon == 'iconWeekCalendar'" :style="{'height' : height}" :class="class" :src="iconWeekCalendar"/>
+    <img v-else-if="icon == 'icon14Day'" :style="{'height' : height}" :class="class" :src="icon14Day"/>
+    <img v-else-if="icon == 'iconMonth'" :style="{'height' : height}" :class="class" :src="iconMonth"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -82,5 +82,8 @@ import iconAddNewGuest from '@/assets/svg/icon-add-guest-white.svg'
 import BilltoMasterRoom from '@/assets/svg/icon-bill-to-master-room.svg'
 import IconBillToCompany from '@/assets/svg/icon-bill-to-company.svg'
 import IconBillToGuest from '@/assets/svg/icon-bill-to-guest.svg'
+import iconWeekCalendar from '@/assets/svg/icon-week-calendar.svg'
+import icon14Day from '@/assets/svg/icon-14day.svg'
+import iconMonth from '@/assets/svg/icon-month-calendar.svg'
 </script>
  

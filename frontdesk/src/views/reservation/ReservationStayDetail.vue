@@ -21,9 +21,7 @@
                                 :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
                                 class="border-noround-right border-y-none border-left-none">
                             </Button>
-                            <Button class="border-noround border-rl-ed border-none">{{
-                                (rs?.reservationStayNames.indexOf(rs.reservationStay?.name))
-                                + 1 }} / {{ rs?.reservationStayNames.length }} </Button>
+                            <Button class="border-noround border-rl-ed border-none">{{ (rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1 }} / {{ rs?.reservationStayNames.length }} </Button>
                             <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
                                 :disabled="rs?.canNavigateNext(name) || rs.loading"
                                 class="border-noround-left border-y-none border-right-none"

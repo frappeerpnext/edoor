@@ -60,6 +60,7 @@ function onEdit() {
             const data = options.data;
             if (data) {
                 name.value = data
+                loading.value = false
             }
         }
     });

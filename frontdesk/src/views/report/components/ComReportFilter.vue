@@ -1,5 +1,6 @@
 <template>
-    <div class="flex justify-between">
+
+    <div v-if="showFilter" class="flex justify-between">
         <div class="col-10">
         <div class="grid">
             <div class="col" v-if="hasFilter('start_date')">
@@ -26,11 +27,18 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
-            <div class="col"  v-if="hasFilter('arrival_mode')">
+            <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
-                    v-model="filter.arrival_mode"   placeholder="Arrival Mode" doctype="Transportation Mode"
+                    v-model="filter.arrival_modes"   placeholder="Arrival Mode" doctype="Transportation Mode"
+                    ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('departure_mode')">
+                <label>Departure Mode</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                    v-model="filter.departure_mode"   placeholder="Departure Mode" doctype="Transportation Mode"
                     ></ComSelect>
             </div>
         </div>
@@ -44,8 +52,7 @@
         </div>
     </div>
         <OverlayPanel ref="showCustomReport" style="width:50rem">
-        <ComOverlayPanelContent title="Advance Custom Report" @onSave="onClearFilter" titleButtonSave="Default setting"
-            icon="pi pi-refresh" :hideButtonClose="false" @onCancel="onCloseCustomReport">
+        <ComOverlayPanelContent title="Advance Custom Report" hideButtonOK="true"  :hideButtonClose="false" @onCancel="onCloseCustomReport">
             <div class="grid">
             <div class="col-6">
                 <label>Letter Head</label><br>
@@ -59,6 +66,10 @@
             </div>
         </ComOverlayPanelContent>
         </OverlayPanel>
+        <div class="reactive border-bottom-1 w-full" style="height:20px;">
+        <i @click="onShowfilter" :class="showFilter ? 'pi-chevron-up': 'pi-chevron-down' " class="pi h-1rem text-sm cursor-pointer  w-full text-center" style="left:56%;margin-top:-15px;"></i>
+        <hr class="mt-3"/>
+        </div>
 </template>
 <script setup>
 import { ref, inject } from "@/plugin"
@@ -68,10 +79,16 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const user = JSON.parse(localStorage.getItem("edoor_user"))
 const property = setting.property
 const moment = inject("$moment")
+const showFilter = ref(true)
 const props = defineProps({
     selectedReport: Object,
     filter: Object
 })
+function onShowfilter() {
+    showFilter.value = !showFilter.value
+    localStorage.setItem("edoor_show_filter", showFilter.value ? "1" : "0")
+    onRefresh()
+}
 const showCustomReport = ref()
 
 const customReport = (event) => {

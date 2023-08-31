@@ -23,7 +23,7 @@
                 </ComCardProfileGuest>
                 <div class="border-t mt-2" v-if="rs.reservationStay && rs.reservationStay.additional_guests && rs.reservationStay.additional_guests.length > 0">
                     <div class="py-2" v-for="(ad, index) in rs.reservationStay.additional_guests" :key="index">
-                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number" :email="ad.email_address" >
+                        <ComCardProfileGuest @onClick="onViewGuestDetail(ad.guest)" :dob="ad?.date_of_birth" :photo="ad?.photo" :name="ad.guest_name" :phoneNumber2="ad.phone_number_2"  :phoneNumber1="ad.phone_number_1" :email="ad.email_address" >
                             <template #end>
                                 <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded @click="onMenuAdditionalGuest($event,ad.name,ad.guest)"/>
                             </template>
