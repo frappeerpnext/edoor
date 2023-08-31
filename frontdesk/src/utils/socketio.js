@@ -10,8 +10,12 @@ let protocol = window.location.protocol;
  
 let url = `${protocol}//${host}${port}`;
  
-let socket = io(url);
-// let socket = io("http://192.168.10.19:9000");
+//let socket = io(url);
+let socket = io("http://192.168.10.19:3111");
+
+socket.on("connect_error", (err) => {
+    console.log(`connect_error due to ${err.message}`);
+  });
 
 
 export default socket;
