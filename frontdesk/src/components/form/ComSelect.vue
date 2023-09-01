@@ -1,5 +1,4 @@
 <template>
-    {{ rs }}
     <div :class="class">
         <MultiSelect class="w-full" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
@@ -67,7 +66,6 @@ const props = defineProps({
 })
 const toast = useToast();
 const frappe = inject('$frappe')
-const rs = inject('$reservation_stay')
 const db = frappe.db();
 const call = frappe.call();
 const data = ref([])

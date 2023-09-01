@@ -45,12 +45,12 @@ export default class Reservation {
 				}
 				
 				if (data.value.length > 0) {
-					data.value = [...new Set(data.value.map(item => item.name))];
-					data.value.forEach((r)=>{
-						console.log(r)
-					})
 					data.value.forEach((d) => {
-						list.push(d)
+						console.log(list)
+						if(list.filter(r=>r.name != d.name)){
+							console.log('xxx',d)
+							list.push(d)
+						}
 					})
 				}
 

@@ -217,6 +217,7 @@ let roomChartResourceFilter = reactive({
 
 let eventKeyword = ref()
 
+ 
 socket.on("test_socket", (arg) => {
     console.log(arg)
     
