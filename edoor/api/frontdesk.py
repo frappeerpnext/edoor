@@ -11,7 +11,7 @@ from frappe.utils import getdate,add_to_date
 
 @frappe.whitelist(allow_guest=True)
 def test_socket():
-    frappe.publish_realtime('message', {'helo': 'world'})
+    frappe.publish_realtime('test_socket', {'helo': 'world'})
     return "xx"
 
 @frappe.whitelist(allow_guest=True)

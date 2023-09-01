@@ -119,7 +119,7 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
 
-
+ 
 
 const socket = inject("$socket");
 const frappe = inject('$frappe')

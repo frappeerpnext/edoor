@@ -143,13 +143,14 @@ import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
+import io from 'socket.io-client';
 
-const mySocket = new WebSocket('wss://www.ebad.ewebcloudserver.com/socket.io/?EIO=4&transport=websocket');
-console.log(mySocket)
+// const mySocket = io("ws://192.168.10.19:9000", {
+//     transports: ["websocket", "polling"],
+//     path: '/socket.io',
+// });
 
-mySocket.addEventListener('message', (event) => {
-  console.log('Received test_socket event:', event.data);
-});
+ 
 
 
 const resources = ref([])
@@ -222,10 +223,10 @@ let roomChartResourceFilter = reactive({
 
 let eventKeyword = ref()
 
- 
+
 socket.on("test_socket", (arg) => {
     console.log(arg)
-    
+
     alert(111)
 })
 
@@ -285,7 +286,7 @@ const calendarOptions = reactive({
     resources: resources,
     events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-        
+
         return draggedEvent._def.extendedProps.can_resize == 1
     },
     selectable: true,
@@ -325,8 +326,8 @@ const calendarOptions = reactive({
         onSelectedDate($event)
     }),
 
-     eventResize: (($event) => {  
-        
+    eventResize: (($event) => {
+
         const dialogRef = dialog.open(ComConfirmChangeStay, {
             data: $event.event,
             props: {
@@ -339,7 +340,7 @@ const calendarOptions = reactive({
                 position: 'top'
             },
             onClose: (options) => {
-              
+
                 const data = options.data;
                 if (!data) {
                     $event.revert()
@@ -845,7 +846,7 @@ const getEvent = debouncer(() => {
 
 
 onMounted(() => {
- 
+
     onInitialDate()
 
     if (!selectedDate.value) {

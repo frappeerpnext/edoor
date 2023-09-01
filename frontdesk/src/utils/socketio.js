@@ -11,6 +11,7 @@ let protocol = window.location.protocol;
 //let url = `${protocol}//${host}${port}`;
 let url = `${protocol}//${host}`;
  
+url = "https://www.ebad.ewebcloudserver.com"
 let socket = io(url);
  
 
