@@ -34,7 +34,6 @@ export default class Reservation {
 	}
 
 	getRoomList(filter = null) {
-		console.log(this.reservationStays)
 		if (filter && filter.length > 0) {
 			var list = []
 			filter.forEach(f => {

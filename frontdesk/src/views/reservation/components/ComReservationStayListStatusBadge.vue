@@ -107,7 +107,34 @@
             </div>
         </div>
 
-
+        <div>
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500">
+                <div class="flex justify-between align-items-center h-full">
+                    <span class="ms-1">Pickup</span>
+                    <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
+                        style="color:#fff;background: #00000021;">
+                        <span v-if="rs.reservationStays">
+                            {{ rs.reservationStays.filter(r=>r.require_pickup).length }}
+                        </span>
+                        <span v-else>0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500">
+                <div class="flex justify-between align-items-center h-full">
+                    <span class="ms-1">Drop Off</span>
+                    <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
+                        style="color:#fff;background: #00000021;">
+                        <span v-if="rs.reservationStays">
+                            {{ rs.reservationStays.filter(r=>r.require_drop_off).length }}
+                        </span>
+                        <span v-else>0</span>
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 <script setup>
