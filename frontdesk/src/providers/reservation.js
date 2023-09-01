@@ -46,15 +46,13 @@ export default class Reservation {
 				
 				if (data.value.length > 0) {
 					data.value.forEach((d) => {
-						console.log(list)
-						if(list.filter(r=>r.name != d.name)){
-							console.log('xxx',d)
-							list.push(d)
-						}
+						list.push(d)
 					})
 				}
 
 			});
+			const unique = [...new Set(list.map(item => item.name))];
+			console.log(unique)
 			this.roomList = list;
 		} else {
 
