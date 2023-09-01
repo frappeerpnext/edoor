@@ -11,7 +11,7 @@ let protocol = window.location.protocol;
 //let url = `${protocol}//${host}${port}`;
 let url = `${protocol}//${host}`;
  
-url = "https://www.ebad.ewebcloudserver.com"
+url = "wss://www.ebad.ewebcloudserver.com:3000"
 let socket = io(url);
  
 
