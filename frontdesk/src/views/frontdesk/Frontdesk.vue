@@ -144,7 +144,12 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
 
+const mySocket = new WebSocket('wss://www.ebad.ewebcloudserver.com/socket.io/?EIO=4&transport=websocket');
+console.log(mySocket)
 
+mySocket.addEventListener('message', (event) => {
+  console.log('Received test_socket event:', event.data);
+});
 
 
 const resources = ref([])
@@ -840,8 +845,7 @@ const getEvent = debouncer(() => {
 
 
 onMounted(() => {
-
-
+ 
     onInitialDate()
 
     if (!selectedDate.value) {

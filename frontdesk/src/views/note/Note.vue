@@ -35,7 +35,7 @@
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="notes.length > 0">
                 <div class="grid-cs-note">
                     <div v-for="(i, index) in notes" :key="index" :style="{ order: index }"
-                        class="item-cs-note border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative">
+                         class="item-cs-note border-1 rounded-lg bg-white py-3 px-5 shadow-md note-content-box relative">
                         <div class="flex flex-col">
                             <div class="line-height-1 w-full flex justify-between ">
                                 <div class="my-auto">

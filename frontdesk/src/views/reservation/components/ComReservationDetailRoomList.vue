@@ -6,8 +6,7 @@
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
-                                
-                                <ComSelect placeholder="Filter by Status" v-model="selectStatus" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
+                                <ComSelect placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
                             </div>
                         </div>
                     </div>
@@ -136,7 +135,6 @@ const moment = inject('$moment')
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const dialog = useDialog()
-const selectStatus = ref()
 const loading = ref(false)
 const toast = useToast();
 const socket = inject("$socket")

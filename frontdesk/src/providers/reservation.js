@@ -8,6 +8,7 @@ export default class Reservation {
 		this.reservation = {}
 		this.masterGuest = {}
 		this.roomList = []
+		this.filterStatusRooms = []
 		this.selecteds = []
 		this.reservationSummary = ref([])
 		this.depositTransactions =[]
@@ -20,6 +21,7 @@ export default class Reservation {
 	LoadReservation(name, showLoading = true) {
 		this.loading = showLoading
 		this.selecteds = []
+		this.filterStatusRooms = []
 		getApi("reservation.get_reservation_detail", {
 			name: name || this.reservation?.name
 		}).then((result) => {
@@ -52,10 +54,12 @@ export default class Reservation {
 
 			});
 			const unique = [...new Set(list.map(item => item.name))];
-			console.log(unique)
-			this.roomList = list;
+			var result = []
+			unique.forEach(r=>{
+				result.push(list.find(l=>l.name == r))
+			});
+			this.roomList = result
 		} else {
-
 			this.roomList = this.reservationStays
 		}
 	}

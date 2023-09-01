@@ -85,7 +85,7 @@
             </div>
         </div>
         <div>
-            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-300">
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-primary-600">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Total Stay</span>
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
@@ -96,7 +96,7 @@
             </div>
         </div>
         <div>
-            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500">
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-yellow-400">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Total Active Stay</span>
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
@@ -108,7 +108,7 @@
         </div>
 
         <div>
-            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500">
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-cyan-500">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Pickup</span>
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
@@ -122,7 +122,7 @@
             </div>
         </div>
         <div>
-            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-slate-500">
+            <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-pink-500">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Drop Off</span>
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
