@@ -8,7 +8,8 @@ let port = ":" +  websocket_port;//window.location.port ? ':9004' : '';
  
 let protocol = window.location.protocol;
  
-let url = `${protocol}//${host}${port}`;
+//let url = `${protocol}//${host}${port}`;
+let url = `${protocol}//${host}`;
 console.log("socket url",url) 
 let socket = io(url);
 console.log(socket)
