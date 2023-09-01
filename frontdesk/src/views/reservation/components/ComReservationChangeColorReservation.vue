@@ -16,7 +16,7 @@ const reservation = ref(JSON.parse(JSON.stringify(rs.reservation)))
 const color = ref(reservation.value.reservation_color)
 function onSave(){
     loading.value = true
-    reservation.value.reservation_color = color.value == "#000000" ? '' : color.value
+    reservation.value.reservation_color = color.value || ""
     postApi('reservation.update_reservation_color',{data: reservation.value}).then((r)=>{
         rs.reservation = r.message
         loading.value = false

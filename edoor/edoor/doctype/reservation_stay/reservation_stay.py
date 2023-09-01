@@ -178,6 +178,7 @@ class ReservationStay(Document):
 			"group_name":self.group_name or '',
 			"reservation_type":self.reservation_type,
 			"paid_by_master_room":self.paid_by_master_room,
+			"adr":self.adr,
 			"name": self.name
 		}
 		frappe.db.sql("""
@@ -196,6 +197,7 @@ class ReservationStay(Document):
 			group_color=%(group_color)s,
 			group_code=%(group_code)s,
 			group_name=%(group_name)s,
+			adr=%(adr)s,
 			reservation_type=%(reservation_type)s,
 			paid_by_master_room=%(paid_by_master_room)s
 		 where parent=%(name)s

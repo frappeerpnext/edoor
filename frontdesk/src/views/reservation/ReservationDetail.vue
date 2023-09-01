@@ -60,9 +60,6 @@
                                 <div class="col-8 pb-0">
                                     <ComReservationInfo />
                                 </div>
-                                <div class="pt-2 col-12">
-                                    <ComReservationDetailRoomList/>
-                                </div>
                             </div>
                         </div>
                         <div class="col-4 pb-0">
@@ -70,6 +67,9 @@
                                 <ComReservationDetailChargeSummary />
                             </div>
                         </div>
+                    </div>
+                    <div class="pt-2">
+                        <ComReservationDetailRoomList/>
                     </div>
                     <div class="pt-3">
                         <div class="border-round-xl"> 

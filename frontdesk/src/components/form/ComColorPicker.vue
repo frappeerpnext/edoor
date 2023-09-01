@@ -1,4 +1,4 @@
-<template>  
+<template>
     <ColorPicker
     theme="light"
     :color="color"
@@ -18,7 +18,7 @@
     })
     let color = computed({
         get(){
-            return props.modelValue
+            return props.modelValue || "rgba(0,0,0,0)"
         },
         set(newValue){
             return newValue

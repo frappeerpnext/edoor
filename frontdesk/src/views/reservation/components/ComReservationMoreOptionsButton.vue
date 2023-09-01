@@ -51,24 +51,24 @@
 
                 <button @click="onMarkAsPaidbyMasterroom" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
+                    <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
                     <span class="ml-2">Mark As Paid by Master room</span>
                 </button>
                 
                 <button @click="onUnMarkAsPaidbyMasterroom " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">UnMark As Paid by Master room </span>
+                    <span class="ml-2">Unmark As Paid by Master room </span>
                 </button>
 
                 <button @click="onAllowPostToCityLedger" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="IconBillToGuest" class="me-2" style="height:15px;" ></ComIcon>
+                    <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
                     <span class="ml-2">Allow Post To City Ledger</span>
                 </button>
                 <button @click="onUnAllowPostToCityLedger " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
+                    <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
                     <span class="ml-2">UnAllow Post To City Ledger</span>
                 </button>
          
@@ -92,12 +92,16 @@
                     <ComIcon icon="userGif" style="height: 15px;" />
                     <span class="ml-2">Mark as GIT Reservation</span>
                 </button>
-
                 <button v-else  @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as FIT Reservation </span>
+                </button>
+                <button @click="onPickDrop" 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-car" />
+                    <span class="ml-2">Pick up / Drop off</span>
                 </button>
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">

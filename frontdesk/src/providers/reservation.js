@@ -34,13 +34,19 @@ export default class Reservation {
 	}
 
 	getRoomList(filter = null) {
-
+		console.log(this.reservationStays)
 		if (filter && filter.length > 0) {
 			var list = []
 			filter.forEach(f => {
-				const data = this.reservationStays.filter(r => r.reservation_status == f.name)
-				if (data.length > 0) {
-					data.forEach((d) => {
+				const data = ref([])
+				if(f.name == 'require_pickup' || f.name == 'require_drop_off'){
+					data.value = this.reservationStays.filter(r => r[f.name] == true)
+				}else{
+					data.value = this.reservationStays.filter(r => r.reservation_status == f.name)
+				}
+				
+				if (data.value.length > 0) {
+					data.value.forEach((d) => {
 						list.push(d)
 					})
 				}

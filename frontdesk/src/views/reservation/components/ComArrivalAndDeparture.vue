@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
                   <div>Note</div>
-                  <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words">
+                  <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words whitespace-break-spaces">
                     {{ rs.reservationStay?.pickup_note }}
                   </div>
                 </div>
@@ -83,7 +83,7 @@
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
                   <div>Note</div>
-                  <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words">
+                  <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words whitespace-break-spaces">
                     {{ rs.reservationStay?.drop_off_note }}
                   </div>
                 </div>
@@ -212,4 +212,5 @@ function onEditDriver(name) {
   position: absolute;
   top: -17px;
 }
+ 
 </style>

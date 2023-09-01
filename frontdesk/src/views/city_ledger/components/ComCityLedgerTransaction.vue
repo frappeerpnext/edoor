@@ -119,9 +119,10 @@
                 <DataTable 
                 resizableColumns 
                 columnResizeMode="fit" 
-                showGridlines stateStorage="local"
+                showGridlines 
+                stateStorage="local"
                 stateKey="table_folio_transaction_list_state" 
-                :reorderableColumns="true" 
+                :reorderableColumns="false" 
                 :value="data"
                 tableStyle="min-width: 50rem;" 
                 @row-dblclick="onViewReservationStayDetail" 
@@ -252,7 +253,7 @@ socket.on("RefreshData", (arg) => {
 })
 
 const columns = ref([
-    { fieldname: 'name', label: 'Folio Transaction Code', fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
+    { fieldname: 'name', label: 'Folio Transaction Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", default: true, header_class: "text-center" },
     { fieldname: 'room_number', label: 'Room Number', default: true, header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },

@@ -118,7 +118,8 @@ function onSaveNote(text_note){
         reservation: rs.reservation.name,
         stays: [props.data],
         status:note.value.reservation_status,
-        note:text_note
+        note:text_note.note,
+        reserved_room:text_note.reserved_room
     } 
     postApi('reservation.update_reservation_status',data).then((r)=>{
         rs.LoadReservation(r.reservation)

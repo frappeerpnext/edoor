@@ -1181,9 +1181,14 @@ ul.res__hideshow{
 }
 .item-cs-note{
     width: 100%;
-    break-inside: avoid-column;
+    break-inside: avoid;
     margin-bottom: 5px; 
     padding: 10px;
+}
+#block-contain-ed { 
+	display: flex;
+	flex-flow: column wrap;
+  max-width:100%;
 }
 .p-datatable-scrollable-table > .p-datatable-thead{
     top: -1px !important;

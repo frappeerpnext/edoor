@@ -6,6 +6,7 @@
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
+                                
                                 <ComSelect placeholder="Filter by Status" v-model="selectStatus" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
                             </div>
                         </div>
@@ -21,7 +22,7 @@
                             </button>
                         </template>
                         </column>
-                        <Column header="Stay Date">
+                        <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
                             <template #body="slotProps">
                                 <div>
                                     <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
@@ -146,6 +147,18 @@ function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
+status.value.push(
+    {
+        "reservation_status": "Pickup",
+        "name": "require_pickup",
+        "sort_order": 0
+    },
+    {
+        "reservation_status": "Drop Off",
+        "name": "require_drop_off",
+        "sort_order": 0
+    }
+)
 const rowClass = (data) => {
      
     return [{ 'bg-purple-100': data.is_master===1 }];

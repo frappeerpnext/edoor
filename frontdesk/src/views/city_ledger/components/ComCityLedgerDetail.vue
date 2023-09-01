@@ -64,7 +64,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-full flex justify-end mt-3">
+                <hr class="my-2">
+                <div class="w-full flex justify-end text-sm -mb-2">
                     <span class="italic">Created by: </span>
                     <span class="text-500 font-italic">
                         {{ data?.owner }} {{ gv.datetimeFormat(data?.creation) }}
@@ -76,7 +77,6 @@
                 </div>
             </TabPanel>
             <TabPanel header="City Ledger Transaction">
-                
                 <ComCityLedgerTransaction v-if="data"  :name="data?.name"/>
             </TabPanel>
             <TabPanel header="Document">

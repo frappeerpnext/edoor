@@ -86,9 +86,7 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                     
                     <iframe @load="onIframeLoaded('iframeArrival')" frameborder="0" scrolling="no" id="iframeArrival" width="100%" :src="arrivalUrl" ></iframe>
-                     
                 </div>
             </TabPanel>
             <TabPanel>
@@ -97,16 +95,13 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    
                     <iframe @load="onIframeLoaded('iframeDeparture')" id="iframeDeparture" width="100%" :src="departureUrl"></iframe>
-                    
                 </div>
             </TabPanel>
             <TabPanel>
                 <template #header>
                     <span>Stay Over</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over
-                    }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
                     <iframe @load="onIframeLoaded('iframeInhouse')" id="iframeInhouse" width="100%" :src="inhouseUrl"></iframe>
@@ -115,18 +110,15 @@
             <TabPanel>
                 <template #header>
                     <span>Upcoming note</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note
-                    }}</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-
                     <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="upCommingNoteUrl"></iframe>
                 </div>
             </TabPanel>
         </TabView>
     </div>
     <div class="mt-3">
-         
         <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') +')'">
             <MTDOccupancyChart />
         </ComPanel>

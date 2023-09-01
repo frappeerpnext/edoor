@@ -17,8 +17,8 @@
             <ComStayInfoNoBox  label="Reservation Type" :value="doc?.reservation_type" /> 
             <ComStayInfoNoBox v-if="doc?.reservation_type == 'GIT'" label="Group">
                 <div class="flex font-semibold text-right -ml-3">
-                        <sapn v-tooltip.top="'Group Code'">{{ doc?.group_code }}</sapn><span v-if="doc?.group_code && doc?.group_name">/</span> <span v-tooltip.top="'group_name'">{{ doc?.group_name }}</span>
-                <div v-tooltip.top="'Group Color'" class="rounded-lg py-2 w-4rem ms-3" v-if="doc?.group_color" :style="{background:doc?.group_color}"></div>
+                        <sapn v-if="doc?.group_code" v-tooltip.top="'Group Code'">{{ doc?.group_code }}</sapn><span v-if="doc?.group_code && doc?.group_name">/</span> <span v-if="doc?.group_name" v-tooltip.top="'group_name'">{{ doc?.group_name }}</span>
+                <div :class="!(doc?.group_code && doc?.group_name) ? '' : 'ms-3'" v-tooltip.top="'Group Color'" class="rounded-lg w-4rem  border-1" v-if="doc?.group_color" :style="{background:doc?.group_color}">&nbsp;</div>
             </div>
                 
             </ComStayInfoNoBox> 

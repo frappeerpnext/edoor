@@ -1,6 +1,6 @@
 <template lang="">
     <div class="col-12">
-        <ComReservationStayPanel title="Charge Summary" >
+        <ComReservationStayPanel title="Charge Summary">
             <template #content>
                 <div class="flex mb-2 mt-2 gap-2 text-right">
                     <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
@@ -15,10 +15,7 @@
                         <div class="text-500 uppercase text-sm">Balance</div>
                         <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
                     </div>
-             
-
                 </div>
-                      
                 <div v-for="d in rs.reservationSummary" :key="items" class="flex gap-2 mt-2">
                     <ComBoxStayInformation isCurrency v-if="d.amount != 0" :title="d?.account_category" :value="d?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
                 </div>
@@ -67,8 +64,8 @@
 </template>
 <script setup>
 import { inject } from '@/plugin';
-import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import ComBoxStayInformation from './ComBoxStayInformation.vue';
+import ComReservationStayPanel from './ComReservationStayPanel.vue'
+import ComBoxStayInformation from './ComBoxStayInformation.vue'
 const emit = defineEmits('onViewReservation')
 const rs = inject('$reservation');
 import { ref } from "vue";
@@ -78,10 +75,8 @@ const toggleTAX = (event) => {
     opTax.value.toggle(event);
 }
 
-function onClick(){
-emit('onViewReservation')
+function onClick() {
+    emit('onViewReservation')
 }
 </script>
-<style scoped>
-
-</style>
+<style scoped></style>

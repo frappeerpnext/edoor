@@ -16,7 +16,7 @@
                         <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
                     </div>
                 </div>
-                <div class="col-3 p-0">
+                <div class="col-2 p-0">
                     <div class="flex relative">
                         <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
                             v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"

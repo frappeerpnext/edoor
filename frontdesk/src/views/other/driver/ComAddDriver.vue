@@ -49,7 +49,6 @@
                     </div>
                     <div class="col-12 lg:col-6  pt-1">
                         <label>ID Expire Date</label><br />
-                        {{ driver.expired_date }}
                         <Calendar inputClass="w-full" class="p-inputtext-sm w-full" v-model="driver.expired_date" showIcon showButtonBar placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
                     </div>
                 </div>

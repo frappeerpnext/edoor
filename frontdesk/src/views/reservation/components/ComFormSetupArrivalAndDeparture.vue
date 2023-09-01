@@ -20,7 +20,7 @@
                             <ComInputTime v-model="stay.pickup_time" label="Pickup Time" placeholder="Pickup Time" />
                         </div>
                         <div class="col-6">
-                            <label for="arrivel_num"> Arrival Flight Number</label>
+                            <label for="arrivel_num">Arrival Flight Number</label>
                             <InputText v-model="stay.arrival_flight_number" id="arrivel_num" type="text"
                                 class="p-inputtext-sm w-full" placeholder=" Arrival Flight Number" :maxlength="50" />
                         </div>
@@ -32,7 +32,6 @@
                         </div>
                         <div class="col-6">
                             <label for="arrival_driver">Pickup Driver</label>
-                            {{ stay.driver }}
                             <ComAutoComplete :clear="false" v-model="stay.pickup_driver" isAddNew @onAddNew="onAddPickupDriver"
                                 placeholder="Pickup Driver" doctype="Drivers" class="auto__Com_Cus w-full" />
                         </div>

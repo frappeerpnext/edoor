@@ -29,21 +29,18 @@
                 <div>
                     <Calendar class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
-                
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
                         <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
                     </span>
                 </div>
-
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
                         <InputText class="btn-set__h w-full"  placeholder="Keyword" v-debounce="onSearch"/>
                     </span>
                 </div>
-                
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="onOpenAdvanceSearch"/>
                 </div> 
@@ -75,6 +72,7 @@
                                 </ComPanel>
                             </div> 
                         </div>
+                        <div class="mt-2" style="height: 22px;"></div>
                     </div>
                     <div class="relative" aria-haspopup="true" aria-controls="overlay_menu" :class="showSummary ? 'chart-show-summary':''">
                        
@@ -89,10 +87,7 @@
                             </template>
                             <hr class="left-0 fixed w-full">
                             <ComNoteGlobal v-if="showNote"/> 
-                           
                         </Sidebar>
-                        
-
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
@@ -123,9 +118,7 @@
     </div>
 
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-        
-            <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
-      
+        <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
     </OverlayPanel>
     </template>
 <script setup>
@@ -150,6 +143,8 @@ import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
+
+
 
 
 const resources = ref([])
@@ -183,6 +178,7 @@ const keyword = ref({
     guest: '',
     room_number: ''
 })
+
 const showSummary = ref(true)
 const showNote = ref(false)
 const totalNotes = ref(0)
@@ -208,6 +204,8 @@ provide('get_count_note', {
 })
 
 
+
+
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
@@ -218,6 +216,12 @@ let roomChartResourceFilter = reactive({
 })
 
 let eventKeyword = ref()
+
+socket.on("test_socket", (arg) => {
+    console.log(arg)
+    
+    alert(111)
+})
 
 socket.on("RefresheDoorDashboard", (arg) => {
 
@@ -371,6 +375,7 @@ const calendarOptions = reactive({
                                             <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>${event.extendedProps?.room_number}</td></tr>
                                             <tr class="table-rs-de"><td>Pax</td><td class="px-2">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
                                             <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>ADR</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.adr)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Room Rate</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_room_rate)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
                                             <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>

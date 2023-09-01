@@ -91,16 +91,12 @@
                     <TabPanel header="Room Rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
-
                     <TabPanel header="Folio">
-
                         <ComReservationStayFolio />
                     </TabPanel>
-
                     <TabPanel header="Document">
                         <ComDocument doctype="Reservation Stay" :docname="name" v-if="!rs.loading" />
                     </TabPanel>
-
                 </TabView>
             </div>
         </div>

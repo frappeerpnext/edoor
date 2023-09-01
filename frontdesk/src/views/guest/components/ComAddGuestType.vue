@@ -1,7 +1,7 @@
 <template>
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
     <div class="grid">
-      <div class="col-6">
+      <div class="col-12">
       <label>
       Guest Type
       </label>

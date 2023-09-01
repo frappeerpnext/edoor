@@ -13,6 +13,7 @@ import { ref, getApi, onMounted, inject, getDoc,useDialog } from "@/plugin"
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue"
 
 const dialogRef = inject("dialogRef")
+const gv = inject("$gv")
 const name = ref("")
 const url = ref("")
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))

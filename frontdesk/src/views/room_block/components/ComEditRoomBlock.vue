@@ -6,6 +6,13 @@
                 <div>
                     <Calendar class="w-full" showIcon v-model="data.block_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
                 </div>
+            </div> 
+            <div class="col-6">
+                <label> Room Name </label>
+                <div class="w-full">
+                    <ComAutoComplete  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
+                    @onSelected="onSearch" :filters="['property','=',property.name]" />
+                </div>
             </div>
             <div class="col-6">
                 <label>Start Date</label>
@@ -18,14 +25,6 @@
                 <label>Release Date</label>
                 <div> 
                     <Calendar class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
-                </div>
-            </div>
-    
-            <div class="col-6">
-                <label> Room Name </label>
-                <div class="w-full">
-                    <ComAutoComplete  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
-                    @onSelected="onSearch" :filters="['property','=',property.name]" />
                 </div>
             </div>
             <div class="col-12">

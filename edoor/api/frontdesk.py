@@ -1,4 +1,5 @@
 import secrets
+ 
 from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio
 import frappe
 import datetime
@@ -7,6 +8,11 @@ from datetime import datetime
 from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
+
+@frappe.whitelist(allow_guest=True)
+def test_socket():
+    frappe.publish_realtime('test_socket', {'helo': 'world'})
+    return "xx"
 
 @frappe.whitelist(allow_guest=True)
 def get_config_data():
@@ -461,6 +467,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             guest_name as title,
             status_color as color,
             adult,
+            adr,
             child,
             pax,
             reference_number,
