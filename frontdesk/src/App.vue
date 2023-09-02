@@ -34,6 +34,7 @@ import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
 import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
+
 // import ComBusinessSourceDetail from "./views/business_source/components/ComBusinessSourceDetail.vue";
 const socket = inject("$socket");
 const gv = inject("$gv")
@@ -123,6 +124,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "show_success") {
                 toast.add({ severity: 'success', summary: data[1], detail: '', life: 3000 })
+            }
+            else if (data[0] == "view_sale_detail") {
+                showSaleDetail(data[1])
             }
         }
 
@@ -456,6 +460,25 @@ function openCloseShift() {
         }
        
     });
+}
+
+function showSaleDetail(name) {
+    alert(name)
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            name: name
+        },
+        props: {
+            header:"Sale Detail" +' '+ name,
+            style: {
+                width: '90vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+   });
 }
 
 
