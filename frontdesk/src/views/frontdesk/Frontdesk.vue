@@ -21,6 +21,7 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
+                    <Button @click="test">TEst</Button>
                 </div>
             </template>
         </ComHeader>
@@ -142,15 +143,27 @@ import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
+
 import { useTippy } from 'vue-tippy'
 import io from 'socket.io-client';
+const mySocket = io('https://www.ebad.ewebcloudserver.com',{ withCredentials: true });
 
-// const mySocket = io("ws://192.168.10.19:9000", {
-//     transports: ["websocket", "polling"],
-//     path: '/socket.io',
-// });
-
+mySocket.on('connect', () => {
+      console.log('Connected to WebSocket!');
+});
  
+mySocket.on('test_socket', () => {
+      console.log('u do me');
+});
+ 
+
+function test(){
+    alert(123)
+    mySocket.emit('docinfo_update', "hello");
+    frappe.publish_realtime('docinfo_updatet', { message:"xxx" });
+    console.log(mySocket)
+}
+
 
 
 const resources = ref([])
@@ -224,12 +237,7 @@ let roomChartResourceFilter = reactive({
 let eventKeyword = ref()
 
 
-socket.on("test_socket", (arg) => {
-    console.log(arg)
-
-    alert(111)
-})
-
+ 
 socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {

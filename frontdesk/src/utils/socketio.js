@@ -11,15 +11,13 @@ let protocol = window.location.protocol;
 //let url = `${protocol}//${host}${port}`;
 let url = `${protocol}//${host}`;
  
-url = "wss://www.ebad.ewebcloudserver.com:3000"
-let socket = io(url);
+
+const socket = io("http://192.168.10.19:9000", { withCredentials: true });
  
 
 //let socket = io("http://192.168.10.19:9000");
 
-
-
-
+ 
 export default socket;
 
 
