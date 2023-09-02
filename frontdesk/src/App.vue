@@ -463,10 +463,11 @@ function openCloseShift() {
 }
 
 function showSaleDetail(name) {
-    alert(name)
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
-            name: name
+           "doctype": 'Sale',
+           name: name,
+           format: 'Sale%20Receipt'
         },
         props: {
             header:"Sale Detail" +' '+ name,

@@ -1,22 +1,26 @@
-const https = require('https');
-const WebSocket = require('ws');
 const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const socketio = require('socket.io');
+const express = require('express');
 
-const wss = new WebSocket.Server({
-  port: 3001,
-  secure: true,
-  //The path to the SSL certificate file.
-  cert: fs.readFileSync('fullchain.pem'),
-  // The path to the SSL private key file.
-  key: fs.readFileSync('privkey.pem')
+const options = {
+  key: fs.readFileSync('privkey.pem'),
+  cert: fs.readFileSync('fullchain.pem')
+};
+
+const app = express();
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(options, app);
+
+const io = socketio(httpsServer);
+
+io.on('connection', (socket) => {
+  socket.on("hello",(arg)=>{
+    console.log("hello from client")
+  })
 });
 
-wss.on('connection', function connection(ws) {
-  
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-    ws.send('I got message from client and send it back');
-  });
-  ws.send('Hello from server!');
-
-})
+httpsServer.listen(3000, () => {
+  console.log('HTTPS Server started on port 3000');
+});

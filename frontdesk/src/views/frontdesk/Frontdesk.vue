@@ -145,37 +145,8 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { FrappeApp } from 'frappe-js-sdk';
 import { useTippy } from 'vue-tippy'
-
-const s = new WebSocket('wss://ebad.ewebcloudserver.com:3001');
-
-s.addEventListener('open', function (event) {
-  console.log('Connected to WebSocket server');
-});
-
-s.addEventListener('open', function (event) {
-  console.log('Connected to WebSocket server');
-});
-
-s.addEventListener('message', function (event) {
-  console.log('Message from server: ', event.data);
-});
-
-
-// socket.on('connect', () => {
-//       console.log('Connected to WebSocket!');
-// });
- 
-// socket.on('test_socket', (data) => {
-//       console.log('u do me');
-// });
  
 
-
-function test(){
-    console.log(s)
-    s.send('Hello from client!');
-    alert(1123)
-}
 
 
 
@@ -185,6 +156,11 @@ const events = ref([])
 
 const socket = inject("$socket");
 
+
+function test(){
+     socket.emit("hello","workd");
+    alert(1123)
+}
 const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
