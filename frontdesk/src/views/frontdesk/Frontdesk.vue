@@ -145,14 +145,14 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 
 import { useTippy } from 'vue-tippy'
-import io from 'socket.io-client';
-const mySocket = io('https://www.ebad.ewebcloudserver.com',{ withCredentials: true });
 
-mySocket.on('connect', () => {
+
+ 
+socket.on('connect', () => {
       console.log('Connected to WebSocket!');
 });
  
-mySocket.on('test_socket', (data) => {
+socket.on('test_socket', (data) => {
       console.log('u do me');
 });
  

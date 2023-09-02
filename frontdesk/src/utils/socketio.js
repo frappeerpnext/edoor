@@ -12,7 +12,7 @@ let protocol = window.location.protocol;
 let url = `${protocol}//${host}`;
  
 
-const socket = io("http://192.168.10.19:9000", { withCredentials: true });
+const socket = io(url, { withCredentials: true });
  
 
 //let socket = io("http://192.168.10.19:9000");
