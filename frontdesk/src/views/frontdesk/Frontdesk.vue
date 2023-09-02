@@ -143,10 +143,10 @@ import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
-
+import { FrappeApp } from 'frappe-js-sdk';
 import { useTippy } from 'vue-tippy'
 
-
+ 
  
 socket.on('connect', () => {
       console.log('Connected to WebSocket!');
