@@ -227,7 +227,7 @@ let eventKeyword = ref()
 
 
  
-socket.on("test_socket", (arg) => {
+socket.on("message", (arg) => {
 console.log("x")
 })
 socket.on("RefresheDoorDashboard", (arg) => {
