@@ -172,7 +172,7 @@
                         </template>
 
                     </Column>
-                    <Column>
+                    <Column columWidths="min-width:50px">
                         <template #body="slotProps">
                             <div class="flex gap-2 justify-end" v-if="!slotProps.data.parent_reference">
                                 <Button @click="onEditFolioTransaction(slotProps.data.name)" icon="pi pi-pencil text-sm"
@@ -183,7 +183,6 @@
                             </div>
                         </template>
                     </Column>
-
                 </DataTable>
                 <Paginator class="p__paginator bg-ed-paging" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                     :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
@@ -404,6 +403,8 @@ function onChecked() {
 function loadData() {
 
     gv.loading = true
+
+    
     let filters = [
         ["property", "=", property.name],
         ["transaction_type", "=", "City Ledger"],

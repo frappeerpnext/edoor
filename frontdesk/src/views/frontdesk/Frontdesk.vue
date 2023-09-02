@@ -123,7 +123,7 @@
     </OverlayPanel>
     </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
+import { ref, reactive, inject, onU\nmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -224,9 +224,13 @@ let roomChartResourceFilter = reactive({
 })
 
 let eventKeyword = ref()
+window.socket = socket;
+
+socket.on("test_socket", (data)=>{
+    console.log(data)
+});
 
 
- 
 socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {

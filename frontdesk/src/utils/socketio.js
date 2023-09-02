@@ -8,12 +8,12 @@ let port = ":" +  websocket_port;//window.location.port ? ':9004' : '';
  
 let protocol = window.location.protocol;
  
-let url = `${protocol}//${host}${port}`;
+// let url = `${protocol}//${host}${port}`;
 //let url = `${protocol}//${host}`;
  
 
-const socket = io(url);
- 
+const socket = io("https://www.ebad.ewebcloudserver.com");
+
 
 //let socket = io("http://192.168.10.19:9000");
 
