@@ -152,7 +152,7 @@ mySocket.on('connect', () => {
       console.log('Connected to WebSocket!');
 });
  
-mySocket.on('test_socket', () => {
+mySocket.on('test_socket', (data) => {
       console.log('u do me');
 });
  
