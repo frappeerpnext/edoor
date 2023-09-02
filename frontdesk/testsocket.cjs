@@ -6,9 +6,9 @@ const wss = new WebSocket.Server({
   port: 3001,
   secure: true,
   // The path to the SSL certificate file.
-  cert: fs.readFileSync('/etc/letsencrypt/live/ebad.ewebcloudserver.com/fullchain.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/www.ebad.ewebcloudserver.com/fullchain.pem'),
   // The path to the SSL private key file.
-  key: fs.readFileSync('/etc/letsencrypt/live/ebad.ewebcloudserver.com/privkey.pem')
+  key: fs.readFileSync('/etc/letsencrypt/live/www.ebad.ewebcloudserver.com/privkey.pem')
 });
 
 wss.on('connection', function connection(ws) {
