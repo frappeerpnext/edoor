@@ -146,7 +146,7 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import { FrappeApp } from 'frappe-js-sdk';
 import { useTippy } from 'vue-tippy'
 
-const s = new WebSocket('ws://ebad.ewebcloudserver.com:3001');
+const s = new WebSocket('wss://ebad.ewebcloudserver.com:3001');
 
 s.addEventListener('open', function (event) {
   console.log('Connected to WebSocket server');
