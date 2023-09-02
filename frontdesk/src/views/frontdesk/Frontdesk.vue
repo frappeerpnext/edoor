@@ -146,22 +146,35 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import { FrappeApp } from 'frappe-js-sdk';
 import { useTippy } from 'vue-tippy'
 
- 
- 
-socket.on('connect', () => {
-      console.log('Connected to WebSocket!');
+const s = new WebSocket('ws://ebad.ewebcloudserver.com:3001');
+
+s.addEventListener('open', function (event) {
+  console.log('Connected to WebSocket server');
 });
- 
-socket.on('test_socket', (data) => {
-      console.log('u do me');
+
+s.addEventListener('open', function (event) {
+  console.log('Connected to WebSocket server');
 });
+
+s.addEventListener('message', function (event) {
+  console.log('Message from server: ', event.data);
+});
+
+
+// socket.on('connect', () => {
+//       console.log('Connected to WebSocket!');
+// });
+ 
+// socket.on('test_socket', (data) => {
+//       console.log('u do me');
+// });
  
 
+
 function test(){
-    alert(123)
-    mySocket.emit('docinfo_update', "hello");
-    frappe.publish_realtime('docinfo_updatet', { message:"xxx" });
-    console.log(mySocket)
+    console.log(s)
+    s.send('Hello from client!');
+    alert(1123)
 }
 
 
