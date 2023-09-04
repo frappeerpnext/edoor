@@ -21,7 +21,7 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                    <Button @click="test">TEst</Button>
+                  
                 </div>
             </template>
         </ComHeader>
@@ -154,11 +154,7 @@ socket.on("hello",(arg)=>{
     console.log(arg)
 })
 
-function test(){
-    
- socket.emit("hello","world")
-  
-}
+ 
 const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
