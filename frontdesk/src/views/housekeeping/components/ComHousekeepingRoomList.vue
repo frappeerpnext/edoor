@@ -57,8 +57,8 @@
             </DataTable>
         </ComPlaceholder>
     </div>
-    <OverlayPanel ref="opHousekeeper">
-        <ComOverlayPanelContent :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
+    <OverlayPanel ref="opHousekeeper" >
+        <ComOverlayPanelContent width="10rem" :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
             @onSave="onSaveAssignHousekeeper">
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper"
                 doctype="Housekeeper" />

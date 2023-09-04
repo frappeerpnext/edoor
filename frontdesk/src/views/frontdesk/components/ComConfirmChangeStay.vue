@@ -61,8 +61,8 @@
                 <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">New Reservation Stay Detail</th>
             </tr>
             <ComStayInfoNoBox  label="Rooms">
-                <div class="inline -ml-3 font-semibold">
-                <sapn v-tooltip.top="data?.extendedProps?.room_types" >{{ data?.extendedProps?.room_type_alias }}</sapn> - <span>{{ data?.extendedProps?.rooms }}</span>
+                <div class="inline -ml-3 font-semibold rounded-xl px-2 me-1 bg-gray-edoor inline">
+                <sapn v-tooltip.top="data?.extendedProps?.room_type" >{{ data?.extendedProps?.room_type_alias }}</sapn> / <span>{{ data?.extendedProps?.rooms }}</span>
                 
                 </div>
             </ComStayInfoNoBox>

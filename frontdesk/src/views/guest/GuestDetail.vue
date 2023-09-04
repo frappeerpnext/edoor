@@ -28,6 +28,7 @@
                 </iframe>
             </TabPanel>
             <TabPanel header="Folio">
+             
                 <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;"
                     :src="folioUrl">
                 </iframe>
@@ -89,7 +90,7 @@ const noteUrl =  computed(() => {
 })
 
 const folioUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=" + gv.getCustomPrintFormat("eDoor Reservation Folio") +" &no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=" + gv.getCustomPrintFormat("eDoor Guest Detail Folio List") +" &no_letterhead=1&letterhead=Defualt%20Letter%20Head&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
 

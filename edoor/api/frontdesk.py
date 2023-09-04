@@ -461,6 +461,8 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             room_id as resourceId,
             room_id,
             room_type_id,
+            room_type,
+            room_type_alias,
             room_number,
             concat(start_date,'T',start_time) as start ,
             concat(end_date,'T',end_time) as end,
