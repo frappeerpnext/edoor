@@ -143,23 +143,21 @@ import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
-import { FrappeApp } from 'frappe-js-sdk';
+
 import { useTippy } from 'vue-tippy'
  
-
-
-
-
 const resources = ref([])
 const events = ref([])
 
-
 const socket = inject("$socket");
-
+socket.on("hello",(arg)=>{
+    console.log(arg)
+})
 
 function test(){
-     socket.emit("heki")
-    alert(1123)
+    
+ socket.emit("hello","world")
+  
 }
 const moment = inject('$moment')
 const filter = reactive({

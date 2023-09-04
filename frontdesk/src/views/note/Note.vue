@@ -262,7 +262,7 @@ function onLoadData() {
         gv.loading = false
     }).catch(() => {
         gv.loading = false
-        loading = false
+        loading.value = false
     })
     getTotalRecord(filters)
 }
