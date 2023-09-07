@@ -33,13 +33,13 @@
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="All Rooms" v-debounce="onSearchRoom"/>
+                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom"/>
                     </span>
                 </div>
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full"  placeholder="Keyword" v-debounce="onSearch"/>
+                        <InputText class="btn-set__h w-full"  placeholder="Search Guests" v-debounce="onSearch"/>
                     </span>
                 </div>
                 <div>

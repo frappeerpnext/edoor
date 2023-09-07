@@ -12,7 +12,7 @@
                         <button
                             :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 12px;" /> {{data.item.label}} </div>
+                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 16px;" /> {{data.item.label}} </div>
                         </button>
                     </template>
                 </Menu>

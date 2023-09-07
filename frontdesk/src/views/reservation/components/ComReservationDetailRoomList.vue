@@ -105,6 +105,12 @@
                                 <ComReservationStayMoreButton class="p-0" @onSelected="onSelected" @onClickDetail="showReservationStayDetail" :data="slotProps.data"/>
                             </template>
                         </Column>
+                        <template #empty>
+                            <div class="p-4 text-center">
+                                <div><img :src="iconNoData" style="width: 80px; margin: 0 auto;"></div>
+                                <div class="mt-2 text-sm italic text-gray-400">Data Empty</div>
+                            </div>
+                        </template>
                     </DataTable>
                 </div>
                 <div class="grid mt-3">
@@ -116,7 +122,6 @@
                 </div>
             </ComPlaceholder>
         </template>
-
     </ComReservationStayPanel> 
 </template>
 <script setup>
@@ -130,6 +135,7 @@ import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue
 import ComReservationStayAddMore from "./ComReservationStayAddMore.vue"
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import GuestDetail from "@/views/guest/GuestDetail.vue"
+import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
 const confirm = useConfirm()
 const moment = inject('$moment')
 const rs = inject("$reservation")

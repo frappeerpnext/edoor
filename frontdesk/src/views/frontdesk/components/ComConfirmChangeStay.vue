@@ -68,7 +68,7 @@
             </ComStayInfoNoBox>
             <ComStayInfoNoBox  label="Arrival">
                 <div class="inline -ml-3 font-semibold">
-                <sapn>{{gv.datetimeFormat(data?.start) }}</sapn>
+                <sapn>{{gv.dateFormat(data?.start) }}</sapn>
                 <span v-if="gv.dateFormat(doc?.arrival_date) != gv.dateFormat(data?.start) " class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">
                 New
                 </span>
@@ -76,7 +76,7 @@
             </ComStayInfoNoBox>
             <ComStayInfoNoBox titleClass="" label="Departure">
                 <div class="inline -ml-3 font-semibold">
-                <sapn>{{ gv.datetimeFormat(data?.end) }}</sapn>
+                <sapn>{{ gv.dateFormat(data?.end) }}</sapn>
                 <span v-if="gv.dateFormat(doc?.departure_date) != gv.dateFormat(data?.end) " class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500"
                                 >New
                                 </span>
@@ -85,11 +85,11 @@
         </table>
         <div class="flex justify-end gap-3 mt-3">
         <div class="flex align-items-center">
-            <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="use_last_rate" />
+            <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
             <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Regenerate using first and Last stay date</label>
         </div>
         <div class="flex align-items-center">
-            <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="use_rate_plan" />
+            <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
             <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Rate using Rate Plan</label>
         </div>
         </div>
@@ -106,7 +106,7 @@ const dialogRef = inject("dialogRef");
 const data = ref({})
 const doc = ref()
 const isSaving =ref(false)
-const generate_rate_type = ref("use_last_rate")
+const generate_rate_type = ref("stay_rate")
 const note = ref("")
 const moment = inject("$moment")
 const socket = inject("$socket")

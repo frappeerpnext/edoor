@@ -11,7 +11,16 @@
                     <i class="pi pi-file-edit" />
                     <span class="ml-2">Group Assign Room</span>
                 </button>
-                
+                <button @click="onGroupChangeRate" 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
+                    <span class="ml-2">Group Change Rate</span>
+                </button>
+                <button @click="onGroupChangeStayDate" 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
+                    <span class="ml-2">Group Change Stay Date</span>
+                </button>
                 <button @click="onChangeStatus('No Show')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-eye-slash" />
@@ -71,18 +80,7 @@
                     <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
                     <span class="ml-2">UnAllow Post To City Ledger</span>
                 </button>
-         
-                <button @click="onGroupChangeRate" 
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Change Rate</span>
-                </button>
-                <button @click="onGroupChangeStayDate" 
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Group Change Stay Date</span>
-                </button>
-                <button @click="onGroupChangeStayDate" 
+                <button 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Stay To Other Reservation</span>
@@ -118,6 +116,8 @@
 import {useDialog, inject, ref, useConfirm, useToast, postApi } from "@/plugin";
 import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
 import ComGroupAssignRoom from "./form/ComGroupAssignRoom.vue";
+import ComGroupChangeRate from "./form/ComGroupChangeRate.vue";
+import ComGroupChangeStayDate from "./form/ComGroupChangeStayDate.vue";
  
 const dialog = useDialog();
 
@@ -375,11 +375,59 @@ function onAuditTrail() {
 }
 
 function onGroupChangeRate(){
-    alert()
+    const dialogRef = dialog.open(ComGroupChangeRate, {
+        data: {
+            // 
+        },
+        props: {
+            header: 'Group Change Rate',
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            //
+        }
+    });
 }
 
 function onGroupChangeStayDate(){
-    alert()
+    if(rs.selecteds && rs.selecteds.length > 0){
+        const dialogRef = dialog.open(ComGroupChangeStayDate,{
+        data: rs.selecteds,
+        props: {
+            header: 'Group Change Stay Date',
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            //
+        }
+    })
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Group Change Stay',
+            detail: 'Please select reservation stay for group Change stay date', life: 3000
+        });
+    }
+    
 }
 function onStayToOtherReservation(){
    

@@ -643,3 +643,9 @@ def get_city_ledger_amount_summary(filters):
 def update_photo(data):
     frappe.db.sql("update `tab{}` set photo=%(photo)s where name=%(name)s".format(data["doctype"]), data)
     frappe.msgprint("Upload photo successfully")
+
+def update_reservation_stay_and_reservation(reservation_stay, reservation):
+    update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
+    update_reservation(name=reservation, doc=None, run_commit=True)
+
+    

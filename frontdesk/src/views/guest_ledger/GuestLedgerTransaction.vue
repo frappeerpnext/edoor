@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            <ComPlaceholder text="No Data"  :loading="loading"  :is-not-empty="data?.length > 0">
+            <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data?.length > 0">
                 <DataTable 
                 class="tb-cs-datatable"
                 resizableColumns 
@@ -197,7 +197,6 @@ const moment = inject("$moment")
 const filter = ref({ status: 'All Status', start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({order_by: "modified", order_type: "desc"})
-const loading = ref(false) 
 import ComOrderBy from '@/components/ComOrderBy.vue';
 const selectedColumns = ref([])
 const sortOptions = ref([

@@ -76,7 +76,7 @@ import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
 let loading = ref(false)
-const driver = ref({})
+const driver = ref({gender: 'Not Set'})
 const optionGender = ref(['Not Set', 'Male', 'Female'])
 const gv = inject('$gv')
 const rs = inject('$reservation_stay');

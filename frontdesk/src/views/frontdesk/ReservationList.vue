@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            <ComPlaceholder text="No Data" height="70vh" :loading="loading" :is-not-empty="data.length > 0">
+            <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable 
                 class="res_list_scroll" 
                 :resizableColumns="true" 

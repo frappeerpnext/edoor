@@ -66,19 +66,6 @@
  },
  {
   "allow_user_to_edit_information": 1,
-  "color": "#CB2929",
-  "docstatus": 0,
-  "doctype": "Reservation Status",
-  "is_active_reservation": 1,
-  "modified": "2023-07-22 08:58:10.727116",
-  "name": "Confirmed",
-  "reservation_status": "Confirmed",
-  "show_in_reservation_list": 1,
-  "show_in_room_chart": 1,
-  "sort_order": 10
- },
- {
-  "allow_user_to_edit_information": 1,
   "color": "#ff7300",
   "docstatus": 0,
   "doctype": "Reservation Status",
@@ -89,5 +76,18 @@
   "show_in_reservation_list": 1,
   "show_in_room_chart": 1,
   "sort_order": 3
+ },
+ {
+  "allow_user_to_edit_information": 1,
+  "color": "#CB2929",
+  "docstatus": 0,
+  "doctype": "Reservation Status",
+  "is_active_reservation": 1,
+  "modified": "2023-07-22 08:58:10.727116",
+  "name": "Confirmed",
+  "reservation_status": "Confirmed",
+  "show_in_reservation_list": 1,
+  "show_in_room_chart": 1,
+  "sort_order": 10
  }
 ]

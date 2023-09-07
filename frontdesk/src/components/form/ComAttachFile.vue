@@ -63,6 +63,7 @@ const emit = defineEmits(['onSuccess','onClose'])
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')
 const files = ref()
+const loading = ref(false)
 const props = defineProps({
     modelValue: String,
     isMultiple: {
@@ -104,6 +105,7 @@ function onClose(){
     emit('onClose')
 }
 function onUpload(){
+    loading.value = true
     const fileArgs = ref({
         /** If the file access is private then set to TRUE (optional) */
         "isPrivate": props.isPrivate,
@@ -121,10 +123,14 @@ function onUpload(){
 
     if(files.value.length > 0){
         uploadFiles(files.value, fileArgs.value).then(()=>{
+            loading.value = false
             emit("onSuccess")
+           
         })
     }else{
+        loading.value = false
         gv.toast('warn','Please choose files.')
+        
     }
     
 }

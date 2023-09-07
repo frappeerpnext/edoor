@@ -1,12 +1,12 @@
 <template>
     <div class="flex gap-2">
-        <div class="p-0">
+        <div class="p-0 w-15rem">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
                 <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
             </div>
         </div>
-        <div class="max-w-20rem">
+        <div class="w-20rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
                         isFilter
                         groupFilterField="room_type_group"
@@ -19,7 +19,7 @@
                         doctype="Room Type"
                         ></ComSelect>
         </div>
-        <div class="max-w-20rem">
+        <div class="w-15rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
                 placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
         </div>
@@ -27,7 +27,7 @@
             <div class="flex gap-2">
                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/> 
                 <div v-if="gv.isNotEmpty(hk.filter)">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    <Button class="content_btn_b white-space-nowrap" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
             </div>
         </div>

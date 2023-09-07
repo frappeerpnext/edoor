@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate
+from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate, update_reservation_stay_room_rate_after_resize
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
@@ -1007,8 +1007,9 @@ def change_stay(data):
     frappe.db.commit()
     if doc: 
         change_room_occupy(doc)
-        generate_room_rate(self=doc, is_update_reservation_stay=True)
-        update_reservation(name=doc.reservation)
+        # generate_room_rate(self=doc, is_update_reservation_stay=True)
+        update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
     return doc
     
 
