@@ -375,7 +375,7 @@ def stay_add_more_rooms(reservation=None, data=None):
             "doctype":"Reservation Stay",
             "reservation":reservation.name,
             "reservation_status":"Reserved" if ((d["room_id"] or None) if 'room_id' in d else None)  else "Confirmed",
-
+            "reservation_color": reservation.reservation_color,
             "arrival_time":reservation.arrival_time,
             "departure_time":reservation.departure_time,
             "note":reservation.note,
@@ -1970,7 +1970,8 @@ def update_mark_as_paid_by_master_room(stays, paid_by_master_room):
         frappe.msgprint("Update mark as paid by master room successfully")
     else:
         frappe.msgprint("Update unmark as paid by master room successfully")
-    
+
+
 @frappe.whitelist(methods="POST")
 def update_allow_post_to_city_ledger(stays, allow_post_to_city_ledger):
     for s in stays:
@@ -1979,3 +1980,9 @@ def update_allow_post_to_city_ledger(stays, allow_post_to_city_ledger):
         frappe.msgprint("Allow post to city ledger successfully")
     else:
         frappe.msgprint("Unallow post to city ledger successfully")
+
+
+@frappe.whitelist(methods="POST")
+def group_change_stay(data):
+    frappe.msgprint("Change Stay successfully")
+    

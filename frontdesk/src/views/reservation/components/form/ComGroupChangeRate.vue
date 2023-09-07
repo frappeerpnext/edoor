@@ -44,25 +44,30 @@
         <div>
             <div>Tax Exempt</div>
             <div class="flex">
-                <div>
-                    <Checkbox v-model="data" :binary="true" />
-                    <label>Tax 1(10.00%)</label>
+                <div class="flex">
+                
+                    <div>
+                        <Checkbox v-model="data" :binary="true" />
+                        <label>Tax 1(10.00%)</label>
+                    </div>
+                    <div>
+                        <Checkbox v-model="data" :binary="true" />
+                        <label>Service Charge(2.00%)</label>
+                    </div>
                 </div>
-                <div>
-                    <Checkbox v-model="data" :binary="true" />
-                    <label>Service Charge(2.00%)</label>
+                <div class="flex">
+                    <div>
+                        <Checkbox v-model="data" :binary="true" />
+                        <label>ACC. Tax(0.00%)</label>
+                    </div>
+                    <div>
+                        <Checkbox v-model="data" :binary="true" />
+                        <label>vat(0.00%)</label>
+                    </div>
                 </div>
+                <Button>Save</Button>
             </div>
-            <div class="flex">
-                <div>
-                    <Checkbox v-model="data" :binary="true" />
-                    <label>ACC. Tax(0.00%)</label>
-                </div>
-                <div>
-                    <Checkbox v-model="data" :binary="true" />
-                    <label>vat(0.00%)</label>
-                </div>
-            </div>
+            
         </div>
     </ComDialogContent>
 </template>
