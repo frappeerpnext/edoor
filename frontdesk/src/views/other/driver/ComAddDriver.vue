@@ -2,8 +2,7 @@
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading"> 
         <div class="mb-3">
             <div class="flex justify-center items-center">
-                <ComUploadProfile doctype="Drivers" :docname="driver.name" :path="driver.photo" v-model="driver.photo"
-                    @getFileName="onGetFile" />
+                <ComUploadProfile doctype="Drivers" :docname="driver.name" :path="driver.photo" v-model="driver.photo" @getFileName="onGetFile" />
             </div>
         </div>
         <ComReservationStayPanel class="mb-3" title="Driver Information">
@@ -27,8 +26,7 @@
                 <div class="grid">
                     <div class="col-12 lg:col-6 pt-2">
                         <label>Phone Number 1</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
-                            v-model="driver.phone_number" :maxlength="50" />
+                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number" v-model="driver.phone_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 pt-2">
                         <label>Phone Number 2</label><br />
@@ -41,7 +39,6 @@
         <ComReservationStayPanel class="mb-3" title="Identity Information">
             <template #content>
                 <div class="grid">
-
                     <div class="col-12 lg:col-6  pt-1">
                         <label class="white-space-nowrap">Driver License Code</label><br />
                         <InputText type="text" class="p-inputtext-sm w-full" placeholder="Driver License Code"
@@ -61,10 +58,6 @@
                         <label class="white-space-nowrap">Address</label><br />
                         <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="driver.address" rows="4" />
                     </div>
-                    <!-- <div class="col-12 lg:col-6 pt-1">
-                        <label class="white-space-nowrap">Note</label><br />
-                        <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="driver.note" rows="4" />
-                    </div> -->
                 </div>
             </template>
         </ComReservationStayPanel>
@@ -89,11 +82,13 @@ function onGetFile(file) {
 }
 function onOK() {
     loading.value = true
+    
     var data = JSON.parse(JSON.stringify(driver.value))
     if(driver.value.expired_date)
         data.expired_date =  gv.dateApiFormat(driver.value.expired_date)
     else
         data.expired_date = ''
+    
     createUpdateDoc('Drivers', { data: data }).then((r) => {
         onClose(r)
         loading.value = false

@@ -58,26 +58,13 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldtype": "Link",
 			"options":"Reservation Status",
 			
-		}, 
-		{
-			"fieldname": "is_master",
-			"label": __("Show Master Folio Only"),
-			"fieldtype": "Check",
-			
-		} ,
-		{
-			"fieldname": "parent_row_group",
-			"label": __("Parent Group By"),
-			"fieldtype": "Select",
-			"options": "\nCategory\nProduct Group\nRevenue Group\nBusiness Branch\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nDate\n\Month\nYear\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			
 		},
 		{
-			"fieldname": "row_group",
-			"label": __("Row Group By"),
+			"fieldname": "group_by",
+			"label": __("Group By"),
 			"fieldtype": "Select",
-			"options": "Product\nCategory\nProduct Group\nRevenue Group\nBusiness Branch\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nDate\n\Month\nYear\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			"default":"Category"
+			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
+			"show_in_print":false
 		},
 		{
 			"fieldname": "chart_type",
@@ -85,8 +72,54 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldtype": "Select",
 			"options": "None\nbar\nline\npie",
 			"default":"bar"
-		}
+		},
+		{
+			"fieldname": "is_active_reservation",
+			"label": __("Is Active Reservation"),
+			"fieldtype": "Check",
+			
+		},
+		{
+			"fieldname": "order_by",
+			"label": __("Order By"),
+			"fieldtype": "Select",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type\nRoom",
+			default:"Last Update On"
+		},
+		{
+			"fieldname": "sort_order",
+			"label": __("Sort Order"),
+			"fieldtype": "Select",
+			"options": "ASC\nDESC",
+			default:"ASC"
+		},
 
 	],
+	"formatter": function(value, row, column, data, default_formatter) {
+	
+		value = default_formatter(value, row, column, data);
+
+		if (data && data.indent==0) {
+			var parser = new DOMParser(); // create a DOMParser object
+			var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+			var element = doc.querySelector("a"); // get the element by selector
+ 
+			if(element){
+				value =$(`<span>${element.dataset.value}</span>`); // get the value of data-value attribute
+				
+			}else {
+				value = $(`<span>${value}</span>`);
+			}
+			
+			
+
+			var $value = $(value).css("font-weight", "bold");
+			
+
+			value = $value.wrap("<p></p>").parent().html();
+		}
+		
+		return value;
+	},
 };
  

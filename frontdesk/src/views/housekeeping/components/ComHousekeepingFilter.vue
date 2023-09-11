@@ -6,7 +6,7 @@
                 <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
             </div>
         </div>
-        <div class="w-20rem">
+        <div class="w-auto max-w-25rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
                         isFilter
                         groupFilterField="room_type_group"

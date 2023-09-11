@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @onClose="onClose" :loading="isSaving" hideButtonOK>
+    <ComDialogContent @onClose="onClose" :loading="loading" hideButtonOK>
        
         <table>
             <tr>
@@ -66,8 +66,7 @@ const dialog = useDialog()
 const data = ref()
 const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 
-function onEdit(){
-   
+function onEdit(){ 
     const dialogRef = dialog.open(ComEditRoomBlock, {
         data:doc.value,
         props: {

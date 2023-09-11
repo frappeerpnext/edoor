@@ -90,6 +90,7 @@
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject('dialogRef')
+const gv = inject('$gv')
 const loading = ref(false);
 const socket = inject("$socket")
 const property = JSON.parse(localStorage.getItem( "edoor_property"))
@@ -100,14 +101,22 @@ function onClose(){
 
 function onSave(){
     
-  loading.value = true
-  createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
-    loading.value = false
-    dialogRef.value.close(r)
-    socket.emit("RefreshData", {property:property.name,action:"refresh_city_ledger"});
-  }).catch((err)=>{
-    loading.value = false
-  })
+    if(!data.value.city_ledger_name){
+        gv.toast('warn','City ledger name is required.')
+        return
+    }
+    else if(!data.value.city_ledger_type){
+        gv.toast('warn','City ledger type is required.')
+        return
+    }
+    loading.value = true
+    createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
+        loading.value = false
+        dialogRef.value.close(r)
+        socket.emit("RefreshData", {property:property.name,action:"refresh_city_ledger"});
+    }).catch((err)=>{
+        loading.value = false
+    })
 }
 onMounted(() => {
   if(dialogRef.value.data.name){

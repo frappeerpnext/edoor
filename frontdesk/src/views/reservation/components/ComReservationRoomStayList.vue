@@ -115,8 +115,10 @@ function onUpgradeRoom() {
             closeOnEscape: false,
             position: 'top'
         },
-        onClose: (options) => {
-            //
+        onClose: (options) => { 
+            if(options.data){
+                rs.getReservationDetail()
+            }
         }
     });
 }
@@ -143,6 +145,7 @@ function onAssignRoom(data){
             position: 'top'
         },
         onClose: (options) => {
+            console.log(options)
             if(options.data && options.data.message){
                 rs.getReservationDetail(options.data.message.name)
             } 

@@ -113,6 +113,7 @@ const moment = inject("$moment")
 const rs = inject("$reservation")
 const isSaving = ref(false)
 const gv = inject("$gv")
+const socket = inject("$socket")
 
  
 const edoor_working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -171,8 +172,10 @@ const onSave = () => {
         
         if(r){
             isSaving.value = false
+            socket.emit("RefresheDoorDashboard", rs.reservation.property);
             dialogRef.value.close(r)
         }
+        
         
     }).catch((er)=>{
         isSaving.value = false

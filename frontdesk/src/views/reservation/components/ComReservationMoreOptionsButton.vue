@@ -13,12 +13,12 @@
                 </button>
                 <button @click="onGroupChangeRate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
+                    <ComIcon icon="roomRate" style="height: 14px;" />
                     <span class="ml-2">Group Change Rate</span>
                 </button>
                 <button @click="onGroupChangeStayDate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
+                    <ComIcon icon="iconChangeStay" style="height: 14px;" />
                     <span class="ml-2">Group Change Stay Date</span>
                 </button>
                 <button @click="onChangeStatus('No Show')" 
@@ -27,12 +27,12 @@
                     <span class="ml-2">Group No Show</span>
                 </button>
                 
-                <button @click="onChangeStatus('Group Cancel')" 
+                <button @click="onChangeStatus('Cancelled')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-user-minus" />
                     <span class="ml-2">Group Cancel</span>
                 </button>
-                <button @click=" onChangeStatus('void')" 
+                <button @click=" onChangeStatus('Void')" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-excel" />
                     <span class="ml-2">Group Void</span>
@@ -96,11 +96,17 @@
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
                     <span class="ml-2">Mark as FIT Reservation </span>
                 </button>
-                <button @click="onPickDrop" 
+                <button v-if = "rs.selecteds == 1" @click="click_me" 
+                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                    <i class="pi pi-car" />
+                    <span class="ml-2">click_me</span>
+                </button>
+                <button v-else @click="onPickDrop" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-car" />
                     <span class="ml-2">Pick up / Drop off</span>
                 </button>
+              
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />
@@ -118,6 +124,7 @@ import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.v
 import ComGroupAssignRoom from "./form/ComGroupAssignRoom.vue";
 import ComGroupChangeRate from "./form/ComGroupChangeRate.vue";
 import ComGroupChangeStayDate from "./form/ComGroupChangeStayDate.vue";
+import ComFormSetupArrivalAndDeparture from './ComFormSetupArrivalAndDeparture.vue';
  
 const dialog = useDialog();
 
@@ -375,34 +382,45 @@ function onAuditTrail() {
 }
 
 function onGroupChangeRate(){
-    const dialogRef = dialog.open(ComGroupChangeRate, {
-        data: {
-            // 
-        },
-        props: {
-            header: 'Group Change Rate',
-            style: {
-                width: '50vw',
+    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
+            const dialogRef = dialog.open(ComGroupChangeRate, {
+            data: rs.selecteds,
+            props: {
+                header: 'Group Change Rate',
+                style: {
+                    width: '50vw',
+                },
+                breakpoints: {
+                    '960px': '100vw',
+                    '640px': '100vw'
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
             },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position: "top"
-        },
-        onClose: (options) => {
-            //
-        }
-    });
+            onClose: (options) => {
+                //
+            }
+        });
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Group Change Rate',
+            detail: 'Please select reservation stay for group Change Rate', life: 3000
+        });
+    }
 }
 
 function onGroupChangeStayDate(){
     if(rs.selecteds && rs.selecteds.length > 0){
         const dialogRef = dialog.open(ComGroupChangeStayDate,{
-        data: rs.selecteds,
+        data: rs.selecteds.map(obj => {
+                return {
+                    name: obj.name,
+                    arrival_date: obj.arrival_date,
+                    departure_date: obj.departure_date
+                };
+        }),
         props: {
             header: 'Group Change Stay Date',
             style: {
@@ -418,7 +436,7 @@ function onGroupChangeStayDate(){
             position: "top"
         },
         onClose: (options) => {
-            //
+            
         }
     })
     }else{
@@ -481,4 +499,40 @@ function onMarkasFITReservation() {
 
     });
 }
+
+function onPickDrop(){
+   if (rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0) {
+    
+   
+    dialog.open(ComFormSetupArrivalAndDeparture, {
+        data:{
+            stays:rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).map(x=>x.name)
+    },
+    props: {
+      header: 'Setup Arrival & Departure Mode',
+      style: {
+        width: '60vw',
+      },
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      },
+      modal: true,
+      closeOnEscape: false,
+      position: 'top'
+    },
+    onClose: (options) => {
+        console.log(options)
+        if(options.data){
+            rs.selecteds = []
+        }        
+    }
+  });
+} else {
+    gv.toast('warn','Please select reservation stay for Pickup and Drop Off.')
+        return false
+}
+}
+
+
 </script>

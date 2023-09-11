@@ -3,7 +3,7 @@
         <div class="grid py-2">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" :selectOtherMonths="true" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date).add(1,'days'))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" :selectOtherMonths="true" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
@@ -35,7 +35,7 @@ const loading = ref(false)
 const stay = ref({
     room_nights: rs.reservationStay.room_nights,
     min_date: workingDay.date_working_day,
-    can_arrival: (moment(workingDay.date_working_day).isSame(rs.reservationStay.arrival_date) || moment(workingDay.date_working_day).isAfter(rs.reservationStay.arrival_date) ? true : false),
+    can_arrival: (moment(workingDay.date_working_day).isAfter(rs.reservationStay.arrival_date) ? true : false),
     arrival_date: moment(rs.reservationStay.arrival_date).toDate(),
     departure_date: moment(rs.reservationStay.departure_date).toDate(),
     arrival_time: moment(rs.reservationStay.arrival_date + " " +  rs.reservationStay.arrival_time).toDate(),

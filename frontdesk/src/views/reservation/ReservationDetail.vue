@@ -154,11 +154,7 @@ const name = ref("")
 const dialog = useDialog()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
-// const note = ref({
-//     title: '',
-//     show: false,
-//     reservation_status:'' // No Show // Void // Cancel
-// })
+ 
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
 })
@@ -187,12 +183,13 @@ function onMaximize(){
 
 onMounted(() => {
     socket.on("RefreshReservationDetail", (reservation) => {
+        console.log(reservation)
         if (reservation == name.value) {
             //we run this in settime out 
             //because we need to wait until data from backend that run enqueue process is update ted
             setTimeout(function(){
                 onRefresh(false)
-            },3000)
+            },1500)
             
             
 

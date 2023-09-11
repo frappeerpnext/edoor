@@ -61,7 +61,7 @@
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
                                     <div>
-                                        <ComTodaySummary :date="working_day.date_working_day"/>
+                                        <ComTodaySummary :loading="loading" :date="working_day.date_working_day"/>
                                     </div>
                                 </ComPanel>
                                 <ComPanel title="Room Status" class="pb-3 mb-3 front-house__kep">
@@ -150,10 +150,7 @@ const resources = ref([])
 const events = ref([])
 
 const socket = inject("$socket");
-socket.on("hello",(arg)=>{
-    console.log(arg)
-})
-
+ 
  
 const moment = inject('$moment')
 const filter = reactive({
@@ -183,6 +180,7 @@ const keyword = ref({
 
 const showSummary = ref(true)
 const showNote = ref(false)
+const loading = ref(false)
 const totalNotes = ref(0)
 let advanceFilter = ref({
     room_type: "",
@@ -221,15 +219,11 @@ let eventKeyword = ref()
 
 
  
-socket.on("message", (arg) => {
-console.log("x")
-})
+ 
 socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {
-        onRefresh()
-        toast.add({ severity: 'info', summary: 'Info', detail: "Reservation updated", life: 3000 })
-
+        onRefresh(false)
     }
 })
 
@@ -357,9 +351,11 @@ const calendarOptions = reactive({
 
     }),
     eventMouseEnter: (($event) => {
-        const event = $event.event._def
 
+        const event = $event.event._def
+        
         if (event.extendedProps.type == "stay") {
+            if( !$event.el.getAttribute("has_tippy") && !gv.loading){ 
 
             const description = `<div class="p-2 w-full">
                                         <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
@@ -387,13 +383,22 @@ const calendarOptions = reactive({
                                             ` : ''}
                                             </tbody>
                                         </table>
-                                    </div>`
+                                    </div>`;
+                                    
+           
+    
+                $event.el.setAttribute("has_tippy", "yes");
+        
 
+                const { tippyInstance } = useTippy($event.el, {
+                    content: description,
+                    delay: [100, 200],
+                   
+                })
+        }
 
-            const { tippyInstance } = useTippy($event.el, {
-                content: description,
-            })
         } else if (event.extendedProps.type == "room_block") {
+            if( !$event.el.getAttribute("has_tippy") && !gv.loading){ 
             const description = `<div class="w-full p-2">
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
@@ -407,9 +412,13 @@ const calendarOptions = reactive({
                                             </tbody>
                                         </table>
                                     </div>`
-            const { tippyInstance } = useTippy($event.el, {
-                content: description,
-            })
+                                    $event.el.setAttribute("has_tippy", "yes");
+        
+
+        const { tippyInstance } = useTippy($event.el, {
+            content: description,
+        })
+    }
         }
         else if (event.extendedProps.type == "available_room") {
             const description = `<div class="pt-1"> Available Room ${event.title} </div> `
@@ -628,7 +637,7 @@ function resourceColumn() {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
-    onRefresh()
+   
 }
 
 function onView() {
@@ -683,6 +692,7 @@ function onFilterDate(event) {
     onFilter(setViewChart.peroid)
 }
 function onPrevNext(key) {
+    
     const cal = fullCalendar.value.getApi()
     const dateIncrement = cal.currentData.options.dateIncrement
     const currentViewChart = getRoomChartlocationStorage()
@@ -699,11 +709,23 @@ function onPrevNext(key) {
     }
 }
 
-const onRefresh = () => {
-    getEvent()
+const onRefresh =debouncer((loading=true) => {
+    
+     //clear tippy
+     [...document.querySelectorAll('*')].forEach(node => {
+    if (node._tippy) {
+        node._tippy.destroy();
+    }
+    });
+    //end clear tip instend
+ 
+    gv.loading = loading;
+    getResource(true)
     getTotalNote()
+ 
+    socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
 
-}
+}, 500);
 
 function showReservationStayDetail(name) {
 
@@ -797,7 +819,7 @@ function getResource(get_event = false) {
         }
 
         setTimeout(() => {
-
+            
             const room_status = document.getElementsByClassName("room-status")
             for (let i = 0; i < room_status.length; i++) {
                 let el = room_status[i]
@@ -823,9 +845,8 @@ function debouncer(fn, delay) {
 
 
 const getEvent = debouncer(() => {
-
+    loading.value = true
     const cal = fullCalendar.value.getApi()
-
     getApi('frontdesk.get_room_chart_calendar_event', {
         start: moment(cal.view.currentStart).format("YYYY-MM-DD"),
         end: moment(cal.view.currentEnd).format("YYYY-MM-DD"),
@@ -833,6 +854,10 @@ const getEvent = debouncer(() => {
         keyword: eventKeyword.value,
     }).then((result) => {
         events.value = (result.message)
+        gv.loading = false
+        loading.value = false
+    }).catch(()=>{
+        loading.value = false
     })
 
 }, 500);

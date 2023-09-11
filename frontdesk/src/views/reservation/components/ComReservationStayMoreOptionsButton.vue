@@ -236,12 +236,9 @@ function OnUndoCheckOut() {
                 reservation_stays:[rs.reservationStay.name] 
             }
             ).then((doc) => {
-              
                 rs.reservationStay = doc.message
-
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
                 socket.emit("RefresheDoorDashboard", doc.message.property)
-
                 rs.loading = false
                 setTimeout(() => {
                     emit('onRefresh')
@@ -297,8 +294,11 @@ function onSaveNote(data){
         loading.value = false
         note.value.show = false
         rs.getReservationDetail(rs.reservationStay.name)
-        socket.emit("RefreshReservationDetail", r.reservation);
-        socket.emit("RefresheDoorDashboard", r.reservation.property);
+
+
+        socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+
     }).catch(()=>{
         loading.value = false
     })
@@ -512,7 +512,5 @@ function onMarkasFITReservation() {
 function onAuditTrail() {
     emit('onAuditTrail')
 }
-function onCancel() {
-    alert()
-}
+ 
 </script>

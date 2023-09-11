@@ -486,12 +486,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     background: var(--bg-btn-color) !important;
 }
 
-.p-inputtext-pt,
-.p-button.p-button-icon-only,
-.p-inputtext-pt,
-.p-inputtext-sm .p-inputtext {
-    border-radius: 0.5rem;
-}
+
 
 .child-adults-txt input {
     width: 7rem;
@@ -1214,4 +1209,7 @@ ul.res__hideshow{
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
+}
+.n__re-custom .p-inputtext-pt{
+    border-radius: 0.5rem;
 }

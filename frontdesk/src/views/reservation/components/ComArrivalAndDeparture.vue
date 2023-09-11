@@ -74,8 +74,9 @@
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                  <ComBoxStayInformation title="Driver" :value="rs.reservationStay?.drop_off_driver_name"
-                    valueClass="col-7" titleClass="col"></ComBoxStayInformation>
+                  <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.drop_off_driver)" title="Driver"
+                    isAction="true" :value="rs.reservationStay?.drop_off_driver_name" valueClass="col-7" titleClass="col">
+                  </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation title="Phone number" :value="rs.reservationStay?.drop_off_driver_phone_number"
@@ -137,6 +138,9 @@ const onMenuArriavalDeparture = (event) => {
 };
 function OnSetupForm() {
   dialog.open(ComFormSetupArrivalAndDeparture, {
+    data:{
+      stays:[rs.reservationStay.name]
+    },
     props: {
       header: 'Setup Arrival & Departure Mode',
       style: {

@@ -20,11 +20,16 @@
 <script setup> 
 import { onMounted,ref,inject,createUpdateDoc } from '@/plugin';
 const dialogRef = inject('dialogRef') 
+const gv = inject('$gv') 
 const loading = ref(false)
 const rename = ref(null)
 const guestType = ref({});
 
 function onSave(){
+  if(!guestType.value.customer_group_en){
+    gv.toast('warn','Please input guest type name.')
+    return
+  }
   loading.value = true
   rename.value = null
   if(dialogRef.value.data){

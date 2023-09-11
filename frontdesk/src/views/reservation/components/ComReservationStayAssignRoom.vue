@@ -1,6 +1,7 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
+        {{ selectedStay }}
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
             <div class="n__re-custom">
@@ -54,11 +55,10 @@
                                     :end-date="selectedStay.end_date"/>
                             </td>
                             <td class="px-2 select-room-number-style">
-                                <ComSelectRoomAvailability 
-                                    v-model="selectedStay.room_id"
-                                    :start-date="selectedStay.start_date"
-                                    :end-date="selectedStay.end_date"
-                                    :roomType="selectedStay.room_type_id" />
+                                <Dropdown v-model="d.room_id"
+                                    :options="rooms"
+                                    optionValue="name"   optionLabel="room_number"
+                                    placeholder="Select Room" showClear filter class="w-full" />
                             </td>
                             <td class="text-center px-2 w-10rem"> 
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
@@ -67,35 +67,15 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap justify-end">
                                     <CurrencyFormat :value="selectedStay.rate" />
                                 </span>
-                                <!-- <span class="white-space-nowrap">
-                                    <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                        <span class="link_line_action">
-                                            <CurrencyFormat :value="selectedStay.rate" />
-                                        </span>
-                                    </span>
-                                </span> -->
+                             
                             </td>
                         </tr>
                     </tbody>
-                    <!-- <tbody>
-                        <tr>
-                            <td colspan="7">
-                                <div class="text-right pt-2">
-                                    <div>
-                                        <Checkbox class="mr-1" v-model="isOverrideRate" :binary="true" inputId="disabled" />
-                                        <label for="disabled"> Override Room Rate</label>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody> -->
+                 
                 </table>
             </div>
             </template>
         </ComReservationStayPanel>
-        <!-- <OverlayPanel ref="op">
-            <ComReservationStayChangeRate v-model="rate" @onClose="onCloseRate" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
-        </OverlayPanel> -->
 
     </div>
 </ComDialogContent>
@@ -115,28 +95,13 @@
     const loading = ref(false)
     const isOverrideRate = ref(false)
     const selectedStay = ref({})
-    
+    const rooms = ref([])
     const rate = ref(0)
-    // const onUseRatePlan = () => {
-    //     selectedStay.value.is_manual_rate = false;
-    //     op.value.hide();
-    // }
+ 
     const onClose = (r) =>{ 
         dialogRef.value.close(r);
     }
-    // function onCloseRate(){
-    //     op.value.hide()
-    // }
-    // const onChangeRate = () => {
-    //     selectedStay.value.rate = rate.value
-    //     selectedStay.value.is_manual_rate = true
-    //     op.value.hide();
-    // }
-
-    // const onOpenChangeRate = (event) => {
-    //     rate.value = JSON.parse(JSON.stringify(selectedStay.value)).rate
-    //     op.value.toggle(event);
-    // }
+ 
 
     const onSelectRoomType = (r) => {
         selectedStay.value.rate = r.rate
@@ -159,13 +124,25 @@
             stay_room: selectedStay.value.stay_room
         }
         postApi("reservation.assign_room",{data: dataSave}).then((r)=>{
-            console.log(r)
             loading.value = false
             socket.emit("RefreshReservationDetail", r.message.reservation);
             onClose(r)
         }).catch(()=>{
             loading.value = false
         })
+    }
+
+    function getRoom(){
+        getApi("reservation.check_room_availability", {
+                property: property.name,
+                room_type_id:selectedStay.value.room_type_id,
+                start_date: selectedStay.value.start_date, 
+                end_date:  selectedStay.value.end_date
+            })
+                .then((result) => {
+                    rooms.value = result.message;
+                    
+                })
     }
     onMounted(() => {
         getApi("frontdesk.get_working_day", {
@@ -200,7 +177,12 @@
                 selectedStay.value.stay_room = selected.name
                 selectedStay.value.is_manual_rate = selected.is_manual_rate
             }
+
+            
+            getRoom() 
         })
+        
+                
     });
 </script>
 <style scoped>

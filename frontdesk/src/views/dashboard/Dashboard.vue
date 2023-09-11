@@ -15,7 +15,7 @@
             <div class="flex gap-2 justify-content-end">
                 <NewFITReservationButton/>
                 <NewGITReservationButton/>
-                <Button @click="test">Test</Button>
+                
             </div>
         </template>
     </ComHeader>
@@ -223,9 +223,8 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
    });
 }
 
-function onRefresh(loading = true){
+function onRefresh(loading = true){ 
     getData(loading)
-   
 }
 
 function onViewRoomOccupy(){
@@ -330,7 +329,7 @@ function getInhouseGuestUrl() {
 }
 
 function getUpCommingNoteUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format="
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&working_date=" + selected_date.value + "&format="
     + gv.getCustomPrintFormat("eDoor Up Coming Note") +  
  "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     url = url + "&date=" + selected_date.value
@@ -380,7 +379,7 @@ function onDateSelect(event) {
 getData();
 
 
-function getData(loading=true) {
+function getData(loading=true) { 
     gv.loading = loading;
     const call = api.call();
     if (!selected_date.value){

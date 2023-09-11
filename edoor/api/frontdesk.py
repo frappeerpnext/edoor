@@ -190,6 +190,12 @@ def get_mtd_room_occupany(property):
 def get_server_port():
     return{"backend_port": frappe.get_doc('ePOS Settings').backend_port}
 
+@frappe.whitelist()
+def get_report():
+    x = frappe.db.get_list("System Report")
+    return x
+
+
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
 
@@ -479,7 +485,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             is_master,
             parent as reservation_stay,
             'stay' as type,
-            1 as can_resize,
+            allow_user_to_edit_information as can_resize,
             arrival_date,
             departure_date,
             start_time,

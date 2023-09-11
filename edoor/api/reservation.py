@@ -6,7 +6,7 @@ import re
 from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import get_date_range, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
 import frappe
-from frappe.utils.data import add_to_date, getdate
+from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
 
 @frappe.whitelist()
@@ -17,7 +17,7 @@ def test():
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
-    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger"])
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     return {
         "reservation":reservation,
@@ -990,6 +990,17 @@ def change_stay(data):
             frappe.throw("Room not avaible")
     
     doc = frappe.get_doc("Reservation Stay",data['parent'])
+
+    #validate if reservation is check in and they and they already stay so we cannot 
+    stay_room_doc = frappe.db.sql("select start_date, end_date from `tabReservation Stay Room` where name ='{}'".format(data["name"]),as_dict=1)
+    working_day  =get_working_day(doc.property)
+    if getdate(  stay_room_doc[0]["start_date"]) != getdate(data["start_date"]) and  getdate(  working_day["date_working_day"])> getdate(  stay_room_doc[0]["start_date"]):
+        frappe.throw(_("Arrival can not change because guest already stay in past date"))
+    #check if user move from departure date and move behind current working date 
+    if getdate(data["end_date"])< getdate(working_day["date_working_day"]):
+        frappe.throw(_("Depature date must be greater then or equal to current working date"))
+         
+
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
     stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
     
@@ -1711,6 +1722,7 @@ def update_reservation_color(data):
     frappe.db.set_value('Reservation', reservation, 'reservation_color', data['reservation_color'])
  
     stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation, 'is_active_reservation': 1})
+
     for t in stays:
         doc = frappe.get_doc('Reservation Stay', t.name)
         doc.reservation_color = data['reservation_color']
@@ -1987,3 +1999,46 @@ def update_allow_post_to_city_ledger(stays, allow_post_to_city_ledger):
 def group_change_stay(data):
     frappe.msgprint("Change Stay successfully")
     
+@frappe.whitelist(methods="POST")
+def get_pickup_and_drop_off_data(stays):
+    if len(stays)==1:
+        return frappe.get_doc("Reservation Stay",stays[0])
+    else:
+        data = frappe.db.sql("select * from `tabReservation Stay` where name in  %(stays)s and  not last_update_pickup_and_drop_off is null order by last_update_pickup_and_drop_off desc limit 1",{"stays":stays},as_dict=1 )
+        if data:
+            return data[0]
+        else:
+            return frappe.get_doc("Reservation Stay",stays[0])
+        
+@frappe.whitelist(methods="POST")
+def update_pickup_and_drop_off(stays,data):
+    stay={}
+    data["doctype"] = "Reservation Stay"
+    data =  frappe.get_doc(data, doctype="Reservation Stay")
+     
+    for s in stays:
+        doc = frappe.get_doc("Reservation Stay",s)
+        doc.require_pickup = data.require_pickup  
+        doc.require_drop_off = data.require_drop_off  
+        doc.pickup_time = data.pickup_time  
+        doc.arrival_mode = data.arrival_mode  
+        doc.arrival_flight_number = data.arrival_flight_number  
+        doc.pickup_location = data.pickup_location 
+        doc.pickup_driver = data.pickup_driver
+        doc.pickup_note = data.pickup_note
+        doc.drop_off_time = data.drop_off_time
+        doc.departure_mode = data.departure_mode
+        doc.departure_flight_number= data.departure_flight_number
+        doc.drop_off_location= data.drop_off_location
+        doc.drop_off_driver= data.drop_off_driver
+        doc.drop_off_note= data.drop_off_note
+        doc.last_update_pickup_and_drop_off= now()
+        doc.save()
+        stay = doc
+    frappe.db.commit()
+    frappe.msgprint("Update pick up and drop off successfully")
+    if len(stays)==1:
+        return stay
+    
+
+ 

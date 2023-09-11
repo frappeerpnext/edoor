@@ -295,7 +295,6 @@ router.beforeEach(async (to, from, next) => {
 
 
 	} else {
-		alert(2)
 		if (getCookie("user_id") != "Guest") {
 
 			//find first record of edoor menu 
@@ -339,6 +338,7 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 
 		window.location.replace(serverUrl)
 	} else {
+	
 		localStorage.setItem('edoor_user', JSON.stringify(data.user))
 		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
 		gv.setting = data.edoor_setting
@@ -347,10 +347,14 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 		}
 		else {
 			localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-
+			console.log(r.message.property)
 			if (r.message.property) {
+			
 				if (r.message.property.length == 1) {
+					
 					localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
+					 
+					window.property = r.message.property[0].name
 				}
 			}
 		}

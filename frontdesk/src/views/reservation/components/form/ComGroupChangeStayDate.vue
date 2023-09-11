@@ -1,5 +1,4 @@
 <template>
-    {{ data }}
     <ComDialogContent :hideButtonClose="true"  @onOK="onSave" :loading="loading">
         <div class="col-6">
             <label>Arrival Date<span class="text-red-500">*</span></label><br />
@@ -22,13 +21,14 @@
         </div>
         <div class="flex flex-wrap gap-3">
             <div class="flex align-items-center">
-                <RadioButton inputId="rate_plan" name="generate_new_stay_rate_by" value="rate_plan"  v-model="data.generate_new_stay_rate_by"/>
-                <label for="rate_plan" class="ml-2">Generate New Stay Rate from Rate Type</label>
-            </div>
-            <div class="flex align-items-center">
                 <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"  v-model="data.generate_new_stay_rate_by"/>
                 <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay Rate</label>
             </div>
+            <div class="flex align-items-center">
+                <RadioButton inputId="rate_plan" name="generate_new_stay_rate_by" value="rate_plan"  v-model="data.generate_new_stay_rate_by"/>
+                <label for="rate_plan" class="ml-2">Generate New Stay Rate from Rate Type</label>
+            </div>
+            
         </div>
         <div class="mt-3">
             <div>
@@ -48,7 +48,7 @@ const loading = ref(false)
 import Enumerable from 'linq'
 const data = ref({generate_new_stay_rate_by:"stay_rate"})
 const moment = inject("$moment")
- 
+const rs = inject("$reservation")
 const onRoomNightChanged = (event) => {
     data.value.departure_date = moment(data.value.arrival_date).add(event, "Days").toDate()
 }
@@ -65,10 +65,8 @@ function onSave(){
             generate_new_stay_rate_by:data.value.generate_new_stay_rate_by
         }
     }).then((result) => {   
-        
         loading.value = false
-        dialogRef.value.close()
-        
+        dialogRef.value.close(rs.selecteds = [])
     }).catch((err) => {
         loading.value = false
     })

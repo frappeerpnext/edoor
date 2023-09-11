@@ -86,7 +86,7 @@
         <div class="flex justify-end gap-3 mt-3">
         <div class="flex align-items-center">
             <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
-            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Regenerate using first and Last stay date</label>
+            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from Last First/Last Stay Rate Note</label>
         </div>
         <div class="flex align-items-center">
             <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />

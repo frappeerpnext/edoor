@@ -110,19 +110,26 @@
           </Column>
         </Row>
       </ColumnGroup>
+      <template #empty>
+        <div class="p-4 text-center text-gray-400">
+            <div><img :src="iconNoData" style="width: 80px; margin: 0 auto;"></div>
+            <div class="mt-2 text-sm italic">Empty Data</div>
+        </div>
+      </template>
     </DataTable>
   
       </div>
 </template>
 <script setup>
-import {inject, ref, onMounted,useDialog} from "@/plugin"
+import {inject, ref, onMounted,useDialog, useToast} from "@/plugin"
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue";
+import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
 import GuestDetail from "@/views/guest/GuestDetail.vue";
 const rs = inject('$reservation')
 const dialog = useDialog();
- 
+const toast = useToast()
 const gv = inject('$gv')
 const filters = ref(
     {

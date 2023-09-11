@@ -60,7 +60,7 @@ export function updateDoc(doctype, name, data, message){
         });
     })
 }
-export function createUpdateDoc(doctype, data, message, rename=null){ 
+export function createUpdateDoc(doctype, data, message, rename=null,show_error_message=true){ 
     const frappe = new FrappeApp()
     const db = frappe.db() 
     return new Promise((resolve, reject)=>{
@@ -88,7 +88,9 @@ export function createUpdateDoc(doctype, data, message, rename=null){
                 }
             })
             .catch((error) => {
-                const message = handleServerMessage(error)
+                if(show_error_message){
+                    handleServerMessage(error)
+                } 
                 reject(error) 
             });
         }

@@ -1,16 +1,16 @@
 [
  {
-  "allow_user_to_edit_information": 0,
-  "color": "#4f4f4f",
+  "allow_user_to_edit_information": 1,
+  "color": "#828205",
   "docstatus": 0,
   "doctype": "Reservation Status",
-  "is_active_reservation": 1,
-  "modified": "2023-07-22 08:57:47.743471",
-  "name": "Checked Out",
-  "reservation_status": "Checked Out",
+  "is_active_reservation": 0,
+  "modified": "2023-07-22 08:57:52.468194",
+  "name": "No Show",
+  "reservation_status": "No Show",
   "show_in_reservation_list": 0,
-  "show_in_room_chart": 1,
-  "sort_order": 2
+  "show_in_room_chart": 0,
+  "sort_order": 4
  },
  {
   "allow_user_to_edit_information": 0,
@@ -39,17 +39,17 @@
   "sort_order": 5
  },
  {
-  "allow_user_to_edit_information": 1,
-  "color": "#828205",
+  "allow_user_to_edit_information": 0,
+  "color": "#4f4f4f",
   "docstatus": 0,
   "doctype": "Reservation Status",
-  "is_active_reservation": 0,
-  "modified": "2023-07-22 08:57:52.468194",
-  "name": "No Show",
-  "reservation_status": "No Show",
+  "is_active_reservation": 1,
+  "modified": "2023-07-22 08:57:47.743471",
+  "name": "Checked Out",
+  "reservation_status": "Checked Out",
   "show_in_reservation_list": 0,
-  "show_in_room_chart": 0,
-  "sort_order": 4
+  "show_in_room_chart": 1,
+  "sort_order": 2
  },
  {
   "allow_user_to_edit_information": 1,
@@ -66,19 +66,6 @@
  },
  {
   "allow_user_to_edit_information": 1,
-  "color": "#ff7300",
-  "docstatus": 0,
-  "doctype": "Reservation Status",
-  "is_active_reservation": 1,
-  "modified": "2023-07-22 08:58:14.704725",
-  "name": "Reserved",
-  "reservation_status": "Reserved",
-  "show_in_reservation_list": 1,
-  "show_in_room_chart": 1,
-  "sort_order": 3
- },
- {
-  "allow_user_to_edit_information": 1,
   "color": "#CB2929",
   "docstatus": 0,
   "doctype": "Reservation Status",
@@ -89,5 +76,18 @@
   "show_in_reservation_list": 1,
   "show_in_room_chart": 1,
   "sort_order": 10
+ },
+ {
+  "allow_user_to_edit_information": 1,
+  "color": "#ff7300",
+  "docstatus": 0,
+  "doctype": "Reservation Status",
+  "is_active_reservation": 1,
+  "modified": "2023-07-22 08:58:14.704725",
+  "name": "Reserved",
+  "reservation_status": "Reserved",
+  "show_in_reservation_list": 1,
+  "show_in_room_chart": 1,
+  "sort_order": 3
  }
 ]

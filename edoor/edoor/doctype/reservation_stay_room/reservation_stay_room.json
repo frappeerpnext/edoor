@@ -7,28 +7,12 @@
  "engine": "InnoDB",
  "field_order": [
   "property",
-  "room_type_id",
-  "room_type",
-  "room_type_alias",
-  "room_id",
-  "room_number",
   "start_date",
   "end_date",
-  "guest",
+  "reference_number",
   "guest_name",
   "email",
   "phone_number",
-  "reservation_status",
-  "status_color",
-  "reservation_type",
-  "show_in_room_chart",
-  "start_time",
-  "end_time",
-  "room_nights",
-  "adult",
-  "child",
-  "pax",
-  "reference_number",
   "internal_reference_number",
   "reservation",
   "reservation_color",
@@ -39,6 +23,7 @@
   "discount_amount",
   "is_manual_rate",
   "is_active_reservation",
+  "allow_user_to_edit_information",
   "adr",
   "tax_1_amount",
   "tax_2_amount",
@@ -58,7 +43,27 @@
   "total_debit",
   "balance",
   "total_room_rate",
-  "note"
+  "column_break_cnbu",
+  "room_type_id",
+  "room_type_alias",
+  "room_type",
+  "reservation_status",
+  "status_color",
+  "reservation_type",
+  "show_in_room_chart",
+  "start_time",
+  "end_time",
+  "column_break_irmb",
+  "room_id",
+  "room_number",
+  "room_nights",
+  "adult",
+  "child",
+  "pax",
+  "guest",
+  "section_break_pwue",
+  "note",
+  "column_break_vpbm"
  ],
  "fields": [
   {
@@ -359,12 +364,34 @@
    "fieldname": "paid_by_master_room",
    "fieldtype": "Check",
    "label": "Paid by Master Room"
+  },
+  {
+   "fieldname": "column_break_cnbu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_irmb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_pwue",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_vpbm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_user_to_edit_information",
+   "fieldtype": "Check",
+   "label": "Allow user to edit infomation"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-04 14:13:54.475113",
+ "modified": "2023-09-07 19:49:22.535511",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

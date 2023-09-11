@@ -131,6 +131,7 @@
         newData.end_date = gv.dateApiFormat(newData.end_date)
         newData.rate = newData.input_rate
         newData.is_override_rate = generate_new_room_rate.value
+        newData.generate_rate_type = ""
 
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 

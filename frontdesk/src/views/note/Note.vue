@@ -39,8 +39,8 @@
                         <div class="flex flex-col">
                             <div class="line-height-1 w-full flex justify-between ">
                                 <div class="my-auto">
-                                    <div class="text-xl font-medium inline ">{{ i.reference_doctype }} </div>
-                                    <span v-if="i.reference_doctype && i.reference_name"> - </span>
+                                    <div v-if="i.reservation || i.reservation_stay" class="text-xl font-medium inline ">{{ i.reference_doctype }} </div>
+                                    <span v-if="i.reference_doctype &&(i.reservation || i.reservation_stay)"> - </span>
                                     <div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
                                         <span class="link_line_action  border-none p-0 w-auto"
                                             @click="onViewFolioDetail(i?.reference_name)">
@@ -59,19 +59,13 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <span class="link_line_action w-auto border-none p-0"
-                                        @click="onViewDetailReservationStay(i.reference_name)"
-                                        v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
-                                        {{ i.reference_name || i.reservation_stay }}
-                                    </span>
-                                    <span v-if="!(i.reference_doctype) && (i.reservation_stay && i.reservation)"> - </span>
-                                    <div class="link_line_action  border-none p-0 "
-                                        :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'"
-                                        @click="onViewDetailReservation(i.reservation)"
-                                        v-if="(i.reference_doctype == 'Reservation' || i.reference_doctype == 'Reservation Stay') || i.reservation">
-                                        {{ i.reservation }}
-                                    </div>
-
+						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="i.reference_doctype == 'Reservation' || i.reservation">
+							{{i.reservation}} 
+						</div>
+						<span v-if="!(i.reference_doctype) &&  i.reservation && i.reservation_stay"> - </span>
+						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservationStay(i.reservation_stay)" v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
+							{{i.reservation_stay}}
+						</div>
                                 </div>
                                 <div class="flex absolute right-3 gap-2">
                                     <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note "
@@ -83,7 +77,7 @@
                                     </Button>
                                 </div>
                             </div>
-                            <div :class="i.reference_doctype ? 'text-500 text-sm ' : ''">Note Date: {{ i.note_date }}</div>
+                            <div :class="i.reservation || i.reservation_stay ? 'text-500 text-sm ' : ''">Note Date: {{ i.note_date }}</div>
                         </div>
                         <div v-if="i.content"
                             class="mt-3 mb-6 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">

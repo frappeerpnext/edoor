@@ -36,6 +36,8 @@
     <img v-else-if="icon == 'iconWeekCalendar'" :style="{'height' : height}" :class="class" :src="iconWeekCalendar"/>
     <img v-else-if="icon == 'icon14Day'" :style="{'height' : height}" :class="class" :src="icon14Day"/>
     <img v-else-if="icon == 'iconMonth'" :style="{'height' : height}" :class="class" :src="iconMonth"/>
+    <img v-else-if="icon == 'roomRate'" :style="{'height' : height}" :class="class" :src="roomRate"/>
+    <img v-else-if="icon == 'iconChangeStay'" :style="{'height' : height}" :class="class" :src="iconChangeStay"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -85,5 +87,7 @@ import IconBillToGuest from '@/assets/svg/icon-bill-to-guest.svg'
 import iconWeekCalendar from '@/assets/svg/icon-week-calendar.svg'
 import icon14Day from '@/assets/svg/icon-14day.svg'
 import iconMonth from '@/assets/svg/icon-month-calendar.svg'
+import roomRate from '@/assets/svg/icon-roomrate.svg'
+import iconChangeStay from '@/assets/svg/icon-changestay.svg'
 </script>
  

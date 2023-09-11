@@ -78,6 +78,7 @@ class ReservationStay(Document):
 			d.property = self.property
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
+			d.allow_user_to_edit_information = self.allow_user_to_edit_information
 
 			if self.is_reserved_room:
 			 
@@ -326,6 +327,7 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 	return True
 
 def update_reservation_stay_room_rate_after_resize(data, stay_doc):
+ 
 	# date min and max date from reservation room rate
 	sql = "select min(date) as start_date, max(date) as end_date from `tabReservation Room Rate` where stay_room_id='{}'".format(data["name"]) 
 	old_stay_date = frappe.db.sql(sql, as_dict=1)
@@ -334,45 +336,53 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	#2 check if user resize from start forward   so we just delete record
 	frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}' and date<'{}'".format(data["name"],data["start_date"]))
 
+	
+	date_range = []
+	room_rate = 0
+	rate_type = stay_doc.rate_type
+	is_manual_rate = 0
 	#3 if user resize from the end forward
 	
-	if getdate(old_stay_date[0]["end_date"])<getdate(data["end_date"]):
+	if add_to_date(getdate(old_stay_date[0]["end_date"]),days=1) <getdate(data["end_date"]):	
 		
 		date_range = get_date_range(add_to_date(getdate(old_stay_date[0]["end_date"]), days=1), getdate( data["end_date"]))
-	 
-		room_rate = 0
-		rate_type = stay_doc.rate_type
-		is_manual_rate = 0
 		if data["generate_rate_type"] =="stay_rate":
 			room_rate_doc = frappe.db.sql("select rate_type, rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["end_date"]),as_dict=1)
 			if room_rate_doc:
 				room_rate = room_rate_doc[0]["rate"]
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
+	else:# if user resize from arrival date back ward
+		
+		date_range = get_date_range( getdate( data["start_date"]),getdate(old_stay_date[0]["start_date"]))
+		if data["generate_rate_type"] =="stay_rate":
+			room_rate_doc = frappe.db.sql("select rate_type, rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["start_date"]),as_dict=1)
+			if room_rate_doc:
+				room_rate = room_rate_doc[0]["rate"]
+				rate_type = room_rate_doc[0]["rate_type"]
+				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
 
-
-			for d in date_range:
-
-				frappe.get_doc({
-						"doctype":"Reservation Room Rate",
-						"reservation":stay_doc.reservation,
-						"reservation_stay":stay_doc.name,
-						"tax_rule":stay_doc.tax_rule,
-						"rate_include_tax":stay_doc.rate_include_tax or "No",
-						"tax_1_rate":stay_doc.tax_1_rate,
-						"tax_2_rate":stay_doc.tax_2_rate,
-						"tax_3_rate":stay_doc.tax_3_rate,
-						"stay_room_id":data["name"],
-						"room_type_id":data["room_type_id"],
-						"room_id":data["room_id"],
-						"date":d,
-						"input_rate": room_rate,
-						"rate_type":rate_type,
-						"is_manual_rate":is_manual_rate,
-						"property":stay_doc.property,
-						"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
-						"is_active_reservation":1
-					}).insert()
+	for d in date_range:
+		frappe.get_doc({
+				"doctype":"Reservation Room Rate",
+				"reservation":stay_doc.reservation,
+				"reservation_stay":stay_doc.name,
+				"tax_rule":stay_doc.tax_rule,
+				"rate_include_tax":stay_doc.rate_include_tax or "No",
+				"tax_1_rate":stay_doc.tax_1_rate,
+				"tax_2_rate":stay_doc.tax_2_rate,
+				"tax_3_rate":stay_doc.tax_3_rate,
+				"stay_room_id":data["name"],
+				"room_type_id":data["room_type_id"],
+				"room_id":data["room_id"],
+				"date":d,
+				"input_rate": room_rate,
+				"rate_type":rate_type,
+				"is_manual_rate":is_manual_rate,
+				"property":stay_doc.property,
+				"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
+				"is_active_reservation":1
+			}).insert()
 			
 	# frappe.throw("xx")
 	
@@ -435,3 +445,5 @@ def generate_stay_room_occupy(self):
 				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
 				
 			}).insert()
+		
+		

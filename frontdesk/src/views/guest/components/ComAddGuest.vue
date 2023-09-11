@@ -14,7 +14,7 @@
                             v-model="guest.customer_name_en" :maxlength="50" />
                     </div>
                     <div class="col-12 pt-2">
-                        <label>Company<span class="text-red-500">*</span></label><br />
+                        <label>Company</label><br />
                         <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Company"
                             v-model="guest.company_name" :maxlength="50" />
                     </div>
@@ -153,13 +153,20 @@ function getMeta() {
 }
 
 function onOK() {
+    if(!guest.value.customer_name_en){
+        gv.toast('warn','Guest name is required.')
+        return
+    }
+    else if(!guest.value.customer_group){
+        gv.toast('warn','Guest type is required.')
+        return
+    }
     loading.value = true
-    
     var data = JSON.parse(JSON.stringify(guest.value))
     data.date_of_birth = data.date_of_birth ? moment(data.date_of_birth).format("YYYY-MM-DD") : ''
     data.expired_date = data.expired_date ? moment(data.expired_date).format("YYYY-MM-DD") : ''
     data.photo = data.attach
-    createUpdateDoc('Customer', {data:data}).then((r) => {
+    createUpdateDoc('Customer', {data:data},'',false).then((r) => {
         if (r.name) {
             getDoc('Customer', r.name).then((g) => {
                 onClose(g)

@@ -74,8 +74,10 @@
                 value: props.exceptValue
             } 
         }
+       
         getApi("reservation.check_room_availability", filter.value)
         .then((result) => { 
+           
             data.value = result.message; 
         })
     }

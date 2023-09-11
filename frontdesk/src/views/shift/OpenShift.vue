@@ -18,11 +18,13 @@
                         <td class="px-2 text-end">
                             <div class="w-full flex justify-end">
                                 <div class="relative w-15rem">
-                                    <InputText v-model="p.input_amount" class="text-end w-full w-15rem"/>
+                                    <InputNumber v-model="p.input_amount" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5"  class="text-end w-full w-15rem"/>
                                     <ComOpenShiftExchangeRate :item="p"/>
                                 </div>
+
                             </div>    
                         </td>
+                        
                         <td class="pl-2">
                             <div class="p-inputtext-pt text-end border-1 border-white">
                                 <CurrencyFormat :value="(p.input_amount/p.exchange_rate) || 0 " class="w-10rem"/>

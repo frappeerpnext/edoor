@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-6">
                             <label for="arrival_driver">Pickup Driver</label>
-                            <ComAutoComplete :clear="false" v-model="stay.pickup_driver" isAddNew @onAddNew="onAddPickupDriver"
+                            <ComAutoComplete :clear="false" v-model="stay.pickup_driver" isAddNew @onAddNew="onAddDriver('pickup')"
                                 placeholder="Pickup Driver" doctype="Drivers" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-12">
@@ -77,7 +77,7 @@
                         </div>
                         <div class="col-6">
                             <label>Drop Off Driver</label>
-                            <ComAutoComplete :clear="false" v-model="stay.drop_off_driver" isAddNew @onAddNew="onAddDriver"
+                            <ComAutoComplete :clear="false" v-model="stay.drop_off_driver" isAddNew @onAddNew="onAddDriver('dropoff')"
                                 placeholder="Drop Off Driver" doctype="Drivers" class="auto__Com_Cus w-full" />
                         </div>
                         <div class="col-12">
@@ -92,35 +92,42 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, useDialog } from "@/plugin";
-import { useToast } from "primevue/usetoast";
+import { ref, inject, useDialog,postApi, onMounted } from "@/plugin";
+
 import ComAddDriver from "../../other/driver/ComAddDriver.vue";
-const rs = inject("$reservation_stay")
-const gv = inject("$gv")
+
 const dialogRef = inject("dialogRef");
-const toast = useToast();
 const isSaving = ref(false)
-const frappe = inject("$frappe")
-const db = frappe.db()
-const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
+const socket = inject("$socket")
+const stay = ref({})
+const stays = ref()
+const rs = inject('$reservation_stay');
 const dialog = useDialog()
  
 function onSave() {
+
+
     isSaving.value = true;
-    db.updateDoc("Reservation Stay", stay.value.name, stay.value)
+    postApi("reservation.update_pickup_and_drop_off",{
+        stays:stays.value,
+        data:stay.value
+    })
         .then((doc) => {
-            rs.reservationStay = JSON.parse(JSON.stringify(doc))
-            toast.add({ severity: 'success', summary: 'Update Transportation Mode', detail: "Update transportation mode successfully", life: 3000 })
-            dialogRef.value.close();
-            isSaving.value = false;
+            
+            if (rs?.reservationStay?.name && doc?.message){
+
+                rs.reservationStay = JSON.parse(JSON.stringify(doc.message))
+            }
+            dialogRef.value.close("refresh");
+            socket.emit("RefreshReservationDetail", stay.value.reservation);
         })
         .catch((error) => {
-            gv.showErrorMessage(error)
+           
             isSaving.value = false;
         })
 
 }
-function onAddPickupDriver() {
+function onAddDriver(type) {
     dialog.open(ComAddDriver, {
         props: {
             header: `Add Driver`,
@@ -136,11 +143,29 @@ function onAddPickupDriver() {
         },
         onClose: (options) => {
             const data = options.data;
-            stay.value.pickup_driver = data.name
-
+            if(type=='pickup')
+                stay.value.pickup_driver = data.name
+            else
+                stay.value.drop_off_driver = data.name
         }
     })
 }
+
+onMounted(()=>{
+    stays.value = dialogRef.value.data?.stays
+    postApi(
+        "reservation.get_pickup_and_drop_off_data",
+        {
+            stays:dialogRef.value.data?.stays
+        },
+        "",
+        false
+    ).then((result)=>{
+        stay.value = result.message
+    })
+    
+})
+
 
 </script>
 <style ></style>

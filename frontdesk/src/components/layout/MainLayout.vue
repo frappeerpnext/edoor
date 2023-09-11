@@ -56,8 +56,9 @@
                                     <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="iconOpenCashierShift" style="height: 15px;" />
-                                        <span class="ml-2">Open cashier shift</span>
+                                        <span class="ml-2">Open cashier shiftx</span>
                                     </button>
+                                    
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="iconViewShiftDetail" style="height: 15px;" />

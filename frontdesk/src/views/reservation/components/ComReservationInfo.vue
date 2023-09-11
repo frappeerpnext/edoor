@@ -83,10 +83,10 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation :isAction="true" title="Arrival"                    
+                    <ComBoxStayInformation @onClick="toggle($event, 'change_date')" :isAction="true" title="Arrival"                    
                         :value="moment(rs.reservation?.arrival_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " ></ComBoxStayInformation>
-                    <ComBoxStayInformation :value="gv.timeFormat(rs.reservation?.arrival_time)"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :value="gv.timeFormat(rs.reservation?.arrival_time)"
                         valueClass="col " :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.arrival_date).format('dddd')"
@@ -94,10 +94,10 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation :isAction="true" title="Departure"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :isAction="true" title="Departure"
                         :value="moment(rs.reservation?.departure_date).format('DD-MM-yyyy')"
                         valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
-                    <ComBoxStayInformation :isAction="true" :value="gv.timeFormat(rs.reservation?.departure_time)"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :isAction="true" :value="gv.timeFormat(rs.reservation?.departure_time)"
                         valueClass="col" class_action="link_line_action" ></ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.departure_date).format('dddd')"
@@ -127,6 +127,7 @@
     <OverlayPanel ref="op">
         <ComReservationChangeColorReservation v-if="overLayName=='Change_color'" @onClose="closeOverlay" />
         <ComEditReservationInformation doctype="Reservation" v-else-if="overLayName=='edit_reservation_information'" @onClose="onCloseRef" />
+        <ComPopOverChangeReservationDate doctype="Reservation" v-else-if="overLayName=='change_date'" @onClose="onCloseRef" />
     </OverlayPanel>
 </template>
 <script setup>
@@ -137,7 +138,7 @@ import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComEditReservationInformation from './ComEditReservationInformation.vue';
 import ComReservationChangeColorReservation from './ComReservationChangeColorReservation.vue';
 import ComChangePax from './ComChangePax.vue';
-
+import ComPopOverChangeReservationDate from './form/ComPopOverChangeReservationDate.vue';
 const moment = inject('$moment')
 const rs = inject('$reservation');
 const gv = inject('$gv');
@@ -175,7 +176,9 @@ function onCloseRef(result){
     }
     op.value.hide()
 }
-
+function onChangeDate($event){
+    alert(123)
+}
 
 
 </script>

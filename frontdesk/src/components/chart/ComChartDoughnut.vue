@@ -1,5 +1,6 @@
 <template>
     <div class="relative">
+        
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
             <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
             <span :style="{ color: percentage.color }" v-else>{{ percentage.percent }}%</span>
@@ -49,14 +50,14 @@ const percentage = ref({
 const chartData = computed(() => {
 
     // const documentStyle = getComputedStyle(document.body);
-    let labels = []
-    let values = []
+    let labels = ref([])
+    let values = ref([])
     let backgroundColors = []
     percentage.value.total = 0
     if (props.data.length > 0) {
         props.data.forEach((r) => {
-            labels.push(r.label)
-            values.push(r.value)
+            labels.value.push(r.label)
+            values.value.push(r.value)
             backgroundColors.push(r.color || 'rgba(255, 159, 64)')
             if (props.showPercentage) {
                 percentage.value.total = percentage.value.total + r.value
@@ -72,10 +73,10 @@ const chartData = computed(() => {
 
         percentage.value.percent = gv.numberFormat(percent)
         return {
-            labels: labels,
+            labels: labels.value,
             datasets: [
                 {
-                    data: values,
+                    data: values.value,
                     backgroundColor: backgroundColors
                 }
             ]
