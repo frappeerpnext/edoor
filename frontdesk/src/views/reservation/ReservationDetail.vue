@@ -102,6 +102,7 @@
             </TabView>
         </div>{{ canCheckIn }}
         {{ working_day.date_working_day }}
+        {{ moment(r.arrival_date).toDate() }}
         <template #footer-left>
             <div class="flex justify-end gap-2">  
                 <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->

@@ -64,7 +64,7 @@
                     <span class="ml-2">Mark as Paid by Master Room</span>
                 </button>
                 
-                <button @click="onUnMarkAsPaidbyMasterroom()" 
+                <button v-else @click="onUnMarkAsPaidbyMasterroom()" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
                     <span class="ml-2">Unmark as Paid by Master Room </span>
