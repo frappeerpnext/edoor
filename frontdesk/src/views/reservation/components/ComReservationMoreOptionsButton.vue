@@ -58,13 +58,13 @@
                     <span class="ml-2">Group Undo Check Out</span>
                 </button>
 
-                <button @click="onMarkAsPaidbyMasterroom" 
+                <button v-if="rs.reservation.paid_by_master_room == 0 " @click="onMarkAsPaidbyMasterroom()" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
                     <span class="ml-2">Mark as Paid by Master Room</span>
                 </button>
                 
-                <button @click="onUnMarkAsPaidbyMasterroom " 
+                <button @click="onUnMarkAsPaidbyMasterroom()" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
                     <span class="ml-2">Unmark as Paid by Master Room </span>
