@@ -1,5 +1,4 @@
 {
- "_comments": "[{\"comment\": \"<div class=\\\"ql-editor read-mode\\\"><p>xxx3323</p></div>\", \"by\": \"Administrator\", \"name\": \"eea4820f30\"}, {\"comment\": \"<div class=\\\"ql-editor read-mode\\\"><p>323</p></div>\", \"by\": \"Administrator\", \"name\": \"26edd174d1\"}]",
  "actions": [],
  "allow_rename": 1,
  "autoname": "hash",
@@ -16,7 +15,12 @@
   "reservation",
   "reservation_stay",
   "content",
-  "is_pin"
+  "is_pin",
+  "column_break_fztq",
+  "guest",
+  "guest_name",
+  "room_id",
+  "room"
  ],
  "fields": [
   {
@@ -69,11 +73,44 @@
    "label": "Property",
    "options": "Business Branch",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_fztq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Guest Name"
+  },
+  {
+   "fieldname": "room_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Room ID",
+   "options": "Room"
+  },
+  {
+   "fetch_from": "room_id.room_number",
+   "fieldname": "room",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room",
+   "options": "Room"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-08 16:37:54.153453",
+ "modified": "2023-09-11 17:26:40.578385",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Frontdesk Note",

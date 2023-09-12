@@ -146,9 +146,7 @@ import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
  
-import io from 'socket.io-client';
-
-
+ 
 const toast = useToast();
 const socket = inject("$socket");
 const moment = inject("$moment")
@@ -156,19 +154,6 @@ const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
  
 
-function test(){
-    io("http://192.168.10.19:9000").emit("RefresheDoorDashboard","xxx")
-   alert(123)
-}
-
-socket.on("RefresheDoorDashboard", (arg) => {
-    alert(11111)
-    if(arg ==property.name){
-        getData(false)
-        toast.add({ severity: 'info', summary: 'Info', detail: "Dashboard is updated " + arg, life: 3000 })
-    }    
-    
-})
 
  
 const dialog = useDialog();
@@ -186,7 +171,17 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
-const checked = ref(false);
+
+
+socket.on("RefresheDoorDashboard", (arg) => {
+ 
+ if(arg ==property.name){
+     getData(true)
+  
+ }    
+ 
+})
+
 
 function getArrivalUrl() {
 
@@ -377,7 +372,6 @@ function onDateSelect(event) {
 }
 
 getData();
-
 
 function getData(loading=true) { 
     gv.loading = loading;

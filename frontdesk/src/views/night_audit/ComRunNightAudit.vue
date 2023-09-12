@@ -55,7 +55,9 @@ const url = ref("")
 const socket = inject("$socket")
 const confirm = useConfirm()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject("$gv")
+
 
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
@@ -74,12 +76,11 @@ const steps = ref([
 ])
 
 
-socket.on("RefreshNightAuditStep", (arg) => {
-    if (arg == JSON.parse(localStorage.getItem("edoor_property")).name) {
+socket.on("RefreshData", (arg) => {
+    if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
         refreshReport()
-        toast.add({ severity: 'info', summary: 'Info', detail: "night audit stop is updated updated if see this pls remove me", life: 3000 })
-
-    }
+        alert(123)
+    }    
 })
 
 
@@ -131,6 +132,14 @@ function onNext() {
 
     }
 }
+
+// socket.on("RefreshNightAuditStep", (arg) => {
+//     if (arg == property.name) {
+//         setTimeout(function () {
+//             loadData()
+//         }, 3000)
+//     }
+// })
 
 
 function onFinish() {

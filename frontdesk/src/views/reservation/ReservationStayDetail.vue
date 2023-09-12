@@ -356,6 +356,7 @@ const onCheckIn = () => {
                     onRefresh()
                     socket.emit("RefresheDoorDashboard", property.name);
                     socket.emit("RefreshReservationDetail", rs.reservation.name);
+                    socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
                 })
                     .catch((err) => {
                         rs.loading = false

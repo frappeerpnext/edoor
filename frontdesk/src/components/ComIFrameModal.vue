@@ -1,5 +1,5 @@
 <template>
-    iframe dymic is already fix here. pls delete me in future
+    
     <div class="wrap-dialog" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
@@ -90,19 +90,18 @@ const show_toolbar = ref(0)
 const view = ref("")
 const extra_params = ref([])
 const filter_options = ref([]) // list array string like ["keyword","business_source","room_type"]
-const toast = useToast()
+
 const gv = inject("$gv")
 
 const socket = inject("$socket");
  
 
-socket.on("RefresheDoorDashboard", (arg) => {
- 
-    if(arg == setting.property.name){
-        
+socket.on("RefreshData", (arg) => {
+    if(arg.property == setting.property.name && arg.action == "refresh_iframe_in_modal"){
+    
+
         loadIframe()
     }    
-    
 })
 
 letter_head.value = setting.property.default_letter_head
@@ -197,7 +196,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+   
+    socket.off("RefreshData");
 })
 
 

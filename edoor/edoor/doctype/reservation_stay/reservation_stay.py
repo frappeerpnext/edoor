@@ -259,7 +259,7 @@ def generate_room_occupy(self):
 			}).insert()
 
 def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True): 
-
+	
 	date_avaliables = ""
 	self.update_room_rate = False
 	for stay in self.stays:
@@ -325,6 +325,19 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 		frappe.db.commit()
 
 	return True
+
+
+def update_reservation_stay_room_rate(data):
+	docs = frappe.db.sql("select name  from `tabReservation Room Rate` where stay_room_id=%(stay_room_id)s",{"stay_room_id":data["stay_room_id"]},as_dict=1)
+	for d in docs:
+		doc = frappe.get_doc("Reservation Room Rate", d["name"])
+		doc.input_rate = data['rate']
+		doc.room_id = data["room_id"]
+		doc.room_type_id =  data["room_type_id"]
+		doc.room_type=  data["room_type"]
+		doc.room_number=  data["room_number"]
+		doc.save()
+	
 
 def update_reservation_stay_room_rate_after_resize(data, stay_doc):
  

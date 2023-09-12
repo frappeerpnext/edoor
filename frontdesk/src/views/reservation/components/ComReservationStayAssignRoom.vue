@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
-        {{ selectedStay }}
+
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
             <div class="n__re-custom">
@@ -46,17 +46,13 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{ selectedStay.rate_type }}</span>
                             </td>
                             <td class="px-2 select-room-type-style">  
-                                <ComSelectRoomTypeAvailability 
-                                    v-model="selectedStay.room_type_id"
-                                    @onSelected="onSelectRoomType"
-                                    :rate-type="selectedStay.rate_type"
-                                    :businessSource="selectedStay.business_source"
-                                    :start-date="selectedStay.start_date"
-                                    :end-date="selectedStay.end_date"/>
+                                <Dropdown v-model="selectedStay.room_type_id" :options="room_types" optionValue="name"
+                                    @change="onSelectRoomType" optionLabel="room_type" placeholder="Select Room Type"
+                                    class="w-full" />
                             </td>
                             <td class="px-2 select-room-number-style">
-                                <Dropdown v-model="d.room_id"
-                                    :options="rooms"
+                                <Dropdown v-model="selectedStay.room_id"
+                                    :options="rooms.filter(r=>r.room_type_id==selectedStay.room_type_id)"
                                     optionValue="name"   optionLabel="room_number"
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
@@ -73,6 +69,10 @@
                     </tbody>
                  
                 </table>
+                <Message v-if="selectedStay.room_type_id != selectedStay.old_room_type_id">
+                    <Checkbox v-model="selectedStay.is_override_rate"  @input="onUpdateRate"  :binary="true"  />
+                    <label class="mr-3 cursor-pointer"  >Room type of this reservation stay is changed. Do you want to update rate?</label>
+                </Message>
             </div>
             </template>
         </ComReservationStayPanel>
@@ -93,49 +93,100 @@
     const working_day = ref({})
     const op = ref()
     const loading = ref(false)
-    const isOverrideRate = ref(false)
+ 
     const selectedStay = ref({})
     const rooms = ref([])
+    const room_types = ref([])
     const rate = ref(0)
+
  
     const onClose = (r) =>{ 
         dialogRef.value.close(r);
     }
+
+    function onUpdateRate(v){
+      if(v){
+        if (selectedStay.value.room_type_id!=selectedStay.value.old_room_type_id) {
+            const rt = room_types.value.find(r=>r.name ==selectedStay.value.room_type_id)
+            selectedStay.value.rate = rt.rate 
+
+        }
+      }else {
+        selectedStay.value.rate = selectedStay.value.old_rate
+      }
+    }
+ 
+    const getRoomType = () => {
+        getApi("reservation.check_room_type_availability", {
+            property: property.name,
+            start_date: moment(selectedStay.value.start_date).format("yyyy-MM-DD"),
+            end_date: moment(selectedStay.value.end_date).format("yyyy-MM-DD"),
+            rate_type: selectedStay.value.rate_type,
+            business_source: selectedStay.value.business_source
+        })
+            .then((result) => {
+                room_types.value = result.message;
+                console.log(room_types.value)
+                // updateRate()
+            })
+        }
+
+
+    const onSelectRoomType = (room_type) => {
+        
+        const rt = room_types.value.find(r=>r.name == room_type.value)
+        selectedStay.value.room_id = null
+        selectedStay.value.room_type = rt.room_type
+
+        if(selectedStay.value.is_override_rate){
+            if (selectedStay.value.room_type_id!=selectedStay.value.old_room_type_id) {
+                const rt = room_types.value.find(r=>r.name ==selectedStay.value.room_type_id)
+                selectedStay.value.rate = rt.rate 
+
+            }else {
+                selectedStay.value.rate = selectedStay.value.old_rate
+            }
+        }else {
+            selectedStay.value.rate = selectedStay.value.old_rate
+        } 
+
+    }
  
 
-    const onSelectRoomType = (r) => {
-        selectedStay.value.rate = r.rate
-        rate.value = r.rate
-    }
+
+ 
+ 
+
     function onSave(){ 
-        if(!selectedStay.value.room_type_id){
-            gv.toast('warn','Please select room type.')
+        if(!selectedStay.value.room_id){
+            gv.toast('warn','Please select  room number.')
             return
         }
         loading.value = true
-        const dataSave = {
-            reservation_stay: dialogRef.value.options.data.reservation_stay_name ? dialogRef.value.options.data.reservation_stay_name : rs.reservationStay.name, 
-            room_stay: selectedStay.value.name,
-            room_type_id: selectedStay.value.room_type_id,
-            room_id: selectedStay.value.room_id,
-            is_manual_rate: selectedStay.value.is_manual_rate,
-            is_override_rate: isOverrideRate.value,
-            rate: selectedStay.value.rate,
-            stay_room: selectedStay.value.stay_room
-        }
-        postApi("reservation.assign_room",{data: dataSave}).then((r)=>{
+        selectedStay.value.reservation_stay = dialogRef.value.options.data.reservation_stay_name ? dialogRef.value.options.data.reservation_stay_name : rs.reservationStay.name, 
+        postApi("reservation.assign_room",{data: selectedStay.value}).then((r)=>{
             loading.value = false
+            
             socket.emit("RefreshReservationDetail", r.message.reservation);
+        
+            socket.emit("RefresheDoorDashboard", property.name);
+           
+            socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"});
+            
+            socket.emit("RefreshNightAuditStep", {property:property.name,action:"refresh_iframe_in_modal"});
+          
+
             onClose(r)
-        }).catch(()=>{
+        }).catch((err)=>{
             loading.value = false
+            console.log(err)
         })
     }
 
     function getRoom(){
+  
         getApi("reservation.check_room_availability", {
                 property: property.name,
-                room_type_id:selectedStay.value.room_type_id,
                 start_date: selectedStay.value.start_date, 
                 end_date:  selectedStay.value.end_date
             })
@@ -144,6 +195,7 @@
                     
                 })
     }
+
     onMounted(() => {
         getApi("frontdesk.get_working_day", {
             property: property.name
@@ -154,32 +206,44 @@
                     if(r){
                         const selected = r.stays.find((r)=> r.name == dialogRef.value.options.data.stay_room)
                         selectedStay.value.room_type_id = selected.room_type_id
+                        selectedStay.value.old_room_type_id = selected.room_type_id
+                        selectedStay.value.room_type = selected.room_type
                         selectedStay.value.room_id = selected.room_id
                         selectedStay.value.start_date = selected.start_date
                         selectedStay.value.end_date = selected.end_date
                         selectedStay.value.room_nights = selected.room_nights
                         selectedStay.value.rate = selected.rate
-                        selectedStay.value.rate_type = r.business_source
+                        selectedStay.value.old_rate = selected.rate
+                        selectedStay.value.rate_type = r.rate_type
+                        selectedStay.value.business_source= r.business_source
                         selectedStay.value.stay_room = selected.name
                         selectedStay.value.is_manual_rate = selected.is_manual_rate
+                         
+                        getRoomType()
+                        getRoom() 
                     }
                 })
             }else{ 
                 const selected = dialogRef.value.options.data.stay_room
                 selectedStay.value.room_type_id = selected.room_type_id
+                selectedStay.value.old_room_type_id = selected.room_type_id
+                selectedStay.value.room_type = selected.room_type
                 selectedStay.value.room_id = selected.room_id
                 selectedStay.value.start_date = selected.start_date
                 selectedStay.value.end_date = selected.end_date
                 selectedStay.value.room_nights = selected.room_nights
                 selectedStay.value.rate = selected.rate
+                selectedStay.value.old_rate = selected.rate
                 selectedStay.value.rate_type = selected.rate_type
                 selectedStay.value.business_source = selected.business_source
                 selectedStay.value.stay_room = selected.name
                 selectedStay.value.is_manual_rate = selected.is_manual_rate
+                getRoomType()
+                getRoom() 
             }
 
             
-            getRoom() 
+          
         })
         
                 

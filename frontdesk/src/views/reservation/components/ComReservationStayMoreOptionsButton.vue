@@ -220,7 +220,6 @@ function onUndoCheckIn() {
 }
 
 function OnUndoCheckOut() {
-    
     confirm.require({
         message: 'Are you sure you want to undo check out this reservation?',
         header: 'Confirmation',
@@ -295,10 +294,12 @@ function onSaveNote(data){
         note.value.show = false
         rs.getReservationDetail(rs.reservationStay.name)
 
-
         socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+        
         socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
 
+        socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+        
     }).catch(()=>{
         loading.value = false
     })

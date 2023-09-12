@@ -1,6 +1,6 @@
 from datetime import datetime
 import json
-from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate, update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate, update_reservation_stay_room_rate, update_reservation_stay_room_rate_after_resize
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
@@ -151,8 +151,9 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
     # concat where condition with show_in_room_availability = 1
     if str(start_date) == str(working_day["date_working_day"]):
         sql = "{} and coalesce(show_in_room_availability,0)  = 1".format(sql)
-
+   
     sql = sql.format(property,room_type_id,start_date, end_date,sql_except)
+ 
     data = frappe.db.sql(sql,as_dict=1)
     return data
 
@@ -461,9 +462,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
                 
 
         #validate check if current room is still have guest in house
-
         room_id = stay.stays[0].room_id
-        check_room_in_house = frappe.db.sql("select name from `tabReservation Stay Room` where parent!='{}' and room_id='{}' and end_date='{}' and reservation_status='In-house'".format(stay.name,room_id, stay.arrival_date),as_dict=1)
+        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where   room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,stay.departure_date),as_dict=1)
+
         if check_room_in_house:
              frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
@@ -676,7 +677,8 @@ def check_out(reservation,reservation_stays=None):
         if stay.balance> 0:
             frappe.throw("Reservation Stay {}, room {} cannot check out because the balance is greater than zero".format(stay.name,stay.rooms))
 
-
+        stay.checked_out_by = frappe.session.user
+        stay.checked_out_date = now()
         stay.reservation_status = "Checked Out"
         stay.save()
 
@@ -980,6 +982,7 @@ def get_reservation_comment_note(doctype, docname):
 
 @frappe.whitelist(methods="POST")
 def change_stay(data):
+    
     room_id = ""
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
@@ -999,7 +1002,14 @@ def change_stay(data):
     #check if user move from departure date and move behind current working date 
     if getdate(data["end_date"])< getdate(working_day["date_working_day"]):
         frappe.throw(_("Depature date must be greater then or equal to current working date"))
-         
+
+    #check if current dsate date range have room block
+    block_data =frappe.db.sql("select name from `tabTemp Room Occupy` Where type='Block' and room_id=%(room_id)s",
+                              {"room_id":data["room_id"]},as_dict=1)
+    if block_data:
+        frappe.throw("You cannot change stay or extend stay on a block room")
+
+
 
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
     stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
@@ -1130,21 +1140,52 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         stay.save()
         #update is active reservation to room rate 
         frappe.db.sql("update `tabReservation Room Rate` set is_active_reservation = 0 where reservation_stay='{}'".format(s['name']))
+        
         if status!="No Show":
-            change_room_occupy(stay)
+            #void and cancel
+            frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay=%(reservation_stay)s",
+                          {"reservation_stay":stay.name})
+            
+            frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s",
+                          {"reservation_stay":stay.name})
+            
         else:
             if not reserved_room:
-                change_room_occupy(stay)
+                #No Show but not reserve room
+                frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay=%(reservation_stay)s",
+                          {"reservation_stay":stay.name})
+            
+                frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay=%(reservation_stay)s",
+                            {"reservation_stay":stay.name})
 
         #close all folio
         if status in ["Cancelled","No Show","Voided"]:
             frappe.db.sql("update `tabReservation Folio` set status = 'Closed' where reservation_stay='{}' and status='Open'".format(stay.name))
-        
+
+
+    #check if reservation dont have master stay room then update date the first active reservation to master room
+
     update_reservation(reservation, run_commit=False)
     frappe.db.commit()
+
     frappe.msgprint("{} reservation successfully".format(status))
+    frappe.enqueue("edoor.api.reservation.update_master_room", queue='short', reservation=reservation)
     return stays
 
+
+
+def update_master_room(reservation):
+    pass
+    sql = "select  name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}' and is_master=1".format(reservation)
+    data = frappe.db.sql(sql,as_dict=1)
+    if not data:
+        frappe.db.sql("update `tabReservation Stay` set is_master=0 where reservation='{}'".format(reservation) )
+        frappe.db.commit()
+        sql = "select  name from `tabReservation Stay` where is_active_reservation=1 and reservation='{}' limit 1".format(reservation)
+        data = frappe.db.sql(sql,as_dict=1)
+        if data:
+            frappe.db.sql("update `tabReservation Stay` set is_master=1 where name ='{}'".format(data[0]["name"]) )
+            frappe.db.commit()
 
 
 @frappe.whitelist()
@@ -1625,11 +1666,27 @@ def unassign_room(reservation_stay, room_stay):
         if s.name == room_stay:
             s.room_id = None
             s.room_number = None
+
+            #clear room id and room number from  temp room occupy and room occupy 
+            frappe.db.sql("update `tabTemp Room Occupy` set room_id=null, room_number=null where stay_room_id=%(stay_room_id)s",
+                          {"stay_room_id":s.name}
+                          )
+            
+            frappe.db.sql("update `tabRoom Occupy` set room_id=null, room_number=null where stay_room_id=%(stay_room_id)s",
+                          {"stay_room_id":s.name}
+                          )
+            
+            #clear room id and room number from reservation room rate
+            frappe.db.sql("update `tabReservation Room Rate` set room_id=null, room_number=null where stay_room_id=%(stay_room_id)s",
+                          {"stay_room_id":s.name}
+                          )
+            
+
+            
+
     doc.save()
     
     if doc:
-        change_room_occupy(doc)
-        generate_room_rate(self=doc, is_update_reservation_stay=True)
         update_reservation(name=doc.reservation, run_commit=False)
     
     frappe.db.commit()
@@ -1643,26 +1700,62 @@ def assign_room(data):
     doc.reservation_status = 'Reserved'
     if 'room_id' in data:
         if not data['room_id']:
-            frappe.throw(_("Please assign room."))
+            frappe.throw(_("Please select a room to assign."))
     else:
-        frappe.throw(_("Please assign room."))
+        frappe.throw(_("Please select a room to assign."))
+
     for s in doc.stays:
         if s.name == data['stay_room']:
             s.room_id = data['room_id'] or None
             s.room_type_id = data['room_type_id']
-            if data['is_override_rate'] or data['is_manual_rate']:
-                s.is_manual_rate = data['is_manual_rate']
+
+            #update room number to room room occupy and temp room occupy
+            room_number = frappe.db.get_value("Room", data["room_id"],"room_number")
+            frappe.db.sql("update `tabTemp Room Occupy`  set room_type_id=%(room_type_id)s, room_type=%(room_type)s , room_id = %(room_id)s,room_number=%(room_number)s where stay_room_id=%(stay_room_id)s", 
+                          {
+                              "room_id":data["room_id"],
+                              "room_number":room_number,
+                              "room_type_id":data["room_type_id"],
+                              "room_type":data["room_type"],
+                              "stay_room_id": s.name
+                          }
+                        )
+            #update room and room type to room occupy
+            frappe.db.sql("update `tabRoom Occupy`  set room_type_id=%(room_type_id)s, room_type=%(room_type)s , room_id = %(room_id)s,room_number=%(room_number)s where stay_room_id=%(stay_room_id)s", 
+                    {
+                        "room_id":data["room_id"],
+                        "room_number":room_number,
+                        "room_type_id":data["room_type_id"],
+                        "room_type":data["room_type"],
+                        "stay_room_id": s.name
+                    }
+                )
+           
+            if   'is_override_rate' in data and  data['is_override_rate'] and  data['rate'] != data["old_rate"]:
+                #update room infor and rate
                 s.input_rate = data['rate']
+                update_reservation_stay_room_rate(data = {"rate": data["rate"], "stay_room_id":  s.name,"room_type":data["room_type"],"room_type_id":data["room_type_id"], "room_id":data["room_id"],"room_number":room_number  })
+            else:
+                #update room type and room number to room rate only
+                frappe.db.sql("update `tabReservation Room Rate` set room_type=%(room_type)s , room_type_id=%(room_type_id)s, room_id=%(room_id)s, room_number=%(room_number)s where stay_room_id=%(stay_room_id)s",
+                            {
+                                "stay_room_id":s.name,
+                                "room_type":data["room_type"],
+                                "room_type_id":data["room_type_id"],
+                                "room_type_alias":frappe.db.get_value("Room Type", data["room_type_id"],"alias"),
+                                "room_id":data["room_id"],
+                                "room_number":room_number
+                            })
+                                
     doc.save()
-    
     if doc:
-        change_room_occupy(doc)
-        generate_room_rate(self=doc,is_update_reservation_stay=True)
-        update_reservation(name=doc.reservation, run_commit=False)
-    
+        update_reservation_stay(name=doc.name, run_commit=False)
+        frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc.reservation, doc=None, run_commit=True)
+        
     frappe.db.commit()
     frappe.msgprint(_("Assign room successfully"))
     return doc
+
 @frappe.whitelist()
 def get_room_rate_by_name_to_edit(name):
     doc = frappe.get_doc("Reservation Room Rate", name)

@@ -196,8 +196,8 @@ function showGuestDetail(name) {
 }
 
 function showReservationDetail(name) {
-
-    const dialogRef = dialog.open(ReservationDetail, {
+    if (!window.has_reservation_detail_opened){
+        const dialogRef = dialog.open(ReservationDetail, {
         data: {
             name: name
         },
@@ -212,6 +212,10 @@ function showReservationDetail(name) {
             position: "top"
         }
     });
+    }else {
+        window.open('reservation-detail/' + name, '_blank')
+    }
+  
 }
 function onEditRoomRate(name) {
 
@@ -269,13 +273,7 @@ function onAssignRoom(reservation_stay_name, name) {
             closeOnEscape: false,
             position: 'top'
         },
-        onClose: (options) => {
-            if (options.data && options.data.message) {
-                rs.getReservationDetail(options.data.message.name)
-                socket.emit("RefresheDoorDashboard", property.name)
-                socket.emit("RefreshReservationStayList", property.name)
-            }
-        }
+        
     })
 }
 

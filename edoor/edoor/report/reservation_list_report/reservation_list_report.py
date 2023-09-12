@@ -59,8 +59,8 @@ def get_filters(filters):
 		sql = sql + " and rst.business_source = %(business_source)s"
 	if filters.guest:
 		sql = sql + " and rst.guest = %(guest)s"
-	if filters.reservation_status:
-		sql = sql + " and rst.reservation_status = %(reservation_status)s"
+	if filters.get("reservation_status"):
+		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	if filters.is_active_reservation:
 		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
@@ -102,7 +102,7 @@ def get_filters(filters):
 	elif filters.order_by == "Room" and filters.sort_order == "ASC":
 		sql = sql + " order by rst.rooms asc"
 	elif filters.order_by == "Room" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.rooms desc"												
+		sql = sql + " order by rst.rooms desc"													
 
 	return sql
 
@@ -120,10 +120,50 @@ def get_reservation_stays(filters):
 		sql = sql + " and rst.business_source = %(business_source)s"
 	if filters.guest:
 		sql = sql + " and rst.guest = %(guest)s"
-	if filters.reservation_status:
-		sql = sql + " and rst.reservation_status = %(reservation_status)s"
+	if filters.get("reservation_status"):
+		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	if filters.is_active_reservation:
 		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
+
+	if filters.order_by == "Last Update On" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.modified asc"
+	elif filters.order_by == "Last Update On" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.modified desc"
+
+	elif filters.order_by == "Created On" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.creation asc"
+	elif filters.order_by == "Created On" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.creation desc"
+
+	elif filters.order_by == "Reservation" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.reservation asc"
+	elif filters.order_by == "Reservation" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.reservation desc"
+
+	elif filters.order_by == "Reservation Stay" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.name asc"
+	elif filters.order_by == "Reservation Stay" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.name desc"
+
+	elif filters.order_by == "Arrival Date" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.arrival_date asc"
+	elif filters.order_by == "Arrival Date" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.arrival_date desc"
+
+	elif filters.order_by == "Departure Date" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.departure_date asc"
+	elif filters.order_by == "Departure Date" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.departure_date desc"
+
+	elif filters.order_by == "Room Type" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.room_type_alias asc"
+	elif filters.order_by == "Room Type" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.room_type_alias desc"
+		
+	elif filters.order_by == "Room" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.rooms asc"
+	elif filters.order_by == "Room" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.rooms desc"
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation_stay"] for d in data]
@@ -141,12 +181,50 @@ def get_reservation(filters):
 		sql = sql + " and rst.business_source = %(business_source)s"
 	if filters.guest:
 		sql = sql + " and rst.guest = %(guest)s"
-	if filters.reservation_status:
-		sql = sql + " and rst.reservation_status = %(reservation_status)s"
+	if filters.get("reservation_status"):
+		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	if filters.is_active_reservation:
 		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
+	if filters.order_by == "Last Update On" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.modified asc"
+	elif filters.order_by == "Last Update On" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.modified desc"
 
+	elif filters.order_by == "Created On" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.creation asc"
+	elif filters.order_by == "Created On" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.creation desc"
+
+	elif filters.order_by == "Reservation" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.reservation asc"
+	elif filters.order_by == "Reservation" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.reservation desc"
+
+	elif filters.order_by == "Reservation Stay" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.name asc"
+	elif filters.order_by == "Reservation Stay" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.name desc"
+
+	elif filters.order_by == "Arrival Date" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.arrival_date asc"
+	elif filters.order_by == "Arrival Date" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.arrival_date desc"
+
+	elif filters.order_by == "Departure Date" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.departure_date asc"
+	elif filters.order_by == "Departure Date" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.departure_date desc"
+
+	elif filters.order_by == "Room Type" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.room_type_alias asc"
+	elif filters.order_by == "Room Type" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.room_type_alias desc"
+		
+	elif filters.order_by == "Room" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.rooms asc"
+	elif filters.order_by == "Room" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.rooms desc"
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation"] for d in data]
 

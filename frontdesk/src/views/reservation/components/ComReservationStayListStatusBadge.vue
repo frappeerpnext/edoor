@@ -99,9 +99,9 @@
             <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-yellow-400">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Total Active Stay</span>
-                    <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
+                    <span v-if="rs.reservationStays"   class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
                         style="color:#fff;background: #00000021;">
-                        {{ rs.reservation.total_reservation_stay }}
+                        {{ rs.reservationStays.filter(r=>r.is_active_reservation == 1).length }}
                     </span>
                 </div>
             </div>

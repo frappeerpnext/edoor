@@ -110,10 +110,7 @@ function onCloseNote(){
 }
 function onSaveNote(text_note){
     loading.value = true
-    // const data = JSON.parse(JSON.stringify(props.data))
-    // data.reservation_status = note.value.reservation_status
-    // data.reservation_status_note = text_note
- 
+
     const data = {
         reservation: rs.reservation.name,
         stays: [props.data],
@@ -130,15 +127,7 @@ function onSaveNote(text_note){
     }).catch(()=>{
         loading.value = false
     })
-    // data.update_room_occupy = true
-    // data.update_reservation = true
-    // updateDoc('Reservation Stay', data.name, data).then((r)=>{
-    //     if(r.reservation){
-    //         rs.LoadReservation(r.reservation)
-    //         socket.emit("RefreshReservationDetail", r.reservation);
-    //         loading.value = false
-    //         onCloseNote()
-    //     }
+  
             
     
 }

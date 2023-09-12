@@ -61,13 +61,13 @@
                 <button @click="onMarkAsPaidbyMasterroom" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">Mark As Paid by Master room</span>
+                    <span class="ml-2">Mark as Paid by Master Room</span>
                 </button>
                 
                 <button @click="onUnMarkAsPaidbyMasterroom " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">Unmark As Paid by Master room </span>
+                    <span class="ml-2">Unmark as Paid by Master Room </span>
                 </button>
 
                 <button @click="onAllowPostToCityLedger" 
@@ -412,7 +412,7 @@ function onGroupChangeRate(){
 }
 
 function onGroupChangeStayDate(){
-    if(rs.selecteds && rs.selecteds.length > 0){
+    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
         const dialogRef = dialog.open(ComGroupChangeStayDate,{
         data: rs.selecteds.map(obj => {
                 return {

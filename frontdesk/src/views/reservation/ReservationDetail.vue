@@ -100,7 +100,8 @@
                 </TabPanel>
 
             </TabView>
-        </div>
+        </div>{{ canCheckIn }}
+        {{ working_day.date_working_day }}
         <template #footer-left>
             <div class="flex justify-end gap-2">  
                 <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->
@@ -108,9 +109,10 @@
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
             </div>
         </template>
-        <template #footer-right>
+        <template #footer-right> 
             <Button v-if="canCheckIn" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
+               
                 Check In</Button>
         </template>
     </ComDialogContent>
@@ -160,7 +162,7 @@ const isPage = computed(() => {
 })
 const canCheckIn = computed(() => {
     let can_check_in =  rs.reservationStays.map((x)=>x.reservation_status).includes("Reserved")
-    can_check_in = can_check_in &&  rs.reservationStays.filter((r)=>r.reservation_status=='Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate())
+    can_check_in = can_check_in &&  rs.reservationStays.filter((r)=>r.reservation_status=='Reserved' && moment(r.arrival_date).toDate() >= moment(working_day.date_working_day).toDate())
     return can_check_in;
 })
 
@@ -182,6 +184,7 @@ function onMaximize(){
 }
 
 onMounted(() => {
+ 
     socket.on("RefreshReservationDetail", (reservation) => {
         console.log(reservation)
         if (reservation == name.value) {
@@ -204,6 +207,7 @@ onMounted(() => {
         }
     } else {
         name.value = dialogRef.value.data.name;
+        window.has_reservation_detail_opened = true
         onRefresh()
 
     }
@@ -212,7 +216,12 @@ onMounted(() => {
 onUnmounted(() => {
     rs.clear()
     socket.off("RefreshReservationDetail");
+    if (dialogRef) {
+        
+        window.has_reservation_detail_opened = false
+        
 
+    }
 
 })
 

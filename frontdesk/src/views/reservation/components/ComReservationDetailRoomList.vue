@@ -161,7 +161,7 @@ status.value.push(
     {
         "reservation_status": "Drop Off",
         "name": "require_drop_off",
-        "sort_order": 0
+        "sort_order": 0,
     }
 )
 const rowClass = (data) => {

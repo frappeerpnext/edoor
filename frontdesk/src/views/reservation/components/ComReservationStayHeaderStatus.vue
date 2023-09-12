@@ -69,11 +69,12 @@ const OnViewReservation = () => {
     if (rs.is_page) {
         router.push({ name: 'ReservationDetail', params: { name: rs.reservation.name } })
     } else {
-        // dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+    
         showReservationDetail(rs.reservation.name)
     }
 }
 function showReservationDetail(name) {
+    if (!window.has_reservation_detail_opened){ 
     
     const open = dialog.open(ReservationDetail, {
         data: {
@@ -89,14 +90,9 @@ function showReservationDetail(name) {
             modal: true,
             closeOnEscape: false,
             position:"top"
-        },
-        onClose: (options) => {
-            const data = options.data;
-            if (data) {
-                //
-            }
         }
     });
+    }
     dialogRef.value.close()
 }
 </script>

@@ -75,6 +75,7 @@
    "description": "We use this field to check room availability for record that no room assignment",
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
+   "in_standard_filter": 1,
    "label": "Stay Room ID"
   },
   {
@@ -107,12 +108,14 @@
   {
    "fieldname": "reservation",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Reservation",
    "options": "Reservation"
   },
   {
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
+   "in_standard_filter": 1,
    "label": "Reservation Stay",
    "options": "Reservation Stay"
   },
@@ -132,7 +135,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-15 16:09:47.335999",
+ "modified": "2023-09-11 20:50:56.607791",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

@@ -55,8 +55,10 @@ frappe.query_reports["Reservation List Report"] = {
 		{
 			"fieldname": "reservation_status",
 			"label": __("Reservation Status"),
-			"fieldtype": "Link",
-			"options":"Reservation Status",
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Reservation Status', txt);
+			}
 			
 		},
 		{
