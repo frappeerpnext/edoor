@@ -17,6 +17,10 @@ import { ref, inject,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const socket = inject('$socket')
+// const rs = inject('$reservation_stay')
+
+
 let filters = [
     ["property", "=", property.name]
 ]
@@ -59,6 +63,9 @@ function onSave() {
         }else {
             emit('onSave',{reservation:doc.message})
         }
+        // alert(property.name)
+        socket.emit("RefresheDoorDashboard", property.name);
+        
     })
     .catch(()=>{
         isLoading.value = false      

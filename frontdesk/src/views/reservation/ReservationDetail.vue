@@ -95,14 +95,16 @@
 
                 </TabPanel>
 
-                <TabPanel header="Document"> 
+                <TabPanel > 
+                    <template #header>
+                            <span class="me-2">Document</span>
+                            <!-- <Badge :value=""></Badge> -->
+                    </template>
                     <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
                 </TabPanel>
 
             </TabView>
-        </div>{{ canCheckIn }}
-        {{ working_day.date_working_day }}
-        {{ moment(r.arrival_date).toDate() }}
+        </div>
         <template #footer-left>
             <div class="flex justify-end gap-2">  
                 <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->
@@ -110,8 +112,9 @@
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
             </div>
         </template>
-        <template #footer-right> 
-            <Button v-if="canCheckIn" class="border-none bg-green-500" @click="onCheckIn">
+        <template #footer-right>
+          
+            <Button v-if="canCheckIn.length > 0" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
                
                 Check In</Button>
@@ -162,10 +165,9 @@ const isPage = computed(() => {
     return route.name == 'ReservationDetail'
 })
 const canCheckIn = computed(() => {
-    let can_check_in =  rs.reservationStays.map((x)=>x.reservation_status).includes("Reserved")
-    can_check_in = can_check_in &&  rs.reservationStays.filter((r)=>r.reservation_status=='Reserved' && moment(r.arrival_date).toDate() >= moment(working_day.date_working_day).toDate())
-    return can_check_in;
-})
+  const can_check_in = rs.reservationStays.filter((r) => r.reservation_status === 'Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate());
+  return can_check_in;
+});
 
 
 function onRefresh(showLoading = true) {
@@ -307,5 +309,8 @@ const items = ref([
     background: #cacaca;
     position: relative;
     right: -3px;
+}
+.min-whidth-modified {
+    line-height: 1.4;
 }
 </style>

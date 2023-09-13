@@ -119,10 +119,10 @@
                 <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                     doctype="Business Source Type" />
-                <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
+                <!-- <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
                     :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                     optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                    placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" />
+                    placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" /> -->
 
                 <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
                     placeholder="Reservation Type" :options="['GIT', 'FIT']" />
@@ -142,9 +142,8 @@
                 <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
                     @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-
                 <div class="col-6" v-if="filter.search_date_type">
-                    <Calendar class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
+                    <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
                         v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
@@ -168,6 +167,8 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const socket = inject("$socket")
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {
@@ -246,7 +247,7 @@ let dateRange = reactive({
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 
 const working_date = ref('')
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 const dialog = useDialog();
 
 

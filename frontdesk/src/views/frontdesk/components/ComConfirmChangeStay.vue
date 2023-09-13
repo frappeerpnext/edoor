@@ -83,16 +83,18 @@
                 </div>
             </ComStayInfoNoBox>           
         </table>
+
         <div class="flex justify-end gap-3 mt-3">
-        <div class="flex align-items-center">
-            <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
-            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from Last First/Last Stay Rate Note</label>
+            <div class="flex align-items-center">
+                <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
+                <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from  First/Last Stay Rate</label>
+            </div>
+            <div class="flex align-items-center">
+                <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
+                <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate Plan</label>
+            </div>
         </div>
-        <div class="flex align-items-center">
-            <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
-            <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Rate using Rate Plan</label>
-        </div>
-        </div>
+
 <hr class="my-3">
         <label>Note</label><br />
                 <Textarea v-model="note" rows="3" placeholder="Note" cols="30"
@@ -131,10 +133,11 @@ function onSave(){
  }
     ).then((result)=>{
         isSaving.value = false
-        dialogRef.value.close(result);
+ 
        
         socket.emit("RefresheDoorDashboard", doc.value.property);
-        
+        socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"});
+        dialogRef.value.close(result);
 
 
     }).catch((err)=>{

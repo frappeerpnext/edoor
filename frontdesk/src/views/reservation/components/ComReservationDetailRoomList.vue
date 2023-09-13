@@ -98,7 +98,17 @@
                         </Column>
                         <Column field="reservation_status" class="res__state__center text-center" header="Status">
                             <template #body="slotProps">
-                                <ComReservationStatus :class="`data-${slotProps.data.reservation_status}`" class="border-round-3xl" :status-name="slotProps.data.reservation_status"/>
+                                <ComReservationStatus :class="`data-${slotProps.data.reservation_status}`" class="border-round-3xl " :status-name="slotProps.data.reservation_status">
+                                    <div v-tooltip.top="'Paid by Master Room'" v-if="slotProps.data.paid_by_master_room && slotProps.data.is_active_reservation" class="px-1 border-circle bg-tran-black  inline">
+                                        <ComIcon class="inline" icon="BilltoMasterRoomWhite" style="height:12px;" ></ComIcon>
+                                    </div>
+                                    <div v-tooltip.top="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                        <ComIcon class="inline" icon="IconBillToCompanywhite" style="height:12px;" ></ComIcon>
+                                    </div>
+                                    <div v-tooltip.top="{ value: `<span class='text-white '> ${slotProps.data.require_drop_off ? 'Require Drop Off' : ''}  ${slotProps.data.require_pickup ? 'Require Pickup ' : ''} </span>`, escape: true, class: 'text-center' }" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                        <i class="pi pi-car text-white" style="font-size: 10px;" />
+                                    </div>
+                                </ComReservationStatus>
                             </template>
                         </Column>
                         <Column header="">

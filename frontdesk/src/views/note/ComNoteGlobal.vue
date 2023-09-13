@@ -101,6 +101,7 @@ const notes = ref([]);
 const loading = ref(false);
 const keyword = ref()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 function onEdit(name){
 	const dialogRef = dialog.open(ComAddNote, {
@@ -185,7 +186,9 @@ function showReservationDetail(selected) {
 
 function onLoadData(){
 	loading.value = true
-	let filters = []
+	let filters = [
+		["property", "=", property.name]
+	]
 	filters.push(["note_date",">=", working_day.date_working_day])
 	if (keyword.value){
 		filters.push(["content","like", '%' + keyword.value + '%'])

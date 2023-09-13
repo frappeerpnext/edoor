@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                 <label>ID Expire Date</label><br />
-                                <Calendar class="p-inputtext-sm w-full" v-model="guest.expired_date"
+                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full" v-model="guest.expired_date"
                                     placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
                             </div>
                         </div>

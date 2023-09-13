@@ -35,6 +35,9 @@ const onSave = () => {
         rs.reservationStay.child = doc.child
         isLoading.value = false;
         socket.emit("RefreshReservationDetail", doc.reservation);
+
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+
         emit("onClose")
     }).catch((ex) => {
         isLoading.value = false;

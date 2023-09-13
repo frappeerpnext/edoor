@@ -1213,3 +1213,6 @@ ul.res__hideshow{
 .n__re-custom .p-inputtext-pt{
     border-radius: 0.5rem;
 }
+.bg-tran-black{
+    background: rgba(0, 0, 0, 0.274);
+}

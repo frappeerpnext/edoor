@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComChartDoughnut v-if="!loading && chartData.length > 0" :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" show-percentage="Occupied" class="doughnut__chart_ds"/>
+        <ComChartDoughnut v-if="!loading" :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" show-percentage="Occupied" class="doughnut__chart_ds"/>
         <Skeleton v-else shape="circle" size="18rem"></Skeleton>
     </div>
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
@@ -23,18 +23,17 @@
         </tippy>
         <ComTodaySummarySep  dialogKey="pickup_drop_off" title="Pickup/Drop Off">{{ data?.pick_up || 0 }} / {{data?.drop_off || 0}}</ComTodaySummarySep>
         <ComTodaySummarySep  dialogKey="no_show" title="No Show">{{data?.total_no_show || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep  dialogKey="cancelled" title="Cancelled">{{data?.total_cancel || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="cancelled" title="Cancelled">{{data?.total_cancelled || 0}}</ComTodaySummarySep>
         
     </div>
 </template>
 <script setup>
-import { ref, getApi,watch, inject,onMounted,onUnmounted } from "@/plugin"
+import { ref, getApi, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const socket = inject("$socket")
 const props = defineProps({
-    date: "",
-    loading: false
+    date: ""
 })
 const gv = inject("$gv")
 const moment = inject("$moment")
@@ -42,17 +41,11 @@ const data = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const chartData = ref([])
 const loading = ref(false)
- 
 
-socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
-        loadData(props.date)
-    }
-})
 
 socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_summary") {
-        loadData(props.date)
+        loadData(props.date,false)
     }
 })
 
@@ -61,12 +54,12 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+    
     socket.off("RefreshData");
 })
 
-function loadData(date){
-    loading.value = true
+function loadData(date,show_loading = true){
+    loading.value = show_loading
     chartData.value = []
     let currentDate = working_day?.date_working_day
     

@@ -545,7 +545,15 @@ def create_folio(stay):
         "guest":stay.guest
     }).insert()
     return doc
- 
+
+
+@frappe.whitelist()
+def five_minute_job():
+    #delete void and cancel from temp room occupy
+    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status in ('Void','Cancelled')")
+    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status in ('Void','Cancelled')")
+
+
 @frappe.whitelist()
 def clear_reservation():
     frappe.db.sql("delete from `tabReservation`")

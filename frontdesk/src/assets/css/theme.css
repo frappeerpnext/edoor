@@ -2119,6 +2119,7 @@
   line-height: 1rem;
   color: #6366F1;
   background-color: #ffffff;
+  display: flex;
 }
 
 .p-button.p-button-raised {
@@ -4971,10 +4972,6 @@
   border-radius: 0;
 }
 
-.p-tabview .p-tabview-nav li.p-tabview-header.p-highlight {
-  margin: 0 0 -2px 0;
-}
-
 .p-tabview .p-tabview-nav li:not(.p-highlight):hover .p-tabview-nav-link {
 /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,c7d2fe+100 */
 background: #ffffff!important; /* Old browsers */
@@ -4986,7 +4983,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   background: #ffffff;
-  padding: 1rem;
+  padding: 0.7rem 1rem;
   font-weight: var(--primary-font-weight);
   border-top-right-radius: 6px;
   border-top-left-radius: 6px;
@@ -5008,11 +5005,14 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
   color: var(--text-color);
   background-color: #ffffff;
   color: var(--text-color);
-  border-top: 2px solid var(--primary-border-color);
-  border-left: 1px solid var(--btn-border-color);
-  border-right: 1px solid var(--btn-border-color);
-  margin: 0 0 -2px 0;
-  padding-top: 0.7rem;
+  border-top-color: var(--primary-border-color);
+  border-left-color: var(--btn-border-color);
+  border-right-color: var(--btn-border-color);
+  box-shadow: 0px 4px 0px -1px rgb(210 226 238);
+-webkit-box-shadow: 0px 4px 0px -1px rgb(210 226 238);
+-moz-box-shadow: 0px 4px 0px -1px rgb(210 226 238);
+  /* margin: 0 0 -2px 0; */
+  /* padding: 0.7rem; */
 }
 
 .p-tabview .p-tabview-nav-btn.p-link {
@@ -7201,7 +7201,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 
 .p-skeleton {
   background-color: #dee2e6;
-  border-radius: 0;
 }
 
 .p-skeleton:after {
@@ -7268,6 +7267,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  border-top: 2px solid white;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
   /* background-color: var(--bg-tb-color); */
   /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,d1e1ee+100 */

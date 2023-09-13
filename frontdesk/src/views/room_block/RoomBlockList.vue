@@ -125,7 +125,7 @@
           optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
           @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
         <div class="col-6" v-if="filter.search_date_type">
-          <Calendar class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy" v-model="filter.date_range"
+          <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy" v-model="filter.date_range"
             selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
         </div>
       </div>
@@ -151,8 +151,6 @@ const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
-
 socket.on("RefreshGuestDatabase", (arg) => {
 
   if (arg == property.name) {

@@ -31,7 +31,9 @@
     <!-- default Icon -->
     <img v-else-if="icon == 'iconGeneralList'" :style="{'height' : height}" :class="class" :src="iconGeneralList"/>
     <img v-else-if="icon == 'BilltoMasterRoom'" :style="{'height' : height}" :class="class" :src="BilltoMasterRoom"/>
+    <img v-else-if="icon == 'BilltoMasterRoomWhite'" :style="{'height' : height}" :class="class" :src="BilltoMasterRoomWhite"/>
     <img v-else-if="icon == 'IconBillToCompany'" :style="{'height' : height}" :class="class" :src="IconBillToCompany"/>
+    <img v-else-if="icon == 'IconBillToCompanywhite'" :style="{'height' : height}" :class="class" :src="IconBillToCompanywhite"/>
     <img v-else-if="icon == 'IconBillToGuest'" :style="{'height' : height}" :class="class" :src="IconBillToGuest"/>
     <img v-else-if="icon == 'iconWeekCalendar'" :style="{'height' : height}" :class="class" :src="iconWeekCalendar"/>
     <img v-else-if="icon == 'icon14Day'" :style="{'height' : height}" :class="class" :src="icon14Day"/>
@@ -89,5 +91,8 @@ import icon14Day from '@/assets/svg/icon-14day.svg'
 import iconMonth from '@/assets/svg/icon-month-calendar.svg'
 import roomRate from '@/assets/svg/icon-roomrate.svg'
 import iconChangeStay from '@/assets/svg/icon-changestay.svg'
+import BilltoMasterRoomWhite from '@/assets/svg/icon-BilltoMasterRoomWhite.svg'
+import IconBillToCompanywhite from '@/assets/svg/IconBillToCompanywhite.svg'
+
 </script>
  

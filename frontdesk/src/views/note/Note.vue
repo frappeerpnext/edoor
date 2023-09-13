@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-2 p-0">
                     <div class="flex relative">
-                        <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
+                        <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
                             v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                             placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon />
                         <div class="check-box-filter">
@@ -137,6 +137,8 @@ const gv = inject('$gv');
 const moment = inject("$moment")
 
 const filter = ref({})
+const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 function onViewDetailReservationStay(rs) {
     window.postMessage("view_reservation_stay_detail|" + rs, '*')
 }
@@ -227,7 +229,9 @@ function onLoadData() {
 
     loading.value = true
     gv.loading = true
-    let filters = []
+    let filters = [
+        ["property", "=", property.name]
+    ]
 
     if (filter.value.keyword) {
         filters.push(["content", "like", '%' + filter.value.keyword + '%'])

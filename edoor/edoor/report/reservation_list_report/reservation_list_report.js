@@ -79,13 +79,13 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldname": "is_active_reservation",
 			"label": __("Is Active Reservation"),
 			"fieldtype": "Check",
-			
+			default:true
 		},
 		{
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type\nRoom",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type",
 			default:"Last Update On"
 		},
 		{

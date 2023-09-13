@@ -3,7 +3,7 @@
         <div class="grid py-2">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" :selectOtherMonths="true" showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
@@ -11,7 +11,7 @@
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Departure Time</label>
@@ -26,6 +26,7 @@
 </template>
 <script setup>
 import { ref,inject,postApi } from '@/plugin'
+const socket = inject("$socket")
 const moment = inject("$moment")
 const rs = inject("$reservation_stay")
 const gv = inject("$gv")
@@ -75,6 +76,9 @@ function onSave(){
             rs.getReservationDetail(r.message.name)
             onClose()
         }
+
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+    
     }).catch((err)=>{
         loading.value = false
     })

@@ -28,7 +28,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro"> 
             <div class="flex gap-2">
                 <div>
-                    <Calendar class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+                    <Calendar :selectOtherMonths="true" class="w-full" v-model="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
                 <div>
                     <span class="p-input-icon-left w-full">
@@ -57,11 +57,11 @@
             <div id="fron__desk-fixed-top">
                 <div :class="showSummary ? 'flex gap-2' : ''">
                     <div v-if="showSummary" class="relative" style="width:280px">
-                        <div>
+                        <div v-if="!loading">
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
                                     <div>
-                                        <ComTodaySummary :loading="loading" :date="working_day.date_working_day"/>
+                                        <ComTodaySummary :date="working_day.date_working_day"/> 
                                     </div>
                                 </ComPanel>
                                 <ComPanel title="Room Status" class="pb-3 mb-3 front-house__kep">
@@ -117,7 +117,6 @@
             </div>
         </div>
     </div>
-
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
     </OverlayPanel>
@@ -141,17 +140,16 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
-import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
-
+import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue' 
 
 import { useTippy } from 'vue-tippy'
- 
+
 const resources = ref([])
 const events = ref([])
 
 const socket = inject("$socket");
- 
- 
+
+const disable_refresh_calendar_event = ref(false)
 const moment = inject('$moment')
 const filter = reactive({
     peroid: 'today',
@@ -180,7 +178,7 @@ const keyword = ref({
 
 const showSummary = ref(true)
 const showNote = ref(false)
-const loading = ref(false)
+const loading = ref(true)
 const totalNotes = ref(0)
 let advanceFilter = ref({
     room_type: "",
@@ -190,6 +188,7 @@ let advanceFilter = ref({
     floor: ""
 })
 const isFilter = computed(() => {
+
     if (gv.dateFormat(filter.date) != gv.dateFormat(working_day.date_working_day)) {
         return true
     }
@@ -199,6 +198,7 @@ const isFilter = computed(() => {
         return false
     }
 })
+
 provide('get_count_note', {
     getTotalNote
 })
@@ -218,13 +218,15 @@ let roomChartResourceFilter = reactive({
 let eventKeyword = ref()
 
 
- 
- 
-socket.on("RefresheDoorDashboard", (arg) => {
 
-    if (arg == property.name) {
-        onRefresh(false)
-    }
+
+socket.on("RefresheDoorDashboard", (arg) => {
+     if(!disable_refresh_calendar_event.value){
+        if (arg == property.name) {
+            onRefresh(false)
+        }
+     }
+
 })
 
 
@@ -315,7 +317,7 @@ const calendarOptions = reactive({
     }),
 
     eventResize: (($event) => {
-
+        disable_refresh_calendar_event.value = true
         const dialogRef = dialog.open(ComConfirmChangeStay, {
             data: $event.event,
             props: {
@@ -334,6 +336,10 @@ const calendarOptions = reactive({
                     $event.revert()
 
                 }
+                //prevent reload calendar when we working on current window
+                setTimeout(() => {
+                    disable_refresh_calendar_event.value = false
+                }, 3000);
             }
         });
 
@@ -353,11 +359,11 @@ const calendarOptions = reactive({
     eventMouseEnter: (($event) => {
 
         const event = $event.event._def
-        
-        if (event.extendedProps.type == "stay") {
-            if( !$event.el.getAttribute("has_tippy") && !gv.loading){ 
 
-            const description = `<div class="p-2 w-full">
+        if (event.extendedProps.type == "stay") {
+            if (!$event.el.getAttribute("has_tippy") && !gv.loading) {
+
+                const description = `<div class="p-2 w-full">
                                         <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
                                         <table class="tip_description_stay_table m-1 pt-3">
                                             <tbody>
@@ -384,22 +390,22 @@ const calendarOptions = reactive({
                                             </tbody>
                                         </table>
                                     </div>`;
-                                    
-           
-    
+
+
+
                 $event.el.setAttribute("has_tippy", "yes");
-        
+
 
                 const { tippyInstance } = useTippy($event.el, {
                     content: description,
                     delay: [100, 200],
-                   
+
                 })
-        }
+            }
 
         } else if (event.extendedProps.type == "room_block") {
-            if( !$event.el.getAttribute("has_tippy") && !gv.loading){ 
-            const description = `<div class="w-full p-2">
+            if (!$event.el.getAttribute("has_tippy") && !gv.loading) {
+                const description = `<div class="w-full p-2">
                                         <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
@@ -412,13 +418,13 @@ const calendarOptions = reactive({
                                             </tbody>
                                         </table>
                                     </div>`
-                                    $event.el.setAttribute("has_tippy", "yes");
-        
+                $event.el.setAttribute("has_tippy", "yes");
 
-        const { tippyInstance } = useTippy($event.el, {
-            content: description,
-        })
-    }
+
+                const { tippyInstance } = useTippy($event.el, {
+                    content: description,
+                })
+            }
         }
         else if (event.extendedProps.type == "available_room") {
             const description = `<div class="pt-1"> Available Room ${event.title} </div> `
@@ -637,7 +643,7 @@ function resourceColumn() {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
-   
+
 }
 
 function onView() {
@@ -692,7 +698,7 @@ function onFilterDate(event) {
     onFilter(setViewChart.peroid)
 }
 function onPrevNext(key) {
-    
+
     const cal = fullCalendar.value.getApi()
     const dateIncrement = cal.currentData.options.dateIncrement
     const currentViewChart = getRoomChartlocationStorage()
@@ -709,21 +715,18 @@ function onPrevNext(key) {
     }
 }
 
-const onRefresh =debouncer((loading=true) => {
-    
-     //clear tippy
-     [...document.querySelectorAll('*')].forEach(node => {
-    if (node._tippy) {
-        node._tippy.destroy();
-    }
+const onRefresh = debouncer((loading = true) => {
+    //clear tippy
+    [...document.querySelectorAll('*')].forEach(node => {
+        if (node._tippy) {
+            node._tippy.destroy();
+        }
     });
     //end clear tip instend
- 
+
     gv.loading = loading;
     getResource(true)
     getTotalNote()
- 
-    socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
 
 }, 500);
 
@@ -791,10 +794,12 @@ function onFilterResource(f) {
         building: f.building,
         floor: f.floor,
         room_number: f.room_number,
+        business_source: f.business_source,
         view_type: filter.view_type // room_type = true or room = false
     }
     advanceFilter.value = roomChartResourceFilter
     getResource()
+    getEvent()
 }
 // search event
 function onSearch(key) {
@@ -803,13 +808,12 @@ function onSearch(key) {
 }
 
 function getTotalNote() {
-    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day]]).then((docs) => {
+    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day],['property','=', property.name]]).then((docs) => {
         totalNotes.value = docs
     })
 }
 
 function getResource(get_event = false) {
-
     getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter).then((result) => {
         resources.value = result.message
         const cal = fullCalendar.value.getApi()
@@ -819,7 +823,7 @@ function getResource(get_event = false) {
         }
 
         setTimeout(() => {
-            
+
             const room_status = document.getElementsByClassName("room-status")
             for (let i = 0; i < room_status.length; i++) {
                 let el = room_status[i]
@@ -852,11 +856,12 @@ const getEvent = debouncer(() => {
         end: moment(cal.view.currentEnd).format("YYYY-MM-DD"),
         property: property.name,
         keyword: eventKeyword.value,
+        business_source: advanceFilter.value.business_source
     }).then((result) => {
         events.value = (result.message)
         gv.loading = false
         loading.value = false
-    }).catch(()=>{
+    }).catch(() => {
         loading.value = false
     })
 

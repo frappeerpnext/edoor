@@ -142,23 +142,29 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-#	"all": [
-#		"edoor.tasks.all"
-#	],
-#	"daily": [
-#		"edoor.tasks.daily"
-#	],
-#	"hourly": [
-#		"edoor.tasks.hourly"
-#	],
-#	"weekly": [
-#		"edoor.tasks.weekly"
-#	],
-#	"monthly": [
-#		"edoor.tasks.monthly"
-#	],
-# }
+scheduler_events = {
+    	"cron": {
+		 
+		"*/5 * * * *": [
+			"edoor.api.utils.five_minute_job",
+		]
+	},
+	# "all": [
+	# 	"edoor.tasks.all"
+	# ],
+	# "daily": [
+	# 	"edoor.tasks.daily"
+	# ],
+	# "hourly": [
+	# 	"edoor.tasks.hourly"
+	# ],
+	# "weekly": [
+	# 	"edoor.tasks.weekly"
+	# ],
+	# "monthly": [
+	# 	"edoor.tasks.monthly"
+	# ],
+}
 
 # Testing
 # -------

@@ -5,7 +5,7 @@
         <div class="w-6">
          <label for="Note Date">Note Date</label>
           <div class="card flex justify-content-left">
-            <Calendar class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.note_date"
+            <Calendar :selectOtherMonths="true" class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.note_date"
               dateFormat="dd-mm-yy" showIcon showButtonBar selectOtherMonths  panelClass="no-btn-clear"/>
           </div>
         </div>

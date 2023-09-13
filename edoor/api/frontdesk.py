@@ -52,9 +52,9 @@ def get_dashboard_data(property = None,date = None):
     #check if past date 
     sql = ""
     if frappe.utils.getdate(date)>=frappe.utils.getdate(working_date):
-        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='', 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
     else:
-        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='', 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
     
     room_operation = frappe.db.sql(sql, as_dict=1)
 
@@ -459,8 +459,11 @@ def get_room_inventory_resource(property = ''):
  
 
 @frappe.whitelist()
-def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None):
+def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None,business_source=""):
     events = []
+    filter = ""
+    if business_source:
+        filter = filter + " and business_source = '{}'".format(business_source)
     sql = """
         select 
             name as id, 
@@ -509,14 +512,15 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             name in (
                 select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' {}
             ) and 
-            property = '{}'
+            property = '{}' {}
 
     """
     sql = sql.format(
             getdate(start), 
             getdate(end),
             "AND data_keyword LIKE '%{}%'".format(keyword) if keyword else "",
-            property)
+            property,
+            filter)
   
  
     data = frappe.db.sql(sql, as_dict=1)

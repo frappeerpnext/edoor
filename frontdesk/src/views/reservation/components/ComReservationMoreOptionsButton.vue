@@ -16,6 +16,7 @@
                     <ComIcon icon="roomRate" style="height: 14px;" />
                     <span class="ml-2">Group Change Rate</span>
                 </button>
+                
                 <button @click="onGroupChangeStayDate" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconChangeStay" style="height: 14px;" />
@@ -57,18 +58,21 @@
                     <i class="pi pi-undo" />
                     <span class="ml-2">Group Undo Check Out</span>
                 </button>
-
-                <button v-if="rs.reservation.paid_by_master_room == 0 " @click="onMarkAsPaidbyMasterroom()" 
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">Mark as Paid by Master Room</span>
-                </button>
+                <span>
+                  
+                    <button @click="onMarkAsPaidbyMasterroom()" 
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
+                        <span class="ml-2">Mark as Paid by Master Room {{  }}</span>
+                    </button>
+                    
+                    <button @click="onUnMarkAsPaidbyMasterroom()" 
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
+                        <span class="ml-2">Unmark as Paid by Master Room </span>
+                    </button>
+                </span>
                 
-                <button v-else @click="onUnMarkAsPaidbyMasterroom()" 
-                    class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon  icon="BilltoMasterRoom" style="height:13px;" ></ComIcon>
-                    <span class="ml-2">Unmark as Paid by Master Room </span>
-                </button>
 
                 <button @click="onAllowPostToCityLedger" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -78,7 +82,7 @@
                 <button @click="onUnAllowPostToCityLedger " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
-                    <span class="ml-2">UnAllow Post To City Ledger</span>
+                    <span class="ml-2">Unallow Post To City Ledger</span>
                 </button>
                 <button 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -106,7 +110,6 @@
                     <i class="pi pi-car" />
                     <span class="ml-2">Pick up / Drop off</span>
                 </button>
-              
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />
@@ -199,6 +202,7 @@ function onSaveGroupStatus(r){
     postApi('reservation.update_reservation_status',data).then((r)=>{
         onCloseNote()
         rs.LoadReservation(rs.reservation.name)
+        socket.emit("RefresheDoorDashboard", rs.reservation.property);
     })
 }
 function onCloseNote(){
@@ -260,51 +264,70 @@ function onGroupAssignRoom(){
 }
 
 function onMarkAsPaidbyMasterroom (){
-    confirm.require({
-        message: 'Are you sure you want to Mark As Paid by Master room?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-    postApi("reservation.update_mark_as_paid_by_master_room", {
-        stays: rs.selecteds.map(x=>x.name),
-        paid_by_master_room: 1
-    }).then((result) => {
-     
-    })
-      .catch((err) => {
-            submitLoading.value = false
-        }) 
-    },
+    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
+        confirm.require({
+            message: 'Are you sure you want to Mark As Paid by Master room?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
+            accept: () => {
+                postApi("reservation.update_mark_as_paid_by_master_room", {
+                stays: rs.selecteds.map(x=>x.name),
+                paid_by_master_room: 1
+                }).then((result) => {
+                    if(result){
+                    rs.LoadReservation()
+                }
+                })
+                .catch((err) => {
+                    submitLoading.value = false
+                }) 
+            },
 
-}); 
+        }); 
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Mark As Paid by Master room',
+            detail: 'Please select reservation stay for Mark As Paid by Master room', life: 3000
+        });
+    }
 }
 
 function onUnMarkAsPaidbyMasterroom (){
-    confirm.require({
-        message: 'Are you sure you want to UnMark As Paid by Master room?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-    postApi("reservation.update_mark_as_paid_by_master_room", {
-        stays: rs.selecteds.map(x=>x.name),
-        paid_by_master_room: 0
-    }).then((result) => {
-     
-    })
-      .catch((err) => {
-            submitLoading.value = false
-        }) 
-    },
+    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
+        confirm.require({
+            message: 'Are you sure you want to Unmark As Paid by Master room?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
+            accept: () => {
+                postApi("reservation.update_mark_as_paid_by_master_room", {
+                stays: rs.selecteds.map(x=>x.name),
+                paid_by_master_room: 0
+                }).then((result) => {
+                    
+                    if(result){
+                    rs.LoadReservation()
+                }
+                })
+                .catch((err) => {
+                    submitLoading.value = false
+                }) 
+            },
 
-}); 
+        }); 
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Unmark As Paid by Master room',
+            detail: 'Please select reservation stay for Unmark As Paid by Master room', life: 3000
+        });
+    }
 }
 
 function onAllowPostToCityLedger (){
@@ -503,7 +526,6 @@ function onMarkasFITReservation() {
 function onPickDrop(){
    if (rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0) {
     
-   
     dialog.open(ComFormSetupArrivalAndDeparture, {
         data:{
             stays:rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).map(x=>x.name)
@@ -529,10 +551,9 @@ function onPickDrop(){
     }
   });
 } else {
-    gv.toast('warn','Please select reservation stay for Pickup and Drop Off.')
+     gv.toast('warn','Please select reservation stay for Pickup and Drop Off.')
         return false
 }
 }
-
 
 </script>

@@ -8,7 +8,6 @@
                 <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
             </template>
         </ComHeader>
-
         <div class="flex justify-between mb-3">
             <div class="flex gap-2 col-10 pl-0">
                 <div class="w-3">
@@ -23,7 +22,7 @@
                 </div>
                 <div class="flex gap-3">
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
-                    <div v-if="Object.keys(filter).length > 0">
+                    <div v-if="gv.isNotEmpty(filter)">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
                             @click="onClearFilter" />
                     </div>
@@ -70,7 +69,7 @@
                     </div>
                     <div class="col-6">
                         <div class="flex relative">
-                            <Calendar class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
+                            <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
                                 v-model="filter.date_range" selectionMode="range" :manualInput="false"
                                 @date-select="onDateSelect" placeholder="Select Date Range"
                                 :disabled="!filter.search_by_date" showIcon />
@@ -218,7 +217,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, useConfirm, useToast, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed, deleteDoc } from '@/plugin'
+import { inject, ref, useConfirm, watch, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed, deleteDoc } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -230,13 +229,13 @@ const props = defineProps({
 const confirm = useConfirm()
 const moment = inject("$moment")
 const gv = inject("$gv")
-const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 const cityLedgerAmountSummary = ref()
 const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
+const loading = ref(false)
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -361,12 +360,12 @@ function onDeleteCityLedgerTransaction(name) {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            gv.loading = true
+            loading.value = true
             deleteDoc('Folio Transaction', name)
                 .then(() => {
                     loadData()
                 }).catch((err) => {
-                    gv.loading = false
+                    loading.value = false
                 })
         },
     });
@@ -392,7 +391,10 @@ function onDateSelect() {
         loadData()
     }
 }
-function onChecked() {
+function onChecked() { 
+    if(!filter.value.search_by_date){
+        filter.value.date_range = null
+    }
     if (!filter.value.search_by_date) {
         loadData()
     } else {
@@ -402,7 +404,7 @@ function onChecked() {
 
 function loadData() {
 
-    gv.loading = true
+   loading.value = true
 
     
     let filters = [
@@ -456,10 +458,10 @@ function loadData() {
     })
         .then((doc) => {
             data.value = doc
-            gv.loading = false
+            loading.value = false
         })
         .catch((error) => {
-            gv.loading = false
+            loading.value = false
 
         });
     getTotalRecord(filters)

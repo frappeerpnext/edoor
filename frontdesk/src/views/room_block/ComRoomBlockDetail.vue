@@ -31,7 +31,7 @@
                 <div class="col-12 lg:col-6">
                     <label>Unblock Date</label>
                     <div class="card flex justify-content-left"> 
-                        <Calendar class="w-full" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
+                        <Calendar selectOtherMonths class="w-full" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
                     </div>
                 </div>
                 <div class="col-12 lg:col-6">

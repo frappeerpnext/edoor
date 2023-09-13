@@ -113,8 +113,6 @@ function onChangeStay(){
     }
 }
 function onUnassignRoom(){
-    // alert(rs.reservationStay.property)
-    // return
     dialogConfirm.require({
         message: 'Are you sure to unassign room?',
         header: 'Unassign Confirmation',
@@ -127,8 +125,12 @@ function onUnassignRoom(){
             loading.value = true
             postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{
                 rs.reservationStay = r.message
+
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+
                 socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                // alert(rs.reservationStay.property)
+                
                 loading.value = false
             }).catch(()=>{
                 loading.value = false

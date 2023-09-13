@@ -4,20 +4,20 @@
             <div class="col-6">
                 <label>Block Date</label>
                 <div>
-                    <Calendar class="w-full" showIcon v-model="data.block_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.block_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
                 </div>
             </div> 
             <div class="col-6">
-                <label> Room Name </label>
+                <label> Room</label>
                 <div class="w-full">
-                    <ComAutoComplete  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
+                    <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
                     @onSelected="onSearch" :filters="['property','=',property.name]" />
                 </div>
             </div>
             <div class="col-6">
                 <label>Start Date</label>
                 <div>
-                    <Calendar class="w-full" showIcon v-model="data.start_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.start_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
                 </div>
             </div>
 
@@ -88,6 +88,7 @@ onMounted(()=>{
     }else {
         data.value.block_date = moment().toDate()
         data.value.start_date = moment().toDate()
+        data.value.end_date = moment().toDate()
         data.value.property = property.name
     }
 })

@@ -27,10 +27,10 @@
                     <tbody>
                         <tr> 
                             <td class="pe-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                                <Calendar  class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2"> 
-                                <Calendar class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
+                                <Calendar  class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
                                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />
@@ -50,9 +50,16 @@
                         <tr>
                             <td colspan="5">
                                 <div class="text-right pt-2">
-                                    <div>
-                                        <Checkbox class="mr-1" v-model="generate_new_room_rate" :binary="true" inputId="disabled" />
-                                        <label for="disabled"> Generate New Room Rate</label>
+                                                            
+                                    <div class="flex justify-end gap-3 mt-3">
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="stay.generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
+                                            <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from First/Last Stay Rate</label>
+                                        </div>
+                                        <div class="flex align-items-center">
+                                            <RadioButton v-model="stay.generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
+                                            <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate Plan</label>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -82,6 +89,7 @@
     const stay = ref(JSON.parse(JSON.stringify(dialogRef.value.data.item)))
     stay.value.start_date = moment(stay.value.start_date).toDate()
     stay.value.end_date = moment(stay.value.end_date).toDate()
+    stay.value.generate_rate_type  = "stay_rate"
     const maxStartDate = computed(()=>{
         return new Date(moment(stay.value.end_date).subtract(1,'days'))
     })
@@ -131,12 +139,15 @@
         newData.end_date = gv.dateApiFormat(newData.end_date)
         newData.rate = newData.input_rate
         newData.is_override_rate = generate_new_room_rate.value
-        newData.generate_rate_type = ""
 
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
             rs.getReservationDetail(rs.reservationStay.name)
+
             socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+
+            socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+
             onClose(true)
         }).catch(()=>{
             loading.value= false

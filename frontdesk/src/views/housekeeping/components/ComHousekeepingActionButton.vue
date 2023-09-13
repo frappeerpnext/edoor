@@ -1,4 +1,5 @@
 <template>
+     
     <div class="flex gap-2">
         <div>
             <Button label=" Change Housekeeping Status" class="p-button h-full p-component conten-btn white-space-nowrap" severity="warning" @click="onChangeHousekeepingStatus" >
@@ -51,6 +52,8 @@ const submitLoading = ref(false)
 const selectedStatus = ref("")
 const selectedHousekeeper = ref("")
 
+ 
+
 function onChangeHousekeepingStatus() {
 
     if (hk.selectedRooms.length == 0) {
@@ -70,16 +73,24 @@ function AssingnHousekeeper() {
 }
 
 function onSaveChangeHousekeepingStatus() {
+     
     submitLoading.value = true;
     const rooms = hk.selectedRooms.map(r => r.name).join(",");
     postApi("housekeeping.update_housekeeping_status", {
         rooms: rooms,
         status: selectedStatus.value
     }).then((result) => {
+      
+        
         visibleHousekeepingStatus.value = false
-        hk.loadData()
+        hk.loadData().then((r)=>{
+         
+            hk.selectedRooms = []
+        })
         submitLoading.value = false
         selectedStatus.value = ""
+         
+     
     })
         .catch((err) => {
             submitLoading.value = false

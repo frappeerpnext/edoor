@@ -360,18 +360,18 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 		
 		date_range = get_date_range(add_to_date(getdate(old_stay_date[0]["end_date"]), days=1), getdate( data["end_date"]))
 		if data["generate_rate_type"] =="stay_rate":
-			room_rate_doc = frappe.db.sql("select rate_type, rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["end_date"]),as_dict=1)
+			room_rate_doc = frappe.db.sql("select rate_type, input_rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["end_date"]),as_dict=1)
 			if room_rate_doc:
-				room_rate = room_rate_doc[0]["rate"]
+				room_rate = room_rate_doc[0]["input_rate"]
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
 	else:# if user resize from arrival date back ward
 		
 		date_range = get_date_range( getdate( data["start_date"]),getdate(old_stay_date[0]["start_date"]))
 		if data["generate_rate_type"] =="stay_rate":
-			room_rate_doc = frappe.db.sql("select rate_type, rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["start_date"]),as_dict=1)
+			room_rate_doc = frappe.db.sql("select rate_type, input_rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["start_date"]),as_dict=1)
 			if room_rate_doc:
-				room_rate = room_rate_doc[0]["rate"]
+				room_rate = room_rate_doc[0]["input_rate"]
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
 
@@ -406,13 +406,8 @@ def change_room_occupy(self):
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
-	
-	#if self.is_active_reservation:
 	doc = frappe.get_doc('Reservation Stay', self.name)
-	# doc.arrival_date = Enumerable(doc.stays).min(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date())
-	# doc.departure_date = Enumerable(doc.stays).max(lambda x:datetime.strptime(str(x.end_date), '%Y-%m-%d').date())
-	# doc.save()
-	# frappe.db.commit()
+
 	generate_stay_room_occupy(self=doc)
 
 def generate_stay_room_occupy(self):

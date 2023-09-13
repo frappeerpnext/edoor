@@ -12,6 +12,7 @@ import GuestType from "../views/guest/GuestType.vue";
 import TestPage from "../views/TestPage.vue";
 import TestPage2 from "../views/TestPage2.vue";
 import RoomInventory from "@/views/frontdesk/RoomInventory.vue";
+import FolioTransaction from "@/views/frontdesk/FolioTransactionList.vue";
 import DeskFolio from "@/views/desk_folio/DeskFolio.vue";
 import Note from "@/views/note/Note.vue";
 import NoPermission from "@/views/other/driver/NoPermission.vue";
@@ -33,6 +34,9 @@ const routes = [
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
   { path: "/frontdesk/inventory", name: "RoomInventory", component: RoomInventory, meta: { layout: 'main_layout', title: 'Room Inventory' } },
+
+  { path: "/frontdesk/folio-transaction", name: "FolioTransaction", component: FolioTransaction, meta: { layout: 'main_layout', title: 'Folio Transaction List' } },
+
   { path: "/frontdesk/reservation-stay", name: "ReservationStayList", component: ReservationStayList, meta: { layout: 'main_layout', title: 'Reservation Stay List' } },
   { path: "/frontdesk/desk-folio", name: "DeskFolio", component: DeskFolio, meta: { layout: 'main_layout', title: 'Desk Folio' } },
   { path: "/frontdesk/no-permission", name: "NoPermission", component:NoPermission, meta: { layout: 'main_layout', title: 'Access Denied' } },

@@ -243,6 +243,8 @@
             loading.value = false;
             socket.emit("RefreshReservationDetail", doc.reservation);
             rs.getReservationDetail(data.reservationStay.name)
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+            socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
             onClose()
         }).catch((ex) => {
             loading.value = false;

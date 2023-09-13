@@ -60,10 +60,7 @@
     <div>
     <span class="font-semibold text-lg mb-3" for="textnote">{{edit.note_type}}</span>
     <div class="mb-2" v-if="edit.note_type=='Notice'">
-    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
-    placeholder="Note Date"
-    v-model="edit.note_date"
-     dateFormat="dd-mm-yy" showIcon showButtonBar />
+    <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" placeholder="Note Date" v-model="edit.note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
     </div>
     <div>
     <Textarea id="textnote" v-model="edit.content" rows="5" class="w-full" />

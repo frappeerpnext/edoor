@@ -59,6 +59,7 @@
 import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog} from '@/plugin'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
+const emit = defineEmits(['Documents_length'])
 const props = defineProps({
     doctype:{
         type: String,
@@ -99,6 +100,9 @@ function onSuccess(){
     visible.value = false
 
 }
+function onDocmentLength(){
+    
+}
 function onLoad(){
     loading.value = true
     let dataFilter = []
@@ -118,6 +122,7 @@ function onLoad(){
     }).then((r)=>{
         data.value = r
         loading.value = false
+        emit('Documents_length',data.value.length); 
     }).catch((err)=>{
         loading.value = false
     })
@@ -204,6 +209,7 @@ const downloadURI = (uri, name) => {
 onMounted(() => {
    onLoad() 
 })
+
 </script>
 <style lang="">
     

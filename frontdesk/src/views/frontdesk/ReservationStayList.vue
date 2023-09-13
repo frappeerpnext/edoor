@@ -8,6 +8,7 @@
                 <template #end>
                     <NewFITReservationButton />
                     <NewGITReservationButton />
+                    
                 </template>
             </ComHeader>
             <div class="mb-3 flex justify-between">
@@ -33,7 +34,7 @@
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
-                </div>
+                </div> 
             </div>
         </div>
         <div class="overflow-auto h-full">
@@ -121,7 +122,7 @@
             <div class="grid">
                 <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                    doctype="Business Source Type" />
+                    doctype="Business Source Type"/>
 
                 <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
                     :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
@@ -133,26 +134,26 @@
 
                 <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
                     v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
-                    doctype="Reservation Status" />
+                    doctype="Reservation Status"  />
 
                 <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name"
-                    v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
+                    v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" :filters="[['property', '=', property.name]]"  />
 
                 <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
-                    v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type">
+                    v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="[['property', '=', property.name]]" >
                 </ComSelect>
 
                 <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
                     :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
-                    v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room">
+                    v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room" :filters="[['property', '=', property.name]]" >
                 </ComSelect>
 
                 <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
-                    @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+                    @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" ></ComSelect>
 
                 <div class="col-6" v-if="filter.search_date_type">
-                    <Calendar hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
+                    <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>

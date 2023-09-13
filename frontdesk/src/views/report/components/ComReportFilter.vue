@@ -3,6 +3,12 @@
     <div v-if="showFilter" class="flex justify-between">
         <div class="col-10">
         <div class="grid">
+            <div class="col" v-if="hasFilter('filter_date_by')">
+                <label>Filters</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.filter_date_by"
+                                    :options="['Arrival Date', 'Departure Date', 'Reservation', 'Stay']" :clear="false" />
+            </div> 
+
             <div class="col" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
@@ -18,6 +24,11 @@
                 <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
                 class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
             </div>
+            <div class="col"  v-if="hasFilter('reservation_status')">
+                <label>Reservation Status</label><br>
+                <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status" doctype="Reservation Status"
+                class="auto__Com_Cus w-full" :isMultipleSelect="true" />
+            </div>
             <div class="col"  v-if="hasFilter('room_type')">
                 <label>Room Type</label><br>
                 
@@ -27,6 +38,10 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
+             
+             
+             
+            
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>
                 
@@ -43,6 +58,7 @@
             </div>
         </div>
         </div>
+       
         <div class="col-2 items-center mt-3 flex justify-end">
             <div class="flex justify-end gap-2">
                 <Button class= "white-space-nowrap content_btn_b w-3rem justify-center"  @click="customReport" ><i class="pi pi-cog text-xl "/></Button>
@@ -51,6 +67,33 @@
             </div>
         </div>
     </div>
+    <div class="col-10">
+        <div class="grid">
+            <div class="flex flex-col"  v-if="hasFilter('is_active_reservation')">
+                <label class="col-6 font-medium cursor-pointer">Is Active Reservation</label>
+                <Checkbox class="col-6 px-3" v-model="filter.is_active_reservation" :binary="true"/>
+                               
+            </div>
+            <!-- <div class="col" v-if="hasFilter('group_by')">
+                <label>Group By</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by"
+                    :options="['Arrival Date', 'Departure Date', 'Reservation','Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
+                    :clear="false" />
+            </div>  -->
+            <div class="col" v-if="hasFilter('order_by')">
+                <label></label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by"
+                    :options="['Last Update On', 'Created On', 'Reservation','Reservation Stay','Arrival Date','Departure Date','Room Type']" 
+                    :clear="false" />
+            </div>
+            <div class="col" v-if="hasFilter('sort_order')">
+                <label>Sort Order</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.sort_order"
+                    :options="['ASC', 'DESC']" 
+                    :clear="false" />
+            </div> 
+        </div>
+        </div>
         <OverlayPanel ref="showCustomReport" style="width:50rem">
         <ComOverlayPanelContent title="Advance Custom Report" hideButtonOK="true"  :hideButtonClose="false" @onCancel="onCloseCustomReport">
             <div class="grid">
@@ -73,6 +116,8 @@
 </template>
 <script setup>
 import { ref, inject } from "@/plugin"
+import Calendar from 'primevue/calendar';
+import Checkbox from 'primevue/checkbox';
 const emit = defineEmits(['onFilter'])
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))

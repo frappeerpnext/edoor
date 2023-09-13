@@ -88,14 +88,19 @@
                             </div>
                         </div>
                     </TabPanel>
+
                     <TabPanel header="Room Rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
                     <TabPanel header="Folio">
                         <ComReservationStayFolio />
                     </TabPanel>
-                    <TabPanel header="Document">
-                        <ComDocument doctype="Reservation Stay" :docname="name" v-if="!rs.loading" />
+                    <TabPanel >
+                        <template #header>
+                            <span class="me-2">Document</span>
+                            <Badge :value="receivedDataLength"></Badge>
+                    </template>
+                        <ComDocument doctype="Reservation Stay" @Documents_length="handleDataLength" :docname="name" v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
             </div>
@@ -203,7 +208,10 @@ const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-
+const receivedDataLength = ref(0);
+const handleDataLength = (length) => {
+  receivedDataLength.value = length;
+};
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
@@ -238,6 +246,14 @@ const onRefresh = (showLoading = true) => {
 
 
 }
+
+socket.on("RefreshReservationStayData", (arg) => {
+    if (arg.property == rs.reservationStay.name && arg.action=="refresh_reservation_stay") {
+        alert('xxsxx')
+        rs.loading = false
+    }
+})
+
 function onUnreservedRoom(){ 
     
     confirm.require({
@@ -302,8 +318,7 @@ onMounted(() => {
         rs.getChargeSummary(name.value)
         rs.is_page = false
     }
-
-
+    handleDataLength()
 });
 
 function onNavigateStay(isNext) {
@@ -357,6 +372,9 @@ const onCheckIn = () => {
                     socket.emit("RefresheDoorDashboard", property.name);
                     socket.emit("RefreshReservationDetail", rs.reservation.name);
                     socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                    socket.emit("RefreshReservationStayData", {property:rs.reservationStay.name, action:"refresh_reservation_stay"})
+                    alert(rs.reservationStay.name)
+                    
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -401,10 +419,8 @@ const OnViewReservation = () => {
 }
 
 onUnmounted(() => {
-
     rs.clear()
-
-
+    socket.off('RefreshReservationStayData');
 })
 
 

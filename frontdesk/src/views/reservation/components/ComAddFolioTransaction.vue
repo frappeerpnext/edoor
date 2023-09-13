@@ -17,9 +17,9 @@
                     <div class="col-6">
                     <label for="posting_date">Posting Date</label>
                     
-                        <Calendar :disabled="!canEdit" inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
+                        <Calendar :selectOtherMonths="true" :disabled="!canEdit" inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
                             :maxDate="moment(working_day?.date_working_day).toDate()" class="w-full" dateFormat="dd-mm-yy" showIcon
-                            showButtonBar :selectOtherMonths="true"/>
+                            showButtonBar selectOtherMonths/>
                     </div>
                     <div class="col-6">
                         <label for="account_code">Account Code</label>
@@ -204,7 +204,7 @@
                         </div>
                         <div class="col-6">
                             <label for="credit_expired_date">Credit Expired Date</label>
-                            <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar />
+                            <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar selectOtherMonths/>
                         </div>
                     </div>
                 </div>
@@ -264,7 +264,7 @@
 </template>
 <script setup>
 
-import { ref, inject, getDoc, computed, onMounted, nextTick,useToast,createUpdateDoc } from "@/plugin"
+import { ref, inject, getDoc, computed, onMounted,useToast,createUpdateDoc } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';

@@ -39,7 +39,7 @@
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
             </div>
             <div class="col-4">
-                <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" />
+                <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" :filters="[['property', '=', hk.property.name]]" />
             </div>
             <div class="col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />

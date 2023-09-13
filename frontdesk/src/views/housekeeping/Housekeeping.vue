@@ -35,8 +35,8 @@
             </div>
             <div>
                 <div class="grid gap-2">
-                    <div v-if="showSummary" class="col-2 p-0 rounded-xl">
-                        <ComHousekeepingStatistic />
+                    <div v-if="showSummary" class="col-2 p-0 rounded-xl"  style="width:280px">
+                        <ComHousekeepingStatistic v-if="!hk.loading" /> 
                     </div>
                     <div class="col rounded-xl p-0">
                         <ComHousekeepingRoomList v-if="hk.view_type == 'table'" />
@@ -55,7 +55,7 @@ import ComHousekeepingActionButton from "./components/ComHousekeepingActionButto
 import ComHousekeepingStatistic from "./components/ComHousekeepingStatistic.vue";
 const edoorShowhousekeepingSummary = localStorage.getItem("edoor_hhowhousekeeping_summary")
 import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
-import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
+import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue"; 
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
 

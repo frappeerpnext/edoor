@@ -1,5 +1,4 @@
 <template>
-
     <div> 
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
@@ -121,6 +120,7 @@ function onSaveNote(text_note){
     postApi('reservation.update_reservation_status',data).then((r)=>{
         rs.LoadReservation(r.reservation)
         socket.emit("RefreshReservationDetail", r.reservation);
+        socket.emit("RefresheDoorDashboard", rs.reservation.property);
         loading.value = false
         onCloseNote()
         rs.LoadReservation(rs.reservation.name)

@@ -10,7 +10,9 @@ from frappe.utils.data import now
 
 class FolioTransaction(Document):
 	def validate(self):
-		
+		if not self.is_new():
+			if self.is_auto_post ==1:
+				frappe.throw("You cannot edit auto post transaction")
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:
 			self.note_by = frappe.session.user
@@ -94,9 +96,7 @@ class FolioTransaction(Document):
 							self.room_number =room_rate_data[0].room_number 
 							self.room_type =room_rate_data[0].room_type
 					#end update room type and room number
-		else:
-			if self.is_auto_post ==1:
-				frappe.throw("You cannot edit auto post transaction")
+		
 			 
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 

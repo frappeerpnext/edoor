@@ -347,6 +347,7 @@
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
     </ComDialogContent>
+    <!-- {{ doc }} -->
 </template>
 <script setup>
 import { ref, inject, computed, onMounted, postApi, watch, getApi, getDoc } from "@/plugin"
@@ -428,17 +429,17 @@ const roomRateTax = ref((d) => {
     const tax_3_amount = getTax3Amount(d.rate * doc.value.reservation.room_night)
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
-const rateTax = ref((d) => {
-    if (room_tax.value) {
-        if (doc.value.tax_rule.rate_include_tax == 'Yes') {
-            return gv.getRateBeforeTax((d.rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-        } else {
-            return d.rate
-        }
-    } else {
-        return 0
-    }
-})
+// const rateTax = ref((d) => {
+//     if (room_tax.value) {
+//         if (doc.value.tax_rule.rate_include_tax == 'Yes') {
+//             return gv.getRateBeforeTax((d.rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
+//         } else {
+//             return d.rate
+//         }
+//     } else {
+//         return 0
+//     }
+// })
 
 
 function getTax1Amount(rate) {

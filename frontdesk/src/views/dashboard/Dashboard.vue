@@ -9,13 +9,12 @@
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
             <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-            <Calendar v-model="date" class="w-48 das-calendar"  panelClass="no-btn-clear" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+            <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar"  panelClass="no-btn-clear" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </template>
         <template #end>
             <div class="flex gap-2 justify-content-end">
                 <NewFITReservationButton/>
                 <NewGITReservationButton/>
-                
             </div>
         </template>
     </ComHeader>

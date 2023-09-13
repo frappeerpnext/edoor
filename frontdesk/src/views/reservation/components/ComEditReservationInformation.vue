@@ -48,7 +48,7 @@ import { ref, inject, onMounted,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 
 const moment = inject("$moment")
-
+const socket = inject('$socket');
 const emit = defineEmits(['onClose'])
 const props = defineProps({
     doctype: String
@@ -85,8 +85,12 @@ const onSave = () => {
             doc:doc,
             apply_all_active_stay:apply_all_stay.value,
             update_to_reservation:update_to_reservation.value
+            
         } ).then((doc) => {
         isLoading.value = false;
+
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+        
         emit("onClose", doc.message)
     }).catch((ex) => {
         isLoading.value = false;
