@@ -109,11 +109,13 @@ import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 import Calendar from 'primevue/calendar';
 const dialogRef = inject('dialogRef')
+const socket = inject('$socket')
 const gv = inject('$gv')
 let loading = ref(false)
 const guest = ref({})
 const optionGender = ref()
 const moment = inject('$moment')
+const rs = inject('$reservation_stay')
 
 const date = ref()
 
@@ -172,7 +174,12 @@ function onOK() {
                 onClose(g)
                 window.postMessage("refresh_guest_detail",'*')
                 loading.value = false
+                
             })
+            loading.value = false
+            socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+            socket.emit("RefreshReservationDetail", rs.reservation.name)
+            socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
         }
     }).catch((err) => {
         loading.value = false

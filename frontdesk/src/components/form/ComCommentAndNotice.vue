@@ -9,7 +9,7 @@
                                   dateFormat="dd-mm-yy" showIcon showButtonBar />
             
             </div>
-            <div class="-mb-2 mt-1 " v-if="create.note_type=='Notice'">
+            <div class="-mb-2 mt-3" v-if="create.note_type=='Notice'">
             </div>
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />

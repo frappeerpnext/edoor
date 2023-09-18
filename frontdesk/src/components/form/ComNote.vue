@@ -11,6 +11,7 @@ import { useToast } from "primevue/usetoast";
 import Textarea from 'primevue/textarea';
 const dialogRef = inject("dialogRef");
 const toast = useToast();
+const loading = ref(false)
 const emit = defineEmits('ok')
 const props = defineProps({
     loading: Boolean,
@@ -26,15 +27,19 @@ const props = defineProps({
 const note = ref(props.value)
 
 function onOk(){
+    loading.value = true
     if(note.value){
         if(props.autoClose){
             dialogRef.value.close(note.value);
+           
         }
         else{
             emit('ok', note.value)
         }
+        loading.value=false
     }else{
         toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
+        loading.value=false
     }
     
 }

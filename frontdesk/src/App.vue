@@ -130,15 +130,19 @@ const actionClickHandler = async function (e) {
             }
         }
 
-    }else{
+    }else if (e.data.extendedProps)  {
         
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
         }
-        else if(e.data.extendedProps.type=="unassign_room"){
-            onViewUnassignRoom(e.data.date)
+        else if(e.data.extendedProps.type=="room_type_event"){
+            
+            onViewDailySummary(e.data.date,e.data.resourceIds[0])
+
         }
         
+    }else if(e.data.action){
+        onViewDailySummary(e.data.date,null)
     }
 };
 
@@ -213,7 +217,7 @@ function showReservationDetail(name) {
         }
     });
     }else {
-        window.open('reservation-detail/' + name, '_blank')
+        window.open('/frontdesk/reservation-detail/' + name, '_blank')
     }
   
 }
@@ -416,21 +420,20 @@ function showRoomBlockDetail(name) {
     });
 }
 
-function onViewUnassignRoom(date) {
+function onViewDailySummary(date,room_type_id) {
 
     const dialogRef = dialog.open(ComIFrameModal, {
 
        data: {
            "doctype":   'Business%20Branch',
            name: JSON.parse(localStorage.getItem("edoor_property")).name,
-           report_name: "eDoor%20Unassign%20Room%20Reservation%20List",
+           report_name: "Daily%20Property%20Data%20Summary",
            view:"ui",
-           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")}],
-           filter_options:['keyword','room_type','reservation_status','business_source'],
+           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:room_type_id}],
            fullheight: true
        },
        props: {
-           header:"Unassign Room on " + moment(date).format("DD-MM-YYYY"),
+           header:"Summary Data on " + moment(date).format("DD-MM-YYYY"),
            style: {
                width: '90vw',
            },

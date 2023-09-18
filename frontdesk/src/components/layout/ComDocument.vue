@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="mt-3" :class="{'min-h-folio-cus' : fill}">
+        <div class="mt-3 min-h-folio-cus" :class="{'min-h-folio-cus' : fill}">
         <div class="flex justify-end mb-3">
             <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
         </div>

@@ -253,6 +253,7 @@ const gv = reactive(new Gv());
 const housekeeping = reactive(new Housekeeping());
 const reservation = reactive(new Reservation());
 const reservation_stay = reactive(new ReservationStay());
+ 
 app.provide("$moment", moment)
 app.provide("$gv", gv)
 app.provide("$housekeeping", housekeeping)

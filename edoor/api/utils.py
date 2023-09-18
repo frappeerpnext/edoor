@@ -44,8 +44,15 @@ def update_keyword(doc, method=None, *args, **kwargs):
             # update keyword for searching in room chart
             if doc.doctype == 'Reservation Stay':
                 rs = frappe.get_doc('Reservation Stay', doc.name)
-                data_keyword = "update `tabRoom Occupy` set data_keyword = '{0}' where reservation_stay = '{1}'".format(rs.keyword, doc.name)
-                frappe.db.sql(data_keyword)
+
+                data_keyword = "update `tabRoom Occupy` set data_keyword = %(keyword)s where reservation_stay = %(reservation_stay)s"
+
+                frappe.db.sql(data_keyword,{"keyword":rs.keyword,"reservation_stay":doc.name})
+                #update to child table reservation stay room
+                sql = "update `tabReservation Stay Room` set keyword =%(keyword)s where parent=%(reservation_stay)s"
+                frappe.db.sql(sql,{"keyword":rs.keyword,"reservation_stay":doc.name})
+            
+
 
 def update_deleted_document(doc, method=None, *args, **kwargs):
     if doc.comment_type == 'Deleted' and (doc.reference_doctype == "Folio Transaction" or doc.reference_doctype == "Reservation Folio" or doc.reference_doctype == "Reservation Room Rate"):

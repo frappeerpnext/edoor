@@ -14,6 +14,7 @@
   "property",
   "room_type_id",
   "room_type",
+  "floor",
   "room_id",
   "room_number",
   "date",
@@ -23,7 +24,9 @@
   "adult",
   "child",
   "pax",
-  "reservation_status"
+  "reservation_status",
+  "business_source",
+  "building"
  ],
  "fields": [
   {
@@ -131,11 +134,32 @@
    "fieldname": "reservation_status",
    "fieldtype": "Data",
    "label": "reservation_status"
+  },
+  {
+   "fetch_from": "reservation_stay.business_source",
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "label": "Business Source",
+   "options": "Business Source"
+  },
+  {
+   "fetch_from": "room_id.floor",
+   "fetch_if_empty": 1,
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Floor"
+  },
+  {
+   "fetch_from": "room_id.building",
+   "fieldname": "building",
+   "fieldtype": "Data",
+   "label": "Building"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-11 20:50:56.607791",
+ "modified": "2023-09-18 12:00:58.514882",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

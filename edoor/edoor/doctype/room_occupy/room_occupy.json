@@ -23,7 +23,10 @@
   "child",
   "pax",
   "data_keyword",
-  "reservation_status"
+  "reservation_status",
+  "business_source",
+  "floor",
+  "building"
  ],
  "fields": [
   {
@@ -132,11 +135,30 @@
    "fieldname": "reservation_status",
    "fieldtype": "Data",
    "label": "reservation_status"
+  },
+  {
+   "fetch_from": "reservation_stay.business_source",
+   "fieldname": "business_source",
+   "fieldtype": "Link",
+   "label": "Business Source",
+   "options": "Business Source"
+  },
+  {
+   "fetch_from": "room_id.floor",
+   "fieldname": "floor",
+   "fieldtype": "Data",
+   "label": "Floor"
+  },
+  {
+   "fetch_from": "room_id.building",
+   "fieldname": "building",
+   "fieldtype": "Data",
+   "label": "Building"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-08 12:02:14.906255",
+ "modified": "2023-09-18 12:00:27.223195",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

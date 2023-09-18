@@ -38,6 +38,12 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldtype": "Link",
 			"options":"Reservation",
 		} ,
+		{
+			"fieldname": "reservation_type",
+			"label": __("Reservation Type"),
+			"fieldtype": "Select",
+			"options":"\nFIT\nGIT",
+		} ,
 		 
 		{
 			"fieldname": "business_source",
@@ -58,7 +64,8 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldtype": "MultiSelectList",
 			get_data: function(txt) {
 				return frappe.db.get_link_options('Reservation Status', txt);
-			}
+			},
+	
 			
 		},
 		{
@@ -85,7 +92,7 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type\nReservation Status",
 			default:"Last Update On"
 		},
 		{
@@ -100,25 +107,38 @@ frappe.query_reports["Reservation List Report"] = {
 	"formatter": function(value, row, column, data, default_formatter) {
 	
 		value = default_formatter(value, row, column, data);
-
+		var parser = new DOMParser(); // create a DOMParser object
+		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+		var element = doc.querySelector("a"); // get the element by selector
 		if (data && data.indent==0) {
-			var parser = new DOMParser(); // create a DOMParser object
-			var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
-			var element = doc.querySelector("a"); // get the element by selector
+			
  
 			if(element){
-				value =$(`<span>${element.dataset.value}</span>`); // get the value of data-value attribute
-				
+
+				value =$(`<span>${element.dataset.value}</span>`);  
 			}else {
+				
 				value = $(`<span>${value}</span>`);
 			}
 			
 			
+			if(data.is_group && column.fieldtype=="Currency" ){
+				 
+				value ="";
+			}else {
+				var $value = $(value).css("font-weight", "bold");
+				value = $value.wrap("<p></p>").parent().html();
+			}
+			 
+		
+		}else {
+			if(column.fieldtype=="Link"){
+				
+				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
 
-			var $value = $(value).css("font-weight", "bold");
+ 
+			}
 			
-
-			value = $value.wrap("<p></p>").parent().html();
 		}
 		
 		return value;

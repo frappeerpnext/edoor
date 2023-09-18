@@ -21,14 +21,16 @@
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-2" > 
 					<div class="font-medium">
-						<span class="text-lg" v-if="i.reservation || i.reservation_stay">{{ i.reference_doctype }}</span>
-						<span v-if="i.reference_doctype && (i.reservation || i.reservation_stay)"> - </span>
-						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="i.reference_doctype == 'Reservation' || i.reservation">
-							{{i.reservation}} 
+						<span class="text-lg" v-if="i.reservation || i.reservation_stay || i.reference_doctype">{{ i.reference_doctype }}</span>
+						<span v-if="i.reference_doctype ||  (i.reservation || i.reservation_stay)"> - </span>
+						<div v-if="i.reference_doctype != 'Folio Transaction'" class="inline">
+						<div class="link_line_action  border-none p-0 inline w-auto" @click="onViewDetailReservation(i.reservation || i.reference_name)" v-if="i.reference_doctype == 'Reservation' || i.reservation">
+							{{i.reservation || i.reference_name}} 
 						</div>
 						<span v-if="i.reservation && i.reservation_stay"> - </span>
-						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservationStay(i.reservation_stay)" v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
-							{{i.reservation_stay}}
+						<div class="link_line_action  border-none p-0 inline w-auto" @click="onViewDetailReservationStay(i.reservation_stay || i.reference_name)" v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
+							{{i.reservation_stay || i.reference_name}}
+						</div>
 						</div>
 						<div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
 						<span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
@@ -45,7 +47,7 @@
 						</div>
 						</div>
 						<div >
-							<span v-if="i.note_date" :class="i.reservation || i.reservation_stay ? 'font-italic text-500 text-sm' : ''">
+							<span v-if="i.note_date" class="font-italic text-500 text-sm">
 								Note Date: {{ gv.dateFormat(i.note_date) }}
 							</span>
 						</div>

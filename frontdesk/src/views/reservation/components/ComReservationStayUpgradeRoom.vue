@@ -245,6 +245,7 @@
             rs.getReservationDetail(data.reservationStay.name)
             socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
             socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
             onClose()
         }).catch((ex) => {
             loading.value = false;

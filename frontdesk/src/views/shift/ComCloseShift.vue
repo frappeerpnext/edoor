@@ -2,7 +2,7 @@
     <ComDialogContent @close="onClose" :loading="isSaving" hideButtonOK :hideButtonClose="true">
         <div class="grid justify-between">
             <div class="col-6">
-                {{ doc }}
+                <!-- {{ doc }} -->
             <table>
                 <tbody>
                     <template v-for="(item, index) in doc?.cash_float" :key="index">

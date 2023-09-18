@@ -2,6 +2,7 @@
     <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
         
         <div class="iframe-view">
+            {{ currentIframe }}
         <TabView  lazy>
             <TabPanel header="General Information">
                 <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
@@ -15,7 +16,7 @@
             </TabPanel>
             <TabPanel header="POS/Misc. Sale">
                 <div style="margin-right:-1rem;">
-                <iframe style="height:500px; width: 100%;"
+                <iframe @load="onIframeLoaded('pos_misc_sale')" id="pos_misc_sale" style="height:500px; width: 100%;"
                     :src="posMiscSaleUrl">
                 </iframe>
                 </div>
@@ -53,18 +54,18 @@ const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)
 const gv = inject("$gv")
+const socket = inject('$socket')
+
 function onIframeLoaded(id){
- 
- const iframe = document.getElementById(id);
-iframe.height = iframe.contentWindow.document.body.scrollHeight;
-
+    const iframe = document.getElementById(id);
+    iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 
-function loadIframe() {
-    const url  = generalInfoUrl.value + "&refresh=" + (Math.random() * 16)
-    document.getElementById("general").contentWindow.location.replace(url)
-}
-
+socket.on("RefreshData", (arg) => {
+    if(arg.property == setting.property.name && arg.action == "refresh_guest_iframe_in_modal"){
+        loadIframe()
+    }    
+})
 
 const generalInfoUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Detail General Information") +  "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
@@ -74,18 +75,12 @@ const stayHistoryUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Stay History") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
-// const posMiscSaleUrl =  computed(() => {
-//     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eeDoor Guest POS FMisc. Sale") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
-//     return url
-// })
 const posMiscSaleUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value +                                                              
-"&format=eDoor%20Guest%20POS%2FMisc.%20Sale&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format=eDoor%20Guest%20POS%2FMisc.%20Sale&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
 const noteUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + 
-    "&format="  + gv.getCustomPrintFormat("eDoor Guest Note") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
+    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Note") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
 
@@ -149,20 +144,37 @@ const onClose = () => {
 const refreshPageHandler = async function (e) {
 
     if (e.isTrusted && typeof (e.data) == 'string') {
-         if (e.data=="refresh_guest_detail"){
+        if (e.data=="refresh_guest_detail"){
+            gv.success('Socket Working reload guest information')
             loadIframe()
-         }
-           
-        }
+        } 
+    }
 };
 
 
 window.addEventListener('message', refreshPageHandler, false);
 
-
+function loadIframe() {
+    if(document.getElementById("general")){
+        document.getElementById("general").contentWindow.location.replace(generalInfoUrl.value + "&refresh=" + (Math.random() * 16))
+    }
+    else if(document.getElementById("stay_history")){
+        document.getElementById("stay_history").contentWindow.location.replace(stayHistoryUrl.value + "&refresh=" + (Math.random() * 16))
+    }
+    else if(document.getElementById("pos_misc_sale")){
+        document.getElementById("pos_misc_sale").contentWindow.location.replace(posMiscSaleUrl.value + "&refresh=" + (Math.random() * 16))
+    }
+    else if(document.getElementById("note")){
+        document.getElementById("note").contentWindow.location.replace(noteUrl.value + "&refresh=" + (Math.random() * 16))
+    }
+    else if(document.getElementById("Folio")){
+        document.getElementById("Folio").contentWindow.location.replace(folioUrl.value + "&refresh=" + (Math.random() * 16))
+    }   
+}
 
 onUnmounted(() => {
     window.removeEventListener('message', refreshPageHandler, false);
+    socket.off("RefreshData");
 
 })
 

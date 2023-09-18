@@ -89,7 +89,10 @@ const onSave = () => {
         } ).then((doc) => {
         isLoading.value = false;
 
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
+        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
         
         emit("onClose", doc.message)
     }).catch((ex) => {

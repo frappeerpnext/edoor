@@ -168,7 +168,7 @@
             loading.value = false
             
             socket.emit("RefreshReservationDetail", r.message.reservation);
-        
+            
             socket.emit("RefresheDoorDashboard", property.name);
            
             socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"});

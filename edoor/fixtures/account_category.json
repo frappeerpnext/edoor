@@ -54,15 +54,6 @@
   "sort_order": 0
  },
  {
-  "account_category": "Room Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:35:27.237427",
-  "name": "Room Discount",
-  "note": null,
-  "sort_order": 101
- },
- {
   "account_category": "Food and Beverage Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -97,6 +88,15 @@
   "name": "Housekeeping Tax",
   "note": null,
   "sort_order": 50
+ },
+ {
+  "account_category": "Room Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:35:27.237427",
+  "name": "Room Discount",
+  "note": null,
+  "sort_order": 101
  },
  {
   "account_category": "POS Transfer",
@@ -135,15 +135,6 @@
   "sort_order": 800
  },
  {
-  "account_category": "Room Tax",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:54:51.419235",
-  "name": "Room Tax",
-  "note": null,
-  "sort_order": 102
- },
- {
   "account_category": "Deposit",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -151,6 +142,15 @@
   "name": "Deposit",
   "note": null,
   "sort_order": 700
+ },
+ {
+  "account_category": "Room Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:54:51.419235",
+  "name": "Room Tax",
+  "note": null,
+  "sort_order": 102
  },
  {
   "account_category": "Room Charge",

@@ -1,8 +1,12 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="mb-3 flex">
-        <ComTagReservation title="RS#:" :value="doc?.reservation" class="bg-card-info p-1px "></ComTagReservation>
-        <ComTagReservation title="RES STAY#:" :value="doc?.name" class="bg-card-info p-1px "></ComTagReservation>
+            <span @click="onViewReservationDetail(doc?.reservation)">
+        <ComTagReservation title="RS#:" :value="doc?.reservation" class="link_line_action w-auto"></ComTagReservation>
+            </span>
+            <span class="con" @click="onViewReservationStayDetail(doc?.name)">
+        <ComTagReservation title="RES STAY#:" :value="doc?.name" class="link_line_action w-auto"></ComTagReservation>
+            </span>
         <span class="px-2 rounded-lg me-2 text-white p-1px"
                                 :style="{ background: doc?.status_color }">{{
                                     doc?.reservation_status }}
@@ -114,6 +118,14 @@ const moment = inject("$moment")
 const socket = inject("$socket")
 const gv = inject('$gv');
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
+function onViewReservationStayDetail(rs) {
+    window.postMessage('view_reservation_stay_detail|' + rs, '*')
+
+}
+function onViewReservationDetail(rs) {
+    window.postMessage('view_reservation_detail|' + rs, '*')
+
+}
 function onSave(){
     isSaving.value = true
     postApi("reservation.change_stay", 
@@ -136,7 +148,9 @@ function onSave(){
  
        
         socket.emit("RefresheDoorDashboard", doc.value.property);
-        socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"});
+        socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
+        socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
+        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
         dialogRef.value.close(result);
 
 

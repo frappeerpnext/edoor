@@ -64,7 +64,7 @@
                         <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         
                         <ComKPI @onClick="viewSummary('Unassign Room')" :value="data.unassign_room" title="Unassign Room" class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI @onClick="viewSummary('Pickup and Drop Off')" :value="data.pick_up + '/' + data.drop_off" title="Pickup/Drop off" class="bg-warning-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI @onClick="viewSummary('Pickup and Drop Off')" :value="data.pick_up + '/' + data.drop_off" title="Pickup/Drop Off" class="bg-warning-edoor border-round-lg cursor-pointer"> </ComKPI>
                         
                     </div>
                 </ComPanel>
@@ -113,6 +113,15 @@
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
                     <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="upCommingNoteUrl"></iframe>
+                </div>
+            </TabPanel>
+            <TabPanel>
+                <template #header>
+                    <span>Desk Folio</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">0</span>
+                </template>
+                <div class="mt-2 view-table-iframe" v-if="!gv.loading">
+                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote"  width="100%" :src="xxx"></iframe>
                 </div>
             </TabPanel>
         </TabView>
@@ -173,27 +182,24 @@ const tomorrow = ref('')
 
 
 socket.on("RefresheDoorDashboard", (arg) => {
- 
- if(arg ==property.name){
-     getData(true)
-  
- }    
- 
+    
+    if(arg ==property.name){
+        getData(false)
+        onRefreshIframe()
+    }    
+    
 })
 
 
 function getArrivalUrl() {
-
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format="+ gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest") +"&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
     url = url + "&date=" + selected_date.value
-
-    return url;
+    url = url + "&refresh=" + (Math.random() * 16)
+    return url ;
 }
 
 function onViewData(doctype, report_name, title ,extra_params,filter_options ){
-   
    const dialogRef = dialog.open(ComIFrameModal, {
-
        data: {
            "doctype": doctype,
            name: JSON.parse(localStorage.getItem("edoor_property")).name,
@@ -220,6 +226,7 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
 function onRefresh(loading = true){ 
     getData(loading)
 }
+
 
 function onViewRoomOccupy(){
     onViewData(
@@ -306,11 +313,8 @@ function onViewNoShowReservation(){
 function getDepartureUrl() {
     
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Departure Guest") +  "&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
-   
-    
-
     url = url + "&date=" + selected_date.value
- 
+    url = url + "&refresh=" + (Math.random() * 16)
     return url;
 
 }
@@ -318,6 +322,7 @@ function getDepartureUrl() {
 function getInhouseGuestUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Stay Over Guest") +  "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     url = url + "&date=" + selected_date.value
+    url = url + "&refresh=" + (Math.random() * 16)
     return url;
 
 }
@@ -327,6 +332,7 @@ function getUpCommingNoteUrl() {
     + gv.getCustomPrintFormat("eDoor Up Coming Note") +  
  "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
     url = url + "&date=" + selected_date.value
+    url = url + "&refresh=" + (Math.random() * 16)
     return url;
 
 }
@@ -418,15 +424,11 @@ function getData(loading=true) {
  
 function onIframeLoaded(id){
     const iframe = document.getElementById(id);
-    // iframe.height = iframe.contentWindow.document.body.scrollHeight;
-    // iframe.width = iframe.contentWindow.document.body.scrollWidth;
 
-    // const iframe = document.getElementById("iframe");
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
     
-    console.log(windowWidth)
-    
+
     if (windowWidth >= 1920){
         iframe.style.minWidth = 100 + '%'
     }
@@ -434,6 +436,15 @@ function onIframeLoaded(id){
         iframe.style.width = contentWidth + 'px';
     }
     iframe.height = iframe.contentWindow.document.body.scrollHeight;
+}
+
+function onRefreshIframe(){
+    
+    document.getElementById("iframeArrival").contentWindow.location.replace(getArrivalUrl)
+    document.getElementById("iframeDeparture").contentWindow.location.replace(getDepartureUrl)
+    document.getElementById("iframeInhouse").contentWindow.location.replace(getInhouseGuestUrl)
+    document.getElementById("iframeNote").contentWindow.location.replace(getUpCommingNoteUrl)
+
 }
 
 const viewSummary = (name) => { 

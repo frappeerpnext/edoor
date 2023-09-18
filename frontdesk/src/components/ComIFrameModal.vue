@@ -98,8 +98,6 @@ const socket = inject("$socket");
 
 socket.on("RefreshData", (arg) => {
     if(arg.property == setting.property.name && arg.action == "refresh_iframe_in_modal"){
-    
-
         loadIframe()
     }    
 })

@@ -1,11 +1,11 @@
 <template>
-     
-    <Button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_deposit_tab==1)" :key="index"
-        @click="onAddFolioTransaction(d)" class="conten-btn mr-1 my-2">Post {{ d.account_name }}</Button>
+   <div class="min-h-folio-cus mt-3"> 
+        <Button v-for="(d, index) in setting?.account_group.filter(r => r.show_in_deposit_tab==1)" :key="index"
+            @click="onAddFolioTransaction(d)" class="conten-btn mr-1">Post {{ d.account_name }}</Button>
 
-    <ComReservationDepositTransactionCreditDebitStyle v-if="setting.folio_transaction_style_credit_debit == 1" />
-    <ComReservationDepositTransactionSimpleStyle v-else />
-
+        <ComReservationDepositTransactionCreditDebitStyle v-if="setting.folio_transaction_style_credit_debit == 1" />
+        <ComReservationDepositTransactionSimpleStyle v-else />
+    </div> 
 </template>
 <script setup>
 import { inject, ref, computed, useToast,useConfirm,useDialog } from '@/plugin';

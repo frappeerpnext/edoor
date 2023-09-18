@@ -97,8 +97,8 @@
 
                 <TabPanel > 
                     <template #header>
-                            <span class="me-2">Document</span>
-                            <!-- <Badge :value=""></Badge> -->
+                        <span class="me-2">Document</span>
+                        <!-- <Badge :value=""></Badge> -->
                     </template>
                     <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
                 </TabPanel>
@@ -187,7 +187,7 @@ function onMaximize(){
 }
 
 onMounted(() => {
- 
+    window.has_reservation_detail_opened = true
     socket.on("RefreshReservationDetail", (reservation) => {
         console.log(reservation)
         if (reservation == name.value) {
@@ -210,7 +210,7 @@ onMounted(() => {
         }
     } else {
         name.value = dialogRef.value.data.name;
-        window.has_reservation_detail_opened = true
+      
         onRefresh()
 
     }
@@ -219,13 +219,7 @@ onMounted(() => {
 onUnmounted(() => {
     rs.clear()
     socket.off("RefreshReservationDetail");
-    if (dialogRef) {
-        
-        window.has_reservation_detail_opened = false
-        
-
-    }
-
+    window.has_reservation_detail_opened = false
 })
 
 function onCheckIn(){

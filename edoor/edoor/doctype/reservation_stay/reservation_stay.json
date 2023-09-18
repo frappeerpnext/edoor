@@ -828,7 +828,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-09-08 17:16:12.444164",
+ "modified": "2023-09-18 09:48:14.782617",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
@@ -896,7 +896,7 @@
    "write": 1
   }
  ],
- "search_fields": "reservation,reference_number,guest,guest_name,guest_phone_number,guest_email,room_types,rooms",
+ "search_fields": "reservation,reference_number,guest,guest_name,guest_phone_number,guest_email,room_types,rooms,internal_reference_number",
  "show_name_in_global_search": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

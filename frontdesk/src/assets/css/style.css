@@ -591,7 +591,8 @@ span.p-button-icon.pi.pi-ellipsis-h {
 /* Start Customize Full calenda css */
 
 .fc .fc-scrollgrid-section-header.fc-scrollgrid-section-sticky>* {
-    top: 62px !important;
+    /* top: 62px !important; */
+    top: 118px !important;
 }
 .fc .fc-scrollgrid-section-footer.fc-scrollgrid-section-sticky>* {
     bottom:20px !important;
@@ -965,7 +966,7 @@ p.text-center.small.page-number.visible-pdf {
     height: 32px;
 }
 .btn-refresh-in-night-audit{
-    position: absolute;
+    position: absolute !important;
     top: 7px;
     border-radius: 50%;
     border: 0px;

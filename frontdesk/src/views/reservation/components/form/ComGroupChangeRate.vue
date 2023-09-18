@@ -1,17 +1,19 @@
 <template>
     {{ data }}
     <ComDialogContent :hideButtonClose="true"  :hideButtonOK="true" :loading="loading">
-        <div>Apply To</div>
+        <ComReservationStayPanel title="Apply To">
+            <template #content>
         <div class="gap-3">
             <div class="flex align-items-center">
                 <RadioButton inputId="full" name="change_date_type" value="full_stay" v-model="data.change_date_type"/>
                 <label for="full" class="ml-2">Full Stay</label>
             </div>
-            
-            <div class="flex align-items-center">
+            <div class="flex align-items-center w-full mt-3">
+                <div class="w-2">
                 <RadioButton inputId="from"  name="change_date_type" value="selected_date" v-model="data.change_date_type" />
-                <label  for="from"   class="ml-2" >From</label>
-                <div class="flex">
+                <label  for="from"   class="ml-2 mr-3" >From</label>
+                </div>
+                <div class="flex align-items-center gap-3 w-full">
                     <Calendar v-model="data.arrival_date" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                         dateFormat="dd-mm-yy" showIcon showButtonBar :disabled="data.change_date_type=='full_stay'" />
                         <div> To </div>
@@ -19,30 +21,50 @@
                     dateFormat="dd-mm-yy" showIcon showButtonBar :disabled="data.change_date_type=='full_stay'" /> 
                 </div>
             </div>
-        </div>  
-        <div>Rate type</div>
-        <div class="flex">
+        </div> 
+        </template>
+     </ComReservationStayPanel>
+     <ComReservationStayPanel title="Rate type" class="mt-3">
+        <template #content>
+            <div class="grid items-center">
+            <div class="col-5 pt-0">
             <label>Rate type</label>
-            <ComSelect v-model="data.rate_type" placeholder="Please select room type" doctype="Rate Type"   />
-            <div>
+            <ComSelect v-model="data.rate_type" class="w-full" placeholder="Please select room type" doctype="Rate Type"   />
+            </div>
+            <div class="col-6 pt-4">            
+                <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                 <Checkbox v-model="data.is_overwrite_room_rate_and_rate_type" :binary="true" />
                 <label>Overwrite Room Rate with Rate Type</label>
             </div>
-            <Button>Save</Button>
-        </div>
-        <div>
-            <div>define New Rate</div>
-            <div class="flex">
-                <label>Rate: </label>
-                <InputText type="text" v-model="data.rate"/>
-                <div>
-                    <Checkbox inputId="rateIncludeTax"  v-model="data.is_rate_include_tax" :binary="true" />
-                    <label for="rateIncludeTax">Rate Include Tax</label>
-                    <Button>Save</Button>
-                </div>
+            </div>
+            <div class="pt-3">
+            <Button>Save</Button>    
             </div>
             
-        </div>
+            </div>
+
+        </template>
+    </ComReservationStayPanel>
+    <ComReservationStayPanel title="Define New Rate" class="mt-3">
+        <template #content>
+            <div class="grid items-center">
+
+            <div class="col-5 pt-0">
+                <label>Rate: </label>
+                <InputText class="w-full" type="text" v-model="data.rate"/>
+            </div>
+            <div class="col-6 pt-4">
+                <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <Checkbox inputId="rateIncludeTax"  v-model="data.is_rate_include_tax" :binary="true" />
+                    <label for="rateIncludeTax">Rate Include Tax</label>
+                </div>
+            </div>
+            <div class="pt-3">
+            <Button>Save</Button>    
+            </div>
+            </div>
+        </template>    
+    </ComReservationStayPanel>
         <div class="flex">
             <div>Tax Exempt</div>
                 <ComAutoComplete v-model="data.tax_rule" placeholder="Please select tax rule" doctype="Tax Rule"/>
@@ -53,6 +75,7 @@
 <script setup>
 import { ref,onMounted,inject } from '@/plugin';
 import Enumerable from 'linq'
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const loading = ref(false)
 const data = ref({change_date_type:'full_stay'})
 const dialogRef=inject("dialogRef")

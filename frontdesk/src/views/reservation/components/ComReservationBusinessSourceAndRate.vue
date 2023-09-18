@@ -59,18 +59,17 @@ function onChangeBusinessSource(result) {
     
     if(result.reservation){
         rs.reservation = doc
-        rs.reservationStay.business_source = doc.business_source
-        
+        rs.reservationStay.business_source = doc.business_source   
     }
-
-  
 
     opBusinessSource.value.hide();
 }
 
 function onChangeRateType(doc) { 
-    socket.emit("RefreshReservationDetail", rs.reservation.name);
     rs.getReservationStay(rs.reservationStay.name)
+    socket.emit("RefreshReservationDetail", rs.reservation.name);
+    socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+    socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
     opRateType.value.hide();
 }
 

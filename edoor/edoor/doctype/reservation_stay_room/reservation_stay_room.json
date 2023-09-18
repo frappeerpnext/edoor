@@ -63,7 +63,8 @@
   "guest",
   "section_break_pwue",
   "note",
-  "column_break_vpbm"
+  "column_break_vpbm",
+  "keyword"
  ],
  "fields": [
   {
@@ -386,12 +387,17 @@
    "fieldname": "allow_user_to_edit_information",
    "fieldtype": "Check",
    "label": "Allow user to edit infomation"
+  },
+  {
+   "fieldname": "keyword",
+   "fieldtype": "Small Text",
+   "label": "keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-07 19:49:22.535511",
+ "modified": "2023-09-18 09:42:23.221028",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

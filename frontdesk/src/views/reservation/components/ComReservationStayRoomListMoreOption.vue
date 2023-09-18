@@ -81,6 +81,7 @@ function onDeleted(note){
             openNote.value = false
             rs.getReservationDetail(props.data.parent)
             socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
         }
     }).catch((r)=>{
         loading.value = false
@@ -124,14 +125,16 @@ function onUnassignRoom(){
         accept: () => {
             loading.value = true
             postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{
+                loading.value = false
+                
                 rs.reservationStay = r.message
 
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
 
                 socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-                // alert(rs.reservationStay.property)
+
+                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
                 
-                loading.value = false
             }).catch(()=>{
                 loading.value = false
             })

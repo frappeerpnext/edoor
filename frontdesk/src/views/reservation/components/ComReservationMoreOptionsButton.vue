@@ -77,17 +77,17 @@
                 <button @click="onAllowPostToCityLedger" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Allow Post To City Ledger</span>
+                    <span class="ml-2">Allow Post to City Ledger</span>
                 </button>
                 <button @click="onUnAllowPostToCityLedger " 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Unallow Post To City Ledger</span>
+                    <span class="ml-2">Disallow Post to City Ledger</span>
                 </button>
                 <button 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Stay To Other Reservation</span>
+                    <span class="ml-2">Stay to Other Reservation</span>
                 </button>
                 <button  v-if="rs.reservation.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
@@ -108,7 +108,7 @@
                 <button v-else @click="onPickDrop" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-car" />
-                    <span class="ml-2">Pick up / Drop off</span>
+                    <span class="ml-2">Pickup / Drop Off</span>
                 </button>
                 <button @click="onAuditTrail" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -264,7 +264,14 @@ function onGroupAssignRoom(){
 }
 
 function onMarkAsPaidbyMasterroom (){
-    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
+    if (rs.selecteds.filter((r)=>r.is_master==0 && r.is_active_reservation==1).length==0){
+        if(rs.reservationStays.length>=1){
+            toast.add({ severity: 'warn', summary: " Mark As Paid by Master room", detail:"Please select reservation stay for Mark As Paid by Master room.", life: 3000 })
+        return
+        }else {
+            rs.selecteds = rs.reservationStays
+        }
+    }
         confirm.require({
             message: 'Are you sure you want to Mark As Paid by Master room?',
             header: 'Confirmation',
@@ -288,16 +295,18 @@ function onMarkAsPaidbyMasterroom (){
             },
 
         }); 
-    }else{
-        toast.add({
-            severity: 'warn', summary: 'Mark As Paid by Master room',
-            detail: 'Please select reservation stay for Mark As Paid by Master room', life: 3000
-        });
-    }
+    
 }
 
 function onUnMarkAsPaidbyMasterroom (){
-    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
+    if (rs.selecteds.filter((r)=>r.is_master==0 && r.is_active_reservation==1).length==0){
+        if(rs.reservationStays.length>=1){
+            toast.add({ severity: 'warn', summary: " Unmark As Paid by Master room", detail:"Please select reservation stay for Unmark As Paid by Master room.", life: 3000 })
+        return
+        }else {
+            rs.selecteds = rs.reservationStays
+        }
+    }
         confirm.require({
             message: 'Are you sure you want to Unmark As Paid by Master room?',
             header: 'Confirmation',
@@ -322,12 +331,7 @@ function onUnMarkAsPaidbyMasterroom (){
             },
 
         }); 
-    }else{
-        toast.add({
-            severity: 'warn', summary: 'Unmark As Paid by Master room',
-            detail: 'Please select reservation stay for Unmark As Paid by Master room', life: 3000
-        });
-    }
+    
 }
 
 function onAllowPostToCityLedger (){
@@ -435,8 +439,15 @@ function onGroupChangeRate(){
 }
 
 function onGroupChangeStayDate(){
-    if(rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length > 0){
-        const dialogRef = dialog.open(ComGroupChangeStayDate,{
+    if (rs.selecteds.filter((r)=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).length==0){
+        if(rs.reservationStays.length>1){
+            toast.add({ severity: 'warn', summary: "Group Change Stay", detail:"Please select reservation stay for group Change stay date.", life: 3000 })
+        return
+        }else {
+            rs.selecteds = rs.reservationStays
+        }
+    }
+    const dialogRef = dialog.open(ComGroupChangeStayDate,{
         data: rs.selecteds.map(obj => {
                 return {
                     name: obj.name,
@@ -447,7 +458,7 @@ function onGroupChangeStayDate(){
         props: {
             header: 'Group Change Stay Date',
             style: {
-                width: '50vw',
+                width: '60vw',
             },
             breakpoints: {
                 '960px': '100vw',
@@ -462,16 +473,9 @@ function onGroupChangeStayDate(){
             
         }
     })
-    }else{
-        toast.add({
-            severity: 'warn', summary: 'Group Change Stay',
-            detail: 'Please select reservation stay for group Change stay date', life: 3000
-        });
-    }
-    
 }
 function onStayToOtherReservation(){
-   
+   //
 }
 function onMarkasGITReservation() {
     confirm.require({

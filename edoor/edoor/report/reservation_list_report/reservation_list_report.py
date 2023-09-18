@@ -18,24 +18,25 @@ def validate(filters):
 
 def get_columns(filters):
 	columns =   [
-		{"fieldname":"reservation", "label":"Res #", "fieldtype":"Link","options":"Reservation","width":130},
-		{"fieldname":"name", "label":"Stay #", "fieldtype":"Link","options":"Reservation Stay","width":115},
-		{'fieldname':'reservation_type','label':'Type',"width":60},
-		{"fieldname":"reservation_date", "label":"Res. Date", "fieldtype":"Date","width":95},
-		{'fieldname':'rooms','label':'Room',"width":40},
-		{'fieldname':'room_type_alias','label':'Room Type',"width":70},
-		{"fieldname":"arrival_date", "label":"Arrival", "fieldtype":"Date","width":95},
-		{"fieldname":"departure_date", "label":"Departure", "fieldtype":"Date","width":95},
-		{'fieldname':'room_nights','label':'Room Night',"width":40},
-		{'fieldname': 'pax', 'label': 'Pax(A/C)',"width":40},
-		{'fieldname':'business_source','label':'Source',"width":90},
-		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90},
-		{'fieldname':'reservation_status','label':'Status',"width":95},
-		{'fieldname':'total_debit','label':'Debit', 'fieldtype':'Currency'},
-		{'fieldname':'total_credit','label':'Credit', 'fieldtype':'Currency'},
-		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency'},
-		{"fieldname":"creation", "label":"Creation", "fieldtype":"Date","width":95},
-		{"fieldname":"modified", "label":"Modified", "fieldtype":"Datetime","width":95},
+		{"fieldname":"reservation", "label":"Res #", "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail"},
+		{"fieldname":"name", "label":"Stay #", "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{'fieldname':'reservation_type','label':'Type',"width":60 ,"show_in_report":1},
+		{"fieldname":"reservation_date", "label":"Res. Date", "fieldtype":"Date","width":95,"show_in_report":1},
+		{'fieldname':'rooms','label':'Room',"width":40,"show_in_report":1},
+		{'fieldname':'room_type_alias','label':'Room Type',"width":50,"show_in_report":1},
+		{"fieldname":"arrival_date", "label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
+		{"fieldname":"departure_date", "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
+		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1},
+		{'fieldname': 'pax', 'label': 'Pax(A/C)',"width":40,"show_in_report":1},
+		{'fieldname':'business_source','label':'Source',"width":90,"show_in_report":1},
+		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
+		{"fieldname":"guest_name", "label":"Guest Name","width":90,"show_in_report":1},
+		{'fieldname':'reservation_status','label':'Status',"width":95,"show_in_report":1},
+		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1},
+		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1},
+		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1},
+		# {"fieldname":"creation", "label":"Creation", "fieldtype":"Date","width":95},
+		# {"fieldname":"modified", "label":"Modified", "fieldtype":"Datetime","width":95},
 	]
 	return columns
 
@@ -59,8 +60,15 @@ def get_filters(filters):
 		sql = sql + " and rst.business_source = %(business_source)s"
 	if filters.guest:
 		sql = sql + " and rst.guest = %(guest)s"
+
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
+	
+	if filters.reservation_type:
+		sql = sql + " and rst.reservation_type = %(reservation_type)s"
+	# elif filters.reservation_type == "GIT":
+	# 	sql = sql + " and rst.reservation_type in %(reservation_type)s"
+
 	if filters.is_active_reservation:
 		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
@@ -98,6 +106,12 @@ def get_filters(filters):
 		sql = sql + " order by rst.room_type_alias asc"
 	elif filters.order_by == "Room Type" and filters.sort_order == "DESC":
 		sql = sql + " order by rst.room_type_alias desc"
+	
+	elif filters.order_by == "Reservation Status" and filters.sort_order == "ASC":
+		sql = sql + " order by rst.reservation_status asc"
+	elif filters.order_by == "Reservation Status" and filters.sort_order == "DESC":
+		sql = sql + " order by rst.reservation_status desc"
+		
 
 	return sql
 
@@ -117,7 +131,8 @@ def get_reservation_stays(filters):
 		sql = sql + " and rst.guest = %(guest)s"
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-
+	if filters.is_active_reservation:
+		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation_stay"] for d in data]
@@ -138,7 +153,8 @@ def get_reservation(filters):
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	
-	
+	if filters.is_active_reservation:
+		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
 		
 	data =  frappe.db.sql(sql, filters, as_dict=1)
@@ -161,11 +177,14 @@ def get_report_data(filters):
 			room_types,
 			nationality,
 			business_source,
+			adult,
+			child,
 			concat(adult,'/',child) as pax,
 			room_nights,
 			business_source_type,
 			rate_type,
 			guest,
+			guest_name,
 			is_active_reservation,
 			reservation_status,
 			total_debit,
@@ -194,13 +213,48 @@ def get_report_data(filters):
 			report_data.append({
 				"indent":0,
 				"reservation": d,
-				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
-				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
-				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g])
+				"is_group":1
 			})
 			report_data = report_data +  [d.update({"indent":1}) or d for d in data if d[group_column["data_field"]]==g]
+			
+			report_data.append({
+				"indent":0,
+				"reservation": "Total",
+				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
+				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
+				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
+				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
+				"pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
+				"is_total_row":1
+			})
+
+		report_data.append({
+				"indent":0,
+				"is_group":1,
+				"reservation": ""})
+		report_data.append({
+				"indent":0,
+				"reservation": "Grand Total",
+				"total_debit":sum([d["total_debit"] for d in data]),
+				"total_credit":sum([d["total_credit"] for d in data]),
+				"balance":sum([d["balance"] for d in data ]),
+				"room_nights":sum([d["room_nights"] for d in data ]),
+				"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
+				"is_total_row":1
+			})
+
 		return report_data
 	else:
+		data.append({
+			"indent":0,
+			"reservation": "Total",
+			"total_debit":sum([d["total_debit"] for d in data]),
+			"total_credit":sum([d["total_credit"] for d in data]),
+			"balance":sum([d["balance"] for d in data ]),
+			"room_nights":sum([d["room_nights"] for d in data ]),
+			"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
+			"is_total_row":1
+		})
 		return data
 
 def get_group_by_column(filters):

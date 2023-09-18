@@ -200,11 +200,13 @@ function onUndoCheckIn() {
             },
                 "Undo check in successfully"
             ).then((doc) => {
+                rs.loading = false
                 rs.reservationStay = doc.message
-
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
                 socket.emit("RefresheDoorDashboard", doc.message.property)
-                rs.loading = false
+                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
@@ -288,17 +290,14 @@ function onSaveNote(data){
         reserved_room:data.reserved_room
     } 
    
-    postApi('reservation.update_reservation_status',data).then((r)=>{
-        
+    postApi('reservation.update_reservation_status',data).then((r)=>{   
         loading.value = false
         note.value.show = false
         rs.getReservationDetail(rs.reservationStay.name)
-
         socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-        
         socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-
         socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
         
     }).catch(()=>{
         loading.value = false
@@ -327,7 +326,12 @@ function onReservedRoom() {
                 property: rs.reservation.property,
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
+                loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name)
+                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+                socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 
@@ -350,7 +354,12 @@ function onUnReservedRoom() {
                 property: rs.reservation.property,
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
+                loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name)
+                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+                socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 

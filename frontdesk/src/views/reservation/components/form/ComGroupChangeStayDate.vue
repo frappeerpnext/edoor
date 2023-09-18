@@ -1,16 +1,11 @@
 <template>
     <ComDialogContent :hideButtonClose="true"  @onOK="onSave" :loading="loading">
-        <div class="col-6">
+        <div class="grid bg-card-info border-round-xl p-3 add-room-reserv h-full my-2">
+        <div class="col">
             <label>Arrival Date<span class="text-red-500">*</span></label><br />
             <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
             v-model="data.arrival_date"
                 placeholder="Arrival Date" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
-        </div>
-        <div class="arr_wfit col-6">
-            <label>Departure<span class="text-red-500">*</span></label><br />
-            <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
-            v-model="data.departure_date"
-                @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
         </div>
         <div class="night__wfit col-fixed px-0" style="width: 150px;">
             <div>
@@ -19,8 +14,16 @@
             <ComReservationInputNight v-model="data.room_night"
                 @onUpdate="onRoomNightChanged" />
         </div>
-        <div class="flex flex-wrap gap-3">
-            <div class="flex align-items-center">
+        <div class="arr_wfit col">
+            <label>Departure<span class="text-red-500">*</span></label><br />
+            <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
+            v-model="data.departure_date"
+                @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
+        </div>
+        
+   <div class="col-12">
+        <div class="flex flex-wrap gap-3 justify-end mt-3 ">
+            <div class="flex align-items-center ">
                 <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"  v-model="data.generate_new_stay_rate_by"/>
                 <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay Rate</label>
             </div>
@@ -30,6 +33,8 @@
             </div>
             
         </div>
+    </div>
+     </div>
         <div class="mt-3">
             <div>
                 <label>Note</label><br />

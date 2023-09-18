@@ -18,6 +18,7 @@
                 </Menu>
             </div>
         </template>
+ 
         <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tooltip.left="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
         <Button @click="onToday('today')" v-tooltip.left="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
         <Button @click="onPrevNext('next')" v-tooltip.left="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
@@ -34,9 +35,10 @@ const iconChangeRoomStatus = ref({
     img: iconChangeRoom
 })
 const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))
-const active = ref(reservation_chart.value.peroid)
 
-const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday',])
+const active = ref(reservation_chart.value?.period || "15_days")
+
+const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday','onChangePeriod'])
 const props = defineProps({
     viewType: {
         type: String,
@@ -50,15 +52,15 @@ const items = ref([
         key: 'week',
         icon:'iconWeekCalendar',
         command: () => {
-            onSearch('week')
+            onChangePeriod('week')
         }
     },
     {
-        label: '14 Days',
-        key: '14_days',
+        label: '15 Days',
+        key: '15_days',
         icon:'icon14Day',
         command: () => {
-            onSearch('14_days')
+            onChangePeriod('15_days')
         }
     },
     {
@@ -66,7 +68,7 @@ const items = ref([
         key: 'month',
         icon:'iconMonth',
         command: () => {
-            onSearch('month')
+            onChangePeriod('month')
         }
     }
 ]);
@@ -77,6 +79,10 @@ function onSearch(key) {
     active.value = key
     emit('onFilter', key)
 }
+function onChangePeriod(key) {
+    active.value = key
+    emit('onChangePeriod', key)
+}
 function onPrevNext(key) {
     emit('onPrevNext', key)
 }
@@ -86,6 +92,7 @@ const toggle = (event) => {
 function onView() {
     emit('onView')
 }
+ 
 </script>
 <style lang="">
     

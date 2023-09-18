@@ -5,7 +5,7 @@
         <div class="grid">
             <div class="col" v-if="hasFilter('filter_date_by')">
                 <label>Filters</label><br/>
-                <ComSelect class="auto__Com_Cus w-full" v-model="filter.filter_date_by"
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.filter_date_by" placeholder="Filter By Date"
                                     :options="['Arrival Date', 'Departure Date', 'Reservation', 'Stay']" :clear="false" />
             </div> 
 
@@ -71,24 +71,25 @@
         <div class="grid">
             <div class="flex flex-col"  v-if="hasFilter('is_active_reservation')">
                 <label class="col-6 font-medium cursor-pointer">Is Active Reservation</label>
-                <Checkbox class="col-6 px-3" v-model="filter.is_active_reservation" :binary="true"/>
+                <Checkbox class="col-6 px-3" v-model="filter.is_active_reservation" :binary="true" trueValue="1"
+                                falseValue="0" />
                                
             </div>
-            <!-- <div class="col" v-if="hasFilter('group_by')">
+            <div class="col" v-if="hasFilter('group_by')">
                 <label>Group By</label><br/>
-                <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by"
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by" placeholder="Group By"
                     :options="['Arrival Date', 'Departure Date', 'Reservation','Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
-                    :clear="false" />
-            </div>  -->
+                     />
+            </div> 
             <div class="col" v-if="hasFilter('order_by')">
-                <label></label><br/>
-                <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by"
-                    :options="['Last Update On', 'Created On', 'Reservation','Reservation Stay','Arrival Date','Departure Date','Room Type']" 
-                    :clear="false" />
+                <label>Order By</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by" placeholder="Order By"
+                    :options="['Last Update On', 'Created On', 'Reservation','Reservation Stay','Arrival Date','Departure Date','Room Type','Reservation Status']" 
+                    :default="['Last Update On']" />
             </div>
             <div class="col" v-if="hasFilter('sort_order')">
                 <label>Sort Order</label><br/>
-                <ComSelect class="auto__Com_Cus w-full" v-model="filter.sort_order"
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.sort_order" placeholder="Sort"
                     :options="['ASC', 'DESC']" 
                     :clear="false" />
             </div> 
@@ -151,6 +152,10 @@ const filter = ref({
     _lang: user.language || "en",
     start_date: moment().toDate(),
     end_date: moment().toDate(),
+    order_by:"Last Update On",
+    is_active_reservation: "1" ,
+    sort_order: "ASC",
+    filter_date_by:"Arrival Date"
 })
 
 const hasFilter = ref((f) => {

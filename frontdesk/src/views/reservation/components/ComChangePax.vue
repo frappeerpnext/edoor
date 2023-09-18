@@ -37,6 +37,7 @@ const onSave = () => {
         socket.emit("RefreshReservationDetail", doc.reservation);
 
         socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
 
         emit("onClose")
     }).catch((ex) => {

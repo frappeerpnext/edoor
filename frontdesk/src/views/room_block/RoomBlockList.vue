@@ -47,10 +47,13 @@
                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
               </Button>
-              <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
-                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+              
+              <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">
+                {{moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} 
+                </span>
               <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
               }}
+              
               </span>
               <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
               <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
@@ -162,7 +165,7 @@ socket.on("RefreshGuestDatabase", (arg) => {
 const columns = ref([
   { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
   { fieldname: 'block_date', label: 'Block Date', header_class: "text-center", fieldtype: "Date", default: true },
-  { fieldname: 'start_date', label: 'Start Date', header_class: "text-center", fieldtype: "Date ", default: true },
+  { fieldname: 'start_date', label: 'Start Date', header_class: "text-center", fieldtype: "Date", default: true },
   { fieldname: 'end_date', label: 'Release Date', header_class: "text-center", fieldtype: "Date", default: true },
   { fieldname: 'room_number', label: 'Room Number', header_class: "text-center", default: true },
   { fieldname: 'room_type', label: 'Room Type', default: true },

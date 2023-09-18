@@ -155,9 +155,9 @@
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
             </Button>
             <Button
-                v-if="rs.reservationStay?.reservation_status == 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservation.departure_date).add(-1, 'day'))"
+                v-if="rs.reservationStay?.reservation_status === 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservationStay.departure_date).add(-1, 'day'))"
                 @click="onCheckOut" class="bg-red-400 border-none">
-                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
+                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out 
             </Button>
 
         </template>
@@ -216,6 +216,8 @@ const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
+
+
 const onRefresh = (showLoading = true) => {
 
     rs.getReservationDetail(name.value, showLoading)
@@ -247,10 +249,12 @@ const onRefresh = (showLoading = true) => {
 
 }
 
-socket.on("RefreshReservationStayData", (arg) => {
-    if (arg.property == rs.reservationStay.name && arg.action=="refresh_reservation_stay") {
-        alert('xxsxx')
-        rs.loading = false
+socket.on("RefreshData", (arg) => {
+    //arg data format {action:"refresh_reservaiton_stay",reservation_stay:"ST2023-5555"}
+
+    if (arg.action== "refresh_reservation_stay" && arg.reservation_stay==rs.reservationStay.name) {
+        onRefresh(false)
+        
     }
 })
 
@@ -270,6 +274,7 @@ function onUnreservedRoom(){
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 rs.getReservationDetail(rs.reservationStay.name)
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 
@@ -290,6 +295,7 @@ function onReservedRoom(){
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 rs.getReservationDetail(rs.reservationStay.name)
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 
@@ -368,13 +374,12 @@ const onCheckIn = () => {
 
                 }).then((result) => {
                     rs.loading = false
-                    onRefresh()
+                    
                     socket.emit("RefresheDoorDashboard", property.name);
                     socket.emit("RefreshReservationDetail", rs.reservation.name);
                     socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
-                    socket.emit("RefreshReservationStayData", {property:rs.reservationStay.name, action:"refresh_reservation_stay"})
-                    alert(rs.reservationStay.name)
-                    
+                    socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                    socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -394,6 +399,11 @@ const onCheckOut = () => {
     confirm.require({
         message: 'Are you sure you want to check out this room?',
         header: 'Confirmation',
+        acceptLabel:'OK',
+        rejectVisible: true,
+        rejectClass: 'hidden',
+        acceptClass: 'border-none',
+        acceptIcon: 'pi pi-check-circle',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
             rs.loading = true
@@ -405,6 +415,7 @@ const onCheckOut = () => {
                 onRefresh()
                 socket.emit("RefresheDoorDashboard", property.name);
                 socket.emit("RefreshReservationDetail", rs.reservation.name);
+                socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
             })
                 .catch((err) => {
                     rs.loading = false
@@ -420,7 +431,7 @@ const OnViewReservation = () => {
 
 onUnmounted(() => {
     rs.clear()
-    socket.off('RefreshReservationStayData');
+    socket.off('RefreshData');
 })
 
 

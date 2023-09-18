@@ -3,11 +3,11 @@
         <div class="grid py-2">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar hideOnDateTimeSelect :disabled="stay.can_arrival" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar hideOnDateTimeSelect :disabled="(stay.can_arrival) || (rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
-                <Calendar selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
+                <Calendar :disabled="(rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
@@ -74,6 +74,9 @@ function onSave(){
         if(r.message){
             loading.value = false
             rs.getReservationDetail(r.message.name)
+            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
             onClose()
         }
 

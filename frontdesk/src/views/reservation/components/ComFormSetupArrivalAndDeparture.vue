@@ -120,6 +120,8 @@ function onSave() {
             }
             dialogRef.value.close("refresh");
             socket.emit("RefreshReservationDetail", stay.value.reservation);
+            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
+            alert(rs.reservationStay.name)
         })
         .catch((error) => {
            

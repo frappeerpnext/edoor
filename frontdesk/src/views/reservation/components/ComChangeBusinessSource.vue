@@ -18,7 +18,7 @@ import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const socket = inject('$socket')
-// const rs = inject('$reservation_stay')
+const rs = inject('$reservation_stay')
 
 
 let filters = [
@@ -63,9 +63,11 @@ function onSave() {
         }else {
             emit('onSave',{reservation:doc.message})
         }
-        // alert(property.name)
+        isLoading.value = false
         socket.emit("RefresheDoorDashboard", property.name);
-        
+        socket.emit("RefreshReservationDetail", rs.reservation.name);
+        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
     })
     .catch(()=>{
         isLoading.value = false      

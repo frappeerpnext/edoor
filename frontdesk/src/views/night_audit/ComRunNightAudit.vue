@@ -19,7 +19,6 @@
         </template>
     </div>
     <Button @click="refreshReport" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
-    
     <div class="wrp-night-audit-content w-full view-table-iframe">
         <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="min-height:20rem; width: 100%; overflow-x: auto;" :src="url" ></iframe>
     </div>
@@ -79,7 +78,6 @@ const steps = ref([
 socket.on("RefreshData", (arg) => {
     if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
         refreshReport()
-        alert(123)
     }    
 })
 
