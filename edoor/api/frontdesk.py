@@ -330,6 +330,33 @@ def get_working_day(property = ''):
 
 
 
+@frappe.whitelist()
+def get_room_chart_resource_and_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
+    return {
+        "resources": get_room_chart_resource(
+            property=property,
+            room_type_group = room_type_group,
+            room_type = room_type,
+            room_number = room_number,
+            floor=floor,
+            building=building,
+            view_type=view_type
+        ),
+        "events":get_room_chart_calendar_event(
+                property=property, 
+                start=start,
+                end=end, 
+                keyword=keyword,
+                view_type=view_type,
+                business_source=business_source,
+                room_type=room_type,
+                room_type_group=room_type_group,
+                room_number=room_number,
+                floor=floor,
+                building=building
+            )
+
+    }
 
 @frappe.whitelist()
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
@@ -351,6 +378,10 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         if room_type_group:
             filter_room_type = filter_room_type + " AND room_type_group = '{}'".format(room_type_group)
         
+        if room_number:
+            filter_room_type = filter_room_type + " AND rt.name in (select room_type_id from `tabRoom` where room_number like '%%{}%%')".format(room_number or '')
+
+        
         sql = """
             select 
             name,
@@ -363,10 +394,12 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
             where 
                 rt.name in (select room_type_id from `tabRoom` where building=if(%(building)s="",building,%(building)s)) and
                 rt.name in (select room_type_id from `tabRoom` where floor=if(%(floor)s="",floor,%(floor)s)) and
+                
                 property='{0}'{1}
             
         """
         sql=sql.format(property,filter_room_type)      
+        
         
 
         filter = {

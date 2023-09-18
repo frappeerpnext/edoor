@@ -90,7 +90,6 @@
                             <hr class="left-0 fixed w-full">
                             <ComNoteGlobal v-if="showNote"/> 
                         </Sidebar>
-                         {{filter}}
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
@@ -451,62 +450,45 @@ function setRoomChartlocationStorage() {
 }
 
 function onFilterToday() {
-    if (loading.value){
+    if (gv.loading){
         return
     }
     const date =moment.utc(working_day.date_working_day)
-
    calendarOptions.visibleRange = {start:date.toDate(),end:getEndDate(date, filter.value.period)}
-    loading.value = true;
-
-    getEvent().then(r=>{
-        loading.value = false
-    }).catch((err)=>{
-        loading.value = false
-    })
+   
+    getEvent() 
 
 }
 
 function onChangePeriod(period) {
     
-    if (loading.value){
+    if (gv.loading){
         return
     }
-    loading.value = true;
+    
     const cal = fullCalendar.value.getApi()
     filter.value.period = period
    calendarOptions.visibleRange = {start:cal.view.currentStart,end:getEndDate(cal.view.currentStart, filter.value.period)}
     
-    getEvent().then(r=>{
-        loading.value = false
-    }).catch((err)=>{
-        loading.value = false
-    })
-
+    getEvent()
 }
 
 
 function onFilterDate(event) {
  
- if (loading.value){
+ if (gv.loading){
      return
  }
 
 const date = moment.utc( moment(event).format("YYYY-MM-DD")).toDate()
 filter.value.date = date
  calendarOptions.visibleRange ={start:date,end:getEndDate(date, filter.value.period)};
- loading.value = true;
- getEvent().then(r=>{
-     loading.value = false
- }).catch((err)=>{
-     loading.value = false
- })
-
+ getEvent()
 }
 
 
 function onPrevNext(key) {
- if (loading.value){
+ if (gv.loading){
      return
  }
  const cal = fullCalendar.value.getApi()
@@ -520,13 +502,9 @@ function onPrevNext(key) {
  calendarOptions.visibleRange = visible_date;
  filter.value.date = visible_date.start
  filter.value.end_date = visible_date.end
- loading.value = true;
+  
 
- getEvent().then(r=>{
-     loading.value = false
- }).catch((err)=>{
-     loading.value = false
- })
+ getEvent()
 
  
 
@@ -665,26 +643,9 @@ function onShowSummary() {
 }
 
 function onView() {
-    loading.value = true;
-    gv.loading = true;
     filter.value.view_type = filter.value.view_type == 'room_type' ? 'room' : 'room_type'
-
     roomChartResourceFilter.view_type = filter.value.view_type
-
- 
-    getResource(true).then((result)=>{
-        if(filter.value.view_type!="room_type"){
-           
-            events.value = events.value.filter(r=>r.type!="room_type_event")
-        }
-        loading.value = false;
-        gv.loading =false;
-    }).catch((err)=>{
-        loading.value = false;
-        gv.loading =false;
-    })
-  
-
+    getResourceAndEvent()
 
 }
 
@@ -727,8 +688,7 @@ function generateEventForRoomType(data){
  
 const onRefresh = debouncer((show_loading = true) => {
     //clear tippy
-    gv.loading = show_loading
-    loading.value = true;
+    
     [...document.querySelectorAll('*')].forEach(node => {
         if (node._tippy) {
             node._tippy.destroy();
@@ -736,14 +696,8 @@ const onRefresh = debouncer((show_loading = true) => {
     });
     //end clear tip 
 
-    getResource(true).then(r=>{
-        loading.value = false
-        gv.loading = false
+    getResourceAndEvent()
 
-    }).catch((err)=>{
-        loading.value = false
-        gv.loading = false
-    })
     getTotalNote()
 
 }, 500);
@@ -807,8 +761,6 @@ function showReservationDetail(name) {
 
 /// filter rescource
 function onFilterResource(f) {
-    gv.loading = true
-    loading.value = true
  
     roomChartResourceFilter = {
         property: property.name,
@@ -822,15 +774,7 @@ function onFilterResource(f) {
     }
     advanceFilter.value = roomChartResourceFilter
 
-    getResource(true).then((r)=>{
-        gv.loading = false
-        loading.value = false
-
-    }).catch((err)=>{
-            gv.loading = false
-        loading.value = false
-    
-    })
+    getResourceAndEvent()
 
 }
 
@@ -846,10 +790,11 @@ function getTotalNote() {
     })
 }
 
-function getResource(get_event = false) {
-    return new Promise(function(resolve, reject) {
+function getResource() {
+    gv.loading = true
         getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter)
         .then((result) => {
+            
             resources.value = result.message
             const cal = fullCalendar.value.getApi()
             cal.setOption('resourceAreaColumns', resourceColumn())
@@ -869,23 +814,12 @@ function getResource(get_event = false) {
                     })
                 }
             }, 3000);
-            
-            if (get_event == true) {
-                getEvent().then((r)=>{
-                    resolve(true)
-                }).catch(error=>{
-                    reject(error);
-                })
-            }else {
-                resolve(result);
-            }
-
-
+             
+            gv.loading = false
         }).catch((error)=>{
-            reject(error);
+            gv.loading = false
         })
-
-        })
+ 
 }
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -901,8 +835,7 @@ function debouncer(fn, delay) {
 
 
 function  getEvent(){ 
-    
-    return new Promise(function(resolve, reject) {
+        gv.loading = true 
         filter.value.date =  moment.utc(calendarOptions.visibleRange.start).toDate()
          
         getApi('frontdesk.get_room_chart_calendar_event', {
@@ -929,16 +862,39 @@ function  getEvent(){
                 element.remove();
             });
     
-
-            resolve(true)
+            gv.loading = false
+             
         }).catch((error) => {
-            reject(error);
+            gv.loading = false
         })
-    })
 }
 
  
 
+function getResourceAndEvent(){
+    gv.loading = true
+    getApi("frontdesk.get_room_chart_resource_and_event",
+    {
+            start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
+            end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
+            property: property.name,
+            keyword: keyword.value.keyword,
+            business_source: advanceFilter.value.business_source,
+            room_type:advanceFilter.value.room_type,
+            view_type:filter.value.view_type,
+            room_number: keyword.value.room_number,
+            room_type_group:advanceFilter.value.room_type_group,
+            floor:advanceFilter.value.floor
+    }).then((result)=>{
+        resources.value = result.message.resources
+        events.value = result.message.events.events
+         
+        if (filter.value.view_type=="room_type"){
+            generateEventForRoomType(result.message.events.occupy_data)
+        }
+        gv.loading = false
+    })
+}
 
 
 onMounted(() => {
@@ -962,11 +918,7 @@ onMounted(() => {
  
     calendarOptions.visibleRange =  { start:filter.value.date, end: getEndDate(filter.value.date,filter.value.period) }
 
-    getResource(true).then((r)=>{
-        gv.loading = false
-    }).catch(err=>{
-        gv.loading = false
-    })
+   getResourceAndEvent()
 
     getTotalNote()
 })

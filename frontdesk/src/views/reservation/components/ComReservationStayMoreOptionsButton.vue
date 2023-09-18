@@ -69,7 +69,6 @@
                     </button>
                     <button @click="onMarkasPaidbyMasterRoom()" v-else-if="!rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        
                         <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
                         <span class="ml-2">  Mark as Paid by Master Room </span>
                     </button>
@@ -395,7 +394,8 @@ function onMarkasPaidbyMasterRoom() {
 
 }
 function onUnmarkasPaidbyMasterRoom() {
-    confirm.require({
+    if(!rs.reservationStay.is_active_reservation){
+        confirm.require({
         message: 'Are you sure you want to Unmark as Paid by Master Room?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
@@ -417,6 +417,13 @@ function onUnmarkasPaidbyMasterRoom() {
         },
 
     });
+    }
+    else{
+        toast.add({
+                severity: 'warn', summary: 'Unmark as Paid by Master Room',
+                detail: 'Unmark as Paid by Master Room can not Change because is action reservation', life: 3000
+            });
+    }
 
 }
 function onUnallowPosttoCityLedger(){
