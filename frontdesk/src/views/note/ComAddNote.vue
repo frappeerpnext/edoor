@@ -39,6 +39,7 @@ const gv = inject('$gv')
 const loading = ref(false);
 const data = ref({})
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 function onSave(){
   if(!data.value.content){
     gv.toast('warn','Please input note.')
@@ -51,7 +52,7 @@ function onSave(){
     loading.value = false
     dialogRef.value.close(r)
   }).catch((err)=>{
-    loading.value = false
+    loading.value = false 
   })
 }
 onMounted(() => {

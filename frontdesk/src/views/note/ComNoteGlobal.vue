@@ -1,7 +1,6 @@
 <template>
 <div>
 	<div>
-		
 		<div class="flex justify-end items-center gap-2">
 			
 			<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">

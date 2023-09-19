@@ -261,7 +261,14 @@
                             <td class="pr-2 min-w-5rem">
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
                                     @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type"
-                                    class="w-full" />
+                                    class="w-full">
+                                    <template #option="slotProps">
+                                        <div class="flex align-items-center">
+                                           
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
                             </td>
                             <td class="p-2 min-w-5rem">
                                 <Dropdown v-model="d.room_id"
@@ -331,6 +338,11 @@
                 </div>
 
             </div>
+            
+            <Message severity="warn"  v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index" >
+                <p v-html="m"></p>
+            </Message>
+
             <Message v-if="doc.reservation_stay.filter(r => !r.room_id).length > 0">You have {{
                 doc.reservation_stay.filter(r => !r.room_id).length }} unassign room(s). You can assign room later in
                 reservation detail.</Message>
@@ -429,18 +441,7 @@ const roomRateTax = ref((d) => {
     const tax_3_amount = getTax3Amount(d.rate * doc.value.reservation.room_night)
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
-// const rateTax = ref((d) => {
-//     if (room_tax.value) {
-//         if (doc.value.tax_rule.rate_include_tax == 'Yes') {
-//             return gv.getRateBeforeTax((d.rate || 0), room_tax.value, doc.value.tax_rule.tax_1_rate, doc.value.tax_rule.tax_2_rate, doc.value.tax_rule.tax_3_rate)
-//         } else {
-//             return d.rate
-//         }
-//     } else {
-//         return 0
-//     }
-// })
-
+ 
 
 function getTax1Amount(rate) {
     if (room_tax.value) {
@@ -547,6 +548,24 @@ const onDateSelect = (date) => {
 
 
 }
+
+
+const warningMessage = computed(()=>{
+    const messages = []
+    const room_type =  [...new Set( doc.value.reservation_stay.filter(x=>x.room_type_id).map(item => item.room_type_id))] 
+    if (room_type){
+        room_type.forEach(r => {
+            const rt = room_types.value.find(rt=>rt.name==r)
+           
+            if(doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>rt.total_vacant_room){
+                messages.push("You have over booking on room type <strong>" + rt.room_type + "</strong>. Total Over: <strong>" + Math.abs(rt.total_vacant_room -  doc.value.reservation_stay.filter(x=>x.room_type_id==r).length)) + "</strong>"
+            }
+        })
+    
+    }
+    
+    return messages
+})
 
 
 const getRoomType = () => {

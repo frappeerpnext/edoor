@@ -348,7 +348,6 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 		}
 		else {
 			localStorage.setItem('edoor_working_day', JSON.stringify(r.message.working_day))
-			console.log(r.message.property)
 			if (r.message.property) {
 			
 				if (r.message.property.length == 1) {

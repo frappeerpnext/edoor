@@ -145,7 +145,6 @@ function onAssignRoom(data){
             position: 'top'
         },
         onClose: (options) => {
-            console.log(options)
             if(options.data && options.data.message){
                 rs.getReservationDetail(options.data.message.name)
             } 

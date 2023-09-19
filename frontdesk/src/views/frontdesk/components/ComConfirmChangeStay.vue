@@ -145,12 +145,14 @@ function onSave(){
  }
     ).then((result)=>{
         isSaving.value = false
- 
        
         socket.emit("RefresheDoorDashboard", doc.value.property);
+       
         socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
         socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
-        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+      
+        socket.emit("RefreshData", { property: doc.value.property, action: "refresh_iframe_in_modal" })
+       
         dialogRef.value.close(result);
 
 

@@ -15,7 +15,7 @@
             <template #end> 
                 <div class="flex gap-2 justify-content-end">
                     <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote">
-                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />  Uncomming Note <Badge
+                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" /> Uncomming Note <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
                     </Badge>
@@ -25,11 +25,12 @@
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar bd" id="frontDeskBar"> 
+        <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
 
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+                    
                 </div>
                 <div>
                     <span class="p-input-icon-left w-full">
@@ -90,6 +91,7 @@
                             <hr class="left-0 fixed w-full">
                             <ComNoteGlobal v-if="showNote"/> 
                         </Sidebar>
+                     
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
@@ -175,6 +177,7 @@ const toast = useToast();
 const dialog = useDialog();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
  
  
@@ -254,7 +257,11 @@ const calendarOptions = reactive({
     resources: resources,
     events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-
+        if(draggedEvent._def.extendedProps.reservation_status=="In-house"){
+            if(!moment(draggedEvent._def.extendedProps.arrival_date).isSame(moment(dropInfo.start).format("YYYY-MM-DD"))){
+                return false
+            }
+        }
         return draggedEvent._def.extendedProps.can_resize == 1
     },
     selectable: true,
@@ -415,10 +422,24 @@ const calendarOptions = reactive({
             }
         }
         else if (event.extendedProps.type == "room_type_event") {
-            const description = `<div class="pt-1"> Available Room ${event.title} <br/> ${JSON.stringify(event)}  </div> `
+            const description = `
+            <div class="w-full p-2">
+                                        <div class="text-center border-1 p-2 border-round-lg">Available Room  ${event.title}</div>
+                                        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
+                                            <tbody>
+                                            <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td>${event?.extendedProps?.arrival || ''}</td></tr>  
+                                            <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td>${event?.extendedProps?.departure || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td>${event?.extendedProps?.adult || ''}</td></tr>
+                                            <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td>${event.extendedProps?.child || ''}</td></tr>
+                                            
+                                            </tbody>
+                                        </table>
+                                    </div> 
+           `
             const { tippyInstance } = useTippy($event.el, {
                 content: description,
             })
+    
         } 
     }),
     eventDrop: function (info) {
@@ -457,7 +478,7 @@ function onFilterToday() {
    calendarOptions.visibleRange = {start:date.toDate(),end:getEndDate(date, filter.value.period)}
    
     getEvent() 
-
+    removeDOM()
 }
 
 function onChangePeriod(period) {
@@ -488,27 +509,23 @@ filter.value.date = date
 
 
 function onPrevNext(key) {
- if (gv.loading){
-     return
- }
- const cal = fullCalendar.value.getApi()
- let visible_date = {}
- if (key == 'prev') {
-     visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days*-1,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days*-1,"days").toDate() }
- } else {
-      visible_date =   { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days,"days").toDate() };
- }
-  
- calendarOptions.visibleRange = visible_date;
- filter.value.date = visible_date.start
- filter.value.end_date = visible_date.end
-  
+    if (gv.loading){
+        return
+    }
+    const cal = fullCalendar.value.getApi()
+    let visible_date = {}
+    if (key == 'prev') {
+        visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days*-1,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days*-1,"days").toDate() }
+    } else {
+        visible_date =   { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days,"days").toDate() };
+    }
+    
+    removeDOM()
+    calendarOptions.visibleRange = visible_date;
+    filter.value.date = visible_date.start
+    filter.value.end_date = visible_date.end
 
- getEvent()
-
- 
-
-
+    getEvent()
 }
 
 
@@ -564,8 +581,14 @@ function onSelectedDate(event) {
 
 
 }
-function resourceColumn() {
-    if (filter.value.view_type == 'room_type') {
+function resourceColumn(view_type) {
+    if (!view_type){
+        const state =  JSON.parse(sessionStorage.getItem("reservation_chart"))
+        view_type = (state?.view || "room") 
+    }
+    
+    
+    if (view_type== 'room_type') {
         return [
             {
                 labelText: 'xxx',
@@ -644,9 +667,9 @@ function onShowSummary() {
 
 function onView() {
     filter.value.view_type = filter.value.view_type == 'room_type' ? 'room' : 'room_type'
-    roomChartResourceFilter.view_type = filter.value.view_type
+    roomChartResourceFilter.view_type = filter.value.view_type    
+    calendarOptions.resourceAreaColumns = resourceColumn(filter.value.view_type)
     getResourceAndEvent()
-
 }
 
 function generateEventForRoomType(data){
@@ -761,7 +784,6 @@ function showReservationDetail(name) {
 
 /// filter rescource
 function onFilterResource(f) {
- 
     roomChartResourceFilter = {
         property: property.name,
         room_type_group: f.room_type_group,
@@ -796,13 +818,8 @@ function getResource() {
         .then((result) => {
             
             resources.value = result.message
-            const cal = fullCalendar.value.getApi()
-            cal.setOption('resourceAreaColumns', resourceColumn())
-
-           
-            document.querySelectorAll('[id^="tippy-"]').forEach(function(element) {
-                element.remove();
-            });
+  
+            removeDOM()
             
             setTimeout(() => {
 
@@ -835,38 +852,36 @@ function debouncer(fn, delay) {
 
 
 function  getEvent(){ 
-        gv.loading = true 
-        filter.value.date =  moment.utc(calendarOptions.visibleRange.start).toDate()
-         
-        getApi('frontdesk.get_room_chart_calendar_event', {
-            start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
-            end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
-            property: property.name,
-            keyword: keyword.value.keyword,
-            business_source: advanceFilter.value.business_source,
-            room_type:advanceFilter.value.room_type,
-            view_type:filter.value.view_type,
-            room_number: keyword.value.room_number,
-            room_type_group:advanceFilter.value.room_type_group,
-            floor:advanceFilter.value.floor
-        }).then((result) => {
-            events.value = (result.message.events)
+    gv.loading = true 
+    filter.value.date =  moment.utc(calendarOptions.visibleRange.start).toDate()
+        
+    getApi('frontdesk.get_room_chart_calendar_event', {
+        start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
+        end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
+        property: property.name,
+        keyword: keyword.value.keyword,
+        business_source: advanceFilter.value.business_source,
+        room_type:advanceFilter.value.room_type,
+        view_type:filter.value.view_type,
+        room_number: keyword.value.room_number,
+        room_type_group:advanceFilter.value.room_type_group,
+        floor:advanceFilter.value.floor
+    }).then((result) => {
+        events.value = (result.message.events)
+        
+        if(filter.value.view_type=="room_type"){
             
-            if(filter.value.view_type=="room_type"){
-                
-                generateEventForRoomType( result.message.occupy_data)
-            }
-            setRoomChartlocationStorage()
-             
-            document.querySelectorAll('[id^="tippy-"]').forEach(function(element) {
-                element.remove();
-            });
-    
-            gv.loading = false
-             
-        }).catch((error) => {
-            gv.loading = false
-        })
+            generateEventForRoomType( result.message.occupy_data)
+        }
+        setRoomChartlocationStorage()
+        showConflictRoom(result.message.conflig_rooms)
+        removeDOM()
+
+        gv.loading = false
+            
+    }).catch((error) => {
+        gv.loading = false
+    })
 }
 
  
@@ -875,27 +890,40 @@ function getResourceAndEvent(){
     gv.loading = true
     getApi("frontdesk.get_room_chart_resource_and_event",
     {
-            start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
-            end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
-            property: property.name,
-            keyword: keyword.value.keyword,
-            business_source: advanceFilter.value.business_source,
-            room_type:advanceFilter.value.room_type,
-            view_type:filter.value.view_type,
-            room_number: keyword.value.room_number,
-            room_type_group:advanceFilter.value.room_type_group,
-            floor:advanceFilter.value.floor
+        start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
+        end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
+        property: property.name,
+        keyword: keyword.value.keyword,
+        business_source: advanceFilter.value.business_source,
+        room_type:advanceFilter.value.room_type,
+        view_type:filter.value.view_type,
+        room_number: keyword.value.room_number,
+        room_type_group:advanceFilter.value.room_type_group,
+        floor:advanceFilter.value.floor
     }).then((result)=>{
         resources.value = result.message.resources
         events.value = result.message.events.events
-         
+    
+        removeDOM()
+
         if (filter.value.view_type=="room_type"){
             generateEventForRoomType(result.message.events.occupy_data)
         }
         gv.loading = false
+        setRoomChartlocationStorage()
+        showConflictRoom(result.message.events.conflig_rooms)
     })
 }
 
+const handleScroll = (event) => {
+    const sticky = document.getElementById("front_desk_search_sticky");
+ 
+    if(document.body.scrollTop > 50){
+        sticky.classList.add("front_desk_sicky_bar");
+    }else{
+        sticky.classList.remove("front_desk_sicky_bar");
+    }
+};
 
 onMounted(() => {
     gv.loading = true
@@ -921,6 +949,8 @@ onMounted(() => {
    getResourceAndEvent()
 
     getTotalNote()
+    document.body.addEventListener('scroll', handleScroll);
+
 })
 
 function getEndDate(start, period){
@@ -939,6 +969,7 @@ function getEndDate(start, period){
 
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
+    document.body.removeEventListener('scroll', handleScroll);
 })
 
 const onOpenAdvanceSearch = (event) => {
@@ -960,7 +991,6 @@ const onClearFilter = () => {
 function onSearchRoom(key) {
     advanceFilter.value.room_number = key
     onFilterResource(advanceFilter.value)
-
 }
 provide('advance_filter', {
     onOpenAdvanceSearch,
@@ -968,6 +998,42 @@ provide('advance_filter', {
     onFilterResource,
     onClearFilter
 })
+function showConflictRoom(conflig_rooms){
+    setTimeout(() => {
+            if(conflig_rooms){
+
+                resources.value.forEach((r)=>{
+                    r.children.forEach((c)=>{
+                       
+                        let room_type_el  = document.querySelector('td[data-resource-id="' + c.id + '"]')
+
+                         
+
+                        let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
+                        if (conflig_rooms.includes(c.id)){
+                            room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
+                            el.style.backgroundColor =setting.room_conflict_background_color;
+
+                        }else {
+                            room_type_el.parentNode.style.backgroundColor = '';
+                            el.style.backgroundColor = '';
+                        }
+                    })
+                    
+                    
+                })
+            }
+            
+
+        }, 500);
+}
+//Remove tippy tooltips when room chart DOM removed
+const removeDOM = () => {
+    document.querySelectorAll('[id^="tippy-"]').forEach(function(element) {
+        element.remove();
+    });
+}
+
 
 
 </script>
@@ -1012,8 +1078,13 @@ div.sticky_search_bar{
   position: -webkit-sticky;
   position: sticky;
   top: 62px;
-  padding:10px 0;
   background-color: #eff2f7;
-  z-index: 2;
+  z-index: 4;
+}
+div.front_desk_sicky_bar{
+    padding:10px 0;
+}
+.fc-timeline-lane .fc-resource{
+    background: red !important;
 }
 </style>

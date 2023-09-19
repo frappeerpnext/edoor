@@ -157,6 +157,7 @@
             property: property.name
         }).then((result) => {
             working_day.value = (result.message)
+            loading.value= false
         })
 });
 </script>

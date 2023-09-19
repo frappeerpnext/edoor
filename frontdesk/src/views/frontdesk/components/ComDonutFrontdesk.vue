@@ -26,7 +26,6 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.body);
-    // console.log(data);
     return {
         labels: ['Occupy', 'Vacant'],
         datasets: [

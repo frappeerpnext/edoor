@@ -16,6 +16,8 @@
   "allow_user_to_delete_auto_post_transaction",
   "cb_177",
   "show_summary_under_room_chart_calendar",
+  "enable_over_booking",
+  "room_conflict_background_color",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -226,12 +228,24 @@
   {
    "fieldname": "column_break_nwvn",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_over_booking",
+   "fieldtype": "Check",
+   "label": "Enable Over Booking"
+  },
+  {
+   "default": "#fc8b8b",
+   "fieldname": "room_conflict_background_color",
+   "fieldtype": "Color",
+   "label": "Room Conflict Background Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-08-29 17:18:20.764286",
+ "modified": "2023-09-19 12:55:36.699009",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

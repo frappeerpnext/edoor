@@ -196,9 +196,6 @@ onMounted(() => {
             setTimeout(function(){
                 onRefresh(false)
             },1500)
-            
-            
-
         }
     })
 
@@ -285,7 +282,6 @@ function onAddRoomMore(){
                     
                     rs.LoadReservation(data.name,false)
                 }, 1000);
-               
             }
         }
     });

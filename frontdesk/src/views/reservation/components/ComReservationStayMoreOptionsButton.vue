@@ -73,10 +73,10 @@
                         <span class="ml-2">  Mark as Paid by Master Room </span>
                     </button>
                     <div>
-                    <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onUnallowPosttoCityLedger()"
+                    <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onDisallowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
-                    <span> Unallow Post to City Ledger </span>
+                    <span> Disallow Post to City Ledger </span>
                     </button>
                     <button v-else @click="onAllowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
@@ -367,34 +367,40 @@ function onUnReservedRoom() {
 }
 
 function onMarkasPaidbyMasterRoom() {
-    confirm.require({
-        message: 'Are you sure you want to Mark as Piad by Master Room?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
-                paid_by_master_room: 1,
-            })
-                .then((doc) => {
-
-                    rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
-                    toast.add({
-                        severity: 'success', summary: 'Mark as Piad by Master Room',
-                        detail: 'Mark as Piad by Master Room Successfully', life: 3000
-                    });
+    if(rs.reservationStay.is_active_reservation){
+        confirm.require({
+            message: 'Are you sure you want to Mark as Piad by Master Room?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
+            accept: () => {
+                db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                    paid_by_master_room: 1,
                 })
+                    .then((doc) => {
 
-        },
+                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
+                        toast.add({
+                            severity: 'success', summary: 'Mark as Piad by Master Room',
+                            detail: 'Mark as Piad by Master Room Successfully', life: 3000
+                        });
+                    })
 
-    });
+            },
 
+        });
+    }else{
+        toast.add({
+                severity: 'warn', summary: 'Mark as Paid by Master Room',
+                detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
+            });
+    }
 }
 function onUnmarkasPaidbyMasterRoom() {
-    if(!rs.reservationStay.is_active_reservation){
+    if(rs.reservationStay.is_active_reservation){
         confirm.require({
         message: 'Are you sure you want to Unmark as Paid by Master Room?',
         header: 'Confirmation',
@@ -421,37 +427,45 @@ function onUnmarkasPaidbyMasterRoom() {
     else{
         toast.add({
                 severity: 'warn', summary: 'Unmark as Paid by Master Room',
-                detail: 'Unmark as Paid by Master Room can not Change because is action reservation', life: 3000
+                detail: `${rs.reservationStay.reservation_status} reservation can not change information`, life: 3000
             });
     }
 
 }
-function onUnallowPosttoCityLedger(){
-    confirm.require({
-        message: 'Are you sure you want to Unallow Post to City Ledger?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
-                allow_post_to_city_ledger: 0,
-            })
-                .then((doc) => {
-                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
-                    toast.add({
-                        severity: 'success', summary: 'Unallow Post to City Ledger',
-                        detail: 'Unallow Post to City Ledger Successfully', life: 3000
-                    });
+function onDisallowPosttoCityLedger(){
+    if(rs.reservationStay.is_active_reservation){
+        confirm.require({
+            message: 'Are you sure you want to Disallow Post to City Ledger?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptIcon: 'pi pi-check-circle',
+            acceptLabel: 'Ok',
+            accept: () => {
+                db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                    allow_post_to_city_ledger: 0,
                 })
-        },
+                    .then((doc) => {
+                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
+                        toast.add({
+                            severity: 'success', summary: 'Disallow Post to City Ledger',
+                            detail: 'Disallow Post to City Ledger Successfully', life: 3000
+                        });
+                    })
+            },
 
-    });
+        });
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Disallow Post to City Ledger',
+            detail: `${rs.reservationStay.reservation_status} reservation is not Disallow to change information`, life: 3000
+        });
+    }
 }
 function onAllowPosttoCityLedger(){
-    confirm.require({
+    if(rs.reservationStay.is_active_reservation){
+        confirm.require({
         message: 'Are you sure you want to Allow Post to City Ledger?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
@@ -473,6 +487,13 @@ function onAllowPosttoCityLedger(){
         },
 
     });
+    }else{
+        toast.add({
+            severity: 'warn', summary: 'Allow Post to City Ledger',
+            detail: `${rs.reservationStay.reservation_status} reservation is not allow to change information`, life: 3000
+        });
+    }
+    
 }
 
 function onMarkasGITReservation() {

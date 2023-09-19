@@ -20,7 +20,7 @@
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-end mb-3 filter-calen-fro">
+        <div class="flex justify-end mb-3 filter-calen-fro sticky_search_bar" id="room_search_sticky" >
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type"   @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
             </div>
@@ -560,7 +560,15 @@ function getEvents() {
             gv.loading = false
         });
 }
-
+const handleScroll = (event) => {
+    const sticky = document.getElementById("room_search_sticky");
+ 
+    if(document.body.scrollTop > 50){
+        sticky.classList.add("front_desk_sicky_bar");
+    }else{
+        sticky.classList.remove("front_desk_sicky_bar");
+    }
+};
 onMounted(() => {
 
     onInitialDate()
@@ -572,10 +580,12 @@ onMounted(() => {
         selectedDate.value = new Date(moment(currentViewChart.start_date).add(1, 'days'))
     }
     getTotalNote()
+    document.body.addEventListener('scroll', handleScroll);
 })
 
 onUnmounted(() => {
     socket.off("RefresheDoorDashboard");
+    document.body.removeEventListener('scroll', handleScroll);
 })
 </script>
 <style>

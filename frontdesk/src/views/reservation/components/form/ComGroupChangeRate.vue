@@ -1,5 +1,4 @@
 <template>
-    {{ data }}
     <ComDialogContent :hideButtonClose="true"  :hideButtonOK="true" :loading="loading">
         <ComReservationStayPanel title="Apply To">
             <template #content>
@@ -31,14 +30,14 @@
             <label>Rate type</label>
             <ComSelect v-model="data.rate_type" class="w-full" placeholder="Please Select Rate Type" doctype="Rate Type"   />
             </div>
-            <div class="col-6 pt-4">            
+            <div class="col pt-4">            
                 <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                 <Checkbox v-model="data.is_overwrite_room_rate_and_rate_type" :binary="true" />
                 <label>Overwrite Room Rate with Rate Type</label>
             </div>
             </div>
-            <div class="pt-3">
-                <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
+            <div class="mx-2 pt-3">
+                <Button class="border-none btn-ok_ss" >
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2"  :src="BtnOkIcon" style="height: 13px;"/>
                                 Save
@@ -58,14 +57,14 @@
                 <label>Rate </label>
                 <InputText class="w-full" type="text" v-model="data.rate"/>
             </div>
-            <div class="col-6 pt-4 ms-2">
+            <div class="col pt-4">
                 <div  class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                     <Checkbox inputId="rateIncludeTax"  v-model="data.is_rate_include_tax" :binary="true" />
                     <label for="rateIncludeTax">Rate Include Tax</label>
                 </div>
             </div>
-            <div class="pt-3">
-                <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
+            <div class="mx-2 pt-3">
+                <Button class="border-none btn-ok_ss" >
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2"  :src="BtnOkIcon" style="height: 13px;"/>
                                 Save
@@ -78,12 +77,12 @@
     <ComReservationStayPanel title="Tax Exempt" class="mt-3">
         <template #content>
             <div class="grid items-center justify-content-between">
-                <div class="col-11 py-0">
+                <div class="col py-0">
                     <label for="rateIncludeTaxRule">tax rule</label>
                     <ComAutoComplete inputId="rateIncludeTaxRule" class="w-full" v-model="data.tax_rule" placeholder="Please select tax rule" doctype="Tax Rule"/>
                 </div>
-                <div class="pt-4">
-                    <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
+                <div class="mx-2 pt-4">
+                    <Button class="border-none btn-ok_ss" >
                         <span class="flex align-items-center">
                             <img class="pi pi-check-circle mr-2"  :src="BtnOkIcon" style="height: 13px;"/>
                                 Save

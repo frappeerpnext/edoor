@@ -1,5 +1,6 @@
 <template>
     <div> 
+        {{ loading }}
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
                 <Button :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
@@ -12,7 +13,7 @@
                         <button  @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
                         </button>
-                        <button @click="onOpenDeleted" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onOpenDeleted" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  " class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Delete
                         </button>
                 </template>
@@ -55,8 +56,18 @@ function isNotLast(){
         return true
     }
 }
+function isNotLastForDelete(){
+    const names = props.rooms.map(item => item.name);
+    const index = names.indexOf(props.data.name)
+    if((index + 1) < props.rooms.length && index !=0){
+        gv.toast('warn',"This room stay is not last stay.")
+        return false
+    }else{
+        return true
+    }
+}
 function onOpenDeleted(){
-    if(isNotLast()){
+    if(isNotLastForDelete()){
         openNote.value = true
     }
     
@@ -70,22 +81,22 @@ function onCloseNote(){
 }
 function onDeleted(note){
     loading.value = true
-    deleteApi('reservation.delete_stay_room', {
-        parent: props.data.parent,
-        name: props.data.name, 
-        note: note
-    })
-    .then((result) => {
-        if(result.message){
-            loading.value = false
-            openNote.value = false
-            rs.getReservationDetail(props.data.parent)
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-        }
-    }).catch((r)=>{
-        loading.value = false
-    })
+    // deleteApi('reservation.delete_stay_room', {
+    //     parent: props.data.parent,
+    //     name: props.data.name, 
+    //     note: note
+    // })
+    // .then((result) => {
+    //     if(result.message){
+    //         openNote.value = false
+    //         rs.getReservationDetail(props.data.parent)
+    //         loading.value = false
+    //         socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+    //         socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+    //     }
+    // }).catch((r)=>{
+    //     loading.value = false
+    // })
 }
 function onChangeStay(){
     if(isNotLast()){

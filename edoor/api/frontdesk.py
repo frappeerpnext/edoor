@@ -221,7 +221,9 @@ def get_edoor_setting(property = None):
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
         "show_account_code_in_folio_transaction":edoor_setting_doc.show_account_code_in_folio_transaction,
+        "enable_over_booking":edoor_setting_doc.enable_over_booking,
         "backend_port":epos_setting.backend_port,
+        "room_conflict_background_color":edoor_setting_doc.room_conflict_background_color,
         "custom_print_format":custom_print_format,
         "currency":{
             "name":currency.name,
@@ -354,9 +356,32 @@ def get_room_chart_resource_and_event(property, start=None,end=None, keyword=Non
                 room_number=room_number,
                 floor=floor,
                 building=building
-            )
-
+            ),
+        
     }
+
+def get_conflict_room(filter):
+    sql="""
+        select 
+            distinct
+            room_id  
+        from `tabTemp Room Occupy` 
+        where
+            ifnull(room_id,'') <> '' and 
+            property = %(property)s and 
+            date between %(start)s and %(end)s and 
+            room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s) and 
+            ifnull(floor,'') = if(%(floor)s='',ifnull(floor,''), %(floor)s) and 
+            ifnull(building,'') = if(%(building)s='',ifnull(building,''), %(building)s) and 
+            room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
+        group by date, room_id
+        having count(*)>1
+        """
+
+ 
+    data = frappe.db.sql(sql,filter, as_dict=1)
+    return [d["room_id"] for d in data]
+
 
 @frappe.whitelist()
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
@@ -482,8 +507,8 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             room_type,
             room_type_alias,
             room_number,
-            concat(start_date,'T',start_time) as start ,
-            concat(end_date,'T',end_time) as end,
+            concat(start_date,'T','12:00:00') as start ,
+            concat(end_date,'T','12:00:00') as end,
             guest_name as title,
             status_color as color,
             adult,
@@ -513,7 +538,8 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             balance,
             total_credit,
             total_room_rate,
-            note
+            note,
+            reservation_status
         from 
             `tabReservation Stay Room` 
         where 
@@ -539,7 +565,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
         sql = sql + " and room_number like   concat('%%' ,  %(room_number)s ,'%%') "
     if keyword:
         # sql = sql + " and ifnull(keyword,'') like  concat('%%' +   %(keywords)s ,'%%') "
-        sql = sql + " and concat(ifnull(keyword,''),' ', guest_name) like concat('%%' ,  %(keywords)s ,'%%') "
+        sql = sql + " and concat(ifnull(keyword,''),' ', guest_name, ' ' + parent) like concat('%%' ,  %(keywords)s ,'%%') "
 
 
 
@@ -595,7 +621,12 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
     events = events +  get_room_block_event(add_to_date(start, days=-1),end,property)
     
 
-    return {"events":events,"occupy_data":occupy_data}
+    return {
+        "events":events,
+        "occupy_data":occupy_data,
+        "conflig_rooms":get_conflict_room(filter),
+
+        }
 
 @frappe.whitelist()
 def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None):

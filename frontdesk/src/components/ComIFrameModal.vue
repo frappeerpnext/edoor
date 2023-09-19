@@ -118,7 +118,6 @@ function onIframeLoaded() {
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
     
-    console.log(windowWidth)
     if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
         iframe.style.overflowX = 'hidden';
     } else {

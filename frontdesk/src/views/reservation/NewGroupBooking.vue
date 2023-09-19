@@ -315,7 +315,7 @@
                                 </div>
                             </td>
                             <td class="p-2 w-12rem text-center">
-                                <div
+                                <div :class="d.total_vacant_room < 0 ? 'text-red-500' : ''"
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     {{ d.total_vacant_room }}
                                 </div>
@@ -358,8 +358,11 @@
                                 </div>
                             </td>
                             <td class="p-2 w-12rem text-center">
-                                <InputNumber v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0"
-                                    :max="d.total_vacant_room" class="child-adults-txt" />
+                                <div class="relative ">
+                                    <div :class="d.total_selected_room > d.total_vacant_room ? 'tip-over-booking' : 'hidden'" v-tippy="d.room_type+' OverBooking'">Overbooking</div>
+                                <InputNumber :class="d.total_selected_room > d.total_vacant_room ? 'over-booking-box' : ''" v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0"
+                                    :max="d.total_vacant_room + (setting.enable_over_booking==1?1000:0)" class="child-adults-txt" />
+                                </div>
                             </td>
                         </tr>
                     </tbody>

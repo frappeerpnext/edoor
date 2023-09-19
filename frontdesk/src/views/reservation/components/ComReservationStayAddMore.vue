@@ -50,8 +50,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-3 relative,">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{
                                     room_tax.tax_2_name }}{{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
@@ -120,7 +119,14 @@
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
                                 @change="onSelectRoomType(d)" 
                                     optionLabel="room_type" placeholder="Select Room Type"
-                                    class="w-full" />
+                                    class="w-full" >
+                                    <template #option="slotProps">
+                                        <div class="flex align-items-center">
+                                           
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
                             </td>
                             <td class="px-2 w-10rem">
                                 <Dropdown v-model="d.room_id"
@@ -186,6 +192,9 @@
                 </Button>
             </div>
         </div>
+        <Message severity="warn"  v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index" >
+                <p v-html="m"></p>
+            </Message>
         <OverlayPanel ref="op">
             <ComReservationStayChangeRate v-model="rate" @onClose="onClose" @onUseRatePlan="onUseRatePlan"
                 @onChangeRate="onChangeRate" />
@@ -217,6 +226,25 @@ const data = ref({
 })
 const room_tax = ref()
 const edoor_working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+
+
+
+const warningMessage = computed(()=>{
+    const messages = []
+    const room_type =  [...new Set( data.value.reservation_stays.filter(x=>x.room_type_id).map(item => item.room_type_id))] 
+    if (room_type){
+        room_type.forEach(r => {
+            const rt = room_types.value.find(rt=>rt.name==r)
+           
+            if(data.value.reservation_stays.filter(x=>x.room_type_id==r).length>rt.total_vacant_room){
+                messages.push("You have over booking on room type <strong>" + rt.room_type + "</strong>. Total Over: <strong>" + Math.abs(rt.total_vacant_room -  data.value.reservation_stays.filter(x=>x.room_type_id==r).length)) + "</strong>"
+            }
+        })
+    
+    }
+    
+    return messages
+})
 
 
 const selectedStay = ref({})
