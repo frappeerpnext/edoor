@@ -77,7 +77,8 @@
                                     </Button>
                                 </div>
                             </div>
-                            <div :class="i.reservation || i.reservation_stay ? 'text-500 text-sm ' : ''">Note Date: {{ gv.dateFormat(i.note_date) }}</div>
+                            <div :class="i.reservation || i.reservation_stay ? 'text-500 text-sm ' : ''"> 
+                                Note Date: {{ gv.dateFormat(i.note_date) }}</div>
                         </div>
                         <div v-if="i.content"
                             class="mt-3 mb-6 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
@@ -345,8 +346,8 @@ function onAddNote(name) {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                dialogRef.value.close()
                 onLoadData()
+                dialogRef.value.close()
                 // update bage total notes
                 getTotalNote()
             }

@@ -1,4 +1,5 @@
 <template>
+    {{ newRoom }}
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
@@ -138,6 +139,7 @@
         </OverlayPanel>
 
     </div>
+    
 </ComDialogContent>
 </template>
 <script setup>
@@ -178,8 +180,9 @@
     function onUpdateDateNewRoom(newValue){
         newRoom.value.start_date = moment(newValue.end_date).toDate() 
         if(!newRoom.value.end_date || moment(newRoom.value.start_date).isSame(newRoom.value.end_date) || moment(newRoom.value.start_date).isAfter(newRoom.value.end_date)){
-            newRoom.value.end_date = moment(newRoom.value.start_date).add(1,'days').toDate()
+            newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
         }
+        
         newRoom.value.room_nights = moment(newRoom.value.end_date).diff(moment(newRoom.value.start_date), 'days')
     }
     function onNight(newValue){
@@ -241,11 +244,16 @@
         
         postApi('reservation.upgrade_room',{doc: data.reservationStay}).then((doc) => { 
             loading.value = false;
-            socket.emit("RefreshReservationDetail", doc.reservation);
             rs.getReservationDetail(data.reservationStay.name)
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-            socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+
+            socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+
             socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+
+            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+
             onClose()
         }).catch((ex) => {
             loading.value = false;

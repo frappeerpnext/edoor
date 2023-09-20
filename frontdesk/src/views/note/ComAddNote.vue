@@ -48,7 +48,8 @@ function onSave(){
   loading.value = true
   let dataSave = JSON.parse(JSON.stringify(data.value))
   dataSave.note_date = gv.dateApiFormat(dataSave.note_date)
-  createUpdateDoc("Frontdesk Note", {data: dataSave}).then((r)=>{
+  createUpdateDoc("Frontdesk Note", {data: dataSave})
+  .then((r)=>{
     loading.value = false
     dialogRef.value.close(r)
   }).catch((err)=>{

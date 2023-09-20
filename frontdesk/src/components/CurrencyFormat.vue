@@ -1,12 +1,13 @@
 <template>
  
-    <span>{{ numberFormat(format, amount) }}</span>
+    <span>{{ NumberFormat(format, amount) }}</span>
 </template>
 <script setup>
 
 import { inject, defineProps, ref, computed } from '@/plugin';
-const numberFormat = inject('$numberFormat')
-const gv = inject("$gv")
+import NumberFormat from 'number-format.js'
+ 
+const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
 const props = defineProps({
     value: Number,
     currency: {
@@ -22,8 +23,8 @@ const format = ref("#,###,##0.00##")
 
 const currencyDefualt = {pos_currency_format : '$ #,###,##0.00', precision: 2}
 const currency = ref()
-if (gv.setting.currency && gv.setting.currency.pos_currency_format){
-    currency.value = gv.setting.currency
+if ( setting.currency && setting.currency.pos_currency_format){
+    currency.value = setting.currency
 }
 else{
     currency.value = currencyDefualt

@@ -160,6 +160,11 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
 @frappe.whitelist()
 def check_room_type_availability(property,start_date=None,end_date=None,rate_type=None, business_source=None, room_type_id=None,exclude_stay_room_id=None):
     end_date = add_to_date(end_date,days=-1)
+    #check if start date < current working date then set start date to crrent working date because we check date only for future date
+    working_day = get_working_day(property=property)
+    if getdate(start_date)< getdate(working_day["date_working_day"]):
+        start_date = working_day["date_working_day"]
+
     #get all room type and total room 
     sql_room_type = "select room_type_id as name, room_type, count(name) as total_room, 0 as occupy from `tabRoom` where disabled = 0 and property='{}'  group by room_type_id,room_type".format(property)
     if room_type_id:
@@ -176,7 +181,6 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
             
         sql= sql + " group by date order by count(room_type_id) desc limit 1"
 
-        
         room_type_occupy = frappe.db.sql(sql,as_dict=1)
   
         if room_type_occupy:
@@ -1021,9 +1025,9 @@ def change_stay(data):
         room_id = data["room_id"]
    
     # when we change stay date from drap and drop in room chart calendar we allow to overlap
-    if room_id:
-        if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0: 
-            
+
+    if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0: 
+        if room_id:        
             check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
                 {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
                 as_dict = 1
@@ -1031,16 +1035,19 @@ def change_stay(data):
             if check_room_occupy:
                 frappe.throw(_("You cannot change stay of this reservation. Because this room is not available on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
 
-        else:
-            check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
-                {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
-                as_dict = 1
-                )
-            if check_room_occupy:
-                frappe.throw(_("You cannot change stay of this reservation. Because this room is not available on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
-    else:
-        #check room avalilable by room type
-        pass 
+        #check room type occupy
+        available_room = check_room_type_availability(
+            property=data["property"],
+            room_type_id=data["room_type_id"],
+            start_date=data["start_date"],
+            end_date=data["end_date"],
+            exclude_stay_room_id=data["name"]
+        )
+        frappe.throw(str(data["name"]))
+         
+        if available_room[0]["total_vacant_room"]<=0:
+            frappe.throw("You cannot change stay of this reservation. Because you don't have enough room for room type {}".format(available_room[0]["room_type"]))
+        
     
     doc = frappe.get_doc("Reservation Stay",data['parent'])
 

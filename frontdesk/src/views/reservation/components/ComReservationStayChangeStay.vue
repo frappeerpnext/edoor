@@ -142,12 +142,19 @@
 
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
+
             rs.getReservationDetail(rs.reservationStay.name)
+
             socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+
             socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+
             socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+
             socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+
             onClose(true)
+            
         }).catch(()=>{
             loading.value= false
         })

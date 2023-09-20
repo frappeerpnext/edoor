@@ -174,8 +174,10 @@ function onMarkAsMasterRoom() {
                 reservation: rs.reservation.name,
                 reservation_stay: rs.reservationStay.name
             }).then((doc) => {
+                rs.loading = false
                 rs.reservationStay = doc.message
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })
 
         },
@@ -239,6 +241,8 @@ function OnUndoCheckOut() {
                 rs.reservationStay = doc.message
                 socket.emit("RefreshReservationDetail", rs.reservation.name)
                 socket.emit("RefresheDoorDashboard", doc.message.property)
+                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                 rs.loading = false
                 setTimeout(() => {
                     emit('onRefresh')
@@ -293,9 +297,9 @@ function onSaveNote(data){
         loading.value = false
         note.value.show = false
         rs.getReservationDetail(rs.reservationStay.name)
-        socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-        socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+        socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+        socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+        socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})
         socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
         
     }).catch(()=>{
@@ -329,8 +333,9 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-                socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
                 socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+
             })  
         },
 
@@ -357,8 +362,9 @@ function onUnReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-                socket.emit("RefreshNightAuditStep", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
                 socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+
             })  
         },
 
@@ -381,12 +387,14 @@ function onMarkasPaidbyMasterRoom() {
                     paid_by_master_room: 1,
                 })
                     .then((doc) => {
-
+                        rs.loading = false
                         rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                         toast.add({
                             severity: 'success', summary: 'Mark as Piad by Master Room',
                             detail: 'Mark as Piad by Master Room Successfully', life: 3000
                         });
+                        socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                     })
 
             },
@@ -414,11 +422,14 @@ function onUnmarkasPaidbyMasterRoom() {
                 paid_by_master_room: 0,
             })
                 .then((doc) => {
+                    loading.value = false;
                     rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
                         severity: 'success', summary: 'Unmark as Paid by Master Room ',
                         detail: 'Unmark as Paid by Master Room Successfully', life: 3000
                     });
+                    socket.emit("RefreshReservationDetail", rs.reservation.name)
+                    socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                 })
         },
 

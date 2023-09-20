@@ -41,7 +41,7 @@
               :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
               :frozen="c.frozen">
               <template #body="slotProps">
-                <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
+                <Button v-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
                   link>
                   {{ slotProps.data[c.fieldname] }}
                   <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>

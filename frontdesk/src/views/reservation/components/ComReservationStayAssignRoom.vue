@@ -167,14 +167,13 @@
         postApi("reservation.assign_room",{data: selectedStay.value}).then((r)=>{
             loading.value = false
             
-            socket.emit("RefreshReservationDetail", r.message.reservation);
+            socket.emit("RefreshReservationDetail", r.message.reservation)
             
-            socket.emit("RefresheDoorDashboard", property.name);
+            socket.emit("RefresheDoorDashboard", property.name)
            
-            socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"});
+            socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"})
             
-            socket.emit("RefreshNightAuditStep", {property:property.name,action:"refresh_iframe_in_modal"});
-          
+            socket.emit("RefreshNightAuditStep", {property:property.name,action:"refresh_iframe_in_modal"})
 
             onClose(r)
         }).catch((err)=>{

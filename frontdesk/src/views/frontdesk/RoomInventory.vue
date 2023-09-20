@@ -20,7 +20,7 @@
                 </div>
             </template>
         </ComHeader>
-        <div class="flex justify-end mb-3 filter-calen-fro sticky_search_bar" id="room_search_sticky" >
+        <div class="flex justify-end mb-3 filter-calen-fro sticky_search_bar_room" id="room_search_sticky" >
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type"   @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onFilter="onFilter($event)"/>
             </div>
@@ -65,7 +65,7 @@
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
-                                        <div class="flex">
+                                        <div class="flex justify-content-center">
                                             <!-- <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event?.extendedProps?.group_color}" v-if="event?.extendedProps?.group_color"></span> -->
                                             <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 
@@ -395,7 +395,7 @@ function resourceColumn() {
 
 
 function onShowSummary() {
- 
+    onRefresh()
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
  

@@ -131,15 +131,6 @@ function onNext() {
     }
 }
 
-// socket.on("RefreshNightAuditStep", (arg) => {
-//     if (arg == property.name) {
-//         setTimeout(function () {
-//             loadData()
-//         }, 3000)
-//     }
-// })
-
-
 function onFinish() {
     loading.value = true;
     confirm.require({
@@ -225,7 +216,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    socket.off("RefreshNightAuditStep");
+    socket.off("RefreshData");
 })
 
 

@@ -636,7 +636,7 @@ td[data-resource-id="out_of_order"] .fc-event.fc-event-draggable,
 td[data-resource-id="arrival_departure"] .fc-event.fc-event-draggable,
 td[data-resource-id="pax"] .fc-event.fc-event-draggable
 {
-    border-radius: 0 !important;
+    border-radius: 5px !important;
 }
 .wrp-statu-icon{
     position: absolute;
@@ -1233,4 +1233,10 @@ ul.res__hideshow{
     top: -13px;
     right: 9px;
     border-radius: 7px 7px 0px 0px;
+}
+.sticky_search_bar_room{
+    position: sticky;
+    top: 63px;
+    background-color: #eff2f7;
+    z-index: 4;
 }

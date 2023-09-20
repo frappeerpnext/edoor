@@ -96,10 +96,9 @@
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
                                         <div class="flex">
-                                            <!-- <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event?.extendedProps?.group_color}" v-if="event?.extendedProps?.group_color"></span> -->
                                             <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
-                                                
-                                            </span>
+                                                <!-- GIT/FIT Color -->
+                                            </span>                                        
                                             <span class="wrp-statu-icon">
                                                 <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
                                                     <ComIcon style="height: 12px;" icon="iconCrown"/>
@@ -108,14 +107,22 @@
                                                     <ComIcon style="height: 12px;" icon="iconUserGroup"/>
                                                 </span>
                                             </span>
-                                            <div class="geust-title">
-                                                {{event.title}}
+                                           
+                                            <div class="guest-title">
+                                                <template v-if="event.extendedProps.type=='room_type_event'">
+                                                    <span style="background:pink">{{event.extendedProps.room_available}}</span> /
+                                                    <span style="background:yellow">{{event.extendedProps.unassign_room}}</span> 
+
+                                                </template>
+                                                <template v-else>
+                                                    {{event.title}}
+                                                </template>
+                                                
                                             </div>
                                         </div>
                                     </div>
                             </template> 
                         </FullCalendar>
-                   
                     </div>
                 </div>
             </div>
@@ -147,7 +154,8 @@ import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingS
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue' 
- 
+import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
+
 import { useTippy } from 'vue-tippy'
 
 
@@ -349,98 +357,17 @@ const calendarOptions = reactive({
 
     }),
     eventMouseEnter: (($event) => {
-        
         if(loading.value){
             return
         }
         const event = $event.event._def
-
-        if (event.extendedProps.type == "stay") {
-            if (!$event.el.getAttribute("has_tippy")) {
-
-                const description = `<div class="p-2 w-full">
-                                        <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
-                                        <table class="tip_description_stay_table m-1 pt-3">
-                                            <tbody>
-                                            <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>${event.extendedProps?.reservation || ''}</td></tr>
-                                            <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_stay || ''}</td></tr>    
-                                            <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>${event.extendedProps?.reference_number || ''} </td></tr>
-                                            <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>${event.extendedProps?.internal_reference_number ?? ''}</td></tr>
-                                            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>${event.extendedProps?.reservation_type || ''} ${event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}</td></tr>    
-                                            <tr class="table-rs-de"><td>Guest</td><td class="px-2">:</td><td>${event.title}</td></tr>
-                                            <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.arrival_date)} - ${gv.timeFormat(event.extendedProps?.start_time)}</td></tr>
-                                            <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>${gv.dateFormat(event.extendedProps?.departure_date)} - ${gv.timeFormat(event.extendedProps?.end_time)}</td></tr>
-                                            <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>${event.extendedProps?.room_number}</td></tr>
-                                            <tr class="table-rs-de"><td>Pax</td><td class="px-2">:</td><td>${event.extendedProps?.adult} / ${event.extendedProps?.child}</td></tr>
-                                            <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>${event.extendedProps?.business_source || ''}</td></tr>
-                                            <tr class="table-rs-de"><td>ADR</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.adr)}</td></tr>
-                                            <tr class="table-rs-de"><td>Total Room Rate</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_room_rate)}</td></tr>
-                                            <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_debit)}</td></tr>
-                                            <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.total_credit)}</td></tr>
-                                            <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>${gv.currencyFormat(event.extendedProps?.balance)}</td></tr>
-                                            ${(event.extendedProps?.note != "null" && event.extendedProps?.note) ? `
-                                            <tr><td><span class="mt-2">Note</span></td></tr>
-                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.note.length > 220 ? event.extendedProps?.note.substring(0, 220) + '...' : event.extendedProps?.note}</div></td></tr>
-                                            ` : ''}
-                                            </tbody>
-                                        </table>
-                                    </div>`;
-
-
-
-                $event.el.setAttribute("has_tippy", "yes");
-
-
-                const { tippyInstance } = useTippy($event.el, {
-                    content: description,
-                    delay: [100, 200],
-
-                })
-            }
-
-        } else if (event.extendedProps.type == "room_block") {
-            if (!$event.el.getAttribute("has_tippy") ) {
-                const description = `<div class="w-full p-2">
-                                        <div class="text-center border-1 p-2 border-round-lg">${event.title}</div>
-                                        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
-                                            <tbody>
-                                            <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td>${event?.publicId || ''}</td></tr>  
-                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.start)}</td></tr>
-                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td>${gv.datetimeFormat(event?.end)}</td></tr>
-                                            <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td>${event.extendedProps?.block_by || ''}</td></tr>
-                                            <tr><td><span class="mt-2">Reason</span></td></tr>
-                                            <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" >${event.extendedProps?.reason}</div></td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>`
-                $event.el.setAttribute("has_tippy", "yes");
-
-
-                const { tippyInstance } = useTippy($event.el, {
-                    content: description,
-                })
-            }
-        }
-        else if (event.extendedProps.type == "room_type_event") {
-            const description = `
-            <div class="w-full p-2">
-                                        <div class="text-center border-1 p-2 border-round-lg">Available Room  ${event.title}</div>
-                                        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
-                                            <tbody>
-                                            <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td>${event?.extendedProps?.arrival || ''}</td></tr>  
-                                            <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td>${event?.extendedProps?.departure || ''}</td></tr>
-                                            <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td>${event?.extendedProps?.adult || ''}</td></tr>
-                                            <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td>${event.extendedProps?.child || ''}</td></tr>
-                                            
-                                            </tbody>
-                                        </table>
-                                    </div> 
-           `
+        if (!$event.el.getAttribute("has_tippy")) {
+            $event.el.setAttribute("has_tippy", "yes");
             const { tippyInstance } = useTippy($event.el, {
-                content: description,
+                content:  h(ComCalendarEventTooltip, { event: event }),
             })
-    
-        } 
+        }
+
     }),
     eventDrop: function (info) {
         if (!confirm("Are you sure about this change?")) {
@@ -662,7 +589,8 @@ function resourceColumn(view_type) {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
-
+    // socket.emit("RefresheDoorDashboard", doc.message.property)
+    alert(property.reservation.property)
 }
 
 function onView() {
@@ -674,7 +602,6 @@ function onView() {
 
 function generateEventForRoomType(data){
  
-
     const cal = fullCalendar.value.getApi()
     let current_date = cal.view.currentStart;
     
@@ -687,15 +614,19 @@ function generateEventForRoomType(data){
             
             room_type_event.push(
                 {
+
+                    color:(r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "blue",
                     resourceId: r.id,
                     start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
                     end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
-                    title: r.total_room - (occupy_data?.total || 0)  + '/' + (occupy_data?.unassign_room ||0),
+                    title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
                     type: "room_type_event",
                     arrival: occupy_data?.arrival || 0,
                     departure: occupy_data?.departure || 0,
                     adult: occupy_data?.adult || 0,
-                    child: occupy_data?.child || 0
+                    child: occupy_data?.child || 0,
+                    room_available: r.total_room - (occupy_data?.total || 0),
+                    unassign_room:(occupy_data?.unassign_room || 0)
                 }
             )
             current_date.setDate(current_date.getDate() + 1);
@@ -903,7 +834,7 @@ function getResourceAndEvent(){
     }).then((result)=>{
         resources.value = result.message.resources
         events.value = result.message.events.events
-    
+ 
         removeDOM()
 
         if (filter.value.view_type=="room_type"){
@@ -1001,14 +932,16 @@ provide('advance_filter', {
 function showConflictRoom(conflig_rooms){
     setTimeout(() => {
             if(conflig_rooms){
-
                 resources.value.forEach((r)=>{
+                    if (filter.value.view_type=="room_type"){
+                        let room_type_el  = document.querySelector('td[data-resource-id="' + r.id + '"]')
+                        let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
+                        room_type_el.parentNode.style.backgroundColor = "#EDEDED";
+                        el.style.backgroundColor ="#EDEDED";
+                    }
+
                     r.children.forEach((c)=>{
-                       
                         let room_type_el  = document.querySelector('td[data-resource-id="' + c.id + '"]')
-
-                         
-
                         let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                         if (conflig_rooms.includes(c.id)){
                             room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;

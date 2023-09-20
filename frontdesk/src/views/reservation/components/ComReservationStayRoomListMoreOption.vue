@@ -1,6 +1,5 @@
 <template>
     <div> 
-        {{ loading }}
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
                 <Button :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
@@ -81,22 +80,29 @@ function onCloseNote(){
 }
 function onDeleted(note){
     loading.value = true
-    // deleteApi('reservation.delete_stay_room', {
-    //     parent: props.data.parent,
-    //     name: props.data.name, 
-    //     note: note
-    // })
-    // .then((result) => {
-    //     if(result.message){
-    //         openNote.value = false
-    //         rs.getReservationDetail(props.data.parent)
-    //         loading.value = false
-    //         socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-    //         socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-    //     }
-    // }).catch((r)=>{
-    //     loading.value = false
-    // })
+    deleteApi('reservation.delete_stay_room', {
+        parent: props.data.parent,
+        name: props.data.name, 
+        note: note
+    })
+    .then((result) => {
+        if(result.message){
+            openNote.value = false
+            rs.getReservationDetail(props.data.parent)
+            loading.value = false
+
+            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+
+            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            
+            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+
+            socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+
+        }
+    }).catch((r)=>{
+        loading.value = false
+    })
 }
 function onChangeStay(){
     if(isNotLast()){
@@ -145,6 +151,8 @@ function onUnassignRoom(){
                 socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
 
                 socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+
+                socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
                 
             }).catch(()=>{
                 loading.value = false

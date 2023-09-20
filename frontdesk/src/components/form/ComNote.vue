@@ -1,5 +1,4 @@
 <template>
-    {{ loading }}
     <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
         <label for="reason-text" class="mb-1 font-medium block">Reason</label>
         <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full"/>
@@ -28,16 +27,15 @@ const props = defineProps({
 const note = ref(props.value)
 
 function onOk(){
-    loading.value = true
+    loading.value = false
     if(note.value){
         if(props.autoClose){
             dialogRef.value.close(note.value);
-           
         }
         else{
             emit('ok', note.value)
         }
-        loading.value=false
+        loading.value=true
     }else{
         toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
         loading.value=false

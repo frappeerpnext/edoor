@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+        
         <div class="mb-3 flex">
             <span @click="onViewReservationDetail(doc?.reservation)">
         <ComTagReservation title="RS#:" :value="doc?.reservation" class="link_line_action w-auto"></ComTagReservation>
@@ -149,6 +150,7 @@ function onSave(){
         socket.emit("RefresheDoorDashboard", doc.value.property);
        
         socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
+        
         socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
       
         socket.emit("RefreshData", { property: doc.value.property, action: "refresh_iframe_in_modal" })
