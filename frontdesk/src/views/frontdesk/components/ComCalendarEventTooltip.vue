@@ -41,6 +41,7 @@
                                         </table>
     </div>
     <div v-else-if="event.extendedProps.type == 'room_block'" class="w-full p-2">
+        {{ event }}
                                         <div class="text-center border-1 p-2 border-round-lg"> {{event.title}}</div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
@@ -55,7 +56,7 @@
     </div>
     
     <div v-else-if="event.extendedProps.type == 'room_type_event'" class="w-full p-2">
-                                        <div :style="{backgroundColor:event.ui.backgroundColor}" class="text-center border-1 p-2 border-round-lg">Available Room  <span>{{event.title}}</span> </div>
+                                        <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span>{{event.title}}</span> </div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  

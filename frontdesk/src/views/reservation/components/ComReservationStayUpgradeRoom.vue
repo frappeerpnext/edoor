@@ -180,7 +180,7 @@
     function onUpdateDateNewRoom(newValue){
         newRoom.value.start_date = moment(newValue.end_date).toDate() 
         if(!newRoom.value.end_date || moment(newRoom.value.start_date).isSame(newRoom.value.end_date) || moment(newRoom.value.start_date).isAfter(newRoom.value.end_date)){
-            newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
+            newRoom.value.end_date = moment(newRoom.value.start_date).add(1,'days').toDate()
         }
         
         newRoom.value.room_nights = moment(newRoom.value.end_date).diff(moment(newRoom.value.start_date), 'days')
@@ -189,7 +189,7 @@
         newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
     }
     function onEndDate(newValue){
-        newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date), 'days')
+        newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date), 'days') + 1
     }
 
     const onUseRatePlan = () => {

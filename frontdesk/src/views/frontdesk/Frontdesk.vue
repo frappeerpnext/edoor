@@ -110,9 +110,10 @@
                                            
                                             <div class="guest-title">
                                                 <template v-if="event.extendedProps.type=='room_type_event'">
-                                                    <span style="background:pink">{{event.extendedProps.room_available}}</span> /
-                                                    <span style="background:yellow">{{event.extendedProps.unassign_room}}</span> 
-
+                                                    <div>
+                                                        <span style="background:pink">{{event.extendedProps.room_available}}</span> /
+                                                        <span style="background:yellow">{{event.extendedProps.unassign_room}}</span>
+                                                    </div>
                                                 </template>
                                                 <template v-else>
                                                     {{event.title}}

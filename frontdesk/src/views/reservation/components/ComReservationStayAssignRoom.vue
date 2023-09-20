@@ -172,8 +172,6 @@
             socket.emit("RefresheDoorDashboard", property.name)
            
             socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"})
-            
-            socket.emit("RefreshNightAuditStep", {property:property.name,action:"refresh_iframe_in_modal"})
 
             onClose(r)
         }).catch((err)=>{
