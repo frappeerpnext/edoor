@@ -1,5 +1,4 @@
 <template>
-    {{ newRoom }}
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">

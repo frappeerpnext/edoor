@@ -180,7 +180,7 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
             sql = sql + " and stay_room_id<>'{}'".format(exclude_stay_room_id) 
             
         sql= sql + " group by date order by count(room_type_id) desc limit 1"
-
+        
         room_type_occupy = frappe.db.sql(sql,as_dict=1)
   
         if room_type_occupy:
@@ -1043,7 +1043,7 @@ def change_stay(data):
             end_date=data["end_date"],
             exclude_stay_room_id=data["name"]
         )
-        frappe.throw(str(data["name"]))
+        frappe.throw(str(available_room))
          
         if available_room[0]["total_vacant_room"]<=0:
             frappe.throw("You cannot change stay of this reservation. Because you don't have enough room for room type {}".format(available_room[0]["room_type"]))

@@ -434,9 +434,9 @@ function onSave() {
             reservation_stays: reservation_stay_names
         },"Edit room rate successfully")
         .then((doc) => {
-            isSaving.value = false;
-            socket.emit("RefreshNightAuditStep", JSON.parse(localStorage.getItem("edoor_property")).name);
-            dialogRef.value.close(doc.message);
+            isSaving.value = false
+            socket.emit("RefreshData", {property:JSON.parse(localStorage.getItem("edoor_property")).name,action:"refresh_iframe_in_modal"})
+            dialogRef.value.close(doc.message)
         })
         .catch((error) => {
             isSaving.value = false;

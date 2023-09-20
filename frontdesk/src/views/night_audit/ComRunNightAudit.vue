@@ -136,7 +136,11 @@ function onFinish() {
     confirm.require({
         message: 'Are you sure you want to process run night audit?',
         header: 'Run Night Audit',
-        icon: 'pi pi-exclamation-triangle',
+        icon: 'pi pi-info-circle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             postApi("frontdesk.run_night_audit", {
                 property: setting?.property?.name,

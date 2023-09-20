@@ -387,6 +387,17 @@ def get_conflict_room(filter):
 def get_room_chart_resource(property = '',room_type_group = '', room_type = '',room_number = "",floor="", building = '', view_type='room_type'):
      
     resources = []
+    #set first resource = summary by for current property
+    total_room = frappe.db.sql("select count(name) as total_room from `tabRoom` where property=%(property)s",{"property":property}, as_dict=1)
+    resources.append({
+        "id":"property_summary",
+        "title":property,
+        "sort_order":-1000,
+        "alias":"",
+        "type":"property_summary",
+        "total_room": 0 if  not total_room else total_room[0]["total_room"]
+    })    
+
     filters = ""
     if room_number:
         filters = filters + " AND `room_number` like '%{}%'".format(room_number)
@@ -433,7 +444,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         }
         room_types = frappe.db.sql(sql,filter, as_dict=1)
         
-       
+         
         for t in room_types:
             rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)
             resources.append({
@@ -446,7 +457,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 "children": rooms
             })
     else:
-        resources = frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
+        resources = resources +  frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
     
 
 
@@ -572,7 +583,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
   
     filter = {
                 "property":property, 
-                "start":add_to_date( start, days=-1),
+                "start":add_to_date( start, days=-1),#we set start -1 to get the last event to show in room chart
                 "end":end,
                 "room_type_id":room_type or "",
                 "room_type_group":room_type_group or '',
@@ -614,6 +625,29 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
                 group by 
                     room_type_id, 
                 date"""
+        
+        occupy_data = frappe.db.sql(sql,filter,as_dict=1)
+    else: 
+        #get summary by date only without room type
+        sql = """select 
+                    date, 
+                    count(name) as total, 
+                    sum(if(type='Block',1,0)) as block, 
+                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
+                    sum(is_arrival) as arrival, 
+                    sum(is_departure) as departure,
+                    sum(adult) as adult, 
+                    sum(child) as child 
+                    from `tabRoom Occupy` 
+                where 
+                    property=%(property)s and 
+                    date between %(start)s and %(end)s and 
+                    room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s)  and 
+                    room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
+                group by 
+                    date
+                """
+        
         occupy_data = frappe.db.sql(sql,filter,as_dict=1)
          
 

@@ -38,6 +38,7 @@
    "fieldname": "date",
    "fieldtype": "Date",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Date"
   },
   {
@@ -73,6 +74,7 @@
    "fieldname": "room_type_id",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Room Type ID",
    "options": "Room Type"
   },
@@ -158,7 +160,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-18 12:00:27.223195",
+ "modified": "2023-09-20 10:37:23.930797",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

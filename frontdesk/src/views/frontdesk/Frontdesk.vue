@@ -95,7 +95,7 @@
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                     <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
-                                        <div class="flex">
+                                        <div :class="event.extendedProps.type=='room_type_event' ? 'flex justify-content-center XXX' : 'flex'">
                                             <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                                                 <!-- GIT/FIT Color -->
                                             </span>                                        
@@ -110,10 +110,9 @@
                                            
                                             <div class="guest-title">
                                                 <template v-if="event.extendedProps.type=='room_type_event'">
-                                                    <div>
-                                                        <span style="background:pink">{{event.extendedProps.room_available}}</span> /
-                                                        <span style="background:yellow">{{event.extendedProps.unassign_room}}</span>
-                                                    </div>
+                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#FFF' : 'color:#000'">{{event.extendedProps.room_available}}</span>
+                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#ffb0b0' : 'color:#dee2e6'"> | </span>
+                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#FFF' : 'color:#000'">{{event.extendedProps.unassign_room}}</span>
                                                 </template>
                                                 <template v-else>
                                                     {{event.title}}
@@ -609,34 +608,90 @@ function generateEventForRoomType(data){
     const room_type_event = []
     let occupy_data ={}
     
-    resources.value.forEach(r=>{
-        while (current_date <= cal.view.currentEnd) {
-            occupy_data = data.find(c=>c.room_type_id== r.id && c.date==moment(current_date).format("YYYY-MM-DD") )
-            
-            room_type_event.push(
-                {
+    if (filter.value.view_type=="room_type"){
 
-                    color:(r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "blue",
-                    resourceId: r.id,
-                    start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
-                    end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
-                    title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
-                    type: "room_type_event",
-                    arrival: occupy_data?.arrival || 0,
-                    departure: occupy_data?.departure || 0,
-                    adult: occupy_data?.adult || 0,
-                    child: occupy_data?.child || 0,
-                    room_available: r.total_room - (occupy_data?.total || 0),
-                    unassign_room:(occupy_data?.unassign_room || 0)
-                }
-            )
-            current_date.setDate(current_date.getDate() + 1);
-        }
-       
-        current_date = cal.view.currentStart;
+     
+        resources.value.forEach(r=>{
         
-    })
+                while (current_date <= cal.view.currentEnd) {
+                    if (r.id=="property_summary"){
+                        occupy_data = data.filter(c=>c.date==moment(current_date).format("YYYY-MM-DD") )
+                    
+                            room_type_event.push(
+                                {
+
+                                    color:"green",
+                                    resourceId: r.id,
+                                    start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                                    end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                                    title: r.total_room - (occupy_data.reduce((n, d) => n + (d.total || 0), 0) || 0)  + ' / ' + (occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0) || 0),
+                                    type: "property_summary",
+                                    arrival: occupy_data?.arrival || 0,
+                                    departure: occupy_data?.departure || 0,
+                                    adult: occupy_data?.adult || 0,
+                                    child: occupy_data?.child || 0,
+                                    room_available: r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0) ,
+                                    unassign_room:occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0)  
+                                }
+                            )
+                    }else { 
+                        occupy_data = data.find(c=>c.room_type_id== r.id && c.date==moment(current_date).format("YYYY-MM-DD") )
+                    
+                        room_type_event.push(
+                            {
+
+                                color:(r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "#F7F7F7",
+                                resourceId: r.id,
+                                start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                                end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                                title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
+                                type: "room_type_event",
+                                arrival: occupy_data?.arrival || 0,
+                                departure: occupy_data?.departure || 0,
+                                adult: occupy_data?.adult || 0,
+                                child: occupy_data?.child || 0,
+                                room_available: r.total_room - (occupy_data?.total || 0),
+                                unassign_room:(occupy_data?.unassign_room || 0)
+                            }
+                        )
+                    }
+                    current_date.setDate(current_date.getDate() + 1);
+                }
+            
+                current_date = cal.view.currentStart;
+                
+            })
+    }else {
+        //when calender view by room 
+        //code below is generate event for current propert event display in first row of calendar
+        resources.value.filter(r=>r.id=="property_summary").forEach(r=>{
+        while (current_date <= cal.view.currentEnd) {
+               occupy_data = data.find(c=>c.date==moment(current_date).format("YYYY-MM-DD") )
+                   room_type_event.push(
+                       {
+
+                           color:"green",
+                           resourceId: r.id,
+                           start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                           end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                           title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
+                           type: "property_summary",
+                           arrival: occupy_data?.arrival || 0,
+                           departure: occupy_data?.departure || 0,
+                           adult: occupy_data?.adult || 0,
+                           child: occupy_data?.child || 0,
+                           room_available: r.total_room - (occupy_data?.total || 0),
+                            unassign_room:(occupy_data?.unassign_room || 0)
+                       }
+                   )
+           
+           current_date.setDate(current_date.getDate() + 1);
+       }
    
+    
+       
+   })
+}
     events.value = [...events.value, ...room_type_event]
  
 }
@@ -801,10 +856,9 @@ function  getEvent(){
     }).then((result) => {
         events.value = (result.message.events)
         
-        if(filter.value.view_type=="room_type"){
-            
-            generateEventForRoomType( result.message.occupy_data)
-        }
+        
+        generateEventForRoomType( result.message.occupy_data)
+       
         setRoomChartlocationStorage()
         showConflictRoom(result.message.conflig_rooms)
         removeDOM()
@@ -838,9 +892,9 @@ function getResourceAndEvent(){
  
         removeDOM()
 
-        if (filter.value.view_type=="room_type"){
+        
             generateEventForRoomType(result.message.events.occupy_data)
-        }
+        
         gv.loading = false
         setRoomChartlocationStorage()
         showConflictRoom(result.message.events.conflig_rooms)
@@ -941,7 +995,7 @@ function showConflictRoom(conflig_rooms){
                         el.style.backgroundColor ="#EDEDED";
                     }
 
-                    r.children.forEach((c)=>{
+                    r.children?.forEach((c)=>{
                         let room_type_el  = document.querySelector('td[data-resource-id="' + c.id + '"]')
                         let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                         if (conflig_rooms.includes(c.id)){

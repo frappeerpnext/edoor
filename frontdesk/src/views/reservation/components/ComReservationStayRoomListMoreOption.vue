@@ -48,7 +48,7 @@ const toggle = (event) => {
 function isNotLast(){
     const names = props.rooms.map(item => item.name);
     const index = names.indexOf(props.data.name)
-    if((index + 1) < props.rooms.length){
+    if((index + 1) < props.rooms.length ){
         gv.toast('warn',"This room stay is not last stay.")
         return false
     }else{
@@ -143,7 +143,6 @@ function onUnassignRoom(){
             loading.value = true
             postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{
                 loading.value = false
-                
                 rs.reservationStay = r.message
 
                 socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);

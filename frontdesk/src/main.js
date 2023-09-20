@@ -230,6 +230,7 @@ app.use(
 			placement: "bottom",
 			allowHTML: true,
 			followCursor: true,
+			
 			//interactive: true,
 		},
 	}
