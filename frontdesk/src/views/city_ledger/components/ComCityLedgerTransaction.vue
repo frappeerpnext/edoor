@@ -5,7 +5,7 @@
                 <Button class="conten-btn" @click="AddTransaction(d)"
                     v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
-                <SplitButton class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
+                <SplitButton @click="viewCityLedgerReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
@@ -249,6 +249,29 @@ socket.on("RefreshData", (arg) => {
         loadData()
     }
 })
+
+const viewCityLedgerReport = () => {
+    dialog.open(ComPrintReservationStay, {
+        data: {
+            doctype: "Reservation%20Stay",
+            reservation_stay: doc.value.reservation_stay,
+            folio_number: name.value,
+            report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+            view: "print"
+        },
+        props: {
+            header: "Folio Summary Report",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+
+        },
+    });
+}
 
 const columns = ref([
     { fieldname: 'name', label: 'Folio Transaction Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },

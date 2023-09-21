@@ -90,7 +90,6 @@ class ReservationStay(Document):
 			if self.is_reserved_room==1:
 				d.is_active_reservation = 1
 
-		 
 			d.status_color = self.status_color
 			d.reservation_type = self.reservation_type
 			d.group_code = self.group_code
@@ -111,6 +110,10 @@ class ReservationStay(Document):
 			d.reservation = self.reservation
 			d.rate_type = self.rate_type
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
+			d.stay_rooms = self.rooms
+			d.stay_room_types = self.room_types 
+			d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status =="Reserved"    else 0
+			d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Reserved","In-house"] else 0
 			#generate room data
 			rooms_data.append({
 					"name": d.name,
@@ -204,6 +207,9 @@ class ReservationStay(Document):
 		 where parent=%(name)s
 		""",data_for_udpate)
 	
+
+
+
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()
@@ -340,7 +346,6 @@ def update_reservation_stay_room_rate(data):
 	
 
 def update_reservation_stay_room_rate_after_resize(data, stay_doc):
- 
 	# date min and max date from reservation room rate
 	sql = "select min(date) as start_date, max(date) as end_date from `tabReservation Room Rate` where stay_room_id='{}'".format(data["name"]) 
 	old_stay_date = frappe.db.sql(sql, as_dict=1)
@@ -400,7 +405,16 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	# frappe.throw("xx")
 	
 	
+def update_reservation_stay_room_rate_after_move(data,stay_doc):
+	date_range = get_date_range( getdate( data["start_date"]),getdate(data["end_date"]))
+	room_rates = frappe.db.get_list("Reservation Room Rate",filters={"stay_room_id":data["name"]},order_by="date",  start=0, page_length=1000  ) 
+	for d in room_rates:
+		rate_doc = frappe.get_doc("Reservation Room Rate",d.name)
+		rate_doc.date = date_range[room_rates.index(d)]
+		rate_doc.save()
 
+	
+		
 
 def change_room_occupy(self):
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)

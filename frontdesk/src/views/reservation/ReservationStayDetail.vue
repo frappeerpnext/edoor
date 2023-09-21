@@ -157,7 +157,7 @@
             <Button
                 v-if="rs.reservationStay?.reservation_status === 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservationStay.departure_date).add(-1, 'day'))"
                 @click="onCheckOut" class="bg-red-400 border-none">
-                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out 
+                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
             </Button>
 
         </template>
@@ -200,7 +200,7 @@ const call = frappe.call();
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast()
-const socket = inject("$socket")
+// const socket = inject("$socket")
 const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -249,7 +249,7 @@ const onRefresh = (showLoading = true) => {
 
 }
 
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     //arg data format {action:"refresh_reservaiton_stay",reservation_stay:"ST2023-5555"}
 
     if (arg.action== "refresh_reservation_stay" && arg.reservation_stay==rs.reservationStay.name) {
@@ -391,7 +391,7 @@ const onCheckIn = () => {
 }
 
 const onCheckOut = () => {
-    if (rs.reservationStay.balance > 0) {
+    if (!rs.reservationStay.balance == 0) {
         toast.add({ severity: 'warn', summary: "You cannot check this reservation because balance is not zero", detail: '', life: 3000 })
         return
     }
@@ -430,7 +430,7 @@ const OnViewReservation = () => {
 
 onUnmounted(() => {
     rs.clear()
-    socket.off('RefreshData');
+    window.socket.off('RefreshData');
 })
 
 
@@ -453,29 +453,6 @@ function onAuditTrail() {
 
     });
 }
-
-function onTest() {
-    const dialogRef = dialog.open(TestPage2, {
-        data: {
-            doctype: 'Reservation Stay',
-            docname: name.value
-        },
-        props: {
-            header: 'Audit Trail',
-            style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
-            modal: true,
-            maximizable: true,
-            position: "top"
-        },
-    });
-}
-
 
 </script>
 <style scoped>

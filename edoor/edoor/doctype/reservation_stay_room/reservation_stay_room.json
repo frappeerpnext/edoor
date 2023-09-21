@@ -14,6 +14,7 @@
   "email",
   "phone_number",
   "internal_reference_number",
+  "column_break_xhsk",
   "reservation",
   "reservation_color",
   "rate_type",
@@ -64,7 +65,11 @@
   "section_break_pwue",
   "note",
   "column_break_vpbm",
-  "keyword"
+  "keyword",
+  "can_change_start_date",
+  "can_change_end_date",
+  "stay_rooms",
+  "stay_room_types"
  ],
  "fields": [
   {
@@ -392,12 +397,40 @@
    "fieldname": "keyword",
    "fieldtype": "Small Text",
    "label": "keyword"
+  },
+  {
+   "fieldname": "column_break_xhsk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_change_start_date",
+   "fieldtype": "Check",
+   "label": "Can Change Start Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_change_end_date",
+   "fieldtype": "Check",
+   "label": "Can Change End Date"
+  },
+  {
+   "fieldname": "stay_rooms",
+   "fieldtype": "Data",
+   "label": "Stay Rooms",
+   "length": 250
+  },
+  {
+   "fieldname": "stay_room_types",
+   "fieldtype": "Data",
+   "label": "Stay Room Type",
+   "length": 250
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-18 09:42:23.221028",
+ "modified": "2023-09-20 16:45:08.732750",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

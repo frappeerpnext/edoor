@@ -20,8 +20,7 @@
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.departure_date"
                 :min-date="new Date(moment(data.arrival_date).add(1, 'days'))" @update:modelValue="onEndDate($event)"
                 dateFormat="dd-mm-yy" />    
-            </div>
-            
+            </div>  
         </div>
         </div>
         <div v-if="room_tax && (room_tax.tax_1_rate + room_tax.tax_2_rate + room_tax.tax_3_rate) > 0" class="bg-card-info border-round-xl p-3 add-room-reserv h-full mt-3">
@@ -36,8 +35,8 @@
                         </span>
                     </div>
                     <div class="">
-                        <div class="flex gap-3 flex-wrap">
-                            <div class="flex gap-3 relative">
+                        <div class="flex gap-3 flex-wrap,">
+                            <div class="flex gap-3 relative" >
                                 <label for="tax-1-rate" class="font-medium flex align-items-center h-full">{{
                                     room_tax.tax_1_name }} {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
@@ -50,7 +49,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex gap-3 relative,">
+                            <div class="flex gap-10 relative,">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{
                                     room_tax.tax_2_name }}{{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
@@ -63,8 +62,7 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="flex gap-3 relative">
+                            <div class="flex gap-10 relative">
                                 <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{
                                     room_tax.tax_3_name }}{{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">

@@ -260,6 +260,12 @@ app.provide("$gv", gv)
 app.provide("$housekeeping", housekeeping)
 app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
+
+
+//global property
+window.moment = moment;
+window.socket = socket;
+
 // get global data
 const apiCall = frappe.call()
  
@@ -344,6 +350,8 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 		localStorage.setItem('edoor_user', JSON.stringify(data.user))
 		localStorage.setItem("edoor_setting", JSON.stringify(data.edoor_setting))
 		gv.setting = data.edoor_setting
+		window.setting = data.edoor_setting
+
 		if (r.message.property == "Invalid Property") {
 			localStorage.removeItem("edoor_property")
 		}
@@ -352,10 +360,10 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 			if (r.message.property) {
 			
 				if (r.message.property.length == 1) {
-					
+					 
 					localStorage.setItem('edoor_property', JSON.stringify(r.message.property[0]))
 					 
-					window.property = r.message.property[0].name
+					window.property = r.message.property[0]
 				}
 			}
 		}

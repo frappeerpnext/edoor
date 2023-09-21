@@ -3,7 +3,7 @@ from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days
 from frappe.utils.data import strip
 import datetime
-
+import uuid
 def execute(filters=None): 
 	data = get_report_data(filters)
 	return get_columns(filters),data
@@ -209,13 +209,14 @@ def get_report_data(filters):
 			d = g
 			if group_column["fieldtype"]=="Date":
 				d  = frappe.format(g,{"fieldtype":"Date"})
-
+			id =  str(uuid.uuid4())
 			report_data.append({
 				"indent":0,
 				"reservation": d,
-				"is_group":1
+				"is_group":1,
+				"id":id
 			})
-			report_data = report_data +  [d.update({"indent":1}) or d for d in data if d[group_column["data_field"]]==g]
+			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d[group_column["data_field"]]==g]
 			
 			report_data.append({
 				"indent":0,
@@ -225,13 +226,15 @@ def get_report_data(filters):
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
 				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
 				"pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
-				"is_total_row":1
+				"is_total_rowx":1,
+				"parent":id
 			})
 
 		report_data.append({
 				"indent":0,
 				"is_group":1,
-				"reservation": ""})
+				"reservation": "",
+				"is_separator":1})
 		report_data.append({
 				"indent":0,
 				"reservation": "Grand Total",
@@ -240,7 +243,8 @@ def get_report_data(filters):
 				"balance":sum([d["balance"] for d in data ]),
 				"room_nights":sum([d["room_nights"] for d in data ]),
 				"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-				"is_total_row":1
+				"is_total_row":1,
+				"is_grand_total":1
 			})
 
 		return report_data

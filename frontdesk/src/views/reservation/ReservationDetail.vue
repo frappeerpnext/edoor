@@ -189,7 +189,6 @@ function onMaximize(){
 onMounted(() => {
     window.has_reservation_detail_opened = true
     socket.on("RefreshReservationDetail", (reservation) => {
-        console.log(reservation)
         if (reservation == name.value) {
             //we run this in settime out 
             //because we need to wait until data from backend that run enqueue process is update ted

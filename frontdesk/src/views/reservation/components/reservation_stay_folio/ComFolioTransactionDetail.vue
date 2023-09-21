@@ -217,6 +217,9 @@ const onSaveReferenceNumber = () => {
     saving.value = false
     doc.value = r
     onCloseRefNumber()
+
+    alert('xdx')
+
   }).catch(()=>{
     saving.value = false
   })

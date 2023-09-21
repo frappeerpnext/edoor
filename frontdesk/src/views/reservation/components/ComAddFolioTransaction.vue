@@ -292,7 +292,7 @@ const use_tax = ref({})
 const toast = useToast()
 const doc = ref({});
 const rs = inject('$reservation_stay')
-const socket = inject("$socket")
+// const socket = inject("$socket")
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
 }
@@ -506,9 +506,11 @@ function onSave() {
     
     createUpdateDoc("Folio Transaction", { data })
             .then((doc) => {
-            isSaving.value = false;
+                isSaving.value = false;
                 dialogRef.value.close(doc);
-                socket.emit("RefresheDoorDashboard", doc.property);
+                window.socket.emit("RefresheDoorDashboard", doc.property);
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
 
             }).catch((err) => {
             

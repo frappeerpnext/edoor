@@ -550,7 +550,10 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             total_credit,
             total_room_rate,
             note,
-            reservation_status
+            reservation_status,
+            can_change_start_date,
+            can_change_end_date,
+            stay_rooms
         from 
             `tabReservation Stay Room` 
         where 

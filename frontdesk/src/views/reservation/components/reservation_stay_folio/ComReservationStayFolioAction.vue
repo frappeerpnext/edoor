@@ -65,7 +65,7 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
         </div>
     </div>
     <ComDialogNote :header="`Delete Folio - ${rs.selectedFolio.name}`" :visible="openNote" :loading="loading"
-        @onOk="deleteFilio" @onClose="onCloseNote" />
+        @onOk="deleteFilio"  @onClose="onCloseNote" />
 </template>
 <script setup>
 
@@ -79,7 +79,6 @@ import Menu from 'primevue/menu';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
-const socket = inject("$socket")
 const dialog = useDialog();
 const confirm = useConfirm();
 const frappe = inject('$frappe');
@@ -203,10 +202,11 @@ function onAddFolioTransaction(account_code) {
                     rs.onLoadFolioTransaction(rs.selectedFolio)
                     rs.getChargeSummary(rs.reservationStay.name)
                     setTimeout(function () {
-
+                        // loading.value = false
                         rs.getReservationStay(rs.reservationStay.name);
                         //send websocket to update reservation detail
-                        socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
                     }, 2000)
                     if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {
@@ -352,8 +352,9 @@ function closeFolio() {
 function deleteFilio(note) {
     if (!rs.selectedFolio.name) {
         gv.toast('warn', 'Please select a Folio.')
+        return
     }
-    loading.value = true
+    loading.value = true,
     deleteApi('utils.delete_doc', { doctype: "Reservation Folio", name: rs.selectedFolio.name, note: note }, "Delete Folio Successfully")
         .then((result) => {
             rs.onLoadReservationFolios().then(() => {
@@ -365,12 +366,13 @@ function deleteFilio(note) {
                     }
                     rs.onLoadFolioTransaction(defaultSelectFolio.value)
                     socket.emit("RefreshReservationDetail", rs.reservation.name)
+                    
                 }
                 loading.value = false;
                 openNote.value = false
             })
         }).catch((error) => {
-            loading.value = false;
+            loading.value = false; 
         })
 
 }

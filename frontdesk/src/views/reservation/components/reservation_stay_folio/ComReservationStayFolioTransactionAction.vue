@@ -144,6 +144,11 @@ function onDeleteFolioTransaction(note) {
             rs.getChargeSummary(rs.reservationStay.name)
             loading.value = false;
             opDelete.value = false
+
+            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+
+            alert(rs.reservation.name)
         })
 
         .catch((error) => {

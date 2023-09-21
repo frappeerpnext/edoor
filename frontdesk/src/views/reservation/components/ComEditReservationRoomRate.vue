@@ -223,9 +223,10 @@ import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 
 import Message from "primevue/message";
  
-const socket = inject("$socket")
+// const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
+const rs = inject('$reservation_stay')
 
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
@@ -435,7 +436,9 @@ function onSave() {
         },"Edit room rate successfully")
         .then((doc) => {
             isSaving.value = false
-            socket.emit("RefreshData", {property:JSON.parse(localStorage.getItem("edoor_property")).name,action:"refresh_iframe_in_modal"})
+            window.socket.emit("RefreshData", {property:JSON.parse(localStorage.getItem("edoor_property")).name,action:"refresh_iframe_in_modal"})
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+
             dialogRef.value.close(doc.message)
         })
         .catch((error) => {

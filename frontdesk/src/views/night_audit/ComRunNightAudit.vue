@@ -74,7 +74,7 @@ const steps = ref([
     { step: 8, label: "Thank You!", is_selected: false },
 ])
 
-
+ 
 socket.on("RefreshData", (arg) => {
     if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
         refreshReport()
@@ -149,6 +149,9 @@ function onFinish() {
                 currentStep.value = 8
                 refreshReport()
                 loading.value = false;
+                
+                socket.emit("RefreshData",{property:setting?.property?.name, action:"reload_page",session_id:window.session_id})
+
             }).catch((err)=>{
                 loading.value = false;
             }).finally(() => {

@@ -36,17 +36,30 @@ import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 
 // import ComBusinessSourceDetail from "./views/business_source/components/ComBusinessSourceDetail.vue";
-const socket = inject("$socket");
+
 const gv = inject("$gv")
 const moment= inject("$moment")
 
-socket.on("UpdateCashierShift", (arg) => {
+window.socket.on("UpdateCashierShift", (arg) => {
 
     if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.business_branch) {
         gv.cashier_shift = arg
  
     }
 })
+
+
+window.socket.on("RefreshData", (arg) => {
+
+    if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.property && arg.action=="reload_page" && window.session_id!=arg.session_id) {
+        window.location.reload()
+    }
+
+})
+
+window.session_id = gv.generateGuid()
+
+
 
 
 

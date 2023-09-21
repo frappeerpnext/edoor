@@ -269,7 +269,16 @@
 
         <div class="bg-card-info border-round-xl mt-2 p-3 add-room-reserv">
             <div class="n__re-custom">
+                <div class="w-full flex justify-end mt-2">
+                <label for="auto_assign_room" class="mr-3 cursor-pointer"
+                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'">Automatically
+                    assign room</label>
+                <Checkbox
+                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'"
+                    inputId="auto_assign_room" v-model="doc.auto_assign_room" :binary="true" />
 
+            </div>
+            <hr class="my-3">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -367,15 +376,6 @@
                         </tr>
                     </tbody>
                 </table>
-
-            </div>
-            <div class="w-full flex justify-end mt-2">
-                <label for="auto_assign_room" class="mr-3 cursor-pointer"
-                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'">Automatically
-                    assign room</label>
-                <Checkbox
-                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'"
-                    inputId="auto_assign_room" v-model="doc.auto_assign_room" :binary="true" />
 
             </div>
         </div>

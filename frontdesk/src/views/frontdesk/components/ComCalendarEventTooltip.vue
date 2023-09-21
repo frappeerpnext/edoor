@@ -10,9 +10,9 @@
                                             <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>{{event.extendedProps?.internal_reference_number ?? ''}}</td></tr>
                                             <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_type || ''}} {{event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}}</td></tr>    
                                             <tr class="table-rs-de"><td>Guest</td><td class="px-2">:</td><td>{{event.title}}</td></tr>
-                                            <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.arrival_date).format('YYYY-MM-DD')}} - {{moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td></tr>
-                                            <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).format('YYYY-MM-DD')}} - {{moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A")}}</td></tr>
-                                            <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>{{event.extendedProps?.room_number}}</td></tr>
+                                            <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td></tr>
+                                            <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A")}}</td></tr>
+                                            <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>{{event.extendedProps.stay_rooms || event.extendedProps?.room_number}}</td></tr>
                                             <tr class="table-rs-de"><td>Pax</td><td class="px-2">:</td><td>{{event.extendedProps?.adult}} / {{event.extendedProps?.child}}</td></tr>
                                             <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>{{event.extendedProps?.business_source || ''}}</td></tr>
                                             <tr class="table-rs-de"><td>ADR</td><td class="px-2">:</td><td>
@@ -43,11 +43,12 @@
     <div v-else-if="event.extendedProps.type == 'room_block'" class="w-full p-2">
        
                                         <div class="text-center border-1 p-2 border-round-lg"> {{event.title}}</div>
+                                     
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td> {{event?.publicId || ''}}</td></tr>  
-                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td> {{moment(event?.start).format('YYYY-MM-DD')}}</td></tr>
-                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td> {{moment(event?.end).format('YYYY-MM-DD')}}</td></tr>
+                                            <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td> {{moment(event?.start).format('DD-MM-YYYY')}}</td></tr>
+                                            <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td> {{moment(event?.end).format('DD-MM-YYYY')}}</td></tr>
                                             <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td> {{event.extendedProps?.block_by || ''}}</td></tr>
                                             <tr><td><span class="mt-2">Reason</span></td></tr>
                                             <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" > {{event.extendedProps?.reason}}</div></td></tr>
@@ -56,11 +57,10 @@
     </div>
     
     <div v-else-if="event.extendedProps.type == 'room_type_event'" class="w-full p-2">
-       
-                                        <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span> {{ event.extendedProps.room_available }}</span> </div>
+                                        <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span class="mx-3" :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }}</span> </div>
                                         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                                             <tbody>
-                                                <tr class="table-rs-de" ><td>Unasign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unasign_room || 0 }}</td></tr>      
+                                                <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
                                             <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
                                             <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
                                             <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
@@ -69,7 +69,9 @@
                                             </tbody>
                                         </table>
     </div> 
- 
+    <div v-else-if="event.extendedProps.type == 'property_summary'">
+{{ event }}
+    </div>
 </template>
 <script setup>
     import CurrencyFormat from "@/components/CurrencyFormat.vue"

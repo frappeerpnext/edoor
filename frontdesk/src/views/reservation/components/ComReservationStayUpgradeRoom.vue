@@ -188,7 +188,7 @@
         newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
     }
     function onEndDate(newValue){
-        newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date), 'days') + 1
+        newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date),'days')
     }
 
     const onUseRatePlan = () => {

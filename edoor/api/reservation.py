@@ -1,10 +1,10 @@
 from datetime import datetime
 import json
-from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate, update_reservation_stay_room_rate, update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, generate_room_rate, update_reservation_stay_room_rate, update_reservation_stay_room_rate_after_move, update_reservation_stay_room_rate_after_resize
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import get_date_range, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio
+from edoor.api.utils import get_date_range, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_role
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -1023,7 +1023,10 @@ def change_stay(data):
     room_id = ""
     if 'room_id' in data and data["room_id"]:
         room_id = data["room_id"]
-   
+
+    if getdate(data["start_date"]) == getdate(data["end_date"]):
+        frappe.throw("Arrival date cannot equal to departure date")
+        
     # when we change stay date from drap and drop in room chart calendar we allow to overlap
 
     if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0: 
@@ -1032,8 +1035,9 @@ def change_stay(data):
                 {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
                 as_dict = 1
                 )
+            
             if check_room_occupy:
-                frappe.throw(_("You cannot change stay of this reservation. Because this room is not available on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
+                frappe.throw(_("You cannot change stay of this reservation. Because this room is not available or block on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
 
         #check room type occupy
         available_room = check_room_type_availability(
@@ -1043,7 +1047,7 @@ def change_stay(data):
             end_date=data["end_date"],
             exclude_stay_room_id=data["name"]
         )
-        frappe.throw(str(available_room))
+
          
         if available_room[0]["total_vacant_room"]<=0:
             frappe.throw("You cannot change stay of this reservation. Because you don't have enough room for room type {}".format(available_room[0]["room_type"]))
@@ -1062,22 +1066,36 @@ def change_stay(data):
     if getdate(data["end_date"])< getdate(working_day["date_working_day"]):
         frappe.throw(_("Depature date must be greater then or equal to current working date"))
 
+   
     #check if current dsate date range have room block
     block_data =frappe.db.sql("select name from `tabTemp Room Occupy` Where type='Block' and room_id=%(room_id)s and date between %(start_date)s and %(end_date)s",
                               {
                                 "room_id":data["room_id"],
                                 "start_date":data["start_date"],
-                                "end_date":data["end_date"]
+                                "end_date":add_to_date(getdate(  data["end_date"]),days=-1)
                             },as_dict=1)
     if block_data:
         frappe.throw("You cannot change stay or extend stay on a block room")
 
+    # validate back date role
+    if getdate(data["start_date"])<getdate(working_day["date_working_day"]):
+        if doc.reservation_status in ["Reserved","Confirm"]:
+            if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1:
+                validate_role("role_for_back_date_transaction","You don't have permission to add back date reservation")
+            else:
+                frappe.throw("You cannot change arrival date to the back date")
+        else:
+            for d in doc.stays:
+                if d.start_date != getdate(data["start_date"]):
+                    frappe.throw("{} is not allow to change arrival date".format(doc.reservation_status))
 
 
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
     stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
     
     for s in stays:
+        #check if not date change 
+        
         if s.name == data['name']:
             s.start_date = data['start_date']
             s.end_date = data['end_date']
@@ -1090,7 +1108,11 @@ def change_stay(data):
     doc.save()
     frappe.db.commit()
     if doc: 
-        update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        if data["is_move"]==0:
+            update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        else:
+            update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
+
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = doc)
        
     return doc
@@ -1933,7 +1955,7 @@ def update_reservation_color(data):
 
     frappe.db.set_value('Reservation', reservation, 'reservation_color', data['reservation_color'])
  
-    stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation, 'is_active_reservation': 1})
+    stays = frappe.db.get_list('Reservation Stay', filters={'reservation':reservation, 'is_active_reservation': 1, "allow_user_to_edit_information":1})
 
     for t in stays:
         doc = frappe.get_doc('Reservation Stay', t.name)

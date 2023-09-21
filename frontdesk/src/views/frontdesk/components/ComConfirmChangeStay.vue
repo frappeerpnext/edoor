@@ -90,10 +90,16 @@
         </table>
 
         <div class="flex justify-end gap-3 mt-3">
-            <div class="flex align-items-center">
+            {{ generate_rate_type }}
+            <div class="flex align-items-center" v-if="show_keep_rate">
+                <RadioButton v-model="generate_rate_type" inputId="regenerate_using_keep_old_rate" name="regenerate" value="keep_current_rate" />
+                <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer">Keep current room rate</label>
+            </div>
+            <div v-else class="flex align-items-center">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
                 <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from  First/Last Stay Rate</label>
             </div>
+
             <div class="flex align-items-center">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
                 <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate Plan</label>
@@ -111,6 +117,8 @@
 import { ref, onMounted, inject, getDoc,postApi } from "@/plugin"
 const dialogRef = inject("dialogRef");
 const data = ref({})
+const show_keep_rate = ref(false)
+
 const doc = ref()
 const isSaving =ref(false)
 const generate_rate_type = ref("stay_rate")
@@ -121,7 +129,6 @@ const gv = inject('$gv');
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 function onViewReservationStayDetail(rs) {
     window.postMessage('view_reservation_stay_detail|' + rs, '*')
-
 }
 function onViewReservationDetail(rs) {
     window.postMessage('view_reservation_detail|' + rs, '*')
@@ -141,7 +148,8 @@ function onSave(){
                 generate_rate_type: generate_rate_type.value,
                 note:note.value,
                 name:data.value.id,
-                ignore_check_room_occupy:1
+                ignore_check_room_occupy:1,
+                is_move: show_keep_rate.value
             }
  }
     ).then((result)=>{
@@ -163,8 +171,14 @@ function onSave(){
     })
 }
 onMounted(() => {
+    data.value = dialogRef.value.data.event;
+    show_keep_rate.value = dialogRef.value.data.show_keep_rate;
+ 
+    if(show_keep_rate.value==1){
+       
+        generate_rate_type.value = "keep_current_rate"
+    }
 
-    data.value = dialogRef.value.data;
     getDoc("Reservation Stay", data.value._def.extendedProps.reservation_stay).then((r) => {
         doc.value = r
     });

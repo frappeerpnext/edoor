@@ -94,33 +94,7 @@
                      
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
-                                    <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
-                                        <div :class="event.extendedProps.type=='room_type_event' ? 'flex justify-content-center XXX' : 'flex'">
-                                            <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
-                                                <!-- GIT/FIT Color -->
-                                            </span>                                        
-                                            <span class="wrp-statu-icon">
-                                                <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
-                                                    <ComIcon style="height: 12px;" icon="iconCrown"/>
-                                                </span>
-                                                <span v-if="event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
-                                                    <ComIcon style="height: 12px;" icon="iconUserGroup"/>
-                                                </span>
-                                            </span>
-                                           
-                                            <div class="guest-title">
-                                                <template v-if="event.extendedProps.type=='room_type_event'">
-                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#FFF' : 'color:#000'">{{event.extendedProps.room_available}}</span>
-                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#ffb0b0' : 'color:#dee2e6'"> | </span>
-                                                    <span :style="event.extendedProps.room_available < 0 ? 'color:#FFF' : 'color:#000'">{{event.extendedProps.unassign_room}}</span>
-                                                </template>
-                                                <template v-else>
-                                                    {{event.title}}
-                                                </template>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
+                                <ComCalendarEvent :event="event"/>    
                             </template> 
                         </FullCalendar>
                     </div>
@@ -155,17 +129,14 @@ import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue' 
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
+import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 
 import { useTippy } from 'vue-tippy'
-
+ 
 
 const resources = ref([])
 const events = ref([])
- 
-
-const socket = inject("$socket");
-
-const disable_refresh_calendar_event = ref(false)
+  
 const moment = inject('$moment')
 const filter = ref({
      
@@ -187,7 +158,9 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
- 
+
+let start_date,end_date //we use this event to hold value of start and end date when use resize date or drag and drop date
+
  
 const keyword = ref({
     keyword:'',
@@ -233,18 +206,13 @@ let roomChartResourceFilter = reactive({
 
 
 
-socket.on("RefresheDoorDashboard", (arg) => {
-     if(!disable_refresh_calendar_event.value){
-        if (arg == property.name) {
-            onRefresh(false)
-        }
-     }
+window.socket.on("RefresheDoorDashboard", (arg) => {
+  
+    if (arg == property.name) {
+        onRefresh(false)
+    }
 
 })
-
-
- 
- 
 
 const calendarOptions = reactive({
     plugins: [
@@ -265,11 +233,7 @@ const calendarOptions = reactive({
     resources: resources,
     events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-        if(draggedEvent._def.extendedProps.reservation_status=="In-house"){
-            if(!moment(draggedEvent._def.extendedProps.arrival_date).isSame(moment(dropInfo.start).format("YYYY-MM-DD"))){
-                return false
-            }
-        }
+      
         return draggedEvent._def.extendedProps.can_resize == 1
     },
     selectable: true,
@@ -313,13 +277,44 @@ const calendarOptions = reactive({
     },
 
     select: (($event) => {
-
         onSelectedDate($event)
     }),
+    eventResizeStart: (($event) => {
+        start_date = moment($event.event.start).format("YYYY-MM-DD")
+        end_date= moment($event.event.end).format("YYYY-MM-DD")
+    }),
     eventResize: (($event) => {
-        disable_refresh_calendar_event.value = true
+       
+
+        if(!moment(start_date).isSame(moment($event.event.start).format("YYYY-MM-DD"))){
+         
+            if($event.event._def.extendedProps.can_change_start_date==0){
+                $event.revert()
+                toast.add({ severity: 'warn', summary:"This reservation is not allow to change arrival date", life: 3000 })
+                return
+            }
+        }
+        
+        if(!moment(end_date).isSame(moment($event.event.end).format("YYYY-MM-DD"))){
+         
+            if($event.event._def.extendedProps.can_change_end_date==0){
+                $event.revert()
+                toast.add({ severity: 'warn', summary:"This reservation is not allow to change departure date", life: 3000 })
+                return
+            }
+        }
+
+        if (moment(start_date).isSame(moment($event.event.start).format("YYYY-MM-DD")) &&
+            moment(end_date).isSame(moment($event.event.end).format("YYYY-MM-DD"))
+        ){
+            $event.revert()
+            return
+        }
+
+
+ 
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: $event.event,
+            data: {event: $event.event,show_keep_rate:0},
             props: {
                 header: 'Change Stay',
                 style: {
@@ -334,17 +329,13 @@ const calendarOptions = reactive({
                 const data = options.data;
                 if (!data) {
                     $event.revert()
-                }
-                //prevent reload calendar when we working on current window
-                setTimeout(() => {
-                    disable_refresh_calendar_event.value = false
-                }, 3000);
+                } 
             }
         });
     }),
     eventClick: ((info) => {
         // alert(info.event._def)
-        
+       
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
@@ -369,12 +360,36 @@ const calendarOptions = reactive({
         }
 
     }),
-    eventDrop: function (info) {
-        if (!confirm("Are you sure about this change?")) {
-            info.revert();
+    eventDrop: function ($event) {
+        let title = "Change Stay"
+        if($event.newResource){
+            if ($event.newResource._resource.id!=$event.oldResource._resource.id){
+            title="Move Room"
         }
+        
+        }
+        
+
+        const dialogRef = dialog.open(ComConfirmChangeStay, {
+            data: {event: $event.event,show_keep_rate:1},
+            props: {
+                header: title,
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                closeOnEscape: false,
+                position: 'top'
+            },
+            onClose: (options) => {
+                const data = options.data;
+                if (!data) {
+                    $event.revert()
+                } 
+            }
+        });
     },
-   
+  
 })
 
 
@@ -589,8 +604,8 @@ function resourceColumn(view_type) {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
-    // socket.emit("RefresheDoorDashboard", doc.message.property)
-    alert(property.reservation.property)
+    // window.socket.emit("RefresheDoorDashboard", doc.message.property)
+    // alert(property.reservation.property)
 }
 
 function onView() {
@@ -954,7 +969,7 @@ function getEndDate(start, period){
 }
 
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+    window.socket.off("RefresheDoorDashboard");
     document.body.removeEventListener('scroll', handleScroll);
 })
 

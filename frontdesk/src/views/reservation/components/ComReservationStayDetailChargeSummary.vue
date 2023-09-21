@@ -1,27 +1,27 @@
 <template lang="">
-        <div class="col-12">
-    <ComReservationStayPanel title="Charge Summary">
-      <template #content>
-        <div class="flex mb-2 mt-2 gap-2 text-right">
-            <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                <div class="text-500 uppercase text-sm">Total Debit</div>
-                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_debit"></CurrencyFormat></div>
-            </div>
-            <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                <div class=" text-500 uppercase text-sm">Total Credit</div>
-                <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_credit"></CurrencyFormat></div>
-            </div>
-            <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
-                <div class="text-500 uppercase text-sm">Balance</div>
-                <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservationStay?.balance"></CurrencyFormat></div>
-            </div>
-        </div>
-         
-          <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
-              <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
+  <div class="col-12">
+      <ComReservationStayPanel title="Charge Summary">
+        <template #content>
+          <div class="flex mb-2 mt-2 gap-2 text-right">
+              <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                  <div class="text-500 uppercase text-sm">Total Debit</div>
+                  <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_debit"></CurrencyFormat></div>
+              </div>
+              <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                  <div class=" text-500 uppercase text-sm">Total Credit</div>
+                  <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservationStay?.total_credit"></CurrencyFormat></div>
+              </div>
+              <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
+                  <div class="text-500 uppercase text-sm">Balance</div>
+                  <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservationStay?.balance"></CurrencyFormat></div>
+              </div>
           </div>
-      </template>
-    </ComReservationStayPanel>
+          
+            <div v-for="items in rs.stay_summary" :key="items" class="flex gap-2 mt-2">
+                <ComBoxStayInformation isCurrency v-if="items.amount != 0" :title="items?.account_category" :value="items?.amount"  valueClass="grow text-right" titleClass="col-5" ></ComBoxStayInformation>
+            </div>
+        </template>
+      </ComReservationStayPanel>
      
     </div>
     <div class="col-12">
