@@ -86,7 +86,6 @@
     // import ComReservationStayChangeRate from './ComReservationStayChangeRate.vue'
     const property = JSON.parse(localStorage.getItem("edoor_property"))
     const rs = inject('$reservation_stay')
-    const socket = inject('$socket')
     const moment = inject('$moment')
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
@@ -167,11 +166,12 @@
         postApi("reservation.assign_room",{data: selectedStay.value}).then((r)=>{
             loading.value = false
             
-            socket.emit("RefreshReservationDetail", r.message.reservation)
+            window.socket.emit("RefreshReservationDetail", r.message.reservation)
             
-            socket.emit("RefresheDoorDashboard", property.name)
+            window.socket.emit("RefresheDoorDashboard", property.name)
            
-            socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"})
+            window.socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"})
+            window.socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
 
             onClose(r)
         }).catch((err)=>{

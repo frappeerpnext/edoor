@@ -109,7 +109,6 @@
 </template>
 <script setup>
 import { inject, ref, useConfirm, useToast, postApi } from "@/plugin";
-const socket = inject("$socket")
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
@@ -176,8 +175,8 @@ function onMarkAsMasterRoom() {
             }).then((doc) => {
                 rs.loading = false
                 rs.reservationStay = doc.message
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })
 
         },
@@ -203,10 +202,10 @@ function onUndoCheckIn() {
             ).then((doc) => {
                 rs.loading = false
                 rs.reservationStay = doc.message
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
-                socket.emit("RefresheDoorDashboard", doc.message.property)
-                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                window.socket.emit("RefresheDoorDashboard", doc.message.property)
+                window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                 
                 setTimeout(() => {
                     emit('onRefresh')
@@ -239,10 +238,10 @@ function OnUndoCheckOut() {
             }
             ).then((doc) => {
                 rs.reservationStay = doc.message
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
-                socket.emit("RefresheDoorDashboard", doc.message.property)
-                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                window.socket.emit("RefresheDoorDashboard", doc.message.property)
+                window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                 rs.loading = false
                 setTimeout(() => {
                     emit('onRefresh')
@@ -297,10 +296,12 @@ function onSaveNote(data){
         loading.value = false
         note.value.show = false
         rs.getReservationDetail(rs.reservationStay.name)
-        socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-        socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+
+        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
         
     }).catch(()=>{
         loading.value = false
@@ -331,10 +332,11 @@ function onReservedRoom() {
             }).then((resul)=>{
                 loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name)
-                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-                socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-                socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+                window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
 
             })  
         },
@@ -360,10 +362,11 @@ function onUnReservedRoom() {
             }).then((resul)=>{
                 loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name)
-                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-                socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-                socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+                window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
 
             })  
         },
@@ -393,8 +396,8 @@ function onMarkasPaidbyMasterRoom() {
                             severity: 'success', summary: 'Mark as Piad by Master Room',
                             detail: 'Mark as Piad by Master Room Successfully', life: 3000
                         });
-                        socket.emit("RefreshReservationDetail", rs.reservation.name)
-                        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                     })
 
             },
@@ -428,8 +431,8 @@ function onUnmarkasPaidbyMasterRoom() {
                         severity: 'success', summary: 'Unmark as Paid by Master Room ',
                         detail: 'Unmark as Paid by Master Room Successfully', life: 3000
                     });
-                    socket.emit("RefreshReservationDetail", rs.reservation.name)
-                    socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                    window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                 })
         },
 
@@ -526,6 +529,7 @@ function onMarkasGITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
                 })
         },
 
@@ -552,6 +556,7 @@ function onMarkasFITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
                 })
         },
 

@@ -8,6 +8,7 @@ from edoor.api.frontdesk import get_working_day
 from frappe.utils import now,getdate
 class Reservation(Document):
 	def validate(self):
+		 
 		if self.departure_date<=self.arrival_date:
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 
@@ -27,6 +28,11 @@ class Reservation(Document):
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0) 
 		#update note & housekeeping note
 		if self.is_new():
+			#set default check in and check out time
+			self.arrival_time = frappe.db.get_single_value("eDoor Setting","default_check_in_time")			
+			self.departure_time = frappe.db.get_single_value("eDoor Setting","default_check_out_time")			
+			
+
 			if self.note:
 				self = update_note(self=self)
 			if self.housekeeping_note:

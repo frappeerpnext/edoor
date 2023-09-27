@@ -81,7 +81,6 @@ import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 const dialogRef = inject('dialogRef')
 const rs = inject('$reservation_stay');
-const socket = inject('$socket')
 const gv = inject('$gv');
 const genderList = ref(["Not Set", "Male", "Female"])
 let isApplyAllStays = ref(false)
@@ -121,8 +120,8 @@ function onAdditionalSave(){
             dialogRef.value.close();
         }
         loading.value = false
-        socket.emit("RefreshReservationDetail", rs.reservation.name)
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
     }).catch((err)=>{
         loading.value = false
     })
@@ -164,8 +163,8 @@ function onStayGuestSave() {
                 dialogRef.value.close(r);
             }
             loading.value = false
-            socket.emit("RefreshReservationDetail", rs.reservation.name)
-            socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
         }).catch(()=>{
             loading.value = false
         })

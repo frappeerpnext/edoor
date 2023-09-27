@@ -17,7 +17,6 @@ import { ref, inject,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const socket = inject('$socket')
 const rs = inject('$reservation_stay')
 
 
@@ -64,10 +63,10 @@ function onSave() {
             emit('onSave',{reservation:doc.message})
         }
         isLoading.value = false
-        socket.emit("RefresheDoorDashboard", property.name);
-        socket.emit("RefreshReservationDetail", rs.reservation.name);
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
+        window.socket.emit("RefresheDoorDashboard", property.name);
+        window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
     })
     .catch(()=>{
         isLoading.value = false      

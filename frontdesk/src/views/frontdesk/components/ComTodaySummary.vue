@@ -31,7 +31,6 @@
 import { ref, getApi, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const socket = inject("$socket")
 const props = defineProps({
     date: ""
 })
@@ -43,7 +42,7 @@ const chartData = ref([])
 const loading = ref(false)
 
 
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_summary") {
         loadData(props.date,false)
     }
@@ -55,7 +54,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 })
 
 function loadData(date,show_loading = true){

@@ -108,15 +108,6 @@
   "sort_order": 500
  },
  {
-  "account_category": "Other Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:48.489650",
-  "name": "Other Charge",
-  "note": null,
-  "sort_order": 300
- },
- {
   "account_category": "City Ledger",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -124,15 +115,6 @@
   "name": "City Ledger",
   "note": null,
   "sort_order": 600
- },
- {
-  "account_category": "Payment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 16:59:46.108506",
-  "name": "Payment",
-  "note": "a",
-  "sort_order": 800
  },
  {
   "account_category": "Deposit",
@@ -160,5 +142,23 @@
   "name": "Room Charge",
   "note": null,
   "sort_order": 100
+ },
+ {
+  "account_category": "Payment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:59:46.108506",
+  "name": "Payment",
+  "note": "a",
+  "sort_order": 800
+ },
+ {
+  "account_category": "Other Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:48.489650",
+  "name": "Other Charge",
+  "note": null,
+  "sort_order": 300
  }
 ]

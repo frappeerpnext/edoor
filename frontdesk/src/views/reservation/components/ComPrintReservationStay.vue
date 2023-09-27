@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from "@/plugin"
+import { ref, onMounted, inject , onUnmounted } from "@/plugin"
 const dialogRef = inject("dialogRef");
 const frappe = inject("$frappe")
 const call = frappe.call()
@@ -41,6 +41,11 @@ function onIframeLoaded() {
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == property.name && arg.action=="printreservation") {
+        refreshReport()
+    }
+})
 onMounted(() => {
     if (dialogRef) {
         const params = dialogRef.value.data
@@ -69,4 +74,8 @@ onMounted(() => {
 
 
 });
+onUnmounted(() => {
+    
+    window.socket.off("RefreshData");
+})
 </script> 

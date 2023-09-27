@@ -22,7 +22,7 @@
                         <div class="col-6">
                             <label for="arrivel_num">Arrival Flight Number</label>
                             <InputText v-model="stay.arrival_flight_number" id="arrivel_num" type="text"
-                                class="p-inputtext-sm w-full" placeholder=" Arrival Flight Number" :maxlength="50" />
+                                class="p-inputtext-sm w-full" placeholder="Arrival Flight Number" :maxlength="50" />
                         </div>
                         <div class="col-6">
                             <label for="num">Pickup Location</label>
@@ -98,7 +98,6 @@ import ComAddDriver from "../../other/driver/ComAddDriver.vue";
 
 const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
-const socket = inject("$socket")
 const stay = ref({})
 const stays = ref()
 const rs = inject('$reservation_stay');
@@ -119,9 +118,8 @@ function onSave() {
                 rs.reservationStay = JSON.parse(JSON.stringify(doc.message))
             }
             dialogRef.value.close("refresh");
-            socket.emit("RefreshReservationDetail", stay.value.reservation);
-            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
-            alert(rs.reservationStay.name)
+            window.socket.emit("RefreshReservationDetail", stay.value.reservation);
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
         })
         .catch((error) => {
            

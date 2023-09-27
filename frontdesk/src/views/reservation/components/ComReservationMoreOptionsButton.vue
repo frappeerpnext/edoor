@@ -131,7 +131,6 @@ import ComFormSetupArrivalAndDeparture from './ComFormSetupArrivalAndDeparture.v
  
 const dialog = useDialog();
 
-const socket = inject("$socket")
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
@@ -202,7 +201,7 @@ function onSaveGroupStatus(r){
     postApi('reservation.update_reservation_status',data).then((r)=>{
         onCloseNote()
         rs.LoadReservation(rs.reservation.name)
-        socket.emit("RefresheDoorDashboard", rs.reservation.property);
+        window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
     })
 }
 function onCloseNote(){
@@ -496,6 +495,8 @@ function onMarkasGITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
+                 
                 })
         },
 
@@ -521,6 +522,7 @@ function onMarkasFITReservation() {
                             severity: 'success', summary: 'Mark as FIT Reservation',
                             detail: 'Mark as FIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
                 })
         },
 

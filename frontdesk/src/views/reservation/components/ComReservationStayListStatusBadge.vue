@@ -114,7 +114,7 @@
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
                         style="color:#fff;background: #00000021;">
                         <span v-if="rs.reservationStays">
-                            {{ rs.reservationStays.filter(r=>r.require_pickup && rs.is_active_reservation == 1).length }}
+                            {{ rs.reservationStays.filter(r=>r.require_pickup && r.is_active_reservation == 1).length }}
                         </span>
                         <span v-else>0</span>
                     </span>
@@ -126,9 +126,9 @@
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Drop Off</span>
                     <span class="border-round-lg text-center line-height-4 w-2rem h-2rem ml-2"
-                        style="color:#fff;background: #00000021;">
+                        style="color:#fff;background: #00000021;"> 
                         <span v-if="rs.reservationStays">
-                            {{ rs.reservationStays.filter(r=>r.require_drop_off && rs.is_active_reservation == 1).length }}
+                            {{ rs.reservationStays.filter(r=>r.require_drop_off && r.is_active_reservation == 1).length }}
                         </span>
                         <span v-else>0</span>
                     </span>

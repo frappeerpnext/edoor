@@ -316,6 +316,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
+   
     if name or doc:
         if name:
             doc = frappe.get_doc("Reservation Stay",name)
@@ -347,7 +348,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
         for  d in folio_data:
             del d["credit"]
             del d["debit"]
-
+        
         for stay in doc.stays:
             sql = """
                 select 
@@ -583,6 +584,7 @@ def clear_reservation():
     room_list = frappe.db.get_all("Room")
     for r in room_list:
         room_doc = frappe.get_doc("Room", r.name)
+        room_doc.housekeeping_status = "Vacant Clean"
         room_doc.save()
     
     
@@ -659,6 +661,7 @@ def update_photo(data):
     frappe.db.sql("update `tab{}` set photo=%(photo)s where name=%(name)s".format(data["doctype"]), data)
     frappe.msgprint("Upload photo successfully")
 
+@frappe.whitelist()
 def update_reservation_stay_and_reservation(reservation_stay, reservation):
     update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
     update_reservation(name=reservation, doc=None, run_commit=True)

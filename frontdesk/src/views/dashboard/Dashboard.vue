@@ -156,7 +156,6 @@ import ComReservationStayList from '@/views/frontdesk/components/ComReservationS
  
  
 const toast = useToast();
-const socket = inject("$socket");
 const moment = inject("$moment")
 const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -181,7 +180,7 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const tomorrow = ref('')
 
 
-socket.on("RefresheDoorDashboard", (arg) => {
+window.socket.on("RefresheDoorDashboard", (arg) => {
     
     if(arg ==property.name){
         getData(false)
@@ -529,7 +528,7 @@ const viewSummary = (name) => {
 }
 
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+    window.socket.off("RefresheDoorDashboard");
 })
 
  

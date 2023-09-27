@@ -1,5 +1,15 @@
-<template> 
-    <Dropdown v-model="roomTypeId" :showClear="showClear" :options="data" showClear optionValue="name" @change="onSelectRoomType($event)" optionLabel="room_type" placeholder="Select Room Type" class="w-full" />
+<template>
+    <Dropdown v-model="roomTypeId" :showClear="showClear" :options="data"  showClear optionValue="name" 
+    @change="onSelectRoomType($event)" 
+    optionLabel="room_type" 
+    placeholder="Select Room Type"
+    class="w-full">
+        <template #option="slotProps">
+            <div class="flex align-items-center">
+                <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+            </div>
+        </template>
+    </Dropdown>
 </template>
 <script setup>
     import {ref,inject,computed,onMounted,getApi, watch } from '@/plugin'

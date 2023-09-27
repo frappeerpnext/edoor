@@ -123,6 +123,7 @@ import ComDialogNote from './components/form/ComDialogNote.vue'
 import socket from './utils/socketio';
 import ComStayInfoNoBox from '@/views/reservation/components/ComStayInfoNoBox.vue'
 import ComLastModifiedInfo from './components/layout/components/ComLastModifiedInfo.vue'
+import ComDocumentBadge from './components/layout/components/ComDocumentBadge.vue'
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css' // optional for styling
 
@@ -198,7 +199,7 @@ app.component('ComColorPicker', ComColorPicker)
 app.component('ComInputCurrency', ComInputCurrency)
 app.component('ComStayInfoNoBox', ComStayInfoNoBox)
 app.component('ComLastModifiedInfo', ComLastModifiedInfo)
-
+app.component('ComDocumentBadge', ComDocumentBadge)
 // Plugins
 app.use(frappe)
 app.use(router);

@@ -34,6 +34,8 @@ class ReservationStay(Document):
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
+ 
+
 		reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
 		#check with old doc
 		if not self.is_new():
@@ -143,6 +145,10 @@ class ReservationStay(Document):
 
 		#update note & housekeeping note
 		if self.is_new():
+			#set default check in and check out time
+			self.arrival_time = frappe.db.get_single_value("eDoor Setting","default_check_in_time")			
+			self.departure_time = frappe.db.get_single_value("eDoor Setting","default_check_out_time")			
+
 			if self.note:
 				self = update_note(self=self)
 			if self.housekeeping_note:
@@ -165,6 +171,11 @@ class ReservationStay(Document):
 		generate_room_rate(self, is_update_reservation_stay=True)
 
 	def on_update(self):
+		if self.is_master:
+			reservation_stays = frappe.get_list("Reservation Stay",filters={
+				'reservation': self.reservation
+			})
+			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join(str(x.name) for x in reservation_stays)))
 		data_for_udpate = {
 			"rooms":self.rooms,
 			"note":self.note,
@@ -402,7 +413,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"is_active_reservation":1
 			}).insert()
 			
-	# frappe.throw("xx")
+
 	
 	
 def update_reservation_stay_room_rate_after_move(data,stay_doc):
@@ -411,10 +422,16 @@ def update_reservation_stay_room_rate_after_move(data,stay_doc):
 	for d in room_rates:
 		rate_doc = frappe.get_doc("Reservation Room Rate",d.name)
 		rate_doc.date = date_range[room_rates.index(d)]
+		rate_doc.room_id=data["room_id"]
+		rate_doc.room_type_id=data["room_type_id"]
+		if data["generate_rate_type"] =="rate_plan":
+
+			rate_doc.is_manual_rate = 0
+			rate_doc.regenerate_rate = 1
+
+
 		rate_doc.save()
 
-	
-		
 
 def change_room_occupy(self):
 	sql = "WHERE reservation_stay = '{0}'".format(self.name)

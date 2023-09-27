@@ -11,12 +11,8 @@ class ReservationRoomRate(Document):
 	def validate(self):
 		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:
-			#get_room_rate(property, rate_type, room_type, business_source, date):
-			
 			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:
 				self.input_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
-		
-		 
 
 		self.rate = self.input_rate or 0		 
 		self.discount = self.discount or 0
@@ -30,6 +26,7 @@ class ReservationRoomRate(Document):
 		if (self.discount_amount or 0) > (self.input_rate or 0):
 			frappe.throw("Discount amount cannot greater than amount")
 
+		
 
 		if self.tax_rule:
 			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
@@ -37,7 +34,6 @@ class ReservationRoomRate(Document):
 			self.tax_2_account = tax_rule.tax_2_account
 			self.tax_3_account = tax_rule.tax_3_account
 			if self.rate_include_tax== "Yes" and (self.tax_1_rate + self.tax_2_rate + self.tax_3_rate) > 0:
-				
 				price = get_base_rate((self.input_rate or 0) - (self.discount_amount or 0),tax_rule,self.tax_1_rate, self.tax_2_rate, self.tax_3_rate)
 
 				self.rate = price + (self.discount_amount or 0)
@@ -64,8 +60,6 @@ class ReservationRoomRate(Document):
 			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		else:
-			 
-			self.rate_include_tax = 'No'
 			self.tax_1_rate = 0
 			self.tax_2_rate = 0
 			self.tax_3_rate = 0
@@ -76,9 +70,10 @@ class ReservationRoomRate(Document):
 			self.taxable_amount_2 = 0
 			self.taxable_amount_3 = 0
 			self.total_tax = 0
-
+			
 		self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		self.total_rate = (self.rate or 0) - (self.discount_amount or 0) + self.total_tax
 
 
+	 
 

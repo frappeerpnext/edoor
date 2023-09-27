@@ -446,7 +446,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
         
          
         for t in room_types:
-            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)
+            rooms = frappe.db.sql("select name as id, room_number as title, sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type,room_type_alias from `tabRoom` where room_type_id='{0}' and property='{1}' and disabled = 0 {2}   order by room_number".format(t["name"],property, filters),as_dict=1)
             resources.append({
                 "id":t["name"],
                 "title":t["room_type"],
@@ -457,7 +457,7 @@ def get_room_chart_resource(property = '',room_type_group = '', room_type = '',r
                 "children": rooms
             })
     else:
-        resources = resources +  frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
+        resources = resources +  frappe.db.sql("select name as id,room_type,room_type_alias, room_type_id, room_number as title,sort_order, housekeeping_status,status_color,housekeeping_icon, 'room' as type,room_type_id, room_type from `tabRoom` where property='{0}' and  disabled = 0 {1} {2} order by room_number".format( property, filters, ("AND room_type_id = '{}'".format(room_type) if room_type else "")),as_dict=1)
     
 
 
@@ -598,9 +598,10 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             }
  
     data = frappe.db.sql(sql,filter, as_dict=1)
-    
+
     for d in data:
         d["can_resize"]  = d["can_resize"] == 1
+        
     events = data
    
 

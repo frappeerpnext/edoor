@@ -18,23 +18,23 @@ def validate(filters):
 
 def get_columns(filters):
 	columns =   [
-		{"fieldname":"reservation", "label":"Res #", "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail"},
-		{"fieldname":"name", "label":"Stay #", "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
-		{'fieldname':'reservation_type','label':'Type',"width":60 ,"show_in_report":1},
-		{"fieldname":"reservation_date", "label":"Res. Date", "fieldtype":"Date","width":95,"show_in_report":1},
-		{'fieldname':'rooms','label':'Room',"width":40,"show_in_report":1},
-		{'fieldname':'room_type_alias','label':'Room Type',"width":50,"show_in_report":1},
-		{"fieldname":"arrival_date", "label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
-		{"fieldname":"departure_date", "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
+		{"fieldname":"reservation", "label":"Res #",'align':'left', "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail"},
+		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
+		{"fieldname":"reservation_date",'align':'left', "label":"Res. Date", "fieldtype":"Date","width":95,"show_in_report":1},
+		{'fieldname':'rooms','label':'Room','align':'center',"width":40,"show_in_report":1},
+		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
+		{"fieldname":"arrival_date", 'align':'left',"label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
+		{"fieldname":"departure_date",'align':'left', "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
 		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1,'align':'center'},
-		{'fieldname': 'pax', 'label': 'Pax(A/C)',"width":40,"show_in_report":1},
-		{'fieldname':'business_source','label':'Source',"width":90,"show_in_report":1},
+		{'fieldname': 'pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
+		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
-		{"fieldname":"guest_name", "label":"Guest Name","width":90,"show_in_report":1,"fieldtype":"Link","options":"Customer","post_message_action": "view_guest_detail"},
-		{'fieldname':'reservation_status','label':'Status',"width":95,"show_in_report":1},
-		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1},
-		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1},
-		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1},
+		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1,"fieldtype":"Link","options":"Customer","post_message_action": "view_guest_detail"},
+		{'fieldname':'reservation_status','label':'Status','align':'center',"width":95,"show_in_report":1},
+		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
+		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
+		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		# {"fieldname":"creation", "label":"Creation", "fieldtype":"Date","width":95},
 		# {"fieldname":"modified", "label":"Modified", "fieldtype":"Datetime","width":95},
 	]
@@ -131,11 +131,12 @@ def get_reservation_stays(filters):
 		sql = sql + " and rst.guest = %(guest)s"
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-	if filters.is_active_reservation:
-		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
+	# if filters.is_active_reservation:
+	# 	sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation_stay"] for d in data]
+
 def get_reservation(filters):
 	sql = """
 		select 
@@ -153,8 +154,8 @@ def get_reservation(filters):
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	
-	if filters.is_active_reservation:
-		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
+	# if filters.is_active_reservation:
+	# 	sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
 		
 	data =  frappe.db.sql(sql, filters, as_dict=1)
@@ -221,28 +222,27 @@ def get_report_data(filters):
 			report_data.append({
 				"indent":0,
 				"reservation": "Total",
+				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
+				"pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
 				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
 				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
-				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
-				"pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
-				"is_total_rowx":1,
+				"is_total_row":1,
 				"parent":id
 			})
 
 		report_data.append({
 				"indent":0,
-				"is_group":1,
 				"reservation": "",
 				"is_separator":1})
 		report_data.append({
 				"indent":0,
 				"reservation": "Grand Total",
+				"room_nights":sum([d["room_nights"] for d in data ]),
+				"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 				"total_debit":sum([d["total_debit"] for d in data]),
 				"total_credit":sum([d["total_credit"] for d in data]),
 				"balance":sum([d["balance"] for d in data ]),
-				"room_nights":sum([d["room_nights"] for d in data ]),
-				"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 				"is_total_row":1,
 				"is_grand_total":1
 			})

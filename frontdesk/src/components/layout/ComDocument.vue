@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="mt-3 min-h-folio-cus" :class="{'min-h-folio-cus' : fill}">
+        <div class="mt-3 min-h-folio-cus" :class="{'unset-min-h' : fill}">
         <div class="flex justify-end mb-3">
             <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
         </div>
@@ -12,7 +12,7 @@
                     <DataTable :value="data">
                         <Column field="file_url" header="File">
                             <template #body="slotProps"> 
-                                <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" align="justify-start"/>
+                                <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" />
                             </template>
                         </Column>
                         <Column field="title" header="Title"></Column>
@@ -56,7 +56,7 @@
     </div>
 </template>
 <script setup>
-import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog} from '@/plugin'
+import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted} from '@/plugin'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 const emit = defineEmits(['Documents_length'])
@@ -82,6 +82,7 @@ const props = defineProps({
         default: true
     }
 })
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const visible = ref(false)
 const loading = ref(false)
 const deleting = ref(false)
@@ -96,13 +97,15 @@ function onModal(open){
     visible.value = open
 }
 function onSuccess(){
-    onLoad()
     visible.value = false
+    window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
+}
 
-}
-function onDocmentLength(){
-    
-}
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == property.name && arg.action=="refresh_document" ) {
+        onLoad()
+    }
+})
 function onLoad(){
     loading.value = true
     let dataFilter = []
@@ -122,7 +125,7 @@ function onLoad(){
     }).then((r)=>{
         data.value = r
         loading.value = false
-        emit('Documents_length',data.value.length); 
+        emit('Documents_length',data.value.length)
     }).catch((err)=>{
         loading.value = false
     })
@@ -174,6 +177,7 @@ function onRemove(selected){
                 if(doc){
                     deleting.value = false
                     onLoad()
+                    window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
                 }
             }).catch((err)=>{
                 deleting.value = false
@@ -194,6 +198,7 @@ function onSave(){
         saving.value = false
         opEdit.value.hide()
         onLoad()
+        window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
     }).catch((err)=>{
         saving.value = false
     })
@@ -209,7 +214,9 @@ const downloadURI = (uri, name) => {
 onMounted(() => {
    onLoad() 
 })
-
+// onUnmounted(() => {
+//     window.socket.off("RefreshData");
+// })
 </script>
 <style lang="">
     

@@ -28,7 +28,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
-
+ 
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                     
                 </div>
@@ -109,7 +109,7 @@
 
     </template>
 <script setup>
-import {h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
+import { h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -127,27 +127,28 @@ import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
-import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue' 
+import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 
 import { useTippy } from 'vue-tippy'
- 
+
 
 const resources = ref([])
 const events = ref([])
-  
+
 const moment = inject('$moment')
 const filter = ref({
-     
+
     view_type: 'room',
     date: moment().toDate(),
     end_date: '',
-    period:"15_days"
+    period: "15_days"
 })
 const selectedDate = ref()
 const showAdvanceSearch = ref()
- 
+
+let currentHightlightResourceId = ""
 
 const fullCalendar = ref(null)
 const gv = inject("$gv")
@@ -159,11 +160,11 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
 
-let start_date,end_date //we use this event to hold value of start and end date when use resize date or drag and drop date
+let start_date, end_date //we use this event to hold value of start and end date when use resize date or drag and drop date
 
- 
+
 const keyword = ref({
-    keyword:'',
+    keyword: '',
     room_number: ''
 })
 
@@ -179,8 +180,8 @@ let advanceFilter = ref({
     floor: ""
 })
 const isFilter = computed(() => {
- 
-      if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
+
+    if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
         return true
     } else {
         return false
@@ -202,12 +203,12 @@ let roomChartResourceFilter = reactive({
     view_type: filter.value.view_type // room_type = true or room = false
 })
 
- 
+
 
 
 
 window.socket.on("RefresheDoorDashboard", (arg) => {
-  
+
     if (arg == property.name) {
         onRefresh(false)
     }
@@ -229,11 +230,11 @@ const calendarOptions = reactive({
     headerToolbar: false,
     nowIndicator: true,
     resourceAreaColumns: resourceColumn(),
-    now:working_day.date_working_day + " 12:00:00",
+    now: working_day.date_working_day + " 12:00:00",
     resources: resources,
     events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-      
+
         return draggedEvent._def.extendedProps.can_resize == 1
     },
     selectable: true,
@@ -251,7 +252,6 @@ const calendarOptions = reactive({
     slotLabelFormat: function (date) {
         return " "
     },
-
     slotLabelDidMount: function (info) {
 
         const d = moment(info.date).format("DD")
@@ -267,56 +267,55 @@ const calendarOptions = reactive({
             }
         }
 
-        info.el.addEventListener('click', function() {
-           window.postMessage({"action":"view_product_data_sumary_by_date",date:moment(info.date).format("YYYY-MM-DD")})
-           
+        info.el.addEventListener('click', function () {
+            window.postMessage({ "action": "view_product_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
+
         })
-       
-        
+
+
 
     },
-
     select: (($event) => {
         onSelectedDate($event)
     }),
     eventResizeStart: (($event) => {
         start_date = moment($event.event.start).format("YYYY-MM-DD")
-        end_date= moment($event.event.end).format("YYYY-MM-DD")
+        end_date = moment($event.event.end).format("YYYY-MM-DD")
     }),
     eventResize: (($event) => {
-       
 
-        if(!moment(start_date).isSame(moment($event.event.start).format("YYYY-MM-DD"))){
-         
-            if($event.event._def.extendedProps.can_change_start_date==0){
+
+        if (!moment(start_date).isSame(moment($event.event.start).format("YYYY-MM-DD"))) {
+
+            if ($event.event._def.extendedProps.can_change_start_date == 0) {
                 $event.revert()
-                toast.add({ severity: 'warn', summary:"This reservation is not allow to change arrival date", life: 3000 })
+                toast.add({ severity: 'warn', summary: "This reservation is not allow to change arrival date", life: 3000 })
                 return
             }
         }
-        
-        if(!moment(end_date).isSame(moment($event.event.end).format("YYYY-MM-DD"))){
-         
-            if($event.event._def.extendedProps.can_change_end_date==0){
+
+        if (!moment(end_date).isSame(moment($event.event.end).format("YYYY-MM-DD"))) {
+
+            if ($event.event._def.extendedProps.can_change_end_date == 0) {
                 $event.revert()
-                toast.add({ severity: 'warn', summary:"This reservation is not allow to change departure date", life: 3000 })
+                toast.add({ severity: 'warn', summary: "This reservation is not allow to change departure date", life: 3000 })
                 return
             }
         }
 
         if (moment(start_date).isSame(moment($event.event.start).format("YYYY-MM-DD")) &&
             moment(end_date).isSame(moment($event.event.end).format("YYYY-MM-DD"))
-        ){
+        ) {
             $event.revert()
             return
         }
 
 
- 
+
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: {event: $event.event,show_keep_rate:0},
+            data: { event: $event.event, show_keep_rate: 0,old_event:{start:start_date, end:end_date} },
             props: {
-                header: 'Change Stay',
+                header: 'Change Stayxx',
                 style: {
                     width: '50vw',
                 },
@@ -329,49 +328,60 @@ const calendarOptions = reactive({
                 const data = options.data;
                 if (!data) {
                     $event.revert()
-                } 
+                }
             }
         });
     }),
     eventClick: ((info) => {
         // alert(info.event._def)
-       
+
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
             info.event._def.date = info.event.start;
-            
+
             // window.postMessage(info.event._def, '*')
             openRoomBlock(info.event._def)
         }
 
     }),
     eventMouseEnter: (($event) => {
-        if(loading.value){
+        if (loading.value) {
             return
         }
         const event = $event.event._def
+        const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
+        elements.forEach(e=>{
+            e.parentNode.parentNode.parentNode.style.boxShadow = '2px 2px 5px 1px rgba(0, 0, 0, 0.8)';
+        })
+        
+        
         if (!$event.el.getAttribute("has_tippy")) {
             $event.el.setAttribute("has_tippy", "yes");
             const { tippyInstance } = useTippy($event.el, {
-                content:  h(ComCalendarEventTooltip, { event: event }),
+                content: h(ComCalendarEventTooltip, { event: event }),
             })
         }
 
     }),
+    eventMouseLeave:(($event) => {
+        const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
+        elements.forEach(e=>{
+            e.parentNode.parentNode.parentNode.style.boxShadow='';
+        })
+    }),
     eventDrop: function ($event) {
         let title = "Change Stay"
-        if($event.newResource){
-            if ($event.newResource._resource.id!=$event.oldResource._resource.id){
-            title="Move Room"
+        if ($event.newResource) {
+            if ($event.newResource._resource.id != $event.oldResource?._resource.id) {
+                title = "Move Room"
+            }
         }
+ 
         
-        }
-        
-
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: {event: $event.event,show_keep_rate:1},
+            data: { event: $event.event, show_keep_rate: 1, new_event: $event.newResource?._resource,old_event:{start:$event.oldEvent.start,end:$event.oldEvent.end} },
             props: {
                 header: title,
                 style: {
@@ -385,83 +395,83 @@ const calendarOptions = reactive({
                 const data = options.data;
                 if (!data) {
                     $event.revert()
-                } 
+                }
             }
         });
     },
-  
+
 })
 
 
 
 const getEventDebounce = debouncer(() => {
-   getEvent()
+    getEvent()
 
 }, 500);
 
 const openRoomBlock = debouncer((_data) => {
     window.postMessage(_data, '*')
 }, 200);
- 
+
 function setRoomChartlocationStorage() {
 
     sessionStorage.setItem('reservation_chart', JSON.stringify({
-        "period":filter.value.period || "15_days",
-        "start_date":moment.utc(filter.value.date).format("YYYY-MM-DD"),
-        "view": filter.value.view_type || "room" 
+        "period": filter.value.period || "15_days",
+        "start_date": moment.utc(filter.value.date).format("YYYY-MM-DD"),
+        "view": filter.value.view_type || "room"
     }))
 }
 
 function onFilterToday() {
-    if (gv.loading){
+    if (gv.loading) {
         return
     }
-    const date =moment.utc(working_day.date_working_day)
-   calendarOptions.visibleRange = {start:date.toDate(),end:getEndDate(date, filter.value.period)}
-   
-    getEvent() 
+    const date = moment.utc(working_day.date_working_day)
+    calendarOptions.visibleRange = { start: date.toDate(), end: getEndDate(date, filter.value.period) }
+
+    getEvent()
     removeDOM()
 }
 
 function onChangePeriod(period) {
-    
-    if (gv.loading){
+
+    if (gv.loading) {
         return
     }
-    
+
     const cal = fullCalendar.value.getApi()
     filter.value.period = period
-   calendarOptions.visibleRange = {start:cal.view.currentStart,end:getEndDate(cal.view.currentStart, filter.value.period)}
-    
+    calendarOptions.visibleRange = { start: cal.view.currentStart, end: getEndDate(cal.view.currentStart, filter.value.period) }
+
     getEvent()
 }
 
 
 function onFilterDate(event) {
- 
- if (gv.loading){
-     return
- }
 
-const date = moment.utc( moment(event).format("YYYY-MM-DD")).toDate()
-filter.value.date = date
- calendarOptions.visibleRange ={start:date,end:getEndDate(date, filter.value.period)};
- getEvent()
+    if (gv.loading) {
+        return
+    }
+
+    const date = moment.utc(moment(event).format("YYYY-MM-DD")).toDate()
+    filter.value.date = date
+    calendarOptions.visibleRange = { start: date, end: getEndDate(date, filter.value.period) };
+    getEvent()
 }
 
 
 function onPrevNext(key) {
-    if (gv.loading){
+    if (gv.loading) {
         return
     }
     const cal = fullCalendar.value.getApi()
     let visible_date = {}
     if (key == 'prev') {
-        visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days*-1,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days*-1,"days").toDate() }
+        visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days * -1, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days * -1, "days").toDate() }
     } else {
-        visible_date =   { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days,"days").toDate(), end:  moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days,"days").toDate() };
+        visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days, "days").toDate() };
     }
-    
+
     removeDOM()
     calendarOptions.visibleRange = visible_date;
     filter.value.date = visible_date.start
@@ -524,13 +534,15 @@ function onSelectedDate(event) {
 
 }
 function resourceColumn(view_type) {
-    if (!view_type){
-        const state =  JSON.parse(sessionStorage.getItem("reservation_chart"))
-        view_type = (state?.view || "room") 
+ 
+    
+    if (!view_type) {
+        const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
+        view_type = (state?.view || "room")
     }
-    
-    
-    if (view_type== 'room_type') {
+
+
+    if (view_type == 'room_type') {
         return [
             {
                 labelText: 'xxx',
@@ -541,6 +553,7 @@ function resourceColumn(view_type) {
                 width: 40,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
+                        
                     const item = arg.resource.extendedProps
 
                     if (item.housekeeping_icon) {
@@ -565,17 +578,23 @@ function resourceColumn(view_type) {
                 field: 'room_type_alias',
                 headerContent: 'Room Type',
                 cellContent: function (arg) {
+                    if(arg.fieldValue){ 
                     const el = arg.resource._context.calendarApi.el
                     const item = arg.resource.extendedProps
 
                     if (item.room_type) {
-                        el.innerHTML = `<div  title="${item.room_type}">${arg.fieldValue}</div>`;
+                        el.innerHTML = `<div  title="${item.room_type}">${arg.fieldValue ?? ""}</div>`;
                     }
                     else {
                         el.innerHTML = ''
                     }
                     const dom = [el.innerHTML]
-                    return { html: dom }
+                    return { html: dom  }
+                    }else {
+                        return {html:[""]}
+                    }
+                  
+
                 }
             },
             {
@@ -604,116 +623,117 @@ function resourceColumn(view_type) {
 function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
+    onRefresh()
     // window.socket.emit("RefresheDoorDashboard", doc.message.property)
     // alert(property.reservation.property)
 }
 
 function onView() {
     filter.value.view_type = filter.value.view_type == 'room_type' ? 'room' : 'room_type'
-    roomChartResourceFilter.view_type = filter.value.view_type    
+    roomChartResourceFilter.view_type = filter.value.view_type
     calendarOptions.resourceAreaColumns = resourceColumn(filter.value.view_type)
     getResourceAndEvent()
 }
 
-function generateEventForRoomType(data){
- 
+function generateEventForRoomType(data) {
+
     const cal = fullCalendar.value.getApi()
     let current_date = cal.view.currentStart;
-    
+
     const room_type_event = []
-    let occupy_data ={}
-    
-    if (filter.value.view_type=="room_type"){
+    let occupy_data = {}
 
-     
-        resources.value.forEach(r=>{
-        
-                while (current_date <= cal.view.currentEnd) {
-                    if (r.id=="property_summary"){
-                        occupy_data = data.filter(c=>c.date==moment(current_date).format("YYYY-MM-DD") )
-                    
-                            room_type_event.push(
-                                {
+    if (filter.value.view_type == "room_type") {
 
-                                    color:"green",
-                                    resourceId: r.id,
-                                    start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
-                                    end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
-                                    title: r.total_room - (occupy_data.reduce((n, d) => n + (d.total || 0), 0) || 0)  + ' / ' + (occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0) || 0),
-                                    type: "property_summary",
-                                    arrival: occupy_data?.arrival || 0,
-                                    departure: occupy_data?.departure || 0,
-                                    adult: occupy_data?.adult || 0,
-                                    child: occupy_data?.child || 0,
-                                    room_available: r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0) ,
-                                    unassign_room:occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0)  
-                                }
-                            )
-                    }else { 
-                        occupy_data = data.find(c=>c.room_type_id== r.id && c.date==moment(current_date).format("YYYY-MM-DD") )
-                    
-                        room_type_event.push(
-                            {
 
-                                color:(r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "#F7F7F7",
-                                resourceId: r.id,
-                                start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
-                                end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
-                                title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
-                                type: "room_type_event",
-                                arrival: occupy_data?.arrival || 0,
-                                departure: occupy_data?.departure || 0,
-                                adult: occupy_data?.adult || 0,
-                                child: occupy_data?.child || 0,
-                                room_available: r.total_room - (occupy_data?.total || 0),
-                                unassign_room:(occupy_data?.unassign_room || 0)
-                            }
-                        )
-                    }
-                    current_date.setDate(current_date.getDate() + 1);
+        resources.value.forEach(r => {
+
+            while (current_date <= cal.view.currentEnd) {
+                if (r.id == "property_summary") {
+                    occupy_data = data.filter(c => c.date == moment(current_date).format("YYYY-MM-DD"))
+
+                    room_type_event.push(
+                        {
+
+                            color: "#3b82f6",
+                            resourceId: r.id,
+                            start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                            end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                            title: r.total_room - (occupy_data.reduce((n, d) => n + (d.total || 0), 0) || 0) + ' / ' + (occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0) || 0),
+                            type: "property_summary",
+                            arrival: occupy_data?.arrival || 0,
+                            departure: occupy_data?.departure || 0,
+                            adult: occupy_data?.adult || 0,
+                            child: occupy_data?.child || 0,
+                            room_available: r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0),
+                            unassign_room: occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0)
+                        }
+                    )
+                } else {
+                    occupy_data = data.find(c => c.room_type_id == r.id && c.date == moment(current_date).format("YYYY-MM-DD"))
+
+                    room_type_event.push(
+                        {
+
+                            color: (r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "#F7F7F7",
+                            resourceId: r.id,
+                            start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                            end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                            title: r.total_room - (occupy_data?.total || 0) + ' / ' + (occupy_data?.unassign_room || 0),
+                            type: "room_type_event",
+                            arrival: occupy_data?.arrival || 0,
+                            departure: occupy_data?.departure || 0,
+                            adult: occupy_data?.adult || 0,
+                            child: occupy_data?.child || 0,
+                            room_available: r.total_room - (occupy_data?.total || 0),
+                            unassign_room: (occupy_data?.unassign_room || 0)
+                        }
+                    )
                 }
-            
-                current_date = cal.view.currentStart;
-                
-            })
-    }else {
+                current_date.setDate(current_date.getDate() + 1);
+            }
+
+            current_date = cal.view.currentStart;
+
+        })
+    } else {
         //when calender view by room 
         //code below is generate event for current propert event display in first row of calendar
-        resources.value.filter(r=>r.id=="property_summary").forEach(r=>{
-        while (current_date <= cal.view.currentEnd) {
-               occupy_data = data.find(c=>c.date==moment(current_date).format("YYYY-MM-DD") )
-                   room_type_event.push(
-                       {
+        resources.value.filter(r => r.id == "property_summary").forEach(r => {
+            while (current_date <= cal.view.currentEnd) {
+                occupy_data = data.find(c => c.date == moment(current_date).format("YYYY-MM-DD"))
+                room_type_event.push(
+                    {
 
-                           color:"green",
-                           resourceId: r.id,
-                           start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
-                           end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
-                           title: r.total_room - (occupy_data?.total || 0)  + ' / ' + (occupy_data?.unassign_room || 0),
-                           type: "property_summary",
-                           arrival: occupy_data?.arrival || 0,
-                           departure: occupy_data?.departure || 0,
-                           adult: occupy_data?.adult || 0,
-                           child: occupy_data?.child || 0,
-                           room_available: r.total_room - (occupy_data?.total || 0),
-                            unassign_room:(occupy_data?.unassign_room || 0)
-                       }
-                   )
-           
-           current_date.setDate(current_date.getDate() + 1);
-       }
-   
-    
-       
-   })
-}
+                        color: "#3b82f6",
+                        resourceId: r.id,
+                        start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                        end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
+                        title: r.total_room - (occupy_data?.total || 0) + ' / ' + (occupy_data?.unassign_room || 0),
+                        type: "property_summary",
+                        arrival: occupy_data?.arrival || 0,
+                        departure: occupy_data?.departure || 0,
+                        adult: occupy_data?.adult || 0,
+                        child: occupy_data?.child || 0,
+                        room_available: r.total_room - (occupy_data?.total || 0),
+                        unassign_room: (occupy_data?.unassign_room || 0)
+                    }
+                )
+
+                current_date.setDate(current_date.getDate() + 1);
+            }
+
+
+
+        })
+    }
     events.value = [...events.value, ...room_type_event]
- 
+
 }
- 
+
 const onRefresh = debouncer((show_loading = true) => {
     //clear tippy
-    
+
     [...document.querySelectorAll('*')].forEach(node => {
         if (node._tippy) {
             node._tippy.destroy();
@@ -794,7 +814,7 @@ function onFilterResource(f) {
         floor: f.floor,
         room_number: f.room_number,
         business_source: f.business_source,
-        view_type:filter.value.view_type
+        view_type: filter.value.view_type
     }
     advanceFilter.value = roomChartResourceFilter
 
@@ -805,24 +825,26 @@ function onFilterResource(f) {
 
 // search event
 function onSearch(key) {
+
     getEvent();
 }
 
 function getTotalNote() {
-    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day],['property','=', property.name]]).then((docs) => {
+    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day], ['property', '=', property.name]]).then((docs) => {
+
         totalNotes.value = docs
     })
 }
 
 function getResource() {
     gv.loading = true
-        getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter)
+    getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter)
         .then((result) => {
-            
+
             resources.value = result.message
-  
+
             removeDOM()
-            
+
             setTimeout(() => {
 
                 const room_status = document.getElementsByClassName("room-status")
@@ -833,12 +855,12 @@ function getResource() {
                     })
                 }
             }, 3000);
-             
+
             gv.loading = false
-        }).catch((error)=>{
+        }).catch((error) => {
             gv.loading = false
         })
- 
+
 }
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -853,75 +875,77 @@ function debouncer(fn, delay) {
 }
 
 
-function  getEvent(){ 
-    gv.loading = true 
-    filter.value.date =  moment.utc(calendarOptions.visibleRange.start).toDate()
-        
+function getEvent() {
+    gv.loading = true
+    filter.value.date = moment.utc(calendarOptions.visibleRange.start).toDate()
+
     getApi('frontdesk.get_room_chart_calendar_event', {
         start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
         end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
         property: property.name,
         keyword: keyword.value.keyword,
         business_source: advanceFilter.value.business_source,
-        room_type:advanceFilter.value.room_type,
-        view_type:filter.value.view_type,
+        room_type: advanceFilter.value.room_type,
+        view_type: filter.value.view_type,
         room_number: keyword.value.room_number,
-        room_type_group:advanceFilter.value.room_type_group,
-        floor:advanceFilter.value.floor
+        room_type_group: advanceFilter.value.room_type_group,
+        floor: advanceFilter.value.floor
     }).then((result) => {
         events.value = (result.message.events)
-        
-        
-        generateEventForRoomType( result.message.occupy_data)
-       
+
+
+        generateEventForRoomType(result.message.occupy_data)
+
         setRoomChartlocationStorage()
         showConflictRoom(result.message.conflig_rooms)
         removeDOM()
 
         gv.loading = false
-            
+
     }).catch((error) => {
         gv.loading = false
     })
 }
 
- 
 
-function getResourceAndEvent(){
+
+function getResourceAndEvent() {
     gv.loading = true
     getApi("frontdesk.get_room_chart_resource_and_event",
-    {
-        start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
-        end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
-        property: property.name,
-        keyword: keyword.value.keyword,
-        business_source: advanceFilter.value.business_source,
-        room_type:advanceFilter.value.room_type,
-        view_type:filter.value.view_type,
-        room_number: keyword.value.room_number,
-        room_type_group:advanceFilter.value.room_type_group,
-        floor:advanceFilter.value.floor
-    }).then((result)=>{
-        resources.value = result.message.resources
-        events.value = result.message.events.events
- 
-        removeDOM()
+        {
+            start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
+            end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
+            property: property.name,
+            keyword: keyword.value.keyword,
+            business_source: advanceFilter.value.business_source,
+            room_type: advanceFilter.value.room_type,
+            view_type: filter.value.view_type,
+            room_number: keyword.value.room_number,
+            room_type_group: advanceFilter.value.room_type_group,
+            floor: advanceFilter.value.floor
+        }).then((result) => {
+            resources.value = result.message.resources
 
-        
+            events.value = result.message.events.events
+
+            removeDOM()
+
+
             generateEventForRoomType(result.message.events.occupy_data)
-        
-        gv.loading = false
-        setRoomChartlocationStorage()
-        showConflictRoom(result.message.events.conflig_rooms)
-    })
+            addHightLightRowEventListener()
+
+            gv.loading = false
+            setRoomChartlocationStorage()
+            showConflictRoom(result.message.events.conflig_rooms)
+        })
 }
 
 const handleScroll = (event) => {
     const sticky = document.getElementById("front_desk_search_sticky");
- 
-    if(document.body.scrollTop > 50){
+
+    if (document.body.scrollTop > 50) {
         sticky.classList.add("front_desk_sicky_bar");
-    }else{
+    } else {
         sticky.classList.remove("front_desk_sicky_bar");
     }
 };
@@ -929,38 +953,82 @@ const handleScroll = (event) => {
 onMounted(() => {
     gv.loading = true
     const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
-    
-    if (state){
-        
+
+    if (state) {
+
         filter.value.view_type = state.view || "room"
-        filter.value.date  = moment.utc(state.start_date).toDate()
+        filter.value.date = moment.utc(state.start_date).toDate()
         filter.value.end_date = moment.utc(state.end_date).toDate()
 
         filter.value.period = state.period || "15_days"
-    }else {
-        filter.value.date = moment.utc( working_day.date_working_day).add(-1,"days").toDate()
+    } else {
+        filter.value.date = moment.utc(working_day.date_working_day).add(-1, "days").toDate()
     }
 
     roomChartResourceFilter.view_type = filter.value.view_type
 
 
- 
-    calendarOptions.visibleRange =  { start:filter.value.date, end: getEndDate(filter.value.date,filter.value.period) }
 
-   getResourceAndEvent()
+    calendarOptions.visibleRange = { start: filter.value.date, end: getEndDate(filter.value.date, filter.value.period) }
+
+    getResourceAndEvent()
 
     getTotalNote()
     document.body.addEventListener('scroll', handleScroll);
 
+    setTimeout(() => {
+        let timelineElement = document.querySelector(".fc-timeline-slot-lane").parentNode.parentNode.parentNode
+        
+
+        timelineElement.addEventListener("mousemove",function(e){
+            let calendarElement = document.querySelector(".fc-scrollgrid")
+            const calendarRect = calendarElement.getBoundingClientRect();
+            const headerHeight =  document.querySelector(".fc-timeline-header-row").offsetHeight;
+            
+            
+            const rect = timelineElement.getBoundingClientRect();
+            let y = e.clientY - rect.top;
+            let resourceElment = document.elementFromPoint(calendarRect.left + 10, y+calendarRect.top + headerHeight).closest("tr")
+         
+            if (resourceElment){
+                const td = resourceElment.getElementsByTagName("td")
+                if(td){
+                    const resourceId = td[0].dataset.resourceId
+            
+                    if(currentHightlightResourceId && currentHightlightResourceId!=resourceId){
+                            let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + currentHightlightResourceId + '"]')
+                            let room_type_el = document.querySelector('td[data-resource-id="' + currentHightlightResourceId + '"]').closest("tr")
+                        
+                            room_type_el.style.backgroundColor = "";
+                            el.style.backgroundColor = "";
+                        }
+                        let room_type_el = document.querySelector('td[data-resource-id="' + resourceId + '"]').closest("tr")
+                        let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + resourceId + '"]')
+                        room_type_el.style.backgroundColor = "#EDEDED";
+                        el.style.backgroundColor = "#EDEDED";
+                        currentHightlightResourceId = resourceId
+                     
+                }
+                
+                    
+            }
+
+            
+
+        })
+        
+
+    }, 2000);
+    
 })
 
-function getEndDate(start, period){
+function getEndDate(start, period) {
     let date = moment()
-    if (period=="week"){
+    if (period == "week") {
         date = moment(start).add(7, "days").toDate()
-    }else if(period=="15_days"){
-        date =  moment(start).add(15, "days").toDate()
-    }else {
+    } else if (period == "15_days") {
+        date = moment(start).add(15, "days").toDate()
+    } else {
         date = moment(start).add(1, "months").toDate()
     }
     filter.value.end_date = date
@@ -981,7 +1049,7 @@ const onOpenAdvanceSearch = (event) => {
         showAdvanceSearch.value.toggle(event);
     }
 }
- 
+
 
 const onClearFilter = () => {
     keyword.value.room_number = ''
@@ -999,40 +1067,72 @@ provide('advance_filter', {
     onFilterResource,
     onClearFilter
 })
-function showConflictRoom(conflig_rooms){
+function showConflictRoom(conflig_rooms) {
     setTimeout(() => {
-            if(conflig_rooms){
-                resources.value.forEach((r)=>{
-                    if (filter.value.view_type=="room_type"){
-                        let room_type_el  = document.querySelector('td[data-resource-id="' + r.id + '"]')
-                        let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
-                        room_type_el.parentNode.style.backgroundColor = "#EDEDED";
-                        el.style.backgroundColor ="#EDEDED";
+        if (conflig_rooms) {
+            resources.value.forEach((r) => {
+                if (filter.value.view_type == "room_type") {
+                    let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')
+                    let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
+                    room_type_el.parentNode.style.backgroundColor = "#EDEDED";
+                    el.style.backgroundColor = "#EDEDED";
+                }
+
+                r.children?.forEach((c) => {
+                    let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
+                    let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
+                    if (conflig_rooms.includes(c.id)) {
+                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
+                        el.style.backgroundColor = setting.room_conflict_background_color;
+
+                    } else {
+                        room_type_el.parentNode.style.backgroundColor = '';
+                        el.style.backgroundColor = '';
                     }
-
-                    r.children?.forEach((c)=>{
-                        let room_type_el  = document.querySelector('td[data-resource-id="' + c.id + '"]')
-                        let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
-                        if (conflig_rooms.includes(c.id)){
-                            room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
-                            el.style.backgroundColor =setting.room_conflict_background_color;
-
-                        }else {
-                            room_type_el.parentNode.style.backgroundColor = '';
-                            el.style.backgroundColor = '';
-                        }
-                    })
-                    
-                    
                 })
-            }
-            
 
-        }, 500);
+
+            })
+        }
+
+
+    }, 500);
+}
+
+
+
+function addHightLightRowEventListener() {
+    setTimeout(() => {
+        resources.value.forEach((r) => {
+            let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')  
+            let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
+
+            room_type_el.addEventListener('mouseenter', function() {
+
+                room_type_el.parentNode.style.backgroundColor = "#EDEDED";
+                el.parentNode.style.backgroundColor = "#EDEDED";
+            });
+            room_type_el.addEventListener('mouseleave', function() {
+
+                room_type_el.parentNode.style.backgroundColor = "#FFF";
+                el.parentNode.style.backgroundColor = "#FFF";
+            });
+            
+            el.addEventListener('mouseenter', function() {
+
+                el.parentNode.style.backgroundColor = "#EDEDED";
+            });
+            el.addEventListener('mouseleave', function() {
+
+                el.parentNode.style.backgroundColor = "#FFF";
+            });
+
+        })
+    },5000)
 }
 //Remove tippy tooltips when room chart DOM removed
 const removeDOM = () => {
-    document.querySelectorAll('[id^="tippy-"]').forEach(function(element) {
+    document.querySelectorAll('[id^="tippy-"]').forEach(function (element) {
         element.remove();
     });
 }
@@ -1044,6 +1144,10 @@ const removeDOM = () => {
 
 
 <style>
+.fc-content td:hover{
+        background: #DBDBDB; 
+        opacity: 0.4;
+    }
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
     justify-content: center !important
 }
@@ -1077,17 +1181,19 @@ const removeDOM = () => {
     background: #DBDBDB;
     opacity: 0.4;
 }
-div.sticky_search_bar{
-  position: -webkit-sticky;
-  position: sticky;
-  top: 62px;
-  background-color: #eff2f7;
-  z-index: 4;
+
+div.sticky_search_bar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 62px;
+    background-color: #eff2f7;
+    z-index: 4;
 }
-div.front_desk_sicky_bar{
-    padding:10px 0;
+
+div.front_desk_sicky_bar {
+    padding: 10px 0;
 }
-.fc-timeline-lane .fc-resource{
+
+.fc-timeline-lane .fc-resource {
     background: red !important;
-}
-</style>
+}</style>

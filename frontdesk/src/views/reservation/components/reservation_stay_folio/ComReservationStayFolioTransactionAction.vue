@@ -153,6 +153,7 @@ function onDeleteFolioTransaction(note) {
 
         .catch((error) => {
             loading.value = false
+            opDelete.value = false
         })
 
 }

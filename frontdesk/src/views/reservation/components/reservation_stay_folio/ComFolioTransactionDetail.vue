@@ -120,7 +120,7 @@
         </div>
       </div>
       <hr class="my-2">
-      <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="false"/>
+      <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true"/>
 
       <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
         <div class="pt-2 pb-3 text-color-black" >
@@ -137,7 +137,7 @@
             <div class="text-color wrap__sp_not">{{ doc?.note }}</div>
         </div>
       </div>
-      <div v-else class="link_line_action px-3" @click="onOpenNote">
+      <div v-else class="link_line_action px-3 mt-3" @click="onOpenNote">
         <div  class="flex justify-center items-center my-3">
             <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
             <span class="text-xl">Add Note</span>
@@ -172,7 +172,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { ref, getApi, inject, onMounted, updateDoc,useDialog,getDoc } from "@/plugin"
+import { ref, getApi, inject, onMounted, updateDoc,useDialog,getDoc, onUnmounted } from "@/plugin"
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioDetailActionMoreOptionsButton from '@/views/reservation/components/ComReservationStayFolioDetailActionMoreOptionsButton.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
@@ -185,9 +185,11 @@ const props = defineProps({
 })
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+const property = JSON.parse(localStorage.getItem("edoor_property"))
 const emit = defineEmits(['onClose'])
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
+// const socket = inject("$socket")
 const dialog = useDialog()
 const gv = inject('$gv')
 const doc = ref({})
@@ -202,13 +204,21 @@ const onClose = () =>{
   dialogRef.value.close();
 }
 
+window.socket.on("RefreshData", (arg) => {
+  if (arg.property == property.name && arg.action=="refresh_folio_transaction_detail" && dialogRef.value.data.folio_transaction_number == arg.name ) {
+    onLoad()
+  }
+})
+
 const changeRef = ($event) => {
-    refNum.value = doc.value.reference_number
-    op.value.toggle($event);
+  refNum.value = doc.value.reference_number
+  op.value.toggle($event)
 }
+
 function onCloseRefNumber(){
   op.value.hide()
 }
+
 const onSaveReferenceNumber = () => {
   saving.value = true
   const data = JSON.parse(JSON.stringify(doc.value))
@@ -216,15 +226,13 @@ const onSaveReferenceNumber = () => {
   updateDoc('Folio Transaction', doc.value.name, data).then((r)=>{
     saving.value = false
     doc.value = r
+    window.socket.emit("RefreshData", { property: property.name, action: "refresh_folio_transaction_detail", name: doc.value.name })
     onCloseRefNumber()
-
-    alert('xdx')
-
   }).catch(()=>{
     saving.value = false
   })
 }
-
+ 
 const opTax = ref();
 const opPostAmount = ref();
 const toggleTAX = (event) => {
@@ -235,7 +243,6 @@ const togglePostAmount = (event) => {
   opPostAmount.value.toggle(event);
 }
 
-
 const onOpenNote = ($event) =>{
   const data = JSON.parse(JSON.stringify(doc.value))
   note.value = data.note
@@ -245,8 +252,6 @@ const onCloseNote = ($event) =>{
   openNote.value.hide()
 }
 
-
-
 function onSaveNote(){
   saving.value = true
   const data = JSON.parse(JSON.stringify(doc.value))
@@ -254,6 +259,7 @@ function onSaveNote(){
   updateDoc('Folio Transaction', doc.value.name,data).then((r)=>{
     saving.value = false
     doc.value = r
+    window.socket.emit("RefreshData", { property: property.name, action: "refresh_folio_transaction_detail", name: doc.value.name })
     onCloseNote()
   }).catch(()=>{
     saving.value = false
@@ -290,9 +296,10 @@ function onOpenFolioDetail(name){
 }
 
 onMounted(() => {
-
+  onLoad()
+})
+function onLoad(){
   if (dialogRef.value.data.folio_transaction_number) {
-
     loading.value = true
     getApi("reservation.get_folio_transaction_detail",{
       name: dialogRef.value.data.folio_transaction_number
@@ -305,28 +312,29 @@ onMounted(() => {
       }).catch((err) => {
         loading.value = false
       })
-    
   }
-})
-
-function onPrintFolioTransaction() {
-
-const dialogRef = dialog.open(ComIFrameModal, {
-    data: {
-        doctype: "Folio Transaction",
-        name: doc.value.name,
-        report_name: doc.value.print_format,
-    },
-    props: {
-        header: 'Print Preview',
-        style: {
-            width: '75vw',
-        },
-        position: "top",
-        modal: true,
-    },
-})
 }
+function onPrintFolioTransaction() {
+  const dialogRef = dialog.open(ComIFrameModal, {
+      data: {
+          doctype: "Folio Transaction",
+          name: doc.value.name,
+          report_name: doc.value.print_format,
+      },
+      props: {
+          header: 'Print Preview',
+          style: {
+              width: '75vw',
+          },
+          position: "top",
+          modal: true,
+      },
+  })
+}
+
+onUnmounted(() => {
+  window.socket.off("RefreshData")
+})
 
 </script>
 <style scoped>

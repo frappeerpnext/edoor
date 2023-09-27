@@ -75,7 +75,6 @@ const props = defineProps({
 const emit = defineEmits('onClickDetail')
 
 const rs = inject("$reservation")
-const socket = inject("$socket")
 const dialog = useDialog()
 const show = ref()
 const loading = ref(false)
@@ -119,8 +118,8 @@ function onSaveNote(text_note){
     } 
     postApi('reservation.update_reservation_status',data).then((r)=>{
         rs.LoadReservation(r.reservation)
-        socket.emit("RefreshReservationDetail", r.reservation);
-        socket.emit("RefresheDoorDashboard", rs.reservation.property);
+        window.socket.emit("RefreshReservationDetail", r.reservation);
+        window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
         loading.value = false
         onCloseNote()
         rs.LoadReservation(rs.reservation.name)

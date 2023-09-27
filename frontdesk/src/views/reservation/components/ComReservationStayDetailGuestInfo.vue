@@ -49,7 +49,6 @@ const gv = inject('$gv');
 const dialog = useDialog()
 const dialogConfirm = useConfirm()
 const frappe = inject('$frappe')
-const socket = inject("$socket")
 const db = frappe.db()
 const menuMasterGuest = ref()
 const loading = ref(false)
@@ -210,7 +209,7 @@ function onAdvancedSearch(guest_type) {
         },
         onClose(r) {
             if(r.data){ 
-                socket.emit("RefresheDoorDashboard", property.name); 
+                window.socket.emit("RefresheDoorDashboard", property.name); 
                 rs.getReservationDetail(rs.reservationStay.name)
                 gv.toast('success', 'Updated Successful')
             }

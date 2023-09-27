@@ -79,7 +79,6 @@ const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const data = ref({})
 const loading = ref(false)
-const socket = inject("$socket")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const checked = ref(false);
 
@@ -112,7 +111,7 @@ function onSave() {
         new_name: data.value.business_source
     }
     createUpdateDoc("Business Source", { data: data.value }, '', rename).then((r) => {
-        socket.emit("RefreshData", { property: property.name, action: "refresh_business_source" });
+        window.socket.emit("RefreshData", { property: property.name, action: "refresh_business_source" });
         dialogRef.value.close(rename.new_name)
         onLoad()
 

@@ -7,7 +7,8 @@
                 </template>
                 <template #end>
                     <Button v-tooltip.left="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
-                        <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>Add New Guest
+                        <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>
+                        Add New Guest
                     </Button>
                 </template>
             </ComHeader> 
@@ -137,7 +138,6 @@ const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
-const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
 
@@ -145,7 +145,7 @@ const showAdvanceSearch = ref()
 
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-socket.on("RefreshGuestDatabase", (arg) => {
+window.socket.on("RefreshGuestDatabase", (arg) => {
 
 if (arg == property.name) {
     loadData()

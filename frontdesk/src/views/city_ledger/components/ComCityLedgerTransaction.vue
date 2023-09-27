@@ -232,7 +232,6 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const opShowColumn = ref();
 const cityLedgerAmountSummary = ref()
-const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
 const loading = ref(false)
@@ -242,7 +241,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
 
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
 
     if (arg.property == property.name && arg.action == "refresh_folio_transaction") {
 
@@ -579,7 +578,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 })
 // Filter 
 const showAdvanceSearch = ref()

@@ -31,7 +31,7 @@
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
-                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
@@ -46,7 +46,7 @@
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
                                     v-model="doc.reservation.departure_date" placeholder="Departure Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon
-                                    showButtonBar />
+                                    showButtonBar panelClass="no-btn-clear"/>
                             </div>
                         </div>
                     </div>
@@ -66,20 +66,18 @@
                                     <ComSelect :clear="false" v-model="doc.reservation.rate_type" :default="true"
                                         @onSelected="onRateTypeChange" placeholder="Rate Type" doctype="Rate Type"
                                         class="auto__Com_Cus w-full" />
-
-
                                 </div>
                             </div>
                         </div>
                         <div class="pt-2 flex justify-end">
-                          
                             <div>
                                 <div class="text-center">
                                     <label class="text-center">Total Pax</label><br>
                                 </div>
                                 <div class="p-inputtext-pt text-center border-1 border-white h-12 w-7rem">{{
                                     doc.reservation_stay.reduce((n, d) => n + d.adult, 0) }} /
-                                    {{ doc.reservation_stay.reduce((n, d) => n + d.child, 0) }}</div>
+                                    {{ doc.reservation_stay.reduce((n, d) => n + d.child, 0) }}
+                                </div>
                             </div>
                         </div>
                         <div class="flex justify-end gap-3 mt-4">
@@ -194,7 +192,7 @@
 
                             <div class="flex gap-3 relative">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_2_name }}{{ room_tax.tax_2_rate }}%</label>
+                                    room_tax.tax_2_name }} {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2"
@@ -208,7 +206,7 @@
 
                             <div class="flex gap-3 relative">
                                 <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_3_name }}{{ room_tax.tax_3_rate }}%</label>
+                                    room_tax.tax_3_name }} {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3"
@@ -219,6 +217,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -375,7 +374,6 @@ import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
 const toast = useToast();
 const moment = inject("$moment")
-const socket = inject("$socket")
 const isSaving = ref(false)
 const gv = inject("$gv")
 
@@ -530,8 +528,8 @@ const departureMinDate = computed(() => {
 
 const onDateSelect = (date) => {
 
-
     let arrival_date = moment(doc.value.reservation.arrival_date).format("YYYY-MM-DD")
+    
     arrival_date = moment(arrival_date).toDate()
 
     let departure_date = moment(doc.value.reservation.departure_date).format("YYYY-MM-DD")
@@ -613,7 +611,7 @@ function onSelectedCustomer(event) {
 }
 
 const onRoomNightChanged = (event) => {
-
+    
     doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(event, "Days").toDate()
     getRoomType()
     getRooms()
@@ -669,7 +667,7 @@ const onSave = () => {
         "Add new reservation successfully"
     ).then((result) => {
         isSaving.value = false
-        socket.emit("RefresheDoorDashboard", property.name);
+        window.socket.emit("RefresheDoorDashboard", property.name);
         dialogRef.value.close(result.message);
     })
         .catch((error) => {
@@ -736,6 +734,7 @@ const onSelectRoomType = (stay) => {
     updateRate()
 }
 
+
 const onDeleteStay = (index) => {
     doc.value.reservation_stay.splice(index, 1);
 }
@@ -746,7 +745,7 @@ const updateRate = () => {
 
 
         if (room_type) {
-
+            
             s.rate = room_type.rate
 
         }
@@ -766,14 +765,14 @@ const onBusinessSourceChange = (source) => {
     if (doc.value.reservation_stay.filter(r => r.is_manual_rate == false).length > 0) {
         getRoomType()
     }
-
 }
 const onRateTypeChange = (rate_type) => {
 
     if (rate_type) {
-        getApi("utils.get_rate_type_info", { name: rate_type.value }).then((result) => {
-            //check if rate type change then resert room revenue code and tax
+        getApi("utils.get_rate_type_info", { name: rate_type.value })
+        .then((result) => {
 
+            //check if rate type change then resert room revenue code and tax
             doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
             const tax_rule = result.message.tax_rule
             doc.value.tax_rule = {
@@ -791,11 +790,7 @@ const onRateTypeChange = (rate_type) => {
             }
 
         })
-
-
     }  
-
-
 }
 
 const onChangeRate = () => {

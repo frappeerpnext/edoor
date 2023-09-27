@@ -5,12 +5,14 @@
             <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
             <span :style="{ color: percentage.color }" v-else>{{ percentage.percent }}%</span>
         </div>
+         
         <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full" width="225" height="150" />
     </div>
 </template>
 <script setup>
-import { ref, computed, inject } from 'vue'
+import { ref, onMounted, inject } from 'vue'
 const gv = inject('$gv')
+const chartData = ref();
 const props = defineProps({
     total_room:Number,
     data: {
@@ -46,10 +48,8 @@ const percentage = ref({
     total: 0,
     color: '#000'
 })
-// [{label: '', value: 0, color: ''}]
-const chartData = computed(() => {
 
-    // const documentStyle = getComputedStyle(document.body);
+const setChartData  = () => {
     let labels = ref([])
     let values = ref([])
     let backgroundColors = []
@@ -85,18 +85,10 @@ const chartData = computed(() => {
         return []
     }
 
+}
+
+onMounted(()=>{
+    chartData.value = setChartData();
 })
 
-const chartDatax = ref();
-
-const documentStyle = getComputedStyle(document.body);
-chartDatax.value = {
-    datasets: [
-        {
-            data: [21, 12],
-            backgroundColor: [documentStyle.getPropertyValue('--bg-btn-green-color'), documentStyle.getPropertyValue('--bg-warning-color'), documentStyle.getPropertyValue('--green-500')],
-            hoverBackgroundColor: [documentStyle.getPropertyValue('--bg-btn-green-hover'), documentStyle.getPropertyValue('--bg-warning-hover'), documentStyle.getPropertyValue('--green-400')]
-        }
-    ],
-}
 </script>

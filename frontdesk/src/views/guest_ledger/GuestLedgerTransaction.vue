@@ -190,7 +190,6 @@ const data = ref()
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const call = frappe.call();
-const socket = inject("$socket")
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
@@ -230,7 +229,7 @@ function onOpenLink(column, data) {
 }
 
 
-socket.on("RefresheDoorDashboard", (arg) => {
+window.socket.on("RefresheDoorDashboard", (arg) => {
     if (arg == property.name) {
         setTimeout(function () {
             loadData()
@@ -366,7 +365,7 @@ onMounted(() => {
     loadData()
 })
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+    window.socket.off("RefresheDoorDashboard");
 })
 
 const showAdvanceSearch = ref()

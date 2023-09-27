@@ -89,7 +89,6 @@ const props = defineProps({
 })
 const reservation = inject('$reservation')
 const reservation_stay = inject('$reservation_stay')
-const socket = inject('$socket')
 const gv = inject('$gv')
 const saving = ref(false)
 const op = ref()
@@ -146,9 +145,9 @@ function onSave() {
                 updateDisplayNote()
             }
             
-            socket.emit("RefreshReservationDetail", reservation_stay.reservationStay.reservation);
+            window.socket.emit("RefreshReservationDetail", reservation_stay.reservationStay.reservation);
             
-            socket.emit("RefresheDoorDashboard", reservation_stay.reservationStay.property);
+            window.socket.emit("RefresheDoorDashboard", reservation_stay.reservationStay.property);
             
         }).catch((err) => {
             saving.value = false

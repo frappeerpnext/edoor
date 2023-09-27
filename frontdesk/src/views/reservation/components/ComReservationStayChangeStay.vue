@@ -81,7 +81,6 @@
     const rs = inject('$reservation_stay') 
     const moment = inject('$moment')
     const gv = inject('$gv')
-    const socket = inject('$socket')
     const dialogRef = inject('dialogRef'); 
     const loading = ref(false) 
     const generate_new_room_rate = ref(true) 
@@ -139,19 +138,21 @@
         newData.end_date = gv.dateApiFormat(newData.end_date)
         newData.rate = newData.input_rate
         newData.is_override_rate = generate_new_room_rate.value
+        newData.is_move = 0
+
 
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
 
             rs.getReservationDetail(rs.reservationStay.name)
 
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
 
-            socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
 
-            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
 
-            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
 
             onClose(true)
             

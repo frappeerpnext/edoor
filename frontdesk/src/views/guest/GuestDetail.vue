@@ -54,14 +54,13 @@ const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)
 const gv = inject("$gv")
-const socket = inject('$socket')
 
 function onIframeLoaded(id){
     const iframe = document.getElementById(id);
     iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     if(arg.property == setting.property.name && arg.action == "refresh_guest_iframe_in_modal"){
         loadIframe()
     }    
@@ -174,7 +173,7 @@ function loadIframe() {
 
 onUnmounted(() => {
     window.removeEventListener('message', refreshPageHandler, false);
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 
 })
 

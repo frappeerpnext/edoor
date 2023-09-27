@@ -79,7 +79,7 @@ function onDelete() {
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
                     dialogRef.value.close(r)
-                    socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
+                    window.socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
                     
                  } ).catch((err)=>{
                     loading.value = false

@@ -50,8 +50,7 @@ import { ref, computed, onMounted, postApi, useToast, onUnmounted, inject, useCo
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-const url = ref("")
-const socket = inject("$socket")
+const url = ref("") 
 const confirm = useConfirm()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -75,7 +74,7 @@ const steps = ref([
 ])
 
  
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
         refreshReport()
     }    
@@ -150,7 +149,7 @@ function onFinish() {
                 refreshReport()
                 loading.value = false;
                 
-                socket.emit("RefreshData",{property:setting?.property?.name, action:"reload_page",session_id:window.session_id})
+                window.socket.emit("RefreshData",{property:setting?.property?.name, action:"reload_page",session_id:window.session_id})
 
             }).catch((err)=>{
                 loading.value = false;
@@ -223,7 +222,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 })
 
 

@@ -1,20 +1,22 @@
 <template>
     <div> 
+        
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
-                <Button :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
+                <Button  :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
             </div>
             <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #end>
-                        <button @click="onChangeStay" v-if="moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_day)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        <button @click="onChangeStay(data)"  class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Change Stay
-                        </button>
-                        <button  @click="onUnassignRoom" v-if="(moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        </button> <!-- "moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_day) -->
+                        <button  @click="onUnassignRoom(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
-                        </button>
-                        <button @click="onOpenDeleted" v-if="moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  " class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        </button><!-- (moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'" -->
+                        <button @click="onOpenDeleted(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Delete
-                        </button>
+                        </button><!--moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  -->
+                        
                 </template>
             </Menu>
         </div>
@@ -26,7 +28,6 @@ import {ref,inject, useDialog, deleteApi, useConfirm, postApi} from '@/plugin'
 import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
 import ComNote from '@/components/form/ComNote.vue';
 const rs = inject('$reservation_stay')
-const socket = inject('$socket')
 const gv = inject('$gv')
 const moment = inject('$moment')
 const dialogRef = inject('dialogRef')
@@ -65,10 +66,15 @@ function isNotLastForDelete(){
         return true
     }
 }
-function onOpenDeleted(){
-    if(isNotLastForDelete()){
-        openNote.value = true
+function onOpenDeleted(data){
+    if(moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  ){
+        if(isNotLastForDelete()){
+            openNote.value = true
+        }
+    }else{
+        gv.toast('warn',"This room stay is disallow to delete.")
     }
+    
     
 }
 function onSelected(room,status){
@@ -91,46 +97,54 @@ function onDeleted(note){
             rs.getReservationDetail(props.data.parent)
             loading.value = false
 
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
 
-            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
             
-            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
 
-            socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+            window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
 
         }
     }).catch((r)=>{
         loading.value = false
     })
 }
-function onChangeStay(){
-    if(isNotLast()){
-        dialog.open(ComReservationStayChangeStay, {
-            data: {
-                item: props.data
-            },
-            props: {
-                header: `Change Stay`,
-                style: {
-                    width: '60vw',
+function onChangeStay(data){
+    if((moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_da)) || rs.reservationStay.reservation_status !='Checked Out'){
+        if(isNotLast()){
+            dialog.open(ComReservationStayChangeStay, {
+                data: {
+                    item: props.data
                 },
-                
-                breakpoints: {
-                    '960px': '75vw',
-                    '640px': '90vw'
+                props: {
+                    header: `Change Stay`,
+                    style: {
+                        width: '60vw',
+                    },
+                    
+                    breakpoints: {
+                        '960px': '75vw',
+                        '640px': '90vw'
+                    },
+                    modal: true,
+                    closeOnEscape: false,
+                    position: 'top'
                 },
-                modal: true,
-                closeOnEscape: false,
-                position: 'top'
-            },
-            onClose: (options) => {
-                //
-            }
-        })
+                onClose: (options) => {
+                    //
+                }
+            })
+            
+        }
+    }else{
+        gv.toast('warn',"This room stay is disallow to change stay.")
     }
+    
 }
-function onUnassignRoom(){
+function onUnassignRoom(data){
+if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'){
     dialogConfirm.require({
         message: 'Are you sure to unassign room?',
         header: 'Unassign Confirmation',
@@ -145,19 +159,25 @@ function onUnassignRoom(){
                 loading.value = false
                 rs.reservationStay = r.message
 
-                socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+                window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
 
-                socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
 
-                socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
 
-                socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+                window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
                 
             }).catch(()=>{
                 loading.value = false
             })
         }
     })
+}else{
+    gv.toast('warn',"This room stay is disallow to unassign room.")
+}
+    
 }
 </script>
 <style>

@@ -87,7 +87,8 @@
                         title="Departure"
                         @onClick="onChangeDate($event)"
                         :value="gv.dateFormat(stay.reservationStay?.departure_date)"
-                        valueClass="col-4 " :isAction="true" ></ComBoxStayInformation>
+                        valueClass="col-4 " :isAction="true" >
+                    </ComBoxStayInformation>
                     <ComBoxStayInformation  @onClick="onChangeDate($event)" :value="gv.timeFormat(stay.reservationStay?.departure_time)"
                         valueClass="col color-purple-edoor" :isAction="true" ></ComBoxStayInformation>
                     <ComBoxStayInformation
@@ -159,8 +160,6 @@ function onCloseRef(result){
     } 
     op.value.hide()
 }
-
-
 
 </script>
 <style scoped>

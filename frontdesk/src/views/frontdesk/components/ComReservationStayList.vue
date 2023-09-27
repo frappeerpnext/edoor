@@ -57,7 +57,6 @@ import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue
 import ComPlaceholder from "@/components/layout/components/ComPlaceholder.vue"
 const dialogRef = inject("dialogRef")
 const gv = inject("$gv")
-const socket = inject("$socket")
 const dialog = useDialog();
 const loading = ref(false)
 const data = ref([])
@@ -95,7 +94,7 @@ function loadData() {
     })
 
 }
-socket.on("RefreshReservationStayList", (arg) => {
+window.socket.on("RefreshReservationStayList", (arg) => {
 
     if(arg ==property.name){
         loadData()
@@ -161,6 +160,6 @@ function onAssignRoom(room_name, reservation_stay){
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
 onUnmounted(() => {
-    socket.off("RefreshReservationStayList");
+    window.socket.off("RefreshReservationStayList");
 })
 </script>

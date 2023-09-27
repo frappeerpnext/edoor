@@ -147,12 +147,11 @@ const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 
-const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
 
     if (arg.property == property.name && arg.action == "refresh_city_ledger") {
 
@@ -376,7 +375,7 @@ function onAddCityLedgerAccount() {
 }
 
 onUnmounted(() => {
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 })
 const showAdvanceSearch = ref()
 const advanceFilter = (event) => {

@@ -1,7 +1,7 @@
 <template>
   
-    <div class="p-2 w-full" v-if="event.extendedProps.type =='stay'">
-                                        <div class="text-center border-1 p-2 border-round-lg">Reservation</div>
+    <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
+                                        <div class="text-center border-1 p-2 border-round-lg ">{{event.title}}</div>
                                         <table class="tip_description_stay_table m-1 pt-3">
                                             <tbody>
                                             <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation || ''}}</td></tr>
@@ -9,7 +9,6 @@
                                             <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reference_number || ''}} </td></tr>
                                             <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>{{event.extendedProps?.internal_reference_number ?? ''}}</td></tr>
                                             <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_type || ''}} {{event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}}</td></tr>    
-                                            <tr class="table-rs-de"><td>Guest</td><td class="px-2">:</td><td>{{event.title}}</td></tr>
                                             <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td></tr>
                                             <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A")}}</td></tr>
                                             <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>{{event.extendedProps.stay_rooms || event.extendedProps?.room_number}}</td></tr>
@@ -70,7 +69,17 @@
                                         </table>
     </div> 
     <div v-else-if="event.extendedProps.type == 'property_summary'">
-{{ event }}
+<div  class="text-center border-1 p-2 border-round-lg">Available Room   <span class="mx-3"> {{ event.extendedProps.room_available }}</span> </div>
+                                        <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
+                                            <tbody>
+                                                <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
+                                            <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
+                                            <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
+                                            <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
+                                            <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td> {{event.extendedProps?.child}}</td></tr>
+                                            
+                                            </tbody>
+                                        </table>
     </div>
 </template>
 <script setup>

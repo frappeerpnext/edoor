@@ -481,7 +481,7 @@ function showSaleDetail(name) {
         data: {
            "doctype": 'Sale',
            name: name,
-           format: 'Sale%20Receipt'
+           report_name: 'Sale%20Receipt'
         },
         props: {
             header:"Sale Detail" +' '+ name,

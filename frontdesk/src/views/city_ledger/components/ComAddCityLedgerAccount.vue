@@ -92,7 +92,6 @@ import ComReservationStayPanel from '@/views/reservation/components/ComReservati
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const loading = ref(false);
-const socket = inject("$socket")
 const property = JSON.parse(localStorage.getItem( "edoor_property"))
 const data = ref({property:property.name})
 function onClose(){
@@ -113,7 +112,7 @@ function onSave(){
     createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
         loading.value = false
         dialogRef.value.close(r)
-        socket.emit("RefreshData", {property:property.name,action:"refresh_city_ledger"});
+        window.socket.emit("RefreshData", {property:property.name,action:"refresh_city_ledger"});
     }).catch((err)=>{
         loading.value = false
     })

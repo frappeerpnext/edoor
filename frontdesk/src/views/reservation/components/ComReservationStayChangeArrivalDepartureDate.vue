@@ -26,7 +26,6 @@
 </template>
 <script setup>
 import { ref,inject,postApi } from '@/plugin'
-const socket = inject("$socket")
 const moment = inject("$moment")
 const rs = inject("$reservation_stay")
 const gv = inject("$gv")
@@ -74,13 +73,14 @@ function onSave(){
         if(r.message){
             loading.value = false
             rs.getReservationDetail(r.message.name)
-            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-            socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
             onClose()
         }
 
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
     
     }).catch((err)=>{
         loading.value = false

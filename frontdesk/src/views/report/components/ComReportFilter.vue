@@ -75,6 +75,13 @@
                                 falseValue="0" />
                                
             </div>
+            <div class="col" v-if="hasFilter('guest')">
+                <label>Guest</label><br/>
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="customer_name_en" optionValue="name"
+                extraFields="customer_name_en"
+                    v-model="filter.guest"   placeholder="Guest" doctype="Customer"></ComSelect>
+            </div> 
             <div class="col" v-if="hasFilter('group_by')">
                 <label>Group By</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by" placeholder="Group By"
@@ -93,8 +100,14 @@
                     :options="['ASC', 'DESC']" 
                     :clear="false" />
             </div> 
+            <div class="col" v-if="hasFilter('summary_filter')">
+                <label>Summary By</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.summary_filter" placeholder="Summary By"
+                    :options="['Arrival Date', 'Departure Date', 'Reservation','Reservation Stay', 'Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
+                    :default="['Business Source']"/>
+            </div>
         </div>
-        </div>
+    </div>
         <OverlayPanel ref="showCustomReport" style="width:50rem">
         <ComOverlayPanelContent title="Advance Custom Report" hideButtonOK="true"  :hideButtonClose="false" @onCancel="onCloseCustomReport">
             <div class="grid">

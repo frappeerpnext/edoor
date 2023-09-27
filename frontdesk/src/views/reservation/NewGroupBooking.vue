@@ -412,7 +412,6 @@ import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
 const toast = useToast();
 const moment = inject("$moment")
-const socket = inject("$socket")
 const isSaving = ref(false)
 const gv = inject("$gv")
 
@@ -721,7 +720,7 @@ const onSave = (assign_room = false) => {
     ).then((result) => {
 
         isSaving.value = false
-        socket.emit("RefresheDoorDashboard", property.name);
+        window.socket.emit("RefresheDoorDashboard", property.name);
         dialogRef.value.close({ reservation: result.message, assign_room: assign_room });
     })
         .catch((error) => {

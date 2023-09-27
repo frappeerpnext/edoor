@@ -63,7 +63,6 @@
     const frappe = inject('$frappe');
     const gv = inject("$gv")
     const db = frappe.db();
-    const socket = inject("$socket")
     const toast = useToast();
     const selectedShift = ref({})
     const setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -109,7 +108,7 @@
             toast.add({ severity: 'success', summary: 'Open Shift', detail: "Open cashier shift successuflly", life: 3000 })
             gv.cashier_shift = doc
             
-            socket.emit("UpdateCashierShift", doc);
+            window.socket.emit("UpdateCashierShift", doc);
             dialogRef.value.close();
           })
           .catch((err)=>{

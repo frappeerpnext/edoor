@@ -48,7 +48,7 @@ import { ref, inject, onMounted,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 
 const moment = inject("$moment")
-const socket = inject('$socket');
+// const socket = inject('$socket');
 const emit = defineEmits(['onClose'])
 const props = defineProps({
     doctype: String
@@ -89,11 +89,11 @@ const onSave = () => {
         } ).then((doc) => {
         isLoading.value = false;
 
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-        socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
-        socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-        
+        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
+        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
         emit("onClose", doc.message)
     }).catch((ex) => {
         isLoading.value = false;

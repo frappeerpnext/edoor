@@ -146,7 +146,6 @@
   const toast = useToast()
   const dialog = useDialog()
   const opShowColumn = ref();
-  const socket = inject("$socket")
   const data = ref([])
   const filter = ref({})
   const showAdvanceSearch = ref()
@@ -155,7 +154,7 @@
   const property = JSON.parse(localStorage.getItem("edoor_property"))
   
   
-  socket.on("RefreshFolioTransaction", (arg) => {
+  window.socket.on("RefreshFolioTransaction", (arg) => {
   
     if (arg == property.name) {
       loadData()

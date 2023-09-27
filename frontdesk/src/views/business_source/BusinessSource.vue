@@ -123,7 +123,7 @@
 
 </template>
 <script setup>
-import { inject, ref, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
+import { inject, ref, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed , onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
@@ -134,7 +134,6 @@ const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
-const socket = inject("$socket")
 const data = ref([])
 const filter = ref({})
 
@@ -142,7 +141,7 @@ const showAdvanceSearch = ref()
 
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-socket.on("RefreshGuestDatabase", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_business_source" ) {
         loadData()
 }
@@ -391,4 +390,8 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+onUnmounted(() => {
+    
+    window.socket.off("RefreshData");
+})
 </script>

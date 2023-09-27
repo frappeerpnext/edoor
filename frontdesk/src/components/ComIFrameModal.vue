@@ -93,10 +93,10 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 
 const gv = inject("$gv")
 
-const socket = inject("$socket");
+// const socket = inject("$socket");
  
 
-socket.on("RefreshData", (arg) => {
+window.socket.on("RefreshData", (arg) => {
     if(arg.property == setting.property.name && arg.action == "refresh_iframe_in_modal"){
         loadIframe()
     }    
@@ -194,7 +194,7 @@ onMounted(() => {
 
 onUnmounted(() => {
    
-    socket.off("RefreshData");
+    window.socket.off("RefreshData");
 })
 
 

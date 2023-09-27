@@ -166,10 +166,9 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
-const socket = inject("$socket")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-socket.on("RefresheDoorDashboard", (arg) => {
+window.socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {
         loadData()

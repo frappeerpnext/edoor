@@ -96,7 +96,6 @@ const canNotUpgradeRoom = computed(()=>{
     return !rs.reservationStatusDelete.find(r=>r == rs.reservationStay.reservation_status)
 })
 function onUpgradeRoom() { 
-
         dialog.open(ComReservationStayUpgradeRoom, {
         data: {
             rs: rs
@@ -116,8 +115,14 @@ function onUpgradeRoom() {
             position: 'top'
         },
         onClose: (options) => { 
+            
             if(options.data){
-                rs.getReservationDetail()
+                //we delay time to reload here to wait until equeue job is done in server
+                
+                setTimeout(() => {
+                    rs.getReservationDetail(rs.reservationStay.name)    
+                }, 1500);
+                
             }
         }
     });
@@ -146,7 +151,10 @@ function onAssignRoom(data){
         },
         onClose: (options) => {
             if(options.data && options.data.message){
-                rs.getReservationDetail(options.data.message.name)
+                setTimeout(() => {
+                    rs.getReservationDetail(options.data.message.name)    
+                }, 1500);
+                
             } 
         }
     })

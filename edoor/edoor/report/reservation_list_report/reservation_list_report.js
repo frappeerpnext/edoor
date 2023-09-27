@@ -102,6 +102,12 @@ frappe.query_reports["Reservation List Report"] = {
 			"options": "ASC\nDESC",
 			default:"ASC"
 		},
+		{
+			"fieldname": "summary_filter",
+			"label": __("Summary By"),
+			"fieldtype": "Select",
+			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nReservation Stay\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
+		},
 
 	],
 	"formatter": function(value, row, column, data, default_formatter) {

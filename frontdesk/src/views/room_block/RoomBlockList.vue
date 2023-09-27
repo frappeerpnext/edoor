@@ -146,15 +146,14 @@ const dialogRef = inject("dialogRef");
 const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
-const opShowColumn = ref();
-const socket = inject("$socket")
+const opShowColumn = ref()
 const data = ref([])
 const filter = ref({})
 const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-socket.on("RefreshGuestDatabase", (arg) => {
+window.socket.on("RefreshGuestDatabase", (arg) => {
 
   if (arg == property.name) {
     loadData()

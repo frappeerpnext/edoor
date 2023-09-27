@@ -109,7 +109,6 @@ import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
 import Calendar from 'primevue/calendar';
 const dialogRef = inject('dialogRef')
-const socket = inject('$socket')
 const gv = inject('$gv')
 let loading = ref(false)
 const guest = ref({})
@@ -177,9 +176,9 @@ function onOK() {
                 
             })
             loading.value = false
-            socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-            socket.emit("RefreshReservationDetail", rs.reservation.name)
-            socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
+            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+            window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
         }
     }).catch((err) => {
         loading.value = false

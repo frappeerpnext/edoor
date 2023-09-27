@@ -82,7 +82,7 @@ const props = defineProps({
     docname: String,
     reservationStay: String,
     reservation: String
-    
+
 })
 
 let op = ref()
@@ -95,7 +95,7 @@ const currentUser = JSON.parse(localStorage.getItem('edoor_user'))
 const create = ref({
     note_type: 'Comment',
     content: '',
-    note_date:moment().toDate()
+    note_date: moment().toDate()
 })
 const edit = ref({
     note_type: 'Comment',
@@ -103,7 +103,7 @@ const edit = ref({
 })
 const list = ref([])
 onMounted(() => {
- 
+
     onLoad()
 })
 function onLoad() {
@@ -118,6 +118,7 @@ function onLoad() {
             list.value = []
 
         loading.value = false
+
     }).catch((err) => {
         loading.value = false
     })
@@ -126,10 +127,10 @@ function onClose() {
     op.value.hide()
 }
 function onAddEdit($event, selected) {
-     
+
     if (selected) {
         edit.value = JSON.parse(JSON.stringify(selected))
-        edit.value.note_date =moment(edit.value.note_date ).toDate() 
+        edit.value.note_date = moment(edit.value.note_date).toDate()
     } else {
         edit.value = {
             note_type: 'Comment',
@@ -141,12 +142,10 @@ function onAddEdit($event, selected) {
 }
 function onCreate() {
     op.value = {}
-    let note_data =  JSON.parse(JSON.stringify(create.value))
-    if (note_data.note_date){
+    let note_data = JSON.parse(JSON.stringify(create.value))
+    if (note_data.note_date) {
         note_data.note_date = moment(note_data.note_date).format("YYYY-MM-DD")
-    } 
-    
- 
+    }
     if (create.value.note_type == 'Notice') {
         onSaveNote('Frontdesk Note', note_data)
     } else {
@@ -155,12 +154,12 @@ function onCreate() {
 }
 
 function onSave() {
-    let note_data =JSON.parse(JSON.stringify(edit.value))
-    
-    if (note_data.note_date){
+    let note_data = JSON.parse(JSON.stringify(edit.value))
+
+    if (note_data.note_date) {
         note_data.note_date = moment(note_data.note_date).format("YYYY-MM-DD")
     }
-    
+
     if (note_data.note_type == 'Notice') {
         onSaveNote('Frontdesk Note', note_data)
     } else {
@@ -173,7 +172,7 @@ function onSaveNote(doctype, data) {
         return
     }
     saving.value = true
-    if(!data.name){
+    if (!data.name) {
         data.property = property.name
     }
     // for folio trancation
@@ -186,17 +185,16 @@ function onSaveNote(doctype, data) {
     data.comment_type = 'Comment'
     data.comment_by = currentUser.name
     data.name = op.value.data?.name || ''
-    console.log(data)
     createUpdateDoc(doctype, { data: data }).then((r) => {
         saving.value = false
         create.value = {
             note_type: 'Comment',
             content: '',
-            note_date:moment().toDate()
+            note_date: moment().toDate()
         }
         edit.value = data.value
         op.value.hide()
-        onLoad()
+        onLoadSocket()
     }).catch((err) => {
         saving.value = false
     })
@@ -215,7 +213,7 @@ function onRemove(selected) {
             deleteDoc(selected.note_type == 'Comment' ? 'Comment' : 'Frontdesk Note', selected.name).then((doc) => {
                 if (doc) {
                     deleting.value = false
-                    onLoad()
+                    onLoadSocket()
                 }
             }).catch((err) => {
                 deleting.value = false
@@ -223,8 +221,17 @@ function onRemove(selected) {
         }
     })
 }
+window.socket.on("RefreshData", (arg) => {
+  if (arg.property == property.name && arg.action=="refresh_comment_notice" && props.docname == arg.name ) {
+    onLoad()
+  }
+})
 
- 
+function onLoadSocket(){
+    window.socket.emit("RefreshData", { property: property.name, action: "refresh_comment_notice", name: props.docname })
+    window.socket.emit("RefresheDoorDashboard" , property.name)
+}
+
 </script>
 <style scoped>
 .bg-yellow-notice-bg {

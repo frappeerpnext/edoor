@@ -215,8 +215,6 @@ const moment = inject("$moment")
 const rs = inject("$reservation")
 const isSaving = ref(false)
 const gv = inject("$gv")
-
-const socket = inject("$socket")
 const room_types = ref([])
 const rooms = ref([])
 const data = ref({
@@ -387,7 +385,7 @@ const onSave = () => {
 
         if (r) {
             isSaving.value = false
-            socket.emit("RefresheDoorDashboard", rs.reservation.property);
+            window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
             dialogRef.value.close(r)
         }
 

@@ -61,29 +61,16 @@
                             <ComNoteGlobal v-if="showNote"/> 
                            
                         </Sidebar>
-
+                        <tippy :content="'sdf'">
+                      
+                        </tippy>
+                        
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
-                                    <div class="group relative h-full p-1" :class="event.extendedProps.type" style="height: 36px">
+                                    <div class="group relative h-full p-1 event-room-type-class" :class="event.extendedProps.type" style="height: 36px">
                                         <div class="flex justify-content-center">
-                                            <!-- <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event?.extendedProps?.group_color}" v-if="event?.extendedProps?.group_color"></span> -->
-                                            <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
-                                                
-                                            </span>
-                                            <span class="wrp-statu-icon">
-                                                <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
-                                                    <ComIcon style="height: 12px;" icon="iconCrown"/>
-                                                </span>
-                                                <span v-if="event.extendedProps.reservation_type=='GIT'" class="stay-bar-status mr-1">
-                                                    <ComIcon style="height: 12px;" icon="iconUserGroup"/>
-                                                </span>
-                                                <span v-if="event.extendedProps.reservation_type=='FIT'" class="stay-bar-status">
-                                                    <ComIcon style="height: 12px;" icon="iconFIT"/>
-                                                </span>
-                                            </span>
-                                            <div class="geust-title">
+                                            <div :style="{color:event.extendedProps.textcolor}" class="">
                                                 {{event.title}}
-                                               
                                             </div>
                                         </div>
                                     </div>
@@ -119,9 +106,6 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
 import { useTippy } from 'vue-tippy'
 
- 
-
-const socket = inject("$socket");
 const frappe = inject('$frappe')
 const call = frappe.call();
 const moment = inject('$moment')
@@ -167,7 +151,7 @@ let roomChartResourceFilter = reactive({
 
 
 
-socket.on("RefresheDoorDashboard", (arg) => {
+window.socket.on("RefresheDoorDashboard", (arg) => {
 
     if (arg == property.name) {
         onRefresh()
@@ -490,7 +474,7 @@ function getEvents() {
 
         resources.value.forEach(r => {
             let current_date = cal.view.currentStart;
-            const days =     moment( cal.view.currentEnd).diff(moment( cal.view.currentStart), 'days');
+            const days = moment( cal.view.currentEnd).diff(moment( cal.view.currentStart), 'days');
             const total_rooms = resources.value.reduce((n, d) => n + (d.total_room || 0), 0)
             if (r.id == "vacant_room"){
                 r.total_room_night = (days * total_rooms) -  result.message.room_occupy.reduce((n, d) => n + (d.total || 0), 0)
@@ -511,30 +495,44 @@ function getEvents() {
 
             while (current_date <= cal.view.currentEnd) {
                 let title = ""
-                let color="green"
+                
+                let color="#f7f7f7"
+                let textcolor="black"
+                let borderColor=""
                 if (r.id == "vacant_room") {
                     title = total_rooms -  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)
-                    color="blue"
+                    color="#fd952c"
+                    textcolor="white"
                 } 
                 else if (r.id == "out_of_order") {
                     title = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.block || 0), 0)
                     color="black"
+                    textcolor="white"
                 } else if (r.id == "occupany") {
                     title = parseInt( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ total_rooms  * 100) + "%"
-                    color="orange"
+                    color="green"
+                    textcolor="white"
                 } else if (r.id == "arrival_departure") {
                     title = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.arrival || 0), 0)
-                    title = title + "/" +  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.departure || 0), 0)
-                    color="black"
+                    title = title + " | " +  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.departure || 0), 0)
+                    color="#F2CB38"
+                    textcolor="white"
                 } else if (r.id == "pax") {
                     title = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.adult || 0), 0)
-                    title = title + "/" +  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.child || 0), 0)
-                    color="red"
+                    title = title + " | " +  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.child || 0), 0)
+                    color="#76E2E8"
+                    textcolor="white"
                 } else {
 
                     title =  r.total_room - (result.message.room_occupy.find(x => x.room_type_id == r.id && x.date == moment(current_date).format("YYYY-MM-DD"))?.total || 0)
-
+borderColor="rgb(0 185 26 / 30%)"
                 }
+                if (title < 0) {
+                    color="red";
+                    textcolor="white"
+                    
+                }
+               
                 events.value.push(
                         {
                             resourceId: r.id,
@@ -542,7 +540,9 @@ function getEvents() {
                             end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
                             title: title,
                             color: color,
-                            type: r.id
+                            textcolor:textcolor ?? 'white' ,
+                            type: r.id ,
+                            borderColor:borderColor
                         }
                     )
                 current_date.setDate(current_date.getDate() + 1);
@@ -584,7 +584,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    socket.off("RefresheDoorDashboard");
+    window.socket.off("RefresheDoorDashboard");
     document.body.removeEventListener('scroll', handleScroll);
 })
 </script>
@@ -622,4 +622,6 @@ onUnmounted(() => {
     background: #DBDBDB;
     opacity: 0.4;
 }
+
+
 </style>

@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+  
     <div class="">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
             <template #content>
@@ -94,37 +95,35 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem">
-                                <Calendar showIcon selectOtherMonths v-model="newRoom.end_date"  :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar    showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
                             <td class="px-2 w-16rem"> 
-                                <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :businessSource="rs.reservationStay.business_source" :rate-type="rs.reservationStay.rate_type" :start-date="newRoom.start_date" :end-date="newRoom.end_date"/>
+                                <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :businessSource="rs.reservationStay.business_source" :rate-type="rs.reservationStay.rate_type" :start-date="newRoom.start_date" :end-date="newRoom.end_date" />
                             </td>
                             <td class="px-2 w-8rem">
                                 <ComSelectRoomAvailability showClear v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
                             </td>
                             <td class="text-center px-2 w-5rem ">
-                                
-                                    <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
-                                
+                                <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/> 
                             </td>
                             <td class="text-right px-2 w-10rem">
-                                <div class="box-input-detail">
-                                <span class="white-space-nowrap">
-                                    <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                        <span class="link_line_action flex justify-between">
-                                            <div>
-                                                <span class="text-sm" v-if="newRoom?.is_manual_rate"> (Manual) </span>
-                                                   <span class="text-sm" v-else>(Plan)</span>
-                                            </div>
-                                            <CurrencyFormat :value="newRoom.rate" />
+                                <div class="box-input-detail"> 
+                                    <span class="white-space-nowrap">
+                                        <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
+                                            <span class="link_line_action flex justify-between">
+                                                <div>
+                                                    <span class="text-sm" v-if="newRoom?.is_manual_rate"> (Manual) </span>
+                                                    <span class="text-sm" v-else>(Plan)</span>
+                                                </div>
+                                                <CurrencyFormat :value="(newRoom.rate || 0)" />
+                                            </span>
                                         </span>
                                     </span>
-                                </span>
                                 </div> 
                             </td>
                             <td class="text-right ps-2 w-10rem">
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">
-                                    <CurrencyFormat :value="(newRoom.room_nights   ?? 0) * (newRoom.rate ?? 0)" />
+                                    <CurrencyFormat :value="(newRoom.room_nights || 0) * (newRoom.rate || 0)" />
                                 </span>
                             </td>
                         </tr>
@@ -151,7 +150,6 @@
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
-    const socket = inject('$socket')
     const dialogRef = inject('dialogRef'); 
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
     lastStay.value.end_date = new Date(lastStay.value.end_date)
@@ -176,6 +174,7 @@
         onUpdateDateNewRoom(newValue)
     })
  
+ 
     function onUpdateDateNewRoom(newValue){
         newRoom.value.start_date = moment(newValue.end_date).toDate() 
         if(!newRoom.value.end_date || moment(newRoom.value.start_date).isSame(newRoom.value.end_date) || moment(newRoom.value.start_date).isAfter(newRoom.value.end_date)){
@@ -188,12 +187,14 @@
         newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
     }
     function onEndDate(newValue){
+        newValue = moment.utc(moment(newValue).format("YYYY-MM-DD")).toDate()
+        newRoom.value.end_date = newValue
         newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date),'days')
     }
 
     const onUseRatePlan = () => {
         newRoom.value.is_manual_rate = false;
-        newRoom.value.rate = newRoom.value.original_rate
+        newRoom.value.rate = newRoom.value.original_rate || 0
         op.value.hide();
     }
     const onClose = () =>{
@@ -214,10 +215,11 @@
     }
 
     const onSelectRoomType = (r) => {
-        if (!newRoom.value.is_manual_rate)
-            newRoom.value.rate = r.rate
-        newRoom.value.original_rate = r.rate
-        rate.value = r.rate
+        if (!newRoom.value.is_manual_rate){
+            newRoom.value.rate = r.rate.rate || 0
+            newRoom.value.original_rate = r.rate.rate || 0
+            rate.value = r.rate.rate || 0
+        }
     }
     function onSave(){
         loading.value = true
@@ -243,17 +245,18 @@
         
         postApi('reservation.upgrade_room',{doc: data.reservationStay}).then((doc) => { 
             loading.value = false;
-            rs.getReservationDetail(data.reservationStay.name)
+            
+            
+            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
 
-            socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
 
-            socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal"})
 
-            socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
 
-            socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
-            onClose()
+            dialogRef.value.close(rs.reservationStay.name);
+            
         }).catch((ex) => {
             loading.value = false;
         })

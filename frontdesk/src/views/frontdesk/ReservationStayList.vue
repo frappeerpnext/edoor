@@ -162,7 +162,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed ,onUnmounted} from '@/plugin'
 
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
@@ -176,15 +176,12 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
-const socket = inject("$socket")
-socket.on("RefresheDoorDashboard", (arg) => {
 
-    if (arg == property.name) {
-        loadData()
-
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == property.name && arg.action=="refresh_res_list") {
+       loadData()
     }
 })
-
 
 
 const columns = ref([
@@ -444,7 +441,10 @@ onMounted(() => {
     })
 
 })
-
+onUnmounted(() => {
+    
+    window.socket.off("RefreshData");
+})
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }

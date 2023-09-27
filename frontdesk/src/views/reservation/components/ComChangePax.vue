@@ -21,7 +21,6 @@ import { ref, useToast, inject, postApi,postReservationStay } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');
-const socket = inject('$socket');
 const isLoading = ref(false)
 const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
 const onSave = () => {
@@ -34,11 +33,11 @@ const onSave = () => {
         rs.reservationStay.adult = doc.adult
         rs.reservationStay.child = doc.child
         isLoading.value = false;
-        socket.emit("RefreshReservationDetail", doc.reservation);
+        window.socket.emit("RefreshReservationDetail", doc.reservation);
 
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-
+        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
         emit("onClose")
     }).catch((ex) => {
         isLoading.value = false;

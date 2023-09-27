@@ -18,6 +18,8 @@
   "show_summary_under_room_chart_calendar",
   "enable_over_booking",
   "room_conflict_background_color",
+  "default_check_in_time",
+  "default_check_out_time",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -240,12 +242,24 @@
    "fieldname": "room_conflict_background_color",
    "fieldtype": "Color",
    "label": "Room Conflict Background Color"
+  },
+  {
+   "default": "14:00:00",
+   "fieldname": "default_check_in_time",
+   "fieldtype": "Time",
+   "label": "Default Check-in Time"
+  },
+  {
+   "default": "12:00:00",
+   "fieldname": "default_check_out_time",
+   "fieldtype": "Time",
+   "label": "Default Check-out Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-19 12:55:36.699009",
+ "modified": "2023-09-21 15:38:26.273658",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

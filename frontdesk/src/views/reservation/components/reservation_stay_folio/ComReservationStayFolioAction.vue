@@ -57,6 +57,8 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
                         <span class="ml-2">Delete Folio</span>
                     </button>
 
+               
+
                 </template>
             </Menu>
         </div>
@@ -264,7 +266,7 @@ function EditFolio(is_edit) {
             let data = options.data;
             if (data != undefined) {
                 rs.onLoadReservationFolios(data.name)
-                socket.emit("RefreshReservationDetail", rs.reservation.name)
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
             }
         }
     })
@@ -349,6 +351,7 @@ function closeFolio() {
 
     });
 }
+
 function deleteFilio(note) {
     if (!rs.selectedFolio.name) {
         gv.toast('warn', 'Please select a Folio.')
@@ -365,14 +368,14 @@ function deleteFilio(note) {
                         defaultSelectFolio.value = rs.folios[0]
                     }
                     rs.onLoadFolioTransaction(defaultSelectFolio.value)
-                    socket.emit("RefreshReservationDetail", rs.reservation.name)
-                    
+                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                 }
                 loading.value = false;
                 openNote.value = false
             })
         }).catch((error) => {
-            loading.value = false; 
+            loading.value = false;
+            openNote.value = false 
         })
 
 }

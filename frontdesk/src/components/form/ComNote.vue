@@ -35,7 +35,7 @@ function onOk(){
         else{
             emit('ok', note.value)
         }
-        loading.value=true
+        loading.value=false
     }else{
         toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
         loading.value=false

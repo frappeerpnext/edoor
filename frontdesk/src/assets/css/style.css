@@ -689,13 +689,16 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
     }
 }
 .fc-timeline-event .guest-title{
-    text-wrap: nowrap;
+    text-wrap: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 .fc-timeline-event:hover{
     box-shadow: 0px 0px 0px 1px #000;
 }
+ 
 /* END Full calenda css toty ty*/
-
+ 
 
 .cs-badge-tran .p-badge.p-badge-warning{
     font-size: 0.7rem;
@@ -869,6 +872,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .min-h-folio-cus{
     /* min-height: 30rem; */
     min-height: calc(100vh - 247px);
+}
+.min-h-folio-cus.unset-min-h{
+    min-height: unset !important;
 }
 /* .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
     padding-bottom: 61px;

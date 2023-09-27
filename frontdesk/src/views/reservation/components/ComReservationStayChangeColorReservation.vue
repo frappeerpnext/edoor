@@ -11,7 +11,6 @@ import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');
-const socket = inject('$socket')
 const loading = ref(false)
 const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
 const color = ref(stay.value.reservation_color)
@@ -26,8 +25,8 @@ function onSave(){
         rs.reservationStay = r.message
         loading.value = false
 
-        socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-        socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
 
         emit('onClose')
     }).catch(()=>{

@@ -53,7 +53,8 @@ function onNight(newValue){
     data.value.departure_date = moment(data.value.arrival_date).add(newValue,'days').toDate()
 }
 function onEndDate(newValue){
-    data.value.departure_date = moment(newValue).toDate()
+    newValue = moment.utc(moment(newValue).format("YYYY-MM-DD")).toDate()
+        data.value.departure_date = newValue
     data.value.room_nights = moment(data.value.departure_date).diff(moment(data.value.arrival_date), 'days') 
 }
 function onStartDate(newValue){

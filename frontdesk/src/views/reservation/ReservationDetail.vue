@@ -98,7 +98,7 @@
                 <TabPanel > 
                     <template #header>
                         <span class="me-2">Document</span>
-                        <!-- <Badge :value=""></Badge> -->
+                        <ComDocumentBadge :attacheds="rs.attacheds" v-if="name && !rs.loading"/>
                     </template>
                     <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
                 </TabPanel>
@@ -151,7 +151,6 @@ const gv = inject("$gv")
  
 const confirm = useConfirm()
 const toast = useToast()
-const socket = inject("$socket")
 const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -188,7 +187,7 @@ function onMaximize(){
 
 onMounted(() => {
     window.has_reservation_detail_opened = true
-    socket.on("RefreshReservationDetail", (reservation) => {
+    window.socket.on("RefreshReservationDetail", (reservation) => {
         if (reservation == name.value) {
             //we run this in settime out 
             //because we need to wait until data from backend that run enqueue process is update ted
@@ -214,7 +213,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     rs.clear()
-    socket.off("RefreshReservationDetail");
+    window.socket.off("RefreshReservationDetail");
     window.has_reservation_detail_opened = false
 })
 
@@ -252,7 +251,7 @@ function onCheckIn(){
                 }).then((result) => {
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name);
-                    socket.emit("RefresheDoorDashboard", property.name);
+                    window.socket.emit("RefresheDoorDashboard", property.name);
                 })
                     .catch((err) => {
                         rs.loading = false

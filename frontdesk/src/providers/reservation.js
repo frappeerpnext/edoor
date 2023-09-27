@@ -15,6 +15,7 @@ export default class Reservation {
 		this.selecteddepositTransactions =[]
 		this.room_rates = []
 		this.selectedRoomRates = []
+		this.attacheds = []
 
 	}
 
@@ -29,6 +30,9 @@ export default class Reservation {
 			this.reservationStays = result.message.reservation_stays
 			this.masterGuest = result.message.master_guest
 			this.getRoomList()
+			var attachedsFiles = this.reservationStays.map(r=>r.name)
+			attachedsFiles[attachedsFiles.length] = name || this.reservation?.name
+			this.attacheds = attachedsFiles
 			this.loading = false
 		}).catch((err) => {
 			this.loading = false

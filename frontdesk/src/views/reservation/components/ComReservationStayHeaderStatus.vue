@@ -34,6 +34,10 @@
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
                 <ComIcon  icon="BilltoMasterRoom" style="height:15px;" ></ComIcon>
             </div>
+            <div v-tooltip.top="'Split Room'" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="rs.reservationStay?.stays?.length >= 2" >
+                <ComIcon  icon="iconSplit" style="height:15px;" ></ComIcon>
+                
+            </div>
             <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay && rs.reservationStay.is_master"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
@@ -56,6 +60,7 @@
 
         </div>
     </div>
+  
 </template>
 <script setup>
 import { inject, useRouter,useDialog } from '@/plugin'

@@ -31,6 +31,15 @@
                                 </div>                               
                             </template>
                         </Column>
+                        <Column header="Room night" headerClass="text-center" bodyClass="text-center">
+                            <template #body="slotProps">
+                              <div>
+                                <span>
+                                    {{rs.reservation.room_nights }}
+                                </span>
+                              </div>                              
+                            </template>
+                        </Column>
                         <Column header="Room">
                             <template #body="slotProps">
                                 <div> 
@@ -154,7 +163,6 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const loading = ref(false)
 const toast = useToast();
-const socket = inject("$socket")
 const frappe = inject("$frappe")
 const call = frappe.call()
 const name = ref("")

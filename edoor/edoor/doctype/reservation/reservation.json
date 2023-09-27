@@ -1,5 +1,4 @@
 {
- "_comments": "[{\"comment\": \"<div class=\\\"ql-editor read-mode\\\"><p>ccccc</p></div>\", \"by\": \"Administrator\", \"name\": \"ffc295d78b\"}]",
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
@@ -73,9 +72,6 @@
   "total_void",
   "section_break_63",
   "room_nights",
-  "section_break_44",
-  "column_break_48",
-  "column_break_52",
   "room_rate_summary_section",
   "room_rate",
   "room_rate_discount",
@@ -369,10 +365,6 @@
    "label": "Total Active Reservation Stay"
   },
   {
-   "fieldname": "section_break_44",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "total_checked_in",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -389,17 +381,9 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_48",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "total_room_rate",
    "fieldtype": "Currency",
    "label": "Total Room Rate"
-  },
-  {
-   "fieldname": "column_break_52",
-   "fieldtype": "Column Break"
   },
   {
    "fieldname": "column_break_47",
@@ -671,7 +655,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-08-15 11:07:12.543943",
+ "modified": "2023-09-21 15:51:55.591604",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

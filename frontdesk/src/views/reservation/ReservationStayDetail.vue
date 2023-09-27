@@ -98,9 +98,9 @@
                     <TabPanel >
                         <template #header>
                             <span class="me-2">Document</span>
-                            <Badge :value="receivedDataLength"></Badge>
+                            <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading"/>
                     </template>
-                        <ComDocument doctype="Reservation Stay" @Documents_length="handleDataLength" :docname="name" v-if="!rs.loading" />
+                        <ComDocument doctype="Reservation Stay" :docname="name" v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
             </div>
@@ -130,8 +130,7 @@
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
                         <span class="italic"> Checked-out by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date)
-                            }}
+                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date) }}
                         </span>
                     </div>
                 </div>
@@ -166,7 +165,7 @@
 </template>
 <script setup>
 
-import { inject, ref, onMounted, computed, useToast, useRoute, useRouter, onUnmounted, useDialog, postApi } from '@/plugin'
+import { inject, ref, onMounted, computed, useToast, useRoute, useRouter, onUnmounted, useDialog, postApi, getCount } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
@@ -200,22 +199,18 @@ const call = frappe.call();
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast()
-// const socket = inject("$socket")
 const dialogRef = inject("dialogRef");
 const setting = localStorage.getItem("edoor_setting")
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
+const rsDoc = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const receivedDataLength = ref(0);
-const handleDataLength = (length) => {
-  receivedDataLength.value = length;
-};
+
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
-
 
 
 const onRefresh = (showLoading = true) => {
@@ -251,10 +246,8 @@ const onRefresh = (showLoading = true) => {
 
 window.socket.on("RefreshData", (arg) => {
     //arg data format {action:"refresh_reservaiton_stay",reservation_stay:"ST2023-5555"}
-
     if (arg.action== "refresh_reservation_stay" && arg.reservation_stay==rs.reservationStay.name) {
         onRefresh(false)
-        
     }
 })
 
@@ -274,7 +267,7 @@ function onUnreservedRoom(){
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 rs.getReservationDetail(rs.reservationStay.name)
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 
@@ -295,7 +288,7 @@ function onReservedRoom(){
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 rs.getReservationDetail(rs.reservationStay.name)
-                socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })  
         },
 
@@ -322,9 +315,8 @@ onMounted(() => {
         name.value = dialogRef.value.data.name;
         rs.getReservationDetail(name.value);
         rs.getChargeSummary(name.value)
-        rs.is_page = false
+        rs.is_page = false 
     }
-    handleDataLength()
 });
 
 function onNavigateStay(isNext) {
@@ -375,10 +367,11 @@ const onCheckIn = () => {
                 }).then((result) => {
                     rs.loading = false
                     
-                    socket.emit("RefresheDoorDashboard", property.name);
-                    socket.emit("RefreshReservationDetail", rs.reservation.name);
-                    socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-                    socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
+                    window.socket.emit("RefresheDoorDashboard", property.name);
+                    window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+                    window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                    window.socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
+                    window.socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -391,10 +384,7 @@ const onCheckIn = () => {
 }
 
 const onCheckOut = () => {
-    if (!rs.reservationStay.balance == 0) {
-        toast.add({ severity: 'warn', summary: "You cannot check this reservation because balance is not zero", detail: '', life: 3000 })
-        return
-    }
+    
     confirm.require({
         message: 'Are you sure you want to check out this room?',
         header: 'Confirmation',
@@ -412,9 +402,9 @@ const onCheckOut = () => {
             }, "Check out successfully").then((result) => {
                 rs.loading = false
                 onRefresh()
-                socket.emit("RefresheDoorDashboard", property.name);
-                socket.emit("RefreshReservationDetail", rs.reservation.name);
-                socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
+                window.socket.emit("RefresheDoorDashboard", property.name);
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+                window.socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
             })
                 .catch((err) => {
                     rs.loading = false
@@ -425,7 +415,9 @@ const onCheckOut = () => {
 }
 
 const OnViewReservation = () => {
-    dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+    alert(rs.reservation.name)
+    // dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
+    window.open('/frontdesk/reservation-detail/' + rs.reservation.name, '_blank')
 }
 
 onUnmounted(() => {
