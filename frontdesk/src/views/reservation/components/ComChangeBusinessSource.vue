@@ -67,6 +67,7 @@ function onSave() {
         window.socket.emit("RefreshReservationDetail", rs.reservation.name);
         window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
         window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
+        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
     })
     .catch(()=>{
         isLoading.value = false      

@@ -111,11 +111,9 @@
                             </span>
                         </template>
                     </Column>
-            
                 </DataTable>
             </ComPlaceholder>
         </div>
-        <div></div>
     </div>
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
         <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
@@ -128,7 +126,6 @@
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
-
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
                     <label :for="c.fieldname">{{ c.label }}</label>
                 </div>
@@ -172,17 +169,17 @@
                             <span>Show Master Folio Only</span>
                         </label>
                     </div>
-
                 </div>
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
 </template>
-
 <script setup>
 import { ref, onMounted, onUnmounted, inject, computed, useDialog, watch } from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComOrderBy from '@/components/ComOrderBy.vue';
+
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -196,15 +193,14 @@ const moment = inject("$moment")
 const filter = ref({ status: 'All Status', start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({order_by: "modified", order_type: "desc"})
-import ComOrderBy from '@/components/ComOrderBy.vue';
 const selectedColumns = ref([])
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
 ])
-const pageState = ref({})
 
+const pageState = ref({})
 const opShowColumn = ref();
 
 const getColumns = computed(() => {
@@ -257,7 +253,6 @@ function onResetTable() {
 
 function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
-
         data: {
             "doctype": "Customer",
             name: property.name,
@@ -274,7 +269,6 @@ function onPrint() {
             maximizable: true,
             closeOnEscape: false
         }
-
     });
 }
 
@@ -295,7 +289,6 @@ function onOrderTypeClick() {
     loadData()
 }
 function onSelectOrderBy() {
-
     loadData()
 }
 
@@ -304,10 +297,8 @@ function onDateSelect(d) {
 }
 
 const onSearch = debouncer(() => {
-
     loadData();
 }, 500);
-
 
 function loadData() {
     gv.loading = true
@@ -328,42 +319,33 @@ function loadData() {
         columns.value.forEach(r => {
             r.selected = selectedColumns.value.includes(r.fieldname)
         });
-
         data.value = result.message.result.slice(0, -1)
         summary.value = result.message.report_summary
         sortOptions.value = [...sortOptions.value, ...columns.value]
         gv.loading = false
-
     }).catch((err) => {
         gv.loading = false
-
         if (err._server_messages) {
-
             const _server_messages = JSON.parse(err._server_messages)
-
             _server_messages.forEach(r => {
                 window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ", ""), '*')
             });
         } else {
             window.postMessage('show_alert|' + err.exception, '*')
         }
-
-
     })
 }
 
 onMounted(() => {
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
-
     if (state) {
         if (state.selectedColumns) {
-
             selectedColumns.value = state.selectedColumns
         }
     }
-
     loadData()
 })
+
 onUnmounted(() => {
     window.socket.off("RefresheDoorDashboard");
 })
@@ -373,6 +355,7 @@ const showAdvanceSearch = ref()
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const onClearFilter = () => {
     filter.value = JSON.parse(JSON.stringify(defaultFilter))
     filter.value.start_date = gv.dateApiFormat(filter.value.start_date)
@@ -380,15 +363,16 @@ const onClearFilter = () => {
     loadData()
     showAdvanceSearch.value.hide()
 }
+
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 function onOrderBy(data) {
     order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
 
 const onCloseColumn = () => {

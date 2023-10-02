@@ -1,30 +1,37 @@
 <template>
        <div>
-              <ComPanel title="Today Statistic" class=" pb-3">
-                <!-- <ComDonutFrontdesk/>  -->
-                <ComChartDoughnut :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
-                <ComHousekeepingTodaySummary :isHousekeeping="true"/>   
-              </ComPanel>
-              <ComPanel title="Housekeeping Statistic" class="mt-3 pb-3">
-                 <ComHousekeepingStatus />       
-              </ComPanel>
-                  
+            <ComPanel title="Today Statistic" class=" pb-3">
+            <!-- <ComDonutFrontdesk/>  -->
+            <ComChartDoughnut :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" v-if="chartData.length > 0" show-percentage="Occupied" class="doughnut__chart_ds"/>
+            <ComHousekeepingTodaySummary :isHousekeeping="true"/>   
+            </ComPanel>
+            <ComPanel title="Housekeeping Statistic" class="mt-3 pb-3">
+                <ComHousekeepingStatus />       
+            </ComPanel>          
        </div>
 </template>
 <script setup>
-import { ref, getApi,watch, inject,onMounted } from "@/plugin"
+import { ref, getApi,watch, inject,onMounted , onUnmounted } from "@/plugin"
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
+import ComHousekeepingTodaySummary from './ComHousekeepingTodaySummary.vue';
 import ComRoomStatusDoughnut from '@/views/dashboard/components/ComRoomStatusDoughnut.vue';
 import ComDonutFrontdesk from '../../frontdesk/components/ComDonutFrontdesk.vue';
-import ComHousekeepingTodaySummary from './ComHousekeepingTodaySummary.vue';
+
 const data = ref({})
 const chartData = ref([]) 
-const props = defineProps({
-    date: ""
-})
+const props = defineProps({date:""})
 const gv = inject("$gv")
 const moment = inject("$moment")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == setting.property.name && arg.action=="refresh_summary_hk") {
+        loadData(props.date)
+    }
+})
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
+})
+console.log(setting.property.name)
 watch(()=> [props.date], ([newValue])=>{
     loadData(newValue)
 })

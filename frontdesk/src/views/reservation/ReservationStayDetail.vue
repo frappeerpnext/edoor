@@ -89,7 +89,7 @@
                         </div>
                     </TabPanel>
 
-                    <TabPanel header="Room Rate">
+                    <TabPanel header="Room Rate" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
                     <TabPanel header="Folio">
@@ -100,7 +100,7 @@
                             <span class="me-2">Document</span>
                             <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading"/>
                     </template>
-                        <ComDocument doctype="Reservation Stay" :docname="name" v-if="!rs.loading" />
+                        <ComDocument doctype="Reservation Stay" :docname="name" :attacheds="[name]" v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
             </div>
@@ -123,12 +123,11 @@
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
                         <span class="italic">Checked-in by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date)
-                            }}
+                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date) }}
                         </span>
                     </div>
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
-                        <span class="italic"> Checked-out by: </span>
+                        <span class="italic">Checked-out by: </span>
                         <span class="text-500 font-italic">
                             {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date) }}
                         </span>
@@ -139,18 +138,14 @@
         <!-- <hr class="mt-2" v-if="rs?.is_page"> -->
         <template #footer-left>
             <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
-
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
-                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
-                    style="font-weight: 600 !important;" class="badge-rs" :value="rs?.reservationStayNames.length"
-                    severity="warning">
+                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge style="font-weight: 600 !important;" class="badge-rs" :value="rs?.reservationStayNames.length" severity="warning">
                 </Badge>
             </Button>
         </template>
         <template #footer-right>
-
-            <Button v-if="rs.canCheckIn()" @click="onCheckIn" class="bg-green-500 border-none">
+            <Button v-if="rs.canCheckIn() && rs.reservationStay?.reservation_status != 'In-house'" @click="onCheckIn" class="bg-green-500 border-none">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
             </Button>
             <Button
@@ -200,19 +195,19 @@ const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast()
 const dialogRef = inject("dialogRef");
-const setting = localStorage.getItem("edoor_setting")
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
 const rsDoc = ref([])
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-
+const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
 
-
+ 
+ 
 const onRefresh = (showLoading = true) => {
 
     rs.getReservationDetail(name.value, showLoading)
@@ -296,6 +291,7 @@ function onReservedRoom(){
 }
 
 onMounted(() => {
+   
 
     if (!dialogRef) {
         rs.is_page = true
@@ -367,11 +363,13 @@ const onCheckIn = () => {
                 }).then((result) => {
                     rs.loading = false
                     
-                    window.socket.emit("RefresheDoorDashboard", property.name);
+                    window.socket.emit("RefresheDoorDashboard", window.property_name);
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-                    window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-                    window.socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
-                    window.socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
+                    // window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                    window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
+                    window.socket.emit("RefreshData", {property: window.property_name,action:"refresh_summary"})
+                    onRefresh(false)
+                    
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -402,9 +400,10 @@ const onCheckOut = () => {
             }, "Check out successfully").then((result) => {
                 rs.loading = false
                 onRefresh()
-                window.socket.emit("RefresheDoorDashboard", property.name);
+                window.socket.emit("RefresheDoorDashboard", window.property_name);
                 window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-                window.socket.emit("RefreshData", { property: property.name, action: "refresh_iframe_in_modal" });
+                window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
+                window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
             })
                 .catch((err) => {
                     rs.loading = false
@@ -415,9 +414,23 @@ const onCheckOut = () => {
 }
 
 const OnViewReservation = () => {
-    alert(rs.reservation.name)
-    // dialogRef.value.close({ action: "view_reservation_detail", reservation: rs.reservation.name });
-    window.open('/frontdesk/reservation-detail/' + rs.reservation.name, '_blank')
+  
+    
+    
+    if(window.has_reservation_detail_opened==true){
+        if(window.reservation = rs.reservationStay.reservation ){
+            dialogRef.value.close();
+        }else {
+            window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')    
+        }
+    }else {
+        dialogRef.value.close();
+        window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
+    }
+    
+
+    
+    
 }
 
 onUnmounted(() => {

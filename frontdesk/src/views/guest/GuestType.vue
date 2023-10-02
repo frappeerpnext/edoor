@@ -29,10 +29,8 @@
                     <Column header="Action" headerClass="text-center w-10rem">
                         <template #body="slotProps">
                             <div class="flex gap-2 justify-center">
-                                <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right"
-                                    class="h-2rem border-none" label="Edit" rounded />
-                                <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm"
-                                    iconPos="right" class="h-2rem border-none" label="Delete" rounded />
+                                <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
+                                <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
                             </div>
                         </template>
                     </Column>
@@ -42,7 +40,7 @@
     </div>
 </template>
 <script setup>
-import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc } from '@/plugin'
+import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc ,onUnmounted } from '@/plugin'
 import ComAddGuestType from "@/views/guest/components/ComAddGuestType.vue"
 const gv = inject("$gv")
 const dialog = useDialog()
@@ -61,16 +59,21 @@ function onDelete(name) {
         acceptLabel: 'Ok',
         accept: () => {
             deleteDoc('Customer Group', name)
-                .then(() => {
-                    loadData()
-                    loading.value = false
-
-                }).catch((err) => {
-                    loading.value = false
-                })
+            .then(() => {
+                loadData()
+                loading.value = false
+            }).catch((err) => {
+                loading.value = false
+            })
         },
     });
 }
+window.socket.on("RefreshData", (arg) => {
+    if(arg.property == setting.property.name && arg.action == "refresh_guest_type"){
+        loadData()
+    }    
+})
+
 function onEdit(edit) {
     dialog.open(ComAddGuestType, {
         props: {
@@ -95,21 +98,23 @@ function onEdit(edit) {
         }
     });
 }
+
 function loadData() {
     gv.loading = true
     getDocList('Customer Group', {
         fields: ['customer_group_en', 'note', 'owner', 'name'],
         limit: 10000,
     })
-        .then((doc) => {
-            data.value = doc
-            gv.loading = false
-        })
-        .catch((error) => {
-            gv.loading = false
+    .then((doc) => {
+        data.value = doc
+        gv.loading = false
+    })
+    .catch((error) => {
+        gv.loading = false
 
-        });
+    });
 }
+
 function onAddNewGuestType() {
     dialog.open(ComAddGuestType, {
         props: {
@@ -129,10 +134,14 @@ function onAddNewGuestType() {
         }
     });
 }
+
 onMounted(() => {
     loadData()
 })
 
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
+})
 </script>
 
  

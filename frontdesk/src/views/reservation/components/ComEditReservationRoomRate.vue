@@ -1,6 +1,16 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
- 
+        <div v-if="current_date >= moment(stay?.arrival_date).toDate() && stay?.reservation_status == 'In-house'">
+            <Message severity="info">Changes to room rates made to past or current dates will not
+                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            </Message>
+        </div>
+        <div
+            v-if="current_date >= moment(stay_reservation?.arrival_date).toDate() && stay_reservation?.reservation_status == 'In-house'">
+            <Message severity="info">Changes to room rates made to past or current dates will not
+                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            </Message>
+        </div>
         <div class="grid justify-between" v-if="stay">
             <div class="col-12 xl:col-6 overflow-auto">
                 <table>
@@ -68,17 +78,7 @@
                 </table>
             </div>
         </div>
-        <div v-if="current_date >= moment(stay?.arrival_date).toDate() && stay?.reservation_status == 'In-house'">
-            <Message severity="info">Changes to room rates made to past or current dates will not
-                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
-            </Message>
-        </div>
-        <div
-            v-if="current_date >= moment(stay_reservation?.arrival_date).toDate() && stay_reservation?.reservation_status == 'In-house'">
-            <Message severity="info">Changes to room rates made to past or current dates will not
-                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
-            </Message>
-        </div>
+        <!--  -->
         <hr class="my-1">
         <div class="grid">
             <div class="col mt-2 ">
@@ -134,13 +134,10 @@
                     <div class="col-12">
                         <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
                     </div>
-
                     <div class="col-12" v-if="showCheckUpdateFutureStayRoomRate">
                         <Checkbox class="" v-model="updateFutureRoomRate" :binary="true" />
                         Update room rate to the future stay room rate ({{ futureRoomRates?.length - 1 }} Room Night(s))
                     </div>
-                 
-
                 </div>
             </div>
             <div class="col-5">

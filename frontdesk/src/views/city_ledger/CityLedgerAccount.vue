@@ -22,15 +22,12 @@
                             <div class="flex gap-3">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="gv.isNotEmpty(filter)">
-                                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
-                                        @click="onClearFilter" />
+                                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
                         </div>
                         <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
-                            <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter"
-                                titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
-                                @onCancel="onCloseAdvanceSearch">
+                            <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
                                 <div class="grid">
                                     <div class="col-6">
                                         <ComSelect :filters="[['property', '=', property.name]]"
@@ -109,8 +106,6 @@
         </div>
     </div>
 
-
-
     <OverlayPanel ref="opShowColumn" style="width:35rem;">
         <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
             @onCancel="onCloseColumn">
@@ -146,16 +141,16 @@ const gv = inject("$gv")
 const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
-
 const data = ref([])
 const filter = ref({})
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-window.socket.on("RefreshData", (arg) => {
 
-    if (arg.property == property.name && arg.action == "refresh_city_ledger") {
-
-        loadData()
+window.socket.on("RefresheDoorDashboard", (arg) => {
+    if (arg == property.name) {
+        setTimeout(function () {
+            loadData()
+        }, 3000)
     }
 })
 
@@ -172,8 +167,6 @@ const columns = ref([
     { fieldname: 'total_debit', label: 'Total Debit', fieldtype: "Currency", default: true, header_class: "text-right" },
     { fieldname: 'total_credit', label: 'Total Credit', fieldtype: "Currency", default: true, header_class: "text-right" },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", default: true, header_class: "text-right" },
-
-
 ])
 
 const selectedColumns = ref([]);
@@ -189,12 +182,12 @@ function OnSaveColumn(event) {
     opShowColumn.value.toggle(event);
 }
 
-
 function onResetTable() {
     localStorage.removeItem("page_state_city_ledger")
     localStorage.removeItem("table_city_ledger_list_state")
     window.location.reload()
 }
+
 const getColumns = computed(() => {
     if (filter.value.search_field) {
         return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
@@ -202,7 +195,6 @@ const getColumns = computed(() => {
         return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
-
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
@@ -216,14 +208,10 @@ function Refresh() {
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
-
     loadData()
 }
 
-
-
 function loadData() {
-
     gv.loading = true
     let filters = [
         ["property", "=", property.name]
@@ -254,41 +242,32 @@ function loadData() {
         limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
         limit: pageState.value?.rows || 20,
     })
-        .then((doc) => {
-            data.value = doc
+    .then((doc) => {
+        data.value = doc
+        gv.loading = false
+    })
+    .catch((error) => {
+        gv.loading = false
 
-            gv.loading = false
-        })
-        .catch((error) => {
-            gv.loading = false
-
-        });
+    });
     getTotalRecord(filters)
-
     localStorage.setItem("page_state_city_ledger", JSON.stringify(pageState.value))
 
 }
 function getTotalRecord(filters) {
-
     getCount('City Ledger', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
-
 }
 function onOrderBy(data) {
     pageState.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
-
-
-
 
 const onSearch = debouncer(() => {
     loadData();
 }, 500);
-
 
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -302,9 +281,6 @@ function debouncer(fn, delay) {
     };
 }
 
-
-
-
 onMounted(() => {
     let state = localStorage.getItem("page_state_city_ledger")
     if (state) {
@@ -313,7 +289,6 @@ onMounted(() => {
         pageState.value = state
         if (state.selectedColumns) {
             selectedColumns.value = state.selectedColumns
-
         } else {
             selectedColumns.value = columns.value.filter(r => r.default).map(x => x.fieldname)
         }
@@ -328,13 +303,11 @@ onMounted(() => {
         console.log(result.message)
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
-
             if (["Date", "Int"].includes(r.fieldtype)) {
                 header_class = "text-center"
             } else if (["Currency"].includes(r.fieldtype)) {
                 header_class = "text-right"
             }
-
             columns.value.push({
                 fieldname: r.fieldname,
                 label: r.label,
@@ -344,7 +317,6 @@ onMounted(() => {
             })
         })
     })
-
 })
 
 function onAddCityLedgerAccount() {
@@ -375,21 +347,26 @@ function onAddCityLedgerAccount() {
 }
 
 onUnmounted(() => {
-    window.socket.off("RefreshData");
+    window.socket.off("RefresheDoorDashboard");
 })
+
 const showAdvanceSearch = ref()
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const onClearFilter = () => {
     filter.value = {};
     loadData();
     showAdvanceSearch.value.hide()
 }
+
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
+
 </script>

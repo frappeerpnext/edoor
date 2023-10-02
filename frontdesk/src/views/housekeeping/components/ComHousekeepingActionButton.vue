@@ -1,5 +1,4 @@
 <template>
-     
     <div class="flex gap-2">
         <div>
             <Button label=" Change Housekeeping Status" class="p-button h-full p-component conten-btn white-space-nowrap" severity="warning" @click="onChangeHousekeepingStatus" >
@@ -30,7 +29,6 @@
     <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }" position="top">
         <div>
             <ComSelect isFilter v-model="selectedHousekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper" />
-
         </div>
         <template #footer>
             <!-- <Button class="border-none" label="No" icon="pi pi-times" @click="visibleHousekeepingStatus = false" text v-if="!submitLoading" /> -->
@@ -44,15 +42,12 @@ import { ref, inject, useToast,postApi } from '@/plugin';
 const toast = useToast();
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
-
 const call = frappe.call()
 const visibleHousekeepingStatus = ref(false)
 const visibleAssignHousekeeper = ref(false)
 const submitLoading = ref(false)
 const selectedStatus = ref("")
 const selectedHousekeeper = ref("")
-
- 
 
 function onChangeHousekeepingStatus() {
 
@@ -64,7 +59,6 @@ function onChangeHousekeepingStatus() {
 }
 
 function AssingnHousekeeper() {
-
     if (hk.selectedRooms.length == 0) {
         toast.add({ severity: 'warn', summary: "Assingn Housekeeper", detail: "Please select room to assign in housekeeper", life: 3000 })
     } else {
@@ -73,30 +67,25 @@ function AssingnHousekeeper() {
 }
 
 function onSaveChangeHousekeepingStatus() {
-     
     submitLoading.value = true;
     const rooms = hk.selectedRooms.map(r => r.name).join(",");
     postApi("housekeeping.update_housekeeping_status", {
         rooms: rooms,
         status: selectedStatus.value
     }).then((result) => {
-      
-        
         visibleHousekeepingStatus.value = false
         hk.loadData().then((r)=>{
-         
             hk.selectedRooms = []
         })
+        window.socket.emit("RefreshData", {property: setting.property.name,action:"refresh_hk_status"})
         submitLoading.value = false
         selectedStatus.value = ""
-         
-     
     })
-        .catch((err) => {
-            submitLoading.value = false
-        })
+    .catch((err) => {
+        submitLoading.value = false
+    })
 }
-function onSaveAssignHousekeeper() {
+function onSaveAssignHousekeeper(){
     submitLoading.value = true;
     const rooms = hk.selectedRooms.map(r => r.name).join(",");
     call.post("edoor.api.housekeeping.update_housekeeper", {

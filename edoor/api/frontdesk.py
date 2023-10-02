@@ -199,7 +199,7 @@ def get_report():
 @frappe.whitelist(allow_guest=True)
 def get_edoor_setting(property = None):
 
-    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],order_by="sort_order asc")
+    edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],filters={"name":["!=","All Menus"]},order_by="sort_order asc")
     
     currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
  
@@ -212,6 +212,8 @@ def get_edoor_setting(property = None):
     epos_setting = frappe.get_doc('ePOS Settings')
     custom_print_format = frappe.db.sql("select name, print_format from `tabCustom Print Format` where ifnull(property,'')='' or property='{}'".format(property),as_dict=1)
     
+
+
     edoor_setting  =  {
         "edoor_menu": edoor_menus,
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
@@ -224,6 +226,7 @@ def get_edoor_setting(property = None):
         "enable_over_booking":edoor_setting_doc.enable_over_booking,
         "backend_port":epos_setting.backend_port,
         "room_conflict_background_color":edoor_setting_doc.room_conflict_background_color,
+        "run_night_audit_role":edoor_setting_doc.run_night_audit_role,
         "custom_print_format":custom_print_format,
         "currency":{
             "name":currency.name,
@@ -293,7 +296,11 @@ def get_logged_user():
     data = frappe.get_doc('User',frappe.session.user)
  
     property = frappe.get_list("Business Branch",fields=["name","property_code","province","email","phone_number_1","photo"])
-     
+        # can see rate role 
+    
+    can_see_rate_role = frappe.db.get_single_value("eDoor Setting","can_see_rate_and_amount_role")
+    roles = frappe.get_roles(frappe.session.user)
+    
     return {
         "name":data.name,
         "full_name":data.full_name,
@@ -301,15 +308,13 @@ def get_logged_user():
         "phone_number":data.phone,
         "photo":data.user_image,
         "property":property,
-        "roles":frappe.get_roles(frappe.session.user),
+        "roles":roles,
+        "can_view_rate": True if can_see_rate_role in roles else False, 
         "language":data.language
     }
 
 @frappe.whitelist()
 def get_room_chart_data(property,group_by,start_date,end_date):
-
-    
-
 
     return []
 

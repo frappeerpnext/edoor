@@ -5,16 +5,16 @@
          <ComAvatar :image="photo" :colorStatus="colorStatus" />
       </div>
       <div class="flex-grow-1 overflow-hidden">
-         <div @click="onClick"   v-tooltip.top="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>
-         <div v-tooltip.top="phoneNumber1" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" ><span v-html="phoneNumber1 ?? '<span class=\'font-italic text-gray-400\'>No phone number</span>'"></span></div>
-         <div v-tooltip.top="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > <span v-html="email ?? '<span class=\'font-italic text-gray-400\'>No email adress</span>'"></span></div>
+         <div @click="onClick"   v-tippy="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>
+         <div v-tippy="phoneNumber1" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" ><span v-html="phoneNumber1 ?? '<span class=\'font-italic text-gray-400\'>No phone number</span>'"></span></div>
+         <div v-tippy="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > <span v-html="email ?? '<span class=\'font-italic text-gray-400\'>No email adress</span>'"></span></div>
       </div>
       <div class="flex-none" v-if="$slots.end">
          <slot name="end"></slot>
       </div>
    </div>
    <div class="grid gap-2 mt-2 ps-2">
-      <span v-tooltip.top="name + ' birthday at ' +moment(dob).format('DD-MM-yy')" v-if="dob && (moment(dob).format('DD-MM') == moment().format('DD-MM') || moment(dob).add(-1, 'day').format('DD-MM') == moment().format('DD-MM') )" class="bg-green-bt p-2 rounded-xl flex justify-center items-center w-2rem h-2rem">
+      <span v-tippy="name + ' birthday at ' +moment(dob).format('DD-MM-yy')" v-if="dob && (moment(dob).format('DD-MM') == moment().format('DD-MM') || moment(dob).add(-1, 'day').format('DD-MM') == moment().format('DD-MM') )" class="bg-green-bt p-2 rounded-xl flex justify-center items-center w-2rem h-2rem">
          <ComIcon icon="BirthdayIcon" class="w-1rem"></ComIcon>
       </span>
       <slot name="footer"></slot>

@@ -8,7 +8,7 @@
     </div>
 </template>
 <script setup>
-import { ref, inject, getDocList } from '@/plugin';
+import { ref,getDocList } from '@/plugin';
 const data = ref([])
     getDocList('Reservation Status', {
         fields: ['name', 'color'],

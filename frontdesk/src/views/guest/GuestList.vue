@@ -52,8 +52,7 @@
                 tableStyle="min-width: 50rem" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
-                    :frozen="c.frozen" 
-                    >
+                    :frozen="c.frozen">
                         <template #body="slotProps" >
                             <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                                 {{ slotProps.data[c.fieldname] }} 
@@ -78,7 +77,6 @@
                             </span>
                         </template>
                     </Column>
-        
                 </DataTable>
             </ComPlaceholder> 
         </div>
@@ -127,7 +125,7 @@
 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
+import { inject, ref, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
@@ -135,22 +133,18 @@ import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 
 const moment = inject("$moment")
 const gv = inject("$gv")
-const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 const data = ref([])
 const filter = ref({})
-
 const showAdvanceSearch = ref()
-
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-window.socket.on("RefreshGuestDatabase", (arg) => {
 
-if (arg == property.name) {
-    loadData()
-     
-}
+window.socket.on("RefreshGuestDatabase", (arg) => {
+    if (arg == property.name) {
+        loadData()    
+    }
 })
 
 const columns = ref([
@@ -168,7 +162,6 @@ const columns = ref([
     { fieldname: 'creation' , fieldtype:"Timeago",  label: 'Creation', header_class:"text-center", default:true},
     { fieldname: 'modified_by' ,  label: 'Modified By'},
     { fieldname: 'modified' , fieldtype:"Timeago",  label: 'Last Modified', header_class:"text-center"},
-  
 ])
  
 const selectedColumns = ref([]);
@@ -184,12 +177,12 @@ function OnSaveColumn(event){
     opShowColumn.value.toggle(event);
 }
 
-
 function onResetTable(){
     localStorage.removeItem("page_state_customer")
     localStorage.removeItem("table_guest_customer_list_state")
     window.location.reload()
 }
+
 const getColumns = computed(()=>{
     if (filter.value.search_field){ 
         return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
@@ -197,7 +190,6 @@ const getColumns = computed(()=>{
         return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
- 
   
 function onOpenLink(column, data){
     window.postMessage(column.post_message_action + "|" + data[column.fieldname] , '*')
@@ -231,14 +223,10 @@ function loadData() {
     if (filter.value?.selected_gender) {
         filters.push(["gender", '=', filter.value.selected_gender])
     }
-     
     let fields = [...columns.value.map(r=>r.fieldname),  ...columns.value.map(r=>r.extra_field)]
     fields = [...fields , ...selectedColumns.value]
-
     fields =  [...new Set(fields.filter(x=>x))]
- 
     getDocList('Customer', {
-
         fields: fields,
         orderBy: {
             field: '`tabCustomer`.' + pageState.value.order_by,
@@ -258,11 +246,12 @@ function loadData() {
     getTotalRecord(filters)
     localStorage.setItem("page_state_customer", JSON.stringify(pageState.value))
 }
-function getTotalRecord(filters) {
 
+function getTotalRecord(filters) {
     getCount('Customer', filters)
     .then((count) => pageState.value.totalRecords = count || 0)
 }
+
 function onOrderBy(data) {
     pageState.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
@@ -285,6 +274,7 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
+
 onMounted(() => {
     let state = localStorage.getItem("page_state_customer")
     if (state) {
@@ -370,7 +360,6 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
-
 
 const care = ref(0)
 const dd = ref()

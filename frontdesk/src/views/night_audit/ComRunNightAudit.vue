@@ -10,10 +10,7 @@
                 <span v-if="step.step < currentStep" class="step-btn step-btn-done">
                     <i class="pi pi-check"></i>
                 </span>
-                <span v-else class="step-btn">
-                    {{ index + 1 }}
-                </span>
-
+                <span v-else class="step-btn">{{ index + 1 }}</span>
                 <span :class="step.step < currentStep ? 'step-label step-label-done' : 'step-label'" v-html="step.label"></span>
             </span>
         </template>
@@ -46,7 +43,8 @@
     </div>
 </template>
 <script setup>
-import { ref, computed, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } from '@/plugin';
+import { ref, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } from '@/plugin';
+
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
@@ -55,13 +53,12 @@ const confirm = useConfirm()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject("$gv")
-
-
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
 const currentStep = ref(1)
 const loading = ref(false)
+
 const steps = ref([
     { step: 1, label: "Welcome", is_selected: true },
     { step: 2, label: "Today<br>Reservation", is_selected: false },
@@ -73,27 +70,21 @@ const steps = ref([
     { step: 8, label: "Thank You!", is_selected: false },
 ])
 
- 
 window.socket.on("RefreshData", (arg) => {
     if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
         refreshReport()
     }    
 })
 
-
-
 function onNext() {
-
     //set selected
     if (currentStep.value < steps.value.length) {
-        if (currentStep.value > 1) {
-            
+        if (currentStep.value > 1){   
             loading.value = true
             postApi("frontdesk.validate_run_night_audit", {
                 property: setting?.property?.name,
                 step: currentStep.value
             }, "", false).then((result) => {
-             
                 if (currentStep.value == 4) {
                     //confrim room rate
                     if (result.message) {
@@ -121,12 +112,9 @@ function onNext() {
                 loading.value = false
             })
         } else {
-
             currentStep.value = currentStep.value + 1
             refreshReport()
         }
-
-
     }
 }
 
@@ -148,9 +136,7 @@ function onFinish() {
                 currentStep.value = 8
                 refreshReport()
                 loading.value = false;
-                
                 window.socket.emit("RefreshData",{property:setting?.property?.name, action:"reload_page",session_id:window.session_id})
-
             }).catch((err)=>{
                 loading.value = false;
             }).finally(() => {
@@ -170,60 +156,43 @@ function onFinish() {
 
 
 function onBack() {
-
     //set selected
     if (currentStep.value > 1) {
-
         loading.value = true
         currentStep.value = currentStep.value - 1
         refreshReport()
     }
-   
 }
 
 function onClose(){
-    
     dialogRef.value.close()
 }
 
 function onIframeLoaded() {
-
     loading.value = false
     const iframe = document.getElementById("iframe_run_night_audit");
-
     if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
         iframe.style.overflowX = 'hidden';
     } else {
         iframe.style.overflowX = 'auto';
     }
-  
     iframe.style.minWidth ="0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-
     iframe.style.height = '0px';
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-
- 
-
 }
 
 const refreshReport = () => {
     loading.value = true
     url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=" +gv.getCustomPrintFormat("eDoor Run Night Audit Step")+"&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
     url.value = url.value + "&step=" + currentStep.value
-
     document.getElementById("iframe_run_night_audit").contentWindow.location.replace(url.value)
 }
-
-
 
 onMounted(() => {
     refreshReport()
 });
-
 onUnmounted(() => {
     window.socket.off("RefreshData");
 })
-
-
 </script>

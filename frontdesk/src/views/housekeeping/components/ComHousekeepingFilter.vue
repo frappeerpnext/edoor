@@ -57,8 +57,6 @@ import { ref,inject } from '@/plugin';
 const showAdvanceSearch = ref()
 const hk = inject("$housekeeping")
 const gv = inject("$gv")
-
-const filter = ref({})
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);
@@ -74,21 +72,19 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
-
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const onClearFilter = () => {
     hk.filter = {};
     hk.loadData();
     showAdvanceSearch.value.hide()
 }
+
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
-
-
-
 </script>
 <style scoped>
 .linelight-edor{

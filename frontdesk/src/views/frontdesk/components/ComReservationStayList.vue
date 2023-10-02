@@ -55,13 +55,13 @@ import { inject, onMounted,useDialog,getDocList,ref,onUnmounted } from '@/plugin
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComPlaceholder from "@/components/layout/components/ComPlaceholder.vue"
+
 const dialogRef = inject("dialogRef")
 const gv = inject("$gv")
 const dialog = useDialog();
 const loading = ref(false)
 const data = ref([])
 const pageState = ref({order_by:"modified", order_type:"desc",page:0,rows:20,totalRecords:0})
-
 
 onMounted(() => { 
     loadData(); 
@@ -92,18 +92,18 @@ function loadData() {
     .catch((error) => {
         loading.value = false
     })
-
 }
-window.socket.on("RefreshReservationStayList", (arg) => {
 
+window.socket.on("RefreshReservationStayList", (arg) => {
     if(arg ==property.name){
         loadData()
     }    
-
 })
+
 function onClose(){
     dialogRef.value.close()
 }
+
 function onViewReservationDetail(name) {
     const dialogRef = dialog.open(ReservationStayDetail, {
         data: {
@@ -128,8 +128,6 @@ function onViewReservationDetail(name) {
         }
     });
 }
-
-
 
 function onViewCustomerDetail(name) {
     const dialogRef = dialog.open(GuestDetail, {
@@ -159,7 +157,9 @@ function onViewCustomerDetail(name) {
 function onAssignRoom(room_name, reservation_stay){
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
+
 onUnmounted(() => {
     window.socket.off("RefreshReservationStayList");
 })
+
 </script>

@@ -5,7 +5,7 @@
                 <div class="text-2xl">City Ledger Account Type</div>
             </template>
             <template #end>
-              <Button class="border-none" label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
+                <Button class="border-none" label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -18,31 +18,39 @@
         </div>
         <div>
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
-            <DataTable showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
-                <Column field="city_ledger_type" header="City Ledger Type"></Column>
-                <Column field="owner" header="Owner"></Column>
-                <Column field="note" class="w-6" header="Note"></Column>
-                <Column header="Action" class="text-center w-10rem">
-                <template #body="slotProps">
-                    <div class="flex gap-2 justify-center">
-                    <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
-                    <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
-                    </div>
-                </template>
-            </Column>
-            </DataTable>
+                <DataTable showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+                    <Column field="city_ledger_type" header="City Ledger Type"></Column>
+                    <Column field="owner" header="Owner"></Column>
+                    <Column field="note" class="w-6" header="Note"></Column>
+                    <Column header="Action" class="text-center w-10rem">
+                        <template #body="slotProps">
+                            <div class="flex gap-2 justify-center">
+                            <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
+                            <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
+                            </div>
+                        </template>
+                    </Column>
+                </DataTable>
             </ComPlaceholder>
         </div>
        
 </template>
 <script setup>
-import { inject, ref, getDocList, onMounted,deleteDoc,useConfirm,useDialog } from '@/plugin'
+import { inject, ref, getDocList, onMounted,deleteDoc,useConfirm,useDialog,onUnmounted } from '@/plugin'
 import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedgerType.vue"
 const gv = inject("$gv")
 const data = ref([])
 const filter = ref({})
 const confirm = useConfirm()
 const dialog = useDialog()
+
+window.socket.on("RefreshCityLedgerType", (arg) => {
+    if (arg == setting.property.name) {
+        setTimeout(function () {
+            loadData()
+        }, 3000)
+    }
+})
 
 function onEdit (selected){ 
  dialog.open(ComAddCityLedgerType, {
@@ -61,11 +69,11 @@ function onEdit (selected){
     },
     data:selected,
     onClose:(options) => {
-            const data = options.data;
-            if(data){
-				loadData()
-			}
+        const data = options.data;
+        if(data){
+            loadData()
         }
+    }
 });  
 }
 
@@ -80,13 +88,13 @@ function onDelete (name){
         acceptLabel: 'Ok',
         accept: () => {
             // loading.value = false
-             deleteDoc('City Ledger Type',name)
-                 .then(() =>{
-                    loadData()
-                    loading.value = false
-                 } ).catch((err)=>{
-                    loading.value = false
-                 })         
+            deleteDoc('City Ledger Type',name)
+            .then(() =>{
+                loadData()
+                loading.value = false
+            }).catch((err)=>{
+                loading.value = false
+            })         
         },
     });
 }
@@ -97,15 +105,16 @@ function loadData() {
         fields: ['name','city_ledger_type', 'note','owner'],
         limit: 10000,
     })
-        .then((doc) => {
-            data.value = doc
-            gv.loading = false
-        })
-        .catch((error) => {
-            gv.loading = false
-         
-        });
+    .then((doc) => {
+        data.value = doc
+        gv.loading = false
+    })
+    .catch((error) => {
+        gv.loading = false
+        
+    });
 }
+
 function onAddCityLedgerAccountType(){
     dialog.open(ComAddCityLedgerType, {
         props: {
@@ -125,8 +134,11 @@ function onAddCityLedgerAccountType(){
         }
     });  
 }
+
 onMounted(() => {
     loadData()
 })
-
+onUnmounted(() => {
+    window.socket.off("RefreshCityLedgerType");
+})
 </script>

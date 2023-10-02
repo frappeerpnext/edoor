@@ -29,11 +29,11 @@
         </div>
       </div>
     </div>
-
   </ComDialogContent>
 </template>
 <script setup>
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
+
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')
 const loading = ref(false);
@@ -56,6 +56,7 @@ function onSave(){
     loading.value = false 
   })
 }
+
 onMounted(() => {
   if(dialogRef.value.data.name){
     getDoc("Frontdesk Note", dialogRef.value.data.name).then((r)=>{

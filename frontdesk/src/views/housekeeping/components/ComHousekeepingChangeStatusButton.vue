@@ -22,6 +22,7 @@ import {ref} from 'vue'
 const props = defineProps({
     data: Object
 })
+
 const emit = defineEmits('onSelected')
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)
@@ -43,10 +44,5 @@ const toggle = (event) => {
 function onSelected(room,status){
     show.value.hide()
     emit('onSelected',room,status)
-    
-
 }
 </script>
-<style lang="">
-    
-</style>

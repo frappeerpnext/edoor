@@ -104,11 +104,15 @@
             </template>
         </Menu>
     </div>
-
-    <ComDialogNote :confirm_message="note.confirm_message" :show_reserved_room="note.show_reserved_room" :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
+   
 </template>
 <script setup>
-import { inject, ref, useConfirm, useToast, postApi } from "@/plugin";
+import { inject, ref, useConfirm, useToast, postApi,useDialog } from "@/plugin";
+import ComDialogNote from "@/components/form/ComDialogNote.vue";
+
+
+const dialog = useDialog();
+
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();
@@ -258,63 +262,109 @@ function OnUndoCheckOut() {
 }
 
 function onCancelReservationStay() {
-     note.value.title = "Cancel Reservation Stay # " + rs.reservationStay.name,
-     note.value.confirm_message = "You are about to cancel this reservation.<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first."
-     note.value.reservation_status = "Cancelled"
-     note.value.show_reserved_room = false
-     note.value.show = true
+    onUpdateReservationStatus(
+        "Cancel Reservation Stay # " + rs.reservationStay.name,
+        {
+            api_url: "reservation.update_reservation_status",
+            method: "POST",
+            confirm_message: "You are about to cancel this reservation.<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first.",
+            data: {
+                reservation: rs.reservationStay.reservation,
+                reserved_room: false,
+                status: "Cancelled",
+                show_reserved_room:false,
+                stays: [{
+                    name: rs.reservationStay.name,
+                    reservation_status: rs.reservationStay.reservation_status
+                }]
+            }
+        }
+    )
+
+
 }
+
+
+function onUpdateReservationStatus(header="Confirm Note",data){
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: data,
+        props: {
+            header: header,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+             const data = options.data;
+             if (data) {
+                rs.getReservationDetail(rs.reservationStay.name)
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
+                console.log("sdf");
+                window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
+                window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+        
+             }
+         }
+
+    });
+
+}
+
+
 function onVoidReservationStay() {
-     note.value.title = "Void Reservation Stay # " + rs.reservationStay.name,
-     note.value.show_reserved_room = false
-     note.value.reservation_status = "Void"
-     note.value.show = true
+    onUpdateReservationStatus(
+        "Void Reservation Stay # " + rs.reservationStay.name,
+        {
+            api_url: "reservation.update_reservation_status",
+            method: "POST",
+            confirm_message: "You are about to void this reservation.<br/> Once the void is complete, you will no longer be able to make any changes to the reservation.",
+            data: {
+                reservation: rs.reservationStay.reservation,
+                reserved_room: false,
+                show_reserved_room:false,
+                status: "Void",
+                stays: [{
+                    name: rs.reservationStay.name,
+                    reservation_status: rs.reservationStay.reservation_status
+                }]
+            }
+        }
+    )
+
+ 
 }
 
 function onNoShowReservationStay() {
-     note.value.title = "No Show Reservation Stay # " + rs.reservationStay.name,
-     note.value.confirm_message = "You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>"
-    note.value.show_reserved_room = true
-     note.value.reservation_status = "No Show"
-     note.value.show = true
-}
+    onUpdateReservationStatus(
+        "No Show Reservation Stay # " + rs.reservationStay.name,
+        {
+            api_url: "reservation.update_reservation_status",
+            method: "POST",
+            confirm_message:"You are about to mark this reservation as No Show.<br/> If you have a No Show charge, please update the folio transaction first. <br/> If you want to sell this room, please untick on check box <strong>Reserved room for this reservation</strong>",
+            data: {
+                reservation: rs.reservationStay.reservation,
+                reserved_room: true,
+                show_reserved_room:true,
+                status: "No Show",
+                stays: [{
+                    name: rs.reservationStay.name,
+                    reservation_status: rs.reservationStay.reservation_status
+                }]
+            }
+        }
+    )
 
-
-function onSaveNote(data){
  
-    loading.value = true
-
-    data = {
-        reservation: rs.reservation.name,
-        stays: [{name:rs.reservationStay.name, reservation_status:rs.reservationStay.reservation_status}],
-        status:note.value.reservation_status,
-        note:data.note,
-        reserved_room:data.reserved_room
-    } 
-   
-    postApi('reservation.update_reservation_status',data).then((r)=>{   
-        loading.value = false
-        note.value.show = false
-        rs.getReservationDetail(rs.reservationStay.name)
-        window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
-        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})
-        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-
-        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-        
-    }).catch(()=>{
-        loading.value = false
-    })
-
-    loading.value = false
-    
 }
 
-function onCloseNote(){
-    note.value.show = false;
-}
-
+ 
+ 
 function onReservedRoom() {
  
     confirm.require({
@@ -331,12 +381,14 @@ function onReservedRoom() {
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 loading.value = false
-                rs.getReservationDetail(rs.reservationStay.name)
+                rs.getReservationDetail(rs.reservationStay.name);
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
+                console.log(rs.reservationStay.property);
                 window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
                 window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
-                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
+                window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name});
+                
 
             })  
         },
@@ -364,10 +416,10 @@ function onUnReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
                 window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
                 window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"});
                 window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-
+            
             })  
         },
 
@@ -529,6 +581,7 @@ function onMarkasGITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
                         window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
                 })
         },
@@ -556,6 +609,7 @@ function onMarkasFITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
+                        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
                         window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
                 })
         },

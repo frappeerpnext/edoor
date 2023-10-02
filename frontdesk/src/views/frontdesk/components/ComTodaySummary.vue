@@ -31,9 +31,7 @@
 import { ref, getApi, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const props = defineProps({
-    date: ""
-})
+const props = defineProps({date:""})
 const gv = inject("$gv")
 const moment = inject("$moment")
 const data = ref([]) 
@@ -41,19 +39,16 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const chartData = ref([])
 const loading = ref(false)
 
-
 window.socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_summary") {
         loadData(props.date,false)
     }
 })
-
 onMounted(() => {
     loadData(props.date)
 })
 
-onUnmounted(() => {
-    
+onUnmounted(() => {  
     window.socket.off("RefreshData");
 })
 
@@ -68,7 +63,6 @@ function loadData(date,show_loading = true){
         }
         
     }
- 
     getApi('frontdesk.get_dashboard_data', {
         property: property.name,
         date: currentDate

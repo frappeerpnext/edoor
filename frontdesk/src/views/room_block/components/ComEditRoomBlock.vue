@@ -68,6 +68,7 @@ function onSave (){
     }
     createUpdateDoc('Room Block', {data: savedData}).then((r)=>{
         dialogRef.value.close(r)
+        window.socket.emit("RefreshData", {property:data.value.property,action:"refresh_room_block"})
         loading.value = false
     }).catch((err)=>{
         loading.value = false

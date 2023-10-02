@@ -199,7 +199,6 @@
         </OverlayPanel>
        
     </ComDialogContent>
-    <!-- {{ data }} -->
 </template>
 <script setup>
 import ComReservationStayChangeRate from "./ComReservationStayChangeRate.vue"
@@ -480,7 +479,6 @@ const getRooms = () => {
 }
 
 const onSelectRoomType = (stay) => {
-     
     stay.room_id = null
     OnSelectRoom()
     updateRate()
@@ -490,11 +488,8 @@ const onSelectRoomType = (stay) => {
 const updateRate = () => {
     data.value.reservation_stays.filter(r => (r.is_manual_rate || false) == false).forEach(s => {
         const room_type = room_types.value.find(r => r.name == s.room_type_id)
-
         if (room_type) {
-
-            s.rate = room_type.rate
-
+            s.rate = room_type.rate.rate
         }
 
     });

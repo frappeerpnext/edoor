@@ -709,16 +709,13 @@ def check_out(reservation,reservation_stays=None):
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     for s in reservation_stays:
         stay = frappe.get_doc("Reservation Stay", s)
-        #balance validation
-        if round(stay.balance, int(currency_precision))> (Decimal('0.1') ** int(currency_precision)):
-            frappe.throw(_("You cannot check this reservation because balance is not zero"))
-
         if stay.reservation_status=="Checked Out":
             frappe.throw("Stay # {}. Room {}. This room is already check out.".format(stay.name, stay.rooms))
 
         if not (stay.departure_date <= working_day["date_working_day"] or stay.departure_date ==add_to_date (working_day["date_working_day"] ,days=-1)):
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
-        if stay.balance> 0:
+        
+        if round(stay.balance, int(currency_precision))> (Decimal('0.1') ** int(currency_precision)):
             frappe.throw("Reservation Stay {}, room {} cannot check out because the balance is greater than zero".format(stay.name,stay.rooms))
 
         stay.checked_out_by = frappe.session.user
@@ -1240,10 +1237,11 @@ def delete_stay_room(parent,name, note):
             deleted_row = p
     
     stay.remove(deleted_row)
-    if len([d for d in stay.stays if d.room_id])>0:
-        stay.reservation_status ="Reserved"
-    else:
-        stay.reservation_status ="Confirmed"
+    if stay.reservation_status in ["Reserved","Confirmed"]:
+        if len([d for d in stay.stays if d.room_id])>0:
+            stay.reservation_status ="Reserved"
+        else:
+            stay.reservation_status ="Confirmed"
 
 
     stay.save()
@@ -1344,12 +1342,15 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
 
         #close all folio
         if status in ["Cancelled","No Show","Voided"]:
-            frappe.db.sql("update `tabReservation Folio` set status = 'Closed' where reservation_stay='{}' and status='Open'".format(stay.name))
+            color = frappe.db.get_value("Reservation Status",status,"color")
+
+            frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}' and status='Open'".format(stay.name,color))
 
 
     #check if reservation dont have master stay room then update date the first active reservation to master room
 
-    update_reservation(reservation, run_commit=False)
+    frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc_reservation.name, doc=None, run_commit=True)
+
     frappe.db.commit()
 
     frappe.msgprint("{} reservation successfully".format(status))

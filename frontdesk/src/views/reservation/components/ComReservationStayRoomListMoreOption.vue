@@ -21,12 +21,13 @@
             </Menu>
         </div>
     </div>
-    <ComDialogNote header="Delete Room Stay" :visible="openNote" :loading="loading" @onOk="onDeleted" @onClose="onCloseNote"/>
+    
 </template>
 <script setup>
-import {ref,inject, useDialog, deleteApi, useConfirm, postApi} from '@/plugin'
+import {ref,inject, useDialog, useConfirm, postApi} from '@/plugin'
 import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
-import ComNote from '@/components/form/ComNote.vue';
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
+
 const rs = inject('$reservation_stay')
 const gv = inject('$gv')
 const moment = inject('$moment')
@@ -41,7 +42,7 @@ const props = defineProps({
 const dialog = useDialog()
 const emit = defineEmits('onSelected')
 const show = ref()
-const openNote = ref(false)
+
 const loading = ref(false)
 const toggle = (event) => {
     show.value.toggle(event);
@@ -69,7 +70,45 @@ function isNotLastForDelete(){
 function onOpenDeleted(data){
     if(moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  ){
         if(isNotLastForDelete()){
-            openNote.value = true
+            
+            const dialogRef = dialog.open(ComDialogNote, {
+                data: {
+                    api_url: "reservation.delete_stay_room",
+                    method: "DELETE",
+                    confirm_message: "Are you sure you want to delete this stay room?",
+                    data: {
+                        parent: props.data.parent,
+                        name: props.data.name, 
+                    }
+                },
+                props: {
+                    header: "Delete Stay Room",
+                    style: {
+                        width: '50vw',
+                    },
+                    modal: true,
+                    maximizable: true,
+                    closeOnEscape: false,
+                    position: "top"
+                },
+                onClose: (options) => {
+                    const data = options.data;
+                    if (data) {
+                        rs.getReservationDetail(props.data.parent)
+                        window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
+
+                        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+                        
+                        window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
+
+                        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
+                        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
+
+                    }
+                }
+
+    });
+
         }
     }else{
         gv.toast('warn',"This room stay is disallow to delete.")
@@ -81,36 +120,8 @@ function onSelected(room,status){
     show.value.hide()
     emit('onSelected',room,status)
 }
-function onCloseNote(){
-    openNote.value = false
-}
-function onDeleted(note){
-    loading.value = true
-    deleteApi('reservation.delete_stay_room', {
-        parent: props.data.parent,
-        name: props.data.name, 
-        note: note
-    })
-    .then((result) => {
-        if(result.message){
-            openNote.value = false
-            rs.getReservationDetail(props.data.parent)
-            loading.value = false
+ 
 
-            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-
-            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-            
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
-            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-            window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-
-        }
-    }).catch((r)=>{
-        loading.value = false
-    })
-}
 function onChangeStay(data){
     if((moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_da)) || rs.reservationStay.reservation_status !='Checked Out'){
         if(isNotLast()){

@@ -3,9 +3,9 @@
         <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" /> -->
         <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="menu" />
+            
         <Menu ref="menu" id="menu" :popup="true">
             <template #end>
-                
                 <button @click="onGroupAssignRoom" 
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
@@ -118,16 +118,18 @@
                 
             </template>
         </Menu>
-        <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/>
+       
     </div>
 </template>
 <script setup>
 import {useDialog, inject, ref, useConfirm, useToast, postApi } from "@/plugin";
-import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
-import ComGroupAssignRoom from "./form/ComGroupAssignRoom.vue";
-import ComGroupChangeRate from "./form/ComGroupChangeRate.vue";
-import ComGroupChangeStayDate from "./form/ComGroupChangeStayDate.vue";
-import ComFormSetupArrivalAndDeparture from './ComFormSetupArrivalAndDeparture.vue';
+import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComGroupAssignRoom from "@/views/reservation/components/form/ComGroupAssignRoom.vue";
+import ComGroupChangeRate from "@/views/reservation/components/form/ComGroupChangeRate.vue";
+import ComGroupChangeStayDate from "@/views/reservation/components/form/ComGroupChangeStayDate.vue";
+import ComFormSetupArrivalAndDeparture from '@/views/reservation/components/ComFormSetupArrivalAndDeparture.vue';
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
+
  
 const dialog = useDialog();
 
@@ -175,12 +177,72 @@ function onMarkAsReservationType() {
     });
 }
 function onChangeStatus(reservation_status){
+    
     if(validateSelectReservation()){
-        note.value.title = `${reservation_status}`
-        note.value.show = true
-        note.value.reservation_status = reservation_status
+        let confirm_message = ""
+        if (reservation_status=="Cancelled"){
+            confirm_message = "You are about to cancel reservation(s).<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first."
+        }else if(reservation_status=="Void"){
+            confirm_message = "You are about to void  reservation(s). Once the void is complete, you will no longer be able to make any changes to the reservation."
+        }else {
+            confirm_message = `You are about to mark   reservation(s) as No Show.
+                    If you have a No Show charge, please update the folio transaction first.
+                    If you want to sell this room, please untick on check box Reserved Room`
+        }
+
+            onUpdateReservationStatus(
+                "Confirm " + reservation_status + " Note",
+                {
+                    api_url: "reservation.update_reservation_status",
+                    method: "POST",
+                    confirm_message: confirm_message,
+                    data: {
+                        reservation: rs.reservation.name,
+                        reserved_room: false,
+                        status: reservation_status,
+                        show_reserved_room:reservation_status=="No Show"?true:false,
+                        stays: rs.selecteds
+                    },
+
+                }
+        )
+
     }
 }
+
+
+function onUpdateReservationStatus(header="Confirm Note",data){
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: data,
+        props: {
+            header: header,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+             const data = options.data;
+           
+
+             if (data) {
+              setTimeout(function(){
+                rs.LoadReservation(rs.reservation.name)
+                window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
+              },1500)
+                
+        
+             }
+         }
+
+    });
+
+}
+
+
 function validateSelectReservation(){
     if(rs.selecteds && rs.selecteds.length > 0){
         return true
@@ -190,25 +252,8 @@ function validateSelectReservation(){
         return false
     }
 }
-function onSaveGroupStatus(r){ 
-    const data = {
-        reservation: rs.reservation.name,
-        stays:rs.selecteds,
-        status:note.value.reservation_status,
-        note:r.note,
-        reserved_room: r.reserved_room
-    } 
-    postApi('reservation.update_reservation_status',data).then((r)=>{
-        onCloseNote()
-        rs.LoadReservation(rs.reservation.name)
-        window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
-    })
-}
-function onCloseNote(){
-    note.value.title = ''
-    note.value.show = false
-    note.value.reservation_status = ''
-}
+
+
 
 function onGroupCheckIn (){
     alert('hello-world')

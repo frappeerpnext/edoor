@@ -143,7 +143,7 @@ function onEditRoomRate(room_rate = null) {
     }
 
     })
-  }else if(rs.selectedRoomRates.length>0){
+  }else if(rs.selectedRoomRates.length > 0 ){
 
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
       data: {

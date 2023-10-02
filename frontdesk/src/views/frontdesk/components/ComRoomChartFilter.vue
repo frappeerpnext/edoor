@@ -18,7 +18,6 @@
                 </Menu>
             </div>
         </template>
- 
         <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tooltip.left="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
         <Button @click="onToday('today')" v-tooltip.left="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
         <Button @click="onPrevNext('next')" v-tooltip.left="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
@@ -26,26 +25,24 @@
 </template> 
 <script setup>
 import { ref, useRoute } from '@/plugin'
+import iconChangeRoom from '@/assets/svg/change-room-icon.svg'
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
 import iconChangeRoomOrderlist from '@/assets/svg/icon-bed.svg'
-import iconChangeRoom from '@/assets/svg/change-room-icon.svg'
 
 const route = useRoute()
-const iconChangeRoomStatus = ref({
-    img: iconChangeRoom
-})
+const iconChangeRoomStatus = ref({img: iconChangeRoom})
 const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))
-
 const active = ref(reservation_chart.value?.period || "15_days")
-
 const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday','onChangePeriod'])
+const menu = ref();
+
 const props = defineProps({
     viewType: {
         type: String,
         default: '<room_type>'
     }
 })
-const menu = ref();
+
 const items = ref([
     {
         label: 'Week',
@@ -72,28 +69,31 @@ const items = ref([
         }
     }
 ]);
+
 function onToday() {
     emit('onToday')
 }
+
 function onSearch(key) {
     active.value = key
     emit('onFilter', key)
 }
+
 function onChangePeriod(key) {
     active.value = key
     emit('onChangePeriod', key)
 }
+
 function onPrevNext(key) {
     emit('onPrevNext', key)
 }
+
 const toggle = (event) => {
     menu.value.toggle(event);
 };
+
 function onView() {
     emit('onView')
 }
  
 </script>
-<style lang="">
-    
-</style>

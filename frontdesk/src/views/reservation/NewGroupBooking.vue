@@ -721,6 +721,7 @@ const onSave = (assign_room = false) => {
 
         isSaving.value = false
         window.socket.emit("RefresheDoorDashboard", property.name);
+        window.socket.emit("RefreshData", { property:property.name, action: "refresh_res_list" })
         dialogRef.value.close({ reservation: result.message, assign_room: assign_room });
     })
         .catch((error) => {

@@ -12,11 +12,10 @@ const props = defineProps({
     title: String,
     class: String
 })
+
 const emit = defineEmits(["onClick"])
+
 function onClick (){
     emit("onClick")
 }
 </script>
-<style lang="">
-    
-</style>

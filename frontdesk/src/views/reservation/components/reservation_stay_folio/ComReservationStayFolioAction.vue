@@ -57,8 +57,6 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
                         <span class="ml-2">Delete Folio</span>
                     </button>
 
-               
-
                 </template>
             </Menu>
         </div>
@@ -66,8 +64,10 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
             <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
         </div>
     </div>
+
     <ComDialogNote :header="`Delete Folio - ${rs.selectedFolio.name}`" :visible="openNote" :loading="loading"
         @onOk="deleteFilio"  @onClose="onCloseNote" />
+        
 </template>
 <script setup>
 
@@ -76,8 +76,8 @@ import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
 import { inject, ref, computed, useToast, deleteApi,updateDoc } from '@/plugin';
 import ComNote from '@/components/form/ComNote.vue';
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
-
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
@@ -299,7 +299,7 @@ function MarkasMasterFolio() {
     })
     }
     else{
-        toast.add({ severity: 'warn', summary: "", detail: "Folio closed not allow to Mark as Master Folio.", life: 3000 })
+        gv.toast('warn', 'Folio closed not allow to Mark as Master Folio.')
     }
     
 }
@@ -329,6 +329,7 @@ function openFolio() {
 function onCloseNote() {
     openNote.value = false
 }
+
 function closeFolio() {
     confirm.require({
         target: event.currentTarget,
@@ -378,5 +379,8 @@ function deleteFilio(note) {
             openNote.value = false 
         })
 
+}
+function deleteFiliox(){
+    gv.toast('success', 'xx')
 }
 </script>

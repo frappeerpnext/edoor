@@ -1,3 +1,4 @@
+
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Dashboard from "../views/dashboard/Dashboard.vue";
@@ -25,11 +26,14 @@ import CityLedgerType from "@/views/city_ledger/CityLedgerType.vue";
 import Reports from "@/views/report/Reports.vue";
 import BusinessSource from "@/views/business_source/BusinessSource.vue";
 import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
+import NotFound from "@/components/NotFound.vue";
 import authRoutes from './auth';
 
-const routes = [
-  { path: "/", redirect: '/frontdesk/dashboard' }, 
-  { path: "/frontdesk", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
+ 
+
+
+let routes = [
+  { path: "/frontdesk", redirect: '/frontdesk/dashboard' }, 
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
@@ -56,15 +60,40 @@ const routes = [
   { path: "/frontdesk/guest-ledger-transaction", name: "GuestLedgerTransaction", component:GuestLedgerTransaction, meta: { layout: 'main_layout', title:"Guest Ledger Transaction" } },
   { path: "/frontdesk/business-source", name: "BusinessSource", component:BusinessSource, meta: { layout: 'main_layout', title:"Business Source" } },
   { path: "/frontdesk/business-source-type", name: "BusinessSourceType", component:BusinessSourceType, meta: { layout: 'main_layout', title:"Business Source Type" } },
- 
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
+ 
   ...authRoutes,
-];
 
-const router = createRouter({
-  base: "/edoor/frontdesk/",
-  history: createWebHistory(),
-  routes,
-});
+]  
+export  const  getRoutes = function  (whitelist_route,edoor_menu) {
+  let default_menu = edoor_menu.filter(r=>r.parent_edoor_menu=="All Menus")[0]
+  if(default_menu){
+    const default_route =JSON.parse(JSON.stringify( routes.filter(r=>r.name ==default_menu.menu_name)))
+      routes.push({
+        path:"/",
+        redirect: default_route[0].path 
+      })
+     
+   
+  }
+  
 
-export default router;
+  routes = routes.filter(r=>whitelist_route?.includes(r.name) || r.path=="/")
+  
+   const   router = createRouter({
+		base: "/edoor/frontdesk/",
+		history: createWebHistory(),
+		routes
+	  });
+    return router
+}
+
+export const allRoutes = function (){
+  return routes
+}
+
+export default {
+  getRoutes,
+  allRoutes
+}

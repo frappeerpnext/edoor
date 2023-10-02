@@ -31,7 +31,7 @@
                         </div>
                         </template>
                     </Column>
-                    <Column class="text-right res__room-list-right" header="ADR">
+                    <Column v-if="can_view_rate" class="text-right res__room-list-right" header="ADR">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.adr" /> 
@@ -88,6 +88,9 @@ const selecteds = ref([])
 const gv = inject('$gv');
 const rs = inject("$reservation_stay")
 const dialog = useDialog() 
+
+const can_view_rate = ref(window.can_view_rate)
+
 const rooms = computed(()=>{
     return Enumerable.from(rs.reservationStay?.stays).orderBy("$.creation").toArray()
 })

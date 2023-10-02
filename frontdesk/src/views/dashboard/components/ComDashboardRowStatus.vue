@@ -7,8 +7,7 @@
             <slot name="content"></slot>
         </div>
         <div class="flex-none">
-            <div :class="badgeClass" class="px-2 py-1 border-round-lg text-white btn-green-edoor"
-                :style="{ backgroundColor: badgeColor }">{{ value }}</div>
+            <div :class="badgeClass" class="px-2 py-1 border-round-lg text-white btn-green-edoor" :style="{ backgroundColor: badgeColor }">{{ value }}</div>
         </div>
     </div>
 </template>

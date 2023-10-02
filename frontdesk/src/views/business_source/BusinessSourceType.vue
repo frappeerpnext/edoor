@@ -5,8 +5,7 @@
                 <div class="text-2xl">Business Source Type</div>
             </template>
             <template #end>
-                <Button class="border-none" label="Add New Business Source Type" icon="pi pi-plus"
-                    @click="onAddNewBusinessSourceType" />
+                <Button class="border-none" label="Add New Business Source Type" icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -62,7 +61,8 @@ function onDelete(name) {
                 .then(() => {
                     loadData()
                     loading.value = false
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     loading.value = false
                 })
         },
@@ -92,21 +92,23 @@ function onEdit(edit) {
         }
     });
 }
+
 function loadData() {
     gv.loading = true
     getDocList('Business Source Type', {
         fields: ['business_source_type', 'note', 'owner', 'name'],
         limit: 10000,
     })
-        .then((doc) => {
-            data.value = doc
-            gv.loading = false
-        })
-        .catch((error) => {
-            gv.loading = false
+    .then((doc) => {
+        data.value = doc
+        gv.loading = false
+    })
+    .catch((error) => {
+        gv.loading = false
 
-        });
+    });
 }
+
 function onAddNewBusinessSourceType() {
     dialog.open(ComAddBusinessSourceType, {
         props: {

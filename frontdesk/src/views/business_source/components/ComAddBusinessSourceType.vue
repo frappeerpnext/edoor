@@ -2,15 +2,11 @@
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
     <div class="grid">
       <div class="col-12">
-      <label>
-      Business Source Type
-      </label>
-      <InputText class="w-full" type="text" v-model="businesssourceType.business_source_type" />
+        <label>Business Source Type</label>
+        <InputText class="w-full" type="text" v-model="businesssourceType.business_source_type" />
       </div>
       <div class="col-12">
-        <label>
-        Note
-        </label>
+        <label>Note</label>
         <Textarea class="w-full" v-model="businesssourceType.note" rows="5" cols="50" />
       </div>
     </div>
@@ -40,9 +36,11 @@ function onSave(){
     loading.value = false
   })
 }
+
 function onClose(){
   dialogRef.value.close()
 }
+
 onMounted(() => {
   if(dialogRef.value.data){
     businesssourceType.value = JSON.parse(JSON.stringify(dialogRef.value.data)) 

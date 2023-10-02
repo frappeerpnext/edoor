@@ -9,8 +9,9 @@
                 <template #default>
                     
                 <div class="wrap-file-list">
-                    <DataTable :value="data">
-                        <Column field="file_url" header="File">
+                    <DataTable 
+                        :value="data">
+                        <Column field="file_url" header="File" headerStyle="width: 25px">
                             <template #body="slotProps"> 
                                 <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" />
                             </template>
@@ -21,7 +22,13 @@
                                 <Button v-if="doctype != slotProps.data.attached_to_doctype" @click="onDetail(slotProps.data)" :label="slotProps.data.attached_to_name" link size="small"/>
                             </template>
                         </Column>
-                        <Column field="description" header="Description"></Column>
+                        <Column field="description" header="Description" headerStyle="max-width: 80%">
+                            <template #body="slotProps">
+                                <div class="break-words whitespace-break-spaces">
+                                    {{ slotProps.data.description }}
+                                </div>
+                            </template>
+                        </Column>
                         <Column field="" header="">
                             <template #body="slotProps">
                                 <ComDocumentButtonAction :data="slotProps.data" @onDownload="onDownload" @onEdit="onEdit" @onDelete="onRemove"/>
@@ -31,6 +38,14 @@
                             </template>
                         </Column>
                     </DataTable>
+                    <div>
+                        <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
+                            :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                            <template #start="slotProps">
+                                <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                            </template>
+                        </Paginator>
+                    </div>
                 </div>
                 </template>
             </ComPlaceholder>
@@ -56,10 +71,10 @@
     </div>
 </template>
 <script setup>
-import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted} from '@/plugin'
+import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,postApi} from '@/plugin'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
-const emit = defineEmits(['Documents_length'])
+import Paginator from 'primevue/paginator';
 const props = defineProps({
     doctype:{
         type: String,
@@ -68,6 +83,9 @@ const props = defineProps({
     docname: {
         type: String,
         required: true
+    },
+    attacheds:{
+        type: [String,Array]
     },
     extraFilters: {
         type: Array,
@@ -92,6 +110,7 @@ const opEdit = ref()
 const selected =ref({})
 const dialogConfirm = useConfirm();
 const dialog = useDialog();
+const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const dialogRef = inject("dialogRef");
 function onModal(open){
     visible.value = open
@@ -106,6 +125,23 @@ window.socket.on("RefreshData", (arg) => {
         onLoad()
     }
 })
+function pageChange(page) {
+    pageState.value.page = page.page
+    pageState.value.rows = page.rows
+    onLoad()
+}
+function getTotalDocument(){
+    const attacheds = ref()
+    if(props.attacheds){
+        attacheds.value = props.attacheds.join("','")
+    }
+    else{
+        attacheds.value = props.docname
+    }
+    postApi("reservation.get_document_count",{attacheds: `'${attacheds.value}'`},'',false).then((r)=>{
+        pageState.value.totalRecords = r.message
+    })
+}
 function onLoad(){
     loading.value = true
     let dataFilter = []
@@ -115,9 +151,12 @@ function onLoad(){
         })
     }
     dataFilter.push(['attached_to_name','=',props.docname])
+    getTotalDocument()
     getDocList('File', {
         fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation"],
         orFilters: dataFilter,
+        limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
+        limit: pageState.value?.rows || 20,
         orderBy: {
             field: 'creation',
             order: 'desc',
@@ -214,9 +253,9 @@ const downloadURI = (uri, name) => {
 onMounted(() => {
    onLoad() 
 })
-// onUnmounted(() => {
-//     window.socket.off("RefreshData");
-// })
+onUnmounted(() => {
+    window.socket.off("RefreshData");
+})
 </script>
 <style lang="">
     

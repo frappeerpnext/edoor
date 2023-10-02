@@ -24,19 +24,16 @@
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
                         <div>
-                            <ComSelect :options="['Open', 'Closed']" placeholder="All Status" v-model="filter.status" :clear="false"
-                                @onSelected="onSearch" />
+                            <ComSelect :options="['Open', 'Closed']" placeholder="All Status" v-model="filter.status" :clear="false" @onSelected="onSearch" />
                         </div>
                         <div class="w-20rem">
-                            <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
-                                doctype="Reservation Status" @onSelected="onSearch" />
+                            <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status" doctype="Reservation Status" @onSelected="onSearch" />
                         </div>
                         <div>
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="isFilter" >
-                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter" icon="pi pi-filter-slash"
-                                        @click="onClearFilter" />
+                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
                         </div>
@@ -57,8 +54,7 @@
             <div>
                 <div class="flex w-full gap-3 mb-3 mt-3">
                     <div :class="(index === summary.length - 1) ? 'bg-green-50 border-green-edoor' : 'bg-white'"
-                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border" v-for="(s, index) in summary"
-                        :key="index">
+                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border" v-for="(s, index) in summary" :key="index">
                         <span class="text-500 uppercase text-sm text-end">{{ s.label }}</span>
                         <span class="text-xl line-height-2 font-semibold text-end">
                             <span>{{ s.value }}</span>
@@ -69,6 +65,7 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
+              
                 <DataTable 
                 class="tb-cs-datatable"
                 @page="onPage"
@@ -187,17 +184,17 @@
                             <span>Show Master Folio Only</span>
                         </label>
                     </div>
-
                 </div>
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
 </template>
-
 <script setup>
 import { ref, onMounted, onUnmounted, inject, computed, useDialog } from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComOrderBy from '@/components/ComOrderBy.vue';
+
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -212,7 +209,6 @@ const filter = ref({ status: 'All Status', start_date: moment().startOf('month')
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({order_by: "modified", order_type: "desc"})
 const loading = ref(false) 
-import ComOrderBy from '@/components/ComOrderBy.vue';
 const selectedColumns = ref([])
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
@@ -220,7 +216,6 @@ const sortOptions = ref([
     { "fieldname": "name", label: "ID" }
 ])
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
-
 const opShowColumn = ref();
 
 const getColumns = computed(() => {
@@ -246,7 +241,6 @@ function onOpenLink(column, data) {
 function pageChange(page) {
   pageState.value.page = page.page
   pageState.value.rows = page.rows
-
   loadData()
 }
 
@@ -278,7 +272,6 @@ function onResetTable() {
 
 function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
-
         data: {
             "doctype": "Customer",
             name: property.name,
@@ -295,7 +288,6 @@ function onPrint() {
             maximizable: true,
             closeOnEscape: false
         }
-
     });
 }
 
@@ -316,7 +308,6 @@ function onOrderTypeClick() {
     loadData()
 }
 function onSelectOrderBy() {
-
     loadData()
 }
 
@@ -325,7 +316,6 @@ function onDateSelect(d) {
 }
 
 const onSearch = debouncer(() => {
-
     loadData();
 }, 500);
 
@@ -349,51 +339,42 @@ function loadData() {
         columns.value.forEach(r => {
             r.selected = selectedColumns.value.includes(r.fieldname)
         });
-
         data.value = result.message.result.slice(0, -1)
         summary.value = result.message.report_summary
         sortOptions.value = [...sortOptions.value, ...columns.value]
         gv.loading = false
-
     }).catch((err) => {
         gv.loading = false
-
         if (err._server_messages) {
-
             const _server_messages = JSON.parse(err._server_messages)
-
             _server_messages.forEach(r => {
                 window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ", ""), '*')
             });
         } else {
             window.postMessage('show_alert|' + err.exception, '*')
         }
-
-
     })
 }
  
 onMounted(() => {
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
-
     if (state) {
         if (state.selectedColumns) {
-
             selectedColumns.value = state.selectedColumns
         }
     }
-
     loadData()
 })
+
 onUnmounted(() => {
     window.socket.off("RefresheDoorDashboard");
 })
 
 const showAdvanceSearch = ref()
-
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const onClearFilter = () => {
     filter.value = JSON.parse(JSON.stringify(defaultFilter))
     filter.value.start_date = gv.dateApiFormat(filter.value.start_date)
@@ -401,15 +382,16 @@ const onClearFilter = () => {
     loadData()
     showAdvanceSearch.value.hide()
 }
+
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 function onOrderBy(data) {
     order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
 
 const onCloseColumn = () => {

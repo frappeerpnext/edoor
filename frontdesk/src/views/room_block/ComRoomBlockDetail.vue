@@ -97,6 +97,7 @@ function onSave (){
         unblock_note: data.value.unblock_note
     }
     updateDoc('Room Block', data.value.name, savedData).then((r)=>{
+        window.socket.emit("RefreshData", {property:data.value.property,action:"refresh_room_block"})
         dialogRef.value.close(r)
         loading.value = false
     })

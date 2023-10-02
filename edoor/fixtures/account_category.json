@@ -45,15 +45,6 @@
   "sort_order": 900
  },
  {
-  "account_category": "Food and Beverage Revenue",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-09-04 14:14:53.399569",
-  "name": "Food and Beverage Revenue",
-  "note": null,
-  "sort_order": 0
- },
- {
   "account_category": "Food and Beverage Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -108,13 +99,13 @@
   "sort_order": 500
  },
  {
-  "account_category": "City Ledger",
+  "account_category": "Food and Beverage Revenue",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 17:40:32.917540",
-  "name": "City Ledger",
+  "modified": "2023-09-04 14:14:53.399569",
+  "name": "Food and Beverage Revenue",
   "note": null,
-  "sort_order": 600
+  "sort_order": 0
  },
  {
   "account_category": "Deposit",
@@ -126,22 +117,13 @@
   "sort_order": 700
  },
  {
-  "account_category": "Room Tax",
+  "account_category": "City Ledger",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 15:54:51.419235",
-  "name": "Room Tax",
+  "modified": "2023-08-27 17:40:32.917540",
+  "name": "City Ledger",
   "note": null,
-  "sort_order": 102
- },
- {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:37:06.187744",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 100
+  "sort_order": 600
  },
  {
   "account_category": "Payment",
@@ -160,5 +142,23 @@
   "name": "Other Charge",
   "note": null,
   "sort_order": 300
+ },
+ {
+  "account_category": "Room Tax",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:54:51.419235",
+  "name": "Room Tax",
+  "note": null,
+  "sort_order": 102
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:37:06.187744",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 100
  }
 ]

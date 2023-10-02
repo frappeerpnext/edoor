@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <div class="h-full">
         <ComPanel title="System Date" class="sys-date bg text-white h-full">
             <div class="text-center content_date">
@@ -11,7 +11,9 @@
 </template>
 <script setup>
 import { inject } from 'vue'
+
 const moment = inject("$moment")
+
 const props = defineProps({
     data: Object
 })

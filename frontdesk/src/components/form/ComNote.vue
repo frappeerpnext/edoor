@@ -27,7 +27,7 @@ const props = defineProps({
 const note = ref(props.value)
 
 function onOk(){
-    loading.value = false
+    loading.value = true
     if(note.value){
         if(props.autoClose){
             dialogRef.value.close(note.value);

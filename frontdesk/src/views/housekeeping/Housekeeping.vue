@@ -47,9 +47,8 @@
         </div>
     </div>
 </template>
-
 <script setup>
-import { ref, inject, useToast, onMounted } from "@/plugin"
+import { ref, inject, useToast, onMounted , onUnmounted } from "@/plugin"
 import ComHousekeepingFilter from "./components/ComHousekeepingFilter.vue";
 import ComHousekeepingActionButton from "./components/ComHousekeepingActionButton.vue";
 import ComHousekeepingStatistic from "./components/ComHousekeepingStatistic.vue";
@@ -58,7 +57,6 @@ import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue"; 
 const hk = inject("$housekeeping")
 const frappe = inject("$frappe")
-
 const showSummary = ref(true)
 const db = frappe.db()
 const call = frappe.call()
@@ -71,12 +69,12 @@ function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_hhowhousekeeping_summary", showSummary.value ? "1" : "0")
 }
+
 function onRefresh() {
     hk.loadData()
 }
-onMounted(() => {
 
+onMounted(() => {
     hk.loadData()
-}
-)
+})
 </script>

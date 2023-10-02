@@ -76,6 +76,7 @@
                                         <img :src="runNightAuditSvgIcon" style="height: 15px;" />
                                         <span class="ml-2">Run Night Audit</span>
                                     </button>
+
                                 </template>
                             </Menu>
                         </div>
@@ -142,6 +143,9 @@ const eDoorMenu = computed(()=>{
     }
 })
 const currentRouteName = computed(() => route.name.replace(/"/g, ''));
+const canRunNightAudit = computed(() => {
+    // return window.user.roles.where(r=>r.)
+});
 
 const subMenus = computed(() => {
     const current_menu_id = setting.edoor_menu.find(r => r.menu_name == currentRouteName.value)

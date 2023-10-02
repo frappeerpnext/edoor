@@ -41,9 +41,11 @@
   "check_in_role",
   "undo_check_in_role",
   "column_break_14",
-  "check_out_role",
   "undo_check_out_role",
-  "column_break_nwvn"
+  "check_out_role",
+  "column_break_nwvn",
+  "can_see_rate_and_amount_role",
+  "run_night_audit_role"
  ],
  "fields": [
   {
@@ -66,6 +68,7 @@
    "label": "Allow user to add back date transaction"
   },
   {
+   "default": "Frontdesk Clerk",
    "fieldname": "role_for_back_date_transaction",
    "fieldtype": "Link",
    "label": "Role for back date transaction",
@@ -100,6 +103,7 @@
    "label": "Permission and Role"
   },
   {
+   "default": "Frontdesk Clerk",
    "fieldname": "check_in_role",
    "fieldtype": "Link",
    "label": "Check In Role",
@@ -110,6 +114,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Frontdesk Clerk",
    "fieldname": "undo_check_in_role",
    "fieldtype": "Link",
    "label": "Undo Check In Role",
@@ -216,12 +221,14 @@
    "label": "Show summary under room chart calendar"
   },
   {
+   "default": "Frontdesk Clerk",
    "fieldname": "check_out_role",
    "fieldtype": "Link",
    "label": "Check Out Role",
    "options": "Role"
   },
   {
+   "default": "Frontdesk Clerk",
    "fieldname": "undo_check_out_role",
    "fieldtype": "Link",
    "label": "Undo Check Out Role",
@@ -254,12 +261,26 @@
    "fieldname": "default_check_out_time",
    "fieldtype": "Time",
    "label": "Default Check-out Time"
+  },
+  {
+   "default": "Frontdesk Clerk",
+   "fieldname": "can_see_rate_and_amount_role",
+   "fieldtype": "Link",
+   "label": "Can see rate and amount Role",
+   "options": "Role"
+  },
+  {
+   "default": "Frontdesk Clerk",
+   "fieldname": "run_night_audit_role",
+   "fieldtype": "Link",
+   "label": "Run Night Audit Role",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-21 15:38:26.273658",
+ "modified": "2023-10-02 14:40:59.365391",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

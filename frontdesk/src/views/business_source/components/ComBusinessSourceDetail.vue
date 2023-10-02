@@ -1,9 +1,7 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="true" style="max-height: 80vh;">
-        <iframe @load="onIframeLoaded()" id="iframe" style="width: 100%;"
-        :src="url">
+        <iframe @load="onIframeLoaded()" id="iframe" style="width: 100%;" :src="url">
         </iframe>
-
         <template #footer-right>
             <Button class="border-none" @click="onEdit"> 
                 <i class="pi pi-pencil me-2"/> Edit
@@ -14,19 +12,16 @@
 
 </template>
  <script setup>
-import { ref, getDoc, inject, useDialog, onMounted,deleteDoc,useConfirm,computed } from '@/plugin'
+import { ref, inject, useDialog, onMounted,deleteDoc,useConfirm,computed } from '@/plugin'
 import ComAddBusinessSource from './ComAddBusinessSource.vue';
 const dialogRef = inject("dialogRef")
 const gv = inject('$gv');
 const dialog = useDialog()
-const data = ref()
 const loading = ref(false)
 const confirm = useConfirm()
 const name = ref()
-
 const setting =JSON.parse( localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-
 const url =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Business%20Source&name="+ name.value +"&format=" + gv.getCustomPrintFormat("eDoor Business Source Detail")  + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
@@ -65,6 +60,7 @@ function onEdit() {
         }
     });
 }
+
 function onDelete() {
     confirm.require({
         message: 'Are you sure you want to delete business source?',

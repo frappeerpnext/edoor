@@ -305,24 +305,22 @@
                             </td>
 
                             <td class="p-2 w-8rem">
-                                <div class="box-input-detail text-center">{{
-                                    doc.reservation.room_night
-                                }}</div>
+                                <div class="box-input-detail text-center">
+                                    {{ doc.reservation.room_night}}
+                                </div>
                             </td>
                             <td class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12"
-                                    v-if="doc.tax_rule.rate_include_tax == 'Yes'">
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-if="doc.tax_rule.rate_include_tax == 'Yes'">
+                                    
                                     <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
                                 </div>
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12" v-else>
-                                    <CurrencyFormat
-                                        :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
+                                    <CurrencyFormat :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
                                 </div>
-
                             </td>
+                            
                             <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end">
-                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
-                                    aria-label="Filter" />
+                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12" aria-label="Filter" />
                             </td>
                         </tr>
                     </tbody>
@@ -668,6 +666,7 @@ const onSave = () => {
     ).then((result) => {
         isSaving.value = false
         window.socket.emit("RefresheDoorDashboard", property.name);
+        window.socket.emit("RefreshData", { property:property.name, action: "refresh_res_list" })
         dialogRef.value.close(result.message);
     })
         .catch((error) => {
@@ -744,9 +743,8 @@ const updateRate = () => {
         const room_type = room_types.value.find(r => r.name == s.room_type_id)
 
 
-        if (room_type) {
-            
-            s.rate = room_type.rate
+        if (room_type) { 
+            s.rate = room_type.rate.rate
 
         }
 

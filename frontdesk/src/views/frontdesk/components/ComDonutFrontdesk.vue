@@ -6,19 +6,16 @@
     </div>
 </template>
 <script setup>
-
 import { ref, onMounted, inject } from "@/plugin";
 import Chart from 'primevue/chart';
+
 onMounted(() => {
     chartData.value = setChartData();
 });
+
 const chartData = ref();
-const chartOptions = ref({
-    cutout: '60%',
-});
-const props = defineProps({
-    data: Object
-})
+const chartOptions = ref({cutout:'60%'});
+const props = defineProps({data: Object})
 const frappe = inject("$frappe")
 const call = frappe.call()
 const data = ref([])

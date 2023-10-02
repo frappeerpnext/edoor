@@ -2,15 +2,11 @@
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
     <div class="grid">
       <div class="col-12">
-      <label>
-      Guest Type
-      </label>
+      <label>Guest Type</label>
       <InputText class="w-full" type="text" v-model="guestType.customer_group_en" />
       </div>
       <div class="col-12">
-        <label>
-          Note
-        </label>
+        <label>Note</label>
         <Textarea class="w-full" v-model="guestType.note" rows="5" cols="50" />
       </div>
     </div>
@@ -19,6 +15,7 @@
 
 <script setup> 
 import { onMounted,ref,inject,createUpdateDoc } from '@/plugin';
+
 const dialogRef = inject('dialogRef') 
 const gv = inject('$gv') 
 const loading = ref(false)
@@ -39,6 +36,7 @@ function onSave(){
     } 
   }
   createUpdateDoc('Customer Group', {data:guestType.value},null,rename.value).then((r)=>{
+    window.socket.emit("RefreshData", { property:setting.property.name , action: "refresh_guest_type" })
     dialogRef.value.close(r)
     loading.value = false
   }).catch((er)=>{

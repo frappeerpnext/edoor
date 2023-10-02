@@ -63,10 +63,10 @@
             </Menu>
         </div>
     </div>
-    <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveNote" @onClose="onCloseNote"/>
 </template>
 <script setup>
 import {ref, useDialog, postApi,inject,useConfirm,useToast} from '@/plugin'
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
 const moment = inject("$moment")
 const props = defineProps({
     data: Object,
@@ -96,39 +96,65 @@ function onClickDetail(){
     emit('onClickDetail',props.data.name)
 
 }
-function onChangeStatus(status){
-    note.value.title = `${status} : ${props.data.name}`
-    note.value.show = true
-    note.value.reservation_status = status
-}
-function onCloseNote(){
-    note.value.title = ''
-    note.value.show = false
-    note.value.reservation_status = ''
-}
-function onSaveNote(text_note){
-    loading.value = true
 
-    const data = {
-        reservation: rs.reservation.name,
-        stays: [props.data],
-        status:note.value.reservation_status,
-        note:text_note.note,
-        reserved_room:text_note.reserved_room
-    } 
-    postApi('reservation.update_reservation_status',data).then((r)=>{
-        rs.LoadReservation(r.reservation)
-        window.socket.emit("RefreshReservationDetail", r.reservation);
-        window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
-        loading.value = false
-        onCloseNote()
-        rs.LoadReservation(rs.reservation.name)
-    }).catch(()=>{
-        loading.value = false
-    })
-  
-            
-    
+function onChangeStatus(reservation_status){
+    let confirm_message = ""
+    if (reservation_status=="Cancelled"){
+        confirm_message = "You are about to cancel reservation(s).<br/> Once the cancellation is complete, you will no longer be able to make any changes to the reservation. <br/> If you have a cancellation charge, please update the folio transaction first."
+    }else if(reservation_status=="Void"){
+        confirm_message = "You are about to void  reservation(s). Once the void is complete, you will no longer be able to make any changes to the reservation."
+    }else {
+        confirm_message = `You are about to mark   reservation(s) as No Show.
+                If you have a No Show charge, please update the folio transaction first.
+                If you want to sell this room, please untick on check box Reserved Room`
+    }
+
+        onUpdateReservationStatus(
+            "Confirm " + reservation_status + " Note",
+            {
+                api_url: "reservation.update_reservation_status",
+                method: "POST",
+                confirm_message: confirm_message,
+                data: {
+                    reservation: rs.reservation.name,
+                    reserved_room: false,
+                    status: reservation_status,
+                    show_reserved_room:reservation_status=="No Show"?true:false,
+                    stays: [props.data]
+                },
+
+            }
+    )
+}
+function onUpdateReservationStatus(header="Confirm Note",data){
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: data,
+        props: {
+            header: header,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+             const data = options.data;
+           
+
+             if (data) {
+              setTimeout(function(){
+                rs.LoadReservation(rs.reservation.name)
+                window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
+              },1500)
+                
+        
+             }
+         }
+
+    });
+
 }
 
 function onUnmarkasPaidbyMasterRoom(){

@@ -32,7 +32,6 @@
                         <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth" showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true"/>
                     </div>
                     <!-- guest.date_of_birth -->
-                   
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
                         <div class="flex align-items-center">
@@ -116,8 +115,6 @@ const optionGender = ref()
 const moment = inject('$moment')
 const rs = inject('$reservation_stay')
 
-const date = ref()
-
 function onLoad() {
     loading.value = true
     getDoc('Customer', dialogRef.value.data.name)
@@ -172,28 +169,30 @@ function onOK() {
             getDoc('Customer', r.name).then((g) => {
                 onClose(g)
                 window.postMessage("refresh_guest_detail",'*')
-                loading.value = false
-                
+                loading.value = false 
             })
             loading.value = false
             window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             window.socket.emit("RefreshReservationDetail", rs.reservation.name)
             window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
+            window.socket.emit("RefreshGuestDatabase", { property:rs.reservationStay.property})
+            window.socket.emit("RefresheDoorDashboard", { property:rs.reservationStay.property})
         }
     }).catch((err) => {
         loading.value = false
     })
 }
+
 const updateLoadingStatus = (isLoading) => {
   loading.value = isLoading;
 };
+
 onMounted(() => {
     getMeta() 
     if (dialogRef.value.data.name) {
         onLoad()
     }
 })
-
 </script>
 <style>
 .autocomplete-full-with input,

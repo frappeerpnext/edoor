@@ -47,6 +47,8 @@ class Reservation(Document):
 				note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
+	def on_update(self):
+		frappe.db.sql("update `tabReservation Stay Room` set reservation_type = '{}' where reservation = '{}'".format(self.reservation_type, self.name))
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()

@@ -1,59 +1,80 @@
 <template>
-    <Dialog :header="header" :visible="show" @update:visible="onHide" modal>
-        <Message v-if="confirm_message" >
-            <div v-html="confirm_message" />
+    <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
+ 
+        <Message v-if="data?.confirm_message">
+            <div v-html="data?.confirm_message" />
         </Message>
-    
-        <ComNote :loading="loading" :value="note" :autoClose="false" @ok="onOk"/>
 
-        <div v-if="show_reserved_room" class="py-2">
-            <Checkbox inputId="no_show_sell_room" v-model="reserved_room" :binary="true" />
+        <label for="reason-text" class="mb-1 font-medium block">Reason</label>
+        <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
+
+
+        <div v-if="data?.data.show_reserved_room" class="py-2">
+            <Checkbox inputId="no_show_sell_room" v-model="data.data.reserved_room" :binary="true" />
             <label for="no_show_sell_room" class="ml-1 cursor-pointer">Reserved room for this reservation.</label>
         </div>
-    </Dialog>
+
+    </ComDialogContent>
 </template>
 <script setup>
 import Message from 'primevue/message';
-import {computed,ref} from 'vue'
+import { ref, onMounted, inject, postApi,deleteApi } from '@/plugin'
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 
-const emit = defineEmits(['onOk','onClose'])
-const props = defineProps({
-    visible: Boolean,
-    header: String,
-    value:{
-        type:String,
-        default:''
-    },
-    loading: Boolean,
-    confirm_message: String,
-    show_reserved_room:Boolean
-})
+const dialogRef = inject("dialogRef");
+
+const emit = defineEmits(['onOk', 'onClose'])
+
+const data = ref()
+const note = ref("")
+const loading = ref(false)
+
  
-const reserved_room = ref(true)
 
-let show = computed({
-    get(){ 
-        return props.visible
-    },
-    set(newValue){ 
-        return newValue
+function onOk() {
+    if(!note.value){
+        toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
+        return
     }
+    
+
+    loading.value = true
+
+    data.value.data.note = note.value
+    if (data.value.method=="POST"){ 
+    postApi(data.value.api_url, data.value.data).then((r) => {
+        loading.value = false
+        dialogRef.value.close(note.value)
+
+
+    }).catch(() => {
+        loading.value = false
+    })
+}else {
+    deleteApi(data.value.api_url, data.value.data).then((r) => {
+        loading.value = false
+        dialogRef.value.close(note.value)
+
+    }).catch(() => {
+        loading.value = false
+    })
+}
+
+
+
+
+
+
+}
+
+onMounted(() => {
+    data.value = dialogRef.value.data;
 })
 
-let note = computed({
-    get(){
-        return props.value
-    },
-    set(newValue){
-        return newValue
-    }
-})
-function onOk(note){
-    emit('onOk',{note:note ,reserved_room:reserved_room.value }) 
-}
-function onHide(){
-    emit('onClose')
-}
+
+
+
 </script>
 <style lang="">
     

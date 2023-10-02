@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="font-bold">{{ property.name }}</div>
@@ -30,7 +30,6 @@
                             <ComChartDoughnut :total_room="data?.total_room"  show-percentage="Occupied" :showPercentageInteger="true" :is-legend="false" :data="chartOccupancy"
                                 v-if="chartOccupancy.length > 0" />
                             <Skeleton v-else shape="circle" size="18rem"></Skeleton>
-
                         </div>
                         <div class="col-5">
                             <ComChartStatus @onClick="onViewRoomOccupy" :value="data.total_room_occupy" title="Occupied" class="btn-green-edoor" ></ComChartStatus>
@@ -134,37 +133,31 @@
 </template>
 
 <script setup>
+import { inject, ref, onUnmounted , onMounted} from '@/plugin'
+import { useToast } from "primevue/usetoast";
+import { useDialog } from 'primevue/usedialog';
+
 import ComKPI from './components/ComKPI.vue';
 import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
 import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
-
-import { inject, ref, onUnmounted , onMounted} from '@/plugin'
-
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
-import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
-import { useToast } from "primevue/usetoast";
-import { useDialog } from 'primevue/usedialog';
-import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
 import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
-import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+
 import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
- 
+import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
+import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
+import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
  
 const toast = useToast();
 const moment = inject("$moment")
 const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
- 
-
-
- 
 const dialog = useDialog();
-
 const api = inject('$frappe')
 const data = ref({})
 const date = ref(null)
@@ -179,21 +172,18 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
 
-
 window.socket.on("RefresheDoorDashboard", (arg) => {
-    
     if(arg ==property.name){
         getData(false)
         onRefreshIframe()
     }    
-    
 })
-
 
 function getArrivalUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format="+ gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest") +"&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
     url = url + "&date=" + selected_date.value
-    url = url + "&refresh=" + (Math.random() * 16)
+    url = url + "&can_view_rate=" + window.can_view_rate
+    url = url + "&refresh=" + (Math.random() * 16) 
     return url ;
 }
 
@@ -218,14 +208,12 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
            maximizable: true,
            closeOnEscape: false
        }
-      
    });
 }
 
 function onRefresh(loading = true){ 
     getData(loading)
 }
-
 
 function onViewRoomOccupy(){
     onViewData(
@@ -244,12 +232,10 @@ function onViewVacantRoom(){
         'Vacant Room',
         [{key:'date', value:selected_date}],
         ['keyword','building','floor','room_type','housekeeping_status']
-    )
-   
+    ) 
 }
 
 function onViewRoomList(){
- 
     onViewData(
         'Business%20Branch',
         "eDoor%20Room%20List",
@@ -257,7 +243,6 @@ function onViewRoomList(){
         [],
         ['keyword','building','floor','room_type_group','room_type','housekeeping_status']
     )
-    
 }
 
 
@@ -280,7 +265,6 @@ function onViewCancelReservation(){
             maximizable: true,
             closeOnEscape: false
         }
-       
     });
 }
 
@@ -304,18 +288,14 @@ function onViewNoShowReservation(){
             maximizable: true,
             closeOnEscape: false
         }
-       
     });
 }
 
-
 function getDepartureUrl() {
-    
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Departure Guest") +  "&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
     url = url + "&date=" + selected_date.value
     url = url + "&refresh=" + (Math.random() * 16)
     return url;
-
 }
 
 function getInhouseGuestUrl() {
@@ -323,7 +303,6 @@ function getInhouseGuestUrl() {
     url = url + "&date=" + selected_date.value
     url = url + "&refresh=" + (Math.random() * 16)
     return url;
-
 }
 
 function getUpCommingNoteUrl() {
@@ -333,11 +312,9 @@ function getUpCommingNoteUrl() {
     url = url + "&date=" + selected_date.value
     url = url + "&refresh=" + (Math.random() * 16)
     return url;
-
 }
 
 function onShowTodayData() {
-
     selected_date.value = data.value.working_date
     date.value = moment(data.value.working_date).format("DD-MM-YYYY")
     arrivalUrl.value = getArrivalUrl();
@@ -345,7 +322,6 @@ function onShowTodayData() {
     inhouseUrl.value = getInhouseGuestUrl();
     upCommingNoteUrl.value = getUpCommingNoteUrl();
     getData()
-
     // this.classList.add("active");
 }
 
@@ -391,43 +367,34 @@ function getData(loading=true) {
         property: JSON.parse(localStorage.getItem("edoor_property")).name,
         date: selected_date.value
     })
-        .then((result) => {
+    .then((result) => {
+        data.value = result.message
+        chartOccupancy.value = []
+        const documentStyle = getComputedStyle(document.body);
+        chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
+        chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
+        if (!selected_date.value) {
+            date.value = moment(data.value.working_date).format("DD-MM-YYYY")
+            tomorrow.value = moment(data.value.working_date).add(1,"days").format("YYYY-MM-DD")
+            selected_date.value = data.value.working_date;
+        }
+        arrivalUrl.value = getArrivalUrl();
+            departureUrl.value = getDepartureUrl();
+            inhouseUrl.value = getInhouseGuestUrl();
+            upCommingNoteUrl.value = getUpCommingNoteUrl();
+        gv.loading = false;
+    })
+    .catch((error) => {
+        toast.add({ severity: 'error', summary: 'Waring', detail: error.exception ? error.exception.split(":")[1] : '', life: 3000 })
+        gv.loading = false;
 
-            data.value = result.message
-            chartOccupancy.value = []
-            const documentStyle = getComputedStyle(document.body);
-            chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
-            chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
-            
-           
-            if (!selected_date.value) {
-                date.value = moment(data.value.working_date).format("DD-MM-YYYY")
-                tomorrow.value = moment(data.value.working_date).add(1,"days").format("YYYY-MM-DD")
-                selected_date.value = data.value.working_date;
-          
-            }
-            arrivalUrl.value = getArrivalUrl();
-                departureUrl.value = getDepartureUrl();
-                inhouseUrl.value = getInhouseGuestUrl();
-                upCommingNoteUrl.value = getUpCommingNoteUrl();
-
-            gv.loading = false;
-
-        })
-        .catch((error) => {
-            toast.add({ severity: 'error', summary: 'Waring', detail: error.exception ? error.exception.split(":")[1] : '', life: 3000 })
-            gv.loading = false;
-
-        });
+    });
 }
  
 function onIframeLoaded(id){
     const iframe = document.getElementById(id);
-
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
-    
-
     if (windowWidth >= 1920){
         iframe.style.minWidth = 100 + '%'
     }
@@ -438,99 +405,93 @@ function onIframeLoaded(id){
 }
 
 function onRefreshIframe(){
-    
     document.getElementById("iframeArrival").contentWindow.location.replace(getArrivalUrl)
     document.getElementById("iframeDeparture").contentWindow.location.replace(getDepartureUrl)
     document.getElementById("iframeInhouse").contentWindow.location.replace(getInhouseGuestUrl)
     document.getElementById("iframeNote").contentWindow.location.replace(getUpCommingNoteUrl)
-
 }
 
 const viewSummary = (name) => { 
- 
-        const filters = [
-            ['property','=',property.name]
-        ]
-        if(name == "Arrival"){
+    const filters = [
+        ['property','=',property.name]
+    ]
+    if(name == "Arrival"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Dashboard%20Arrival%20Guest",
+            'Arrival Guest',
+            [{key:'action', value:"view_arrival"},{key:"date", value:selected_date.value}],
+            ['keyword','building','floor','room_type','reservation_status']
+        )
+    }else if(name=="Check-In Remaining") {
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Dashboard%20Arrival%20Guest",
+            'Check-in Remaining',
+            [{key:'action', value:"view_arrival_remaining"},{key:"date", value:selected_date.value}],
+            ['keyword','building','floor','room_type']
+        )
+    }
+    else if(name == "Departure"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Dashboard%20Departure%20Guest",
+            'Departure',
+            [{key:'action', value:"view_departure"},{key:"date", value:selected_date.value}],
+            ['keyword','building','floor','room_type','reservation_status','business_source']
+        )
+    }
+    else if(name == "Check-out remaining"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Dashboard%20Departure%20Guest",
+            'Check-out Remaining',
+            [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
+            ['keyword','building','floor','room_type','reservation_status','business_source']
+        )
+    }
+    else if(name == "Unassign Room"){
+
             onViewData(
-                'Business%20Branch',
-                "eDoor%20Dashboard%20Arrival%20Guest",
-                'Arrival Guest',
-                [{key:'action', value:"view_arrival"},{key:"date", value:selected_date.value}],
-                ['keyword','building','floor','room_type','reservation_status']
-            )
-        }else if(name=="Check-In Remaining") {
-            onViewData(
-                'Business%20Branch',
-                "eDoor%20Dashboard%20Arrival%20Guest",
-                'Check-in Remaining',
-                [{key:'action', value:"view_arrival_remaining"},{key:"date", value:selected_date.value}],
-                ['keyword','building','floor','room_type']
-            )
-        }
-        else if(name == "Departure"){
-            onViewData(
-                'Business%20Branch',
-                "eDoor%20Dashboard%20Departure%20Guest",
-                'Departure',
-                [{key:'action', value:"view_departure"},{key:"date", value:selected_date.value}],
-                ['keyword','building','floor','room_type','reservation_status','business_source']
-            )
-        }
-        else if(name == "Check-out remaining"){
-            onViewData(
-                'Business%20Branch',
-                "eDoor%20Dashboard%20Departure%20Guest",
-                'Check-out Remaining',
-                [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
-                ['keyword','building','floor','room_type','reservation_status','business_source']
-            )
-        }
-        else if(name == "Unassign Room"){
- 
-             onViewData(
-                'Business%20Branch',
-                "eDoor%20Unassign%20Room%20Reservation%20List",
-                'Unassign Room Reservation List',
-                [{key:"date", value:selected_date.value}],
-                ['keyword','room_type','reservation_status','business_source']
-            )
-        }
-        else if(name == "Pickup and Drop Off"){
-            onViewData(
-                'Business%20Branch',
-                "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
-                'Pickup & Drop Off',
-                [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
-                ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
-            )
-             
-        }
-        else if(name == "GIT Arrival"){
-            onViewData(
-                'Business%20Branch',
-                "eDoor%20GIT%20Arrival%20Guest",
-                'GIT Arrival',
-                [{key:"date", value:selected_date.value}],
-                ['keyword','room_type','reservation_status','business_source']
-            )
-        }
-        else if(name == "Stay Over"){
-           onViewData(
-                'Business%20Branch',
-                "eDoor%20Dashboard%20Stay%20Over%20Guest",
-                'Stay Over',
-                [{key:"date", value:selected_date.value}],
-                ['keyword','room_type','reservation_status','business_source']
-            )
-        }
-         
+            'Business%20Branch',
+            "eDoor%20Unassign%20Room%20Reservation%20List",
+            'Unassign Room Reservation List',
+            [{key:"date", value:selected_date.value}],
+            ['keyword','room_type','reservation_status','business_source']
+        )
+    }
+    else if(name == "Pickup and Drop Off"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+            'Pickup & Drop Off',
+            [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
+            ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
+        )
+            
+    }
+    else if(name == "GIT Arrival"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20GIT%20Arrival%20Guest",
+            'GIT Arrival',
+            [{key:"date", value:selected_date.value}],
+            ['keyword','room_type','reservation_status','business_source']
+        )
+    }
+    else if(name == "Stay Over"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            'Stay Over',
+            [{key:"date", value:selected_date.value}],
+            ['keyword','room_type','reservation_status','business_source']
+        )
+    }       
 }
 
 onUnmounted(() => {
     window.socket.off("RefresheDoorDashboard");
 })
-
- 
 
 </script>

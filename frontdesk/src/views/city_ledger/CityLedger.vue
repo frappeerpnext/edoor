@@ -114,11 +114,9 @@
                             </span>
                         </template>
                     </Column>
-
                 </DataTable>
             </ComPlaceholder>
         </div>
-        <div></div>
     </div>
 
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
@@ -189,13 +187,14 @@ const order = ref({ order_by: "modified", order_type: "desc" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const loading = ref(false)
 const selectedColumns = ref([])
+
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
 ])
-const pageState = ref({})
 
+const pageState = ref({})
 const opShowColumn = ref();
 
 const getColumns = computed(() => {
@@ -209,8 +208,6 @@ const getColumns = computed(() => {
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
-
-
 
 window.socket.on("RefresheDoorDashboard", (arg) => {
     if (arg == property.name) {
@@ -230,7 +227,6 @@ function OnSaveColumn(event) {
     localStorage.setItem("page_state_guest_ledger", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
 }
-
 
 function onResetTable() {
     localStorage.removeItem("page_state_guest_ledger")
@@ -277,8 +273,8 @@ function onOrderTypeClick() {
     order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
     loadData()
 }
-function onSelectOrderBy() {
 
+function onSelectOrderBy() {
     loadData()
 }
 
@@ -287,10 +283,8 @@ function onDateSelect(d) {
 }
 
 const onSearch = debouncer(() => {
-
     loadData();
 }, 500);
-
 
 function loadData() {
     gv.loading = true
@@ -330,8 +324,6 @@ function loadData() {
         } else {
             window.postMessage('show_alert|' + err.exception, '*')
         }
-
-
     })
 }
 
@@ -340,13 +332,12 @@ onMounted(() => {
 
     if (state) {
         if (state.selectedColumns) {
-
             selectedColumns.value = state.selectedColumns
         }
     }
-
     loadData()
 })
+
 onUnmounted(() => {
     window.socket.off("RefresheDoorDashboard");
 })
@@ -371,7 +362,6 @@ const onClearFilter = () => {
 }
 
 const isFilter = computed(() => {
-
     if (moment().startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
         console.log('deferece date')
         return true

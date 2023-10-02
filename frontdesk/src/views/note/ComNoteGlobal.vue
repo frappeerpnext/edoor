@@ -2,7 +2,6 @@
 <div>
 	<div>
 		<div class="flex justify-end items-center gap-2">
-			
 			<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
             <i class="pi pi-search" />
             <InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch"/>
@@ -32,18 +31,18 @@
 						</div>
 						</div>
 						<div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
-						<span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
-							{{i.reference_name}}
-						</span>
-						<div class="w-full">
-							<span v-if="i.reservation_stay" class="link_line_action border-none p-0 text-sm w-auto" @click="onViewDetailReservationStay(i.reservation_stay)" >
-							{{i.reservation_stay}}
+							<span class="link_line_action w-auto border-none p-0" @click="onViewFolioDetail(i?.reference_name)"  v-if="i.reference_doctype == 'Folio Transaction'">
+								{{i.reference_name}}
 							</span>
-							<span> - </span>
-							<span v-if="i.reservation" class="link_line_action  border-none p-0 text-sm w-auto" @click="onViewDetailReservation(i.reservation)" >
-								{{i.reservation}} 
-							</span> 
-						</div>
+							<div class="w-full">
+								<span v-if="i.reservation_stay" class="link_line_action border-none p-0 text-sm w-auto" @click="onViewDetailReservationStay(i.reservation_stay)" >
+									{{i.reservation_stay}}
+								</span>
+								<span> - </span>
+								<span v-if="i.reservation" class="link_line_action  border-none p-0 text-sm w-auto" @click="onViewDetailReservation(i.reservation)" >
+									{{i.reservation}} 
+								</span> 
+							</div>
 						</div>
 						<div >
 							<span v-if="i.note_date" class="font-italic text-500 text-sm">
@@ -51,10 +50,7 @@
 							</span>
 						</div>
 					</div>
-					<div> 	
-					</div>
 				</div>
-				
 				<div class="flex">
 					<span class="btn-in-note hidden">
 						<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData"/>
@@ -91,8 +87,8 @@ import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
-const confirm = useConfirm()
 
+const confirm = useConfirm()
 const frappe = inject('$frappe');
 const { getTotalNote } = inject('get_count_note')
 const gv = inject('$gv');
@@ -133,14 +129,15 @@ function onEdit(name){
             }
         });
 }
+
 function onPin(i){
 	i.is_pin = !i.is_pin
 	updateDoc('Frontdesk Note', i.name, i).then((r)=>{
 		onLoadData()
 	})
 }
-function onViewFolioDetail (selected) {
 
+function onViewFolioDetail (selected) {
 const dialogRef = dialog.open(ComFolioTransactionDetail, {
 	data: {
 		folio_transaction_number: selected
@@ -154,13 +151,13 @@ const dialogRef = dialog.open(ComFolioTransactionDetail, {
 		position:'top',
 		closeOnEscape: false
 	},
-
 });
 
 }
 function onViewDetailReservationStay(rs){
     window.postMessage("view_reservation_stay_detail|"+rs, '*')
 }
+
 function onViewDetailReservation(rs){
     window.postMessage("view_reservation_detail|"+rs, '*')
 }

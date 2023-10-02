@@ -2,11 +2,9 @@
 
     <div class="group relative h-full p-1" :class="event.extendedProps.type + ' ' + (event.extendedProps.reservation_stay || '')" style="height: 36px ">
         <div :class="(event.extendedProps.type=='room_type_event' || event.extendedProps.type=='property_summary') ? 'flex justify-content-center' : 'flex'">
-            
             <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
                 <!-- GIT/FIT Color -->
             </span>
-
             <span class="wrp-statu-icon">
                 <span v-if="event.extendedProps.is_master" class="stay-bar-status mr-1">
                     <img :src="iconCrown" style="height: 12px"/>
@@ -34,11 +32,9 @@
                     {{event.title}}
                 </template>
             </div>
-            
         </div>
     </div>
 </template>
-
 <script setup>
 import iconCrown from '@/assets/svg/icon-crown.svg'
 import iconUserGroup from '@/assets/svg/icon-user-group.svg'

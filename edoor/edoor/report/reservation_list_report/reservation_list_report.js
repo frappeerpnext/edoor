@@ -2,13 +2,25 @@
 // For license information, please see license.txt
 
 frappe.query_reports["Reservation List Report"] = {
+	// "onload": function(frm) {
+	// 	frm.page.add_inner_button(__("Print"), function() {
+	// 		let dialog = frappe.ui.get_print_settings(
+	// 			false,
+	// 			(print_settings) => this.print_report(print_settings),
+	// 			"Default Letter Head",
+	// 			this.get_visible_columns()
+	// 		);
+	// 		this.add_portrait_warning(dialog);
+	// 	});
+	// },
 	"filters": [
 		{
 			"fieldname": "filter_date_by",
 			"label": __("Filter Date By"),
 			"fieldtype": "Select",
 			"options": "Arrival Date\nDeparture Date\nReservation\nStay Date",
-			default:"Arrival Date"
+			default:"Arrival Date",
+			
 		},
 		{
 			"fieldname":"start_date",
@@ -73,40 +85,46 @@ frappe.query_reports["Reservation List Report"] = {
 			"label": __("Group By"),
 			"fieldtype": "Select",
 			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
-			"show_in_print":false
+			hide_in_filter:1
+ 
 		},
 		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
 			"options": "None\nbar\nline\npie",
-			"default":"bar"
+			"default":"bar",
+			hide_in_filter:1
 		},
 		{
 			"fieldname": "is_active_reservation",
 			"label": __("Is Active Reservation"),
 			"fieldtype": "Check",
-			default:true
+			default:true,
+			hide_in_filter:1
 		},
 		{
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
 			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nRoom Type\nReservation Status",
-			default:"Last Update On"
+			default:"Last Update On",
+			hide_in_filter:1
 		},
 		{
 			"fieldname": "sort_order",
 			"label": __("Sort Order"),
 			"fieldtype": "Select",
 			"options": "ASC\nDESC",
-			default:"ASC"
+			default:"ASC",
+			hide_in_filter:1
 		},
 		{
 			"fieldname": "summary_filter",
 			"label": __("Summary By"),
 			"fieldtype": "Select",
 			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nReservation Stay\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
+			hide_in_filter:1
 		},
 
 	],
@@ -128,13 +146,9 @@ frappe.query_reports["Reservation List Report"] = {
 			}
 			
 			
-			if(data.is_group && column.fieldtype=="Currency" ){
-				 
-				value ="";
-			}else {
+
 				var $value = $(value).css("font-weight", "bold");
 				value = $value.wrap("<p></p>").parent().html();
-			}
 			 
 		
 		}else {

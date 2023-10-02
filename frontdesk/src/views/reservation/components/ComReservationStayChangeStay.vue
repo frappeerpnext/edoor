@@ -3,7 +3,7 @@
     <div>
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
-            <div class="n__re-custom"> 
+            <div class="n__re-custom">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -26,10 +26,11 @@
                     </thead>
                     <tbody>
                         <tr> 
-                            <td class="pe-2"> 
-                                <Calendar  class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="rs.reservationStay.reservation_status == 'In-house'" :max-date="maxStartDate" :min-date="new Date(working_day.date_working_day)" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                            <td class="pe-2">
+                                <Calendar  class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="rs.reservationStay.reservation_status == 'In-house'"  :min-date="minStartDate" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2"> 
+                               
                                 <Calendar  class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
@@ -89,8 +90,16 @@
     stay.value.start_date = moment(stay.value.start_date).toDate()
     stay.value.end_date = moment(stay.value.end_date).toDate()
     stay.value.generate_rate_type  = "stay_rate"
-    const maxStartDate = computed(()=>{
-        return new Date(moment(stay.value.end_date).subtract(1,'days'))
+    const stays = Enumerable.from(rs.reservationStay.stays).orderBy("$.start_date").toArray()
+    const index = stays.findIndex(p => p.name == stay.value.name)
+     
+    const minStartDate = computed(()=>{
+        if(index > 0){
+            const prevStay = stays[index - 1]
+            return new Date(prevStay.end_date)
+        }else{
+            return new Date(working_day.date_working_day)
+        }
     })
     const minDate = computed(()=>{
         if(moment(stay.value.start_date).isSame(working_day.date_working_day) || moment(stay.value.start_date).isBefore(working_day.date_working_day)){
@@ -100,11 +109,9 @@
         }
     })
     const maxDate = computed(()=>{
-        const data = Enumerable.from(rs.reservationStay.stays).orderBy("$.start_date").toArray()
-        const index = data.findIndex(p => p.name == stay.value.name)
-        if(data[index + 1]){ 
-            maxNight.value = moment(data[index + 1].end_date).diff(moment(stay.value.start_date), 'days') - 1
-            return moment(data[index + 1].end_date).subtract(1, "days").toDate()
+        if(stays[index + 1]){ 
+            maxNight.value = moment(stays[index + 1].end_date).diff(moment(stay.value.start_date), 'days') - 1
+            return moment(stays[index + 1].end_date).subtract(1, "days").toDate()
         }
         return null
     })
@@ -112,11 +119,14 @@
     function onStartDate(newValue){
         let end_date = moment(stay.value.end_date).format("YYYY-MM-DD")
         end_date = moment(end_date).toDate()
+
         if(moment(newValue).isSame(end_date) || moment(newValue).isAfter(end_date)){
-            stay.value.end_date = moment(stay.value.end_date).add(1,'days').toDate()
+
+            stay.value.end_date = moment(newValue).add(1,'days').toDate()
         }
         stay.value.room_nights = moment(stay.value.end_date).diff(moment(newValue), 'days') 
     }
+
     function onNight(newValue){
         stay.value.end_date = new Date(moment(stay.value.start_date).add(newValue,'days').toDate())
     }
@@ -139,8 +149,6 @@
         newData.rate = newData.input_rate
         newData.is_override_rate = generate_new_room_rate.value
         newData.is_move = 0
-
-
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
 

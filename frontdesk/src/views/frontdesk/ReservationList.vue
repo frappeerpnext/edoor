@@ -169,10 +169,8 @@ const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 window.socket.on("RefresheDoorDashboard", (arg) => {
-
     if (arg == property.name) {
         loadData()
-
     }
 })
 
@@ -214,7 +212,6 @@ const getColumns = computed(() => {
 })
 
 const selectedColumns = ref([]);
-
 const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
@@ -244,12 +241,8 @@ let dateRange = reactive({
 })
 
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
-
 const working_date = ref('')
-
 const dialog = useDialog();
-
-
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
@@ -259,6 +252,7 @@ function Refresh() {
     pageState.value.page = 0
     loadData()
 }
+
 function onDateSelect() {
     if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
         dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
@@ -266,14 +260,12 @@ function onDateSelect() {
         loadData()
     }
 }
+
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
-
     loadData()
 }
-
-
 
 function loadData() {
     gv.loading = true
@@ -310,11 +302,8 @@ function loadData() {
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
-
     fields = [...new Set(fields.filter(x => x))]
-
     getDocList('Reservation', {
-
         fields: fields,
         orderBy: {
             field: '`tabReservation`.' + pageState.value.order_by,
@@ -333,22 +322,18 @@ function loadData() {
             toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
         });
     getTotalRecord(filters)
-
     localStorage.setItem("page_state_reservation", JSON.stringify(pageState.value))
-
 }
 function getTotalRecord(filters) {
-
     getCount('Reservation', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
-
 }
+
 function onOrderBy(data) {
     pageState.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
 
 function onSelectFilterDate(event) {
@@ -362,7 +347,6 @@ const onSearch = debouncer(() => {
     loadData();
 }, 500);
 
-
 function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {
@@ -375,7 +359,6 @@ function debouncer(fn, delay) {
     };
 }
 
-
 getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
@@ -384,9 +367,6 @@ getApi('frontdesk.get_working_day', {
     // const endDate = moment(working_date.value).add(1, 'days')
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
-
-
-
 
 onMounted(() => {
     let state = localStorage.getItem("page_state_reservation")
@@ -416,7 +396,6 @@ onMounted(() => {
             } else if (["Currency"].includes(r.fieldtype)) {
                 header_class = "text-right"
             }
-
             columns.value.push({
                 fieldname: r.fieldname,
                 label: r.label,
@@ -426,25 +405,26 @@ onMounted(() => {
             })
         })
     })
-
 })
 
 function onResetTable() {
     localStorage.removeItem("page_state_reservation")
     localStorage.removeItem("table_reservation_list_state")
-
     window.location.reload()
 }
 
 const advanceSearch = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const onClearFilter = () => {
     filter.value = {}
     loadData()
     showAdvanceSearch.value.hide()
 }
+
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 </script>

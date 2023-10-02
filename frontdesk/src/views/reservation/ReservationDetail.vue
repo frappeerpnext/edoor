@@ -100,7 +100,7 @@
                         <span class="me-2">Document</span>
                         <ComDocumentBadge :attacheds="rs.attacheds" v-if="name && !rs.loading"/>
                     </template>
-                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :docname="name" />
+                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :attacheds="rs.attacheds" :docname="name"/>
                 </TabPanel>
 
             </TabView>
@@ -120,7 +120,7 @@
                 Check In</Button>
         </template>
     </ComDialogContent>
-    <!-- <ComDialogNote :header="note.title" :visible="note.show" :loading="loading" @onOk="onSaveGroupStatus" @onClose="onCloseNote"/> -->
+
 </template>
 
 <script setup>
@@ -187,6 +187,7 @@ function onMaximize(){
 
 onMounted(() => {
     window.has_reservation_detail_opened = true
+   
     window.socket.on("RefreshReservationDetail", (reservation) => {
         if (reservation == name.value) {
             //we run this in settime out 
@@ -209,12 +210,16 @@ onMounted(() => {
         onRefresh()
 
     }
+    
+    window.reservation = name.value
+
 });
 
 onUnmounted(() => {
     rs.clear()
     window.socket.off("RefreshReservationDetail");
     window.has_reservation_detail_opened = false
+    window.reservation = ""
 })
 
 function onCheckIn(){

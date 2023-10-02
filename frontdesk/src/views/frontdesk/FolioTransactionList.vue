@@ -76,7 +76,6 @@
                 </span>
               </template>
             </Column>
-  
           </DataTable>
         </ComPlaceholder>
       </div>
@@ -114,7 +113,7 @@
       <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
         icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
-<ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
+          <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
             optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
             isFilter />
           <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]"
@@ -134,12 +133,13 @@
         </div>
       </ComOverlayPanelContent>
     </OverlayPanel>
-  </template>
-  <script setup>
+</template>
+<script setup>
   import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
   import Paginator from 'primevue/paginator';
   import ComOrderBy from '@/components/ComOrderBy.vue';
   import { Timeago } from 'vue2-timeago'
+
   const moment = inject("$moment")
   const dialogRef = inject("dialogRef");
   const gv = inject("$gv")
@@ -153,12 +153,9 @@
   const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
   const property = JSON.parse(localStorage.getItem("edoor_property"))
   
-  
   window.socket.on("RefreshFolioTransaction", (arg) => {
-  
     if (arg == property.name) {
       loadData()
-  
     }
   })
   
@@ -171,7 +168,6 @@
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true },
     { fieldname: 'room_number', label: 'Rooms', header_class: "text-center", default: true },
-
   ])
   
   const getColumns = computed(() => {
@@ -186,6 +182,7 @@
     start: '',
     end: ''
   })
+
   function onDateSelect() {
     if (filter.value.date_range && filter.value.date_range[1]) {
         loadData()
@@ -309,7 +306,6 @@ function onChecked() {
     loadData();
   }, 500);
   
-  
   function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {
@@ -321,6 +317,7 @@ function onChecked() {
       }, delay);
     };
   }
+
   onMounted(() => {
     let state = localStorage.getItem("page_state_folio_transaction")
     if (state) {
@@ -360,15 +357,12 @@ function onChecked() {
         })
       })
     })
-  
   })
-  // function onAddNewFolioTransaction(folio_transaction) {
-  //   alert("folio transaction")
-  // }
-  
+
   const advanceSearch = (event) => {
     showAdvanceSearch.value.toggle(event);
   }
+
   const onClearFilter = () => {
     filter.value = {}
     loadData()
@@ -382,4 +376,5 @@ function onChecked() {
   const onCloseColumn = () => {
     opShowColumn.value.hide()
   }
+  
   </script>

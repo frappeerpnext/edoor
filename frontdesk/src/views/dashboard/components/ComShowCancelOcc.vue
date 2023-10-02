@@ -11,7 +11,9 @@ const props = defineProps({
     title: String,
     value: [String, Number]
 })
+
 const emit = defineEmits(["onClick"])
+
 function onClick() {
     emit("onClick")
 }

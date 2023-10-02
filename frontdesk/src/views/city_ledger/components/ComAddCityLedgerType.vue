@@ -37,6 +37,7 @@ function onSave(){
   createUpdateDoc('City Ledger Type', {data:accountType.value},null,rename.value).then((r)=>{
     dialogRef.value.close(r)
     loading.value = false
+    window.socket.emit("RefreshCityLedgerType",setting.property.name)
   }).catch((er)=>{
     loading.value = false
   })

@@ -17,7 +17,7 @@ import App from "./App.vue";
 
 import Error from "./components/Error.vue";
 
-import router from './router';
+
 
 import Auth from "./utils/auth";
 
@@ -30,6 +30,8 @@ import ConfirmationService from 'primevue/confirmationservice';
 import NumberFormat from 'number-format.js'
 import { vue3Debounce } from 'vue-debounce'
 
+import {getRoutes} from './router';
+ 
 const app = createApp(App);
 
 
@@ -127,6 +129,8 @@ import ComDocumentBadge from './components/layout/components/ComDocumentBadge.vu
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css' // optional for styling
 
+
+
 // use components //
 app.component('Button', Button);
 app.component('Menu', Menu);
@@ -202,7 +206,7 @@ app.component('ComLastModifiedInfo', ComLastModifiedInfo)
 app.component('ComDocumentBadge', ComDocumentBadge)
 // Plugins
 app.use(frappe)
-app.use(router);
+
 app.use(resourcesPlugin);
 app.use(PrimeVue, {
 	ripple: true,
@@ -273,70 +277,103 @@ const apiCall = frappe.call()
 
 
 const config = await getConfigData()
+
+
 if (!auth.isLoggedIn) {
 	const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
 	window.location.replace(serverUrl)
 }
  
-router.beforeEach(async (to, from, next) => {
-	 
-	document.title = (to.meta.title || '') + ' | eDoor Front Desk'
-	if (to.matched.some((record) => !record.meta.isLoginPage)) {
-		// this route requires auth, check if logged in
-		// if not, redirect to login page.
-		if (!getCookie("user_id") || getCookie("user_id") == "Guest") {
-			const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
-			window.location.replace(serverUrl)
+
+
+const setting = await getEdoorSetting()
+
+if (setting) {
+	console.log(setting);
+	//attact state to window object
+	window.setting = setting.edoor_setting
+	window.property = setting.edoor_setting.property
+	window.property_name = setting.edoor_setting.property.name
+	window.user =  setting.user
+	window.current_working_date =  setting.working_day.date_working_day
+	
+	
+	//attach permission
+	window.can_view_rate = setting.user.can_view_rate
+	
+
+
+
+	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound"]
+	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
+
+	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)
+	app.use(router);
+	app.mount("#app");
+
+
+	router.beforeEach(async (to, from, next) => {
+		
+		document.title = (to.meta.title || '') + ' | eDoor Front Desk'
+		if (to.matched.some((record) => !record.meta.isLoginPage)) {
+			// this route requires auth, check if logged in
+			// if not, redirect to login page.
+			if (!getCookie("user_id") || getCookie("user_id") == "Guest") {
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
+				window.location.replace(serverUrl)
+			} else {
+				if (to?.name) {
+
+					const setting = JSON.parse(localStorage.getItem('edoor_setting'))
+					if (setting.edoor_menu.filter((r) => r.menu_name == to.name).length > 0 || whitelist_route.includes(to.name)) {
+						next();
+					} else {
+
+						next({ name: 'NoPermission' });
+					}
+				}
+			}
+
+
 		} else {
-			if (to?.name) {
-			 
+			if (getCookie("user_id") != "Guest") {
+
+				//find first record of edoor menu 
 				const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-				if (setting.edoor_menu.filter((r) => r.menu_name == to.name).length > 0 || ["NoPermission", "ReservationStayDetail", "ReservationDetail"].includes(to.name)) {
-				
-					next();
+				if (setting) {
+					let edoorMenu = setting?.edoor_menu?.filter(r => r.menu_name != 'All Menus' && r.parent_edoor_menu == 'All Menus')
+					edoorMenu = edoorMenu.sort((a, b) => {
+						return a.sort_order - b.sort_order;
+					});
 
-				} else {
-					 
-					next({ name: 'NoPermission' });
+					if (edoorMenu) {
+
+						next({ name: edoorMenu[0].menu_name });
+					} else {
+
+						next({ name: 'Dashboard' });
+					}
 				}
-			}
-		}
 
 
-	} else {
-		if (getCookie("user_id") != "Guest") {
+			} else {
 
-			//find first record of edoor menu 
-			const setting = JSON.parse(localStorage.getItem('edoor_setting'))
-			if (setting) {
-				let edoorMenu = setting?.edoor_menu?.filter(r => r.menu_name != 'All Menus' && r.parent_edoor_menu == 'All Menus')
-				edoorMenu = edoorMenu.sort((a, b) => {
-					return a.sort_order - b.sort_order;
-				});
-				if (edoorMenu) {
-					  
-					next({ name: edoorMenu[0].menu_name });
-				} else {
-				 
-					next({ name: 'Dashboard' });
-				}
+
+				const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
+				window.location.replace(serverUrl)
+
+
 			}
 
-
-		} else {
-
-
-			const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;
-			window.location.replace(serverUrl)
-
-
 		}
+	});
 
-	}
-});
+}
 
+function getEdoorSetting() {
+	return new Promise((resolve, reject) => {
 
-
+		
 apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
 }).then((r) => {
@@ -368,16 +405,19 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 				}
 			}
 		}
+	
 
-		app.mount("#app");
+
+		resolve(r.message)
 	}
 
+}).catch((err)=>{
+	reject(err)
 })
 
+	});
 
-
-
-
+}
 function getConfigData() {
 	return new Promise((resolve, reject) => {
 
@@ -391,6 +431,8 @@ function getConfigData() {
 	});
 
 }
+
+
 function getCookie(name) {
 	let cookie = document.cookie;
 	let decodedCookie = decodeURIComponent(cookie);

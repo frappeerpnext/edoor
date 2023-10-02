@@ -123,27 +123,28 @@
 
 </template>
 <script setup>
-import { inject, ref, useToast, getCount, getDocList, onMounted,getApi,useDialog, computed , onUnmounted } from '@/plugin'
+import { inject, ref, getCount, getDocList, onMounted,getApi,useDialog, computed , onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
 import ComAddBusinessSource from '@/views/business_source/components/ComAddBusinessSource.vue';
-import ComBusinessSourceDetail from './components/ComBusinessSourceDetail.vue';
+import ComBusinessSourceDetail from '@/views/business_source/components/ComBusinessSourceDetail.vue';
+
 const moment = inject("$moment")
 const gv = inject("$gv")
-const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 const data = ref([])
 const filter = ref({})
-
 const showAdvanceSearch = ref()
-
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 window.socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_business_source" ) {
-        loadData()
+        setTimeout(function () {
+            loadData()
+        }, 3000)
 }
 })
  
@@ -155,11 +156,9 @@ const columns = ref([
     { fieldname: 'contact_name', label: 'Contact Name' , default:true},
     { fieldname: 'phone_number', label: 'Phone Number' ,default:true},
     { fieldname: 'email', label: 'Email' ,default:true},
-  
 ])
  
 const selectedColumns = ref([]);
-
 const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
@@ -170,7 +169,6 @@ function OnSaveColumn(event){
     localStorage.setItem("page_state_business_source", JSON.stringify(pageState.value) )
     opShowColumn.value.toggle(event);
 }
-
 
 function onResetTable(){
     localStorage.removeItem("page_state_business_source")
@@ -185,9 +183,7 @@ const getColumns = computed(()=>{
     }
 })
  
-  
 function onOpenLink(column, data){
-    
     const dialogRef = dialog.open(ComBusinessSourceDetail, {
         data: {
             name: data.name
@@ -208,7 +204,6 @@ function onOpenLink(column, data){
             }
         }
     });
-
 }
 
 function Refresh() {
@@ -222,8 +217,6 @@ function pageChange(page) {
 
     loadData()
 }
-
-
 
 function loadData() {
     gv.loading = true
@@ -256,39 +249,33 @@ function loadData() {
         limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
         limit: pageState.value?.rows || 20,
     })
-        .then((doc) => {
-            data.value = doc
-            gv.loading = false
-        })
-        .catch((error) => {
-            gv.loading = false
-         
-        });
+    .then((doc) => {
+        data.value = doc
+        gv.loading = false
+    })
+    .catch((error) => {
+        gv.loading = false
+        
+    });
     getTotalRecord(filters)
-
     localStorage.setItem("page_state_business_source", JSON.stringify(pageState.value))
-
 }
-function getTotalRecord(filters) {
 
+function getTotalRecord(filters) {
     getCount('Business Source', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
-
 }
+
 function onOrderBy(data) {
     pageState.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
     pageState.value.page = 0
     loadData()
-
 }
-
- 
 
 const onSearch = debouncer(() => {
     loadData();
 }, 500);
-
 
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -302,9 +289,6 @@ function debouncer(fn, delay) {
     };
 }
  
- 
-
-
 onMounted(() => {
     let state = localStorage.getItem("page_state_business_source")
     if (state) {
@@ -343,7 +327,6 @@ onMounted(() => {
             })
         })
     })
-
 })
 
 function onAddNewBusinessSource(){
@@ -390,8 +373,9 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 onUnmounted(() => {
-    
     window.socket.off("RefreshData");
 })
+
 </script>

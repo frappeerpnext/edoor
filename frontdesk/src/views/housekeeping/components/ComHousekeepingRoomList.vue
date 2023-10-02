@@ -26,8 +26,6 @@
                             class="link_line_action1 no-underline"></Button>
                     </template>
                 </Column>
-
-
                 <Column field="guest_name" header="Guest Name">
                     <template #body="slotProps">
                         <Button v-if="slotProps.data.guest" class="color-purple-edoor p-0 no-underline"
@@ -77,10 +75,8 @@
         </Sidebar>
     </div>
 </template>
-
 <script setup>
-
-import { ref, inject, postApi, computed } from '@/plugin';
+import { ref, inject, postApi, computed , onUnmounted } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import { useDialog } from 'primevue/usedialog';
@@ -98,10 +94,17 @@ const frappe = inject("$frappe")
 const call = frappe.call()
 const visibleRight = ref(false);
 const db = frappe.db()
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == setting.property.name && arg.action=="refresh_hk") {
+        hk.loadData()
+    }
+})
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
+})
 const data = computed(() => {
     return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
 })
-
 function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
 }
@@ -110,7 +113,6 @@ function onAssignHousekeeper($event, r) {
     selected.value.room = r.name || ''
     opHousekeeper.value.toggle($event)
 }
-
 function onSaveAssignHousekeeper() {
     loading.value = true;
     call.post("edoor.api.housekeeping.update_housekeeper", {
@@ -125,7 +127,6 @@ function onSaveAssignHousekeeper() {
         loading.value = false
     })
 }
-
 function SidebarClose() {
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     elements_row_hk.forEach(elements_row_hk => {
@@ -146,7 +147,6 @@ function onRowSelect(r) {
         visibleRight.value = true
         r.originalEvent.currentTarget.classList.add('active_row_hk');
     }
-
     hk.selectedRow = r.data
     if (hk.selectedRow.reservation_stay) {
         getHKSummary()
@@ -162,12 +162,11 @@ function onRowSelect(r) {
 }
 function getHKSummary() {
     postApi('reservation.get_reservation_housekeeping_charge_summary', { reservation_stay: hk.selectedRow.reservation_stay }, '', false)
-        .then((doc) => {
-            hk.selectedRow.summary = doc.message
-        })
-        .catch((error) => console.error(error));
+    .then((doc) => {
+        hk.selectedRow.summary = doc.message
+    })
+    .catch((error) => console.error(error));
 }
-
 function onDblClick(r) {
     alert("you double click on row: " + r.data.room_number)
 }
@@ -197,7 +196,6 @@ function onViewCustomerDetail(name) {
 }
 function onViewReservationStayDetail(rs) {
     window.postMessage('view_reservation_stay_detail|' + rs, '*')
-
 }
 </script>
 <style scoped>

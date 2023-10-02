@@ -136,7 +136,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed ,onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -153,12 +153,14 @@ const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-window.socket.on("RefreshGuestDatabase", (arg) => {
 
-  if (arg == property.name) {
-    loadData()
-
-  }
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == property.name && arg.action=="refresh_room_block") {
+        loadData()
+    }
+})
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
 })
 const columns = ref([
   { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },

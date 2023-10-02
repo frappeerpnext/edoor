@@ -14,14 +14,16 @@
 import { watch,ref,inject } from '@/plugin';
 const emit = defineEmits(["onFilterResource"])
 const edoor_property = JSON.parse(localStorage.getItem('edoor_property'))
+
 const props = defineProps({
     headerClass: String,
     bodyClass: String
 })
+
 const { onFilterResource, advanceFilter,onOpenAdvanceSearch,onClearFilter } = inject('advance_filter')
 const filter = ref(JSON.parse(JSON.stringify(advanceFilter.value)))
+
 watch(filter.value, (newValue, oldValue) => {
     onFilterResource(newValue)
 }) 
-
 </script>

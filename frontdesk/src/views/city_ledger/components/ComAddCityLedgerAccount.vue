@@ -112,7 +112,7 @@ function onSave(){
     createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
         loading.value = false
         dialogRef.value.close(r)
-        window.socket.emit("RefreshData", {property:property.name,action:"refresh_city_ledger"});
+        window.socket.emit("RefresheDoorDashboard",property.name)
     }).catch((err)=>{
         loading.value = false
     })

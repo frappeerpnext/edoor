@@ -30,7 +30,7 @@ def get_columns(filters):
 		{'fieldname': 'pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
-		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1,"fieldtype":"Link","options":"Customer","post_message_action": "view_guest_detail"},
+		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'reservation_status','label':'Status','align':'center',"width":95,"show_in_report":1},
 		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
@@ -131,8 +131,7 @@ def get_reservation_stays(filters):
 		sql = sql + " and rst.guest = %(guest)s"
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-	# if filters.is_active_reservation:
-	# 	sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
+
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation_stay"] for d in data]
@@ -154,8 +153,6 @@ def get_reservation(filters):
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
 	
-	# if filters.is_active_reservation:
-	# 	sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
 		
 	data =  frappe.db.sql(sql, filters, as_dict=1)
@@ -228,6 +225,7 @@ def get_report_data(filters):
 				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
 				"is_total_row":1,
+				"is_group":0,
 				"parent":id
 			})
 
@@ -244,6 +242,7 @@ def get_report_data(filters):
 				"total_credit":sum([d["total_credit"] for d in data]),
 				"balance":sum([d["balance"] for d in data ]),
 				"is_total_row":1,
+				"is_group":0,
 				"is_grand_total":1
 			})
 

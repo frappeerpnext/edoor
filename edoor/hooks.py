@@ -56,14 +56,6 @@ app_license = "MIT"
 # ----------
 
 # add methods and filters to jinja environment
-jinja = {
-	"methods": "frappe.utils.jinja_globals",
-	"filters": [
-		"frappe.utils.data.global_date_format",
-		"frappe.utils.markdown",
-		"frappe.website.utils.abs_url",
-	],
-}
 
 # Installation
 # ------------

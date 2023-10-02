@@ -12,7 +12,8 @@ class ReservationRoomRate(Document):
 		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:
 			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:
-				self.input_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
+				room_rate = get_room_rate(self.property, self.rate_type, self.room_type_id,self.business_source,self.date)	
+				self.input_rate = room_rate['rate']
 
 		self.rate = self.input_rate or 0		 
 		self.discount = self.discount or 0

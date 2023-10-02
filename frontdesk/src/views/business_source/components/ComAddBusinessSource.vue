@@ -93,9 +93,11 @@ function onLoad() {
             loading.value = false
         });
 }
+
 function onClose() {
     dialogRef.value.close()
 }
+
 function onSave() {
     if (!data.value.business_source) {
         gv.toast('warn', 'Bussiness source is required.')
@@ -119,6 +121,7 @@ function onSave() {
         loading.value = false
     })
 }
+
 onMounted(() => {
     if (dialogRef.value.data.name) {
         onLoad()

@@ -166,9 +166,11 @@ const toast = useToast();
 const frappe = inject("$frappe")
 const call = frappe.call()
 const name = ref("")
+ 
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
+
 const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation_status)
 status.value.push(
     {

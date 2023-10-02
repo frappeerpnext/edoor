@@ -573,6 +573,7 @@ def clear_reservation():
     frappe.db.sql("delete from `tabFolio Transaction`")
     frappe.db.sql("delete from `tabReservation Folio`")
     frappe.db.sql("update `tabRoom` set housekeeping_status = 'Vacant Clean', reservation_stay='',guest='' , guest_name=''")
+    
     frappe.db.sql("delete from `tabSale Product`")
     frappe.db.sql("delete from `tabSale Payment`")
     frappe.db.sql("delete from `tabSale`")
@@ -582,13 +583,18 @@ def clear_reservation():
     frappe.db.sql("delete from `tabRoom Block`")
 
     room_list = frappe.db.get_all("Room")
+
     for r in room_list:
+
         room_doc = frappe.get_doc("Room", r.name)
         room_doc.housekeeping_status = "Vacant Clean"
+        
         room_doc.save()
     
     
     frappe.db.commit()
+
+    
     return "done"
 
 @frappe.whitelist()
@@ -666,8 +672,10 @@ def update_reservation_stay_and_reservation(reservation_stay, reservation):
     update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
     update_reservation(name=reservation, doc=None, run_commit=True)
 
+
     
 def validate_role(role_name, message = None):
+
     #check if edoor setting config allow enter back date transaction
     if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1: 
         #check user permission if have permission for back date
@@ -677,3 +685,10 @@ def validate_role(role_name, message = None):
                 frappe.throw(message or "You don't have permission to perform this action")
         else:
             frappe.throw(message or "You don't have permission to perform this action")
+
+@frappe.whitelist()
+def can_view_rate():
+    can_see_rate_role = frappe.db.get_single_value("eDoor Setting","can_see_rate_and_amount_role")
+    roles = frappe.get_roles(frappe.session.user)
+    
+    return 1 if can_see_rate_role in roles else 0
