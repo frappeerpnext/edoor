@@ -1,10 +1,8 @@
 <template>
     <div class="wrap-page">
-
         <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
             mode="indeterminate">
         </ProgressBar>
- 
         <div class="header-bar w-full">
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full"> 
@@ -71,7 +69,7 @@
                                         <span class="ml-2">Close Cashier Shift</span>
                                     </button>
 
-                                    <button @click="onRunNightAudit"
+                                    <button v-if="canRunNightAudit" @click="onRunNightAudit"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="runNightAuditSvgIcon" style="height: 15px;" />
                                         <span class="ml-2">Run Night Audit</span>
@@ -99,8 +97,8 @@
 </template>
 
 <script setup>
-import { ref, inject, useToast, useRouter, useRoute, computed } from '@/plugin'
-import { useScreen, useGrid } from 'vue-screen'
+import { ref, inject, useRouter, useRoute, computed } from '@/plugin'
+import { useScreen } from 'vue-screen'
 import ComAvatarUserProfile from './components/ComAvatarUserProfile.vue'
 import ProgressBar from 'primevue/progressbar'
 import ComHeaderDateTimeUpdate from './components/ComTimeUpdate.vue'
@@ -120,51 +118,35 @@ import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 const dialog = useDialog();
 const router = useRouter()
 const route = useRoute()
-const frappe = inject('$frappe')
+
 const gv = inject('$gv')
 const screen = useScreen()
-const auth = frappe.auth()
+
 const user = ref(JSON.parse(localStorage.getItem('edoor_user')))
 const show = ref()
-const toast = useToast()
+ 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting?.backend_port;
+
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 const moment = inject("$moment")
-// const eDoorMenu = ref([])
+
 const eDoorMenu = computed(()=>{ 
     const menu = ref(setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != ""))
-    //menu.value = menu.value.filter(r => r.parent_edoor_menu == 'All Menus')
+    
     if(screen.width <= 1346){
         return menu.value.filter(r => r.move_to_more == false)
     }else{
         return menu.value
     }
 })
-const currentRouteName = computed(() => route.name.replace(/"/g, ''));
+
+
 const canRunNightAudit = computed(() => {
-    // return window.user.roles.where(r=>r.)
+return window.user?.roles?.filter(r=>r==window.setting.run_night_audit_role).length>0
 });
 
-const subMenus = computed(() => {
-    const current_menu_id = setting.edoor_menu.find(r => r.menu_name == currentRouteName.value)
-    if (current_menu_id) {
-        let parent_menu_id = current_menu_id.name
- 
-        if (current_menu_id.is_group == 0){
-            if(current_menu_id.parent_edoor_menu!="All Menus"){
-                parent_menu_id =current_menu_id.parent_edoor_menu  
-            }
-           
-        }
 
-        return setting.edoor_menu?.filter((r) => r.parent_edoor_menu == parent_menu_id)
-    }
-
-
-    return []
-})
 
 const toggle = (event) => {
     show.value.toggle(event);
@@ -220,20 +202,7 @@ function onRoute(route) {
     router.push({ name: route })
 }
 
-function onLink(url) {
-    alert("pls remove fix link url")
-    location.replace('http://192.168.10.114:1216/app/edoor-frontdesk/' + url)
-    //location.replace(serverUrl + '/' + url)
-}
 
-function onLogout() {
-    auth.logout().then(() => {
-        // development mode
-        alert("pls remove fix link url")
-        location.replace('http://192.168.10.114:1216/app/edoor-frontdesk')
-        // location.replace(serverUrl)
-    }).catch((error) => toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 }));
-}
 
 
 function onBlankGuestRegistration() {
@@ -292,10 +261,6 @@ function onOpenCashierShift() {
 function onCloseCashierShift() {
     window.postMessage('close_shift', '*')
 }
-
-// onMounted(() => {
-//     eDoorMenu.value = setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != "")
  
-// })
  
 </script>

@@ -11,7 +11,6 @@
                         </div>
                     </div>
                 </div>
-                
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
                     <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>

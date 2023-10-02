@@ -44,7 +44,7 @@
             <TabView lazy>
                 <TabPanel header="General Information">
                     <div class="grid mt-2 ml-0 ms-0">
-                        <div class="col-8 pl-0">
+                        <div class="col pl-0">
                             <div class="grid">
                                 <div class="col-4">
                                     <div class="grid">
@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4 pb-0">
+                        <div v-if="can_view_rate" class="col-4 pb-0">
                             <div class="grid">
                                 <ComReservationDetailChargeSummary />
                             </div>
@@ -87,7 +87,7 @@
                 <TabPanel header="Deposit">
                     <ComReservationDeposit />
                 </TabPanel>
-                <TabPanel header="Room Rate">
+                <TabPanel v-if="can_view_rate"  header="Room Rate">
                     <ComReservationRoomRate />
                 </TabPanel>
 
@@ -142,7 +142,7 @@ import ComReservationStayAddMore from './components/ComReservationStayAddMore.vu
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
 const moment = inject('$moment');
-
+const can_view_rate = window.can_view_rate
 const loading = ref(false)
 const route = useRoute()
 

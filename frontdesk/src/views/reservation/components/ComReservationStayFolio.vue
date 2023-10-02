@@ -23,18 +23,9 @@ import ComReservationStayFolioTransactionDebitCreditStyle from "@/views/reservat
 import ComReservationStayFolioTransactionSimpleListStyle from "@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionSimpleListStyle.vue"
 import ComNewReservationStayFolio from "@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue"
 import { useDialog } from 'primevue/usedialog';
-import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, computed, useToast } from '@/plugin';
-import Tooltip from 'primevue/tooltip';
-
-const toast = useToast();
+import { inject, ref, } from '@/plugin';
 const dialog = useDialog();
-const confirm = useConfirm();
-const frappe = inject('$frappe')
-const db = frappe.db();
 const rs = inject("$reservation_stay")
-const moment = inject("$moment")
-const gv = inject("$gv")
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 

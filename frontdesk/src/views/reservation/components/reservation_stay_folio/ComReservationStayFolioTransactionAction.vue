@@ -32,7 +32,6 @@
             </template>
         </Menu>
     </div>
-    <ComDialogNote :header="`Delete Folio Transaction - ${data.name}`" :visible="opDelete" :loading="loading" @onOk="onDeleteFolioTransaction" @onClose="opDelete = false"/>
     </div>
     
 </template>
@@ -128,13 +127,53 @@ function onPrintFolioTransaction() {
         },
     })
 }
+
+// function onOpenDelete() {
+//     deleteApi('utils.delete_doc', { doctype: "Folio Transaction", name: props.data.name, note: note })
+//         .then((result) => {
+//             rs.onLoadReservationFolios()
+//             rs.onLoadFolioTransaction(rs.selectedFolio)
+//             setTimeout(function () {
+
+//                 rs.getReservationStay(rs.reservationStay.name);
+//             }, 2000)
+//             rs.getChargeSummary(rs.reservationStay.name)
+//             loading.value = false;
+//             opDelete.value = false
+
+//             window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+//             window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+
+//             alert(rs.reservation.name)
+//         })
+
+//         .catch((error) => {
+//             loading.value = false
+//             opDelete.value = false
+//         })
+
+// }
+
 function onOpenDelete() {
-    opDelete.value = true
-}
-function onDeleteFolioTransaction(note) {
-    loading.value = true
-    deleteApi('utils.delete_doc', { doctype: "Folio Transaction", name: props.data.name, note: note })
-        .then((result) => {
+
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: {
+                api_url: "utils.delete_doc",
+                method: "DELETE",
+                confirm_message: "Are you sure you want to delete this filio?",
+                data:{ doctype: "Folio Transaction", name: rs.selectedFolio.name },
+            },
+        props: {
+            header: "Delete Folio",
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
             rs.onLoadReservationFolios()
             rs.onLoadFolioTransaction(rs.selectedFolio)
             setTimeout(function () {
@@ -149,12 +188,10 @@ function onDeleteFolioTransaction(note) {
             window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
 
             alert(rs.reservation.name)
-        })
+         
+         }
 
-        .catch((error) => {
-            loading.value = false
-            opDelete.value = false
-        })
+    });
 
 }
 </script>

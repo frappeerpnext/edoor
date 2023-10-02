@@ -45,7 +45,10 @@
   "check_out_role",
   "column_break_nwvn",
   "can_see_rate_and_amount_role",
-  "run_night_audit_role"
+  "run_night_audit_role",
+  "cancel_reservation_role",
+  "void_reservation_role",
+  "no_show_reservation_role"
  ],
  "fields": [
   {
@@ -275,12 +278,33 @@
    "fieldtype": "Link",
    "label": "Run Night Audit Role",
    "options": "Role"
+  },
+  {
+   "default": "Frontdesk Clerk",
+   "fieldname": "cancel_reservation_role",
+   "fieldtype": "Link",
+   "label": "Cancel Reservation Role",
+   "options": "Role"
+  },
+  {
+   "default": "Frontdesk Clerk",
+   "fieldname": "void_reservation_role",
+   "fieldtype": "Link",
+   "label": "Void Reservation Role",
+   "options": "Role"
+  },
+  {
+   "default": "Frontdesk Clerk",
+   "fieldname": "no_show_reservation_role",
+   "fieldtype": "Link",
+   "label": "No Show Reservation Role",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-02 14:40:59.365391",
+ "modified": "2023-10-02 23:49:54.315770",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

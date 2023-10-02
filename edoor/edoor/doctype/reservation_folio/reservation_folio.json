@@ -255,7 +255,7 @@
    "link_fieldname": "folio_number"
   }
  ],
- "modified": "2023-09-22 15:30:36.545304",
+ "modified": "2023-10-02 15:28:01.636558",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",
@@ -306,6 +306,18 @@
    "read": 1,
    "report": 1,
    "role": "Frontdesk Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Night Auditor",
    "share": 1,
    "write": 1
   }

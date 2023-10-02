@@ -120,7 +120,8 @@ function onChangeStatus(reservation_status){
                     reserved_room: false,
                     status: reservation_status,
                     show_reserved_room:reservation_status=="No Show"?true:false,
-                    stays: [props.data]
+                    stays: [{name:props.data.name,reservation_status: props.data.reservation_status}]
+                    
                 },
 
             }

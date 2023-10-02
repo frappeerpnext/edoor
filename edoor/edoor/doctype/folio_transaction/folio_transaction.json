@@ -775,7 +775,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-12 11:01:46.427987",
+ "modified": "2023-10-02 15:28:31.581495",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -862,6 +862,18 @@
    "read": 1,
    "report": 1,
    "role": "Sales Master Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Night Auditor",
    "share": 1,
    "write": 1
   }

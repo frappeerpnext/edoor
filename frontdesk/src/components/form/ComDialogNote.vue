@@ -18,8 +18,9 @@
 </template>
 <script setup>
 import Message from 'primevue/message';
-import { ref, onMounted, inject, postApi,deleteApi } from '@/plugin'
+import { ref, onMounted, inject, postApi, deleteApi } from '@/plugin'
 import { useToast } from "primevue/usetoast";
+
 const toast = useToast();
 
 const dialogRef = inject("dialogRef");
@@ -30,36 +31,37 @@ const data = ref()
 const note = ref("")
 const loading = ref(false)
 
- 
+
 
 function onOk() {
-    if(!note.value){
+    if (!note.value) {
         toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
         return
     }
-    
+
 
     loading.value = true
 
     data.value.data.note = note.value
-    if (data.value.method=="POST"){ 
-    postApi(data.value.api_url, data.value.data).then((r) => {
-        loading.value = false
-        dialogRef.value.close(note.value)
+
+    if (data.value.method == "POST") {
+        postApi(data.value.api_url, data.value.data).then((r) => {
+            loading.value = false
+            dialogRef.value.close(note.value)
 
 
-    }).catch(() => {
-        loading.value = false
-    })
-}else {
-    deleteApi(data.value.api_url, data.value.data).then((r) => {
-        loading.value = false
-        dialogRef.value.close(note.value)
+        }).catch(() => {
+            loading.value = false
+        })
+    } else if(data.value.method=="DELETE") {
+        deleteApi(data.value.api_url, data.value.data).then((r) => {
+            loading.value = false
+            dialogRef.value.close(note.value)
 
-    }).catch(() => {
-        loading.value = false
-    })
-}
+        }).catch(() => {
+            loading.value = false
+        })
+    }
 
 
 

@@ -453,6 +453,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
     #check master room is already check in
     #update check date and check in by in to reservation stay
 
+ 
 
     check_in_role = frappe.db.get_single_value("eDoor Setting","check_in_role")
  
@@ -639,14 +640,7 @@ def undo_check_in(reservation_stay):
     frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc.reservation, doc=None, run_commit=True)
 
 
-
     return doc
-
-
-
-
-
-
 
 
 def is_master_room_check_in(reservation,reservation_stays):
@@ -694,6 +688,8 @@ def check_out(reservation,reservation_stays=None):
     #validate user role
     #validate cashier shift 
     #remove guest and stay number from room
+    
+    validate_role("check_out_role")
     
     
     doc = frappe.get_doc("Reservation",reservation)

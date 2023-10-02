@@ -151,7 +151,7 @@
         newData.is_move = 0
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false 
-
+            window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
             rs.getReservationDetail(rs.reservationStay.name)
 
             window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
@@ -161,6 +161,8 @@
             window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
 
             window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
+
+            
 
             onClose(true)
             

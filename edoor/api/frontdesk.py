@@ -1,6 +1,6 @@
 import secrets
  
-from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio
+from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, validate_role
 import frappe
 import datetime
 import random
@@ -895,6 +895,10 @@ def run_night_audit(property, working_day):
     #2. Validate cashier shift open
     #3. validate arrival to check in 
     #3. validate departure to check out 
+
+    #validate permission
+    validate_role("run_night_audit_role")
+
     doc_property = frappe.get_doc("Business Branch", property)
     doc_working_day = frappe.get_doc("Working Day", working_day)
 

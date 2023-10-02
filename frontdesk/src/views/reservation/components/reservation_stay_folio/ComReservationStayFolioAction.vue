@@ -45,13 +45,13 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
                         <span class="ml-2">Edit Folio </span>
                     </button>
 
-                    <button @click="openFolio" v-if="rs.selectedFolio?.status == 'Closed'"
+                    <button @click="deleteFilio" v-if="rs.selectedFolio?.status == 'Closed'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-check-circle" />
                         <span class="ml-2">Open Folio</span>
                     </button>
 
-                    <button @click="openNote = true"
+                    <button @click="deleteFilio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
                         <span class="ml-2">Delete Folio</span>
@@ -65,8 +65,6 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
         </div>
     </div>
 
-    <ComDialogNote :header="`Delete Folio - ${rs.selectedFolio.name}`" :visible="openNote" :loading="loading"
-        @onOk="deleteFilio"  @onClose="onCloseNote" />
         
 </template>
 <script setup>
@@ -74,8 +72,8 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, computed, useToast, deleteApi,updateDoc } from '@/plugin';
-import ComNote from '@/components/form/ComNote.vue';
+import { inject, ref, useToast,updateDoc } from '@/plugin';
+
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
@@ -83,16 +81,12 @@ import ComPrintReservationStay from "@/views/reservation/components/ComPrintRese
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const dialog = useDialog();
 const confirm = useConfirm();
-const frappe = inject('$frappe');
-const call = frappe.call();
-const db = frappe.db();
+
 const toast = useToast();
-const rs = inject("$reservation_stay")  //reservation
-const r = inject("$reservation")  //reservation
+const rs = inject("$reservation_stay")  
 
 const gv = inject("$gv")
-const openNote = ref(false)
-const loading = ref(false)
+
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 
@@ -204,7 +198,6 @@ function onAddFolioTransaction(account_code) {
                     rs.onLoadFolioTransaction(rs.selectedFolio)
                     rs.getChargeSummary(rs.reservationStay.name)
                     setTimeout(function () {
-                        // loading.value = false
                         rs.getReservationStay(rs.reservationStay.name);
                         //send websocket to update reservation detail
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
@@ -326,9 +319,7 @@ function openFolio() {
 
     })
 }
-function onCloseNote() {
-    openNote.value = false
-}
+ 
 
 function closeFolio() {
     confirm.require({
@@ -353,34 +344,55 @@ function closeFolio() {
     });
 }
 
-function deleteFilio(note) {
+function deleteFilio() {
     if (!rs.selectedFolio.name) {
         gv.toast('warn', 'Please select a Folio.')
         return
     }
-    loading.value = true,
-    deleteApi('utils.delete_doc', { doctype: "Reservation Folio", name: rs.selectedFolio.name, note: note }, "Delete Folio Successfully")
-        .then((result) => {
-            rs.onLoadReservationFolios().then(() => {
-                if (rs.folios.length > 0) {
-                    // default select
-                    let defaultSelectFolio = ref(rs.folios.find(r => r.is_master == true))
-                    if (!defaultSelectFolio.value) {
-                        defaultSelectFolio.value = rs.folios[0]
+
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: {
+                api_url: "utils.delete_doc",
+                method: "DELETE",
+                confirm_message: "Are you sure you want to delete this filio?",
+                data:{ doctype: "Reservation Folio", name: rs.selectedFolio.name },
+            },
+        props: {
+            header: "Delete Folio",
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+             const data = options.data;
+             if (data) {
+                //when delete success
+                rs.onLoadReservationFolios().then(() => {
+                    if (rs.folios.length > 0) {
+                        // default select
+                        let defaultSelectFolio = ref(rs.folios.find(r => r.is_master == true))
+                        if (!defaultSelectFolio.value) {
+                            defaultSelectFolio.value = rs.folios[0]
+                        }
+                        rs.onLoadFolioTransaction(defaultSelectFolio.value)
+                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     }
-                    rs.onLoadFolioTransaction(defaultSelectFolio.value)
-                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                }
-                loading.value = false;
-                openNote.value = false
+                   
+        
             })
-        }).catch((error) => {
-            loading.value = false;
-            openNote.value = false 
-        })
+        
+             }
+         }
+
+    });
+
+
+    
 
 }
-function deleteFiliox(){
-    gv.toast('success', 'xx')
-}
+
 </script>

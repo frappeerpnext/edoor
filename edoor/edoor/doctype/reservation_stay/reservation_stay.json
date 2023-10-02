@@ -828,7 +828,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-09-18 09:48:14.782617",
+ "modified": "2023-10-02 15:26:37.492549",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
@@ -892,6 +892,18 @@
    "read": 1,
    "report": 1,
    "role": "Reservation User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Night Auditor",
    "share": 1,
    "write": 1
   }

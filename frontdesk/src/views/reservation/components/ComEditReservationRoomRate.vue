@@ -233,7 +233,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, useToast, getDoc, postApi, getApi } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, getApi } from "@/plugin"
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';

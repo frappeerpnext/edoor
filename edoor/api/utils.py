@@ -332,7 +332,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 sum(if(type='Credit',amount,0)) as credit
             from `tabFolio Transaction` 
             where
-                reservation_stay = '{}'
+                reservation_stay = '{}' and 
+                transaction_type = 'Reservation Folio'
             group by account_category
         """.format(
                 doc.name
@@ -673,18 +674,28 @@ def update_reservation_stay_and_reservation(reservation_stay, reservation):
     update_reservation(name=reservation, doc=None, run_commit=True)
 
 
-    
-def validate_role(role_name, message = None):
 
-    #check if edoor setting config allow enter back date transaction
-    if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1: 
-        #check user permission if have permission for back date
+    
+def validate_role(role_name, message = None,is_backdate_transaction =True):
+
+    if is_backdate_transaction==True:
+        #check if edoor setting config allow enter back date transaction
+        if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1: 
+            #check user permission if have permission for back date
+            role = frappe.db.get_single_value("eDoor Setting",role_name)
+            if role:
+                if not role in frappe.get_roles(frappe.session.user):
+                    frappe.throw(message or "You don't have permission to perform this action")
+            else:
+                frappe.throw(message or "You don't have permission to perform this action")
+    else:
         role = frappe.db.get_single_value("eDoor Setting",role_name)
         if role:
             if not role in frappe.get_roles(frappe.session.user):
                 frappe.throw(message or "You don't have permission to perform this action")
         else:
             frappe.throw(message or "You don't have permission to perform this action")
+    
 
 @frappe.whitelist()
 def can_view_rate():

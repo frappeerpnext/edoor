@@ -210,6 +210,7 @@ function onUndoCheckIn() {
                 window.socket.emit("RefresheDoorDashboard", doc.message.property)
                 window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
                 window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
                 
                 setTimeout(() => {
                     emit('onRefresh')
@@ -246,6 +247,7 @@ function OnUndoCheckOut() {
                 window.socket.emit("RefresheDoorDashboard", doc.message.property)
                 window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
                 window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
+                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
                 rs.loading = false
                 setTimeout(() => {
                     emit('onRefresh')
@@ -303,7 +305,6 @@ function onUpdateReservationStatus(header="Confirm Note",data){
              if (data) {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-                console.log("sdf");
                 window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
                 window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_iframe_in_modal"})

@@ -48,9 +48,7 @@ onMounted(() => {
     loadData(props.date)
 })
 
-onUnmounted(() => {  
-    window.socket.off("RefreshData");
-})
+
 
 function loadData(date,show_loading = true){
     loading.value = show_loading
@@ -76,4 +74,7 @@ function loadData(date,show_loading = true){
         loading.value = false
     })
 }
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
+})
 </script>
