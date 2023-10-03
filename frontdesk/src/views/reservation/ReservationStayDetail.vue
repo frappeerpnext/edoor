@@ -82,7 +82,7 @@
                             </div>
                             <div class="col-4">
                                 <div class="grid">
-                                    <ComReservationStayDetailChargeSummary @onViewReservation="OnViewReservation()" />
+                                    <ComReservationStayDetailChargeSummary v-if="can_view_rate" @onViewReservation="OnViewReservation()" />
                                     <ComArrivalAndDeparture />
                                 </div>
                             </div>
@@ -160,18 +160,16 @@
 </template>
 <script setup>
 
-import { inject, ref, onMounted, computed, useToast, useRoute, useRouter, onUnmounted, useDialog, postApi, getCount } from '@/plugin'
+import { inject, ref, onMounted, computed, useRoute, useRouter, onUnmounted, useDialog, postApi, getCount } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
 
 import ComReservationStayRoomRate from '@/views/reservation/components/ComReservationStayRoomRate.vue';
-import ComCardProfileGuest from '@/views/reservation/components/ComCardProfileGuest.vue';
+
 import ComReservationStayDetailGuestInfo from './components/ComReservationStayDetailGuestInfo.vue';
-import ComReservationStayPanel from './components/ComReservationStayPanel.vue';
 import ComReservationStayDetailChargeSummary from './components/ComReservationStayDetailChargeSummary.vue';
-import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
+
 import ComReservationBusinessSourceAndRate from '@/views/reservation/components/ComReservationBusinessSourceAndRate.vue';
 import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
@@ -183,23 +181,22 @@ import ComReservationStayFolio from '@/views/reservation/components/ComReservati
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
-import TestPage2 from '../TestPage2.vue';
+
 import Message from 'primevue/message';
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
 const route = useRoute()
 const router = useRouter()
-const frappe = inject("$frappe")
-const call = frappe.call();
+
 const moment = inject("$moment")
 const confirm = useConfirm()
-const toast = useToast()
+ 
 const dialogRef = inject("dialogRef");
 
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
-const rsDoc = ref([])
+
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {

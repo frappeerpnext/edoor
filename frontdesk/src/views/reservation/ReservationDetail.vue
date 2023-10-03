@@ -84,7 +84,7 @@
                         </div>
                     </div>
                 </TabPanel>
-                <TabPanel header="Deposit">
+                <TabPanel v-if="can_view_rate" header="Deposit">
                     <ComReservationDeposit />
                 </TabPanel>
                 <TabPanel v-if="can_view_rate"  header="Room Rate">
@@ -107,7 +107,7 @@
         </div>
         <template #footer-left>
             <div class="flex justify-end gap-2">  
-                <!-- <SplitButton class="border-none" icon="pi pi-list" label="Mores" :model="items" /> -->
+                
                 <ComReservationMoreOptionsButton />
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
             </div>
@@ -125,7 +125,7 @@
 
 <script setup>
 import { inject, ref, onMounted, computed, useToast, useRoute, onUnmounted, useDialog, postApi } from '@/plugin'
-import { useConfirm } from "primevue/useconfirm";
+
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
 import ComReservationDetailGuestInfo from '@/views/reservation/components/ComReservationDetailGuestInfo.vue'
 import ComReservationInfo from '@/views/reservation/components/ComReservationInfo.vue'
@@ -135,24 +135,22 @@ import ComReservationDetailChargeSummary from '@/views/reservation/components/Co
 import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
 import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
 import ComReservationNote from './components/ComReservationNote.vue';
-import ComAuditTrail from '../../components/layout/components/ComAuditTrail.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
-import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
+
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
 const moment = inject('$moment');
 const can_view_rate = window.can_view_rate
-const loading = ref(false)
 const route = useRoute()
 
 const rs = inject("$reservation")
-const gv = inject("$gv")
+
  
-const confirm = useConfirm()
+
 const toast = useToast()
 const dialogRef = inject("dialogRef");
-const setting = localStorage.getItem("edoor_setting")
+
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const name = ref("")
@@ -206,8 +204,20 @@ onMounted(() => {
         }
     } else {
         name.value = dialogRef.value.data.name;
-      
-        onRefresh()
+        if(dialogRef.value.data.delay_load_data){
+            //we use delay to wait data update to reservation stay and reservation in background to fininsh update
+            //this delate is set from NewFITReservtionButton and NewGroupBookingButton
+            //and from room chart calendar in frondeks page
+            rs.loading = true
+            setTimeout(() => {
+              
+                onRefresh()
+            }, dialogRef.value.data.delay_load_data);
+        }
+        else {
+            onRefresh()
+        }
+
 
     }
     

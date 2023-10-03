@@ -39,7 +39,7 @@
                         </template>
                     </Column>
 
-                    <Column class="text-right res__room-list-right" header="Discount">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Discount">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.discount_amount" /> 
@@ -47,14 +47,14 @@
                         </template>
                     </Column>
 
-                    <Column class="text-right res__room-list-right" header="Tax">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Tax">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.total_tax" /> 
                             </span>
                         </template>
                     </Column>
-                    <Column class="text-right res__room-list-right" header="Total Charge">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Charge">
                         <template #body="{ data }">
                             <span class="text-end">
                             <CurrencyFormat :value="data.total_rate"/>

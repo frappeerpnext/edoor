@@ -356,11 +356,14 @@
                             <td class="p-2 w-12rem text-right">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
+                                   
                                     <div v-if="doc.tax_rule.rate_include_tax == 'Yes'">
+                                      
                                         <CurrencyFormat
                                             :value="((d.new_rate) * doc.reservation.room_night) * d.total_selected_room" />
                                     </div>
                                     <div v-else>
+                          
                                         <CurrencyFormat
                                             :value="roomRateTax(d) + (d.new_rate * doc.reservation.room_night * d.total_selected_room)" />
                                     </div>
@@ -620,18 +623,24 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
+            console.log(result)
             result.message.forEach((r) => {
-
+               
                 let rt = room_types.value?.find((t) => t.name == r.name)
 
                 if (rt) {
-
+                   
+                   
                     rt.total_room = r.total_room
                     rt.total_vacant_room = r.total_vacant_room
-                    rt.rate = r.rate
+                    rt.rate = r.rate.rate
+                    rt.new_rate = r.rate.rate
 
                 } else {
+  
                     r.total_selected_room = 0
+                    r.rate = r.rate.rate
+                    r.new_rate = r.new_rate.rate
                     room_types.value.push(r)
 
                 }

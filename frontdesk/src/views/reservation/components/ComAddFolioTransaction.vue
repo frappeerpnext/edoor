@@ -453,7 +453,7 @@ function onSelectAccountCode(data) {
 
             }
             if (d.use_folio_balance_as_default_amount == 1) {
-                doc.value.input_amount = balance.value
+                 doc.value.input_amount = Math.abs(  balance.value)
             }
             if (d.price>0 && !doc.value.name) {
                 doc.value.input_amount =d.price

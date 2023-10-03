@@ -37,7 +37,7 @@
           <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
             stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"
             tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
-            <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
+            <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"
               :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
               :frozen="c.frozen">
               <template #body="slotProps">
@@ -166,7 +166,7 @@
     { fieldname: 'transaction_type', label: 'Transaction Type', default: true },
     { fieldname: 'posting_date', label: 'Date', header_class: "text-center", fieldtype: "Date", default: true },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
-    { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true },
+    { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'room_number', label: 'Rooms', header_class: "text-center", default: true },
   ])
   

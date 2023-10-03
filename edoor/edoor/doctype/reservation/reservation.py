@@ -13,6 +13,7 @@ class Reservation(Document):
 			frappe.throw("Departure date cannot less than or equal to arrival date")
 
 		working_day = get_working_day(self.property)
+		
 		if not working_day:
 			frappe.throw("There is no working open")
 		else:
@@ -23,7 +24,7 @@ class Reservation(Document):
 				self.working_day = working_day["name"]
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
-
+		
 		self.pax = (self.adult or 1) + (self.child or 0)
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0) 
 		#update note & housekeeping note
@@ -47,8 +48,13 @@ class Reservation(Document):
 				note = frappe.db.get_value('Reservation Stay', self.name,'housekeeping_note')
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
+	
+		
+	
+	
 	def on_update(self):
 		frappe.db.sql("update `tabReservation Stay Room` set reservation_type = '{}' where reservation = '{}'".format(self.reservation_type, self.name))
+		
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()

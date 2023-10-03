@@ -37,6 +37,8 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
+
+ 
                 <DataTable 
                 class="res_list_scroll" 
                 :resizableColumns="true" 
@@ -48,10 +50,12 @@
                 :value="data"
                 tableStyle="min-width: 50rem" 
                 @row-dblclick="onViewReservationStayDetail">
-                    <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
+                    <Column  v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"
                         :field="c.fieldname" :header="c.label"
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
-                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                        :bodyClass="c.header_class || ''" :frozen="c.frozen"
+                        
+                        >
                         <template #body="slotProps">
                             <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
                                 @click="onOpenLink(c, slotProps.data)" link>
@@ -119,12 +123,7 @@
                 <ComSelect class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                     doctype="Business Source Type" />
-                <!-- <ComSelect class="col-3" width="100%" isFilter groupFilterField="business_source_type"
-                    :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
-                    optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                    placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" /> -->
-
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
+                    <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
                     placeholder="Reservation Type" :options="['GIT', 'FIT']" />
 
                 <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
@@ -190,11 +189,11 @@ const columns = ref([
     { fieldname: 'group_code', label: 'Group Code', extra_field: "group_name", extra_field_separator: "<br/>", default: true },
     { fieldname: 'business_source', label: 'Business Source', default: true },
     { fieldname: 'total_reservation_stay', label: 'Total Stay #', header_class: "text-center", default: true },
-    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true },
-    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true },
-    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true },
-    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true },
-    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true },
+    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate:window.can_view_rate?'Yes':'No' },
+    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true ,can_view_rate:window.can_view_rate?'Yes':'No' },
+    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
+    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
+    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'owner', label: 'Created By' },
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
     { fieldname: 'modified_by', label: 'Modified By' },

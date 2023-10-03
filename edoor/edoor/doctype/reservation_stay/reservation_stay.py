@@ -336,8 +336,7 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 	if len(deleted_old_rates) > 0:
 		for d in deleted_old_rates:
 			frappe.delete_doc('Reservation Room Rate', d.name)
-	if is_update_reservation_stay:
-		update_reservation_stay(name=self.name, run_commit=False)
+			
 	if run_commit:
 		frappe.db.commit()
 

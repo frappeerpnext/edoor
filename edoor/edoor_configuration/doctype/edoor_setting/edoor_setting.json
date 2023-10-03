@@ -46,9 +46,10 @@
   "column_break_nwvn",
   "can_see_rate_and_amount_role",
   "run_night_audit_role",
+  "column_break_bono",
+  "no_show_reservation_role",
   "cancel_reservation_role",
-  "void_reservation_role",
-  "no_show_reservation_role"
+  "void_reservation_role"
  ],
  "fields": [
   {
@@ -89,12 +90,14 @@
    "label": "Housekeeping Status"
   },
   {
+   "default": "Occupy Cleaned",
    "fieldname": "housekeeping_status_after_check_in",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Check In",
    "options": "Housekeeping Status"
   },
   {
+   "default": "Occupy Dirty",
    "fieldname": "housekeeping_status_after_run_night_audit",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Run Night Audit",
@@ -128,6 +131,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Vacant Clean",
    "fieldname": "housekeeping_status_after_undo_check_in",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check In",
@@ -156,12 +160,14 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "Vacant Dirty",
    "fieldname": "housekeeping_status_after_cancel_room_block",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Cancel Room Block",
    "options": "Housekeeping Status"
   },
   {
+   "default": "Vacant Dirty",
    "fieldname": "housekeeping_status_after_check_out",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Check Out",
@@ -172,6 +178,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Occupy Dirty",
    "fieldname": "housekeeping_status_after_undo_check_out",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check Out",
@@ -208,6 +215,7 @@
    "options": "Report"
   },
   {
+   "default": "Vacant Dirty",
    "fieldname": "hk_status_rb_release_after_audit",
    "fieldtype": "Link",
    "label": "Housekeeping Status of Release Room Block After Run Night Audit",
@@ -299,12 +307,16 @@
    "fieldtype": "Link",
    "label": "No Show Reservation Role",
    "options": "Role"
+  },
+  {
+   "fieldname": "column_break_bono",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-02 23:49:54.315770",
+ "modified": "2023-10-02 23:55:50.776594",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

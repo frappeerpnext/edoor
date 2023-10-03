@@ -63,12 +63,14 @@
                 </ComStayInfoNoBox> 
                 <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 
             </table>
+            <template v-if="can_view_rate" >
             <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div> 
             <table class="w-full" v-if="hk.selectedRow.summary">
                 <ComStayInfoNoBox  label="TOTAL DEBIT" :value="gv.currencyFormat(hk.selectedRow.summary.debit)" />  
                 <ComStayInfoNoBox  label="TOTAL CREDIT" :value="gv.currencyFormat(hk.selectedRow.summary.credit)" />  
                 <ComStayInfoNoBox  label="BALANCE" :value="gv.currencyFormat(hk.selectedRow.summary.debit-hk.selectedRow.summary.credit)" />
             </table>
+            </template>
         </div>
         <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
             <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>

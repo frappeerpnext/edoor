@@ -43,7 +43,8 @@ function onClick() {
 function onViewReservationDetail(name) {
     const dialogRef = dialog.open(ReservationDetail, {
         data: {
-            name: name
+            name: name,
+            delay_load_data:1500
         },
         props: {
             header: 'Reservation Detail',

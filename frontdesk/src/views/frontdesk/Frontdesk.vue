@@ -308,11 +308,13 @@ const calendarOptions = reactive({
 
     eventClick: ((info) => {
         // alert(info.event._def)
+
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
             info.event._def.date = info.event.start;
+            alert(info.event._def)
             // window.postMessage(info.event._def, '*')
             openRoomBlock(info.event._def)
         }
@@ -693,7 +695,8 @@ function showReservationStayDetail(name) {
 function showReservationDetail(name) {
     const dialogRef = dialog.open(ReservationDetail, {
         data: {
-            name: name
+            name: name,
+            delay_load_data:1500
         },
         props: {
             header: 'Reservation Detail',

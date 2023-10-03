@@ -61,7 +61,7 @@
         </Column>
     </DataTable>
 
-    <div class="w-full flex justify-content-end my-2" id="detl_foloi">
+    <div v-if="can_view_rate" class="w-full flex justify-content-end my-2" id="detl_foloi">
         <div class="w-30rem">
             <div v-for="(item, index) in rs?.folio_summary" :key="index" class="flex mt-2 gap-2">
                 <ComBoxStayInformation :title="item?.account_category || 'Undefine'" :value="item?.amount || 0" isCurrency
@@ -95,7 +95,7 @@ import ComFolioTransactionDetail from '@/views/reservation/components/reservatio
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioTransactionAction from './ComReservationStayFolioTransactionAction.vue';
 const gv = inject('$gv');
-
+const can_view_rate=window.can_view_rate;
 const dialog = useDialog();
 const show = ref()
  

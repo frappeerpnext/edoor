@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_city_ledger, update_reservation_folio, update_reservation_stay,update_reservation,get_base_rate
+from edoor.api.utils import update_city_ledger, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import now
 
@@ -233,9 +233,7 @@ class FolioTransaction(Document):
 		if self.transaction_type=='Reservation Folio':
 			update_reservation_folio(self.transaction_number, None, False)
 
-
-		frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
-		frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
+		frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 		#update reservation stay and reservation of target folio transfer after delete
 		sql = "select distinct transaction_type, transaction_number, reservation, reservation_stay from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
@@ -247,8 +245,8 @@ class FolioTransaction(Document):
 			if d["transaction_type"] =="Reservation Folio":
 				frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
 			
-			frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=d["reservation_stay"], doc=None, run_commit=False)
-			frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=d["reservation"], doc=None, run_commit=False)
+			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=d["reservation_stay"],reservation=d["reservation"])
+
 		
 		#check if folio transaction is city ledger then update city leder summary
 		if self.city_ledger:
@@ -302,12 +300,9 @@ def update_folio_transaction(self):
 	#update to reservation stay and reservation
 	if not self.parent_reference:	
 		if self.transaction_type=="Reservation Folio": 
-			update_reservation_stay(self.reservation_stay,None, False)
-			update_reservation(self.reservation,None, False)
+			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
+
 		
-		# frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=self.reservation_stay, doc=None, run_commit=False)
-		# frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=self.reservation, doc=None, run_commit=False)
-	
 	if self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
 

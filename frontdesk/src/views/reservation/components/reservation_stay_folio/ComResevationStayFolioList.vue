@@ -19,7 +19,7 @@
                         <span class="flex flex-column align-items-start w-full">
                             <span class="flex justify-content-between w-full">
                                 <span class="line-height-2">{{ item.name }}</span>
-                                <span class="line-height-2">
+                                <span v-if="can_view_rate" class="line-height-2">
                                     <CurrencyFormat :value="item.balance" class="white-space-nowrap" />
                                 </span>
                             </span>
@@ -48,7 +48,7 @@
                 </template>
             </div>
 
-            <div :class="rs.is_page == true ? 'flex flex-column bg-white mt-3' : 'flex flex-column bg-white mt-3 fixed'" style="width: 250px;bottom:0px;z-index: 1;">
+            <div v-if="can_view_rate" :class="rs.is_page == true ? 'flex flex-column bg-white mt-3' : 'flex flex-column bg-white mt-3 fixed'" style="width: 250px;bottom:0px;z-index: 1;">
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
                     <div class="pr-3"><label>Total Debit</label></div>
                     <div><span>
@@ -94,7 +94,7 @@ const dialog = useDialog();
 const toast = useToast();
 const gv = inject('$gv')
 const moment = inject('$moment')
-
+const can_view_rate= window.can_view_rate;
 function onClick(data) {
     rs.onLoadFolioTransaction(data)
 }

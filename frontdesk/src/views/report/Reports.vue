@@ -16,7 +16,6 @@
         <SplitterPanel :size="75" class="pa-4">
             <div v-if="selectedReport" class="p-2">
                 <ComReportFilter @onFilter="onFilter" :selectedReport="selectedReport" />
-                <!-- {{ url }}{{ selectedReport.report_name }} -->
                 <iframe @load="onIframeLoaded()" style="height:700px" id="iframe" width="100%" :src="url"></iframe>
             </div>
             <div v-else class="p-2 flex align-items-center h-100 justify-center">
@@ -43,11 +42,12 @@ const selectedReport = ref()
 const filters = ref({})
 
 function onSelectReport(p) {
-
+   
     selectedReport.value = p
     loadIframe()
 }
 function onFilter(f) {
+    
     if (selectedReport.value) {
         filters.value = f
 
@@ -68,13 +68,7 @@ function onIframeLoaded() {
     } else {
         iframe.style.overflowX = 'auto';
     }
-
-    // iframe.style.minWidth ="0px"
-    // iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-
-    // iframe.style.height = '0px';
-    // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-
+ 
 }
 
 

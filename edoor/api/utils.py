@@ -22,8 +22,8 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
             sql = "select fieldname,options,fetch_from from `tabDocField` where  fetch_from <> '' and fetch_if_empty = 0 and parent='{}' and fetch_from like '{}.%'".format(d.parent, d["fieldname"])
             fetch_fields = frappe.db.sql(sql, as_dict=1)
             for  f in fetch_fields:
-                sql = "update `tab{}` set {}='{}' where {}='{}'".format(d["parent"],f["fieldname"],doc.get(f["fetch_from"].split(".")[1]),f["fetch_from"].split(".")[0], doc.name)
-                frappe.db.sql(sql)
+                sql = "update `tab{}` set {}=%(value)s where {}='{}'".format(d["parent"],f["fieldname"],f["fetch_from"].split(".")[0], doc.name)
+                frappe.db.sql(sql,{"value":doc.get(f["fetch_from"].split(".")[1])})
                 #frappe.msgprint(sql)
 
 
@@ -670,7 +670,13 @@ def update_photo(data):
 
 @frappe.whitelist()
 def update_reservation_stay_and_reservation(reservation_stay, reservation):
-    update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
+    #check if user pass array
+    if isinstance(reservation_stay, list):
+        for s in reservation_stay:
+            update_reservation_stay ( name=s, doc=None, run_commit=True)
+    else:
+        update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
+
     update_reservation(name=reservation, doc=None, run_commit=True)
 
 
@@ -688,14 +694,16 @@ def validate_role(role_name, message = None,is_backdate_transaction =True):
                     frappe.throw(message or "You don't have permission to perform this action")
             else:
                 frappe.throw(message or "You don't have permission to perform this action")
-    else:
-        role = frappe.db.get_single_value("eDoor Setting",role_name)
-        if role:
-            if not role in frappe.get_roles(frappe.session.user):
-                frappe.throw(message or "You don't have permission to perform this action")
-        else:
-            frappe.throw(message or "You don't have permission to perform this action")
+
+       
     
+def check_user_permission(role_name,message = None):
+    role = frappe.db.get_single_value("eDoor Setting",role_name)
+    if role:
+        if not role in frappe.get_roles(frappe.session.user):
+            frappe.throw(message or "You don't have permission to perform this action")
+    else:
+        frappe.throw(message or "You don't have permission to perform this action")
 
 @frappe.whitelist()
 def can_view_rate():

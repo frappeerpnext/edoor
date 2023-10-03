@@ -200,7 +200,9 @@ function onUndoCheckIn() {
         accept: () => {
             rs.loading = true
             postApi("reservation.undo_check_in", {
-                reservation_stay: rs.reservationStay.name
+                reservation_stay: rs.reservationStay.name,
+                reservation: rs.reservationStay.reservation,
+                property:window.property
             },
                 "Undo check in successfully"
             ).then((doc) => {

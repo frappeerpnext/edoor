@@ -65,18 +65,18 @@
 </template>
 </ComReservationStayPanel>  
 
-    <!-- <Button @click="onSave()">Save</Button> -->
+   
 </ComDialogContent>
 </template>
 <script setup>
 import { ref, getApi, inject, onMounted, postApi, computed } from "@/plugin"
 import Message from "primevue/message";
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
-import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
+
 const loading = ref(false)
 const dialogRef = inject("dialogRef");
 const data = ref([])
-const gv = inject('$gv');
+
 const moment = inject("$moment")
 const reservation = ref({})
 const room_data = ref([])
@@ -129,7 +129,7 @@ function onSave() {
     }).then((result) => {
         socket.emit("RefresheDoorDashboard", reservation.value.property);
         socket.emit("RefreshReservationDetail", reservation.value.name);
-        dialogRef.value.close()
+        dialogRef.value.close("open_reservation_detail")
         loading.value = false
     }).catch((err) => {
         loading.value = false

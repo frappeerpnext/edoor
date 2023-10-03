@@ -5,8 +5,10 @@ from frappe.utils.data import strip
 import datetime
 import uuid
 def execute(filters=None): 
-	data = get_report_data(filters)
-	return get_columns(filters),data
+	data = get_get_reservation_stay(filters)
+	summary = get_summary(data)
+	report_data = get_report_data(filters,data)
+	return get_columns(filters),report_data,None,None, summary
 
 def validate(filters):
 	datediff = date_diff(filters.end_date, filters.start_date)
@@ -39,6 +41,18 @@ def get_columns(filters):
 		# {"fieldname":"modified", "label":"Modified", "fieldtype":"Datetime","width":95},
 	]
 	return columns
+
+
+def get_summary(data):
+	return [
+		{ "label":"Total Room","value":len(data)},
+		{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ])},
+	]
+
+def get_chart(data):
+	pass
+
+	
 
 def get_filters(filters):
 	sql = " and property=%(property)s "
@@ -158,46 +172,48 @@ def get_reservation(filters):
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation"] for d in data]
 
-
-def get_report_data(filters):
+def get_get_reservation_stay(filters):
 	sql="""
-		select 
-			name,
-			reservation_date,
-			arrival_date,
-			departure_date,
-			rooms,
-			modified,
-			creation,
-			reservation_type,
-			reservation,
-			room_type_alias,
-			room_types,
-			nationality,
-			business_source,
-			adult,
-			child,
-			concat(adult,'/',child) as pax,
-			room_nights,
-			business_source_type,
-			rate_type,
-			guest,
-			guest_name,
-			is_active_reservation,
-			reservation_status,
-			total_debit,
-			total_credit,
-			balance
-		from `tabReservation Stay` rst
-		where
-			1=1  
-			{}
-		
-	""".format(get_filters(filters))
+			select 
+				name,
+				reservation_date,
+				arrival_date,
+				departure_date,
+				rooms,
+				modified,
+				creation,
+				reservation_type,
+				reservation,
+				room_type_alias,
+				room_types,
+				nationality,
+				business_source,
+				adult,
+				child,
+				concat(adult,'/',child) as pax,
+				room_nights,
+				business_source_type,
+				rate_type,
+				guest,
+				guest_name,
+				is_active_reservation,
+				reservation_status,
+				total_debit,
+				total_credit,
+				balance
+			from `tabReservation Stay` rst
+			where
+				1=1  
+				{}
+			
+		""".format(get_filters(filters))
 
 	
 
 	data =   frappe.db.sql(sql,filters,as_dict=1)
+	return data
+
+def get_report_data(filters,data):
 
 	if filters.group_by:
 		group_column = get_group_by_column(filters)

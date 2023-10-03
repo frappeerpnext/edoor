@@ -1,5 +1,4 @@
 <template>
-
     <div v-if="showFilter" class="flex justify-between">
         <div class="col-10">
         <div class="grid">
@@ -129,7 +128,7 @@
         </div>
 </template>
 <script setup>
-import { ref, inject } from "@/plugin"
+import { ref, inject,onMounted } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 const emit = defineEmits(['onFilter'])
@@ -160,6 +159,7 @@ const showAdvanceSearch = ref()
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
+
 const filter = ref({
     letterhead: setting.property.default_letter_head,
     _lang: user.language || "en",
@@ -182,6 +182,7 @@ const hasFilter = ref((f) => {
 
 function onSearch() {
     let f = {}
+   
     const filter_option = props.selectedReport.filter_option + ",_lang,letterhead"
     if (filter_option) {
         filter_option.split(",").forEach(r => {
@@ -198,7 +199,11 @@ function onSearch() {
     if (f.end_date) {
         f.end_date = moment(f.end_date).format("YYYY-MM-DD")
     }
-
+    window.report_filter = filter.value
     emit("onFilter", f)
 }
+
+onMounted(() => {
+    onSearch()
+})
 </script>
