@@ -133,7 +133,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onUnmounted , onMounted} from '@/plugin'
+import { inject, ref, onUnmounted} from '@/plugin'
 import { useToast } from "primevue/usetoast";
 import { useDialog } from 'primevue/usedialog';
 
@@ -148,10 +148,10 @@ import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 
-import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
-import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
-import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
-import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
+// import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
+// import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
+// import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
+// import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
  
 const toast = useToast();
 const moment = inject("$moment")

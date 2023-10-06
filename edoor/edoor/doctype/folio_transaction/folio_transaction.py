@@ -11,8 +11,11 @@ from frappe.utils.data import now
 class FolioTransaction(Document):
 	def validate(self):
 		if not self.is_new():
-			if self.is_auto_post ==1:
-				frappe.throw("You cannot edit auto post transaction")
+				if self.is_auto_post ==1:
+					if not hasattr(self,"ignore_validate_auto_post"):
+						frappe.throw("You cannot edit auto post transaction")
+		
+
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:
 			self.note_by = frappe.session.user
@@ -186,6 +189,8 @@ class FolioTransaction(Document):
 	
 		if not self.parent_reference:
 			update_sub_account_description(self)
+
+
 	def after_insert(self):
 		update_folio_transaction(self)
 
@@ -195,7 +200,8 @@ class FolioTransaction(Document):
 
 	def on_update(self):
 		if not self.is_new():
-			update_folio_transaction(self)
+			if not hasattr(self,"ignore_update_folio_transaction"):
+				update_folio_transaction(self)
 		
 
 	def on_trash(self):
@@ -314,6 +320,7 @@ def update_folio_transaction(self):
 
 
 def update_sub_account_description(self):
+	
 	if self.discount_account:
 		if self.discount_amount == 0:
 			self.discount_description = ""
@@ -354,6 +361,7 @@ def update_sub_account_description(self):
 			account_name = frappe.db.get_value("Account Code", self.bank_fee_account,"account_name")
 			self.bank_fee_description = '{} - {}% of {}'.format(account_name, self.bank_fee, fmt_money(amount=self.input_amount, currency=frappe.db.get_default("currency")))
 		
+
 
 def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 		

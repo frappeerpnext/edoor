@@ -1,19 +1,23 @@
 <template>
+    {{ }}
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-3">
         <div>
-            
-             <template v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab==1)" :key="index">
-                <Button 
-                    @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
-v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) == 1 && (rs.reservationStay.allow_post_to_city_ledger || 0)==1 )" 
-                    >Post {{ d.account_name }}</Button>
-             </template>    
-        
+
+            <template
+                v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab == 1)"
+                :key="index">
+                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
+                    v-if="(d.is_city_ledger_account || 0) == 0 || ((d.is_city_ledger_account || 0) == 1 && (rs.reservationStay.allow_post_to_city_ledger || 0) == 1)">Post
+                    {{ d.account_name }}</Button>
+            </template>
+
             <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
-                <template #end> 
-                    <template v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab==1)" :key="index">
+                <template #end>
+                    <template
+                        v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab == 1)"
+                        :key="index">
                         <button
                             v-if="d.is_city_ledger_account == 0 || (d.is_city_ledger_account == 1 && rs.reservationStay.allow_post_to_city_ledger == 1)"
                             @click="onAddFolioTransaction(d)"
@@ -28,7 +32,7 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
                         <span class="ml-2"> Mark as Master Folio</span>
                     </button>
 
-                    <button @click="toggle"
+                    <button @click="onTransferFolioItem"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-arrow-right-arrow-left" />
                         <span class="ml-2">Transfer Items</span>
@@ -61,29 +65,29 @@ v-if="(d.is_city_ledger_account || 0)==0  || ((d.is_city_ledger_account || 0) ==
             </Menu>
         </div>
         <div>
-            <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
+            <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
+                :model="print_menus" />
         </div>
     </div>
-
-        
 </template>
 <script setup>
 
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast,updateDoc } from '@/plugin';
+import { inject, ref, useToast, updateDoc } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComFolioTransfer from "./ComFolioTransfer.vue";
 const dialog = useDialog();
 const confirm = useConfirm();
 
 const toast = useToast();
-const rs = inject("$reservation_stay")  
+const rs = inject("$reservation_stay")
 
 const gv = inject("$gv")
 
@@ -100,28 +104,28 @@ const toggle = (event) => {
 
 const print_menus = ref([])
 
-function viewFolioSummaryReport(){
-    
-    dialog.open(ComPrintReservationStay, {
-            data: {
-                doctype: "Reservation%20Stay",
-                reservation_stay: rs.reservationStay.name,
-                folio_number: rs.selectedFolio.name,
-                report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
-                view: "print"
-            },
-            props: {
-                header: "Folio Summary Report",
-                style: {
-                    width: '80vw',
-                },
-                position:"top",
-                modal: true,
-                maximizable: true,
-                closeOnEscape: false
+function viewFolioSummaryReport() {
 
+    dialog.open(ComPrintReservationStay, {
+        data: {
+            doctype: "Reservation%20Stay",
+            reservation_stay: rs.reservationStay.name,
+            folio_number: rs.selectedFolio.name,
+            report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+            view: "print"
+        },
+        props: {
+            header: "Folio Summary Report",
+            style: {
+                width: '80vw',
             },
-        });
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+
+        },
+    });
 }
 
 //Folio Summary Report
@@ -154,11 +158,11 @@ print_menus.value.push({
                 style: {
                     width: '80vw',
                 },
-                position:"top",
+                position: "top",
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false
-              
+
             },
         });
     }
@@ -170,12 +174,12 @@ function onAddFolioTransaction(account_code) {
     if (rs.selectedFolio.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
-                new_doc:{
-                    transaction_type:"Reservation Folio",
-                    transaction_number:rs.selectedFolio.name,
-                    reservation:rs.reservation.name,
+                new_doc: {
+                    transaction_type: "Reservation Folio",
+                    transaction_number: rs.selectedFolio.name,
+                    reservation: rs.reservation.name,
                     property: rs.reservation.property,
-                    account_group:account_code.name
+                    account_group: account_code.name
                 },
                 balance: rs.totalDebit - rs.totalCredit
             },
@@ -201,7 +205,7 @@ function onAddFolioTransaction(account_code) {
                         rs.getReservationStay(rs.reservationStay.name);
                         //send websocket to update reservation detail
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                        window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+                        window.socket.emit("RefreshData", { reservation_stay: rs.reservationStay.name, action: "refresh_reservation_stay" })
                     }, 2000)
                     if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {
@@ -226,7 +230,7 @@ function showPrintPreview(data) {
             doctype: "Folio Transaction",
             name: data.name,
             report_name: data.print_format,
-            show_letter_head:true
+            show_letter_head: true
         },
         props: {
             header: 'Print Preview',
@@ -265,40 +269,39 @@ function EditFolio(is_edit) {
     })
 }
 function MarkasMasterFolio() {
-    if (rs.selectedFolio.status == "Open"){
+    if (rs.selectedFolio.status == "Open") {
         confirm.require({
-        target: event.currentTarget,
-        header: 'Mark Folio ' + rs.selectedFolio.name + ' as Master Folio',
-        message: 'Do you want to Mark this Folio ' + rs.selectedFolio.name + ' as Master Folio?',
-        icon: 'pi pi-info-circle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptLabel: 'Ok',
-        acceptIcon: 'pi pi-check-circle',
+            target: event.currentTarget,
+            header: 'Mark Folio ' + rs.selectedFolio.name + ' as Master Folio',
+            message: 'Do you want to Mark this Folio ' + rs.selectedFolio.name + ' as Master Folio?',
+            icon: 'pi pi-info-circle',
+            acceptClass: 'border-none crfm-dialog',
+            rejectClass: 'hidden',
+            acceptLabel: 'Ok',
+            acceptIcon: 'pi pi-check-circle',
 
-        accept: () => {
-            updateDoc('Reservation Folio', rs.selectedFolio.name, {
-                is_master: 1,
-            })
-                .then((doc) => {
-                    rs.folios.forEach(r => r.is_master = false);
-                    rs.selectedFolio.is_master = doc.is_master;
-                    toast.add({
-                        severity: 'success', summary: 'Mark Folio as Master Folio',
-                        detail: 'Mark Folio as Master Folio Successfully', life: 3000
-                    });
+            accept: () => {
+                updateDoc('Reservation Folio', rs.selectedFolio.name, {
+                    is_master: 1,
                 })
-        },
-    })
+                    .then((doc) => {
+                        rs.folios.forEach(r => r.is_master = false);
+                        rs.selectedFolio.is_master = doc.is_master;
+                        toast.add({
+                            severity: 'success', summary: 'Mark Folio as Master Folio',
+                            detail: 'Mark Folio as Master Folio Successfully', life: 3000
+                        });
+                    })
+            },
+        })
     }
-    else{
+    else {
         gv.toast('warn', 'Folio closed not allow to Mark as Master Folio.')
     }
-    
+
 }
 function openFolio() {
     confirm.require({
-        target: event.currentTarget,
         header: 'Open Folio ' + rs.selectedFolio.name,
         message: 'Are you sure you want to Open Folio ' + rs.selectedFolio.name + '?',
         icon: 'pi pi-info-circle',
@@ -319,11 +322,10 @@ function openFolio() {
 
     })
 }
- 
+
 
 function closeFolio() {
     confirm.require({
-        target: event.currentTarget,
         header: 'Close Folio ' + rs.selectedFolio.name,
         message: 'Are you sure you want to Close Folio ' + rs.selectedFolio.name + '?',
         icon: 'pi pi-info-circle',
@@ -352,11 +354,11 @@ function deleteFilio() {
 
     const dialogRef = dialog.open(ComDialogNote, {
         data: {
-                api_url: "utils.delete_doc",
-                method: "DELETE",
-                confirm_message: "Are you sure you want to delete this filio?",
-                data:{ doctype: "Reservation Folio", name: rs.selectedFolio.name },
-            },
+            api_url: "utils.delete_doc",
+            method: "DELETE",
+            confirm_message: "Are you sure you want to delete this filio?",
+            data: { doctype: "Reservation Folio", name: rs.selectedFolio.name },
+        },
         props: {
             header: "Delete Folio",
             style: {
@@ -368,8 +370,8 @@ function deleteFilio() {
             position: "top"
         },
         onClose: (options) => {
-             const data = options.data;
-             if (data) {
+            const data = options.data;
+            if (data) {
                 //when delete success
                 rs.onLoadReservationFolios().then(() => {
                     if (rs.folios.length > 0) {
@@ -381,18 +383,68 @@ function deleteFilio() {
                         rs.onLoadFolioTransaction(defaultSelectFolio.value)
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     }
-                   
-        
-            })
-        
-             }
-         }
+
+
+                })
+
+            }
+        }
 
     });
 
 
-    
+
 
 }
 
+function onTransferFolioItem() {
+
+    if (rs.selectedFolioTransactions.length == 0) {
+        toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
+        return
+    }
+
+    const dialogRef = dialog.open(ComFolioTransfer, {
+        data: { 
+                reservation:rs.reservationStay.reservation,
+                reservation_stay:rs.reservationStay.name,
+                folio_number: rs.selectedFolio.name,
+                folio_transaction:rs.selectedFolioTransactions,
+                
+            },
+        props: {
+            header: 'Folio Transfer',
+            style: {
+                width: '75vw',
+            },
+
+            modal: true,
+            position: "top"
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data) {
+
+                rs.selectedFolioTransactions.value = []
+                clearState()
+                setTimeout(() => {
+
+                    rs.onLoadFolioTransaction(rs.selectedFolio)
+                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)    
+                }, 1000);
+                
+            }
+        }
+    })
+}
+
+function clearState(){
+    let state = sessionStorage.getItem("folo_transaction_credit_debit_table_state_" + rs.selectedFolio.name )
+    if(state){
+        state = JSON.parse(state)
+         state.selection=[]
+         
+        sessionStorage.setItem("folo_transaction_credit_debit_table_state_" + rs.selectedFolio.name,JSON.stringify(state) )
+    }
+}
 </script>

@@ -130,7 +130,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed } from '@/plugin'
+import { inject, ref, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -138,7 +138,7 @@ import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLe
 
 const moment = inject("$moment")
 const gv = inject("$gv")
-const toast = useToast()
+// const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref();
 const data = ref([])

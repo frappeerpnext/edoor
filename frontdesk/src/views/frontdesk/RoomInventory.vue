@@ -85,7 +85,7 @@
     </div>
   </template>
 <script setup>
-import { ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide } from '@/plugin'
+import { ref, reactive, inject, onUnmounted, useToast, onMounted, watch, getApi, getCount, provide } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import FullCalendar from '@fullcalendar/vue3'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -104,7 +104,7 @@ import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 
-import { useTippy } from 'vue-tippy'
+// import { useTippy } from 'vue-tippy'
 
 const frappe = inject('$frappe')
 const call = frappe.call();
@@ -121,7 +121,7 @@ const fullCalendar = ref(null)
 const gv = inject("$gv")
 
 const toast = useToast();
-const dialog = useDialog();
+// const dialog = useDialog();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")

@@ -5,10 +5,18 @@ from frappe.utils.data import strip
 import datetime
 import uuid
 def execute(filters=None): 
+
+	if filters.summary_filter:
+		if not filters.summary_fields:
+			filters.summary_fields = ['total_record', 'room_night']
+
+	 
+
 	data = get_get_reservation_stay(filters)
-	summary = get_summary(data)
+	summary = get_summary(filters,data)
+	chart = get_chart(filters,data)
 	report_data = get_report_data(filters,data)
-	return get_columns(filters),report_data,None,None, summary
+	return get_columns(filters),report_data,None,chart, summary
 
 def validate(filters):
 	datediff = date_diff(filters.end_date, filters.start_date)
@@ -29,7 +37,7 @@ def get_columns(filters):
 		{"fieldname":"arrival_date", 'align':'left',"label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
 		{"fieldname":"departure_date",'align':'left', "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
 		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1,'align':'center'},
-		{'fieldname': 'pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
+		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
@@ -37,22 +45,66 @@ def get_columns(filters):
 		{'fieldname':'total_debit','label':'Debit','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'total_credit','label':'Credit', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
 		{'fieldname':'balance','label':'Balance', 'align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		# {"fieldname":"creation", "label":"Creation", "fieldtype":"Date","width":95},
-		# {"fieldname":"modified", "label":"Modified", "fieldtype":"Datetime","width":95},
 	]
 	return columns
 
 
-def get_summary(data):
-	return [
-		{ "label":"Total Room","value":len(data)},
-		{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ])},
-	]
+def get_summary(filters,data):
+	get_count = get_get_reservation_stay(filters)
+	if filters.show_summary:
+		return [
+			{ "label":"Total Room","value":len(data),"indicator":"red"},
+			{ "label":"Total Reservation","value":sum([1 for d in data if d["reservation"]]),"indicator":"red"},
+			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
+			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
+			{ "label":"Total Debit","value": sum([d["total_debit"] for d in data ]),"datatype": "Currency","indicator":"red"},
+			{ "label":"Total Credit","value":sum([d["total_credit"] for d in data ]),"datatype": "Currency","indicator":"green"},
+			{ "label":"Total Balance","value":sum([d["balance"] for d in data ]),"datatype": "Currency","indicator":"blue"},
+		]
 
-def get_chart(data):
-	pass
+def get_chart(filters,data):
+	chart_series = filters.get("chart_series")
+	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
+		return None
 
+	dataset = []
+	colors = []
+
+	report_fields = get_chart_series()
+ 
 	
+
+	group_column = get_field(filters)
+	
+
+	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
+	for d in chart_series:
+		field = [x for x in report_fields if x["label"] == d][0]
+ 
+		dataset_values = []
+		for g in group_data: 
+			dataset_values.append(
+				sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+			)
+
+		dataset.append({'name':field["label"],'values':dataset_values})
+		colors.append(field["chart_color"])
+
+ 
+	chart = {
+		'data':{
+			'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
+			'datasets':dataset
+		},
+		"type": filters.chart_type,
+		"lineOptions": {
+			"regionFill": 1,
+		},
+		'valuesOverPoints':1,
+		"axisOptions": {"xIsSeries": 1},
+		
+	}
+	return chart
 
 def get_filters(filters):
 	sql = " and property=%(property)s "
@@ -80,54 +132,29 @@ def get_filters(filters):
 	
 	if filters.reservation_type:
 		sql = sql + " and rst.reservation_type = %(reservation_type)s"
-	# elif filters.reservation_type == "GIT":
-	# 	sql = sql + " and rst.reservation_type in %(reservation_type)s"
-
+ 
 	if filters.is_active_reservation:
 		sql = sql + " and rst.is_active_reservation = %(is_active_reservation)s"
 
-	if filters.order_by == "Last Update On" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.modified asc"
-	elif filters.order_by == "Last Update On" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.modified desc"
-
-	elif filters.order_by == "Created On" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.creation asc"
-	elif filters.order_by == "Created On" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.creation desc"
-
-	elif filters.order_by == "Reservation" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.reservation asc"
-	elif filters.order_by == "Reservation" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.reservation desc"
-
-	elif filters.order_by == "Reservation Stay" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.name asc"
-	elif filters.order_by == "Reservation Stay" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.name desc"
-
-	elif filters.order_by == "Arrival Date" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.arrival_date asc"
-	elif filters.order_by == "Arrival Date" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.arrival_date desc"
-
-	elif filters.order_by == "Departure Date" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.departure_date asc"
-	elif filters.order_by == "Departure Date" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.departure_date desc"
-
-	elif filters.order_by == "Room Type" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.room_type_alias asc"
-	elif filters.order_by == "Room Type" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.room_type_alias desc"
-	
-	elif filters.order_by == "Reservation Status" and filters.sort_order == "ASC":
-		sql = sql + " order by rst.reservation_status asc"
-	elif filters.order_by == "Reservation Status" and filters.sort_order == "DESC":
-		sql = sql + " order by rst.reservation_status desc"
-		
+	sql = sql + " order by {} {}".format(
+		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
+		filters.sort_order
+	)
 
 	return sql
+
+def get_order_field():
+	return [
+		{"label":"Created On","field":"rst.creation"},
+		{"label":"Reservation","field":"rst.reservation"},
+		{"label":"Reservation Stay","field":"rst.name"},
+		{"label":"Arrival Date","field":"rst.arrival_date"},
+		{"label":"Departure Date","field":"rst.departure_date"},
+		{"label":"Room Type","field":"rst.room_type_alias"},
+		{"label":"Business Source","field":"rst.business_source"},
+		{"label":"Reservation Status","field":"rst.reservation_status"},
+		{"label":"Last Update On","field":"rst.modified"},
+		]
 
 def get_reservation_stays(filters):
 	sql = """
@@ -190,7 +217,8 @@ def get_get_reservation_stay(filters):
 				business_source,
 				adult,
 				child,
-				concat(adult,'/',child) as pax,
+				concat(adult,'/',child) as total_pax,
+				pax,
 				room_nights,
 				business_source_type,
 				rate_type,
@@ -200,7 +228,9 @@ def get_get_reservation_stay(filters):
 				reservation_status,
 				total_debit,
 				total_credit,
-				balance
+				balance,
+				1 as is_data,
+				1 as total_record
 			from `tabReservation Stay` rst
 			where
 				1=1  
@@ -236,7 +266,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
-				"pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
 				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
 				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
@@ -253,7 +283,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Grand Total",
 				"room_nights":sum([d["room_nights"] for d in data ]),
-				"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 				"total_debit":sum([d["total_debit"] for d in data]),
 				"total_credit":sum([d["total_credit"] for d in data]),
 				"balance":sum([d["balance"] for d in data ]),
@@ -271,7 +301,7 @@ def get_report_data(filters,data):
 			"total_credit":sum([d["total_credit"] for d in data]),
 			"balance":sum([d["balance"] for d in data ]),
 			"room_nights":sum([d["room_nights"] for d in data ]),
-			"pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
+			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 			"is_total_row":1
 		})
 		return data
@@ -286,6 +316,7 @@ def group_by_columns():
 		{"fieldname":"group_by","data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
 		{"fieldname":"group_by","data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
 		{"fieldname":"group_by","data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
+		{"fieldname":"group_by","data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
 		{"fieldname":"group_by","data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
 		{"fieldname":"group_by","data_field":"guest", "label":"Guest" ,"fieldtype":"Data" },
 		{"fieldname":"group_by","data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
@@ -295,4 +326,38 @@ def group_by_columns():
 		{"fieldname":"group_by","data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
 		{"fieldname":"group_by","data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
 		{"fieldname":"group_by","data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
+	]
+
+def get_field(filters):
+ 
+	return  [d for d in get_report_field() if d["label"] == filters.view_chart_by][0]
+
+def get_report_field():
+	return [
+		{"fieldname":"view_chart_by","data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
+		{"fieldname":"view_chart_by","data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
+		{"fieldname":"view_chart_by","data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
+		{"fieldname":"view_chart_by","data_field":"guest_name", "label":"Guest" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
+		{"fieldname":"view_chart_by","data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
+	]
+
+	
+
+def get_chart_series():
+	return [
+		{"fieldname":"chart_series","data_field":"total_debit","label":"Total Debit","short_label":"Debit", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"center","chart_color":"#dc9819","sql_expression":"SUM(rst.total_debit)"},
+		{"fieldname":"chart_series","data_field":"total_credit","label":"Total Credit", "short_label":"Credit", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"right","chart_color":"#1987dc","sql_expression":"SUM(rst.total_credit)"},
+		{"fieldname":"chart_series","data_field":"balance","label":"Balance", "short_label":"Balance", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"right","chart_color":"#fd4e8a","sql_expression":"SUM(rst.balance)"},
+		{"fieldname":"chart_series","data_field":"adult","label":"Adult", "short_label":"Adult", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#d7e528","sql_expression":"SUM(rst.adult)"},
+		{"fieldname":"chart_series","data_field":"child","label":"Child", "short_label":"Child", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.child)"},
+		{"fieldname":"chart_series","data_field":"pax","label":"Pax", "short_label":"Pax", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.pax)"},
+		{"fieldname":"chart_series","data_field":"room_nights","label":"Room Nights", "short_label":"Room Nights", "fieldtype":"Integer","indicator":"Red","precision":None, "align":"right","chart_color":"#3ce18e","sql_expression":"SUM(rst.room_nights)"}
 	]

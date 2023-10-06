@@ -10,7 +10,7 @@
  
 </template>
 <script setup>
-import { ref, computed,getDocList,inject,useDialog } from "@/plugin"
+import { computed,inject,useDialog } from "@/plugin"
 import ComReservationStayList from "./ComReservationStayList.vue";
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ProgressBar from 'primevue/progressbar';

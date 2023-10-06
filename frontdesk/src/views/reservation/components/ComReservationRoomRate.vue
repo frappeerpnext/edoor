@@ -21,6 +21,11 @@
       v-model:filters="filters"
       :globalFilterFields="['room_number','date_search','room_type','room_type_alias','rate_type','reservation_stay','guest_name']"
       :rowsPerPageOptions="[20, 50, 100]">
+
+      <div class="absolute bottom-6 left-4">
+        <strong>Total Records: <span class="ttl-column_re">{{rs?.room_rates.length }}</span></strong>
+       </div>
+
      
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
@@ -122,11 +127,11 @@
 </template>
 <script setup>
 import {inject, ref, onMounted,useDialog, useToast} from "@/plugin"
-import { FilterMatchMode, FilterOperator } from 'primevue/api';
+import { FilterMatchMode } from 'primevue/api';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue";
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
-import GuestDetail from "@/views/guest/GuestDetail.vue";
+// import GuestDetail from "@/views/guest/GuestDetail.vue";
 const rs = inject('$reservation')
 const dialog = useDialog();
 const toast = useToast()

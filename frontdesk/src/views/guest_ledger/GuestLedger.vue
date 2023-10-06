@@ -81,6 +81,9 @@
                 :rows="20"
                 :rowsPerPageOptions="[20, 30, 40, 50]"
                 tableStyle="min-width: 50rem">
+                <div class="absolute bottom-6 left-4">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </div>
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname"
                         :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
@@ -327,7 +330,8 @@ function loadData() {
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
     filters.property = property.name
     filters.order_by = order.value.order_by
-    filters.order_type = order.value.order_type
+    filters.order_type = order.value.order_type 
+    filters.keyword = gv.keyword(filter.value.keyword)
     call.get("frappe.desk.query_report.run", {
         report_name: edoor_setting.guest_ledger_report_name,
         filters: filters

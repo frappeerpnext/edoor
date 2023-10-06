@@ -4,6 +4,30 @@ import json
 from py_linq import Enumerable
 from frappe import local
 from frappe.utils.data import getdate
+import matplotlib.pyplot as plt
+from PIL import Image
+from frappe import _
+
+@frappe.whitelist()
+def get_chart():
+    labels = ["January", "February", "March", "April", "May", "June", "July"]
+    values = [10, 20, 30, 40, 50, 60, 70]
+
+    chart_data = {
+        "labels": labels,
+        "datasets": [
+            {
+                "name": _("Values"),
+                "values": values,
+                "chartType": "line"
+            }
+        ]
+    }
+
+    chart = frappe.Chart("My Chart", data=chart_data, type="line")
+    chart_file_path = frappe.get_app_path("my_custom_app", "public", "charts", "my_chart.png")
+    chart.save(chart_file_path)
+
 def successful_login(login_manager):
     pass
  
@@ -669,7 +693,9 @@ def update_photo(data):
     frappe.msgprint("Upload photo successfully")
 
 @frappe.whitelist()
-def update_reservation_stay_and_reservation(reservation_stay, reservation):
+def update_reservation_stay_and_reservation(reservation_stay, reservation, reservation_folio=None):
+    if reservation_folio:
+        update_reservation_folio(name=reservation_folio, doc=None, run_commit=True)
     #check if user pass array
     if isinstance(reservation_stay, list):
         for s in reservation_stay:

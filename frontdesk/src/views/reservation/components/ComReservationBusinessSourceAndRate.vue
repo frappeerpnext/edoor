@@ -33,7 +33,7 @@
 <script setup>
 import { inject, ref } from "@/plugin"
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import ComBoxStayInformation from './ComBoxStayInformation.vue';
+// import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
 import ComChangeRateType from "./ComChangeRateType.vue";
 

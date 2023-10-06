@@ -18,13 +18,11 @@
     </ComOverlayPanelContent>
 </template>     
 <script setup>
-import { ref, inject, useToast, postApi } from "@/plugin"
+import { ref, inject, postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
 const rs = inject('$reservation_stay');
-const toast = useToast()
-
 const emit = defineEmits(['onClose', 'onSave'])
 const props = defineProps({
     rate_type: {

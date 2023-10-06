@@ -782,11 +782,11 @@ function getEvent() {
         start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
         end: moment.utc(calendarOptions.visibleRange.end).format("YYYY-MM-DD"),
         property: property.name,
-        keyword: keyword.value.keyword,
+        keyword: gv.keyword(keyword.value.keyword),
         business_source: advanceFilter.value.business_source,
         room_type: advanceFilter.value.room_type,
         view_type: filter.value.view_type,
-        room_number: keyword.value.room_number,
+        room_number: gv.keyword(keyword.value.room_number),
         room_type_group: advanceFilter.value.room_type_group,
         floor: advanceFilter.value.floor
     }).then((result) => {
@@ -812,7 +812,7 @@ function getResourceAndEvent() {
             business_source: advanceFilter.value.business_source,
             room_type: advanceFilter.value.room_type,
             view_type: filter.value.view_type,
-            room_number: keyword.value.room_number,
+            room_number: gv.keyword(keyword.value.room_number),
             room_type_group: advanceFilter.value.room_type_group,
             floor: advanceFilter.value.floor
     }).then((result) => {
@@ -920,8 +920,8 @@ const onClearFilter = () => {
 }
 
 function onSearchRoom(key) {
-    advanceFilter.value.room_number = key
-    onFilterResource(advanceFilter.value)
+    advanceFilter.value.room_number = gv.keyword(key);
+    onFilterResource(advanceFilter.value);
 }
 
 provide('advance_filter', {

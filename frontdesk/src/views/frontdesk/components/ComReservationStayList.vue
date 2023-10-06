@@ -61,7 +61,7 @@ const gv = inject("$gv")
 const dialog = useDialog();
 const loading = ref(false)
 const data = ref([])
-const pageState = ref({order_by:"modified", order_type:"desc",page:0,rows:20,totalRecords:0})
+// const pageState = ref({order_by:"modified", order_type:"desc",page:0,rows:20,totalRecords:0})
 
 onMounted(() => { 
     loadData(); 

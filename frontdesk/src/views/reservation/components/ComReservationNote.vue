@@ -83,7 +83,7 @@
 </template>
 <script setup>
 import { ref, postApi, inject, onMounted } from '@/plugin'
-import ComReservationStayPanel from './ComReservationStayPanel.vue';
+// import ComReservationStayPanel from './ComReservationStayPanel.vue';
 const props = defineProps({
     doctype: String
 })

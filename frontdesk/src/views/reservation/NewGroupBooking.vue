@@ -282,26 +282,26 @@
                 <table class="w-full">
                     <thead>
                         <tr>
-                            <th class="text-left">
+                            <th class="text-left pb-1">
                                 <label>Room Type</label>
                             </th>
-                            <th class="text-center">
+                            <th class="text-center pb-1">
                                 <label class="px-2">Total Rooms</label>
                             </th>
-                            <th class="text-center">
+                            <th class="text-center pb-1">
                                 <label class="text-center px-2">Total Room Available</label>
                             </th>
-                            <th class="text-right w-15rem">
+                            <th class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Rate</label>
                             </th>
 
-                            <th class="text-right w-15rem">
+                            <th class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Tax</label>
                             </th>
-                            <th class="text-right w-15rem">
+                            <th class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Amount</label>
                             </th>
-                            <th>
+                            <th class="pb-1">
                                 <label class="text-center px-2">No. of Room</label>
                             </th>
                         </tr>
@@ -317,19 +317,19 @@
                                     {{ d.room_type }}
                                 </div>
                             </td>
-                            <td class="p-2 text-center">
+                            <td class="padding-list-booking-group text-center">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     {{ d.total_room }}
                                 </div>
                             </td>
-                            <td class="p-2 w-12rem text-center">
+                            <td class="padding-list-booking-group w-12rem text-center">
                                 <div :class="d.total_vacant_room < 0 ? 'text-red-500' : ''"
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     {{ d.total_vacant_room }}
                                 </div>
                             </td>
-                            <td class="p-2 w-12rem text-center">
+                            <td class="padding-list-booking-group w-12rem text-center">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     <span @click="onOpenChangeRate($event, d)"
@@ -347,13 +347,13 @@
                                 </div>
                             </td>
 
-                            <td class="p-2 w-12rem text-right">
+                            <td class="padding-list-booking-group w-12rem text-right">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
                             </td>
-                            <td class="p-2 w-12rem text-right">
+                            <td class="padding-list-booking-group w-12rem text-right">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                    
@@ -369,7 +369,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-2 w-12rem text-center">
+                            <td class="padding-list-booking-group w-12rem text-center">
                                 <div class="relative ">
                                     <div :class="d.total_selected_room > d.total_vacant_room ? 'tip-over-booking' : 'hidden'" v-tippy="d.room_type+' OverBooking'">Overbooking</div>
                                 <InputNumber :class="d.total_selected_room > d.total_vacant_room ? 'over-booking-box' : ''" v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0"

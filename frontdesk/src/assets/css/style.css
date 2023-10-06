@@ -553,6 +553,8 @@ span.p-button-icon.pi.pi-ellipsis-h {
     cursor: pointer;
     display: inline-block;
     width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .td_guest_cs hr {
@@ -598,7 +600,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     bottom:20px !important;
 }
 .fc .fc-scrollgrid-section.fc-scrollgrid-section-body>* {
-    padding-bottom:21px !important;
+    padding-bottom:20px !important;
 }
 .doughnut__chart_ds{
     font-size: 3rem !important;
@@ -1064,6 +1066,9 @@ p.text-center.small.page-number.visible-pdf {
 .p-dialog-maximized .dialog-ftt{
     bottom: 0 !important;
 }
+.p-dialog-maximized .total_foliolist{
+    bottom:45px !important;
+}
 .wrp-night-audit-content{
     margin-bottom: 40px;
 }
@@ -1235,13 +1240,13 @@ ul.res__hideshow{
 -moz-box-shadow: 0px 0px 0px 2px rgba(255,0,0,0.75);
 }
 .tip-over-booking{
-    height: 12px;
+    height: 16px;
     background: red;
-    padding: 0px 12px;
-    font-size: 9px;
+    padding: 0px 13px;
+    font-size: 11px;
     color: black;
     position: absolute;
-    top: -13px;
+    top: -17px;
     right: 9px;
     border-radius: 7px 7px 0px 0px;
 }
@@ -1250,4 +1255,11 @@ ul.res__hideshow{
     top: 63px;
     background-color: #eff2f7;
     z-index: 4;
+}
+.page_total_foliolist{
+    position: fixed;
+    bottom: 70px !important;
+}
+.padding-list-booking-group{
+    padding: 10px;
 }

@@ -74,7 +74,7 @@
 </ComDialogContent>
 </template>
 <script setup>
-    import {inject,ref, getApi, onMounted,postApi, useDialog, computed,watch} from '@/plugin'
+    import {inject,ref, getApi, onMounted,postApi, computed} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import Enumerable from 'linq'
     const property = JSON.parse(localStorage.getItem("edoor_property"))

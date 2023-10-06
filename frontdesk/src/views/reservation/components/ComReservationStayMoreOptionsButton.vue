@@ -124,10 +124,10 @@ const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))
 const frappe = inject('$frappe');
 const db = frappe.db();
 const loading = ref(false)
-const note = ref({
-    show:false,
-    show_reserved_room:false
-})
+// const note = ref({
+//     show:false,
+//     show_reserved_room:false
+// })
 
 
 const toggle = (event) => {
@@ -202,7 +202,7 @@ function onUndoCheckIn() {
             postApi("reservation.undo_check_in", {
                 reservation_stay: rs.reservationStay.name,
                 reservation: rs.reservationStay.reservation,
-                property:window.property
+                property:window.property.name
             },
                 "Undo check in successfully"
             ).then((doc) => {

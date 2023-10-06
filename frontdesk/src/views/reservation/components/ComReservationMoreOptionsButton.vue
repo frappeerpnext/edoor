@@ -353,7 +353,7 @@ function onGroupCheckOut(is_not_undo = false) {
                 const checkList = rs.selecteds.map((r) => r.name).join(',')
                 postApi("reservation.check_out", {
                     reservation: rs.reservation.name,
-                    reservation_stays: checkList,
+                    reservation_stays: [checkList],
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {

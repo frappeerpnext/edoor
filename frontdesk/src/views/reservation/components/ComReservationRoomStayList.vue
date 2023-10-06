@@ -77,14 +77,14 @@
     </ComReservationStayPanel>
 </template>
 <script setup>
-import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import ComReservationStayRoomListMoreOption from '../components/ComReservationStayRoomListMoreOption.vue'
-import ComReservationStayUpgradeRoom from './ComReservationStayUpgradeRoom.vue';
-import ComReservationStayAssignRoom from './ComReservationStayAssignRoom.vue';
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import ComReservationStayRoomListMoreOption from '@/views/reservation/components/ComReservationStayRoomListMoreOption.vue'
+import ComReservationStayUpgradeRoom from '@/views/reservation/components/ComReservationStayUpgradeRoom.vue';
+import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import {inject,ref,useDialog,computed   } from '@/plugin'
 import Enumerable from 'linq';
-const moment = inject('$moment')
-const selecteds = ref([])
+// const moment = inject('$moment')
+// const selecteds = ref([])
 const gv = inject('$gv');
 const rs = inject("$reservation_stay")
 const dialog = useDialog() 

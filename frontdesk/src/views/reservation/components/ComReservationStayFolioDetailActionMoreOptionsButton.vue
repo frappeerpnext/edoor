@@ -4,8 +4,8 @@
     </div>
 </template>
 <script setup>
-import { inject ,ref } from "@/plugin";
-import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
+import {ref } from "@/plugin";
+// import ComAuditTrail from '../../../components/layout/components/ComAuditTrail.vue';
 const emit = defineEmits('onAuditTrail')
 const items=ref([])
 items.value.push({

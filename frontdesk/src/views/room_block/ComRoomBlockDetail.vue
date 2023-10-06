@@ -61,10 +61,10 @@ const dialogRef = inject("dialogRef");
 const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
-const moment = inject('$moment');
+// const moment = inject('$moment');
 const dialog = useDialog()
 const data = ref()
-const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
+// const edoor_working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 
 function onEdit(){ 
     const dialogRef = dialog.open(ComEditRoomBlock, {

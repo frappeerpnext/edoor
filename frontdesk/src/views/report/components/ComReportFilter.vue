@@ -1,7 +1,7 @@
 <template>
-    <div v-if="showFilter" class="flex justify-between">
-        <div class="col-10">
-        <div class="grid">
+    <div v-if="showFilter" class="p-3">
+    <div  class="grid justify-between">
+        <div class="grid w-full">
             <div class="col" v-if="hasFilter('filter_date_by')">
                 <label>Filters</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.filter_date_by" placeholder="Filter By Date"
@@ -37,10 +37,6 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
             </div>
-             
-             
-             
-            
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>
                 
@@ -56,23 +52,19 @@
                     ></ComSelect>
             </div>
         </div>
-        </div>
-       
-        <div class="col-2 items-center mt-3 flex justify-end">
-            <div class="flex justify-end gap-2">
-                <Button class= "white-space-nowrap content_btn_b w-3rem justify-center"  @click="customReport" ><i class="pi pi-cog text-xl "/></Button>
-                <div class="border-left-1 border-primary-100"></div>
-                <Button class= "white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2"/> Preview Report</Button>
-            </div>
-        </div>
-    </div>
-    <div class="col-10">
-        <div class="grid">
-            <div class="flex flex-col"  v-if="hasFilter('is_active_reservation')">
-                <label class="col-6 font-medium cursor-pointer">Is Active Reservation</label>
-                <Checkbox class="col-6 px-3" v-model="filter.is_active_reservation" :binary="true" trueValue="1"
-                                falseValue="0" />
-                               
+        <div class="grid w-full">
+            <div class="col mt-4"  v-if="hasFilter('is_active_reservation')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Is Active Reservation</label>
+                    </div>
+                    <div>
+                        <Checkbox input-id="filter_is_active" class="mx-3" v-model="filter.is_active_reservation" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
             </div>
             <div class="col" v-if="hasFilter('guest')">
                 <label>Guest</label><br/>
@@ -102,11 +94,18 @@
             <div class="col" v-if="hasFilter('summary_filter')">
                 <label>Summary By</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.summary_filter" placeholder="Summary By"
-                    :options="['Arrival Date', 'Departure Date', 'Reservation','Reservation Stay', 'Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
+                    :options="['Arrival Date', 'Departure Date', 'Reservation' , 'Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
                     :default="['Business Source']"/>
             </div>
         </div>
-    </div>
+        </div>
+        <div class="w-full items-center flex justify-end p-3 pb-0">
+            <div class="flex justify-end gap-2">
+                <Button class= "white-space-nowrap content_btn_b w-3rem justify-center"  @click="customReport" ><i class="pi pi-cog text-xl "/></Button>
+                <div class="border-left-1 border-primary-100"></div>
+                <Button class= "white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2"/> Preview Report</Button>
+            </div>
+        </div>
         <OverlayPanel ref="showCustomReport" style="width:50rem">
         <ComOverlayPanelContent title="Advance Custom Report" hideButtonOK="true"  :hideButtonClose="false" @onCancel="onCloseCustomReport">
             <div class="grid">
@@ -122,10 +121,12 @@
             </div>
         </ComOverlayPanelContent>
         </OverlayPanel>
+    </div>
         <div class="reactive border-bottom-1 w-full" style="height:20px;">
         <i @click="onShowfilter" :class="showFilter ? 'pi-chevron-up': 'pi-chevron-down' " class="pi h-1rem text-sm cursor-pointer  w-full text-center" style="left:56%;margin-top:-15px;"></i>
         <hr class="mt-3"/>
         </div>
+
 </template>
 <script setup>
 import { ref, inject,onMounted } from "@/plugin"

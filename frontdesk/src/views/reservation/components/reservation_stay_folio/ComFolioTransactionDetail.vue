@@ -52,12 +52,10 @@
                     </div>
                   </OverlayPanel>
                 </ComStayInfoNoBox>
-
-                
                 <ComStayInfoNoBox label="Discount Type" v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code" :value="doc?.discount_type" />
                 <!-- <ComStayInfoNoBox :label="`Room Discount - ${doc?.discount}%`" v-if="account_code?.allow_discount && doc?.account_code" :value="`${doc?.discount}%`" /> -->
                 <ComStayInfoNoBox label="Total Discount" v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code" :value="doc?.discount_amount" isCurrency />
-                <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency isSlot>
+                <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency isSlot >
                   <Button v-if="doc?.amount || doc?.total_tax || doc?.discount" @click="togglePostAmount" icon="pi pi-question text-xs"
                     class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary" rounded outlined
                     aria-label="Total Tax" />

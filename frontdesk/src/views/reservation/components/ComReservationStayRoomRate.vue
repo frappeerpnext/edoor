@@ -11,6 +11,9 @@
  
     <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
+      <div class="absolute bottom-6 left-10">
+        <strong>Total Records: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
+      </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
       <Column field="date" header="Date" bodyClass="text-center" headerClass="text-center">

@@ -712,6 +712,7 @@ def check_out(reservation,reservation_stays=None):
     room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_out")
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     for s in reservation_stays:
+
         stay = frappe.get_doc("Reservation Stay", s)
         if stay.reservation_status=="Checked Out":
             frappe.throw("Stay # {}. Room {}. This room is already check out.".format(stay.name, stay.rooms))
@@ -1588,7 +1589,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "creation":d.creation,
                 "show_print_preview":d.show_print_preview,
                 "print_format":d.print_format,
-                "is_auto_post":d["is_auto_post"]
+                "is_auto_post":d["is_auto_post"],
+                "total_amount":d["total_amount"]
 
             })
 
@@ -1617,7 +1619,8 @@ def get_folio_transaction(transaction_type, transaction_number):
             "creation":d.creation,
             "show_print_preview":d.show_print_preview,
             "print_format":d.print_format,
-             "is_auto_post":d["is_auto_post"]
+             "is_auto_post":d["is_auto_post"],
+             "total_amount":d["total_amount"]
         })
 
         if  d.discount_amount > 0:
@@ -1626,7 +1629,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "account_name": "{}-{}".format(d.discount_account, d.discount_description)  if show_account_code else d.discount_description,
                 "credit":d.discount_amount,
                 "debit":0,
-                "balance":balance
+                "balance":balance,
+                "total_amount":d.discount_amount
             })
         
         if  d.tax_1_amount > 0:
@@ -1635,7 +1639,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "account_name": "{}-{}".format(d.tax_1_account, d.tax_1_description)  if show_account_code else d.tax_1_description,
                 "debit":d.tax_1_amount,
                 "credit":0,
-                "balance":balance
+                "balance":balance,
+                "total_amount":d.tax_1_amount
             })
 
         if  d.tax_2_amount > 0:
@@ -1644,7 +1649,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "account_name": " {}-{}".format(d.tax_2_account, d.tax_2_description)  if show_account_code else d.tax_2_description,
                 "debit":d.tax_2_amount,
                 "credit":0,
-                "balance":balance
+                "balance":balance,
+                "total_amount":d.tax_2_amount,
             })
 
         if  d.tax_3_amount > 0:
@@ -1653,7 +1659,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "account_name": "{}-{}".format(d.tax_3_account, d.tax_3_description)  if show_account_code else d.tax_3_description,
                 "debit":d.tax_3_amount,
                 "credit":0,
-                "balance":balance
+                "balance":balance,
+                "total_amount":d.tax_3_amount,
             })
         
         
@@ -2349,3 +2356,71 @@ def get_document_count(attacheds):
     if attacheds:
         data = frappe.db.sql("select count(name) from `tabFile` where attached_to_name in ({})".format(attacheds))
         return data[0][0]
+    
+@frappe.whitelist()
+def get_room_tax_summary(reservation=None, reservation_stay=None):
+    if reservation:
+        sql="""
+            select tax_1_name as tax_name, tax_1_rate as tax_rate, sum(tax_1_amount) as tax_amount  from `tabReservation Room Rate` where reservation = '{0}'  and tax_1_rate> 0  and is_active_reservation = 1 group by tax_1_name, tax_1_rate
+            union all 
+            select tax_2_name as tax_name, tax_2_rate as tax_rate, sum(tax_2_amount) as tax_amount  from `tabReservation Room Rate` where reservation = '{0}'   and tax_2_rate> 0 and is_active_reservation = 1 group by tax_2_name, tax_2_rate
+            union all
+            select tax_3_name as tax_name, tax_3_rate as tax_rate, sum(tax_3_amount) as tax_amount  from `tabReservation Room Rate` where reservation= '{0}'  and tax_3_rate> 0 and is_active_reservation = 1 group by tax_3_name, tax_3_rate
+        """.format(reservation)
+        return frappe.db.sql(sql,as_dict=1)
+    else:
+        sql="""
+            select tax_1_name as tax_name, tax_1_rate as tax_rate, sum(tax_1_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay = '{0}'  and tax_1_rate> 0  and is_active_reservation = 1 group by tax_1_name, tax_1_rate
+            union all 
+            select tax_2_name as tax_name, tax_2_rate as tax_rate, sum(tax_2_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay = '{0}'   and tax_2_rate> 0 and is_active_reservation = 1 group by tax_2_name, tax_2_rate
+            union all
+            select tax_3_name as tax_name, tax_3_rate as tax_rate, sum(tax_3_amount) as tax_amount  from `tabReservation Room Rate` where reservation_stay= '{0}'  and tax_3_rate> 0 and is_active_reservation = 1 group by tax_3_name, tax_3_rate
+        """.format(reservation_stay)
+        return frappe.db.sql(sql,as_dict=1)
+
+@frappe.whitelist(methods="POST")
+def folio_transfer(data):
+    if not data["new_folio_number"]:
+        frappe.throw("Please select new folio number")
+    
+    new_folio_doc = frappe.get_doc("Reservation Folio", data["new_folio_number"])
+    for d in data["folio_transaction"]:
+        folio_transaction_doc = frappe.get_doc("Folio Transaction", d)
+        folio_transaction_doc.transaction_number = new_folio_doc.name
+        folio_transaction_doc.reservation = new_folio_doc.reservation
+        folio_transaction_doc.reservation_stay = new_folio_doc.reservation_stay
+        folio_transaction_doc.ignore_validate_auto_post = 1
+        folio_transaction_doc.ignore_update_folio_transaction = 1
+        folio_transaction_doc.valiate_input_amount = 0
+        # frappe.throw(str(hasattr(folio_transaction_doc,"ignore_validate_auto_post")))
+        #check keep room info
+        #check keep guest infor
+        folio_transaction_doc.save()
+
+        #update sub record
+        sub_transaction = frappe.db.sql("select name from `tabFolio Transaction` where parent_reference='{}'".format(d), as_dict=1)
+        for s in sub_transaction:
+            sub_transaction_doc = frappe.get_doc("Folio Transaction", s["name"])
+            sub_transaction_doc.transaction_number = new_folio_doc.name
+            sub_transaction_doc.reservation = new_folio_doc.reservation
+            sub_transaction_doc.reservation_stay = new_folio_doc.reservation_stay
+            sub_transaction_doc.ignore_validate_auto_post = 1
+            sub_transaction_doc.ignore_update_folio_transaction = 1
+            sub_transaction_doc.valiate_input_amount = 0
+
+            #check keep room info
+
+            #check keep guest infor
+            sub_transaction_doc.save()
+        #end updatre sub
+
+        #enque update job source folio
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
+        #enque update target folio
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
+
+
+
+    
+
+    frappe.msgprint("Folio transfer successfully")

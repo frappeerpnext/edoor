@@ -21,7 +21,7 @@
     </ComOverlayPanelContent>
 </template>
 <script setup>
-    import {ref, computed} from 'vue'
+    import {computed} from 'vue'
     const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         modelValue: Number,

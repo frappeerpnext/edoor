@@ -2,7 +2,7 @@
 <template>
   <span v-tippy="titleTooltip" v-if="title !== null" class=" text-right white-space-nowrap overflow-hidden text-overflow-ellipsis" :class="titleClass">{{ title }}</span>
   <div class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
-    <span v-tippy="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action':''" @click="onClick" >
+    <span v-tippy="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action overflow-hidden':''" @click="onClick" >
  
         <span v-if="isAction && !isSlot">
           <i v-if="!value && value != 0" class="pi pi-pencil"></i>

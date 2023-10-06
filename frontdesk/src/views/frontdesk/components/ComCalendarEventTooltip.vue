@@ -2,7 +2,7 @@
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
         <div class="text-center border-1 p-2 border-round-lg ">{{event.title}}</div>
         <table class="tip_description_stay_table m-1 pt-3">
-            <tbody>
+              <tbody>
             <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation || ''}}</td></tr>
             <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_stay || ''}}</td></tr>    
             <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reference_number || ''}} </td></tr>
@@ -25,8 +25,9 @@
                 <CurrencyFormat :value="event.extendedProps?.total_debit"/> 
             </td>
             </tr>
-            <tr class="table-rs-de"><td>Total Debit</td><td class="px-2">:</td><td>
-                <CurrencyFormat :value="event.extendedProps?.total_debit"/> 
+            <tr class="table-rs-de"><td>Total Credit</td><td class="px-2">:</td><td>
+                <CurrencyFormat :value="event.extendedProps?.total_credit"/>
+               
             </td>
             </tr>
             <tr class="table-rs-de"><td>Balance</td><td class="px-2">:</td><td>
@@ -81,7 +82,7 @@
     </div>
 </template>
 <script setup>
-    import {ref} from "vue"
+    // import {ref} from "vue"
     import CurrencyFormat from "@/components/CurrencyFormat.vue"
     import moment from "@/utils/moment.js";
     const props =defineProps({

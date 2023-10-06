@@ -359,24 +359,24 @@
     <!-- {{ doc }} -->
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, postApi, watch, getApi, getDoc } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, getApi, getDoc } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
-import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
+// import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
 
 
 
 
-import { useToast } from "primevue/usetoast";
+// import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
-const toast = useToast();
+// const toast = useToast();
 const moment = inject("$moment")
 const isSaving = ref(false)
 const gv = inject("$gv")
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+// const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const room_types = ref([])
 const rooms = ref([])
 const working_day = ref({})

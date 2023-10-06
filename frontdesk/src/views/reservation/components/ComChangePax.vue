@@ -17,7 +17,7 @@
 </template>     
 <script setup>
 
-import { ref, useToast, inject, postApi,postReservationStay } from "@/plugin"
+import { ref, inject,postReservationStay } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');

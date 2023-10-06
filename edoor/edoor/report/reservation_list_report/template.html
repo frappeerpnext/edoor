@@ -2,3 +2,23 @@
 
 {%set doc = frappe.get_doc("Customer","C2023-0005")%}
 
+<!-- This is the print format template file -->
+{% set chart_html = frappe.render_chart(chart) %}
+<h1>My Report</h1>
+<table>
+  <tr>
+    <th>Column 1</th>
+    <th>Column 2</th>
+    <th>Column 3</th>
+  </tr>
+  {% for row in data %}
+  <tr>
+    <td>{{ row[0] }}</td>
+    <td>{{ row[1] }}</td>
+    <td>{{ row[2] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<div class="chart-container">
+  {{ chart_html }}
+</div>

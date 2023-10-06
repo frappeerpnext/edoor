@@ -77,7 +77,7 @@
 <script setup>
 import { ref, inject, onMounted, getApi,getDoc } from '@/plugin'
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
-import ComBoxStayInformation from './ComBoxStayInformation.vue'; 
+// import ComBoxStayInformation from './ComBoxStayInformation.vue'; 
 import ComDialogContent from '../../../components/form/ComDialogContent.vue';
 const dialogRef = inject('dialogRef')
 const rs = inject('$reservation_stay');

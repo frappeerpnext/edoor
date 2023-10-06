@@ -38,7 +38,7 @@
     import {inject, ref,computed} from "@/plugin"
     import Enumerable from 'linq'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
-    import ComBoxStayInformation from './ComBoxStayInformation.vue';
+    // import ComBoxStayInformation from './ComBoxStayInformation.vue';
     import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
     import ComChangeRateType from "./ComChangeRateType.vue";
     

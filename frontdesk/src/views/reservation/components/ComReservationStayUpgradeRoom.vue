@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-  
     <div class="">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
             <template #content>
@@ -17,13 +16,13 @@
                             <th class="text-left px-2">
                                 <label>Room</label>
                             </th>
-                            <th class="text-right px-2">
+                            <th v-if="can_view_rate" class="text-right px-2">
                                 <label>Rate</label>
                             </th> 
                             <th class="px-2 w-8rem text-center">
                                 <label>Nights</label>
                             </th>
-                            <th class="text-right ps-2">
+                            <th v-if="can_view_rate" class="text-right ps-2">
                                 <label>Amount</label>
                             </th>
 
@@ -40,7 +39,7 @@
                             <td class="px-2 text-left">
                                 <div class="box-input-detail flex"><span v-tooltip.top="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
                             </td>
-                            <td class="text-right px-2">
+                            <td v-if="can_view_rate" class="text-right px-2">
                                 <span class="box-input-detail flex justify-end white-space-nowrap">
                                     <CurrencyFormat :value="lastStay.rate" />
                                 </span>
@@ -48,7 +47,7 @@
                             <td class="text-right px-2"> 
                                 <span class="box-input-detail flex justify-center">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
                             </td>
-                            <td class="text-right ps-2">
+                            <td v-if="can_view_rate" class="text-right ps-2">
                                 <span class="box-input-detail flex justify-end white-space-nowrap">
                                     <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
                                 </span>
@@ -80,10 +79,10 @@
                             <th class="text-center px-2 w-5rem">
                                 <label class="text-center">Nights</label>
                             </th>
-                            <th class="text-right px-2">
+                            <th v-if="can_view_rate" class="text-right px-2">
                                 <label>Rate<span class="text-red-500">*</span></label>
                             </th>
-                            <th class="text-right ps-2">
+                            <th v-if="can_view_rate" class="text-right ps-2">
                                 <label>Amount</label>
                             </th>
 
@@ -106,7 +105,7 @@
                             <td class="text-center px-2 w-5rem ">
                                 <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/> 
                             </td>
-                            <td class="text-right px-2 w-10rem">
+                            <td v-if="can_view_rate" class="text-right px-2 w-10rem">
                                 <div class="box-input-detail"> 
                                     <span class="white-space-nowrap">
                                         <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
@@ -121,7 +120,7 @@
                                     </span>
                                 </div> 
                             </td>
-                            <td class="text-right ps-2 w-10rem">
+                            <td v-if="can_view_rate" class="text-right ps-2 w-10rem">
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">
                                     <CurrencyFormat :value="(newRoom.room_nights || 0) * (newRoom.rate || 0)" />
                                 </span>
@@ -154,19 +153,19 @@
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
     lastStay.value.end_date = new Date(lastStay.value.end_date)
     const lastStayMaxEndDate = new Date(lastStay.value.end_date)
-    const room_types = ref([])
-    const rooms = ref([])
+    // const room_types = ref([])
+    // const rooms = ref([])
     const working_day = ref({})
     const op = ref()
     const loading = ref(false)
-    const selectedStay = ref({})
+    // const selectedStay = ref({})
     const rate = ref(0)
     const newRoom = ref({
         room_nights: 1,
         end_date: '',
         start_date:'',
         rate: 0,
-        room_type_id: '',
+        room_type_id: lastStay.value?.room_type_id,
         room_id:''
     })
 

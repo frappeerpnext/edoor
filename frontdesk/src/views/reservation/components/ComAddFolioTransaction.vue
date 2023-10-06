@@ -264,7 +264,7 @@
 </template>
 <script setup>
 
-import { ref, inject, getDoc, computed, onMounted,useToast,createUpdateDoc } from "@/plugin"
+import { ref, inject, getDoc, computed, onMounted,createUpdateDoc } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
@@ -289,7 +289,7 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
-const toast = useToast()
+ 
 const doc = ref({});
 const rs = inject('$reservation_stay')
 // const socket = inject("$socket")

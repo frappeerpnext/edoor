@@ -36,13 +36,13 @@
                             ...
                         </button>
                         <div v-else class="flex gap-2">
-                            <a v-tooltip.top="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left" >{{ stay.reservationStay?.group_name }}</a>
+                            <a v-tippy="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left overflow-hidden" >{{ stay.reservationStay?.group_name }}</a>
                             <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
                             <span>/</span>
-                            <a v-tooltip.top="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow text-left" >
+                            <a v-tippy="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow text-left overflow-hidden" >
                                 {{ stay.reservationStay?.group_code }}
                             </a>
                             <button v-else class="link_line_action grow text-left" >
@@ -127,7 +127,7 @@
 import OverlayPanel from 'primevue/overlaypanel';
 import {inject} from '@/plugin'
 import { ref } from "vue";
-import ColorPicker from 'primevue/colorpicker';
+// import ColorPicker from 'primevue/colorpicker';
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangePax from './ComChangePax.vue';
@@ -139,7 +139,7 @@ const stay = inject('$reservation_stay');
 const gv = inject('$gv');
 const overLayName = ref("")
 const op = ref();
-const color = ref()
+// const color = ref()
 const toggle = ($event, name) => {
     overLayName.value = name
     op.value.toggle($event);

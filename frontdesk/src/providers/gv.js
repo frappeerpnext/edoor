@@ -101,15 +101,13 @@ export default class Gv {
 		return  price
 	 
 	}
-	// validateKeyword(keyword){
-	// 	const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  
-	// 	if (keyword && re.test(String(keyword).toLowerCase()) == false) {
-	// 		this.toast("warn","Keyword cannot use sign.")
-	// 		return false;
-	// 	}
-	// 	return true;
-	// }
+	keyword(keyword){
+		if(keyword){
+			let replaced = keyword.replace(/[+`"|\\'\[\]\(\)%\{\}\-*;,^=/]/g, " ")
+			return replaced.trim().split(/[\s,\t,\n]+/).join(' ')
+		}
+		return ""
+	}
 	isNotEmpty(obj, except_properties = '', except_object= {}){
 		 
 		var notEmpty = 0

@@ -99,8 +99,8 @@
                         <template #header>
                             <span class="me-2">Document</span>
                             <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading"/>
-                    </template>
-                        <ComDocument doctype="Reservation Stay" :docname="name" :attacheds="[name]" v-if="!rs.loading" />
+                        </template>
+                        <ComDocument doctype="Reservation Stay" :docname="name" :fill="false" :attacheds="[name]" v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
             </div>
@@ -157,10 +157,12 @@
         </template>
 
     </ComDialogContent>
+
 </template>
+
 <script setup>
 
-import { inject, ref, onMounted, computed, useRoute, useRouter, onUnmounted, useDialog, postApi, getCount } from '@/plugin'
+import { inject, ref, onMounted, computed, useRoute, useRouter, onUnmounted, useDialog, postApi } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
 
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"

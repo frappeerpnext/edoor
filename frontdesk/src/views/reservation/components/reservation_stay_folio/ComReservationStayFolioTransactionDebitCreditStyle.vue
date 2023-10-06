@@ -6,13 +6,18 @@
         :isNotEmpty="rs.folioTransactions.length > 0">
 
     <DataTable v-model:selection="rs.selectedFolioTransactions"
-     @row-dblclick="onViewFolioDetail" :value="rs.folioTransactions" 
-     tableStyle="min-width: 50rem" 
-    :rowClass="rowStyleClass"
-    paginator  
-            :stateKey="'folo_transaction_credit_debit_table_state_' + rs.selectedFolio.name "
-            :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]"
-    >
+        @row-dblclick="onViewFolioDetail" :value="rs.folioTransactions" 
+         tableStyle="min-width: 50rem" 
+            :rowClass="rowStyleClass"
+            paginator  
+            :stateKey="'folo_transaction_credit_debit_table_state_' + rs.selectedFolio.name"
+            :rows="10" 
+            :rowsPerPageOptions="[5, 10, 20, 50]"
+        >
+            <div class="absolute bottom-6 left-4">
+                    <strong>Total Records: <span class="ttl-column_re">{{ rs.folioTransactions?.length }}</span></strong>
+                </div>
+            
         <Column selectionMode="multiple" headerStyle="width: 3rem">
             
         </Column>
@@ -151,7 +156,7 @@ const onViewFolioDetail = (doc) => {
      
 }
 
- 
+
 </script>
 <style>
     .ui-helper-hidden .p-selection-column .p-checkbox{

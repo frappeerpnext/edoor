@@ -40,7 +40,17 @@
                     <Button @click="onViewReservationStayDetail(hk?.reservationStay?.name)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.name }}</Button>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox  label="Type" :value="hk?.reservationStay?.reservation_type" />
-                <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'"  label="Group" :value="hk?.reservationStay?.group_code + ' / ' + hk?.reservationStay?.group_name" />
+                <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'"  label="Group">
+                    <div class="w-full overflow-hidden white-space-nowrap -ml-3 text-overflow-ellipsis">
+                        <div v-tippy="hk?.reservationStay?.group_code" class="inline">
+                           {{ hk?.reservationStay?.group_code }} 
+                        </div>
+                         / 
+                        <div v-tippy="hk?.reservationStay?.group_name" class="inline">
+                           {{ hk?.reservationStay?.group_name }}
+                        </div>
+                    </div>
+                </ComStayInfoNoBox>
                 <ComStayInfoNoBox  label="Status">
                     <span class="-ms-3 font-semibold" :style="{color:hk.reservationStay?.status_color}">{{ hk?.reservationStay?.reservation_status }}</span>
                 </ComStayInfoNoBox>

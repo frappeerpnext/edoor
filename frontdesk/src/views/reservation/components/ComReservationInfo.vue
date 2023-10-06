@@ -33,21 +33,21 @@
                 </div>
                 <div class="flex mt-2 gap-2" v-if="!(rs.reservation?.reservation_type == 'FIT')">
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')"   title="Group"  valueClass="grow">
-                        <button class="link_line_action text-left" v-if="!rs.reservation?.group_name && !rs.reservation?.group_code">
+                        <button class="link_line_action text-left overflow-hidden" v-if="!rs.reservation?.group_name && !rs.reservation?.group_code">
                             <i class="pi pi-pencil"></i>
                             ...
                         </button>
                         <div v-else class="flex gap-2">
-                            <a v-tooltip.top="'Group Name'" v-if="rs.reservation?.group_name" class="link_line_action grow" >{{ rs.reservation?.group_name }}</a>
-                            <button v-else class="link_line_action grow text-left" >
+                            <a v-tooltip.top="'Group Name'" v-if="rs.reservation?.group_name" class="link_line_action grow overflow-hidden w-6" >{{ rs.reservation?.group_name }}</a>
+                            <button v-else class="link_line_action grow text-left overflow-hidden" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
                             <span>/</span>
-                            <a v-tooltip.top="'Group Code'" v-if="rs.reservation?.group_code" class="link_line_action grow" >
+                            <a v-tooltip.top="'Group Code'" v-if="rs.reservation?.group_code" class="link_line_action grow w-6" >
                                 {{ rs.reservation?.group_code }}
                             </a>
-                            <button v-else class="link_line_action grow text-left" >
+                            <button v-else class="link_line_action grow text-left overflow-hidden" >
                                 <i class="pi pi-pencil"></i>
                             ...  
                             </button>

@@ -62,8 +62,6 @@
                                         class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
                                         {{JSON.parse(slotProps.data.rooms_data).length - 3}} Mores
                                     </span>
-                                    
-                                  
                                 </div>
                             </template>
                         </Column>
@@ -144,27 +142,17 @@
     </ComReservationStayPanel> 
 </template>
 <script setup>
-import {inject,ref,onMounted,useDialog, postApi,useConfirm,useToast} from '@/plugin'
+import {inject,ref,useDialog} from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
-import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
-import AddRoomIcon from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
-import ComReservationStayAddMore from "./ComReservationStayAddMore.vue"
-import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
-import GuestDetail from "@/views/guest/GuestDetail.vue"
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
-const confirm = useConfirm()
-const moment = inject('$moment')
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const dialog = useDialog()
-const loading = ref(false)
-const toast = useToast();
-const frappe = inject("$frappe")
-const call = frappe.call()
-const name = ref("")
+
+// const name = ref("")
  
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')

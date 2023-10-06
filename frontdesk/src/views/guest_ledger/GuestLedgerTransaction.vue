@@ -82,6 +82,9 @@
                 paginator
                 :rows="20" 
                 :rowsPerPageOptions="[20, 30, 40, 50]">
+                <div class="absolute bottom-6 left-4">
+                    <strong>Total Records: <span class="ttl-column_re">{{pageState.totalRecords}}</span></strong>
+                </div>
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
                         :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
@@ -113,6 +116,14 @@
                     </Column>
                 </DataTable>
             </ComPlaceholder>
+        </div>
+        <div>
+            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
+                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                <template #start="slotProps">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </template>
+            </Paginator>
         </div>
     </div>
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
@@ -199,8 +210,7 @@ const sortOptions = ref([
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
 ])
-
-const pageState = ref({})
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const opShowColumn = ref();
 
 const getColumns = computed(() => {

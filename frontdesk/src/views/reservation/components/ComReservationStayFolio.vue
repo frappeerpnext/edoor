@@ -23,7 +23,7 @@ import ComReservationStayFolioTransactionDebitCreditStyle from "@/views/reservat
 import ComReservationStayFolioTransactionSimpleListStyle from "@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionSimpleListStyle.vue"
 import ComNewReservationStayFolio from "@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue"
 import { useDialog } from 'primevue/usedialog';
-import { inject, ref, } from '@/plugin';
+import { inject, ref, onUnmounted } from '@/plugin';
 const dialog = useDialog();
 const rs = inject("$reservation_stay")
 
@@ -68,5 +68,16 @@ function onAddCreatNewFolio() {
         }
     })
 }
+onUnmounted(()=>{
+    let state = sessionStorage.getItem("folo_transaction_credit_debit_table_state_" + rs.selectedFolio.name )
+    if(state){
+        state = JSON.parse(state)
+         state.selection=[]
+         
+        sessionStorage.setItem("folo_transaction_credit_debit_table_state_" + rs.selectedFolio.name,JSON.stringify(state) )
+    }
+    
+})
+ 
 
 </script>

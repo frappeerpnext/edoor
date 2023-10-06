@@ -135,16 +135,16 @@
     </OverlayPanel>
 </template>
 <script setup>
-  import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
+  import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, computed } from '@/plugin'
   import Paginator from 'primevue/paginator';
   import ComOrderBy from '@/components/ComOrderBy.vue';
   import { Timeago } from 'vue2-timeago'
 
   const moment = inject("$moment")
-  const dialogRef = inject("dialogRef");
+  // const dialogRef = inject("dialogRef");
   const gv = inject("$gv")
-  const toast = useToast()
-  const dialog = useDialog()
+  // const toast = useToast()
+  // const dialog = useDialog()
   const opShowColumn = ref();
   const data = ref([])
   const filter = ref({})

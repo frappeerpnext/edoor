@@ -29,12 +29,12 @@
                                 <i class="pi pi-file-excel me-2" />
                                 Void
                             </button>
-                            <button class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                            <button  @click="onCheckIn()" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                                 <ComIcon icon="checkin-black" class="me-2" style="height: 14px;" />
                                 Check-In
                             </button>
                         </template>
-                        <button v-if="data.reservation_status == 'Checked In' || data.reservation_status == 'In-house'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
+                        <button @click="onCheckOut()" v-if="data.reservation_status == 'Checked In' || data.reservation_status == 'In-house'" class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="checkoutBlack" class="me-2" style="height: 12px;" />
                             Check Out
                         </button>
@@ -65,8 +65,10 @@
     </div>
 </template>
 <script setup>
-import {ref, useDialog, postApi,inject,useConfirm,useToast} from '@/plugin'
+import {ref, useDialog, postApi,inject,useConfirm,useToast,computed} from '@/plugin'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+
 const moment = inject("$moment")
 const props = defineProps({
     data: Object,
@@ -96,6 +98,77 @@ function onClickDetail(){
     emit('onClickDetail',props.data.name)
 
 }
+const canCheckIn = computed(() => {
+  const can_check_in = rs.reservationStays.filter((r) => r.reservation_status === 'Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate());
+  return can_check_in;
+});
+function onCheckIn(){
+    const dialogRef = dialog.open(ComConfirmCheckIn, {
+        data:{
+            stays:[{name:props.data.name,reservation_status: props.data.reservation_status}]
+        },
+        props: {
+            header: 'Confirm Check In',
+            style: {
+                width: '450px',
+            },
+            modal: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            const result = options.data;
+
+            if (result) {
+                rs.loading = true
+
+                postApi("reservation.check_in", {
+                    reservation: rs.reservation.name,
+                    reservation_stays: [{name:props.data.name,reservation_status: props.data.reservation_status}]
+                })
+                .then((result) => {
+                    rs.loading = false
+                    rs.LoadReservation(rs.reservation.name);
+                    window.socket.emit("RefresheDoorDashboard", rs.reservation.property);   
+                })
+                .catch((err) => {
+                    rs.loading = false
+                })
+                
+            }
+        }
+    })
+}
+const onCheckOut = () => {
+    
+    confirm.require({
+        message: 'Are you sure you want to check out this room?',
+        header: 'Confirmation',
+        acceptLabel:'OK',
+        rejectVisible: true,
+        rejectClass: 'hidden',
+        acceptClass: 'border-none',
+        acceptIcon: 'pi pi-check-circle',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            rs.loading = true
+            postApi("reservation.check_out", {
+                reservation: rs.reservation.name,
+                reservation_stays: [props.data.name]
+            }, "Check out successfully").then((result) => {
+                rs.loading = false
+                window.socket.emit("RefresheDoorDashboard", window.property_name);
+                window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+                window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
+                window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
+            })
+                .catch((err) => {
+                    rs.loading = false
+                })
+        }
+    });
+
+}
+
 
 function onChangeStatus(reservation_status){
     let confirm_message = ""

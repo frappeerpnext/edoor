@@ -90,13 +90,13 @@
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
     const working_day = ref({})
-    const op = ref()
+    // const op = ref()
     const loading = ref(false)
  
     const selectedStay = ref({})
     const rooms = ref([])
     const room_types = ref([])
-    const rate = ref(0)
+    // const rate = ref(0)
 
  
     const onClose = (r) =>{ 

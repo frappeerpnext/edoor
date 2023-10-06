@@ -269,10 +269,11 @@ export default class ReservationStay {
 
 		this.reservation.value = ref({})
 
-	 
+		 
 		this.selectedRoomRates = []
 		this.folioTransactions.value = ref([])
 		this.selectedFolioTransactions.value = ref([])
+
 
 		//clear state key seletion of folio transaction
 		 

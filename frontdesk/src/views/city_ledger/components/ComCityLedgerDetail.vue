@@ -99,7 +99,7 @@
 import { ref, getDoc, inject, useDialog, onMounted,deleteDoc,useConfirm } from '@/plugin'
 import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLedgerAccount.vue';
 import ComCityLedgerTransaction from '@/views/city_ledger/components/ComCityLedgerTransaction.vue';
-import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+// import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const dialogRef = inject("dialogRef")
 const gv = inject('$gv');
 const dialog = useDialog()

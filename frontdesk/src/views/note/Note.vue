@@ -116,17 +116,21 @@
         </div>
         <div>
             <Paginator v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
-                :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange"></Paginator>
+                :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                <template #start="slotProps">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </template>
+            
+            </Paginator>
         </div>
     </div>
 </template>
 <script setup>
-import { ref, inject, onMounted, updateDoc, reactive, useDialog, getDocList, getCount, useConfirm, deleteDoc } from '@/plugin';
+import { ref, inject, onMounted, updateDoc, useDialog, getDocList, getCount, useConfirm, deleteDoc } from '@/plugin';
 
 import ComAddNote from './ComAddNote.vue';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import ComNoteGlobalButtonMore from './ComNoteGlobalButtonMore.vue';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 
 const confirm = useConfirm()

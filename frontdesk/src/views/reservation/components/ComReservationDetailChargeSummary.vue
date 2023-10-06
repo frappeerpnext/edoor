@@ -46,9 +46,10 @@
                         <OverlayPanel ref="opTax">
                         <div class="table-order-tax">
                         <table>
-                                <tr v-if="rs?.reservation?.room_rate_tax_1_amount" ><td class='p-2 text-right'>{{rs?.reservation?.tax_1_name}} - {{rs?.reservation?.tax_1_rate}} % : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_1_amount"/> </td></tr>
-                                <tr v-if="rs?.reservation?.room_rate_tax_2_amount" class='border-top-1 '><td class='p-2  text-right'>{{rs?.reservation?.tax_2_name}} - {{rs?.reservation?.tax_2_rate}} % : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_2_amount"/> </td></tr>
-                                <tr v-if="rs?.reservation?.room_rate_tax_3_amount" class='border-top-1 '><td class='p-2 text-right'>{{rs?.reservation?.tax_3_name}} - {{rs?.reservation?.tax_3_rate}} % : </td><td class='p-2'> <CurrencyFormat :value="rs?.reservation?.room_rate_tax_3_amount"/> </td></tr>
+                            <tr v-for="(d, index) in taxData" :key="index" ><td class='p-2 text-right border-top-1'> {{d.tax_name}} - {{d.tax_rate}} % : </td><td class='p-2 border-top-1'> <CurrencyFormat :value="d.tax_amount"/> </td></tr>
+
+                                
+                                
                         </table>    
                         </div>
                         </OverlayPanel>
@@ -65,20 +66,25 @@
     </div>
 </template>
 <script setup>
-import { inject } from '@/plugin';
+import { inject,onMounted,getApi,ref } from '@/plugin';
 import ComReservationStayPanel from './ComReservationStayPanel.vue'
 import ComBoxStayInformation from './ComBoxStayInformation.vue'
 const emit = defineEmits('onViewReservation')
 const rs = inject('$reservation');
-import { ref } from "vue";
-
+ 
+const taxData = ref()
 const opTax = ref();
 const toggleTAX = (event) => {
     opTax.value.toggle(event);
 }
-
-function onClick() {
-    emit('onViewReservation')
-}
+ 
+onMounted(() => {
+    setTimeout(() => {
+      getApi("reservation.get_room_tax_summary", {reservation:rs.reservation.name})
+      .then(result=>{
+          taxData.value = result.message
+      })
+    }, 3000);
+})
 </script>
 <style scoped></style>

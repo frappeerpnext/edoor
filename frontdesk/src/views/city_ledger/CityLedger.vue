@@ -75,6 +75,9 @@
                 paginator 
                 :rows="20" 
                 :rowsPerPageOptions="[20, 30, 40, 50]">
+                <div class="absolute bottom-6 left-4">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </div>
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))"
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''">
@@ -168,7 +171,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, inject, computed, useDialog, getApi } from '@/plugin'
+import { ref, onMounted, onUnmounted, inject, computed, useDialog } from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 const dialog = useDialog();
@@ -183,9 +186,10 @@ const summary = ref()
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const filter = ref({ start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "" })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const order = ref({ order_by: "modified", order_type: "desc" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
-const loading = ref(false)
+// const loading = ref(false)
 const selectedColumns = ref([])
 
 const sortOptions = ref([
@@ -194,7 +198,7 @@ const sortOptions = ref([
     { "fieldname": "name", label: "ID" }
 ])
 
-const pageState = ref({})
+// const pageState = ref({})
 const opShowColumn = ref();
 
 const getColumns = computed(() => {
