@@ -311,6 +311,7 @@ function loadData() {
         });
 
         data.value = result.message.result.slice(0, -1)
+        pageState.value.totalRecords = data.value.length
         summary.value = result.message.report_summary
         sortOptions.value = [...sortOptions.value, ...columns.value]
         gv.loading = false

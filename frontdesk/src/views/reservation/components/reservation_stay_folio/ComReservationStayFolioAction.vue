@@ -423,10 +423,10 @@ function onTransferFolioItem() {
         },
         onClose: (options) => {
             const data = options.data;
+  
             if (data) {
-
-                rs.selectedFolioTransactions.value = []
-                clearState()
+                rs.selectedFolioTransactions=[]
+              
                 setTimeout(() => {
 
                     rs.onLoadFolioTransaction(rs.selectedFolio)

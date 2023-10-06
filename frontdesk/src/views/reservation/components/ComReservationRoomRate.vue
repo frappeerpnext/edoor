@@ -25,8 +25,6 @@
       <div class="absolute bottom-6 left-4">
         <strong>Total Records: <span class="ttl-column_re">{{rs?.room_rates.length }}</span></strong>
        </div>
-
-     
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
       <Column field="date" header="Date" bodyClass="text-center" headerClass="text-center">

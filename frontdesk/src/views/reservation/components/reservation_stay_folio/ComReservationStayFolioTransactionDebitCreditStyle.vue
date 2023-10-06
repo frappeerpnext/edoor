@@ -1,13 +1,15 @@
 <template>
-   
+   <button @click="clear">clear select </button>
     <ComPlaceholder 
         text="There is no Folio transactions" 
         :loading="loading" 
         :isNotEmpty="rs.folioTransactions.length > 0">
 
-    <DataTable v-model:selection="rs.selectedFolioTransactions"
+    <DataTable 
+        v-model:selection="rs.selectedFolioTransactions"
         @row-dblclick="onViewFolioDetail" :value="rs.folioTransactions" 
-         tableStyle="min-width: 50rem" 
+ 
+        tableStyle="min-width: 50rem" 
             :rowClass="rowStyleClass"
             paginator  
             :stateKey="'folo_transaction_credit_debit_table_state_' + rs.selectedFolio.name"
@@ -99,6 +101,7 @@ import { inject,ref,useDialog,computed,onUnmounted} from '@/plugin';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioTransactionAction from './ComReservationStayFolioTransactionAction.vue';
+import ComReservationStayTransportationLabel from '../ComReservationStayTransportationLabel.vue';
 const gv = inject('$gv');
 const can_view_rate=window.can_view_rate;
 const dialog = useDialog();
@@ -108,6 +111,7 @@ const toggle = (event) => {
     show.value.toggle(event)
 }
 
+ 
 const rs = inject('$reservation_stay');
 const moment = inject("$moment")
  
@@ -155,8 +159,7 @@ const onViewFolioDetail = (doc) => {
     }
      
 }
-
-
+ 
 </script>
 <style>
     .ui-helper-hidden .p-selection-column .p-checkbox{

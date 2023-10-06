@@ -229,6 +229,7 @@ fixtures = [
     {"dt": "Reservation Status"},
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
+        {"dt": "Color"},
     {"dt": "Account Category"},
 ]
 

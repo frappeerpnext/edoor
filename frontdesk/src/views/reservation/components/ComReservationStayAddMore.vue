@@ -2,7 +2,7 @@
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="bg-card-info border-round-xl p-3 add-room-reserv h-full">
         <div class="grid">
-            <div class="col-3">
+            <div class="col">
               <label>Arrival Date <span class="text-red-500">*</span></label>
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.arrival_date"
                 :min-date="moment(edoor_working_day.date_working_day).toDate()" @update:modelValue="onStartDate($event)"
@@ -15,7 +15,7 @@
                     <ComReservationInputNight v-model="data.room_nights"
                                     @onUpdate="onNight($event)" />  
             </div>
-            <div class="col-3">
+            <div class="col">
             <label>Departure Date<span class="text-red-500">*</span></label>
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.departure_date"
                 :min-date="new Date(moment(data.arrival_date).add(1, 'days'))" @update:modelValue="onEndDate($event)"
