@@ -4,6 +4,7 @@
 
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
+ 
             <div class="n__re-custom">
                 <table class="w-full">
                     <thead>
@@ -105,9 +106,12 @@
 
     function onUpdateRate(v){
       if(v){
+    
         if (selectedStay.value.room_type_id!=selectedStay.value.old_room_type_id) {
             const rt = room_types.value.find(r=>r.name ==selectedStay.value.room_type_id)
-            selectedStay.value.rate = rt.rate 
+
+            selectedStay.value.rate = rt.rate.rate
+
 
         }
       }else {
@@ -125,22 +129,25 @@
         })
             .then((result) => {
                 room_types.value = result.message;
-                console.log(room_types.value)
-                // updateRate()
+             
+              
             })
         }
 
 
     const onSelectRoomType = (room_type) => {
-        
+
         const rt = room_types.value.find(r=>r.name == room_type.value)
+ 
         selectedStay.value.room_id = null
         selectedStay.value.room_type = rt.room_type
 
         if(selectedStay.value.is_override_rate){
             if (selectedStay.value.room_type_id!=selectedStay.value.old_room_type_id) {
                 const rt = room_types.value.find(r=>r.name ==selectedStay.value.room_type_id)
-                selectedStay.value.rate = rt.rate 
+                
+                
+                selectedStay.value.rate = rt.rate .rate
 
             }else {
                 selectedStay.value.rate = selectedStay.value.old_rate
@@ -148,6 +155,8 @@
         }else {
             selectedStay.value.rate = selectedStay.value.old_rate
         } 
+
+
 
     }
  

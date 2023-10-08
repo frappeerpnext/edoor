@@ -17,7 +17,7 @@
                             </template>
                         </Column>
                         <Column field="title" header="Title"></Column>
-                        <Column field="attached_to_name" header="Attach Name">
+                        <Column v-if="showAttach" field="attached_to_name" header="Attach Name">
                             <template #body="slotProps"> 
                                 <Button v-if="doctype != slotProps.data.attached_to_doctype" @click="onDetail(slotProps.data)" :label="slotProps.data.attached_to_name" link size="small"/>
                             </template>
@@ -96,6 +96,10 @@ const props = defineProps({
         default: 'name'
     },
     fill: {
+        type: Boolean,
+        default: true
+    },
+    showAttach: {
         type: Boolean,
         default: true
     }

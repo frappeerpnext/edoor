@@ -215,9 +215,17 @@ function onSave(){
         }
     ).then((result)=>{
         isSaving.value = false
-        window.socket.emit("RefresheDoorDashboard", doc.value.property);
-        window.socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
-        window.socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
+        //we delay wait data to update complete
+        setTimeout(function(){
+  
+            window.socket.emit("RefresheDoorDashboard", doc.value.property);
+            window.socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
+            window.socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
+        }, 1000)
+        
+
+
+        
         window.socket.emit("RefreshData", { property: doc.value.property, action: "refresh_iframe_in_modal" })
         dialogRef.value.close(result);
     }).catch((err)=>{

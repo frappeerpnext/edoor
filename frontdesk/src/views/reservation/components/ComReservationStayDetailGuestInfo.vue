@@ -119,6 +119,7 @@ const menuStayOneGuest = ref([
             onEditGuest('stay_guest')
         }
     }
+
 ])
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([

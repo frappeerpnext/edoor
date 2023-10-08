@@ -9,7 +9,7 @@
                 <slot name="defualt"></slot> 
             </div>
         </div>
-        <div v-if="data?.is_group" class="sub-menu-1 bg-white">
+        <div v-if="data?.is_group && getChildMenu.length>0" class="sub-menu-1 bg-white">
             <ComHeaderBarItemChildButton :data="getChildMenu"/>
         </div>
     </div>

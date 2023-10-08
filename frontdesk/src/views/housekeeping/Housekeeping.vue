@@ -62,6 +62,16 @@ const db = frappe.db()
 const call = frappe.call()
 const toast = useToast();
 const filter = ref({})
+
+
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == window.property_name && arg.action == "refresh_hk") {
+        setTimeout(function(){
+            // hk.loadData()
+            alert(123)
+        },3000) 
+    }
+})
 if (edoorShowhousekeepingSummary) {
     showSummary.value = edoorShowhousekeepingSummary == "1";
 }
@@ -76,5 +86,9 @@ function onRefresh() {
 
 onMounted(() => {
     hk.loadData()
+})
+
+onUnmounted(() => {  
+    window.socket.off("RefreshData");
 })
 </script>

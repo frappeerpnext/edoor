@@ -197,6 +197,16 @@ class FolioTransaction(Document):
 		if self.require_city_ledger_account==1 and  self.city_ledger :
 			post_to_city_ledger(self)
 
+		#add audit trail to reservation filio
+
+		#add audit trail to reservation stay
+		# stay_doc = frappe.get_doc("Reservation Stay", self.reservation_stay)
+		# stay_doc.add_comment("Comment", 
+		# 			   	text=f'User {frappe.session.user} add {self.account_code} - {self.account_name} to folio # {self.transaction_number }. Reservation Stay # <a class="reservation-stay" data-action="view_reservation_stay_detail" data-key="{self.reservation_stay}">{self.reservation_stay}</a>, Reservation: {self.reservation}, Amount:{frappe.format(self.total_amount,{"fieldtype":"Currency"})}. Note: {self.note}'
+		# )
+
+		#add to reservation 
+
 
 	def on_update(self):
 		if not self.is_new():

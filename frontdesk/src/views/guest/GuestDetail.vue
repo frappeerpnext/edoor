@@ -42,8 +42,8 @@ import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
-const setting =JSON.parse( localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)
@@ -55,7 +55,7 @@ function onIframeLoaded(id){
 }
 
 window.socket.on("RefreshData", (arg) => {
-    if(arg.property == setting.property.name && arg.action == "refresh_guest_iframe_in_modal"){
+    if(arg.property == window.property_name && arg.action == "refresh_guest_iframe_in_modal"){
         loadIframe()
     }    
 })
@@ -115,7 +115,7 @@ function onDeleteGuest (name){
             deleteDoc('Customer',name)
             .then(() =>{
                 loading.value = false
-                window.socket.emit("RefreshGuestDatabase", { property:setting.property.name})
+                window.socket.emit("RefreshGuestDatabase", { property:window.property_name})
                 dialogRef.value.close()
             }).catch((err)=>{
                 loading.value = false
@@ -134,18 +134,11 @@ const onClose = () => {
     dialogRef.value.close()
 }
 
-const refreshPageHandler = async function (e) {
-
-    if (e.isTrusted && typeof (e.data) == 'string') {
-        if (e.data=="refresh_guest_detail"){
-            gv.success('Socket Working reload guest information')
-            loadIframe()
-        } 
-    }
-};
+ 
 
 
-window.addEventListener('message', refreshPageHandler, false);
+
+
 
 function loadIframe() {
     if(document.getElementById("general")){
@@ -166,7 +159,7 @@ function loadIframe() {
 }
 
 onUnmounted(() => {
-    window.removeEventListener('message', refreshPageHandler, false);
+ 
     window.socket.off("RefreshData");
 })
 

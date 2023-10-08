@@ -145,6 +145,7 @@ def check_room_availability(property,room_type_id=None,start_date=None,end_date=
                     coalesce(room_id,'') 
                 from `tabTemp Room Occupy` 
                 where
+                    is_departure = 0 and
                     date between '{2}' and '{3}' {4}
             )   
     """
@@ -176,7 +177,7 @@ def check_room_type_availability(property,start_date=None,end_date=None,rate_typ
     for t in room_type:
         #get total room occupy from temp room occupy 
         #we count stay_room_id because some reervation stay is not yet assign room
-        sql = "select count(room_type_id) as total_room from `tabTemp Room Occupy` where room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
+        sql = "select count(room_type_id) as total_room from `tabTemp Room Occupy` where is_departure = 0 and  room_type_id = '{}' and date between '{}' and '{}'".format(t["name"],start_date,end_date)
         if exclude_stay_room_id:
             sql = sql + " and stay_room_id<>'{}'".format(exclude_stay_room_id) 
             
@@ -205,7 +206,7 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
     except_stay = ""
     if reservation_stay:
         except_stay = " AND coalesce(reservation_stay,'') <> '{}'".format(reservation_stay)
-    sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
+    sql = "SELECT COUNT(name) AS total FROM `tabTemp Room Occupy` WHERE is_departure = 0 and property='{4}' AND room_id = '{0}' AND room_type_id = '{5}' AND DATE BETWEEN '{1}' AND '{2}'{3}".format(room_id,start_date,end_date,except_stay,property,room_type_id)
     room_occupy = frappe.db.sql(sql)
     return room_occupy[0][0]
 
@@ -288,7 +289,7 @@ def add_new_reservation(doc):
             room = d["room_id"]
             #checi if room is not available
             if d["room_id"]:
-                check_room_not_available = frappe.db.sql("select name from `tabTemp Room Occupy` where room_id='{}' and date between '{}' and '{}'".format(room, reservation.arrival_date, add_to_date(getdate(reservation.departure_date), days=-1)),as_dict=1)
+                check_room_not_available = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure=0 and room_id='{}' and date between '{}' and '{}'".format(room, reservation.arrival_date, add_to_date(getdate(reservation.departure_date), days=-1)),as_dict=1)
                 if check_room_not_available:
                     frappe.throw("Room {} is not available".format(frappe.db.get_value("Room",room,"room_number")))
         
@@ -498,7 +499,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
 
         #validate check if current room is still have guest in house
         room_id = stay.stays[0].room_id
-        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where   room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,stay.departure_date),as_dict=1)
+        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure = 0 and  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,stay.departure_date),as_dict=1)
 
         if check_room_in_house:
              frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
@@ -1046,7 +1047,7 @@ def change_stay(data):
 
     if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0: 
         if room_id:        
-            check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
+            check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where is_departure = 0 and date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
                 {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
                 as_dict = 1
                 )
@@ -1102,14 +1103,15 @@ def change_stay(data):
 
    
     #check if current dsate date range have room block
-    block_data =frappe.db.sql("select name from `tabTemp Room Occupy` Where type='Block' and room_id=%(room_id)s and date between %(start_date)s and %(end_date)s",
-                              {
-                                "room_id":data["room_id"],
-                                "start_date":data["start_date"],
-                                "end_date":add_to_date(getdate(  data["end_date"]),days=-1)
-                            },as_dict=1)
-    if block_data:
-        frappe.throw("You cannot change stay or extend stay on a block room")
+    if hasattr(data,"room_id") and data["room_id"]: 
+        block_data =frappe.db.sql("select name from `tabTemp Room Occupy` Where  type='Block' and room_id=%(room_id)s and date between %(start_date)s and %(end_date)s",
+                                {
+                                    "room_id":data["room_id"],
+                                    "start_date":data["start_date"],
+                                    "end_date":add_to_date(getdate(  data["end_date"]),days=-1)
+                                },as_dict=1)
+        if block_data:
+            frappe.throw("You cannot change stay or extend stay on a block room")
 
     # validate back date role
     if getdate(data["start_date"])<getdate(working_day["date_working_day"]):
@@ -1131,10 +1133,13 @@ def change_stay(data):
     for s in stays:
         if s.name == data['name']:
             s.room_type_id=data["room_type_id"]
-            s.room_id=data["room_id"]
+          
+            if room_id: 
+                s.room_id=room_id 
+            
             s.start_date = data['start_date']
             s.end_date = data['end_date']
-
+           
         # change last stay room for start date
         index = stays.index(s) + 1
         if len(stays) > index and stays[index]:
@@ -1167,7 +1172,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
         #validate if room is not available 
         if frappe.db.get_single_value("eDoor Setting","enable_over_booking")==0:
             if doc.stays[0].room_id:
-                data = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
+                data = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy`  where is_departure = 0 and date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
                     {"start_date":arrival_date,"end_date":add_to_date(departure_date,days=-1),"stay_room_id":doc.stays[0].name,"room_id":doc.stays[0].room_id},
                     as_dict = 1
                 )
@@ -1743,8 +1748,10 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.tax_1_rate = data["tax_1_rate"]
         doc.tax_2_rate = data["tax_2_rate"]
         doc.tax_3_rate = data["tax_3_rate"]
+        doc.note = data["note"]
 
         doc.rate_include_tax = data["rate_include_tax"]
+
  
         doc.save()
 
@@ -2094,7 +2101,7 @@ def reserved_room(property, reservation_stay):
         #check if current room is already assign room 
         if s.room_id:
             
-            data = frappe.db.sql("select name from `tabTemp Room Occupy` where room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
+            data = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure = 0 and room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
             if data:
                 frappe.throw("Room {} is not available now".format(s.room_number))
     
@@ -2383,7 +2390,38 @@ def folio_transfer(data):
     if not data["new_folio_number"]:
         frappe.throw("Please select new folio number")
     
+    #validate folio is still open
     new_folio_doc = frappe.get_doc("Reservation Folio", data["new_folio_number"])
+    new_room_id = None
+    new_room_type_id = None 
+    if data["change_room"]==1:
+        #check room from room occupy of current working day
+        working_day = get_working_day(property=data["property"])
+        occupy_data = frappe.db.sql("select room_type_id,room_id from `tabTemp Room Occupy` where is_departure = 0 and reservation_stay='{}' and date='{}' limit 1".format(new_folio_doc.reservation_stay, working_day["date_working_day"]),as_dict=1)
+        if occupy_data:
+            new_room_id = occupy_data[0]["room_id"]
+            new_room_type_id= occupy_data[0]["room_type_id"]
+
+    if new_folio_doc.status == "Closed":
+        frappe.throw(_("Target folio number {} is already closed".format(data["new_folio_number"])))
+    #check reservation status in new folio is not allow to edit
+    reservation_status_doc = frappe.get_doc("Reservation Status", new_folio_doc.reservation_status)
+    if not reservation_status_doc.allow_user_to_edit_information or not reservation_status_doc.is_active_reservation:
+        frappe.throw(_("xxReservation stay # {} of target folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, new_folio_doc.name)))
+
+    
+
+    old_folio_doc = frappe.get_doc("Reservation Folio", data["folio_number"])
+    #check if old folio doc is already close 
+    if old_folio_doc.status == "Closed":
+        frappe.throw(_("Current folio number {} is already closed".format(data["folio_number"])))
+    
+    #check reservation status in new folio is not allow to edit
+    reservation_status_doc = frappe.get_doc("Reservation Status", old_folio_doc.reservation_status)
+    if not reservation_status_doc.allow_user_to_edit_information or not reservation_status_doc.is_active_reservation:
+        frappe.throw(_("yyyReservation stay # {} of source folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, old_folio_doc.name)))
+
+
     for d in data["folio_transaction"]:
         folio_transaction_doc = frappe.get_doc("Folio Transaction", d)
         folio_transaction_doc.transaction_number = new_folio_doc.name
@@ -2392,10 +2430,26 @@ def folio_transfer(data):
         folio_transaction_doc.ignore_validate_auto_post = 1
         folio_transaction_doc.ignore_update_folio_transaction = 1
         folio_transaction_doc.valiate_input_amount = 0
-        # frappe.throw(str(hasattr(folio_transaction_doc,"ignore_validate_auto_post")))
-        #check keep room info
+        
+        #check if user want to change room
+        if data["change_room"] ==1:
+            if new_room_type_id and new_room_id:
+                folio_transaction_doc.room_type_id = new_room_type_id
+                folio_transaction_doc.room_id = new_room_id
+
         #check keep guest infor
+        if data["change_guest"] ==1:
+            folio_transaction_doc.guest = new_folio_doc.guest
+
+
+
+        folio_transaction_doc.add_comment(
+                "Comment",
+                text=f'Folio Transfer from room # {old_folio_doc.rooms}. Folio Number  {data["folio_number"]}, Reservation Stay # {old_folio_doc.reservation}, Reservation # {old_folio_doc.reservation_stay}, Note: {data["note"]}'
+        )
+        
         folio_transaction_doc.save()
+
 
         #update sub record
         sub_transaction = frappe.db.sql("select name from `tabFolio Transaction` where parent_reference='{}'".format(d), as_dict=1)
@@ -2408,19 +2462,29 @@ def folio_transfer(data):
             sub_transaction_doc.ignore_update_folio_transaction = 1
             sub_transaction_doc.valiate_input_amount = 0
 
-            #check keep room info
+            folio_transaction_doc.add_comment(
+                "Comment",
+                text=f'Folio Transfer from room # {old_folio_doc.rooms}. Folio Number  {data["folio_number"]}, Reservation Stay # {old_folio_doc.reservation}, Reservation # {old_folio_doc.reservation_stay}, Note: {data["note"]}'
+            )
+
+            #check if user want to change room
+            if data["change_room"] ==1:
+                if new_room_type_id and new_room_id:
+                    sub_transaction_doc.room_type_id = new_room_type_id
+                    sub_transaction_doc.room_id = new_room_id
+            
 
             #check keep guest infor
+            #check keep guest infor
+            if data["change_guest"] ==1:
+                sub_transaction_doc.guest = new_folio_doc.guest
+
             sub_transaction_doc.save()
         #end updatre sub
 
         #enque update job source folio
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
         #enque update target folio
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["folio_number"] , reservation = data["reservation"], reservation_stay=data["reservation_stay"])
-
-
-
-    
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["new_folio_number"] , reservation = new_folio_doc.reservation, reservation_stay=new_folio_doc.reservation_stay)    
 
     frappe.msgprint("Folio transfer successfully")

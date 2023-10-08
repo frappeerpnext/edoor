@@ -32,6 +32,8 @@ function onSave() {
     .then((doc) => {
         dialogRef.value.close(doc)
         isSaving.value = false
+
+        window.socket.emit("RefreshData", {action:'refresh_reservation_stay',reservation_stay:reservation_stay.value.name})
     }).catch(()=>{
         isSaving.value = false
     })

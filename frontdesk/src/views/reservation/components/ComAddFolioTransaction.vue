@@ -511,9 +511,8 @@ function onSave() {
                 window.socket.emit("RefresheDoorDashboard", doc.property);
                 window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                 window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
-
+                window.socket.emit("RefreshData", { property:property.name, action:"refresh_folio_transaction_detail", name:dialogRef.value.data.folio_transaction_number })
             }).catch((err) => {
-            
                 isSaving.value = false;
             })
    

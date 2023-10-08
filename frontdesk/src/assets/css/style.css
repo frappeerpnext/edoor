@@ -1263,3 +1263,7 @@ ul.res__hideshow{
 .padding-list-booking-group{
     padding: 10px;
 }
+.p-paginator-left-content{
+    position: absolute;
+    left: 40px;
+}

@@ -99,6 +99,7 @@ const actionClickHandler = async function (e) {
 
                 showGuestDetail(data[1])
             } else if (data[0] == "view_reservation_stay_detail") {
+                
                 showReservationStayDetail(data[1])
 
             } else if (data[0] == "view_reservation_detail") {
@@ -144,15 +145,18 @@ const actionClickHandler = async function (e) {
         }
 
     }else if (e.data.extendedProps)  {
-        
+       
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
         }
-        else if(e.data.extendedProps.type=="room_type_event"){
+        else if(e.data.extendedProps.type=="room_type_event" ){
             
             onViewDailySummary(e.data.date,e.data.resourceIds[0])
-
         }
+        else if(e.data.extendedProps.type=="property_summary"   ){
+            onViewDailySummary(e.data.date,null)
+        }
+        
         
     }else if(e.data.action){
         onViewDailySummary(e.data.date,null)
@@ -213,6 +217,7 @@ function showGuestDetail(name) {
 }
 
 function showReservationDetail(name) {
+    
     if (!window.has_reservation_detail_opened){
         const dialogRef = dialog.open(ReservationDetail, {
         data: {
@@ -313,6 +318,7 @@ function showReservationStayDetail(name) {
         },
         onClose: (options) => {
             const data = options.data;
+          
             if (data != undefined) {
                 if (data.action == "view_reservation_detail") {
                     showReservationDetail(data.reservation)

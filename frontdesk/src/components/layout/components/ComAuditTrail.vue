@@ -120,6 +120,7 @@
     import {Timeago} from 'vue2-timeago'
     import ComAuditTrailDetail from './ComAuditTrailDetail.vue';
     import ComNoticeAuditTrail from './ComNoticeAuditTrail.vue';
+import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
     const dialogRef = inject("dialogRef");
     const data = ref([])
     const gv = inject('$gv')
@@ -131,6 +132,7 @@
         if(dialogRef.value.data){
             await onLoad(dialogRef.value?.data?.doctype, dialogRef.value?.data?.docname)
         }  
+        setEventListener()
     })
     async function onLoad(doctype, docname){
         console.log(doctype)
@@ -143,11 +145,25 @@
             }).then((r)=>{
                 data.value = Enumerable.from(r.message).orderByDescending("$.creation").toArray()
                 loading.value = false
+               
             }).catch((err)=>{
                 loading.value = false
             })
         }
     }
+
+    function setEventListener(){
+        console.log( document.querySelectorAll(".reservation-stay"))
+
+        document.querySelectorAll(".reservation-stay").forEach(el=>{
+            el.addEventListener("click", function(){
+             
+                window.postMessage(`${el.dataset.action}|${el.dataset.key}`, '*')
+                
+            })
+        })
+    }
+    
     function onDetail(record){
         selected.value = record
         visible.value = true

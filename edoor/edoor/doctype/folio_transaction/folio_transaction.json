@@ -664,6 +664,7 @@
    "fetch_from": "reservation_stay.reservation_status",
    "fieldname": "reservation_status",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Reservation Status"
   },
   {
@@ -775,7 +776,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-02 15:28:31.581495",
+ "modified": "2023-10-06 10:16:00.115166",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

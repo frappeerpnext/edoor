@@ -49,7 +49,7 @@
                         </Button>
                     </template>
                 </Column>
-                <div class="absolute bottom-6 left-4">
+                <div class="absolute bottom-6 left-4 z-5">
                     <strong>Total Records: <span class="ttl-column_re">{{ hk.room_list.length }}</span></strong>
                 </div>
             </DataTable>
@@ -94,14 +94,7 @@ const frappe = inject("$frappe")
 const call = frappe.call()
 const visibleRight = ref(false);
 const db = frappe.db()
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == setting.property.name && arg.action=="refresh_hk") {
-        hk.loadData()
-    }
-})
-onUnmounted(() => {  
-    window.socket.off("RefreshData");
-})
+
 const data = computed(() => {
     return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
 })

@@ -1,5 +1,5 @@
 <template>
-   <button @click="clear">clear select </button>
+ 
     <ComPlaceholder 
         text="There is no Folio transactions" 
         :loading="loading" 

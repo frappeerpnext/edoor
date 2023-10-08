@@ -16,7 +16,7 @@
                                     <span v-html="m.icon"></span>
                                 </template>
                                 <template #defualt>
-                                    <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group" class="pi pi-angle-down"></i></p>
+                                    <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group && hasChildren(m.name)" class="pi pi-angle-down"></i></p>
                                 </template>
                             </ComHeaderBarItemButton>
                         </template>  
@@ -54,7 +54,7 @@
                                     <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="iconOpenCashierShift" style="height: 15px;" />
-                                        <span class="ml-2">Open cashier shiftx</span>
+                                        <span class="ml-2">Open cashier shift</span>
                                     </button>
                                     
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
@@ -87,6 +87,7 @@
         
         <div>
             <div class="wrap-page-content -mb-2 px-2">
+                
                 <router-view />
             </div>
             <div v-if="route.name != 'Frontdesk'" class="mt-3" style="height: 22px;"></div>
@@ -132,6 +133,7 @@ import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
 const moment = inject("$moment")
 
 const eDoorMenu = computed(()=>{ 
+
     const menu = ref(setting?.edoor_menu.filter(r => (r.parent_edoor_menu || "") != ""))
     
     if(screen.width <= 1346){
@@ -141,6 +143,12 @@ const eDoorMenu = computed(()=>{
     }
 })
 
+function hasChildren(name){
+    
+    return eDoorMenu.value.filter(r=>r.parent_edoor_menu==name).length>0
+}
+
+ 
 
 const canRunNightAudit = computed(() => {
 return window.user?.roles?.filter(r=>r==window.setting.run_night_audit_role).length>0

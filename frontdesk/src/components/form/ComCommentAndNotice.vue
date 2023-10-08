@@ -7,7 +7,6 @@
                                  placeholder="Note Date"
                                  v-model="create.note_date"
                                   dateFormat="dd-mm-yy" showIcon showButtonBar />
-            
             </div>
             <div class="-mb-2 mt-3" v-if="create.note_type=='Notice'">
             </div>

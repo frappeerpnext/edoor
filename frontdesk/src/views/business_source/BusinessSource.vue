@@ -89,7 +89,7 @@
  
     
 
-<OverlayPanel ref="opShowColumn">
+<OverlayPanel ref="opShowColumn" style="width:35rem">
     <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save" @onCancel="onCloseColumn">
         <template #top>
             <span class="p-input-icon-left w-full mb-3">

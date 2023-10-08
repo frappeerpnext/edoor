@@ -1,8 +1,6 @@
 <template>
-    {{ }}
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-3">
         <div>
-
             <template
                 v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab == 1)"
                 :key="index">
@@ -49,7 +47,7 @@
                         <span class="ml-2">Edit Folio </span>
                     </button>
 
-                    <button @click="deleteFilio" v-if="rs.selectedFolio?.status == 'Closed'"
+                    <button @click="openFolio" v-if="rs.selectedFolio?.status == 'Closed'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-check-circle" />
                         <span class="ml-2">Open Folio</span>
@@ -203,9 +201,6 @@ function onAddFolioTransaction(account_code) {
                     rs.getChargeSummary(rs.reservationStay.name)
                     setTimeout(function () {
                         rs.getReservationStay(rs.reservationStay.name);
-                        //send websocket to update reservation detail
-                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                        window.socket.emit("RefreshData", { reservation_stay: rs.reservationStay.name, action: "refresh_reservation_stay" })
                     }, 2000)
                     if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {
@@ -315,8 +310,9 @@ function openFolio() {
             })
                 .then((doc) => {
                     rs.selectedFolio.status = doc.status;
-                    // toast.add({ severity: 'success', summary: 'Open Folio', detail: 'Open Folio successfully', life: 3000 });
                     rs.onLoadReservationFolios()
+
+                    window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
                 })
         },
 
@@ -340,6 +336,8 @@ function closeFolio() {
                 .then((doc) => {
                     rs.selectedFolio.status = doc.status;
                     rs.onLoadReservationFolios()
+
+                    window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
                 })
         },
 
@@ -356,11 +354,11 @@ function deleteFilio() {
         data: {
             api_url: "utils.delete_doc",
             method: "DELETE",
-            confirm_message: "Are you sure you want to delete this filio?",
+            confirm_message: "Are you sure you want to delete this folio?",
             data: { doctype: "Reservation Folio", name: rs.selectedFolio.name },
         },
         props: {
-            header: "Delete Folio",
+            header: "Delete Folio Number" + " " + rs.selectedFolio.name,
             style: {
                 width: '50vw',
             },
@@ -380,16 +378,11 @@ function deleteFilio() {
                         if (!defaultSelectFolio.value) {
                             defaultSelectFolio.value = rs.folios[0]
                         }
-                        rs.onLoadFolioTransaction(defaultSelectFolio.value)
-                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        rs.onLoadFolioTransaction(defaultSelectFolio.value)   
                     }
-
-
                 })
-
             }
         }
-
     });
 
 
@@ -428,10 +421,14 @@ function onTransferFolioItem() {
                 rs.selectedFolioTransactions=[]
               
                 setTimeout(() => {
-
                     rs.onLoadFolioTransaction(rs.selectedFolio)
+                }, );
+
+                setTimeout(() => {
+                    rs.onLoadReservationFolios(rs.reservationStay.name)
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)    
-                }, 1000);
+                }, 3000);
+
                 
             }
         }

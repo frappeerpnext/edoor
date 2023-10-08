@@ -553,7 +553,7 @@ const warningMessage = computed(()=>{
         room_type.forEach(r => {
             const rt = room_types.value.find(rt=>rt.name==r)
            
-            if(doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>rt.total_vacant_room){
+            if(doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>(rt.total_vacant_room ||0)){
                 messages.push("You have over booking on room type <strong>" + rt.room_type + "</strong>. Total Over: <strong>" + Math.abs(rt.total_vacant_room -  doc.value.reservation_stay.filter(x=>x.room_type_id==r).length)) + "</strong>"
             }
         })

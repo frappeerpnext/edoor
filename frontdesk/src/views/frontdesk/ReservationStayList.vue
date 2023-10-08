@@ -433,7 +433,7 @@ onMounted(() => {
 
             columns.value.push({
                 fieldname: r.fieldname,
-                header: r.label,
+                label: r.label,
                 fieldtype: r.fieldtype.toLowerCase(),
                 header_class: header_class,
                 selected: selectedColumns.value.includes(r.fieldname)

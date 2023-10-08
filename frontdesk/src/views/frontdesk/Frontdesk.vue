@@ -6,7 +6,6 @@
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
-                        
                         <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('MMM DD, yyyy')}} - {{moment.utc(filter.end_date).format('MMM DD, yyyy')}}</div>
                         <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('MMM DD')}} - {{moment.utc(filter.end_date).format('MMM DD, yyyy')}}</div>
                     </div>
@@ -28,9 +27,7 @@
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
- 
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
-                    
                 </div>
                 <div>
                     <span class="p-input-icon-left w-full">
@@ -91,7 +88,7 @@
                             <hr class="left-0 fixed w-full">
                             <ComNoteGlobal v-if="showNote"/> 
                         </Sidebar>
-                     
+                       
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
                             <template v-slot:eventContent="{event}"> 
                                 <ComCalendarEvent :event="event"/>    
@@ -131,6 +128,7 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 import FullCalendar from '@fullcalendar/vue3'
 
+
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
@@ -161,7 +159,7 @@ const showSummary = ref(true)
 const showNote = ref(false)
 const loading = ref(false)
 const totalNotes = ref(0)
-
+const conflictRooms = ref()
 let advanceFilter = ref({
     room_type: "",
     room_number: "",
@@ -182,6 +180,11 @@ provide('get_count_note', {
     getTotalNote
 })
 
+function HelloWorld(){
+    events.value = events.value.filter(r=>r.type=="stay")
+
+}
+
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
 }
@@ -193,7 +196,9 @@ let roomChartResourceFilter = reactive({
 
 window.socket.on("RefresheDoorDashboard", (arg) => {
     if (arg == property.name) {
-        onRefresh(false)
+
+        getResourceAndEvent()
+
     }
 })
 
@@ -307,16 +312,14 @@ const calendarOptions = reactive({
     }),
 
     eventClick: ((info) => {
-        // alert(info.event._def)
+ 
 
         const data = info.event._def.extendedProps;
         if (data.type == "stay") {
             showReservationStayDetail(data.reservation_stay)
         } else {
             info.event._def.date = info.event.start;
-            alert(info.event._def)
-            // window.postMessage(info.event._def, '*')
-            openRoomBlock(info.event._def)
+            window.postMessage(info.event._def, '*')
         }
     }),
 
@@ -346,6 +349,13 @@ const calendarOptions = reactive({
     
     eventDrop: function ($event) {
         let title = "Change Stay"
+        if($event.newResource){ 
+        if($event.newResource?.extendedProps?.type!="room"){
+            $event.revert()
+            return
+        }
+    }
+
         if ($event.newResource) {
             if ($event.newResource._resource.id != $event.oldResource?._resource.id) {
                 title = "Move Room"
@@ -376,10 +386,7 @@ const calendarOptions = reactive({
 const getEventDebounce = debouncer(() => {
     getEvent()
 }, 500);
-
-const openRoomBlock = debouncer((_data) => {
-    window.postMessage(_data, '*')
-}, 200);
+ 
 
 function setRoomChartlocationStorage() {
     sessionStorage.setItem('reservation_chart', JSON.stringify({
@@ -434,7 +441,11 @@ function onPrevNext(key) {
     calendarOptions.visibleRange = visible_date;
     filter.value.date = visible_date.start
     filter.value.end_date = visible_date.end
+
+
     getEvent()
+
+ 
 }
 
 function onSelectedDate(event) {
@@ -501,6 +512,8 @@ function resourceColumn(view_type) {
 
                     if (item.housekeeping_icon) {
                         el.innerHTML = `<div id='room_status_${arg.resource._resource.id}' class="cell-status text-center room-status" data-title="${arg.fieldValue}">${item.housekeeping_icon}</div>`;
+                    
+                     
                     }
                     else {
                         el.innerHTML = ''
@@ -527,11 +540,15 @@ function resourceColumn(view_type) {
 
                     if (item.room_type) {
                         el.innerHTML = `<div  title="${item.room_type}">${arg.fieldValue ?? ""}</div>`;
+                        
+
+                       
                     }
                     else {
                         el.innerHTML = ''
                     }
                     const dom = [el.innerHTML]
+                   
                     return { html: dom  }
                     }else {
                         return {html:[""]}
@@ -563,8 +580,7 @@ function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
     onRefresh()
-    // window.socket.emit("RefresheDoorDashboard", doc.message.property)
-    // alert(property.reservation.property)
+ 
 }
 
 function onView() {
@@ -575,29 +591,38 @@ function onView() {
 }
 
 function generateEventForRoomType(data) {
+
     const cal = fullCalendar.value.getApi()
     let current_date = cal.view.currentStart;
     const room_type_event = []
     let occupy_data = {}
     if (filter.value.view_type == "room_type") {
         resources.value.forEach(r => {
+         
             while (current_date <= cal.view.currentEnd) {
                 if (r.id == "property_summary") {
                     occupy_data = data.filter(c => c.date == moment(current_date).format("YYYY-MM-DD"))
+                    const room_available = r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0)
+                  
+                    
                     room_type_event.push(
                         {
-                            color: "#3b82f6",
+                           
+                            color:room_available<0?"red":"#3b82f6",
                             resourceId: r.id,
                             start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
                             end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
                             title: r.total_room - (occupy_data.reduce((n, d) => n + (d.total || 0), 0) || 0) + ' / ' + (occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0) || 0),
                             type: "property_summary",
-                            arrival: occupy_data?.arrival || 0,
-                            departure: occupy_data?.departure || 0,
-                            adult: occupy_data?.adult || 0,
-                            child: occupy_data?.child || 0,
-                            room_available: r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0),
-                            unassign_room: occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0)
+                            arrival: occupy_data.reduce((n, d) => n + (d.arrival || 0), 0),
+                            departure: occupy_data.reduce((n, d) => n + (d.departure || 0), 0),
+                            adult: occupy_data.reduce((n, d) => n + (d.adult || 0), 0),
+                            child:occupy_data.reduce((n, d) => n + (d.child || 0), 0),
+                            room_available: room_available,
+                            unassign_room: occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0),
+                            stay_over: occupy_data.reduce((n, d) => n + (d.stay_over || 0), 0),
+                            total_room:  resources.value.filter(r=>r.type=='room_type').reduce((n, d) => n + (d.total_room || 0), 0),
+
                         }
                     )
                 } else {
@@ -605,6 +630,7 @@ function generateEventForRoomType(data) {
 
                     room_type_event.push(
                         {
+                            room_type:r.title,
                             color: (r.total_room - (occupy_data?.total || 0)) < 0 ? "red" : "#F7F7F7",
                             resourceId: r.id,
                             start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
@@ -616,7 +642,10 @@ function generateEventForRoomType(data) {
                             adult: occupy_data?.adult || 0,
                             child: occupy_data?.child || 0,
                             room_available: r.total_room - (occupy_data?.total || 0),
-                            unassign_room: (occupy_data?.unassign_room || 0)
+                            unassign_room: (occupy_data?.unassign_room || 0),
+                            stay_over: (occupy_data?.stay_over || 0),
+                            total_room: r.total_room,
+                            current_date:  moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
                         }
                     )
                 }
@@ -654,13 +683,7 @@ function generateEventForRoomType(data) {
     events.value = [...events.value, ...room_type_event]
 }
 const onRefresh = debouncer((show_loading = true) => {
-    //clear tippy
-    [...document.querySelectorAll('*')].forEach(node => {
-        if (node._tippy) {
-            node._tippy.destroy();
-        }
-    });
-    //end clear tip 
+    
     getResourceAndEvent()
     getTotalNote()
 }, 500);
@@ -742,27 +765,7 @@ function getTotalNote() {
     })
 }
 
-function getResource() {
-    gv.loading = true
-    getApi('frontdesk.get_room_chart_resource', roomChartResourceFilter)
-    .then((result) => {
-        resources.value = result.message
-        removeDOM()
-        setTimeout(() => {
-            const room_status = document.getElementsByClassName("room-status")
-            for (let i = 0; i < room_status.length; i++) {
-                let el = room_status[i]
-                useTippy(el, {
-                    content: el.getAttribute("data-title")
-                })
-            }
-        }, 3000);
-
-        gv.loading = false
-    }).catch((error) => {
-        gv.loading = false
-    })
-}
+ 
 function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {
@@ -793,9 +796,21 @@ function getEvent() {
         events.value = (result.message.events)
         generateEventForRoomType(result.message.occupy_data)
         setRoomChartlocationStorage()
+        conflictRooms.value = result.message.conflig_rooms
         showConflictRoom(result.message.conflig_rooms)
         removeDOM()
         gv.loading = false
+        //set tool tip form room housekeeping status
+        setTimeout(() => {
+            const room_status = document.getElementsByClassName("room-status")
+            for (let i = 0; i < room_status.length; i++) {
+                let el = room_status[i]
+                useTippy(el, {
+                    content: el.getAttribute("data-title")
+                })
+            }
+        }, 3000);
+
     }).catch((error) => {
         gv.loading = false
     })
@@ -820,10 +835,23 @@ function getResourceAndEvent() {
         events.value = result.message.events.events
         removeDOM()
         generateEventForRoomType(result.message.events.occupy_data)
-        addHightLightRowEventListener()
-        gv.loading = false
+     
         setRoomChartlocationStorage()
+        conflictRooms.value =result.message.events.conflig_rooms
+ 
         showConflictRoom(result.message.events.conflig_rooms)
+
+        //set tooltip
+        setTimeout(() => {
+            const room_status = document.getElementsByClassName("room-status")
+            for (let i = 0; i < room_status.length; i++) {
+                let el = room_status[i]
+                useTippy(el, {
+                    content: el.getAttribute("data-title")
+                })
+            }
+        }, 3000);
+        gv.loading = false
     })
 }
 
@@ -863,10 +891,17 @@ onMounted(() => {
             let resourceElment = document.elementFromPoint(calendarRect.left + 10, y+calendarRect.top + headerHeight).closest("tr")
          
             if (resourceElment){
+                
                 const td = resourceElment.getElementsByTagName("td")
                 if(td){
                     const resourceId = td[0].dataset.resourceId
-            
+                    
+                    if(conflictRooms.value){
+                        if (conflictRooms.value.includes(resourceId)){
+                            return
+                        }
+                    }
+                    
                     if(currentHightlightResourceId && currentHightlightResourceId!=resourceId){
                             let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + currentHightlightResourceId + '"]')
                             let room_type_el = document.querySelector('td[data-resource-id="' + currentHightlightResourceId + '"]').closest("tr")
@@ -874,16 +909,28 @@ onMounted(() => {
                             room_type_el.style.backgroundColor = "";
                             el.style.backgroundColor = "";
                     }
-                    let room_type_el = document.querySelector('td[data-resource-id="' + resourceId + '"]').closest("tr")
+                    let room_type_el = document.querySelector('td[data-resource-id="' + resourceId + '"]')?.closest("tr")
                     let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + resourceId + '"]')
-                    room_type_el.style.backgroundColor = "#EDEDED";
-                    el.style.backgroundColor = "#EDEDED";
+                    if(room_type_el){
+                        room_type_el.style.backgroundColor = "#EDEDED";
+
+                    }
+                    if(el){
+                        el.style.backgroundColor = "#EDEDED";
+                    }
+                    
+                    
                     currentHightlightResourceId = resourceId
+
+
                 }    
             }
         })
+
+    
     }, 2000);
 })
+ 
 
 function getEndDate(start, period) {
     let date = moment()
@@ -933,7 +980,9 @@ provide('advance_filter', {
 
 function showConflictRoom(conflig_rooms) {
     setTimeout(() => {
+         
         if (conflig_rooms) {
+            if (filter.value.view_type == "room_type") {
             resources.value.forEach((r) => {
                 if (filter.value.view_type == "room_type") {
                     let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')
@@ -955,40 +1004,25 @@ function showConflictRoom(conflig_rooms) {
                     }
                 })
             })
+        }else {
+            resources.value.filter(r=>r.type=='room').forEach((c) => {
+                    let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
+                    let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
+                    if (conflig_rooms.includes(c.id)) {
+                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
+                        el.style.backgroundColor = setting.room_conflict_background_color;
+
+                    } else {
+                        room_type_el.parentNode.style.backgroundColor = '';
+                        el.style.backgroundColor = '';
+                    }
+                })
+        }
         }
 
-    }, 500);
+    }, 1000);
 }
 
-function addHightLightRowEventListener() {
-    setTimeout(() => {
-        resources.value.forEach((r) => {
-            let room_type_el = document.querySelector('td[data-resource-id="' + r.id + '"]')  
-            let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + r.id + '"]')
-
-            room_type_el.addEventListener('mouseenter', function() {
-
-                room_type_el.parentNode.style.backgroundColor = "#EDEDED";
-                el.parentNode.style.backgroundColor = "#EDEDED";
-            });
-            room_type_el.addEventListener('mouseleave', function() {
-
-                room_type_el.parentNode.style.backgroundColor = "#FFF";
-                el.parentNode.style.backgroundColor = "#FFF";
-            });
-            
-            el.addEventListener('mouseenter', function() {
-
-                el.parentNode.style.backgroundColor = "#EDEDED";
-            });
-            el.addEventListener('mouseleave', function() {
-
-                el.parentNode.style.backgroundColor = "#FFF";
-            });
-
-        })
-    },5000)
-}
 //Remove tippy tooltips when room chart DOM removed
 const removeDOM = () => {
     document.querySelectorAll('[id^="tippy-"]').forEach(function (element) {

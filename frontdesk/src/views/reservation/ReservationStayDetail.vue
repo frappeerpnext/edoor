@@ -364,11 +364,11 @@ const onCheckIn = () => {
                     
                     window.socket.emit("RefresheDoorDashboard", window.property_name);
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-                    // window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                     window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
                     window.socket.emit("RefreshData", {property: window.property_name,action:"refresh_summary"})
-                    onRefresh(false)
+                    window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
                     
+                    onRefresh(false)
                 })
                     .catch((err) => {
                         rs.loading = false

@@ -125,7 +125,7 @@
 
 </template>
 <script setup>
-import { inject, ref, getCount, getDocList, onMounted,getApi,useDialog, computed } from '@/plugin'
+import { inject, ref, getCount, getDocList, onMounted,getApi,useDialog, computed, onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
@@ -139,13 +139,18 @@ const data = ref([])
 const filter = ref({})
 const showAdvanceSearch = ref()
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
-const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-window.socket.on("RefreshGuestDatabase", (arg) => {
-    if (arg == property.name) {
-        loadData()    
+
+
+window.socket.on("RefreshData", (arg) => {
+   
+    if (arg.property == window.property_name && arg.action == "refresh_guest_database") {
+        setTimeout(function(){
+            loadData(false)
+        },3000) 
     }
 })
+
 
 const columns = ref([
     { fieldname: 'name', label: 'Customer Code', header_class:"text-center", fieldtype:"Link",post_message_action:"view_guest_detail" ,default:true},
@@ -203,13 +208,11 @@ function Refresh() {
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
-    console.log(page)
-    console.log(pageState.value)
     loadData()
 }
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading = true) {
+    gv.loading = show_loading
     let filters = []
     if (filter.value?.keyword) {
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
@@ -366,6 +369,10 @@ const dd = ref()
 onMounted(()=>{
     const height = care.value.clientHeight
     dd.value = height
+})
+
+onUnmounted(() => {
+    window.socket.off("RefreshData")
 })
 
 </script>

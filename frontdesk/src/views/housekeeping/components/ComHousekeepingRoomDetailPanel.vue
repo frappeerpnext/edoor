@@ -73,7 +73,7 @@
                 </ComStayInfoNoBox> 
                 <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 
             </table>
-            <template v-if="can_view_rate" >
+            <template  >
             <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div> 
             <table class="w-full" v-if="hk.selectedRow.summary">
                 <ComStayInfoNoBox  label="TOTAL DEBIT" :value="gv.currencyFormat(hk.selectedRow.summary.debit)" />  
@@ -120,12 +120,6 @@
 </template>
 <script setup>
 import { inject, ref, useToast} from '@/plugin';
-import GuestDetail from "@/views/guest/GuestDetail.vue"
-import ComReservationNote from '@/views/reservation/components/ComReservationNote.vue';
-import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue';
-import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
-import { onUnmounted } from 'vue';
-
 const hk = inject("$housekeeping")
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)

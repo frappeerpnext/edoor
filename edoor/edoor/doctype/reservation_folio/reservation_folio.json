@@ -20,6 +20,7 @@
   "business_source",
   "reservation_status",
   "reservation_status_color",
+  "is_active_reservation",
   "column_break_10",
   "room_types",
   "room_types_alias",
@@ -245,6 +246,13 @@
    "fieldtype": "Data",
    "label": "Room Types Alias",
    "length": 500
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_stay.is_active_reservation",
+   "fieldname": "is_active_reservation",
+   "fieldtype": "Check",
+   "label": "Is Active Reservation"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -255,7 +263,7 @@
    "link_fieldname": "folio_number"
   }
  ],
- "modified": "2023-10-02 15:28:01.636558",
+ "modified": "2023-10-06 13:58:22.864352",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

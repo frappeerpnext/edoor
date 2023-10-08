@@ -372,6 +372,7 @@ def get_conflict_room(filter):
             room_id  
         from `tabTemp Room Occupy` 
         where
+            is_departure = 0 and
             ifnull(room_id,'') <> '' and 
             property = %(property)s and 
             date between %(start)s and %(end)s and 
@@ -380,7 +381,7 @@ def get_conflict_room(filter):
             ifnull(building,'') = if(%(building)s='',ifnull(building,''), %(building)s) and 
             room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
         group by date, room_id
-        having count(*)>1
+        having count(name)>1
         """
 
  
@@ -611,53 +612,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
    
 
     # check if room chart view is group by room type then add event to room type resource
-    occupy_data = []
-    if view_type =="room_type":
-        sql = """select 
-                    room_type_id, 
-                    date, 
-                    count(name) as total, 
-                    sum(if(type='Block',1,0)) as block, 
-                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(is_arrival) as arrival, 
-                    sum(is_departure) as departure,
-                    sum(adult) as adult, 
-                    sum(child) as child 
-                    from `tabRoom Occupy` 
-                where 
-                    property=%(property)s and 
-                    date between %(start)s and %(end)s and 
-                    room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s)  and 
-                    room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
-
-
-                group by 
-                    room_type_id, 
-                date"""
-        
-        occupy_data = frappe.db.sql(sql,filter,as_dict=1)
-    else: 
-        #get summary by date only without room type
-        sql = """select 
-                    date, 
-                    count(name) as total, 
-                    sum(if(type='Block',1,0)) as block, 
-                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(is_arrival) as arrival, 
-                    sum(is_departure) as departure,
-                    sum(adult) as adult, 
-                    sum(child) as child 
-                    from `tabRoom Occupy` 
-                where 
-                    property=%(property)s and 
-                    date between %(start)s and %(end)s and 
-                    room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s)  and 
-                    room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
-                group by 
-                    date
-                """
-        
-        occupy_data = frappe.db.sql(sql,filter,as_dict=1)
+    occupy_data =  get_occupy_data(view_type, filter)
          
 
     #get event from room block
@@ -680,6 +635,60 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
     }
     return data
    
+
+@frappe.whitelist()
+def get_occupy_data(view_type, filter):
+    occupy_data = []
+    if view_type =="room_type":
+        sql = """select 
+                    room_type_id, 
+                    date, 
+                    sum(if(is_departure=1,0,1)) as total,
+                    sum(if(type='Block',1,0)) as block, 
+                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
+                    sum(is_arrival) as arrival, 
+                    sum( is_departure ) as departure,
+                    sum(if(is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+                    sum(adult) as adult, 
+                    sum(child) as child 
+                    from `tabRoom Occupy`  
+                where 
+                    
+                    property=%(property)s and 
+                    date between %(start)s and %(end)s and 
+                    room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s)  and 
+                    room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
+                group by 
+                    room_type_id, 
+                date
+                """
+        
+        occupy_data = frappe.db.sql(sql,filter,as_dict=1)
+    else: 
+        #get summary by date only without room type
+        sql = """select 
+                    date, 
+                    sum(if(is_departure=1,0,1)) as total,
+                    sum(if(type='Block',1,0)) as block, 
+                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
+                    sum(is_arrival) as arrival, 
+                    sum(is_departure) as departure,
+                    sum(if(is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+                    sum(adult) as adult, 
+                    sum(child) as child 
+                    from `tabRoom Occupy` 
+                where 
+                    property=%(property)s and 
+                    date between %(start)s and %(end)s and 
+                    room_type_id = if(%(room_type_id)s='',room_type_id, %(room_type_id)s)  and 
+                    room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
+                group by 
+                    date
+                """
+        
+        occupy_data = frappe.db.sql(sql,filter,as_dict=1)
+
+    return occupy_data
 
 @frappe.whitelist()
 def get_room_block_event(start,end,property):

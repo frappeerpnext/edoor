@@ -24,7 +24,7 @@
                 </template>
                 <template v-if="isDelete">
                     <button @click="onOpenDelete"
-                        v-if="!data.parent_reference "
+                        v-if="!data.parent_reference"
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         Delete
                     </button>
@@ -40,6 +40,7 @@ import { ref, useDialog, inject, useConfirm, deleteApi } from '@/plugin'
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
 const props = defineProps({
     data: Object,
     isEdit: {
@@ -129,16 +130,15 @@ function onPrintFolioTransaction() {
 }
 
 function onOpenDelete() {
-
     const dialogRef = dialog.open(ComDialogNote, {
         data: {
                 api_url: "utils.delete_doc",
                 method: "DELETE",
-                confirm_message: "Are you sure you want to delete this filio?",
-                data:{ doctype: "Folio Transaction", name: rs.selectedFolio.name },
+                confirm_message: "Are you sure you want to delete this folio?",
+                data:{ doctype: "Folio Transaction", name: props.data.name },
             },
         props: {
-            header: "Delete Folio",
+            header: "Delete Folio Transaction" + " " + props.data.name,
             style: {
                 width: '50vw',
             },
@@ -159,14 +159,9 @@ function onOpenDelete() {
             opDelete.value = false
 
             window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
-
-            alert(rs.reservation.name)
-         
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})         
          }
-
     });
-
 }
 </script>
 <style lang="">

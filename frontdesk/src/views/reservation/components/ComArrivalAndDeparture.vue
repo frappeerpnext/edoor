@@ -8,7 +8,7 @@
       </template>
       <template #content>
         <div class="mt-2 Arrival-bg">
-          <TabView :activeIndex="(rs.reservationStay.reservation_status == 'In-House' ? 1 : 0)">
+          <TabView :activeIndex="(rs.reservationStay.reservation_status == 'In-house' ? 1 : 0)">
             <TabPanel header="Arrival">
               <div v-if="rs.reservationStay.require_pickup" class="">
                 <div class="flex mt-4 gap-2">

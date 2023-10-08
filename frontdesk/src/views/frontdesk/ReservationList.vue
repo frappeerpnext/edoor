@@ -151,7 +151,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, watch } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
 
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
@@ -167,9 +167,11 @@ const toast = useToast()
 const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
-        loadData()
+window.socket.on("RefreshData", (arg) => {
+    if (arg.property == window.property_name && arg.action == "refresh_reservation_list") {
+        setTimeout(function(){
+            loadData(false)
+        },3000) 
     }
 })
 
@@ -266,8 +268,8 @@ function pageChange(page) {
     loadData()
 }
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading = true) {
+    gv.loading = show_loading
     let filters = [
         ["Reservation", "property", '=', property.name]
     ]
@@ -425,5 +427,7 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
-
+onUnmounted(() => {
+    window.socket.off("RefreshData")
+})
 </script>

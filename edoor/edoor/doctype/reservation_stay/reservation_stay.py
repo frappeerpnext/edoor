@@ -114,8 +114,8 @@ class ReservationStay(Document):
 			d.room_nights = frappe.utils.date_diff(d.end_date, d.start_date)
 			d.stay_rooms = self.rooms
 			d.stay_room_types = self.room_types 
-			d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status =="Reserved"    else 0
-			d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Reserved","In-house"] else 0
+			d.can_change_start_date = 1 if (len(self.stays) == 1 or self.stays.index(d) ==0) and self.reservation_status in ["Reserved","Confirmed"]     else 0
+			d.can_change_end_date = 1 if (len(self.stays) == 1 or self.stays.index(d) == len(self.stays)-1 ) and  self.reservation_status in ["Confirmed","Reserved","In-house"] else 0
 			#generate room data
 			rooms_data.append({
 					"name": d.name,
@@ -174,7 +174,9 @@ class ReservationStay(Document):
 		if self.is_master:
 			reservation_stays = frappe.get_list("Reservation Stay",filters={
 				'reservation': self.reservation
-			})
+			},
+			page_length=100)
+			
 			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join(str(x.name) for x in reservation_stays)))
 		data_for_udpate = {
 			"rooms":self.rooms,
@@ -232,7 +234,7 @@ def update_housekeeping_note(self):
 	return self
 
 def generate_room_occupy(self):		
-	dates = get_date_range(self.arrival_date, self.departure_date)
+	dates = get_date_range(self.arrival_date, self.departure_date,exlude_last_date=False)
 	for stay in self.stays: 
 		for d in dates:
 			#generate room to temp room occupy
@@ -250,7 +252,7 @@ def generate_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
 
 
 			}).insert()
@@ -271,7 +273,7 @@ def generate_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
 
 			}).insert()
 
@@ -402,7 +404,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"tax_3_rate":stay_doc.tax_3_rate,
 				"stay_room_id":data["name"],
 				"room_type_id":data["room_type_id"],
-				"room_id":data["room_id"],
+				"room_id": data["room_id"]  if hasattr(data,"room_id") and data["room_id"]  else None,
 				"date":d,
 				"input_rate": room_rate,
 				"rate_type":rate_type,
@@ -443,7 +445,8 @@ def change_room_occupy(self):
 def generate_stay_room_occupy(self):
 	self.update_room_occupy = False
 	for stay in self.stays:
-		dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date)
+		dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
+	 
 		for d in dates:
 			#generate room to temp room occupy
 			frappe.get_doc({
@@ -460,7 +463,7 @@ def generate_stay_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
 
 			}).insert()
 
@@ -480,7 +483,7 @@ def generate_stay_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==add_to_date(getdate(self.departure_date), days=-1) else 0 
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
 				
 			}).insert()
 		

@@ -114,7 +114,9 @@ const guest = ref({})
 const optionGender = ref()
 const moment = inject('$moment')
 const rs = inject('$reservation_stay')
+const reservation = inject('$reservation')
 
+ 
 function onLoad() {
     loading.value = true
     getDoc('Customer', dialogRef.value.data.name)
@@ -128,12 +130,7 @@ function onLoad() {
             loading.value = false
         });
 }
-function refreshGuestDetail(){
- setTimeout(function(){ 
-    window.postMessage("refresh_guest_detail",'*')
-},1000)
-  
-}
+ 
 function onClose(param = false) {
     dialogRef.value.close(param)
 }
@@ -165,19 +162,18 @@ function onOK() {
     data.expired_date = data.expired_date ? moment(data.expired_date).format("YYYY-MM-DD") : ''
     data.photo = data.attach
     createUpdateDoc('Customer', {data:data},'',false).then((r) => {
-        if (r.name) {
-            getDoc('Customer', r.name).then((g) => {
-                onClose(g)
-                window.postMessage("refresh_guest_detail",'*')
-                loading.value = false 
-            })
-            loading.value = false
+       
+    console.log(r)
             window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-            window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:rs.reservationStay.property})
-            window.socket.emit("RefreshGuestDatabase", { property:rs.reservationStay.property})
-            window.socket.emit("RefresheDoorDashboard", { property:rs.reservationStay.property})
-        }
+            window.socket.emit("RefreshReservationDetail", reservation.reservation.name)
+            window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:window.property_name})
+            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_guest_database"})
+            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_reservation_list"})
+            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_hk"})
+            window.socket.emit("RefresheDoorDashboard", { property:window.property_name})
+            alert(window.property_name)
+            onClose(r)
+            loading.value = false
     }).catch((err) => {
         loading.value = false
     })

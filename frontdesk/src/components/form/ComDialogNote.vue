@@ -25,6 +25,8 @@ const toast = useToast();
 
 const dialogRef = inject("dialogRef");
 
+const rs = inject("$reservation_stay")
+
 const emit = defineEmits(['onOk', 'onClose'])
 
 const data = ref()
@@ -49,7 +51,8 @@ function onOk() {
             loading.value = false
             dialogRef.value.close(note.value)
 
-
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+            
         }).catch(() => {
             loading.value = false
         })
@@ -58,16 +61,12 @@ function onOk() {
             loading.value = false
             dialogRef.value.close(note.value)
 
+            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+
         }).catch(() => {
             loading.value = false
         })
     }
-
-
-
-
-
-
 }
 
 onMounted(() => {

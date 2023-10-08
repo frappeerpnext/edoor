@@ -5,9 +5,7 @@
           <template #start>
             <div class="text-2xl">Folio Transaction</div>
           </template>
-          <!-- <template #end>
-            <Button class="border-none" @click="onAddNewFolioTransaction()">Add New Folio Transaction</Button>
-          </template> -->
+         
         </ComHeader>
         <div class="mb-3 flex justify-between">
           <div class="flex gap-2">
@@ -32,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div class="overflow-auto h-full">
+      <div class=" h-full">
         <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
           <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
             stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"
@@ -151,8 +149,7 @@
   const showAdvanceSearch = ref()
   const selectedColumns = ref([]);
   const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
-  const property = JSON.parse(localStorage.getItem("edoor_property"))
-  
+  const property = window.property
   window.socket.on("RefreshFolioTransaction", (arg) => {
     if (arg == property.name) {
       loadData()
@@ -178,10 +175,7 @@
     }
   })
   
-  let dateRange = reactive({
-    start: '',
-    end: ''
-  })
+
 
   function onDateSelect() {
     if (filter.value.date_range && filter.value.date_range[1]) {
@@ -338,7 +332,8 @@ function onChecked() {
     });
     loadData()
     getApi("frontdesk.get_meta", { doctype: "Folio Transaction" }).then((result) => {
-      console.log(result.message)
+
+console.log(result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)))
       result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
         let header_class = ""
   
@@ -350,13 +345,17 @@ function onChecked() {
   
         columns.value.push({
           fieldname: r.fieldname,
-          header: r.label,
+          label: r.label,
           fieldtype: r.fieldtype.toLowerCase(),
           header_class: header_class,
           selected: selectedColumns.value.includes(r.fieldname)
         })
+
+
       })
+
     })
+   
   })
 
   const advanceSearch = (event) => {

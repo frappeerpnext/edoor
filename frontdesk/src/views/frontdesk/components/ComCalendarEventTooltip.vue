@@ -57,11 +57,16 @@
     </div>
     
     <div v-else-if="event.extendedProps.type == 'room_type_event'" class="w-full p-2">
+ 
         <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span class="mx-3" :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }}</span> </div>
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
+                <tr class="table-rs-de" ><td>Room Type</td><td class="px-3">:</td><td> {{event.extendedProps.room_type}}</td></tr>      
+                <tr class="table-rs-de" ><td>Date</td><td class="px-3">:</td><td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td></tr>      
+                <tr class="table-rs-de" ><td>Total Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
                 <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
                 <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
+                <tr class="table-rs-de" ><td>Stay Over</td><td class="px-3">:</td><td> {{event?.extendedProps?.stay_over }}</td></tr>  
                 <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
                 <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
                 <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td> {{event.extendedProps?.child}}</td></tr>
@@ -69,11 +74,15 @@
         </table>
     </div> 
     <div v-else-if="event.extendedProps.type == 'property_summary'">
-        <div  class="text-center border-1 p-2 border-round-lg">Available Room   <span class="mx-3"> {{ event.extendedProps.room_available }}</span> </div>
+        <div  class="text-center border-1 p-2 border-round-lg">Available Room   <span class="mx-3"> {{ event.extendedProps.room_available }} of {{ event.extendedProps.total_room }}</span> </div>
+
             <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                 <tbody>
+
+                    <tr class="table-rs-de" ><td>Total Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
                     <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
                     <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
+                    <tr class="table-rs-de" ><td>Stay Over</td><td class="px-3">:</td><td> {{event?.extendedProps?.stay_over }}</td></tr>  
                     <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
                     <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
                     <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td> {{event.extendedProps?.child}}</td></tr>

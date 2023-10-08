@@ -1,5 +1,7 @@
 <template>
     <ComDialogContent titleButtonOK="Open" titleButtonClose="Cancel" @onClose="dialogRef.close()" @onOK="onOpen">
+       
+     
         <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift"  doctype="Shift Type" placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time"/> 
         <div class="bg-card-info border-round-xl p-3 h-full mt-3">
             <table>
@@ -18,7 +20,7 @@
                         <td class="px-2 text-end">
                             <div class="w-full flex justify-end">
                                 <div class="relative w-15rem">
-                                    <InputNumber v-model="p.input_amount" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5"  class="text-end w-full w-15rem"/>
+                                    <InputNumber class="text-end w-full w-15rem" v-model="p.input_amount"  :minFractionDigits="0" :maxFractionDigits="p.currency_precision"   mode="currency" :currency="p.currency" :locale="p.locale" />
                                     <ComOpenShiftExchangeRate :item="p"/>
                                 </div>
 
@@ -65,7 +67,7 @@
     const db = frappe.db();
     const toast = useToast();
     const selectedShift = ref({})
-    const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+    const setting = window.setting
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
     const payment_types = setting?.payment_type.filter(r=>r.allow_cash_float==1)
 
@@ -82,7 +84,9 @@
             payment_method:p.payment_type,
             exchange_rate :p.exchange_rate,
             input_amount:0,
-            currency:p.currency
+            currency:p.currency,
+            locale:p.locale,
+            currency_precision:p.currency_precision
         })
     });
     const onSelectShift = (d)=>{

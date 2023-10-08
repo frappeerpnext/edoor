@@ -123,8 +123,10 @@ function onSelected(room,status){
  
 
 function onChangeStay(data){
+ 
+    
     if((moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_da)) || rs.reservationStay.reservation_status !='Checked Out'){
-        if(isNotLast()){
+        if(data.can_change_start_date==1 || data.can_change_end_date==1){
             dialog.open(ComReservationStayChangeStay, {
                 data: {
                     item: props.data
@@ -148,6 +150,8 @@ function onChangeStay(data){
                 }
             })
             
+        }else {
+            gv.toast('warn',"This room stay is disallow to change stay.")
         }
     }else{
         gv.toast('warn',"This room stay is disallow to change stay.")
