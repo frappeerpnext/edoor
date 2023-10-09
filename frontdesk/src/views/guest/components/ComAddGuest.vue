@@ -168,7 +168,7 @@ function onOK() {
             window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:window.property_name})
             window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_guest_database"})
             window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_reservation_list"})
-            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_hk"})
+            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_housekeeping"})
             window.socket.emit("RefresheDoorDashboard", { property:window.property_name})
             onClose(r)
             loading.value = false

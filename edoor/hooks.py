@@ -229,7 +229,9 @@ fixtures = [
     {"dt": "Reservation Status"},
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
-        {"dt": "Color"},
+    
+    {"dt": "Website Theme","filters": [["name", "=", "estc theme"]]},
+    {"dt": "Color"},
     {"dt": "Account Category"},
 ]
 

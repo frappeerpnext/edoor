@@ -65,9 +65,9 @@ const filter = ref({})
 
 
 window.socket.on("RefreshData", (arg) => {
-    if (arg.property == window.property_name && arg.action == "refresh_reservation_list") {
+    if (arg.property == window.property_name && arg.action == "refresh_housekeeping") {
         setTimeout(function(){
-            loadData(false)
+            hk.loadData()
         },3000) 
     }
 })

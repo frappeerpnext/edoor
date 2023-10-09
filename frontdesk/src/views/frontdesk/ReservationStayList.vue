@@ -179,7 +179,6 @@ const opShowColumn = ref();
 
 window.socket.on("RefreshData", (arg) => {
     if (arg.property == property.name && arg.action=="refresh_res_list") {
-        
        loadData()
     }
 })
