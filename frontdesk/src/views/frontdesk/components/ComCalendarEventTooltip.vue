@@ -1,4 +1,5 @@
 <template>
+
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
         <div class="text-center border-1 p-2 border-round-lg ">{{event.title}}</div>
         <table class="tip_description_stay_table m-1 pt-3">
@@ -58,32 +59,38 @@
     
     <div v-else-if="event.extendedProps.type == 'room_type_event'" class="w-full p-2">
  
-        <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span class="mx-3" :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }}</span> </div>
+        <div  class="text-center border-1 p-2 border-round-lg">Available Room  <span class="mx-3" :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }}  of {{ event.extendedProps.total_room || 0 }}</span> </div>
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
                 <tr class="table-rs-de" ><td>Room Type</td><td class="px-3">:</td><td> {{event.extendedProps.room_type}}</td></tr>      
                 <tr class="table-rs-de" ><td>Date</td><td class="px-3">:</td><td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td></tr>      
                 <tr class="table-rs-de" ><td>Total Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
+                <tr class="table-rs-de" ><td>Total Room Sold</td><td class="px-3">:</td><td> {{event.extendedProps.total_room_sold || 0 }}</td></tr>      
+                <tr class="table-rs-de" ><td>Occupacy</td><td class="px-3">:</td><td> {{occupancy || 0 }}%</td></tr>      
                 <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
                 <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
                 <tr class="table-rs-de" ><td>Stay Over</td><td class="px-3">:</td><td> {{event?.extendedProps?.stay_over }}</td></tr>  
                 <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
+                <tr class="table-rs-de"><td>Room Block</td><td class="px-3">:</td><td> {{event?.extendedProps?.room_block }}</td></tr>
                 <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
                 <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td> {{event.extendedProps?.child}}</td></tr>
             </tbody>
         </table>
     </div> 
     <div v-else-if="event.extendedProps.type == 'property_summary'">
-        <div  class="text-center border-1 p-2 border-round-lg">Available Room   <span class="mx-3"> {{ event.extendedProps.room_available }} of {{ event.extendedProps.total_room }}</span> </div>
+        <div  class="text-center border-1 p-2 border-round-lg">Available Room   <span class="mx-3"> {{ event.extendedProps.room_available }} of {{ event.extendedProps.total_room || 0 }}</span> </div>
 
             <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                 <tbody>
-
+                    <tr class="table-rs-de" ><td>Date</td><td class="px-3">:</td><td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td></tr>      
                     <tr class="table-rs-de" ><td>Total Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
+                    <tr class="table-rs-de" ><td>Total Room Sold</td><td class="px-3">:</td><td> {{event.extendedProps.total_room_sold || 0 }}</td></tr>      
+                    <tr class="table-rs-de" ><td>Occupacy</td><td class="px-3">:</td><td> {{occupancy || 0 }}%</td></tr>  
                     <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
                     <tr class="table-rs-de" ><td>Arrival</td><td class="px-3">:</td><td> {{event?.extendedProps?.arrival }}</td></tr>  
                     <tr class="table-rs-de" ><td>Stay Over</td><td class="px-3">:</td><td> {{event?.extendedProps?.stay_over }}</td></tr>  
-                    <tr class="table-rs-de"><td>Departure</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
+                    <tr class="table-rs-de"><td>Deprture</td><td class="px-3">:</td><td> {{event?.extendedProps?.departure }}</td></tr>
+                    <tr class="table-rs-de"><td>Room Block</td><td class="px-3">:</td><td> {{event?.extendedProps?.room_block }}</td></tr>
                     <tr class="table-rs-de"><td>Adult</td><td class="px-3">:</td><td> {{event?.extendedProps?.adult }}</td></tr>
                     <tr class="table-rs-de"><td>Child</td><td class="px-3">:</td><td> {{event.extendedProps?.child}}</td></tr>
                 </tbody>
@@ -91,11 +98,17 @@
     </div>
 </template>
 <script setup>
-    // import {ref} from "vue"
+    import {computed} from "vue"
     import CurrencyFormat from "@/components/CurrencyFormat.vue"
     import moment from "@/utils/moment.js";
     const props =defineProps({
         event:Object
+    })
+
+    const occupancy =  computed(()=>{
+        const d =props.event.extendedProps
+        return (((d.total_room_sold || 0)/( (d.total_room || 0) - (window.setting.calculate_room_occupancy_include_room_block==1?0:(d.room_block || 0)))) *100).toFixed(2)
+             
     })
 
     const can_view_rate = window.can_view_rate

@@ -260,7 +260,6 @@ const calendarOptions = reactive({
     select: (($event) => {
         onSelectedDate($event)
     }),
-
     eventResizeStart: (($event) => {
         start_date = moment($event.event.start).format("YYYY-MM-DD")
         end_date = moment($event.event.end).format("YYYY-MM-DD")
@@ -516,7 +515,8 @@ function resourceColumn(view_type) {
                      
                     }
                     else {
-                        el.innerHTML = ''
+               
+                        el.innerHTML = arg.resource.extendedProps.total_room
                     }
 
                     let dom = [el.innerHTML]
@@ -540,9 +540,6 @@ function resourceColumn(view_type) {
 
                     if (item.room_type) {
                         el.innerHTML = `<div  title="${item.room_type}">${arg.fieldValue ?? ""}</div>`;
-                        
-
-                       
                     }
                     else {
                         el.innerHTML = ''
@@ -622,12 +619,15 @@ function generateEventForRoomType(data) {
                             unassign_room: occupy_data.reduce((n, d) => n + (d.unassign_room || 0), 0),
                             stay_over: occupy_data.reduce((n, d) => n + (d.stay_over || 0), 0),
                             total_room:  resources.value.filter(r=>r.type=='room_type').reduce((n, d) => n + (d.total_room || 0), 0),
-
+                            current_date:  moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                            room_block:  occupy_data.reduce((n, d) => n + (d.block || 0), 0),
+                            total_room_sold:  occupy_data.reduce((n, d) => n + (d.total_room_sold || 0), 0),
+                             
                         }
                     )
                 } else {
                     occupy_data = data.find(c => c.room_type_id == r.id && c.date == moment(current_date).format("YYYY-MM-DD"))
-
+                    
                     room_type_event.push(
                         {
                             room_type:r.title,
@@ -646,6 +646,9 @@ function generateEventForRoomType(data) {
                             stay_over: (occupy_data?.stay_over || 0),
                             total_room: r.total_room,
                             current_date:  moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                            room_block: occupy_data?.block,
+                            total_room_sold: occupy_data?.total_room_sold,
+                            
                         }
                     )
                 }
@@ -891,7 +894,7 @@ onMounted(() => {
             let resourceElment = document.elementFromPoint(calendarRect.left + 10, y+calendarRect.top + headerHeight).closest("tr")
          
             if (resourceElment){
-                
+ 
                 const td = resourceElment.getElementsByTagName("td")
                 if(td){
                     const resourceId = td[0].dataset.resourceId
@@ -901,6 +904,11 @@ onMounted(() => {
                             return
                         }
                     }
+                    //check if resource is room type resource then skip it\
+                    if (resources.value.filter(r=>r.id==resourceId && r.type=="room_type").length>0){
+                        return
+                    }
+
                     
                     if(currentHightlightResourceId && currentHightlightResourceId!=resourceId){
                             let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + currentHightlightResourceId + '"]')

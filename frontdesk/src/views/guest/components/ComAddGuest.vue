@@ -163,7 +163,6 @@ function onOK() {
     data.photo = data.attach
     createUpdateDoc('Customer', {data:data},'',false).then((r) => {
        
-    console.log(r)
             window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             window.socket.emit("RefreshReservationDetail", reservation.reservation.name)
             window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:window.property_name})
@@ -171,7 +170,6 @@ function onOK() {
             window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_reservation_list"})
             window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_hk"})
             window.socket.emit("RefresheDoorDashboard", { property:window.property_name})
-            alert(window.property_name)
             onClose(r)
             loading.value = false
     }).catch((err) => {

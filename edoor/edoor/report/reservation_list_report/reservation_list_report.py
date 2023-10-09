@@ -353,11 +353,11 @@ def get_report_field():
 
 def get_chart_series():
 	return [
-		{"fieldname":"chart_series","data_field":"total_debit","label":"Total Debit","short_label":"Debit", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"center","chart_color":"#dc9819","sql_expression":"SUM(rst.total_debit)"},
-		{"fieldname":"chart_series","data_field":"total_credit","label":"Total Credit", "short_label":"Credit", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"right","chart_color":"#1987dc","sql_expression":"SUM(rst.total_credit)"},
-		{"fieldname":"chart_series","data_field":"balance","label":"Balance", "short_label":"Balance", "fieldtype":"Currency","indicator":"Grey","precision":None, "align":"right","chart_color":"#fd4e8a","sql_expression":"SUM(rst.balance)"},
-		{"fieldname":"chart_series","data_field":"adult","label":"Adult", "short_label":"Adult", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#d7e528","sql_expression":"SUM(rst.adult)"},
-		{"fieldname":"chart_series","data_field":"child","label":"Child", "short_label":"Child", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.child)"},
-		{"fieldname":"chart_series","data_field":"pax","label":"Pax", "short_label":"Pax", "fieldtype":"Integer","indicator":"Grey","precision":None, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.pax)"},
-		{"fieldname":"chart_series","data_field":"room_nights","label":"Room Nights", "short_label":"Room Nights", "fieldtype":"Integer","indicator":"Red","precision":None, "align":"right","chart_color":"#3ce18e","sql_expression":"SUM(rst.room_nights)"}
+		{"fieldname":"chart_series","data_field":"total_debit","label":"Total Debit","short_label":"Debit", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"center","chart_color":"#dc9819","sql_expression":"SUM(rst.total_debit)"},
+		{"fieldname":"chart_series","data_field":"total_credit","label":"Total Credit", "short_label":"Credit", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"right","chart_color":"#1987dc","sql_expression":"SUM(rst.total_credit)"},
+		{"fieldname":"chart_series","data_field":"balance","label":"Balance", "short_label":"Balance", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"right","chart_color":"#fd4e8a","sql_expression":"SUM(rst.balance)"},
+		{"fieldname":"chart_series","data_field":"adult","label":"Adult", "short_label":"Adult", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#d7e528","sql_expression":"SUM(rst.adult)"},
+		{"fieldname":"chart_series","data_field":"child","label":"Child", "short_label":"Child", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.child)"},
+		{"fieldname":"chart_series","data_field":"pax","label":"Pax", "short_label":"Pax", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.pax)"},
+		{"fieldname":"chart_series","data_field":"room_nights","label":"Room Nights", "short_label":"Room Nights", "fieldtype":"Integer","indicator":"Red","precision":2, "align":"right","chart_color":"#3ce18e","sql_expression":"SUM(rst.room_nights)"}
 	]

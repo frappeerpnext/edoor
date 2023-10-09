@@ -145,9 +145,9 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldtype": "MultiSelectList",
 			get_data: function(txt) {
 				return [
-					{"value":"Total Debit","description":"Total Debit",fieldtype:"Currency"},
-					{"value":"Total Credit","description":"Total Credit",fieldtype:"Currency"},
-					{"value":"Balance","description":"Balance",fieldtype:"Currency"},
+					{"value":"Total Debit","description":"Total Debit",fieldtype:"Currency","precision":2},
+					{"value":"Total Credit","description":"Total Credit",fieldtype:"Currency","precision":2},
+					{"value":"Balance","description":"Balance",fieldtype:"Currency","precision":2},
 					{"value":"Adult","description":"Adult",fieldtype:"Int"},
 					{"value":"Child","description":"Child",fieldtype:"Int"},
 					{"value":"Pax","description":"Pax",fieldtype:"Int"},

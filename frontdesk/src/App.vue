@@ -151,7 +151,7 @@ const actionClickHandler = async function (e) {
         }
         else if(e.data.extendedProps.type=="room_type_event" ){
             
-            onViewDailySummary(e.data.date,e.data.resourceIds[0])
+            onViewDailySummary(e.data.date,e.data.resourceIds[0], e.data.extendedProps.room_type)
         }
         else if(e.data.extendedProps.type=="property_summary"   ){
             onViewDailySummary(e.data.date,null)
@@ -439,7 +439,7 @@ function showRoomBlockDetail(name) {
     });
 }
 
-function onViewDailySummary(date,room_type_id) {
+function onViewDailySummary(date,room_type_id, title="") {
 
     const dialogRef = dialog.open(ComIFrameModal, {
 
@@ -452,7 +452,7 @@ function onViewDailySummary(date,room_type_id) {
            fullheight: true
        },
        props: {
-           header:"Summary Data on " + moment(date).format("DD-MM-YYYY"),
+           header:"Summary Data on " + moment(date).format("DD-MM-YYYY") +( title==""?"":" - " + title),
            style: {
                width: '90vw',
            },

@@ -70,6 +70,7 @@ def get_dashboard_data(property = None,date = None):
     stay_sql = """SELECT 
                     SUM(if(reservation_status = 'No Show',1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
+                    SUM(if(reservation_status = 'Void',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed'),1,0)) AS `arrival_remaining`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house')   and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
@@ -136,6 +137,7 @@ def get_dashboard_data(property = None,date = None):
         "unassign_room":unassign_room or 0,
         "total_no_show":stay[0]["total_no_show"] or 0,
         "total_cancelled":stay[0]["total_cancelled"] or 0,
+        "total_void":stay[0]["total_void"] or 0,
         "stay_over":stay[0]["total_stay_over"] or 0,
         "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
         "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
@@ -228,6 +230,8 @@ def get_edoor_setting(property = None):
         "room_conflict_background_color":edoor_setting_doc.room_conflict_background_color,
         "run_night_audit_role":edoor_setting_doc.run_night_audit_role,
         "custom_print_format":custom_print_format,
+        "powered_by_text": edoor_setting_doc.powered_by_text,
+        "calculate_room_occupancy_include_room_block": edoor_setting_doc.calculate_room_occupancy_include_room_block,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -643,14 +647,15 @@ def get_occupy_data(view_type, filter):
         sql = """select 
                     room_type_id, 
                     date, 
-                    sum(if(is_departure=1,0,1)) as total,
+                    sum(if(is_departure=1 ,0,1)) as total,
                     sum(if(type='Block',1,0)) as block, 
                     sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(is_arrival) as arrival, 
-                    sum( is_departure ) as departure,
-                    sum(if(is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+                    sum(if(type='Reservation' and is_arrival=1,1,0)) as arrival, 
+                    sum(if(type='Reservation' and is_departure=1,1,0))  as departure,
+                    sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0) ) as stay_over,
                     sum(adult) as adult, 
-                    sum(child) as child 
+                    sum(child) as child ,
+                    sum(if(type='Reservation' and is_departure=0,1,0)) as total_room_sold
                     from `tabRoom Occupy`  
                 where 
                     
@@ -660,7 +665,7 @@ def get_occupy_data(view_type, filter):
                     room_type_id in (select name from `tabRoom Type` where room_type_group=if(%(room_type_group)s='',room_type_group,%(room_type_group)s)) 
                 group by 
                     room_type_id, 
-                date
+                    date
                 """
         
         occupy_data = frappe.db.sql(sql,filter,as_dict=1)

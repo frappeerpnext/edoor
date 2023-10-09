@@ -69,7 +69,7 @@
                 </div>
             </div> 
             <div class="widht-ifame">
-            <iframe @load="onIframeLoaded()" style="min-height:30vh;" id="iframe" width="100%" :src="url"></iframe>
+            <iframe @load="onIframeLoaded()" style="min-height:100vh;" id="iframe" width="100%" :src="url" ></iframe>
             </div>
         </div>
     </div>

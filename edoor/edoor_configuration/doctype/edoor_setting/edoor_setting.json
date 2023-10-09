@@ -20,11 +20,15 @@
   "room_conflict_background_color",
   "default_check_in_time",
   "default_check_out_time",
+  "calculate_room_occupancy_include_room_block",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
   "column_break_11",
   "city_ledger_report_name",
+  "branding_section",
+  "powered_by_text",
+  "column_break_jeaq",
   "housekeeping_status_tab",
   "housekeeping_status_after_check_in",
   "housekeeping_status_after_check_out",
@@ -311,12 +315,33 @@
   {
    "fieldname": "column_break_bono",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "branding_section",
+   "fieldtype": "Section Break",
+   "label": "Branding"
+  },
+  {
+   "default": "eDoor Frontdesk",
+   "fieldname": "powered_by_text",
+   "fieldtype": "Data",
+   "label": "Powered by Text"
+  },
+  {
+   "fieldname": "column_break_jeaq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "calculate_room_occupancy_include_room_block",
+   "fieldtype": "Check",
+   "label": "Calculate Room Occupancy Include Room Block"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-02 23:55:50.776594",
+ "modified": "2023-10-09 09:19:22.814746",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",
