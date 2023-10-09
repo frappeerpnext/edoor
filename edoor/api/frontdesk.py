@@ -29,7 +29,7 @@ def get_meta(doctype=None):
 # Get the current date
 
 @frappe.whitelist()
-def get_dashboard_data(property = None,date = None):
+def get_dashboard_data(property = None,date = None,room_type_id=None):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
     working_date =  frappe.utils.today() 
     if data:
