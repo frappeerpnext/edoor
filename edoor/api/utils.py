@@ -1,13 +1,14 @@
 import datetime 
 import frappe
 import json
+from dateutil.rrule import rrule, MONTHLY
 from py_linq import Enumerable
 from frappe import local
 from frappe.utils.data import getdate
 import matplotlib.pyplot as plt
 from PIL import Image
 from frappe import _
-
+import calendar
 @frappe.whitelist()
 def get_chart():
     labels = ["January", "February", "March", "April", "May", "June", "July"]
@@ -781,3 +782,6 @@ def update_doctype_data(data):
     return frappe.get_doc(data["doctype"],data["name"])
 
     
+def get_months(start_date,end_date):
+	months = [{'month_number': dt.month, 'month_name': dt.strftime('%B'),"year": dt.year, "total_day":  calendar.monthrange(dt.year, dt.month)[1]} for dt in rrule(MONTHLY, dtstart=start_date, until=end_date)]
+	return months

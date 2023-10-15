@@ -76,7 +76,11 @@
             </ComPanel>
         </div>
     </div>
-
+    <div class="mt-3">
+        <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') +')'">
+            <MTDOccupancyChart />
+        </ComPanel>
+    </div>
     <div class="px-3 py-3 bg-white mt-2 border-round-xl tab-reserv-no">
         <TabView class="tabview-custom" lazy>
             <TabPanel>
@@ -126,11 +130,7 @@
             </TabPanel>
         </TabView>
     </div>
-    <div class="mt-3">
-        <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') +')'">
-            <MTDOccupancyChart />
-        </ComPanel>
-    </div>
+    
 </template>
 
 <script setup>

@@ -10,13 +10,11 @@
 <script setup>
 import { ref, onMounted, computed, inject } from "vue";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-
 const plugins = [ChartDataLabels]
 const props = defineProps({ data: Object })
 const moment = inject("$moment")
 
 onMounted(() => {
- console.log(props.data)
     chartOptions.value = setChartOptions();
 });
 
@@ -42,21 +40,21 @@ const chartData = computed(() => {
             {
                 type: 'bar',
                 label: 'Departure',
-                backgroundColor: documentStyle.getPropertyValue('--gray-500'),
+                backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Checked Out").color,
                 data:  props.data.filter(r=>r.departure) .map(r=>parseFloat( r.departure))
             },
                 {
                     type: 'bar',
                     stacked: false,
                     label: 'Stay Over',
-                    backgroundColor: documentStyle.getPropertyValue('--orange-500'),
+                    backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="In-house").color,
                     data:   props.data.filter(r=>r.stay_over) .map(r=>parseFloat( r.stay_over))
                 },
             {
                 type: 'bar',
                 label: 'Arrival',
                 stacked: false,
-                backgroundColor: documentStyle.getPropertyValue('--green-500'),
+                backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Reserved").color,
                 data:   props.data.filter(r=>r.arrival) .map(r=>parseFloat( r.arrival)),
                 borderColor: 'white',
             },

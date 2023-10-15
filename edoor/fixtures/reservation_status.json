@@ -14,20 +14,6 @@
   "sort_order": 6
  },
  {
-  "alias": "CO",
-  "allow_user_to_edit_information": 0,
-  "color": "#4f4f4f",
-  "docstatus": 0,
-  "doctype": "Reservation Status",
-  "is_active_reservation": 1,
-  "modified": "2023-10-10 16:09:41.182634",
-  "name": "Checked Out",
-  "reservation_status": "Checked Out",
-  "show_in_reservation_list": 0,
-  "show_in_room_chart": 1,
-  "sort_order": 2
- },
- {
   "alias": "CL",
   "allow_user_to_edit_information": 0,
   "color": "#ED6396",
@@ -40,6 +26,20 @@
   "show_in_reservation_list": 0,
   "show_in_room_chart": 0,
   "sort_order": 5
+ },
+ {
+  "alias": "CO",
+  "allow_user_to_edit_information": 0,
+  "color": "#4f4f4f",
+  "docstatus": 0,
+  "doctype": "Reservation Status",
+  "is_active_reservation": 1,
+  "modified": "2023-10-10 16:09:41.182634",
+  "name": "Checked Out",
+  "reservation_status": "Checked Out",
+  "show_in_reservation_list": 0,
+  "show_in_room_chart": 1,
+  "sort_order": 2
  },
  {
   "alias": "NS",

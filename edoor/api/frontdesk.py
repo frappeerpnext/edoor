@@ -1,6 +1,6 @@
 import secrets
  
-from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, validate_role
+from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, get_months, validate_role
 import frappe
 import datetime
 import random
@@ -222,26 +222,140 @@ def get_house_keeping_status(property):
     return housekeeping_status
 
 @frappe.whitelist()
-def get_mtd_room_occupany(property):
+def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Series",show_occupancy_only=False,view_chart_type="line"):
+    
     total_room = frappe.db.sql("select count(name) from `tabRoom` where property='{}' and disabled=0".format(property))[0][0] 
     
     now = datetime.now()
     start_date = datetime(now.year, now.month, 1)
-    
     end_date = now + relativedelta(day=1, months=1, days=-1)
-    sql = "select date,0 as occupancy from `tabDates` where date between cast('{}' as date) and cast('{}' as date)"
-    sql = sql.format(start_date, end_date)
-    data_date = frappe.db.sql(sql,as_dict=1)
-    
-    sql = "select date, count(name) as  total from `tabRoom Occupy` where property='{}' and date between '{}' and '{}' and type='Reservation' group by date "
+    group_by_field =  "date"
+    if duration_type=="Daily":
+        group_by_field = "date"
+    else:
+        start_date = datetime(now.year,1, 1)
+        end_date = add_to_date(start_date, years=1,days=-1)
+       
+        group_by_field = "monthname(date)"
+    months= get_months(start_date,end_date)
+
+    series_label =[]
+    #get series label
+    if view_chart_by=="Time Series":
+        if duration_type=="Daily":
+            series_label =  [getdate(d) for d in  get_date_range(start_date, end_date, False)]
+        else:
+            series_label =  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    elif view_chart_by =="Business Source":
+        group_by_field = "business_source"
+        series_label =  frappe.db.sql("select distinct business_source from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by business_source".format(property, start_date, end_date),as_dict=1)
+        if series_label:
+            series_label = [d["business_source"] for d in series_label]
+    elif view_chart_by =="Room Type":
+        group_by_field = "room_type"
+        series_label =  frappe.db.sql("select distinct room_type from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by business_source".format(property, start_date, end_date),as_dict=1)
+        if series_label:
+            series_label = [d["room_type"] for d in series_label]
+        
+
+    sql = """select 
+                {0} as group_by, 
+                sum(if(type='Reservation',1,0)) as  total ,
+                sum(if(type='Reservation' and is_arrival=1,1,0)) as  arrival ,
+                sum(if(type='Reservation' and is_departure=1,1,0)) as  departure ,
+                sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0)) as  stay_over ,
+                sum(if(type='Block',1,0)) as  block 
+                
+
+            from `tabRoom Occupy` where property='{1}' and date between '{2}' and '{3}'  group by {0} """
  
-    data = frappe.db.sql(sql.format(property, start_date,end_date),as_dict=1)
+    data = frappe.db.sql(sql.format(group_by_field, property, start_date,end_date),as_dict=1)
+ 
     
-    for r in data:
-          [x for x in data_date if x["date"]==r["date"]][0]["occupancy"] = (r["total"]) 
+    occupancy_data = []
+    arrival_data = []
+    departure_data = []
+    stay_over_data = []
+    block_data = []
+    calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
 
-    return data_date
+    for d in series_label:
+        occupancy = sum([x["total"] for x in data if x["group_by"] == d])
+        block= sum([x["block"] for x in data if x["group_by"] == d])
+        
+        #check if duration tyope is monthly then we set total room = total room x total day of month
+        total_rooms = total_room
+        if duration_type=="Monthly" :
+            if view_chart_by=="Time Series":
+                total_rooms = total_room * sum([m["total_day"] for m in months if m["month_name"] == d])
+            else:
+                total_rooms = total_room * sum([m["total_day"] for m in months])
 
+        if  calculate_room_occupancy_include_room_block==1:
+            occupancy = round( occupancy / total_rooms * 100,2)
+        else:
+            occupancy =round( occupancy / (total_rooms - (block or 0)) * 100,2)
+        
+        
+        occupancy_data.append(occupancy or 0)
+ 
+        if int(show_occupancy_only)==0:
+            arrival_data.append(sum([x["arrival"] for x in data if x["group_by"] == d]))
+            departure_data.append(sum([x["departure"] for x in data if x["group_by"] == d]))
+            stay_over_data.append(sum([x["stay_over"] for x in data if x["group_by"] == d]))
+            block_data.append(sum([x["block"] for x in data if x["group_by"] == d]))
+
+    chart_data = {
+            "labels":[getdate(d).strftime('%d/%b') for d in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else series_label,
+            "datasets":[
+                {
+                "type": "line" if int(show_occupancy_only)==0 else  view_chart_type,
+                "label": 'Occupancy (%)',
+                "borderWidth": 2 if view_chart_type=="line" else 0,
+                "fill": False,
+                "tension": 0.4,
+                "data": occupancy_data,
+                "showPoint":True ,
+                "borderColor": "#3b82f6",
+                "backgroundColor": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
+            }]
+    }
+ 
+    if int(show_occupancy_only)==0:
+        
+        chart_data["datasets"] = chart_data["datasets"]  +  [
+                {
+                    "type": 'bar',
+                    "label": 'Room Block',
+                    "backgroundColor": frappe.db.get_single_value("eDoor Setting","room_block_color"),
+                    "data": block_data,
+                },
+
+                {
+                    "type": 'bar',
+                    "label": 'Departure',
+                    "backgroundColor": frappe.db.get_value("Reservation Status","Checked Out","color"),
+                    "data": departure_data,
+                },
+                {
+                    "type": 'bar',
+                    "label": 'Stay Over',
+                    "backgroundColor": frappe.db.get_value("Reservation Status","In-house","color"),
+                    "data": stay_over_data,
+                },
+                {
+                    "type": 'bar',
+                    "backgroundColor": frappe.db.get_value("Reservation Status","Reserved","color"),
+                    "label": 'Arrival',
+                    "data": arrival_data,
+                },
+            
+
+        ]
+    
+ 
+    return chart_data
+   
 
 
 @frappe.whitelist(allow_guest=True)
