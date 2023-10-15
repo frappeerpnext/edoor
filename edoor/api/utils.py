@@ -737,3 +737,47 @@ def can_view_rate():
     roles = frappe.get_roles(frappe.session.user)
     
     return 1 if can_see_rate_role in roles else 0
+
+
+def generate_temp_room_occupy_after_undo_check_out(stay_doc):
+    #get stay date to temp room occupy. we get from room occupy cause room occupy is not clear
+    room_occupy_list = frappe.db.sql("select date,room_type_id, room_id,stay_room_id,is_arrival,is_departure from `tabRoom Occupy` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
+
+    for r in room_occupy_list:
+        frappe.get_doc({
+            "doctype":"Temp Room Occupy",
+            "reservation":stay_doc.reservation,
+            "reservation_stay":stay_doc.name,
+            "room_type_id":r["room_type_id"],
+            "room_id":r["room_id"],
+            "date":r["date"],
+            "type":"Reservation",
+            "property":stay_doc.property,
+            "stay_room_id":r["stay_room_id"],
+            "adult":stay_doc.adult,
+            "child":stay_doc.child,
+            "pax":stay_doc.pax,
+            "is_arrival": r["is_arrival"],
+            "is_departure": r["is_departure"]
+        }).insert()
+
+    frappe.db.commit()
+    
+@frappe.whitelist(methods="POST")
+def update_doctype_data(data):
+    data["modified_by"] = frappe.session.user
+    data["modified"] = frappe.utils.now()
+    
+
+    keys = data.keys()
+    data_keys = []
+    for k in [d for d in keys if d not in ["name","doctype"]]:
+        data_keys.append("{0}=%({0})s".format(k))
+    if len(data_keys)>0:
+        sql ="update `tab{}` set {} where name=%(name)s".format(data["doctype"],",".join(data_keys))
+        frappe.db.sql(sql, data)
+        frappe.db.commit()
+
+    return frappe.get_doc(data["doctype"],data["name"])
+
+    

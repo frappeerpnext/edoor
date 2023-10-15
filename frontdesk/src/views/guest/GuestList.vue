@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data?.length > 0">       
+            <ComPlaceholder text="No Data"  :loading="gv.loading"  :is-not-empty="data?.length > 0">   
                 <DataTable 
                 class="res_list_scroll"
                 :resizableColumns="true"  
@@ -51,29 +51,31 @@
                 :value="data" 
                 tableStyle="min-width: 50rem" 
                 @row-dblclick="onViewReservationStayDetail">
-                    <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+                    <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label && !skip_columns.includes(r.fieldname))" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
                     :frozen="c.frozen">
                         <template #body="slotProps" >
-                            <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
-                                {{ slotProps.data[c.fieldname] }} 
-                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                                <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
-                            </Button>
-                            <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                            <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
-                            <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
-                            <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-                            v-if="slotProps?.data && slotProps?.data?.rooms">
-                            <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                <span>{{ item }}</span>
-                                <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                            </template>
-                            </div>
-                            <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
-                            <span v-else>
-                                {{ slotProps.data[c.fieldname] }}
-                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
-                                <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                            <span  :class="slotProps.data['disabled'] ? 'row-disabled':''">
+                                <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                                    {{ slotProps.data[c.fieldname] }} 
+                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                                    <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                                </Button>
+                                <span v-else-if="c.fieldtype=='Date' && slotProps.data[c.fieldname]">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                                <span v-else-if="c.fieldtype=='Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY  h:mm a") }} </span>
+                                <Timeago v-else-if="c.fieldtype=='Timeago'" :datetime="slotProps.data[c.fieldname]" long ></Timeago>
+                                <div v-else-if="c.fieldtype=='Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                                v-if="slotProps?.data && slotProps?.data?.rooms">
+                                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                    <span>{{ item }}</span>
+                                    <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                                </template>
+                                </div>
+                                <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
+                                <span v-else>
+                                    {{ slotProps.data[c.fieldname] }}
+                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
+                                    <span v-if="c.extra_field" >{{ slotProps.data[c.extra_field] }} </span>  
+                                </span>
                             </span>
                         </template>
                     </Column>
@@ -140,6 +142,7 @@ const filter = ref({})
 const showAdvanceSearch = ref()
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 
+const skip_columns = ["customer_name_kh","customer_code_name","customer_code"]
 
 
 window.socket.on("RefreshData", (arg) => {
@@ -168,7 +171,8 @@ const columns = ref([
     { fieldname: 'modified_by' ,  label: 'Modified By'},
     { fieldname: 'modified' , fieldtype:"Timeago",  label: 'Last Modified', header_class:"text-center"},
 ])
- 
+
+
 const selectedColumns = ref([]);
 
 const toggleShowColumn = (event) => {
@@ -190,9 +194,9 @@ function onResetTable(){
 
 const getColumns = computed(()=>{
     if (filter.value.search_field){ 
-        return columns.value.filter(r=>(r.label ||"").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
+        return columns.value.filter(r=>(r.label ||"" && !skip_columns.includes(r.fieldname)).toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
     }else {
-        return columns.value.filter(r=>r.label).sort((a, b) => a.label.localeCompare(b.label));
+        return columns.value.filter(r=>r.label && !skip_columns.includes(r.fieldname)).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
   
@@ -229,6 +233,7 @@ function loadData(show_loading = true) {
     let fields = [...columns.value.map(r=>r.fieldname),  ...columns.value.map(r=>r.extra_field)]
     fields = [...fields , ...selectedColumns.value]
     fields =  [...new Set(fields.filter(x=>x))]
+    fields.push('disabled')
     getDocList('Customer', {
         fields: fields,
         orderBy: {
@@ -371,8 +376,5 @@ onMounted(()=>{
     dd.value = height
 })
 
-onUnmounted(() => {
-    window.socket.off("RefreshData")
-})
 
 </script>

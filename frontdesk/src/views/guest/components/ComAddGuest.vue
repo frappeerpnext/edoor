@@ -1,8 +1,11 @@
 <template>
+    {{ rs }}
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
+
         <div class="mb-3">
             <div class="flex justify-center items-center flex-col">
-                <ComUploadProfile @loadingChange="updateLoadingStatus" @getFileName="refreshGuestDetail" doctype="Customer" :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
+                <ComUploadProfile @loadingChange="updateLoadingStatus" @getFileName="refreshGuestDetail" doctype="Customer"
+                    :docname="guest.name" :path="guest.photo" v-model="guest.attach" />
             </div>
         </div>
         <ComReservationStayPanel class="mb-3" title="Guest Information">
@@ -29,13 +32,15 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
-                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth" showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true"/>
+                        <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
+                            showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true" />
                     </div>
                     <!-- guest.date_of_birth -->
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />
                         <div class="flex align-items-center">
-                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="true" :false-value="0" :trueValue="1" inputId="disabled" />
+                            <Checkbox class="mr-1" v-model="guest.disabled" :binary="true" :false-value="0" :trueValue="1"
+                                inputId="disabled" />
                             <label for="disabled"> Disabled</label>
                         </div>
                     </div>
@@ -77,11 +82,13 @@
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label class="white-space-nowrap">ID/Passport Number</label><br />
-                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number" v-model="guest.id_card_number" :maxlength="50" />
+                        <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                            v-model="guest.id_card_number" :maxlength="50" />
                     </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-1">
                         <label>ID Expire Date</label><br />
-                        <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full" v-model="guest.expired_date" placeholder="ID Expire Date" dateFormat="dd-mm-yy" showButtonBar showIcon/>
+                        <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full" v-model="guest.expired_date"
+                            placeholder="ID Expire Date" dateFormat="dd-mm-yy" showButtonBar showIcon />
                     </div>
                 </div>
             </template>
@@ -104,8 +111,8 @@
 </template>
 <script setup>
 import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugin'
-import ComDialogContent from '../../../components/form/ComDialogContent.vue';
-import ComReservationStayPanel from '../../reservation/components/ComReservationStayPanel.vue';
+import ComDialogContent from '@/components/form/ComDialogContent.vue';
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import Calendar from 'primevue/calendar';
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
@@ -113,10 +120,9 @@ let loading = ref(false)
 const guest = ref({})
 const optionGender = ref()
 const moment = inject('$moment')
-const rs = inject('$reservation_stay')
-const reservation = inject('$reservation')
 
- 
+
+
 function onLoad() {
     loading.value = true
     getDoc('Customer', dialogRef.value.data.name)
@@ -130,7 +136,7 @@ function onLoad() {
             loading.value = false
         });
 }
- 
+
 function onClose(param = false) {
     dialogRef.value.close(param)
 }
@@ -148,12 +154,12 @@ function getMeta() {
 }
 
 function onOK() {
-    if(!guest.value.customer_name_en){
-        gv.toast('warn','Guest name is required.')
+    if (!guest.value.customer_name_en) {
+        gv.toast('warn', 'Guest name is required.')
         return
     }
-    else if(!guest.value.customer_group){
-        gv.toast('warn','Guest type is required.')
+    else if (!guest.value.customer_group) {
+        gv.toast('warn', 'Guest type is required.')
         return
     }
     loading.value = true
@@ -161,28 +167,35 @@ function onOK() {
     data.date_of_birth = data.date_of_birth ? moment(data.date_of_birth).format("YYYY-MM-DD") : ''
     data.expired_date = data.expired_date ? moment(data.expired_date).format("YYYY-MM-DD") : ''
     data.photo = data.attach
-    createUpdateDoc('Customer', {data:data},'',false).then((r) => {
-       
-            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-            window.socket.emit("RefreshReservationDetail", reservation.reservation.name)
-            window.socket.emit("RefreshData", { action:"refresh_guest_iframe_in_modal",property:window.property_name})
-            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_guest_database"})
-            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_reservation_list"})
-            window.socket.emit("RefreshData", { property:window.property_name, action:"refresh_housekeeping"})
-            window.socket.emit("RefresheDoorDashboard", { property:window.property_name})
-            onClose(r)
-            loading.value = false
+    createUpdateDoc('Customer', { data: data }, '', false)
+    .then((r) => {
+        window.socket.emit("ReservationList", { property: window.property_name })
+        window.socket.emit("ReservationStayList", { property: window.property_name })
+        window.socket.emit("Housekeeping", { property: window.property_name })
+        window.socket.emit("Frontdesk", window.property_name)
+        window.socket.emit("ComGuestLedger", { property: window.property_name })
+        window.socket.emit("GuestDetail", window.property_name)
+        window.socket.emit("Dashboard", window.property_name)
+        window.socket.emit("ComIframeModal", window.property_name)
+        if (window.reservation_stay) {
+            window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+        }
+        if (window.reservation) {
+            window.socket.emit("ReservationDetail", window.reservation)
+        }
+        onClose(r)
+        loading.value = false
     }).catch((err) => {
         loading.value = false
     })
 }
 
 const updateLoadingStatus = (isLoading) => {
-  loading.value = isLoading;
+    loading.value = isLoading;
 };
 
 onMounted(() => {
-    getMeta() 
+    getMeta()
     if (dialogRef.value.data.name) {
         onLoad()
     }

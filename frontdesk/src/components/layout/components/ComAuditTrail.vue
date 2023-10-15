@@ -135,8 +135,6 @@ import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
         setEventListener()
     })
     async function onLoad(doctype, docname){
-        console.log(doctype)
-        console.log(docname)
         if(doctype && docname){
             loading.value = true
             await getApi('reservation.get_audit_trail',{
@@ -153,8 +151,6 @@ import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
     }
 
     function setEventListener(){
-        console.log( document.querySelectorAll(".reservation-stay"))
-
         document.querySelectorAll(".reservation-stay").forEach(el=>{
             el.addEventListener("click", function(){
              

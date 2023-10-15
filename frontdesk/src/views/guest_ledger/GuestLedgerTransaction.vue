@@ -235,14 +235,6 @@ function onOpenLink(column, data) {
 }
 
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
-        setTimeout(function () {
-            loadData()
-        }, 3000)
-    }
-})
-
 const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
 }
@@ -348,6 +340,15 @@ function loadData() {
 }
 
 onMounted(() => {
+
+    window.socket.on("GuestLedgerTransaction", (arg) => {
+        if (arg == property.name) {
+            setTimeout(function () {
+                loadData()
+            }, 3000)
+        }
+    })
+
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
     if (state) {
         if (state.selectedColumns) {
@@ -358,7 +359,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    window.socket.off("RefresheDoorDashboard");
+    window.socket.off("GuestLedgerTransaction");
 })
 
 const showAdvanceSearch = ref()

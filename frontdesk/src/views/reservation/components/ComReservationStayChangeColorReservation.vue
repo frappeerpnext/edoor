@@ -24,10 +24,9 @@ function onSave(){
     postApi('reservation.update_reservation_color',{data: stay.value}).then((r)=>{
         rs.reservationStay = r.message
         loading.value = false
-
-        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-
+        window.socket.emit("Dashboard", rs.reservationStay.property)
+        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
         emit('onClose')
     }).catch(()=>{
         loading.value = false

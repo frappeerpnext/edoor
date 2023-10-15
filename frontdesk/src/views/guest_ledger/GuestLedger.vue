@@ -247,13 +247,7 @@ function pageChange(page) {
   loadData()
 }
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
-        setTimeout(function () {
-            loadData()
-        }, 3000)
-    }
-})
+
 
 const toggleShowColumn = (event) => {
     opShowColumn.value.toggle(event);
@@ -362,6 +356,13 @@ function loadData() {
 }
  
 onMounted(() => {
+    window.socket.on("ComGuestLedger", (arg) => {
+    if (arg.property == window.property_name) {
+        setTimeout(function () {
+            loadData()
+        }, 3000)
+    }
+})
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
     if (state) {
         if (state.selectedColumns) {
@@ -369,10 +370,6 @@ onMounted(() => {
         }
     }
     loadData()
-})
-
-onUnmounted(() => {
-    window.socket.off("RefresheDoorDashboard");
 })
 
 const showAdvanceSearch = ref()
@@ -402,4 +399,8 @@ function onOrderBy(data) {
 const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
+
+onUnmounted(() => {
+    window.socket.off("GuestLedger");
+})
 </script>

@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
         
-        <div class="iframe-view">
+        <div class="iframe-view guest-detail">
             {{ currentIframe }}
             <TabView  lazy>
                 <TabPanel header="General Information">
@@ -51,14 +51,12 @@ const gv = inject("$gv")
 
 function onIframeLoaded(id){
     const iframe = document.getElementById(id);
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    if (iframe){
+        iframe.height = iframe.contentWindow.document.body.scrollHeight;
+    }
 }
 
-window.socket.on("RefreshData", (arg) => {
-    if(arg.property == window.property_name && arg.action == "refresh_guest_iframe_in_modal"){
-        loadIframe()
-    }    
-})
+
 const generalInfoUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Detail General Information") +  "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
@@ -116,6 +114,8 @@ function onDeleteGuest (name){
             .then(() =>{
                 loading.value = false
                 window.socket.emit("RefreshGuestDatabase", { property:window.property_name})
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ReservationList", { property:window.property_name})
                 dialogRef.value.close()
             }).catch((err)=>{
                 loading.value = false
@@ -125,20 +125,23 @@ function onDeleteGuest (name){
 }
  
 onMounted(() => {
+
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
     } 
+
+    if (document.querySelectorAll('.guest-detail').length == 1){
+        window.socket.on("GuestDetail", (arg) => {
+            if( arg == window.property_name){
+                loadIframe()
+            }    
+        })
+    }
 });
 
 const onClose = () => {
     dialogRef.value.close()
 }
-
- 
-
-
-
-
 
 function loadIframe() {
     if(document.getElementById("general")){
@@ -159,9 +162,11 @@ function loadIframe() {
 }
 
 onUnmounted(() => {
- 
-    window.socket.off("RefreshData");
+    if (document.querySelectorAll('.guest-detail').length - 1 == 0){
+        window.socket.off("GuestDetail")
+    }
 })
+
 
 </script>
 <style scoped>

@@ -38,7 +38,6 @@
     import {inject, ref,computed} from "@/plugin"
     import Enumerable from 'linq'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
-    // import ComBoxStayInformation from './ComBoxStayInformation.vue';
     import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
     import ComChangeRateType from "./ComChangeRateType.vue";
     
@@ -67,7 +66,9 @@
     }
     const onChangeBusinessSource = (doc) => {
         // rs.reservation = doc
-
+        alert(window.reservation_stay)
+        // window.socket.emit("ReservationStayDetail", { reservation_stay: rs.reservationStays.name })
+        
         opBusinessSource.value.hide();
     }
 
@@ -75,6 +76,7 @@
         if(doc){
             rs.LoadReservation(rs.reservation.name)
             opRateType.value.hide();
+            window.socket.emit("ReservationDetail", window.reservation)
         }
             
     }

@@ -1,9 +1,10 @@
 <template>
     <div @click="onClick" class="guest-user__pro px-2 flex items-center h-full justify-center cursor-pointer"
         style="width:180px" aria-haspopup="true" aria-controls="overlay_menu_user">
+ 
         <ComAvatar :image="user.photo">
-            <div :title="user.name" :style="(user.name.length > 12 )? { fontSize: 12.90 - (user.name.length - 14) * 0.10 + 'px' } : ''"
-                class="font-lg font-bold text-white white-space-nowrap overflow-hidden text-overflow-ellipsis w-8rem">{{ user.name
+            <div :title="user.full_name" :style="(user.full_name.length > 12 )? { fontSize: 12.90 - (user.full_name.length - 14) * 0.10 + 'px' } : ''"
+                class="font-lg font-bold text-white white-space-nowrap overflow-hidden text-overflow-ellipsis w-8rem">{{ user.full_name
                 }}</div>
             <div :title="user.role" class="text-ms text-white white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
                 user.role }}</div>

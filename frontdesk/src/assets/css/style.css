@@ -1267,3 +1267,6 @@ ul.res__hideshow{
     position: absolute;
     left: 40px;
 }
+span.row-disabled > :not(button) { 
+    color: rgb(172, 172, 172) !important;
+}

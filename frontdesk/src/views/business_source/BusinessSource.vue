@@ -374,8 +374,6 @@ const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
 
-onUnmounted(() => {
-    window.socket.off("RefreshData");
-})
+
 
 </script>

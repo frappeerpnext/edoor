@@ -83,8 +83,6 @@ import ComReservationStayUpgradeRoom from '@/views/reservation/components/ComRes
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import {inject,ref,useDialog,computed   } from '@/plugin'
 import Enumerable from 'linq';
-// const moment = inject('$moment')
-// const selecteds = ref([])
 const gv = inject('$gv');
 const rs = inject("$reservation_stay")
 const dialog = useDialog() 

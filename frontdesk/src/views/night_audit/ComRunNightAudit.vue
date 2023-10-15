@@ -192,7 +192,5 @@ const refreshReport = () => {
 onMounted(() => {
     refreshReport()
 });
-onUnmounted(() => {
-    window.socket.off("RefreshData");
-})
+
 </script>

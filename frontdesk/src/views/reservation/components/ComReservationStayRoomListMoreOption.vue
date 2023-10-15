@@ -1,6 +1,6 @@
 <template>
     <div> 
-        
+       
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
                 <Button  :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
@@ -9,13 +9,13 @@
                 <template #end>
                         <button @click="onChangeStay(data)"  class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Change Stay
-                        </button> <!-- "moment(data.end_date).isSame(edoor_working_day.date_working_day) || moment(data.end_date).isAfter(edoor_working_day.date_working_day) -->
-                        <button  @click="onUnassignRoom(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                        </button> 
+                        <button  v-if="data?.room_id"  @click="onUnassignRoom(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Unassign room
-                        </button><!-- (moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'" -->
+                        </button>
                         <button @click="onOpenDeleted(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                             Delete
-                        </button><!--moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  -->
+                        </button>
                         
                 </template>
             </Menu>
@@ -95,15 +95,6 @@ function onOpenDeleted(data){
                     const data = options.data;
                     if (data) {
                         rs.getReservationDetail(props.data.parent)
-                        window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-
-                        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-                        
-                        window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
-                        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-                        window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-
                     }
                 }
 
@@ -173,17 +164,10 @@ if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || momen
             postApi("reservation.unassign_room",{reservation_stay: rs.reservationStay.name, room_stay: props.data.name}).then((r)=>{
                 loading.value = false
                 rs.reservationStay = r.message
-
-                window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-
-                window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-
-                window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-
-                window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
-                window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
-                
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ReservationList", { property:window.property_name})
+                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})                
             }).catch(()=>{
                 loading.value = false
             })

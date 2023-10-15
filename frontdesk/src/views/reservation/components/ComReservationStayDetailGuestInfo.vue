@@ -43,15 +43,12 @@ import ComReservationChangeGuest from './ComReservationChangeGuest.vue'
 import ComReservationStayTransportationLabel from './ComReservationStayTransportationLabel.vue'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');
 const dialog = useDialog()
 const dialogConfirm = useConfirm()
-const frappe = inject('$frappe')
-const db = frappe.db()
 const menuMasterGuest = ref()
-const loading = ref(false)
 const selectGuestName = ref()
 const menuMasterGuestList = ref([
     {
@@ -69,7 +66,6 @@ const menuMasterGuestList = ref([
         }
     }
 ])
-
 
 
 const menuStayGuest = ref()
@@ -178,6 +174,7 @@ function onDeleteAdditionalGuest(){
             reservationStayData.additional_guests = additionalGuests
             updateDoc('Reservation Stay', reservationStayData.name, reservationStayData, 'Deleted successful').then((doc) => {
                 rs.reservationStay = doc
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
         }
     })
@@ -210,7 +207,7 @@ function onAdvancedSearch(guest_type) {
         },
         onClose(r) {
             if(r.data){ 
-                window.socket.emit("RefresheDoorDashboard", property.name); 
+                // window.socket.emit("RefresheDoorDashboard", property.name); 
                 rs.getReservationDetail(rs.reservationStay.name)
                 gv.toast('success', 'Updated Successful')
             }

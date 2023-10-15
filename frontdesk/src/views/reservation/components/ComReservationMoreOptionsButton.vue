@@ -225,7 +225,8 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             if (data) {
                 setTimeout(function () {
                     rs.LoadReservation(rs.reservation.name)
-                    window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
+                    window.socket.emit("Dashboard", rs.reservation.property);
+                    window.socket.emit("ReservationList", { property:window.property_name})
                 }, 1500)
 
 
@@ -283,7 +284,8 @@ function onGroupCheckIn() {
                 }).then((result) => {
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name);
-                    window.socket.emit("RefresheDoorDashboard", property.name);
+                    window.socket.emit("Dashboard", property.name);
+                    window.socket.emit("ReservationList", { property:window.property_name})
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -323,7 +325,7 @@ function onGroupUndoCheckIn() {
                         setTimeout(()=>{
                             rs.LoadReservation()
                         },1000)
-                        
+                        window.socket.emit("ReservationList", { property:window.property_name})
                     }
                 }).catch(err=>{
                     rs.loading = false
@@ -357,6 +359,7 @@ function onGroupCheckOut(is_not_undo = false) {
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {
+                        window.socket.emit("ReservationList", { property:window.property_name})
                         rs.LoadReservation()
                     }
                 }).catch((error) => {
@@ -598,9 +601,7 @@ function onGroupChangeStayDate() {
         }
     })
 }
-function onStayToOtherReservation() {
-    //
-}
+
 function onMarkasGITReservation() {
     confirm.require({
         message: 'Are you sure you want to Mark as GIT Reservation',
@@ -620,7 +621,9 @@ function onMarkasGITReservation() {
                             severity: 'success', summary: 'Mark as GIT Reservation',
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
-                    window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
+                    // window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
+                    window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("Dashboard", window.property_name)
 
                 })
         },
@@ -637,7 +640,7 @@ function onMarkasFITReservation() {
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
-        accept: () => {
+        accept: () => {``
             db.updateDoc('Reservation', rs.reservation?.name, {
                 reservation_type: "FIT",
             })
@@ -647,7 +650,10 @@ function onMarkasFITReservation() {
                             severity: 'success', summary: 'Mark as FIT Reservation',
                             detail: 'Mark as FIT Reservation Successfully', life: 3000
                         });
-                    window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
+                    window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("Dashboard", window.property_name)
+
+
                 })
         },
 

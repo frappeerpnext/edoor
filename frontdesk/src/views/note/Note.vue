@@ -80,6 +80,8 @@
                             <div :class="i.reservation || i.reservation_stay ? 'text-500 text-sm ' : ''"> 
                                 Note Date: {{ gv.dateFormat(i.note_date) }}</div>
                         </div>
+                        {{ i.room}}
+                        {{ i.guest_name }}
                         <div v-if="i.content"
                             class="mt-3 mb-6 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">
                             {{ i.content }}
@@ -248,7 +250,7 @@ function onLoadData() {
 
 
     getDocList('Frontdesk Note', {
-        fields: ['name', 'note_date', 'reference_doctype', 'is_pin', 'reference_name', "reservation", "reservation_stay", "content", "modified_by", 'modified', 'owner', 'creation'],
+        fields: ['name', 'note_date', 'reference_doctype', 'is_pin', 'reference_name', "reservation", "reservation_stay", "content", "modified_by", 'modified', 'owner', 'creation','room','guest_name'],
         filters: filters,
         orderBy: {
             field: pageState.value.order_by,

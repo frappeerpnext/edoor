@@ -257,9 +257,7 @@ const downloadURI = (uri, name) => {
 onMounted(() => {
    onLoad() 
 })
-onUnmounted(() => {
-    window.socket.off("RefreshData");
-})
+
 </script>
 <style lang="">
     

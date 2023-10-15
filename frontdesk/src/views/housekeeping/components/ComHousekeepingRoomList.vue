@@ -95,6 +95,8 @@ const call = frappe.call()
 const visibleRight = ref(false);
 const db = frappe.db()
 
+
+
 const data = computed(() => {
     return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
 })

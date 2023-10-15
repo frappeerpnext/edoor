@@ -139,9 +139,7 @@ onMounted(() => {
     loadData()
 })
 
-onUnmounted(() => {  
-    window.socket.off("RefreshData");
-})
+
 </script>
 
  

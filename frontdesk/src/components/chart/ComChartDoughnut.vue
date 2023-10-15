@@ -1,18 +1,16 @@
 <template>
+
     <div class="relative">
-        
         <div v-if="showPercentage" class="absolute top-50 left-50 text-6xl" :class="class" style="transform: translate(-50%, -50%);">
-            <span :style="{ color: percentage.color }" v-if="showPercentageInteger">{{ parseInt(percentage.percent) }}%</span>
-            <span :style="{ color: percentage.color }" v-else>{{ percentage.percent }}%</span>
+            <span :style="{ color: percentage.color }">{{ occupancy }}%</span>
         </div>
          
         <Chart type="doughnut" :data="chartData" :options="chartOptions" class="w-full" width="225" height="150" />
     </div>
 </template>
 <script setup>
-import { ref, onMounted, inject } from 'vue'
-const gv = inject('$gv')
-const chartData = ref();
+import { ref, inject,computed } from 'vue'
+ 
 const props = defineProps({
     total_room:Number,
     data: {
@@ -22,6 +20,9 @@ const props = defineProps({
     showPercentage: {
         type: String,
         default: ''
+    },
+    percentage: {
+        type: Number,
     },
     cutout: {
         type: String,
@@ -49,11 +50,21 @@ const percentage = ref({
     color: '#000'
 })
 
-const setChartData  = () => {
+const occupancy = computed(()=>{
+    
+    if (props.showPercentageInteger){
+        return props.percentage?.toFixed(0)
+    }else {
+        return props.percentage?.toFixed(2)
+    }
+  
+
+})
+
+const chartData = computed(()=>{ 
     let labels = ref([])
     let values = ref([])
     let backgroundColors = []
-    percentage.value.total = 0
     if (props.data.length > 0) {
         props.data.forEach((r) => {
             labels.value.push(r.label)
@@ -67,11 +78,7 @@ const setChartData  = () => {
                 }
             }
         })
-        // calculate
-        const total_room = (props.total_room ?? 0) == 0? 1: props.total_room
-        const percent = (percentage.value.field_show / total_room) * 100
-
-        percentage.value.percent = gv.numberFormat(percent)
+           
         return {
             labels: labels.value,
             datasets: [
@@ -85,10 +92,8 @@ const setChartData  = () => {
         return []
     }
 
-}
-
-onMounted(()=>{
-    chartData.value = setChartData();
 })
+
+ 
 
 </script>

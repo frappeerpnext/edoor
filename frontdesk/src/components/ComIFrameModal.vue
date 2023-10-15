@@ -1,6 +1,6 @@
 <template>
     
-    <div class="wrap-dialog" :class="{'full-height' : dialogRef.data.fullheight}">
+    <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
                 <div class="col flex gap-2 ">
@@ -69,7 +69,7 @@
                 </div>
             </div> 
             <div class="widht-ifame">
-            <iframe @load="onIframeLoaded()" style="min-height:100vh;" id="iframe" width="100%" :src="url" ></iframe>
+            <iframe @load="onIframeLoaded()" style="min-height:100vh;" :id="iframe_id" width="100%" :src="url" ></iframe>
             </div>
         </div>
     </div>
@@ -84,6 +84,8 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const url = ref("")
 const show_letter_head = ref(false)
 const letter_head = ref("");
+const iframe_id = "iframe_" +  Math.random().toString().replace(".","_")
+ 
 
 const filters = ref({})
 const show_toolbar = ref(0)
@@ -93,14 +95,6 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 
 const gv = inject("$gv")
 
-// const socket = inject("$socket");
- 
-
-window.socket.on("RefreshData", (arg) => {
-    if(arg.property == setting.property.name && arg.action == "refresh_iframe_in_modal"){
-        loadIframe()
-    }    
-})
 
 letter_head.value = setting.property.default_letter_head
 
@@ -114,7 +108,7 @@ const hasFilter = ref((f) => {
 
 
 function onIframeLoaded() {
-    const iframe = document.getElementById("iframe");
+    const iframe = document.getElementById(iframe_id);
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
     
@@ -158,7 +152,7 @@ function loadIframe() {
 
     url.value = url.value + "&refresh=" + (Math.random() * 16)
 
-    document.getElementById("iframe").contentWindow.location.replace(url.value)
+    document.getElementById(iframe_id).contentWindow.location.replace(url.value)
    
 }
 
@@ -181,6 +175,13 @@ function debouncer(fn, delay) {
 
 
 onMounted(() => {
+    window.socket.on("ComIframeModal", (arg) => {
+        if(arg == window.property_name){
+            loadIframe()
+        }    
+    })
+
+    console.log(document.querySelectorAll('.iframe-modal'))
 
     show_toolbar.value = dialogRef.value.data.show_toolbar || 1
     show_letter_head.value = dialogRef.value.data.show_letter_head || false
@@ -192,9 +193,8 @@ onMounted(() => {
 
 });
 
-onUnmounted(() => {
-   
-    window.socket.off("RefreshData");
+onUnmounted(()=>{
+    window.socket.off("ComIframeModal")
 })
 
 

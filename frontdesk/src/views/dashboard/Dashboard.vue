@@ -27,7 +27,8 @@
                 <ComPanel title="Occupancy">
                     <div class="grid">
                         <div class="col-6 flex align-items-center justify-content-center mt-3">
-                            <ComChartDoughnut :total_room="data?.total_room"  show-percentage="Occupied" :showPercentageInteger="true" :is-legend="false" :data="chartOccupancy"
+
+                            <ComChartDoughnut :percentage="data?.occupancy"  show-percentage="Occupied" :showPercentageInteger="false" :is-legend="false" :data="chartOccupancy"
                                 v-if="chartOccupancy.length > 0" />
                             <Skeleton v-else shape="circle" size="18rem"></Skeleton>
                         </div>
@@ -133,7 +134,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onUnmounted} from '@/plugin'
+import { inject, ref, onUnmounted,onMounted} from '@/plugin'
 import { useToast } from "primevue/usetoast";
 import { useDialog } from 'primevue/usedialog';
 
@@ -148,10 +149,7 @@ import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 
-// import ComReservationStayList from '@/views/frontdesk/components/ComReservationStayList.vue'
-// import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
-// import ComDashboardRowStatus from './components/ComDashboardRowStatus.vue';
-// import ComRoomStatusDoughnut from './components/ComRoomStatusDoughnut.vue';
+
  
 const toast = useToast();
 const moment = inject("$moment")
@@ -172,12 +170,9 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if(arg ==property.name){
-        getData(false)
-        onRefreshIframe()
-    }    
-})
+
+ 
+
 
 function getArrivalUrl() {
     let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format="+ gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest") +"&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
@@ -212,7 +207,9 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
 }
 
 function onRefresh(loading = true){ 
-    getData(loading)
+ 
+ getData(loading)
+
 }
 
 function onViewRoomOccupy(){
@@ -371,8 +368,11 @@ function getData(loading=true) {
         data.value = result.message
         chartOccupancy.value = []
         const documentStyle = getComputedStyle(document.body);
+       
+        
         chartOccupancy.value.push({ label: 'Occupied', value: data.value.total_room_occupy, color: documentStyle.getPropertyValue('--bg-btn-green-color') })
         chartOccupancy.value.push({ label: 'Vacant', value: data.value.total_room_vacant, color: documentStyle.getPropertyValue('--bg-warning-color') })
+       
         if (!selected_date.value) {
             date.value = moment(data.value.working_date).format("DD-MM-YYYY")
             tomorrow.value = moment(data.value.working_date).add(1,"days").format("YYYY-MM-DD")
@@ -489,9 +489,20 @@ const viewSummary = (name) => {
         )
     }       
 }
+onMounted(() => {
+    window.socket.on("Dashboard", (arg) => {
+        
+    if(arg ==property.name){
+        setTimeout(function(){
+            getData(false)
+        onRefreshIframe()
+            },3000) 
 
+    }    
+})
+})
 onUnmounted(() => {
-    window.socket.off("RefresheDoorDashboard");
+    window.socket.off("Dashboard");
 })
 
 </script>

@@ -1,5 +1,6 @@
 <template>
     <div class="td_guest_cs px-1 cursor-pointer">
+
     <ComTodaySummarySep dialogKey="all_rooms" title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
         <tippy :content="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in '  + ' and ' + ' Total Arrival ' + (data?.arrival|| 0)  ">
             <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival" :value="((data.arrival || 0) -(data.arrival_remaining || 0))">
@@ -12,6 +13,7 @@
             </ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep :isHousekeeping="isHousekeeping" dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
+  
         <ComTodaySummarySep :isHousekeeping="isHousekeeping" dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
         <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) and ' + data?.git_stay_arrival + ' Stay(s)'">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + '/' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>

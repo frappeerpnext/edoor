@@ -104,7 +104,7 @@ class ReservationStay(Document):
 			d.start_date = d.start_date or self.arrival_date
 			d.start_time = d.start_time or self.arrival_time
 			d.end_time = d.end_time or self.departure_time
-			d.nd_date = d.end_date or self.departure_date
+			d.end_date = d.end_date or self.departure_date
 			d.adult = self.adult or 1
 			d.child = self.child or 0
 			d.reference_number = self.reference_number
@@ -168,7 +168,7 @@ class ReservationStay(Document):
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
 		generate_room_occupy(self)
-		generate_room_rate(self, is_update_reservation_stay=True)
+		generate_room_rate(self)
 
 	def on_update(self):
 		if self.is_master:
@@ -195,7 +195,7 @@ class ReservationStay(Document):
 			"group_name":self.group_name or '',
 			"reservation_type":self.reservation_type,
 			"paid_by_master_room":self.paid_by_master_room,
-			"adr":self.adr,
+			"reservation_stay_adr":self.adr,
 			"name": self.name
 		}
 		frappe.db.sql("""
@@ -214,7 +214,7 @@ class ReservationStay(Document):
 			group_color=%(group_color)s,
 			group_code=%(group_code)s,
 			group_name=%(group_name)s,
-			adr=%(adr)s,
+			reservation_stay_adr=%(reservation_stay_adr)s,
 			reservation_type=%(reservation_type)s,
 			paid_by_master_room=%(paid_by_master_room)s
 		 where parent=%(name)s
@@ -277,8 +277,8 @@ def generate_room_occupy(self):
 
 			}).insert()
 
-def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True): 
-	
+def generate_room_rate(self, run_commit = True): 
+
 	date_avaliables = ""
 	self.update_room_rate = False
 	for stay in self.stays:
@@ -299,7 +299,7 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 				if hasattr(self, 'is_override_rate') and self.is_override_rate:
 					regenerate_rate = True
 					is_manual_rate = False
-				
+			 
 				frappe.get_doc({
 					"doctype":"Reservation Room Rate",
 					"reservation":self.reservation,
@@ -322,13 +322,15 @@ def generate_room_rate(self,is_update_reservation_stay=False, run_commit = True)
 				}).insert()
 			else:
 				# avaliable room rate
+	 
 				old_room_rate = frappe.get_list("Reservation Room Rate", filters={'reservation_stay':self.name,'date':d})
 				old_rate = frappe.get_doc('Reservation Room Rate',old_room_rate[0].name)
 				old_rate.room_type_id = stay.room_type_id
 				old_rate.room_id = stay.room_id
 				old_rate.room_number = stay.room_number
-				if hasattr(self, 'is_old_override_rate') and self.is_old_override_rate:
+				if hasattr(self, 'is_override_rate') and self.is_override_rate==1:
 					old_rate.input_rate = get_room_rate(self.property, self.rate_type, stay.room_type_id, self.business_source, d)
+					
 				old_rate.save()
 				
  

@@ -6,8 +6,8 @@
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
-                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('MMM DD, yyyy')}} - {{moment.utc(filter.end_date).format('MMM DD, yyyy')}}</div>
-                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('MMM DD')}} - {{moment.utc(filter.end_date).format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('MMM DD, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('MMM DD')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
                     </div>
                 </div>
             </template>
@@ -21,6 +21,7 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
+                <ComCheckRoomConfligAndOverBooking/>
                 </div>
             </template>
         </ComHeader>
@@ -119,13 +120,13 @@ import ComConfirmChangeStay from "@/views/frontdesk/components/ComConfirmChangeS
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
-import iconEdoorAddGroupBooking from '../../assets/svg/icon-add-group-booking.svg'
 import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from './components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
+import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import FullCalendar from '@fullcalendar/vue3'
 
 
@@ -168,7 +169,7 @@ let advanceFilter = ref({
     floor: ""
 })
 
-const isFilter = computed(() => {
+const isFilter = computed(() => { 
     if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
         return true
     } else {
@@ -194,13 +195,7 @@ let roomChartResourceFilter = reactive({
     view_type: filter.value.view_type // room_type = true or room = false
 })
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
 
-        getResourceAndEvent()
-
-    }
-})
 
 const calendarOptions = reactive({
     plugins: [
@@ -242,6 +237,7 @@ const calendarOptions = reactive({
     slotLabelDidMount: function (info) {
         const d = moment(info.date).format("DD")
         const day = moment(info.date).format("ddd")
+
         if (moment(info.date).format("yyyy-MM-DD") == working_day.date_working_day) {
             info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
         } else {
@@ -255,6 +251,8 @@ const calendarOptions = reactive({
         info.el.addEventListener('click', function () {
             window.postMessage({ "action": "view_product_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
         })
+        info.el.style.cursor="pointer"
+
     },
 
     select: (($event) => {
@@ -662,6 +660,7 @@ function generateEventForRoomType(data) {
         resources.value.filter(r => r.id == "property_summary").forEach(r => {
             while (current_date <= cal.view.currentEnd) {
                 occupy_data = data.find(c => c.date == moment(current_date).format("YYYY-MM-DD"))
+               
                 room_type_event.push(
                     {
 
@@ -676,7 +675,13 @@ function generateEventForRoomType(data) {
                         adult: occupy_data?.adult || 0,
                         child: occupy_data?.child || 0,
                         room_available: r.total_room - (occupy_data?.total || 0),
-                        unassign_room: (occupy_data?.unassign_room || 0)
+                        unassign_room: (occupy_data?.unassign_room || 0),
+                        stay_over: (occupy_data?.stay_over || 0),
+                        current_date:  moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
+                        room_block:  occupy_data?.block || 0 ,
+                        total_room:resources.value.find(r=>r.id=="property_summary").total_room,
+                        total_room_sold: occupy_data?.total_room_sold
+                        
                     }
                 )
                 current_date.setDate(current_date.getDate() + 1);
@@ -819,8 +824,8 @@ function getEvent() {
     })
 }
 
-function getResourceAndEvent() {
-    gv.loading = true
+function getResourceAndEvent(showLoading = true) {
+    gv.loading = showLoading
     getApi("frontdesk.get_room_chart_resource_and_event",
         {
             start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),
@@ -868,6 +873,13 @@ const handleScroll = (event) => {
 };
 
 onMounted(() => {
+
+    window.socket.on("Frontdesk", (arg) => {
+        if (arg == window.property_name) {
+            getResourceAndEvent(false)
+        }
+    })
+
     gv.loading = true
     const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
     if (state) {
@@ -954,7 +966,7 @@ function getEndDate(start, period) {
 }
 
 onUnmounted(() => {
-    window.socket.off("RefresheDoorDashboard");
+    window.socket.off("Frontdesk");
     document.body.removeEventListener('scroll', handleScroll);
 })
 
@@ -987,6 +999,7 @@ provide('advance_filter', {
 })
 
 function showConflictRoom(conflig_rooms) {
+    console.log(conflig_rooms)
     setTimeout(() => {
          
         if (conflig_rooms) {

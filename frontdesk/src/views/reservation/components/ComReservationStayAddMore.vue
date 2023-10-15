@@ -384,8 +384,9 @@ const onSave = () => {
 
         if (r) {
             isSaving.value = false
-            window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
-            window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
+            window.socket.emit("Dashboard", rs.reservation.property);
+            // window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
+            window.socket.emit("ReservationList", { property:window.property_name})
             dialogRef.value.close(r)
         }
 

@@ -44,6 +44,8 @@
 								</span> 
 							</div>
 						</div>
+						{{ i.guest_name }}
+						{{ i.room }}
 						<div >
 							<span v-if="i.note_date" class="font-italic text-500 text-sm">
 								Note Date: {{ gv.dateFormat(i.note_date) }}
@@ -82,8 +84,6 @@
 <script setup>
 import { ref, inject,useDialog,onMounted,updateDoc,useConfirm } from '@/plugin';
 import ComAddNote from './ComAddNote.vue';
-import ComNoteGlobalButtonMore from './ComNoteGlobalButtonMore.vue';
-import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
@@ -192,7 +192,7 @@ function onLoadData(){
 		filters.push(["content","like", '%' + keyword.value + '%'])
 	}
 	db.getDocList('Frontdesk Note', {
-		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content","modified_by",'modified','owner','creation'],
+		fields: ['name','note_date','reference_doctype','is_pin','reference_name', "reservation", "reservation_stay", "content","modified_by",'modified','owner','creation','room_id','guest','guest_name','room'],
 		filters:filters,
 		orderBy: {
 			field: 'creation',

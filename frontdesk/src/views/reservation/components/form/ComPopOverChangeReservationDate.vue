@@ -78,9 +78,7 @@ function onSave(){
     ).then((r)=>{
         loading.value = false
         dialogRef.value.close()
-        
-        // socket.emit("RefresheDoorDashboard", rs.reservation.property);
-    
+        window.socket.emit("ReservationList", { property:window.property_name})
     }).catch((err)=>{
         loading.value = false
     })

@@ -577,9 +577,6 @@ onMounted(() => {
     })
 })
 
-onUnmounted(() => {
-    window.socket.off("RefreshData");
-})
 // Filter 
 const showAdvanceSearch = ref()
 const advanceFilter = (event) => {

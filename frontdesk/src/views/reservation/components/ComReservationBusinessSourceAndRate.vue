@@ -33,7 +33,6 @@
 <script setup>
 import { inject, ref } from "@/plugin"
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
-// import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
 import ComChangeRateType from "./ComChangeRateType.vue";
 
@@ -60,16 +59,16 @@ function onChangeBusinessSource(result) {
         rs.reservation = doc
         rs.reservationStay.business_source = doc.business_source   
     }
-    window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
+    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+    window.socket.emit("ReservationDetail", window.reservation)
     opBusinessSource.value.hide();
 }
 
 function onChangeRateType(doc) { 
     rs.getReservationStay(rs.reservationStay.name)
-    window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-    window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-    window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
-    window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
+    window.socket.emit("ReservationStayList", { property: window.property_name })
+    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+    window.socket.emit("ReservationDetail", window.reservation)
     opRateType.value.hide();
 }
 

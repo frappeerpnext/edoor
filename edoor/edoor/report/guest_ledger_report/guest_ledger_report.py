@@ -15,11 +15,7 @@ def execute(filters=None):
 	filters.status = filters.status or ''
 	filters.status = '' if filters.status =='All Status' else filters.status
 	filters.reservation_status = filters.reservation_status   or ''
-	
- 
- 
-
-
+	 
 
 	validate(filters)
 	report_data = []
@@ -88,6 +84,7 @@ def get_report_data(folio_transaction_amount,filters):
 	#get folio number from folio folio transaction
 	folio_numbers = set([d["transaction_number"] for d in folio_transaction_amount])
 	filters.folio_numbers = folio_numbers or []
+	filters.keyword = "%{}%".format(filters.keyword or "")
 	if filters.folio_numbers:
 
 		sql="""select 
@@ -113,7 +110,7 @@ def get_report_data(folio_transaction_amount,filters):
 
 		from `tabReservation Folio`
 		where
-				concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(rooms,'') , ' ' , 'guest', ' ', guest_name, ' ',ifnull(phone_number,''), ' ' ,ifnull(email,'')) like '%{0}%' and 
+				concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(rooms,'') , ' ' , 'guest', ' ', guest_name, ' ',ifnull(phone_number,''), ' ' ,ifnull(email,'')) like %(keyword)s and 
 				property = %(property)s and 
 
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
@@ -124,7 +121,7 @@ def get_report_data(folio_transaction_amount,filters):
 				reservation_status = if(%(reservation_status)s='',reservation_status,%(reservation_status)s)  and 
 				is_master = if(%(is_master)s=0,is_master,1) and 
 				name in %(folio_numbers)s
-		""".format(filters.keyword or '')
+		""" 
 		
 		data = frappe.db.sql(sql,filters,as_dict=1)
 		folio_opeing_balance = get_folio_opening_balance(filters)

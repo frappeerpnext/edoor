@@ -1,7 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div>
-      
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
             <div class="n__re-custom">
@@ -31,7 +30,7 @@
                                 <Calendar  class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="!stay.can_change_start_date"  :min-date="minStartDate" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2"> 
-                               
+
                                 <Calendar  class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate"  :disabled="!stay.can_change_end_date"  dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
@@ -80,7 +79,7 @@
     import Enumerable from 'linq'
     const property = JSON.parse(localStorage.getItem("edoor_property"))
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-    const rs = inject('$reservation_stay') 
+    const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
@@ -151,20 +150,13 @@
         newData.is_override_rate = generate_new_room_rate.value
         newData.is_move = 0
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
-            loading.value = false 
-            window.socket.emit("RefreshData", {property:rs.reservationStay.property,action:"refresh_summary"})
+            loading.value = false
             rs.getReservationDetail(rs.reservationStay.name)
-
-            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
-
-            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
-            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             
-
             onClose(true)
             
         }).catch(()=>{

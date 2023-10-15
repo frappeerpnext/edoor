@@ -128,7 +128,9 @@ function onCheckIn(){
                 .then((result) => {
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name);
-                    window.socket.emit("RefresheDoorDashboard", rs.reservation.property);   
+                    // window.socket.emit("RefresheDoorDashboard", rs.reservation.property); 
+                    window.socket.emit("ReservationList", { property:window.property_name})
+  
                 })
                 .catch((err) => {
                     rs.loading = false
@@ -156,10 +158,12 @@ const onCheckOut = () => {
                 reservation_stays: [props.data.name]
             }, "Check out successfully").then((result) => {
                 rs.loading = false
-                window.socket.emit("RefresheDoorDashboard", window.property_name);
-                window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-                window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
-                window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
+                window.socket.emit("Dashboard", window.property_name);
+                window.socket.emit("ReservationList", { property:window.property_name})
+
+                // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+                // window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
+                // window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
             })
                 .catch((err) => {
                     rs.loading = false
@@ -220,7 +224,9 @@ function onUpdateReservationStatus(header="Confirm Note",data){
              if (data) {
               setTimeout(function(){
                 rs.LoadReservation(rs.reservation.name)
-                window.socket.emit("RefresheDoorDashboard", rs.reservation.property);
+                window.socket.emit("Dashboard", rs.reservation.property);
+                window.socket.emit("ReservationList", { property:window.property_name})
+
               },1500)
                 
         

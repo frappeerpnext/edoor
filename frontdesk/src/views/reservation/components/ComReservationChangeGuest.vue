@@ -76,12 +76,14 @@
 </template>
 <script setup>
 import { ref, inject, onMounted, getApi,getDoc } from '@/plugin'
-import ComReservationStayPanel from './ComReservationStayPanel.vue';
-// import ComBoxStayInformation from './ComBoxStayInformation.vue'; 
-import ComDialogContent from '../../../components/form/ComDialogContent.vue';
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import ComDialogContent from '@/components/form/ComDialogContent.vue';
 const dialogRef = inject('dialogRef')
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');
+const moment = inject("$moment")
+
+
 const genderList = ref(["Not Set", "Male", "Female"])
 let isApplyAllStays = ref(false)
 let isApplyMasterGuest = ref(false)
@@ -96,6 +98,8 @@ function onSelected(r) {
         getDoc('Customer', r.value)
         .then((doc) => {
             guest.value = doc
+            guest.value.expired_date = moment(guest.value.expired_date ).toDate()
+
             loading.value = false
         })
         .catch((error) => {
@@ -111,17 +115,19 @@ function onAdditionalSave(){
     if(!guest.value.name){
         guest.value.doctype = 'Customer'
     }
+    const saveGuest = JSON.parse(JSON.stringify(guest.value))
+    saveGuest.expired_date = moment(saveGuest.expired_date).format("YYYY-MM-DD")
     getApi('reservation.change_reservation_additional_guest',{ 
         reservation_stay: rs.reservationStay.name,
-        guest: guest.value,
+        guest: saveGuest,
     }).then((r) => {
         if (r) { 
-            rs.reservationStay = r.message.result
-            dialogRef.value.close();
+            // rs.reservationStay = r.message.result
+            window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
+            window.socket.emit("ReservationDetail", window.reservation)
+            dialogRef.value.close() 
         }
         loading.value = false
-        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
     }).catch((err)=>{
         loading.value = false
     })
@@ -142,29 +148,22 @@ function onStayGuestSave() {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'
         }
+        const saveGuest = JSON.parse(JSON.stringify(guest.value))
+    saveGuest.expired_date = moment(saveGuest.expired_date).format("YYYY-MM-DD")
         getApi("reservation.change_reservation_guest", {
             reservation: rs.reservation.name,
             reservation_stay: rs.reservationStay.name,
-            guest: guest.value,
+            guest: saveGuest,
             is_apply_all_stays: isApplyAllStays.value,
             is_apply_master_guest: isApplyMasterGuest.value,
             is_only_master_guest: (isApplyMasterGuest.value && !isApplyAllStays.value)
         }).then((r)=>{
-            if (r) {
-                loading.value = false
-                // if(isApplyAllStays.value || dialogRef.value.data.is_change_stay_guest){
-                //     // is_guest_stay
-                //     rs.guest = guest.value
-                // }   
-                // if(isApplyMasterGuest.value){
-                //     // master guest
-                //     rs.masterGuest = guest.value
-                // }
+            loading.value = false
+            if (r){
+                window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
+                window.socket.emit("ReservationDetail", window.reservation)
                 dialogRef.value.close(r);
             }
-            loading.value = false
-            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
         }).catch(()=>{
             loading.value = false
         })

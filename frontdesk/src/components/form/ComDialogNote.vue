@@ -50,18 +50,24 @@ function onOk() {
         postApi(data.value.api_url, data.value.data).then((r) => {
             loading.value = false
             dialogRef.value.close(note.value)
+            window.socket.emit("Dashboard", window.property_name)
 
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
             
         }).catch(() => {
             loading.value = false
         })
     } else if(data.value.method=="DELETE") {
-        deleteApi(data.value.api_url, data.value.data).then((r) => {
+        deleteApi(data.value.api_url, data.value.data)
+        .then((r) => {
             loading.value = false
             dialogRef.value.close(note.value)
 
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+            window.socket.emit("Dashboard", window.property_name)
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+
 
         }).catch(() => {
             loading.value = false

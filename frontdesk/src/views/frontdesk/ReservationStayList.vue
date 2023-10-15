@@ -177,12 +177,6 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == property.name && arg.action=="refresh_res_list") {
-       loadData()
-    }
-})
-
 
 const columns = ref([
     { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
@@ -286,8 +280,8 @@ function pageChange(page) {
 
 
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     let filters = [
         ["Reservation Stay", "property", '=', property.name]
     ]
@@ -401,6 +395,13 @@ getApi('frontdesk.get_working_day', {
 
 
 onMounted(() => {
+    window.socket.on("ReservationStayList", (arg) => {
+        if (arg.property == window.property_name) {
+            setTimeout(function(){
+                loadData(false)
+            },3000) 
+        }
+    })
     let state = localStorage.getItem("page_state_reservation_stay")
     if (state) {
         state = JSON.parse(state)
@@ -441,10 +442,7 @@ onMounted(() => {
     })
 
 })
-onUnmounted(() => {
-    
-    window.socket.off("RefreshData");
-})
+
 const advanceFilter = (event) => {
     showAdvanceSearch.value.toggle(event);
 }
@@ -456,4 +454,8 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
+onUnmounted(() => {
+    window.socket.off("ReservationStayList");
+})
 </script>

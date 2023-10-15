@@ -134,7 +134,7 @@ import ComReservationDetailBusinessSourceAndRate from '@/views/reservation/compo
 import ComReservationDetailRoomList from '@/views/reservation/components/ComReservationDetailRoomList.vue'
 import ComReservationDetailChargeSummary from '@/views/reservation/components/ComReservationDetailChargeSummary.vue'
 import ComReservationRoomRate from '@/views/reservation/components/ComReservationRoomRate.vue'
-import ComCommentAndNotice from '../../components/form/ComCommentAndNotice.vue';
+import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationNote from './components/ComReservationNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 
@@ -187,17 +187,6 @@ function onMaximize(){
 onMounted(() => {
     window.has_reservation_detail_opened = true
    
-    window.socket.on("RefreshReservationDetail", (reservation) => {
-        if (reservation == name.value) {
-            //we run this in settime out 
-            //because we need to wait until data from backend that run enqueue process is update ted
-            setTimeout(function(){
-                onRefresh(false)
-            },1500)
-        }
-    })
-
-
     if (!dialogRef) {
         if (route.params.name) {
             name.value = route.params.name
@@ -224,11 +213,21 @@ onMounted(() => {
     
     window.reservation = name.value
 
+    window.socket.on("ReservationDetail", (reservation) => {
+        if (reservation == name.value) {
+            setTimeout(function(){
+                onRefresh(false)
+            },1500)
+        }
+    })
+
 });
+
+// window.reservation = rs.reservation.name
 
 onUnmounted(() => {
     rs.clear()
-    window.socket.off("RefreshReservationDetail");
+    window.socket.off("ReservationDetail");
     window.has_reservation_detail_opened = false
     window.reservation = ""
 })
@@ -267,7 +266,8 @@ function onCheckIn(){
                 }).then((result) => {
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name);
-                    window.socket.emit("RefresheDoorDashboard", property.name);
+                    window.socket.emit("Dashboard", property.name);
+                    window.socket.emit("ReservationList", { property:window.property_name})
                 })
                     .catch((err) => {
                         rs.loading = false

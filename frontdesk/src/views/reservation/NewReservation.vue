@@ -10,7 +10,7 @@
                                 <label>Reservation Date<span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
                                     v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
-                                    dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                    dateFormat="dd-mm-yy" showIcon showButtonBar :maxDate="moment(working_day.date_working_day).toDate()" />
                             </div>
                             <div class="col-6"> </div>
                         </div>
@@ -31,7 +31,7 @@
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
-                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
+                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" :minDate="minDate" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
@@ -46,7 +46,7 @@
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
                                     v-model="doc.reservation.departure_date" placeholder="Departure Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon
-                                    showButtonBar panelClass="no-btn-clear"/>
+                                    showButtonBar panelClass="no-btn-clear" />
                             </div>
                         </div>
                     </div>
@@ -384,6 +384,7 @@ const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
 const room_tax = ref()
+const minDate = ref()
 
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
@@ -665,8 +666,9 @@ const onSave = () => {
         "Add new reservation successfully"
     ).then((result) => {
         isSaving.value = false
-        window.socket.emit("RefresheDoorDashboard", property.name);
-        window.socket.emit("RefreshData", { property:property.name, action: "refresh_res_list" })
+        window.socket.emit("Dashboard", window.property_name);
+        window.socket.emit("ReservationList", { property:window.property_name})
+
         dialogRef.value.close(result.message);
     })
         .catch((error) => {
@@ -683,6 +685,8 @@ onMounted(() => {
 
     }).then((result) => {
         working_day.value = (result.message)
+        minDate.value = window.setting.allow_user_to_add_back_date_transaction==1? moment().add(-50, 'years').toDate():moment(working_day.value.date_working_day).toDate()
+       
         doc.value.reservation.reservation_date = moment(working_day.value.date_working_day).toDate()
 
         if (!dialogRef) {

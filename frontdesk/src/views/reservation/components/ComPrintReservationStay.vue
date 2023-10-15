@@ -74,8 +74,5 @@ onMounted(() => {
 
 
 });
-onUnmounted(() => {
-    
-    window.socket.off("RefreshData");
-})
+
 </script> 

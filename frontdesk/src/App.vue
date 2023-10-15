@@ -40,28 +40,9 @@ import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDet
 const gv = inject("$gv")
 const moment= inject("$moment")
 
-window.socket.on("UpdateCashierShift", (arg) => {
-
-    if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.business_branch) {
-        gv.cashier_shift = arg
- 
-    }
-})
-
-
-window.socket.on("RefreshData", (arg) => {
-
-    if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.property && arg.action=="reload_page" && window.session_id!=arg.session_id) {
-        window.location.reload()
-    }
-
-})
 
 window.session_id = gv.generateGuid()
-
-
-
-
+ 
 
 const toast = useToast();
 const dialog = useDialog();
@@ -149,7 +130,7 @@ const actionClickHandler = async function (e) {
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
         }
-        else if(e.data.extendedProps.type=="room_type_event" ){
+        else if(e.data.extendedProps.type=="room_type_event" || e.data.extendedProps.type=="room_inventory_room_type_summary" ){
             
             onViewDailySummary(e.data.date,e.data.resourceIds[0], e.data.extendedProps.room_type)
         }
@@ -170,9 +151,22 @@ window.addEventListener('message', actionClickHandler, false);
 
 onUnmounted(() => {
     window.removeEventListener('message', actionClickHandler, false);
-
 })
 onMounted(() => {
+    window.socket.on("UpdateCashierShift", (arg) => {
+        if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.business_branch) {
+            gv.cashier_shift = arg
+        }
+    })
+
+
+    window.socket.on("RunNightAudit", (arg) => {
+        if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.property && arg.action=="reload_page" && window.session_id!=arg.session_id) {
+            window.location.reload()
+        }
+    })
+
+
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
     if (!working_day.cashier_shift?.name) {
         const dialogRef = dialog.open(OpenShift, {
@@ -300,7 +294,7 @@ function onAssignRoom(reservation_stay_name, name) {
 }
 
 function showReservationStayDetail(name) {
-
+    if (!window.reservation_stay){
     const dialogRef = dialog.open(ReservationStayDetail, {
         data: {
             name: name
@@ -327,6 +321,10 @@ function showReservationStayDetail(name) {
             }
         }
     });
+}
+else{
+    window.open('/frontdesk/stay-detail/' + name, '_blank')
+}
 }
 
 

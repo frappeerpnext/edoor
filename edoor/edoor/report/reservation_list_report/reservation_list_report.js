@@ -67,7 +67,6 @@ frappe.query_reports["Reservation List Report"] = {
 			get_data: function(txt) {
 				return frappe.db.get_link_options('Reservation Status', txt);
 			},
-	
 			
 		},
 		{

@@ -144,11 +144,8 @@ function onSave() {
                 reservation.reservation = r.message
                 updateDisplayNote()
             }
-            
-            window.socket.emit("RefreshReservationDetail", reservation_stay.reservationStay.reservation);
-            
-            window.socket.emit("RefresheDoorDashboard", reservation_stay.reservationStay.property);
-            
+            window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", reservation_stay.reservationStay.reservation)
         }).catch((err) => {
             saving.value = false
         })

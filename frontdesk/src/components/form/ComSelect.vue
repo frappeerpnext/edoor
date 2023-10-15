@@ -1,5 +1,6 @@
 <template>
     <div :class="class">
+        <tippy :content="tooltip || doctype">
         <MultiSelect class="w-full" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
             @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
@@ -7,6 +8,7 @@
             :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
             :placeholder="placeholder">
         </Dropdown>
+    </tippy>
     </div>
 </template>
 <script setup>
@@ -62,7 +64,8 @@ const props = defineProps({
         default: false
     },
     maxSelectLabel: Number,
-    class: String
+    class: String,
+    tooltip:String
 })
 const toast = useToast();
 const frappe = inject('$frappe')

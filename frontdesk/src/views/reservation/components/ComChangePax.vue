@@ -33,11 +33,10 @@ const onSave = () => {
         rs.reservationStay.adult = doc.adult
         rs.reservationStay.child = doc.child
         isLoading.value = false;
-        window.socket.emit("RefreshReservationDetail", doc.reservation);
-
-        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-        window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-        window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
+        window.socket.emit("ReservationList", { property:window.property_name})
+        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
         emit("onClose")
     }).catch((ex) => {
         isLoading.value = false;

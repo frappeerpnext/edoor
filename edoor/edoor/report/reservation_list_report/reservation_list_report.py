@@ -63,6 +63,8 @@ def get_summary(filters,data):
 		]
 
 def get_chart(filters,data):
+	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+	 
 	chart_series = filters.get("chart_series")
 	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
 		return None
@@ -80,12 +82,21 @@ def get_chart(filters,data):
 	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
 	for d in chart_series:
 		field = [x for x in report_fields if x["label"] == d][0]
- 
+	 
+
 		dataset_values = []
 		for g in group_data: 
+
+			amount = sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+			if field["fieldtype"]  =="Currency":
+				amount = round(amount,int(currency_precision))
+
+
 			dataset_values.append(
-				sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+				amount
 			)
+
+
 
 		dataset.append({'name':field["label"],'values':dataset_values})
 		colors.append(field["chart_color"])
@@ -97,9 +108,9 @@ def get_chart(filters,data):
 			'datasets':dataset
 		},
 		"type": filters.chart_type,
-		"lineOptions": {
-			"regionFill": 1,
-		},
+		# "lineOptions": {
+		# 	"regionFill": 1,
+		# },
 		'valuesOverPoints':1,
 		"axisOptions": {"xIsSeries": 1},
 		
@@ -313,19 +324,19 @@ def get_group_by_column(filters):
 def group_by_columns():
 	
 	return [
-		{"fieldname":"group_by","data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
-		{"fieldname":"group_by","data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
-		{"fieldname":"group_by","data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
-		{"fieldname":"group_by","data_field":"guest", "label":"Guest" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
-		{"fieldname":"group_by","data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
+		{"data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
+		{"data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
+		{"data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
+		{"data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
+		{"data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
+		{"data_field":"guest", "label":"Guest" ,"fieldtype":"Data" },
+		{"data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
+		{"data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
+		{"data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
+		{"data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
+		{"data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
+		{"data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
+		{"data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
 	]
 
 def get_field(filters):
@@ -334,30 +345,30 @@ def get_field(filters):
 
 def get_report_field():
 	return [
-		{"fieldname":"view_chart_by","data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
-		{"fieldname":"view_chart_by","data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
-		{"fieldname":"view_chart_by","data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
-		{"fieldname":"view_chart_by","data_field":"guest_name", "label":"Guest" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
-		{"fieldname":"view_chart_by","data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
+		{"data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
+		{"data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
+		{"data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
+		{"data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
+		{"data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
+		{"data_field":"guest_name", "label":"Guest" ,"fieldtype":"Data" },
+		{"data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
+		{"data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
+		{"data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
+		{"data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
+		{"data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
+		{"data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
+		{"data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
 	]
 
 	
 
 def get_chart_series():
 	return [
-		{"fieldname":"chart_series","data_field":"total_debit","label":"Total Debit","short_label":"Debit", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"center","chart_color":"#dc9819","sql_expression":"SUM(rst.total_debit)"},
-		{"fieldname":"chart_series","data_field":"total_credit","label":"Total Credit", "short_label":"Credit", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"right","chart_color":"#1987dc","sql_expression":"SUM(rst.total_credit)"},
-		{"fieldname":"chart_series","data_field":"balance","label":"Balance", "short_label":"Balance", "fieldtype":"Currency","indicator":"Grey","precision":2, "align":"right","chart_color":"#fd4e8a","sql_expression":"SUM(rst.balance)"},
-		{"fieldname":"chart_series","data_field":"adult","label":"Adult", "short_label":"Adult", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#d7e528","sql_expression":"SUM(rst.adult)"},
-		{"fieldname":"chart_series","data_field":"child","label":"Child", "short_label":"Child", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.child)"},
-		{"fieldname":"chart_series","data_field":"pax","label":"Pax", "short_label":"Pax", "fieldtype":"Integer","indicator":"Grey","precision":2, "align":"right","chart_color":"#df7b5c","sql_expression":"SUM(rst.pax)"},
-		{"fieldname":"chart_series","data_field":"room_nights","label":"Room Nights", "short_label":"Room Nights", "fieldtype":"Integer","indicator":"Red","precision":2, "align":"right","chart_color":"#3ce18e","sql_expression":"SUM(rst.room_nights)"}
+		{"data_field":"total_debit","label":"Total Debit","short_label":"Debit", "fieldtype":"Currency", "align":"center","chart_color":"#dc9819"},
+		{"data_field":"total_credit","label":"Total Credit", "short_label":"Credit", "fieldtype":"Currency", "align":"right","chart_color":"#1987dc"},
+		{"data_field":"balance","label":"Balance", "short_label":"Balance", "fieldtype":"Currency", "align":"right","chart_color":"#fd4e8a"},
+		{"data_field":"adult","label":"Adult", "short_label":"Adult", "fieldtype":"Integer", "align":"right","chart_color":"#d7e528"},
+		{"data_field":"child","label":"Child", "short_label":"Child", "fieldtype":"Integer", "align":"right","chart_color":"#df7b5c"},
+		{"data_field":"pax","label":"Pax", "short_label":"Pax", "fieldtype":"Integer", "align":"right","chart_color":"#df7b5c"},
+		{"data_field":"room_nights","label":"Room Nights", "short_label":"Room Nights", "fieldtype":"Integer", "align":"right","chart_color":"#3ce18e"}
 	]

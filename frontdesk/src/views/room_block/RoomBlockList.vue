@@ -159,9 +159,7 @@ window.socket.on("RefreshData", (arg) => {
         loadData()
     }
 })
-onUnmounted(() => {  
-    window.socket.off("RefreshData");
-})
+
 const columns = ref([
   { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
   { fieldname: 'block_date', label: 'Block Date', header_class: "text-center", fieldtype: "Date", default: true },

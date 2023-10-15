@@ -1,5 +1,4 @@
 <template>
-
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
         <div class="text-center border-1 p-2 border-round-lg ">{{event.title}}</div>
         <table class="tip_description_stay_table m-1 pt-3">
@@ -16,7 +15,7 @@
             <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>{{event.extendedProps?.business_source || ''}}</td></tr>
            <template v-if="can_view_rate" >
             <tr  class="table-rs-de"><td>ADR</td><td class="px-2">:</td><td>
-                <CurrencyFormat :value="event.extendedProps?.adr"/> 
+                <CurrencyFormat :value="event.extendedProps?.reservation_stay_adr"/> 
             </td></tr>
             <tr class="table-rs-de"><td>Total Room Rate</td><td class="px-2">:</td><td>
                 <CurrencyFormat :value="event.extendedProps?.total_room_rate"/> 
@@ -96,6 +95,17 @@
                 </tbody>
             </table>
     </div>
+    <div v-else-if="event.extendedProps.type == 'room_inventory_room_type_summary'">
+ 
+            <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
+                <tbody>
+                    <tr class="table-rs-de" ><td>Room Type</td><td class="px-3">:</td><td> {{event.extendedProps.room_type}}</td></tr>      
+                    <tr class="table-rs-de" ><td>Date</td><td class="px-3">:</td><td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td></tr>      
+                    <tr class="table-rs-de" ><td>Vacant Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
+                    <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
+              </tbody>
+            </table>
+    </div>
 </template>
 <script setup>
     import {computed} from "vue"
@@ -107,6 +117,8 @@
 
     const occupancy =  computed(()=>{
         const d =props.event.extendedProps
+        
+       
         return (((d.total_room_sold || 0)/( (d.total_room || 0) - (window.setting.calculate_room_occupancy_include_room_block==1?0:(d.room_block || 0)))) *100).toFixed(2)
              
     })

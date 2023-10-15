@@ -1,6 +1,6 @@
 <template lang="">
     <ComReservationStayPanel title="Reservation Room List">
-        <template #content> 
+        <template #content>
             <ComPlaceholder :isNotEmpty="true">
                 <div class="flex justify-end">
                     <div>
@@ -30,11 +30,11 @@
                                 </div>                               
                             </template>
                         </Column>
-                        <Column header="Room night" headerClass="text-center" bodyClass="text-center">
+                        <Column header="Nights" headerClass="text-center" bodyClass="text-center">
                             <template #body="slotProps">
                               <div>
                                 <span>
-                                    {{rs.reservation.room_nights }}
+                                    {{moment(slotProps.data.departure_date).diff(moment(slotProps.data.arrival_date), 'days')}}
                                 </span>
                               </div>                              
                             </template>
@@ -151,7 +151,7 @@ import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const dialog = useDialog()
-
+const moment = inject('$moment')
 // const name = ref("")
  
 function onViewCustomerDetail(name) {

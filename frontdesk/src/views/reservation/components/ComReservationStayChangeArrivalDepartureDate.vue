@@ -73,15 +73,14 @@ function onSave(){
         if(r.message){
             loading.value = false
             rs.getReservationDetail(r.message.name)
-            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" })
-            window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation);
-            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
+            window.socket.emit("Dashboard",window.property_name)
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             onClose()
-        }
-
-        window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property);
-    
+        }    
     }).catch((err)=>{
         loading.value = false
     })

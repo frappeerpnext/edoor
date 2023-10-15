@@ -34,10 +34,17 @@
             <td class="pr-2 select-room-type-style"  >
 
                 <Dropdown class="w-full" v-model="d.new_room_type_id" :options="get_room_types(d)" optionValue="name"
-                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" />
+                    @change="onSelectRoomType(d)" optionLabel="room_type" placeholder="Select Room Type" >
+                 <template #option="slotProps">
+                                        <div class="flex align-items-center">
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
 
                 <Message v-if="d.room_type_id != d.new_room_type_id">
-                    <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0" />
+                    <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0"  @input="onUpdateRate(d)" />
+ 
                     <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
                         regenerate rate</label>
                 </Message>
@@ -80,10 +87,33 @@ const data = ref([])
 const moment = inject("$moment")
 const reservation = ref({})
 const room_data = ref([])
-const socket = inject("$socket")
+
+
+function onUpdateRate(d) {
+    if (d.is_generate_rate == 1 && d.room_type_id != d.new_room_type_id) {
+      
+        const data = room_data.value.filter(r => r.start_date == d.start_date)
+ 
+        if (data.length > 0) {
+          
+            if (data[0].room_types.length > 0) {
+
+                
+                const room_type = data[0].room_types.find(r => r.name == d.new_room_type_id)
+
+                if (room_type) {
+                    d.rate = room_type.rate.rate
+                }
+            }
+        }
+    } else {
+        d.rate = d.old_rate
+    }
+
+}
 
 function get_room_types(d) {
-
+   
     return room_data.value.find(r => r.start_date == d.start_date && r.end_date == d.end_date).room_types;//.filter(r=>r.total_vacant_room>0)
 }
 
@@ -117,6 +147,8 @@ const onSelectRoomType = (d) => {
     } else {
         d.is_generate_rate = false
     }
+
+    onUpdateRate(d)
 }
 
 
@@ -127,8 +159,13 @@ function onSave() {
         reservation:reservation.value.name,
         reservation_stays: data.value.filter(r=>r.room_id)
     }).then((result) => {
-        socket.emit("RefresheDoorDashboard", reservation.value.property);
-        socket.emit("RefreshReservationDetail", reservation.value.name);
+        window.socket.emit("Dashboard", window.property_name);
+        window.socket.emit("Frontdesk", window.property_name);
+        
+        window.socket.emit("ReservationDetail", reservation.value.name);
+        window.socket.emit("ReservationList", { property:window.property_name})
+
+
         dialogRef.value.close("open_reservation_detail")
         loading.value = false
     }).catch((err) => {
@@ -149,7 +186,8 @@ onMounted(() => {
             data.value = result.message.data
             room_data.value = result.message.rooms
             data.value.forEach(r => {
-                r.room_id = null
+                r.room_id = null,
+                r.old_rate = r.rate
             });
 
 

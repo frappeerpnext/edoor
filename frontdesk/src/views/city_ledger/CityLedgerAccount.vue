@@ -146,13 +146,7 @@ const filter = ref({})
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-window.socket.on("RefresheDoorDashboard", (arg) => {
-    if (arg == property.name) {
-        setTimeout(function () {
-            loadData()
-        }, 3000)
-    }
-})
+
 
 const columns = ref([
     { fieldname: 'name', label: 'City Ledger Code', header_class: 'text-center', fieldtype: "Link", post_message_action: "view_city_ledger_detail", default: true },
@@ -282,6 +276,16 @@ function debouncer(fn, delay) {
 }
 
 onMounted(() => {
+    //socket reload
+
+    window.socket.on("CityLedgerAccount", (arg) => {
+        if (arg == property.name) {
+            setTimeout(function () {
+                loadData()
+            }, 3000)
+        }
+    })
+
     let state = localStorage.getItem("page_state_city_ledger")
     if (state) {
         state = JSON.parse(state)
@@ -347,7 +351,7 @@ function onAddCityLedgerAccount() {
 }
 
 onUnmounted(() => {
-    window.socket.off("RefresheDoorDashboard");
+    window.socket.off("CityLedgerAccount");
 })
 
 const showAdvanceSearch = ref()

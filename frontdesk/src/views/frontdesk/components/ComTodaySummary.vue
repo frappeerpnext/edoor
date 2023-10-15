@@ -1,10 +1,10 @@
 <template>
     <div>
-        <ComChartDoughnut v-if="!loading" :total_room="data?.total_room" :data="chartData" :showPercentageInteger="true" show-percentage="Occupied" class="doughnut__chart_ds"/>
+        <ComChartDoughnut v-if="!loading" :percentage="data?.occupancy" :data="chartData"  show-percentage="Occupied" class="doughnut__chart_ds"/>
         <Skeleton v-else shape="circle" size="18rem"></Skeleton>
     </div>
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
-        
+ 
         <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
         <tippy :content="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in ' + ' and ' +  ' Total Arrival ' + (data?.arrival|| 0)  ">
         <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival" :value="((data.arrival || 0) -(data.arrival_remaining || 0))">
@@ -17,7 +17,9 @@
         </ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
-        <ComTodaySummarySep dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
+    <tippy :content="`Today you have ${data?.unassign_room} unassign room reservation and total all unassign room is ${data?.total_unassign_room}`">
+        <ComTodaySummarySep dialogKey="unassign_room"  title="Unassign Room (Today/All)">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
+    </tippy>
         <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) and ' + data?.git_stay_arrival + ' Stay(s)'">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + '/' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
         </tippy>
@@ -30,6 +32,7 @@
 <script setup>
 import { ref, getApi, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
+ 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const props = defineProps({date:""})
 const gv = inject("$gv")
@@ -74,7 +77,5 @@ function loadData(date,show_loading = true){
         loading.value = false
     })
 }
-onUnmounted(() => {  
-    window.socket.off("RefreshData");
-})
+
 </script>

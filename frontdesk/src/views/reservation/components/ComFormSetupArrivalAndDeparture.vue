@@ -118,9 +118,10 @@ function onSave() {
                 rs.reservationStay = JSON.parse(JSON.stringify(doc.message))
             }
             dialogRef.value.close("refresh");
-            window.socket.emit("RefreshReservationDetail", stay.value.reservation);
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
-            window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
+            window.socket.emit("Dashboard", window.property_name)
+            // window.socket.emit("RefreshReservationDetail", stay.value.reservation);
+            // window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
+            // window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
             console.log(setting.property.name)
         })
         .catch((error) => {

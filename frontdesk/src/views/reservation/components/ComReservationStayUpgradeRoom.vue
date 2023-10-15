@@ -58,6 +58,7 @@
             </div>
             </template>
         </ComReservationStayPanel>
+     
         <ComReservationStayPanel title="New Stay Room">
             <template #content> 
             <div class="n__re-custom">
@@ -82,10 +83,7 @@
                             <th v-if="can_view_rate" class="text-right px-2">
                                 <label>Rate<span class="text-red-500">*</span></label>
                             </th>
-                            <th v-if="can_view_rate" class="text-right ps-2">
-                                <label>Amount</label>
-                            </th>
-
+                             
                         </tr>
                     </thead>
                     <tbody>
@@ -96,44 +94,50 @@
                             <td class="px-2 w-14rem">
                                 <Calendar    showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
+
                             <td class="px-2 w-16rem"> 
-                                <ComSelectRoomTypeAvailability v-model="newRoom.room_type_id" @onSelected="onSelectRoomType" :businessSource="rs.reservationStay.business_source" :rate-type="rs.reservationStay.rate_type" :start-date="newRoom.start_date" :end-date="newRoom.end_date" />
+                                
+                                <Dropdown v-model="newRoom.room_type_id" :options="room_types" optionValue="name"
+                                @change="onSelectRoomType" optionLabel="room_type" placeholder="Select Room Type"
+                                class="w-full"  >
+
+                                <template #option="slotProps">
+                                    <div class="flex align-items-center">
+                                 <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                  </div>
+                                </template>
+                            </Dropdown>
+
                             </td>
+                            
                             <td class="px-2 w-8rem">
-                                <ComSelectRoomAvailability showClear v-model="newRoom.room_id" :except="lastStay.room_id" :start-date="newRoom.start_date" :end-date="newRoom.end_date" :roomType="newRoom.room_type_id" />
+                                <Dropdown v-model="newRoom.room_id"
+                                    :options="rooms.filter(r=>r.room_type_id==newRoom.room_type_id)"
+                                    optionValue="name"   optionLabel="room_number"
+                                    placeholder="Select Room" showClear filter class="w-full" />
+
+                              
                             </td>
                             <td class="text-center px-2 w-5rem ">
                                 <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/> 
                             </td>
                             <td v-if="can_view_rate" class="text-right px-2 w-10rem">
-                                <div class="box-input-detail"> 
-                                    <span class="white-space-nowrap">
-                                        <span @click="onOpenChangeRate($event)" class="text-right w-full color-purple-edoor text-md font-italic ">
-                                            <span class="link_line_action flex justify-between">
-                                                <div>
-                                                    <span class="text-sm" v-if="newRoom?.is_manual_rate"> (Manual) </span>
-                                                    <span class="text-sm" v-else>(Plan)</span>
-                                                </div>
-                                                <CurrencyFormat :value="(newRoom.rate || 0)" />
-                                            </span>
-                                        </span>
-                                    </span>
-                                </div> 
+                                <CurrencyFormat :value="(newRoom.rate || 0)" />
                             </td>
-                            <td v-if="can_view_rate" class="text-right ps-2 w-10rem">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex justify-end">
-                                    <CurrencyFormat :value="(newRoom.room_nights || 0) * (newRoom.rate || 0)" />
-                                </span>
-                            </td>
+                            
                         </tr>
                     </tbody>
                 </table>
+
+                <Message v-if="newRoom.room_type_id != newRoom.old_room_type_id">
+                    <Checkbox v-model="newRoom.is_override_rate"  @input="onUpdateRate"  :binary="true"     inputId="generate_rate" />
+                    <label for="generate_rate" class="mr-3 cursor-pointer"  >Room type of this reservation stay is changed. Do you want to update rate?</label>
+                </Message>
+
             </div>
             </template>
         </ComReservationStayPanel>
-        <OverlayPanel ref="op">
-            <ComReservationStayChangeRate v-model="rate" @onClose="onCloseRate" @onUseRatePlan="onUseRatePlan" @onChangeRate="onChangeRate"/>
-        </OverlayPanel>
+        
 
     </div>
     
@@ -142,10 +146,9 @@
 <script setup>
     import {inject,ref, getApi, onMounted,postApi,watch} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
-    import ComReservationStayChangeRate from './ComReservationStayChangeRate.vue'
-    import ComSelectRoomAvailability from './form/ComSelectRoomAvailability.vue'
+ 
+    
     import Enumerable from 'linq'
-    const property = JSON.parse(localStorage.getItem("edoor_property"))
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
@@ -153,13 +156,14 @@
     const lastStay = ref(JSON.parse(JSON.stringify(Enumerable.from(rs.reservationStay.stays).orderByDescending("$.end_date").toArray()[0])))
     lastStay.value.end_date = new Date(lastStay.value.end_date)
     const lastStayMaxEndDate = new Date(lastStay.value.end_date)
-    // const room_types = ref([])
-    // const rooms = ref([])
     const working_day = ref({})
-    const op = ref()
+ 
     const loading = ref(false)
-    // const selectedStay = ref({})
-    const rate = ref(0)
+ 
+    const room_types = ref([])
+    const rooms = ref([])
+    const can_view_rate = window.can_view_rate
+
     const newRoom = ref({
         room_nights: 1,
         end_date: '',
@@ -170,10 +174,61 @@
     })
 
     watch(lastStay.value,(newValue)=>{
+       
         onUpdateDateNewRoom(newValue)
+        getRoomType()
+        getRoom()
     })
  
+
+    
+    
+    const getRoomType = () => {
+        getApi("reservation.check_room_type_availability", {
+            property: rs.reservationStay.property,
+            start_date: moment(newRoom.value.start_date).format("yyyy-MM-DD"),
+            end_date: moment(newRoom.value.end_date).format("yyyy-MM-DD"),
+            rate_type: rs.reservationStay.rate_type,
+            business_source: rs.reservationStay.business_source
+        })
+            .then((result) => {
+                
+                room_types.value = result.message;
+             
+              
+            })
+        }
+
+        function getRoom(){
+  
+  getApi("reservation.check_room_availability", {
+          property: window.property_name,
+          start_date: newRoom.value.start_date, 
+          end_date:  newRoom.value.end_date
+      })
+          .then((result) => {
+              
+              rooms.value = result.message;
+              
+          })
+}
+
+        function onUpdateRate(v){   
+        if(v){
+        
+            if (newRoom.value.room_type_id!=newRoom.value.old_room_type_id) {
+                const rt = room_types.value.find(r=>r.name ==newRoom.value.room_type_id)
+
+                newRoom.value.rate = rt.rate.rate
+
+
+            }
+        }else {
+            newRoom.value.rate = newRoom.value.old_rate
+        }
+        }
  
+
     function onUpdateDateNewRoom(newValue){
         newRoom.value.start_date = moment(newValue.end_date).toDate() 
         if(!newRoom.value.end_date || moment(newRoom.value.start_date).isSame(newRoom.value.end_date) || moment(newRoom.value.start_date).isAfter(newRoom.value.end_date)){
@@ -181,6 +236,11 @@
         }
         
         newRoom.value.room_nights = moment(newRoom.value.end_date).diff(moment(newRoom.value.start_date), 'days')
+        newRoom.value.old_room_type_id = newValue.room_type_id
+        newRoom.value.rate = newValue.input_rate
+        newRoom.value.old_rate = newValue.input_rate
+        newRoom.value.room_id = null
+        newRoom.is_manual_rate = newValue.is_manual_rate
     }
     function onNight(newValue){
         newRoom.value.end_date = moment(newRoom.value.start_date).add(newValue,'days').toDate()
@@ -191,35 +251,39 @@
         newRoom.value.room_nights = moment(newValue).diff(moment(newRoom.value.start_date),'days')
     }
 
-    const onUseRatePlan = () => {
-        newRoom.value.is_manual_rate = false;
-        newRoom.value.rate = newRoom.value.original_rate || 0
-        op.value.hide();
-    }
+    
     const onClose = () =>{
         dialogRef.value.close();
     }
-    function onCloseRate(){
-        op.value.hide()
-    }
-    const onChangeRate = () => {
-        newRoom.value.rate = rate.value
-        newRoom.value.is_manual_rate = true
-        op.value.hide();
-    }
+ 
+ 
+  
 
-    const onOpenChangeRate = (event) => {
-        rate.value = JSON.parse(JSON.stringify(newRoom.value)).rate
-        op.value.toggle(event);
-    }
+    const onSelectRoomType = (room_type) => {
 
-    const onSelectRoomType = (r) => {
-        if (!newRoom.value.is_manual_rate){
-            newRoom.value.rate = r.rate.rate || 0
-            newRoom.value.original_rate = r.rate.rate || 0
-            rate.value = r.rate.rate || 0
-        }
-    }
+            const rt = room_types.value.find(r=>r.name == room_type.value)
+
+            newRoom.value.room_id = null
+            newRoom.value.room_type = rt.room_type
+
+            if(newRoom.value.is_override_rate){
+                if (newRoom.value.room_type_id!=newRoom.value.old_room_type_id) {
+                    const rt = room_types.value.find(r=>r.name ==newRoom.value.room_type_id)
+                    
+                    
+                    newRoom.value.rate = rt.rate .rate
+
+                }else {
+                    newRoom.value.rate = newRoom.value.old_rate
+                }
+            }else {
+                newRoom.value.rate = newRoom.value.old_rate
+            } 
+
+
+
+            }
+
     function onSave(){
         loading.value = true
         if(!newRoom.value.room_type_id){
@@ -242,18 +306,12 @@
         })
         data.reservationStay.stays.push(newData)
         
-        postApi('reservation.upgrade_room',{doc: data.reservationStay}).then((doc) => { 
+        postApi('reservation.upgrade_room',{doc: data.reservationStay,regenerate_rate:newRoom.value.is_override_rate }).then((doc) => { 
             loading.value = false;
-            
-            
-            window.socket.emit("RefreshReservationDetail", rs.reservationStay.reservation)
-
-            window.socket.emit("RefresheDoorDashboard", rs.reservationStay.property)
-
-            window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal"})
-
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"})
-
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             dialogRef.value.close(rs.reservationStay.name);
             
         }).catch((ex) => {
@@ -264,10 +322,14 @@
     }
     onMounted(() => {
         getApi("frontdesk.get_working_day", {
-            property: property.name
+            property: window.property_name
         }).then((result) => {
             working_day.value = (result.message) 
             onUpdateDateNewRoom(lastStay.value)
+
+            getRoomType()
+            getRoom() 
+
         })
 });
 </script>

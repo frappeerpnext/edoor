@@ -23,9 +23,6 @@
             </div>
     
         </template>
- 
-
-
         <div class="relative">
             <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>
             <span class="pl-5">I am verify that all information is correct</span>
@@ -41,6 +38,7 @@
 </template>
 <script setup>
 import { ref, inject, onMounted } from '@/plugin';
+import { onUnmounted } from 'vue';
 const dialogRef = inject("dialogRef");
 const rs = inject("$reservation_stay")
 const isConfirm = ref(false)
@@ -61,4 +59,7 @@ onMounted(() => {
         rs.getRoomRate(rs.reservationStay.name);
     }
 });
+onUnmounted(()=>{
+    window
+})
 </script>

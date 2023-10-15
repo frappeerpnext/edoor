@@ -5,7 +5,7 @@
 from edoor.api.reservation import get_room_rate
 import frappe
 from frappe.model.document import Document
-from edoor.api.utils import  update_reservation_stay,update_reservation,get_base_rate
+from edoor.api.utils import get_base_rate
 import json
 class ReservationRoomRate(Document):
 	def validate(self):

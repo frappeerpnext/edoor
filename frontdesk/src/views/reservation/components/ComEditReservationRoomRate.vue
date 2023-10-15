@@ -230,6 +230,7 @@
             <hr />
 
         </div>
+        
     </ComDialogContent>
 </template>
 <script setup>
@@ -479,8 +480,9 @@ function onSave() {
     }, "Edit room rate successfully")
         .then((doc) => {
             isSaving.value = false
-            window.socket.emit("RefreshData", { property: JSON.parse(localStorage.getItem("edoor_property")).name, action: "refresh_iframe_in_modal" })
-            window.socket.emit("RefreshData", { reservation_stay: rs.reservationStay.name, action: "refresh_reservation_stay" })
+            // window.socket.emit("RefreshData", { property: JSON.parse(localStorage.getItem("edoor_property")).name, action: "refresh_iframe_in_modal" })
+            // window.socket.emit("RefreshData", { reservation_stay: rs.reservationStay.name, action: "refresh_reservation_stay" })
+            window.socket.emit("ReservationList", { property:window.property_name})
 
             dialogRef.value.close(doc.message)
         })

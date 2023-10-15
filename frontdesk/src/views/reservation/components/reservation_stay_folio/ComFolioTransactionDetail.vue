@@ -126,13 +126,13 @@
             <tbody>
               <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
               <ComStayInfoNoBox label="Ref. No" isSlot :fill="false"
-                :value="doc?.reference_number ? doc?.reference_number : ''">
-                <Button v-if="!doc?.reference_number && doc?.is_auto_post != 1" class="p-0 link_line_action1"
+               >
+                <Button  class="p-0 link_line_action1"
                   @click="changeRef($event)" link>
                   <span v-if="doc?.reference_number">{{ doc?.reference_number }}</span>
                   <span v-else>Add Ref. No</span>
                 </Button>
-                <span v-else-if="!doc?.reference_number">N/A</span>
+                
               </ComStayInfoNoBox>
               <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
               <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')" />
@@ -203,7 +203,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { ref, getApi, inject, onMounted, updateDoc, useDialog, getDoc, onUnmounted } from "@/plugin"
+import { ref, getApi, inject, onMounted, updateDoc, useDialog, postApi } from "@/plugin"
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioDetailActionMoreOptionsButton from '@/views/reservation/components/ComReservationStayFolioDetailActionMoreOptionsButton.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
@@ -234,7 +234,7 @@ const onClose = () => {
   dialogRef.value.close();
 }
 
-window.socket.on("RefreshData", (arg) => {
+window.socket.on("ComFolioTransactionDetail", (arg) => {
   if (arg.property == property.name && arg.action == "refresh_folio_transaction_detail" && arg.name == dialogRef.value.data.folio_transaction_number) {
     alert('ddd')
   }
@@ -253,10 +253,15 @@ const onSaveReferenceNumber = () => {
   saving.value = true
   const data = JSON.parse(JSON.stringify(doc.value))
   data.reference_number = refNum.value
-  updateDoc('Folio Transaction', doc.value.name, data).then((r) => {
+  postApi('utils.update_doctype_data', {
+    data: {
+      doctype: "Folio Transaction",
+      name: data.name,
+      reference_number: data.reference_number || ""
+    }
+  }).then((r) => {
+    doc.value.reference_number = r.message.reference_number
     saving.value = false
-    doc.value = r
-    window.socket.emit("RefreshData", { property: property.name, action: "refresh_folio_transaction_detail", name: dialogRef.value.data.folio_transaction_number })
     onCloseRefNumber()
   }).catch(() => {
     saving.value = false
@@ -284,13 +289,18 @@ const onCloseNote = ($event) => {
 
 function onSaveNote() {
   saving.value = true
-  const data = JSON.parse(JSON.stringify(doc.value))
-  data.note = note.value
-  updateDoc('Folio Transaction', doc.value.name, data).then((r) => {
-    saving.value = false
-    doc.value = r
-    window.socket.emit("RefreshData", { property: property.name, action: "refresh_folio_transaction_detail", name: dialogRef.value.data.folio_transaction_number })
+  
+  postApi('utils.update_doctype_data',{data:{
+    "doctype":"Folio Transaction",
+    name:doc.value.name,
+    note:note.value
+  }}).then((r) => {
     onCloseNote()
+    saving.value = false
+    doc.value.note = r.message.note
+    doc.value.modified = r.message,modified
+    doc.value.modified_by = r.message.modified_by
+
   }).catch(() => {
     saving.value = false
   })
@@ -362,9 +372,7 @@ function onPrintFolioTransaction() {
   })
 }
 
-onUnmounted(() => {
-  window.socket.off("RefreshData")
-})
+
 
 </script>
 <style scoped>

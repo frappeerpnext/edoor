@@ -12,9 +12,7 @@
                             <th class="text-left pe-2 w-12rem">
                                 <label>Stay Date</label>
                             </th>
-                            <!-- <th class="text-left px-2 w-14rem">
-                                <label>End Date</label>
-                            </th> --> 
+
                             <th class="text-left px-2">
                                 <label>Rate Type</label>
                             </th>
@@ -47,9 +45,18 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{ selectedStay.rate_type }}</span>
                             </td>
                             <td class="px-2 select-room-type-style">  
-                                <Dropdown v-model="selectedStay.room_type_id" :options="room_types" optionValue="name"
-                                    @change="onSelectRoomType" optionLabel="room_type" placeholder="Select Room Type"
-                                    class="w-full" />
+                            <Dropdown v-model="selectedStay.room_type_id" :options="room_types" optionValue="name"
+                                @change="onSelectRoomType" optionLabel="room_type" placeholder="Select Room Type"
+                                class="w-full"  >
+
+                                <template #option="slotProps">
+                                    <div class="flex align-items-center">
+                                 <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                  </div>
+                                </template>
+                            </Dropdown>
+                                
+                                
                             </td>
                             <td class="px-2 select-room-number-style">
                                 <Dropdown v-model="selectedStay.room_id"
@@ -84,20 +91,16 @@
 <script setup>
     import {inject,ref, getApi, onMounted,postApi,getDoc} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
-    // import ComReservationStayChangeRate from './ComReservationStayChangeRate.vue'
     const property = JSON.parse(localStorage.getItem("edoor_property"))
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
     const dialogRef = inject('dialogRef'); 
     const working_day = ref({})
-    // const op = ref()
     const loading = ref(false)
- 
     const selectedStay = ref({})
     const rooms = ref([])
     const room_types = ref([])
-    // const rate = ref(0)
 
  
     const onClose = (r) =>{ 
@@ -128,6 +131,7 @@
             business_source: selectedStay.value.business_source
         })
             .then((result) => {
+                
                 room_types.value = result.message;
              
               
@@ -159,12 +163,7 @@
 
 
     }
- 
-
-
- 
- 
-
+    
     function onSave(){ 
         if(!selectedStay.value.room_id){
             gv.toast('warn','Please select  room number.')
@@ -172,20 +171,18 @@
         }
         loading.value = true
         selectedStay.value.reservation_stay = dialogRef.value.options.data.reservation_stay_name ? dialogRef.value.options.data.reservation_stay_name : rs.reservationStay.name, 
-        postApi("reservation.assign_room",{data: selectedStay.value}).then((r)=>{
+        postApi("reservation.assign_room",{data: selectedStay.value})
+        .then((r)=>{
             loading.value = false
-            
-            window.socket.emit("RefreshReservationDetail", r.message.reservation)
-            
-            window.socket.emit("RefresheDoorDashboard", property.name)
-           
-            window.socket.emit("RefreshData", {property:property.name,action:"refresh_iframe_in_modal"})
-            window.socket.emit("RefreshData", {property:property.name,action:"refresh_summary"})
-
+            window.socket.emit("ComIframeModal", window.property_name)
+            window.socket.emit("Dashboard", window.property_name)
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             onClose(r)
         }).catch((err)=>{
             loading.value = false
-            console.log(err)
         })
     }
 
@@ -197,6 +194,7 @@
                 end_date:  selectedStay.value.end_date
             })
                 .then((result) => {
+                    
                     rooms.value = result.message;
                     
                 })

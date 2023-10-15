@@ -73,7 +73,7 @@ def get_report_data(folio_transaction_amount,filters):
 	city_ledger_codes = set([d["transaction_number"] for d in folio_transaction_amount])
 	filters.city_ledger_codes = city_ledger_codes or []
 	if filters.city_ledger_codes:
-
+		filters.keyword = "%" + filters.keyword + "%"
 		sql="""select 
 			name,
 			modified,
@@ -84,12 +84,12 @@ def get_report_data(folio_transaction_amount,filters):
 			balance as balance
 		from `tabCity Ledger` t
 		where
-				concat(name,' ', city_ledger_name) like '%{0}%' and 
+				concat(name,' ', city_ledger_name) like %(keyword)s and 
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(city_ledger_type,'') = if(%(city_ledger_type)s='',ifnull(city_ledger_type,''),%(city_ledger_type)s)  and 
 				name in %(city_ledger_codes)s  and 
 				property=%(property)s
-		""".format(filters.keyword or '')
+		"""
 		
 		data = frappe.db.sql(sql,filters,as_dict=1)
 		folio_opeing_balance = get_folio_opening_balance(filters)

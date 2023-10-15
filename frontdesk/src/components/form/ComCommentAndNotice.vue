@@ -73,7 +73,6 @@
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc } from '@/plugin'
 import Enumerable from 'linq'
-import ComReservationStayPanel from '../../views/reservation/components/ComReservationStayPanel.vue';
 const moment = inject("$moment");
 const gv = inject("$gv");
 const props = defineProps({
@@ -227,8 +226,7 @@ window.socket.on("RefreshData", (arg) => {
 })
 
 function onLoadSocket(){
-    window.socket.emit("RefreshData", { property: property.name, action: "refresh_comment_notice", name: props.docname })
-    window.socket.emit("RefresheDoorDashboard" , property.name)
+    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
 }
 
 </script>

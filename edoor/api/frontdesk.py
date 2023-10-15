@@ -8,6 +8,35 @@ from datetime import datetime
 from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
+from frappe.desk.search import search_link
+
+
+@frappe.whitelist(methods="POST")
+def search(doctypes=None, txt="" ,filters=None):
+    search_tables = frappe.get_doc("eDoor Setting").search_table
+    results = []
+    for t in search_tables:
+        if t.table_name in doctypes:
+            search_fields = ["name"]
+            for k in t.search_field.split(","):
+                search_fields.append("ifnull({}, ' ')".format(k))
+            if len(search_fields)>0:
+                search_fields = ", ' ',".join(search_fields)
+            
+            return_fields = "name,modified"
+            if t.return_fields:
+                return_fields = return_fields + "," + t.return_fields
+            
+
+            sql = "select '{0}' as doctype, {1} from `tab{0}` where concat({2}) like %(txt)s order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result)
+    
+            
+            data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
+            results = results + data
+            results.sort(key=lambda x: x.modified, reverse=True)
+    return results
+
+
 
 @frappe.whitelist(allow_guest=True)
 def test_socket():
@@ -50,13 +79,21 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     unassign_room = 0
     
     #check if past date 
-    sql = ""
-    if frappe.utils.getdate(date)>=frappe.utils.getdate(working_date):
-        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabTemp Room Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+    sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE is_departure= 0 and  `date` = '{0}' AND property = '{1}' and type='Reservation' and room_type_id=if('{2}'='',room_type_id,'{2}');".format(date,property, room_type_id or '')
+
+    #get all totoal unassign room
+
+    total_unassign_room = frappe.db.sql("select count( distinct reservation_stay) as total from `tabTemp Room Occupy`  WHERE  is_departure= 0 and  `date` >= '{0}' AND property = '{1}' and type='Reservation' and coalesce(room_id,'')='';".format(working_date ,property),as_dict=1)
+    if total_unassign_room:
+        total_unassign_room = total_unassign_room[0]["total"]
     else:
-        sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Reservation';".format(date,property)
+        total_unassign_room = 0
+    
+   
+ 
     
     room_operation = frappe.db.sql(sql, as_dict=1)
+
 
 
     if room_operation:
@@ -71,11 +108,19 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                     SUM(if(reservation_status = 'No Show',1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void',1,0)) AS `total_void`, 
-                    SUM(if(reservation_status in ('Reserved','Confirmed'),1,0)) AS `arrival_remaining`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house')   and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
-                    SUM(if(require_pickup = 1 AND  is_active_reservation = 1, 1, 0)) AS `pick_up`
-                FROM `tabReservation Stay` WHERE  arrival_date='{0}' and property = '{1}';""".format(date,property)
+                    SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}' AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
+                    SUM(if(require_pickup = 1 AND  is_active_reservation = 1 and  arrival_date='{1}', 1, 0)) AS `pick_up`
+                FROM `tabReservation Stay` 
+                WHERE  
+                    name in (
+                        select reservation_stay from `tabReservation Room Rate`
+                        where
+                            date = '{1}' and 
+                            room_type_id = if('{2}'='',room_type_id,'{2}')
+                    )  and
+                    property = '{0}';""".format(property,date, room_type_id or '')
     
     stay = frappe.db.sql(stay_sql, as_dict=1)
     
@@ -119,10 +164,18 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #get total room block 
     sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block';".format(date,property)
     total_room_block = frappe.db.sql(sql,as_dict=1)
+    total_room_block = total_room_block[0]["total_room_block"] or 0
 
-    vacant_room = (total_room or 0) - (total_room_occupy or 0) - (total_room_block[0]["total_room_block"] or 0)
+    vacant_room = (total_room or 0) - (total_room_occupy or 0) - total_room_block
     if vacant_room<0:
         vacant_room = 0
+
+    occupancy = 0
+    if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
+        occupancy = (total_room_occupy or 0)  / (total_room or 1) * 100
+    else:
+        occupancy = (total_room_occupy or 0)  / ((total_room or 1) - total_room_block) * 100
+
     return {
         "working_date":working_date,
         "total_room":total_room or 0,
@@ -142,6 +195,9 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
         "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
         "upcoming_note":upcoming_note[0]["total"] or 0,
+        "total_unassign_room":total_unassign_room,
+        "total_room_block": total_room_block,
+        "occupancy":occupancy
         
         
     }
@@ -232,6 +288,7 @@ def get_edoor_setting(property = None):
         "custom_print_format":custom_print_format,
         "powered_by_text": edoor_setting_doc.powered_by_text,
         "calculate_room_occupancy_include_room_block": edoor_setting_doc.calculate_room_occupancy_include_room_block,
+        "search_table": [{"doctype":d.table_name,"title":d.title,"template":d.template} for d in edoor_setting_doc.search_table],
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -501,14 +558,31 @@ def get_room_inventory_resource(property = ''):
     })
     
     resources.append({
-        "id": "arrival_departure",
-        "title": "Arrival/Departure",
+        "id": "arrival",
+        "title": "Arrival",
         "sort_order":1003
     })
     resources.append({
+        "id": "stay_over",
+        "title": "Stay Over",
+        "sort_order":1004
+    })
+    
+    resources.append({
+        "id": "departure",
+        "title": "Departure",
+        "sort_order":1005
+    })
+
+    resources.append({
         "id": "pax",
         "title": "PAX (A/C)",
-        "sort_order":1004
+        "sort_order":1006
+    })
+    resources.append({
+        "id": "dummy",
+        "title": " ",
+        "sort_order":1007
     })
 
 
@@ -533,7 +607,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             guest_name as title,
             status_color as color,
             adult,
-            adr,
+            reservation_stay_adr,
             child,
             pax,
             reference_number,
@@ -627,13 +701,31 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
         "events":events,
         "occupy_data":occupy_data,
         "conflig_rooms":get_conflict_room(filter),
-
         }
 
 @frappe.whitelist()
 def get_room_inventory_calendar_event(property, start=None,end=None, keyword=None):
-     
-    sql = "select room_type_id, date, count(name) as total, sum(if(type='Block',1,0)) as block, sum(is_arrival) as arrival, sum(is_departure) as departure,sum(adult) as adult, sum(child) as child from `tabRoom Occupy` where property='{}' and date between '{}' and '{}' group by room_type_id, date".format(property,start,end)
+ 
+    sql = """
+        select 
+            room_type_id, 
+            date,
+            count(name) as total, 
+            sum(if(type='Block',1,0)) as block, 
+            sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
+            sum(is_arrival) as arrival,
+            sum(is_departure) as departure,
+            sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+            sum(adult) as adult, 
+            sum(child) as child 
+        from `tabRoom Occupy` 
+        where 
+            property='{}' and 
+            date between '{}' and '{}'  
+        group by 
+            room_type_id, 
+            date
+        """.format(property,start,end)
     data = {
         "room_occupy": frappe.db.sql(sql,as_dict=1)
     }
@@ -656,7 +748,7 @@ def get_occupy_data(view_type, filter):
                     sum(adult) as adult, 
                     sum(child) as child ,
                     sum(if(type='Reservation' and is_departure=0,1,0)) as total_room_sold
-                    from `tabRoom Occupy`  
+                from `tabRoom Occupy`  
                 where 
                     
                     property=%(property)s and 
@@ -680,7 +772,8 @@ def get_occupy_data(view_type, filter):
                     sum(is_departure) as departure,
                     sum(if(is_departure=0 and is_arrival=0,1,0) ) as stay_over,
                     sum(adult) as adult, 
-                    sum(child) as child 
+                    sum(child) as child ,       
+                    sum(if(type='Reservation' and is_departure=0,1,0)) as total_room_sold
                     from `tabRoom Occupy` 
                 where 
                     property=%(property)s and 
@@ -1052,4 +1145,10 @@ def post_room_change_to_folio(working_day):
     
     #verify if reservation stay and and reservation is update balance
 
+
+@frappe.whitelist()
+def check_room_config_and_over_booking(property):
+    working_day = get_working_day(property)
+    sql="select count(name) from `tabTemp Room Occupy` where type='Reservation' and is_departure=0  and ifnull(room_id,'') <> '' and date>='{}'   group by room_id,date   having count(name)>1".format(working_day["date_working_day"])
+    return frappe.db.sql(sql,as_dict=1)
 

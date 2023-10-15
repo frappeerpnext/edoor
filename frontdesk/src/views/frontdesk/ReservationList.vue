@@ -151,7 +151,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed,onUnmounted } from '@/plugin'
 
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
@@ -166,14 +166,6 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == window.property_name && arg.action == "refresh_reservation_list") {
-        setTimeout(function(){
-            loadData(false)
-        },3000) 
-    }
-})
 
 const columns = ref([
     { fieldname: 'name', label: 'Reservation #', fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
@@ -370,6 +362,14 @@ getApi('frontdesk.get_working_day', {
 })
 
 onMounted(() => {
+    window.socket.on("ReservationList", (arg) => {
+        if (arg.property == window.property_name) {
+            setTimeout(function(){
+                loadData(false)
+            },3000) 
+        }
+    })
+
     let state = localStorage.getItem("page_state_reservation")
     if (state) {
         state = JSON.parse(state)
@@ -427,7 +427,9 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+
 onUnmounted(() => {
-    window.socket.off("RefreshData")
+    window.socket.off("ReservationList");
 })
+
 </script>

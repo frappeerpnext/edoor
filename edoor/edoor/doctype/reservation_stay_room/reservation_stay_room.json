@@ -10,10 +10,8 @@
   "start_date",
   "end_date",
   "reference_number",
-  "guest_name",
-  "email",
-  "phone_number",
   "internal_reference_number",
+  "adr",
   "column_break_xhsk",
   "reservation",
   "reservation_color",
@@ -23,27 +21,6 @@
   "total_rate",
   "discount_amount",
   "is_manual_rate",
-  "is_active_reservation",
-  "allow_user_to_edit_information",
-  "adr",
-  "tax_1_amount",
-  "tax_2_amount",
-  "tax_3_amount",
-  "total_tax",
-  "deleted_note",
-  "group_code",
-  "group_name",
-  "group_color",
-  "is_master",
-  "arrival_date",
-  "departure_date",
-  "rooms",
-  "paid_by_master_room",
-  "business_source",
-  "total_credit",
-  "total_debit",
-  "balance",
-  "total_room_rate",
   "column_break_cnbu",
   "room_type_id",
   "room_type_alias",
@@ -51,9 +28,6 @@
   "reservation_status",
   "status_color",
   "reservation_type",
-  "show_in_room_chart",
-  "start_time",
-  "end_time",
   "column_break_irmb",
   "room_id",
   "room_number",
@@ -61,15 +35,60 @@
   "adult",
   "child",
   "pax",
+  "deleted_note",
+  "reservation_stay_information_section",
+  "reservation_stay_adr",
+  "column_break_iwdw",
+  "allow_user_to_edit_information",
+  "column_break_szti",
+  "end_time",
+  "start_time",
+  "is_active_reservation",
+  "column_break_lxbf",
+  "show_in_room_chart",
+  "column_break_nktf",
+  "tax_information_section",
+  "tax_1_amount",
+  "column_break_klsz",
+  "tax_2_amount",
+  "column_break_oymi",
+  "tax_3_amount",
+  "column_break_njlt",
+  "total_tax",
+  "guest_information_section",
   "guest",
+  "column_break_plnw",
+  "guest_name",
+  "column_break_azrm",
+  "phone_number",
+  "column_break_gdzg",
+  "email",
   "section_break_pwue",
   "note",
   "column_break_vpbm",
   "keyword",
+  "hide_section_section",
   "can_change_start_date",
+  "balance",
+  "rooms",
+  "column_break_ztvx",
   "can_change_end_date",
+  "total_debit",
+  "departure_date",
+  "arrival_date",
+  "column_break_bsei",
   "stay_rooms",
-  "stay_room_types"
+  "total_credit",
+  "group_color",
+  "column_break_wdvo",
+  "group_name",
+  "stay_room_types",
+  "business_source",
+  "is_master",
+  "column_break_vbiw",
+  "paid_by_master_room",
+  "group_code",
+  "total_room_rate"
  ],
  "fields": [
   {
@@ -425,12 +444,96 @@
    "fieldtype": "Data",
    "label": "Stay Room Type",
    "length": 250
+  },
+  {
+   "fieldname": "hide_section_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Hide Section"
+  },
+  {
+   "fieldname": "column_break_ztvx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_bsei",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_wdvo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vbiw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "guest_information_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Guest Information"
+  },
+  {
+   "fieldname": "column_break_plnw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_azrm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_gdzg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "tax_information_section",
+   "fieldtype": "Section Break",
+   "hidden": 1,
+   "label": "Tax Information"
+  },
+  {
+   "fieldname": "column_break_klsz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_oymi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_njlt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reservation_stay_information_section",
+   "fieldtype": "Section Break",
+   "label": "Reservation Stay Information"
+  },
+  {
+   "fieldname": "reservation_stay_adr",
+   "fieldtype": "Currency",
+   "label": "Reservation Stay ADR"
+  },
+  {
+   "fieldname": "column_break_iwdw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_szti",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_lxbf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_nktf",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-20 16:45:08.732750",
+ "modified": "2023-10-13 15:26:58.423126",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",
