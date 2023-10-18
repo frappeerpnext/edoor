@@ -8,8 +8,6 @@
         </template>
         <template #content>
             <div>
-
-
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation  @onClick="toggle($event, 'edit_reservation_information')"  :isAction="true" titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(rs.reservation?.reservation_date)"
                         valueClass="grow"></ComBoxStayInformation>
@@ -38,13 +36,13 @@
                             ...
                         </button>
                         <div v-else class="flex gap-2">
-                            <a v-tooltip.top="'Group Name'" v-if="rs.reservation?.group_name" class="link_line_action grow overflow-hidden w-6" >{{ rs.reservation?.group_name }}</a>
+                            <a v-tippy="'Group Name'" v-if="rs.reservation?.group_name" class="link_line_action grow overflow-hidden w-6" >{{ rs.reservation?.group_name }}</a>
                             <button v-else class="link_line_action grow text-left overflow-hidden" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
                             <span>/</span>
-                            <a v-tooltip.top="'Group Code'" v-if="rs.reservation?.group_code" class="link_line_action grow w-6" >
+                            <a v-tippy="'Group Code'" v-if="rs.reservation?.group_code" class="link_line_action grow w-6" >
                                 {{ rs.reservation?.group_code }}
                             </a>
                             <button v-else class="link_line_action grow text-left overflow-hidden" >
@@ -61,20 +59,19 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation title="Rooms" valueClass="grow">
-                       
                         <div v-if="rs && rs?.reservationStays">
                             <div> 
                                 <span v-for="(i, index) in roomData" :key="index">
                                     <div class="inline" v-if="index < 3">
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                        <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>
+                                        <span v-tippy="i.room_type">{{i.room_type_alias}}</span>
                                         <span v-if="i.room_number">/{{ i.room_number }}  
                                         </span>
                                         </div>
                                     </div>
                                 </span>
                                 <span v-if="roomData.length > 3"
-                                    v-tooltip.top="{ value: getTooltip() , escape: true, class: 'max-w-30rem' }"
+                                    v-tippy="getTooltip()"    
                                     class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
                                     {{roomData.length - 3}} Mores
                                 </span>
@@ -137,7 +134,6 @@ import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComEditReservationInformation from './ComEditReservationInformation.vue';
 import ComReservationChangeColorReservation from './ComReservationChangeColorReservation.vue';
-import ComChangePax from './ComChangePax.vue';
 import ComPopOverChangeReservationDate from './form/ComPopOverChangeReservationDate.vue';
 const moment = inject('$moment')
 const rs = inject('$reservation');
@@ -156,7 +152,7 @@ function getTooltip(){
    roomData.value.forEach(e => {
         index = index + 1
         if(index > 3){
-            html = html + ` ${e.room_type}/${e.room_number ?  e.room_number : ''}\n`
+            html = html + ` ${e.room_type}/${e.room_number ?  e.room_number : ''}<br/>`
         }
         
    });

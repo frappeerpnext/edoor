@@ -74,11 +74,12 @@ function onSave(){
             departure_time:moment(data.value.departure_time).format("HH:mm:ss")
         }
     }
-    
     ).then((r)=>{
         loading.value = false
-        dialogRef.value.close()
         window.socket.emit("ReservationList", { property:window.property_name})
+        window.socket.emit("ReservationDetail", window.reservation)
+        // emit("onClose", r.message)
+        // console.log(r)
     }).catch((err)=>{
         loading.value = false
     })

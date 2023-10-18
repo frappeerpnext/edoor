@@ -10,16 +10,17 @@ from edoor.api.frontdesk import get_working_day
 
 class RoomBlock(Document):
 	def validate(self):
+	
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
-		# if datetime.strptime(self.start_date, "%Y-%m-%d").date() < datetime.now().date():
-		# 	frappe.throw("Start date cannot be less than current date")
 		
 		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() < datetime.now().date():
 			frappe.throw("End date cannot be less than current date")
 		
-		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() < datetime.strptime(str(self.start_date), "%Y-%m-%d").date():
-			frappe.throw("End date cannot be less than start date")
+		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() <= datetime.strptime(str(self.start_date), "%Y-%m-%d").date():
+			self.end_date = add_to_date(getdate(self.start_date),days=1)
+		
+		
 		
 	def before_submit(self):
 		sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id = '{}' and date between '{}' and '{}' and property='{}' limit 1"
@@ -35,6 +36,8 @@ class RoomBlock(Document):
 		
 	def on_update_after_submit(self):
 		if self.is_unblock ==1:
+			if not self.unblock_housekeeping_status:
+				frappe.throw("Please select current room housekeeping status.")
 			room_doc = frappe.get_doc("Room", self.room_id)
 			room_doc.housekeeping_status = self.unblock_housekeeping_status 
 			room_doc.save()
@@ -43,7 +46,7 @@ class RoomBlock(Document):
 		else:
 			#check if date is extend
 			old_doc = frappe.get_doc("Room Block", self.name)
-			if self.end_date != old_doc.end_date:
+			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:
 				#check if next block date have room occupy 
 				sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id='{}' and date between '{}' and '{}' and property='{}' and stay_room_id != '{}' limit 1 "
 				sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1), self.property,self.name)

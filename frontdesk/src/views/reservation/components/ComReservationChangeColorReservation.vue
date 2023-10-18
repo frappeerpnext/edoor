@@ -20,6 +20,7 @@ function onSave(){
     postApi('reservation.update_reservation_color',{data: reservation.value}).then((r)=>{
         rs.reservation = r.message
         loading.value = false
+        window.socket.emit("ReservationDetail", window.reservation)
         emit('onClose')
     }).catch(()=>{
         loading.value = false

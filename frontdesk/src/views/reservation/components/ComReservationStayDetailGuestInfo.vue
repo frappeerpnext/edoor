@@ -207,7 +207,6 @@ function onAdvancedSearch(guest_type) {
         },
         onClose(r) {
             if(r.data){ 
-                // window.socket.emit("RefresheDoorDashboard", property.name); 
                 rs.getReservationDetail(rs.reservationStay.name)
                 gv.toast('success', 'Updated Successful')
             }

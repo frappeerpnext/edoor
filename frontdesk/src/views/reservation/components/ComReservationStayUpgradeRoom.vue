@@ -37,7 +37,7 @@
                                 <Calendar class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2 text-left">
-                                <div class="box-input-detail flex"><span v-tooltip.top="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span v-tooltip.top="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
+                                <div class="box-input-detail flex"><span  v-tippy="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span  v-tippy="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
                             </td>
                             <td v-if="can_view_rate" class="text-right px-2">
                                 <span class="box-input-detail flex justify-end white-space-nowrap">
@@ -313,7 +313,6 @@
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             dialogRef.value.close(rs.reservationStay.name);
-            
         }).catch((ex) => {
             loading.value = false;
         })

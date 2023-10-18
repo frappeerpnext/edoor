@@ -143,7 +143,7 @@
                             </td>
                             <td class="p-2 text-right w-15rem">
                                 <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
-                                    <div v-tooltip.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
+                                    <div  v-tippy ="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
 
                                         <button @click="onOpenChangeRate($event, d)"
                                             class="text-right w-full color-purple-edoor text-md font-italic ">

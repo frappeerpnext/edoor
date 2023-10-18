@@ -57,21 +57,16 @@ function onSave() {
         reservation_stay: props.reservation_stay,
     })
     .then((doc) => {
+        isLoading.value = false
         if(props.reservation_stay){ 
             emit('onSave',{reservation_stay:doc.message})
         }else {
             emit('onSave',{reservation:doc.message})
         }
-        isLoading.value = false
-        // window.socket.emit("RefresheDoorDashboard", property.name);
-        // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-        // window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
-        // window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_iframe_in_modal" });
-        // window.socket.emit("RefreshData", { property: rs.reservationStay.property, action: "refresh_res_list" })
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})
-
-
+        window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
+        window.socket.emit("ReservationDetail", window.reservation)
     })
     .catch(()=>{
         isLoading.value = false      

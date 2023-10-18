@@ -19,7 +19,7 @@
                     
                         <Calendar :selectOtherMonths="true" :disabled="!canEdit" inputId="posting_date" v-model="doc.posting_date" :minDate="min_date"
                             :maxDate="moment(working_day?.date_working_day).toDate()" class="w-full" dateFormat="dd-mm-yy" showIcon
-                            showButtonBar selectOtherMonths/>
+                            showButtonBar selectOtherMonths panelClass="no-btn-clear"/>
                     </div>
                     <div class="col-6">
                         <label for="account_code">Account Code</label>
@@ -453,7 +453,7 @@ function onSelectAccountCode(data) {
 
             }
             if (d.use_folio_balance_as_default_amount == 1) {
-                 doc.value.input_amount = Math.abs(  balance.value)
+                 doc.value.input_amount = Math.abs(  balance.value || 0)
             }
             if (d.price>0 && !doc.value.name) {
                 doc.value.input_amount =d.price
@@ -506,13 +506,13 @@ function onSave() {
     
     createUpdateDoc("Folio Transaction", { data })
             .then((doc) => {
-                isSaving.value = false;
-                dialogRef.value.close(doc);
-                // window.socket.emit("RefresheDoorDashboard", doc.property);
-                // window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                // window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
-                // window.socket.emit("RefreshData", { property:property.name, action:"refresh_folio_transaction_detail", name:dialogRef.value.data.folio_transaction_number })
+                isSaving.value = false
+                dialogRef.value.close(doc)
                 window.socket.emit("ReservationList", { property:window.property_name})
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+                window.socket.emit("FolioTransactionDetail", {property:window.property_name, name:window.folio_transaction_number})
+                alert(window.folio_transaction_number)
             }).catch((err) => {
                 isSaving.value = false;
             })

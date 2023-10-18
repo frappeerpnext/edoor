@@ -7,6 +7,7 @@
             <SplitButton  @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
         </template>
     </ComDialogContent>
+    
 </template>
 <script setup>
 import { ref, getApi, onMounted, inject, getDoc,useDialog } from "@/plugin"
@@ -71,7 +72,7 @@ print_menus.value.push({
                 view: "print"
             },
             props: {
-                header: "Folio Summary Report",
+                header: "Folio Detail Report",
                 style: {
                     width: '80vw',
                 },

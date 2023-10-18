@@ -8,7 +8,6 @@
                 <template #end>
                     <NewFITReservationButton />
                     <NewGITReservationButton />
-                    
                 </template>
             </ComHeader>
             <div class="mb-3 flex justify-between">
@@ -37,55 +36,55 @@
                 </div> 
             </div>
         </div>
-        <div class="overflow-auto h-full">
-            <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-                <DataTable 
-                class="res_list_scroll" 
-                :resizableColumns="true" 
-                columnResizeMode="fit" 
-                showGridlines
-                stateStorage="local" 
-                stateKey="table_reservation_stay_list_state" 
-                scrollable 
-                :reorderableColumns="true"
-                :value="data" 
-                tableStyle="min-width: 50rem" 
-                @row-dblclick="onViewReservationStayDetail">
-                    <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
-                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
-                        <template #body="slotProps">
-                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
-                                @click="onOpenLink(c, slotProps.data)" link>
-                                {{ slotProps.data[c.fieldname] }}
-                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                            </Button>
-                            <span v-else-if="c.fieldtype == 'Date'">{{
-                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                            <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
-                            </Timeago>
-                            <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.rooms">
-                                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                    <span>{{ item }}</span>
-                                    <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                                </template>
-                            </div>
-                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-                            <span v-else-if="c.fieldtype == 'Status'"
-                                class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                                }}</span>
-                            <span v-else>
-                                {{ slotProps.data[c.fieldname] }}
-                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                            </span>
-                        </template>
-                    </Column>
-                </DataTable>
-            </ComPlaceholder>
-        </div>
+            <div class="overflow-auto h-full">
+                <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
+                    <DataTable 
+                    class="res_list_scroll" 
+                    :resizableColumns="true" 
+                    columnResizeMode="fit" 
+                    showGridlines
+                    stateStorage="local" 
+                    stateKey="table_reservation_stay_list_state" 
+                    scrollable 
+                    :reorderableColumns="true"
+                    :value="data" 
+                    tableStyle="min-width: 50rem" 
+                    @row-dblclick="onViewReservationStayDetail">
+                        <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')"
+                            :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                            :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                            <template #body="slotProps">
+                                <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                    @click="onOpenLink(c, slotProps.data)" link>
+                                    {{ slotProps.data[c.fieldname] }}
+                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                                </Button>
+                                <span v-else-if="c.fieldtype == 'Date'">{{
+                                    moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                                <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
+                                </Timeago>
+                                <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.rooms">
+                                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                        <span>{{ item }}</span>
+                                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                                    </template>
+                                </div>
+                                <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                                <span v-else-if="c.fieldtype == 'Status'"
+                                    class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                    :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                                    }}</span>
+                                <span v-else>
+                                    {{ slotProps.data[c.fieldname] }}
+                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                                </span>
+                            </template>
+                        </Column>
+                    </DataTable>
+                </ComPlaceholder>
+            </div>
         <div>
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
@@ -95,6 +94,7 @@
             </Paginator>
         </div>
     </div>
+    
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
         <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save"
             @onCancel="onCloseColumn">
@@ -115,7 +115,6 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
@@ -150,13 +149,15 @@
 
                 <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
-                    @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" ></ComSelect>
+                    @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" >
+                </ComSelect>
 
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
+
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -176,7 +177,6 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
-
 
 const columns = ref([
     { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
@@ -224,7 +224,6 @@ function OnSaveColumn(event) {
     opShowColumn.value.toggle(event);
 }
 
-
 function onResetTable() {
     localStorage.removeItem("page_state_reservation_stay")
     localStorage.removeItem("table_reservation_stay_list_state")
@@ -254,8 +253,6 @@ const working_date = ref('')
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const dialog = useDialog();
 
-
-
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
@@ -277,8 +274,6 @@ function pageChange(page) {
 
     loadData()
 }
-
-
 
 function loadData(show_loading=true) {
     gv.loading = show_loading
@@ -390,9 +385,6 @@ getApi('frontdesk.get_working_day', {
     // const endDate = moment(working_date.value).add(1, 'days')
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
-
-
-
 
 onMounted(() => {
     window.socket.on("ReservationStayList", (arg) => {

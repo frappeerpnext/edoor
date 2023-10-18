@@ -36,9 +36,9 @@
                         <tr>
                             <td class="pe-2">
                                 <div class="p-inputtext-pt border-1 border-white h-12 w-full white-space-nowrap">
-                                    <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(moment(selectedStay.start_date))}}</span>
+                                    <span  v-tippy="'Arrival Date'">{{gv.dateFormat(moment(selectedStay.start_date))}}</span>
                                     &#8594;
-                                    <span v-tooltip.top="'Departure Date'">{{gv.dateFormat(moment(selectedStay.end_date))}}</span>
+                                    <span  v-tippy="'Departure Date'">{{gv.dateFormat(moment(selectedStay.end_date))}}</span>
                                 </div>
                             </td>
                             <td class="text-right px-2 w-10rem"> 
@@ -180,6 +180,8 @@
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("Frontdesk", window.property_name)
+            window.socket.emit("TodaySummary", window.property_name)
             onClose(r)
         }).catch((err)=>{
             loading.value = false

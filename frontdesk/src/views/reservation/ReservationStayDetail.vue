@@ -7,12 +7,12 @@
                     <ComReservationStayHeaderStatus />
 
                     <div class="flex gap-2">
-                        <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"
+                        <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
                             class="rounded-lg conten-btn flex" link>
                             <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                             </icon>
                         </button>
-                        <button @click="onRoute" v-tooltip.left="'Open New Window'" v-if="!isPage"
+                        <button @click="onRoute" v-tippy ="'Open New Window'" v-if="!isPage"
                             class="rounded-lg conten-btn " link>
                             <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                         </button>
@@ -104,7 +104,7 @@
                             <span class="me-2">Document</span>
                             <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading" />
                         </template>
-                        <ComDocument doctype="Reservation Stay" :docname="name" :fill="false" :attacheds="[name]"
+                        <ComDocument doctype=" Reservation Stay" :docname="name" :fill="false" :attacheds="[name]"
                             v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
@@ -288,8 +288,6 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
-
-                // window.socket.emit("RefreshData", { action:"refresh_reservation_stay",reservation_stay:rs.reservationStay.name})
             })
         },
 
@@ -309,6 +307,7 @@ onMounted(() => {
         } else {
             alert("Go back to reserveatin list")
         }
+        window.reservation_stay = route.params.name
 
     } else {
 
@@ -316,9 +315,10 @@ onMounted(() => {
         rs.getReservationDetail(name.value);
         rs.getChargeSummary(name.value)
         rs.is_page = false
+        window.reservation_stay = dialogRef.value.data.name
     }
 
-    window.reservation_stay = dialogRef.value.data.name
+   
 
     window.socket.on("ReservationStayDetail", (arg) => {
         if (arg.reservation_stay == rs.reservationStay.name) {
@@ -380,10 +380,10 @@ const onCheckIn = () => {
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name);
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    
                     window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-
+                    window.socket.emit("Frontdesk", window.property_name)
+                    window.socket.emit("TodaySummary", window.property_name)
                     onRefresh(false)
                 })
                     .catch((err) => {
@@ -420,7 +420,10 @@ const onCheckOut = () => {
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
+                    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+                    window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                    window.socket.emit("Frontdesk", window.property_name)
+                    window.socket.emit("TodaySummary", window.property_name)
                 })
                 .catch((err) => {
                     rs.loading = false

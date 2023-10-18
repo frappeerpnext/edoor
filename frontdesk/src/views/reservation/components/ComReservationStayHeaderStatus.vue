@@ -15,40 +15,40 @@
                     
                     <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)" :key="index">
                         <span v-if="index != 0"> , </span>
-                        <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' +
+                        <span v-tippy ="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' +
                             i.room_number : '' }}
                     </div>
                     <div v-if="rs.reservationStay?.stays.length > 3"
-                        v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${rs?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + obj.room_number).join('\n')}</div>`, escape: true, class: 'max-w-30rem' }"
+                        v-tippy="{ value: `<div class='tooltip-room-stay'> ${rs?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + obj.room_number).join('\n')}</div>`, escape: true, class: 'max-w-30rem' }"
                         class="bg-gray-400 rounded-xl px-2 cursor-pointer ms-2 inline">
                         {{ rs.reservationStay?.stays.length - 3 }}
                         Mores
                     </div>
                 </div>
             </ComTagReservation>
-            <div v-tooltip.top="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
+            <div  v-tippy="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
                 <ComIcon  icon="IconBillToCompany" style="height:15px;width:15px;" ></ComIcon>
             </div>
-            <div v-tooltip.top="'Paid By Master Room'" v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room"
+            <div  v-tippy="'Paid By Master Room'" v-if="!(rs?.reservationStay?.is_master) && rs?.reservationStay?.paid_by_master_room"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
                 <ComIcon  icon="BilltoMasterRoom" style="height:15px;" ></ComIcon>
             </div>
-            <div v-tooltip.top="'Split Room'" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="rs.reservationStay?.stays?.length >= 2" >
+            <div  v-tippy="'Split Room'" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="rs.reservationStay?.stays?.length >= 2" >
                 <ComIcon  icon="iconSplit" style="height:15px;" ></ComIcon>
                 
             </div>
-            <div v-tooltip.top="'Master Room'" v-if="rs.reservationStay && rs.reservationStay.is_master"
+            <div  v-tippy="'Master Room'" v-if="rs.reservationStay && rs.reservationStay.is_master"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
             </div>
-        <div v-tooltip.top="rs.reservationStay?.reservation_type" v-if="rs.reservationStay?.reservation_type == 'FIT'"
+        <div  v-tippy="rs.reservationStay?.reservation_type" v-if="rs.reservationStay?.reservation_type == 'FIT'"
             class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500 flex items-center justify-center">
             <span>
             <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
             </span>
         </div>
-        <div v-tooltip.top="rs.reservationStay?.reservation_type" v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
+        <div  v-tippy="rs.reservationStay?.reservation_type" v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
             <span>
             <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
             </span>

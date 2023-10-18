@@ -61,6 +61,7 @@ function onDelete(name) {
             deleteDoc('Customer Group', name)
             .then(() => {
                 loadData()
+                window.socket.emit("GuestType", window.property_name)
                 loading.value = false
             }).catch((err) => {
                 loading.value = false
@@ -68,11 +69,6 @@ function onDelete(name) {
         },
     });
 }
-window.socket.on("RefreshData", (arg) => {
-    if(arg.property == setting.property.name && arg.action == "refresh_guest_type"){
-        loadData()
-    }    
-})
 
 function onEdit(edit) {
     dialog.open(ComAddGuestType, {
@@ -99,8 +95,8 @@ function onEdit(edit) {
     });
 }
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     getDocList('Customer Group', {
         fields: ['customer_group_en', 'note', 'owner', 'name'],
         limit: 10000,
@@ -136,9 +132,18 @@ function onAddNewGuestType() {
 }
 
 onMounted(() => {
-    loadData()
+    loadData(false)
+    window.socket.on("GuestType", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(function(){
+                loadData(false)
+            },3000) 
+        }
+    })
 })
-
+onUnmounted(() => {
+    window.socket.off("GuestType");
+})
 
 </script>
 

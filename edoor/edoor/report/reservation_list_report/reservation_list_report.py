@@ -50,11 +50,11 @@ def get_columns(filters):
 
 
 def get_summary(filters,data):
-	get_count = get_get_reservation_stay(filters)
+	get_count = {d['reservation'] for d in data}
 	if filters.show_summary:
 		return [
 			{ "label":"Total Room","value":len(data),"indicator":"red"},
-			{ "label":"Total Reservation","value":sum([1 for d in data if d["reservation"]]),"indicator":"red"},
+			{ "label":"Total Reservation","value":len(get_count),"indicator":"red"},
 			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
 			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
 			{ "label":"Total Debit","value": sum([d["total_debit"] for d in data ]),"datatype": "Currency","indicator":"red"},

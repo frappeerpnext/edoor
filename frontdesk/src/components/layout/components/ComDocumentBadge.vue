@@ -7,11 +7,7 @@ const props = defineProps({
     attacheds: [String,Array]
 })
 const total = ref(0)
-window.socket.on("RefreshData", (arg) => {
-    if (arg.action== "refresh_document") {
-        getTotalDocument()
-    }
-})
+
 
 function getTotalDocument(){ 
     var attacheds = props.attacheds.join("','") 

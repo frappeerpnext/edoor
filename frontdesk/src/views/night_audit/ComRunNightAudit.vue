@@ -70,11 +70,7 @@ const steps = ref([
     { step: 8, label: "Thank You!", is_selected: false },
 ])
 
-window.socket.on("RefreshData", (arg) => {
-    if(arg.property == property.name && arg.action == "refresh_iframe_in_modal"){
-        refreshReport()
-    }    
-})
+
 
 function onNext() {
     //set selected
@@ -136,7 +132,7 @@ function onFinish() {
                 currentStep.value = 8
                 refreshReport()
                 loading.value = false;
-                window.socket.emit("RefreshData",{property:setting?.property?.name, action:"reload_page",session_id:window.session_id})
+                window.socket.emit("RunNightAudit",{property:window.property_name, action:"reload_page",session_id:window.session_id})
             }).catch((err)=>{
                 loading.value = false;
             }).finally(() => {

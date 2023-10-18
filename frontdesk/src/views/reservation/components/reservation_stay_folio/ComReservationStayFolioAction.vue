@@ -258,7 +258,6 @@ function EditFolio(is_edit) {
             let data = options.data;
             if (data != undefined) {
                 rs.onLoadReservationFolios(data.name)
-                window.socket.emit("RefreshReservationDetail", rs.reservation.name)
             }
         }
     })
@@ -286,6 +285,7 @@ function MarkasMasterFolio() {
                             severity: 'success', summary: 'Mark Folio as Master Folio',
                             detail: 'Mark Folio as Master Folio Successfully', life: 3000
                         });
+                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     })
             },
         })
@@ -312,7 +312,9 @@ function openFolio() {
                     rs.selectedFolio.status = doc.status;
                     rs.onLoadReservationFolios()
 
-                    window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+                    window.socket.emit("ReservationStayList", { property:window.property_name })
+                    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+
                 })
         },
 
@@ -337,7 +339,9 @@ function closeFolio() {
                     rs.selectedFolio.status = doc.status;
                     rs.onLoadReservationFolios()
 
-                    window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+
                 })
         },
 
@@ -391,7 +395,6 @@ function deleteFilio() {
 }
 
 function onTransferFolioItem() {
-
     if (rs.selectedFolioTransactions.length == 0) {
         toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
         return
@@ -426,7 +429,7 @@ function onTransferFolioItem() {
 
                 setTimeout(() => {
                     rs.onLoadReservationFolios(rs.reservationStay.name)
-                    window.socket.emit("RefreshReservationDetail", rs.reservation.name)    
+                    window.socket.emit("ReservationDetail", rs.reservation.name)    
                 }, 3000);
 
                 

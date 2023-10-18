@@ -16,6 +16,10 @@ export default class Reservation {
 		this.room_rates = []
 		this.selectedRoomRates = []
 		this.attacheds = []
+		this.reservationFolioList=[]
+		this.selectedFolio = null
+		this.totalFolio = 0
+
 
 	}
 
@@ -33,6 +37,7 @@ export default class Reservation {
 			var attachedsFiles = this.reservationStays.map(r=>r.name)
 			attachedsFiles[attachedsFiles.length] = name || this.reservation?.name
 			this.attacheds = attachedsFiles
+			this.totalFolio = result.message.total_folio
 			this.loading = false
 		}).catch((err) => {
 			this.loading = false
@@ -111,6 +116,16 @@ export default class Reservation {
 		})
 
 	}
+	
+	getReservationFolioList(reservation) {
+
+		getApi('reservation.get_reservation_folio_list', {
+			reservation:reservation
+		}).then((result) => {
+			this.reservationFolioList = result.message
+		})
+
+	}
 
 
 
@@ -122,6 +137,7 @@ export default class Reservation {
 			this.reservationSummary.value = []
 			this.depositTransaction = []
 			this.room_rates = []
-			this.selectedRoomRates = []
+			this.selectedRoomRates = [],
+			this.reservationFolioList=[]
 		}
 	}

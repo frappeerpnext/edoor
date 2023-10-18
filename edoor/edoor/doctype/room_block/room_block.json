@@ -39,6 +39,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "start_date",
    "fieldtype": "Date",
    "in_list_view": 1,
@@ -168,15 +169,17 @@
    "options": "Housekeeping Status"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "keyword",
    "fieldtype": "Small Text",
+   "hidden": 1,
    "label": "keyword"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-08-11 12:02:12.564210",
+ "modified": "2023-10-15 16:10:11.223059",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

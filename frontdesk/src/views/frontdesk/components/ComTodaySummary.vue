@@ -42,16 +42,16 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const chartData = ref([])
 const loading = ref(false)
 
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == property.name && arg.action=="refresh_summary") {
-        loadData(props.date,false)
-    }
-})
 onMounted(() => {
+    window.socket.on("TodaySummary", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(() => {
+                loadData(props.date,false)
+            }, 2000)
+        }
+    })
     loadData(props.date)
 })
-
-
 
 function loadData(date,show_loading = true){
     loading.value = show_loading

@@ -33,7 +33,6 @@
   "room_types",
   "room_type_alias",
   "rooms",
-  "room_names",
   "guest_information_section",
   "guest",
   "guest_name",
@@ -774,14 +773,6 @@
    "fieldname": "reservation_date",
    "fieldtype": "Date",
    "label": "Reservation Date"
-  },
-  {
-   "fieldname": "room_names",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "in_list_view": 1,
-   "label": "Room Names",
-   "length": 500
   },
   {
    "fieldname": "rooms_data",

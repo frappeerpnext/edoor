@@ -17,6 +17,7 @@
   "reservation",
   "reservation_stay",
   "reservation_status",
+  "reservation_status_color",
   "column_break_7",
   "posting_date",
   "working_day",
@@ -136,6 +137,7 @@
   {
    "fieldname": "folio_number",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Folio Number",
    "options": "Reservation Folio"
@@ -149,7 +151,7 @@
    "reqd": 1
   },
   {
-   "fetch_from": "folio_number.reservation",
+   "fetch_from": ".reservation",
    "fetch_if_empty": 1,
    "fieldname": "reservation",
    "fieldtype": "Link",
@@ -157,7 +159,7 @@
    "options": "Reservation"
   },
   {
-   "fetch_from": "folio_number.reservation_stay",
+   "fetch_from": ".",
    "fetch_if_empty": 1,
    "fieldname": "reservation_stay",
    "fieldtype": "Link",
@@ -663,9 +665,10 @@
   {
    "fetch_from": "reservation_stay.reservation_status",
    "fieldname": "reservation_status",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Reservation Status"
+   "label": "Reservation Status",
+   "options": "Reservation Status"
   },
   {
    "fieldname": "note_by",
@@ -689,7 +692,7 @@
    "label": "Guest Profile"
   },
   {
-   "fetch_from": "folio_number.guest",
+   "fetch_from": ".",
    "fieldname": "guest",
    "fieldtype": "Link",
    "label": "Guest",
@@ -772,11 +775,17 @@
    "fieldname": "is_housekeeping_account",
    "fieldtype": "Check",
    "label": "Is Housekeeping Account"
+  },
+  {
+   "fetch_from": "reservation_stay.status_color",
+   "fieldname": "reservation_status_color",
+   "fieldtype": "Data",
+   "label": "Reservation Status Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-06 10:16:00.115166",
+ "modified": "2023-10-18 14:44:32.259045",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

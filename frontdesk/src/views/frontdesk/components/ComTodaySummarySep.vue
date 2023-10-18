@@ -112,7 +112,7 @@ const filters = [
             "eDoor%20Unassign%20Room%20Reservation%20List",
             'Unassign Room Reservation List',
             [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
-            ['keyword','room_type','reservation_status','business_source']
+            ['keyword','room_type','start_date','end_date','business_source']
         )
     }
     else if(props.dialogKey == "pickup_drop_off"){

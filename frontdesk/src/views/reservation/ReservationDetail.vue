@@ -11,12 +11,12 @@
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                <div v-tooltip.top="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                                <div v-tippy="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                                     <span class="">
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
                                 </div>
-                                <div v-tooltip.top="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                                <div v-tippy="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
                                     <span>
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
                                     </span>
@@ -28,12 +28,12 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button @click="onRefresh" v-tooltip.left="'Refresh'" :loading="rs?.loading"
+                            <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
                                 class="rounded-lg conten-btn flex" link>
                                 <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                                 </icon>
                             </button>
-                            <button @click="onRoute" v-tooltip.left="'Open New Window'" v-if="!isPage"
+                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage"
                                 class="rounded-lg conten-btn" link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
@@ -41,7 +41,8 @@
                     </div>
                 </div>
             </div>
-            <TabView lazy>
+       
+            <TabView lazy v-model:activeIndex="activeTab">
                 <TabPanel header="General Information">
                     <div class="grid mt-2 ml-0 ms-0">
                         <div class="col pl-0">
@@ -91,9 +92,12 @@
                     <ComReservationRoomRate />
                 </TabPanel>
 
-                <TabPanel header="Folio">
-                   this tap have no actin
-
+                <TabPanel>
+                    <template #header>
+                        <span class="me-2">Folio</span>
+                        <Badge :value="rs.totalFolio"></Badge>
+                    </template>
+                   <ComReservationFolio />
                 </TabPanel>
 
                 <TabPanel > 
@@ -137,12 +141,14 @@ import ComReservationRoomRate from '@/views/reservation/components/ComReservatio
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationNote from './components/ComReservationNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+import ComReservationFolio from '@/views/reservation/components/reservation_folio/ComReservationFolio.vue'
 
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
 const moment = inject('$moment');
 const can_view_rate = window.can_view_rate
+const activeTab = ref(0)
 const route = useRoute()
 
 const rs = inject("$reservation")
@@ -169,8 +175,17 @@ const canCheckIn = computed(() => {
 
 
 function onRefresh(showLoading = true) {
-    rs.LoadReservation(name.value, showLoading);
+    if(activeTab.value==0){
+        rs.LoadReservation(name.value, showLoading);
     rs.getChargeSummary(name.value)
+
+    } else if(activeTab.value==3) { 
+        window.postMessage({action:"load_reservation_folio_list",reservation:name.value},"*")
+        window.postMessage({action:"load_folio_transaction"},"*")
+    }
+    
+
+
 }
 
 
@@ -195,12 +210,8 @@ onMounted(() => {
     } else {
         name.value = dialogRef.value.data.name;
         if(dialogRef.value.data.delay_load_data){
-            //we use delay to wait data update to reservation stay and reservation in background to fininsh update
-            //this delate is set from NewFITReservtionButton and NewGroupBookingButton
-            //and from room chart calendar in frondeks page
             rs.loading = true
             setTimeout(() => {
-              
                 onRefresh()
             }, dialogRef.value.data.delay_load_data);
         }
@@ -279,7 +290,7 @@ function onCheckIn(){
 function onAddRoomMore(){
     const dialogRef = dialog.open(ComReservationStayAddMore, {
         props: {
-            header: 'Add More Stay Room',
+            header: 'Add More Room',
             style: {
                 width: '80vw',
             },

@@ -68,9 +68,9 @@
                             <div 
                             v-for="(i, index)  in stay?.reservationStay.stays?.slice(0, 3)"
                                 :key="index" class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                <span v-tooltip.top="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' + i.room_number + ' ' : '' }}                               
+                                <span  v-tippy="i.room_type">{{ i.room_type_alias }}</span>{{ (i.room_number) ? '/' + i.room_number + ' ' : '' }}                               
                             </div>
-                            <div v-if="stay.reservationStay?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${stay?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + (obj.room_number || '')  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
+                            <div v-if="stay.reservationStay?.stays.length>3"  v-tippy="{ value: `<div class='tooltip-room-stay'> ${stay?.reservationStay.stays.slice(3).map(obj => obj.room_type + '/' + (obj.room_number || '')  ).join('\n')}</div>` , escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
                                     {{ stay.reservationStay?.stays.length - 3 }}
                                     Mores
                             </div> 

@@ -15,30 +15,35 @@
 import { ref, getApi, onMounted, onUnmounted } from "@/plugin"
 import { useDialog } from 'primevue/usedialog';
 import ComDashboardRowStatus from '@/views/dashboard/components/ComDashboardRowStatus.vue';
-import ComIFrameModal from "../../../components/ComIFrameModal.vue";
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const data = ref([])
 const working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 const dialog = useDialog();
+const loading = ref(false)
 
 
 
 
-function loadData() {
+function loadData(showLoading = true) {
+    loading.value = showLoading
     getApi('frontdesk.get_house_keeping_status', {
         property: JSON.parse(localStorage.getItem("edoor_property")).name
     }).then((result) => {
         data.value = result.message
+        loading.value = false
+    }).catch(() => {
+        loading.value = false
     })
 }
 
 onMounted(() => {
     window.socket.on("ComHousekeepingStatus", (arg) => {
-
         if (arg==window.property_name) {
-            loadData()
+            setTimeout(() => {
+                loadData(false)
+            }, 2000)
         }
     })
-
     loadData()
 })
 const onViewRoomList = (status) => {

@@ -203,7 +203,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { ref, getApi, inject, onMounted, updateDoc, useDialog, postApi } from "@/plugin"
+import { ref, getApi, inject, onMounted, updateDoc, useDialog, postApi, onUnmounted } from "@/plugin"
 import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInformation.vue';
 import ComReservationStayFolioDetailActionMoreOptionsButton from '@/views/reservation/components/ComReservationStayFolioDetailActionMoreOptionsButton.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
@@ -234,11 +234,6 @@ const onClose = () => {
   dialogRef.value.close();
 }
 
-window.socket.on("ComFolioTransactionDetail", (arg) => {
-  if (arg.property == property.name && arg.action == "refresh_folio_transaction_detail" && arg.name == dialogRef.value.data.folio_transaction_number) {
-    alert('ddd')
-  }
-})
 
 const changeRef = ($event) => {
   refNum.value = doc.value.reference_number
@@ -262,6 +257,9 @@ const onSaveReferenceNumber = () => {
   }).then((r) => {
     doc.value.reference_number = r.message.reference_number
     saving.value = false
+    window.socket.emit("FolioTransactionDetail", {property:window.property_name, name:window.folio_transaction_number})
+
+
     onCloseRefNumber()
   }).catch(() => {
     saving.value = false
@@ -336,11 +334,19 @@ function onOpenFolioDetail(name) {
 }
 
 onMounted(() => {
+  window.folio_transaction_number = dialogRef.value.data.folio_transaction_number
+  window.socket.on("FolioTransactionDetail", (arg) => {
+    if (arg.property == property.name && arg.name == window.folio_transaction_number) {
+      setTimeout(() => {
+        onLoad(false)
+      }, 2000)
+    }
+  })
   onLoad()
 })
-function onLoad() {
+function onLoad(showLoading = true) {
   if (dialogRef.value.data.folio_transaction_number) {
-    loading.value = true
+    loading.value = showLoading
     getApi("reservation.get_folio_transaction_detail", {
       name: dialogRef.value.data.folio_transaction_number
     })
@@ -372,6 +378,9 @@ function onPrintFolioTransaction() {
   })
 }
 
+onUnmounted(() => {
+  window.socket.off("FolioTransactionDetail")
+})
 
 
 </script>

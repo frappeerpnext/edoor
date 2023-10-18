@@ -156,6 +156,7 @@
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("Frontdesk", window.property_name)
             
             onClose(true)
             

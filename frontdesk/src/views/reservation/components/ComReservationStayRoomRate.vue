@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-folio-cus mt-3">
 
-    <Button   class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
+    <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
       <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
       Edit Rate
       <template v-if="rs.selectedRoomRates.length>0">
@@ -25,7 +25,7 @@
       <Column field="room_number" header="Room">
         <template #body="slotProps">
           <div> 
-            <span v-tooltip.top="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
+            <span  v-tippy="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
           </div>
           <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
         </template>

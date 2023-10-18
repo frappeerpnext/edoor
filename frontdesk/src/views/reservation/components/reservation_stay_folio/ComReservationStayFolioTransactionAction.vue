@@ -56,8 +56,6 @@ const dialog = useDialog()
 const show = ref()
 const loading = ref()
 const opDelete = ref(false)
-const confirm = useConfirm();
-const rs = inject('$reservation_stay')
 const toggle = (event) => {
     show.value.toggle(event)
 }
@@ -79,12 +77,11 @@ function onEditFolioTransaction() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                rs.onLoadReservationFolios()
-                rs.onLoadFolioTransaction(rs.selectedFolio)
-                rs.getChargeSummary(rs.reservationStay.name)
-                setTimeout(function () {
-                    rs.getReservationStay(rs.reservationStay.name);
-                }, 2000)
+                //load folio list and folio transactgion 
+ 
+                window.postMessage({action:"load_reservation_folio_list"})
+                window.postMessage({action:"load_folio_transaction"})
+
 
             }
 
@@ -148,18 +145,14 @@ function onOpenDelete() {
             position: "top"
         },
         onClose: (options) => {
-            rs.onLoadReservationFolios()
-            rs.onLoadFolioTransaction(rs.selectedFolio)
-            setTimeout(function () {
-
-                rs.getReservationStay(rs.reservationStay.name);
-            }, 2000)
-            rs.getChargeSummary(rs.reservationStay.name)
+            if(options.data){
+                alert("after delete")
+                window.postMessage({action:"load_reservation_folio_list"})
+                window.postMessage({action:"load_folio_transaction"})
+            }
+            
             loading.value = false;
-            opDelete.value = false
-
-            window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-            window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name, action:"refresh_reservation_stay"})         
+            opDelete.value = false     
          }
     });
 }

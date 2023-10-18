@@ -1,13 +1,37 @@
+
+
 <template>
-    <div class=" view-table-iframe-dialog -mr-3 pr-2" style="height: 75vh;">
-    <div class="mb-2">
-    <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
-        placeholder="Select Guest" class="w-full md:w-14rem mb-3" @change="refreshReport" />
-    
-    <ComSelect @change="refreshReport" class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" />
+
+ 
+
+<div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
+        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
+            <div class="grid mb-3 ">
+                <div class="col flex gap-2 ">
+                    <div>
+                        <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
+                placeholder="Select Guest" class="w-full md:w-14rem mb-3" @change="refreshReport" />
+                    </div>
+                    <div>
+                        <ComSelect @change="refreshReport" class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" />
+                    </div>
+                </div>
+                <div class="col flex gap-2 justify-end">
+                    <div v-if="(view||'')!='ui'">
+                        <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" :model="items" />
+                        
+                    </div>
+                    <div >
+                        <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                    </div>
+                </div>
+            </div> 
+            <div class="widht-ifame">
+                <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
+            </div>
+        </div>
     </div>
-    <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
-</div>
+
 </template>
 
 <script setup>
@@ -26,6 +50,19 @@ const selected_guest = ref({})
 const letter_head = ref("")
 const reservationStay = ref("")
 
+const items = [
+    {
+        label: 'Export PDF',
+        icon: 'pi pi-file-pdf',
+        command: () => {
+            url.value = serverUrl + "/api/method/frappe.utils.print_format.download_pdf?doctype=Customer&name=" + selected_guest.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&trigger_print=1&settings=%7B%7D&_lang=en&show_toolbar=0&reservation_stay=" + reservationStay.value
+            window.open(url.value,reservationStay.value,'width=800, height=900'); 
+        }
+    },
+];
+
+
+
 letter_head.value = setting.property.default_letter_head
 function onIframeLoaded() {
     const iframe = document.getElementById("report-view");
@@ -35,8 +72,15 @@ function onIframeLoaded() {
 }
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
+    url.value = serverUrl + "/printview?doctype=Customer&name=" + selected_guest.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&show_toolbar=0&letterhead="+ encodeURI(letter_head.value) +"&settings=%7B%7D&_lang=en&show_toolbar=1&reservation_stay=" + reservationStay.value
     document.getElementById("report-view").contentWindow.location.replace(url.value)
+}
+
+function onPrint(){
+    
+
+    document.getElementById("report-view").contentWindow.print()
+
 }
 
 onMounted(() => {

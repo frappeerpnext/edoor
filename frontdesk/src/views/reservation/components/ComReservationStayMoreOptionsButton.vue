@@ -1,7 +1,6 @@
 <template>
     <div>
-        <!-- <SplitButton class="border-split-none" label="Mores" icon="pi pi-list" :model="items" /> -->
-        <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
+          <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="folio_menu" />
         <Menu ref="folio_menu" id="folio_menu" :popup="true">
             <template #end>
@@ -18,7 +17,7 @@
                     <span class="ml-2">Undo Check-In</span>
                 </button>
                 <button @click="OnUndoCheckOut()"
-                    v-if="rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date == working_day?.date_working_day"
+                    v-if="canUndoCheckOut"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
                     <span class="ml-2">Undo Check Out</span>
@@ -107,7 +106,7 @@
    
 </template>
 <script setup>
-import { inject, ref, useConfirm, useToast, postApi,useDialog } from "@/plugin";
+import { inject, ref, useConfirm, useToast, postApi,useDialog,computed } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 
 
@@ -129,6 +128,16 @@ const loading = ref(false)
 const toggle = (event) => {
     folio_menu.value.toggle(event);
 }
+ 
+const canUndoCheckOut = computed(()=>{
+    
+if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
+    return rs.reservationStay.reservation_status == 'Checked Out' 
+}else {
+    return rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date >= working_day.value?.date_working_day 
+}
+    
+})
 
 items.value.push({
     label: "Audit Trail",
@@ -176,11 +185,9 @@ function onMarkAsMasterRoom() {
                 rs.loading = false
                 rs.reservationStay = doc.message
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
-                
             })
 
         },
@@ -212,10 +219,10 @@ function onUndoCheckIn() {
                 window.socket.emit("Dashboard", window.property_name)
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("TodaySummary", window.property_name)
 
 
                 setTimeout(() => {
@@ -253,7 +260,6 @@ function OnUndoCheckOut() {
                 window.socket.emit("Dashboard", window.property_name)
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
@@ -313,14 +319,6 @@ function onUpdateReservationStatus(header="Confirm Note",data){
              const data = options.data;
              if (data) {
                 rs.getReservationDetail(rs.reservationStay.name)
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("Dashboard", window.property_name)
-
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                window.socket.emit("Frontdesk", window.property_name)
-
-        
              }
          }
 
@@ -396,7 +394,6 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name);
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("Frontdesk", window.property_name)
                 
@@ -426,7 +423,6 @@ function onUnReservedRoom() {
                 loading.value = false
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("Frontdesk", window.property_name)
 
@@ -461,7 +457,6 @@ function onMarkasPaidbyMasterRoom() {
                         });
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                         window.socket.emit("ReservationStayList", { property:window.property_name})
-
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
 
@@ -500,7 +495,6 @@ function onUnmarkasPaidbyMasterRoom() {
                     });
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     window.socket.emit("ReservationStayList", { property:window.property_name})
-
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
 

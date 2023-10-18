@@ -336,7 +336,7 @@
                                     <span @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic ">
 
-                                        <div v-tooltip.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
+                                        <div v-tippy.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
                                             class="link_line_action flex justify-between">
                                             <div class="text-left inline">
                                                 <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
@@ -732,14 +732,14 @@ const onSave = (assign_room = false) => {
         doc: data
     }
     ).then((result) => {
-
         isSaving.value = false
         window.socket.emit("Dashboard", window.property_name);
         window.socket.emit("ReservationList", { property:window.property_name})
+        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("Frontdesk", window.property_name)
         dialogRef.value.close({ reservation: result.message, assign_room: assign_room });
     })
         .catch((error) => {
-
             isSaving.value = false
         });
 }

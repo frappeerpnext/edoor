@@ -26,14 +26,14 @@
                                 <span v-for="(i, index) in roomData" :key="index">
                                     <div class="inline font-semibold text-right" v-if="index < 3">
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                            <span v-tooltip.top="i.room_type">{{ i.room_type_alias }} </span>
+                                            <span v-tippy="i.room_type">{{ i.room_type_alias }} </span>
                                             <span v-if="i.room_number">/{{ i.room_number }}
                                             </span>
                                         </div>
                                     </div>
                                 </span>
                                 <span v-if="roomData.length > 3"
-                                    v-tooltip.top="{ value: getTooltip(), escape: true, class: 'max-w-30rem' }"
+                                    v-tippy="{ value: getTooltip(), escape: true, class: 'max-w-30rem' }"
                                     class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer whitespace-nowrap">
                                     {{ roomData.length - 3 }} Mores
                                 </span>
@@ -480,10 +480,9 @@ function onSave() {
     }, "Edit room rate successfully")
         .then((doc) => {
             isSaving.value = false
-            // window.socket.emit("RefreshData", { property: JSON.parse(localStorage.getItem("edoor_property")).name, action: "refresh_iframe_in_modal" })
-            // window.socket.emit("RefreshData", { reservation_stay: rs.reservationStay.name, action: "refresh_reservation_stay" })
             window.socket.emit("ReservationList", { property:window.property_name})
-
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             dialogRef.value.close(doc.message)
         })
         .catch((error) => {

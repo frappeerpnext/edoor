@@ -61,7 +61,7 @@
 
             <Column field="note" header="Note" style="min-width: 160px;">
                 <template #body="slotProps">
-                    <div v-if="slotProps.data.note" v-tooltip.top="slotProps.data.note">
+                    <div v-if="slotProps.data.note"  v-tippy="slotProps.data.note">
                         {{ slotProps.data.note.slice(0, 20) + (slotProps.data.note.length > 20 ? '...' : '') }}
                     </div>
                 </template>

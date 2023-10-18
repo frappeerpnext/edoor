@@ -46,7 +46,9 @@ let routes = [
   { path: "/frontdesk/no-permission", name: "NoPermission", component:NoPermission, meta: { layout: 'main_layout', title: 'Access Denied' } },
   { path: "/frontdesk/note", name: "Note", component: Note, meta: { layout: 'main_layout', title: 'Note' } },
   { path: "/frontdesk/room-block", name: "RoomBlock", component: RoomBlock, meta: { layout: 'main_layout', title: 'Room Block' } },
+  { path: "/frontdesk/housekeeping/room-block", name: "HousekeepingRoomBlock", component: RoomBlock, meta: { layout: 'main_layout', title: 'Room Block' } },
   { path: "/frontdesk/housekeeping", name: "Housekeeping", component: Housekeeping, meta: { layout: 'main_layout', title: 'Housekeeping' } },
+  
   { path: "/frontdesk/stay-detail/:name?", name: "ReservationStayDetail", component:ReservationStayDetail, meta: { layout: 'main_layout', title: 'Reservation Stay Detail' } },
   { path: "/frontdesk/reservation-detail/:name?", name: "ReservationDetail", component:ReservationDetail, meta: { layout: 'main_layout', title: 'Reservation Detail' } },
   { path: "/frontdesk/guest-database", name: "GuestDatabase", component:GuestList, meta: { layout: 'main_layout', title:"Guest Database" } },
@@ -62,6 +64,7 @@ let routes = [
   { path: "/frontdesk/business-source-type", name: "BusinessSourceType", component:BusinessSourceType, meta: { layout: 'main_layout', title:"Business Source Type" } },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/test-page", name: "TestPage", component: TestPage, meta: { layout: 'main_layout' } },
  
   ...authRoutes,
 

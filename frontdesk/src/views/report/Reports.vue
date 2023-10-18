@@ -5,7 +5,29 @@
                 <div class="flex align-items-center">
                     <div @click="onRefresh()" class="text-2xl">Reports</div>
                 </div>
+                <div class="flex align-items-right">
+                    <SplitButton class="border-split-none" label="Print" icon="pi pi-print" @click="onPrint" />
+                </div>
             </div>
+    <!-- <div class="wrap-dialog iframe-modal">
+        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
+            <div class="grid mb-3 ">
+                <div class="col flex gap-2 ">
+                    <div>
+                        <div @click="onRefresh()" class="text-2xl">Reports</div>
+                    </div>
+                </div>
+                <div class="col flex gap-2 justify-end">
+                    <div v-if="(view||'')!='ui'">
+                        <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" :model="items" />
+                        
+                    </div>
+                </div>
+            </div> 
+           
+        </div>
+    </div> -->
+            
         </template>
     </ComHeader>
     <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
@@ -88,9 +110,28 @@ function loadIframe() {
         }
 
         url.value = url.value + "&refresh=" + (Math.random() * 16)
+        
         document.getElementById("iframe").contentWindow.location.replace(url.value)
     }
 
+}
+function onPrint(){
+    if (selectedReport.value) {
+        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting.property.name + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=1"
+
+
+        if (Object.keys(filters.value)) {
+            Object.keys(filters.value).forEach(p => {
+                if (filters.value[p]) {
+                    url.value = url.value + "&" + p + "=" + filters.value[p]
+                }
+            });
+        }
+
+        url.value = url.value + "&trigger_print=1&refresh=" + (Math.random() * 16)
+        
+        document.getElementById("iframe").contentWindow.location.replace(url.value)
+    }
 }
 
 

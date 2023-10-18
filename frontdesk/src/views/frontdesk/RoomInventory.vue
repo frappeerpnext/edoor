@@ -5,9 +5,9 @@
                 <div class="flex">
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Room Inventory</div> 
-                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('MMM DD, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
-                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('MMM DD')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
+                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
+                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
                 </div>
             </template>
@@ -134,18 +134,15 @@ const filter = ref({
     period: "15_days"
 })
 
-const selectedDate = ref()
 const showAdvanceSearch = ref()
-let currentHightlightResourceId = ""
+
 const fullCalendar = ref(null)
 const gv = inject("$gv")
 const toast = useToast();
 const dialog = useDialog();
-const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const edoorShowFrontdeskSummary = localStorage.getItem("edoor_show_frontdesk_summary")
-let start_date, end_date //we use this event to hold value of start and end date when use resize date or drag and drop date
+
 const keyword = ref({
     keyword: '',
     room_number: ''
@@ -154,7 +151,7 @@ const showSummary = ref(true)
 const showNote = ref(false)
 const loading = ref(false)
 const totalNotes = ref(0)
-const conflictRooms = ref()
+
 let advanceFilter = ref({
     room_type: "",
     room_number: "",
@@ -176,7 +173,7 @@ if (edoorShowFrontdeskSummary) {
 }
 
 let roomChartResourceFilter = reactive({
-    property: property.name,
+    property: window.property_name,
     view_type: filter.value.view_type // room_type = true or room = false
 })
 
@@ -278,9 +275,6 @@ const calendarOptions = reactive({
   
 })
 
-const getEventDebounce = debouncer(() => {
-    getEvents()
-}, 500);
  
 
 function setRoomChartlocationStorage() {
@@ -343,49 +337,7 @@ function onPrevNext(key) {
  
 }
 
-function onSelectedDate(event) {
-    const start = event.startStr
-    const end = event.endStr
-    const totalSlotsSelected = Math.abs(new Date(end) - new Date(start)) / 1000 / 60 / 60 / 24
-    if (totalSlotsSelected < 1) {
-        return
-    }
-    if (event.resource._resource.extendedProps.type == "room") {
-        let room_type_id = event.resource._resource.extendedProps.room_type_id ?? ""
-        if (room_type_id == "") {
-            room_type_id = event.resource._resource.parentId;
-        }
-        const dialogRef = dialog.open(NewReservation, {
-            data: {
-                arrival_date: event.start,
-                departure_date: event.end,
-                room_type_id: room_type_id,
-                room_id: event.resource._resource.id
-            },
-            props: {
-                header: 'New Reservation',
-                style: {
-                    width: '80vw',
-                },
-                breakpoints: {
-                    '960px': '100vw',
-                    '640px': '100vw'
-                },
-                modal: true,
-                maximizable: true,
-                closeOnEscape: false,
-                position: 'top'
-            },
-            onClose: (options) => {
-                const data = options.data;
-                if (data != undefined) {
-                    showReservationDetail(data.name)
-                }
-            }
-        });
-    }
-}
-
+ 
 function resourceColumn() {
     return [
             {
@@ -433,28 +385,9 @@ const onRefresh = debouncer((show_loading = true) => {
 
   
  
-function onFilterResource(f) {
-    roomChartResourceFilter = {
-        property: property.name,
-        room_type_group: f.room_type_group,
-        room_type: f.room_type,
-        building: f.building,
-        floor: f.floor,
-        room_number: f.room_number,
-        business_source: f.business_source,
-        view_type: filter.value.view_type
-    }
-    advanceFilter.value = roomChartResourceFilter
-    getResourceAndEvent()
-}
-
-// search event
-function onSearch(key) {
-    getEvents();
-}
 
 function getTotalNote() {
-    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day], ['property', '=', property.name]]).then((docs) => {
+    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day], ['property', '=', window.property_name]]).then((docs) => {
         totalNotes.value = docs
     })
 }
@@ -474,7 +407,7 @@ function debouncer(fn, delay) {
 
  
 function getResources() {
-    getApi('frontdesk.get_room_inventory_resource', { property: property.name }).then((result) => {
+    getApi('frontdesk.get_room_inventory_resource', { property: window.property_name }).then((result) => {
         resources.value = result.message
         getEvents()
     })
@@ -488,7 +421,7 @@ function getEvents() {
     getApi('frontdesk.get_room_inventory_calendar_event', {
         start: moment(cal.view.currentStart).format("YYYY-MM-DD"),
         end: moment(cal.view.currentEnd).add(-1,"days").format("YYYY-MM-DD"),
-        property: property.name
+        property: window.property_name
     }).then((result) => {
         removeDOM()
         //1 create room type event
@@ -555,20 +488,20 @@ function getEvents() {
                     
                 } else if (r.id == "arrival") {
 
-                    event.arrival = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.arrival || 0), 0)
+                    event.arrival = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.arrival || 0), 0) || 0
                     event.title = event.arrival
 
                     event.color="#F2CB38"
                     event.textcolor="white"
                     
                 } else if (r.id == "stay_over") {
-                    event.stay_over = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.stay_over || 0), 0)
+                    event.stay_over = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.stay_over || 0), 0) || 0
                     event.title = event.stay_over
                     event.color="#F2CB38"
                     event.textcolor="white"
                     
                 } else if (r.id == "departure") {
-                    event.departure = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.departure || 0), 0)
+                    event.departure = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.departure || 0), 0) || 0
                     event.title = event.departure
 
                     event.color="#F2CB38"
@@ -678,6 +611,7 @@ onMounted(() => {
 
     getResources()
 
+    document.body.addEventListener('scroll', handleScroll);
 
 })
  
@@ -699,35 +633,6 @@ onUnmounted(() => {
     window.socket.off("Frontdesk");
     document.body.removeEventListener('scroll', handleScroll);
 })
-
-const onOpenAdvanceSearch = (event) => {
-    if (event == false) {
-        showAdvanceSearch.value.hide()
-    }
-    else {
-        showAdvanceSearch.value.toggle(event);
-    }
-}
-
-
-const onClearFilter = () => {
-    keyword.value.room_number = ''
-    keyword.value.keyword = ''
-    onFilterResource({})
-}
-
-function onSearchRoom(key) {
-    advanceFilter.value.room_number = gv.keyword(key);
-    onFilterResource(advanceFilter.value);
-}
-
-provide('advance_filter', {
-    onOpenAdvanceSearch,
-    advanceFilter,
-    onFilterResource,
-    onClearFilter
-})
-
  
 
 //Remove tippy tooltips when room chart DOM removed

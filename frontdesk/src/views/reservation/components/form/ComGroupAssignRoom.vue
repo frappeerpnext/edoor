@@ -13,11 +13,12 @@
             <td class="text-center">Nights</td>
             <td class="text-right">Rate</td>
         </tr>
-        <tr v-for="(d, index) in data" :key="index">
+        <template  v-for="(d, index) in data" :key="index">
+            <tr>
             <td>
                 <div class="box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt" >
-                <span v-tooltip.top="'Arrival date'"> {{ moment(d.start_date).format("DD-MM-YYYY") }}</span> &#8594;
-                <span v-tooltip.top="'Departure date'">{{ moment(d.end_date).format("DD-MM-YYYY") }}</span>
+                <span  v-tippy="'Arrival date'"> {{ moment(d.start_date).format("DD-MM-YYYY") }}</span> &#8594;
+                <span  v-tippy="'Departure date'">{{ moment(d.end_date).format("DD-MM-YYYY") }}</span>
                 </div>
                 
             </td>
@@ -42,12 +43,7 @@
                                     </template>
                                 </Dropdown>
 
-                <Message v-if="d.room_type_id != d.new_room_type_id">
-                    <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0"  @input="onUpdateRate(d)" />
- 
-                    <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
-                        regenerate rate</label>
-                </Message>
+           
             </td>
             <td class="p-2 select-room-number-style">
                 <Dropdown class="w-full" v-model="d.room_id" :options="get_rooms(d)" optionValue="name" 
@@ -68,6 +64,20 @@
 
 
         </tr>
+        <tr v-if="d.room_type_id != d.new_room_type_id" >
+            <td colspan="7">
+                <Message >
+                    <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0"  @input="onUpdateRate(d)" />
+ 
+                    <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
+                        regenerate rate</label>
+                </Message>
+            </td>
+        </tr>
+           
+                
+        </template>
+      
     </table>
 </template>
 </ComReservationStayPanel>  

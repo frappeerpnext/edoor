@@ -24,9 +24,9 @@
                         <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
                             <template #body="slotProps">
                                 <div>
-                                    <span v-tooltip.top="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
+                                    <span v-tippy="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
                                     &#8594;
-                                    <span v-tooltip.top="'Departure Date'">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
+                                    <span v-tippy="'Departure Date'">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
                                 </div>                               
                             </template>
                         </Column>
@@ -45,11 +45,11 @@
                                     <span v-for="(i, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
                                         <span v-if="index < 3">
                                             {{(index != 0) ? ',' : ''}}
-                                            <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>/
+                                            <span v-tippy="i.room_type">{{i.room_type_alias}}</span>/
                                             <span v-if="i.room_number">
                                                 {{ i.room_number }}  
                                             </span>
-                                            <button v-tooltip.top="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                            <button v-tippy="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
                                                 <!-- <i class="pi pi-pencil"></i> -->
                                                 <span>
                                                     Assign {{i.reservation_stay}}
@@ -58,7 +58,7 @@
                                         </span>
                                     </span>
                                     <span v-if="JSON.parse(slotProps.data.rooms_data).length > 3"
-                                        v-tooltip.top="{ value: getTooltip(slotProps.data) , escape: true, class: 'max-w-30rem' }"
+                                        v-tippy="{ value: getTooltip(slotProps.data) , escape: true, class: 'max-w-30rem' }"
                                         class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
                                         {{JSON.parse(slotProps.data.rooms_data).length - 3}} Mores
                                     </span>
@@ -74,7 +74,7 @@
                         </Column>
                         <Column header="Pax">
                             <template #body="slotProps">
-                                <span v-tooltip.top="'Adults'">{{slotProps.data.adult}}</span>/<span v-tooltip.top="'Children'">{{slotProps.data.child}}</span>
+                                <span v-tippy="'Adults'">{{slotProps.data.adult}}</span>/<span v-tippy ="'Children'">{{slotProps.data.child}}</span>
                             </template>
                         </Column>
                         <Column class="text-right res__room-list-right" header="ADR">
@@ -105,13 +105,13 @@
                         <Column field="reservation_status" class="res__state__center text-center" header="Status">
                             <template #body="slotProps">
                                 <ComReservationStatus :class="`data-${slotProps.data.reservation_status}`" class="border-round-3xl " :status-name="slotProps.data.reservation_status">
-                                    <div v-tooltip.top="'Paid by Master Room'" v-if="slotProps.data.paid_by_master_room && slotProps.data.is_active_reservation && !(slotProps.data.is_master)" class="px-1 border-circle bg-tran-black  inline">
+                                    <div v-tippy="'Paid by Master Room'" v-if="slotProps.data.paid_by_master_room && slotProps.data.is_active_reservation && !(slotProps.data.is_master)" class="px-1 border-circle bg-tran-black  inline">
                                         <ComIcon class="inline" icon="BilltoMasterRoomWhite" style="height:12px;" ></ComIcon>
                                     </div>
-                                    <div v-tooltip.top="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                    <div v-tippy="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <ComIcon class="inline" icon="IconBillToCompanywhite" style="height:12px;" ></ComIcon>
                                     </div>
-                                    <div v-tooltip.top="{ value: `<span class='text-white '> ${slotProps.data.require_drop_off ? 'Require Drop Off' : ''}  ${slotProps.data.require_pickup ? 'Require Pickup ' : ''} </span>`, escape: true, class: 'text-center' }" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                    <div v-tippy="{ value: `<span class='text-white '> ${slotProps.data.require_drop_off ? 'Require Drop Off' : ''}  ${slotProps.data.require_pickup ? 'Require Pickup ' : ''} </span>`, escape: true, class: 'text-center' }" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <i class="pi pi-car text-white" style="font-size: 10px;" />
                                     </div>
                                 </ComReservationStatus>

@@ -201,6 +201,7 @@ import ComOrderBy from '@/components/ComOrderBy.vue';
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const data = ref()
 const gv = inject("$gv")
 const frappe = inject('$frappe');
@@ -208,7 +209,7 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ status: 'All Status', start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword: "" })
+const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({order_by: "modified", order_type: "desc"})
 const loading = ref(false) 
@@ -317,8 +318,8 @@ const onSearch = debouncer(() => {
 }, 500);
 
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
     filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
@@ -359,7 +360,7 @@ onMounted(() => {
     window.socket.on("ComGuestLedger", (arg) => {
     if (arg.property == window.property_name) {
         setTimeout(function () {
-            loadData()
+            loadData(false)
         }, 3000)
     }
 })

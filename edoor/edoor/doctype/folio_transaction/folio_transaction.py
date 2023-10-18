@@ -78,6 +78,16 @@ class FolioTransaction(Document):
 			self.working_date = working_day["date_working_day"]
 			self.cashier_shift = working_day["cashier_shift"]["name"]
 
+			#check if not guest selected then add reservation folio guest to this folio transaction
+			if self.transaction_type == "Reservation Folio":
+
+				if not self.guest:
+					guest, guest_name = frappe.db.get_value('Reservation Folio',self.transaction_number , ['guest', 'guest_name'])
+					self.guest = guest
+					self.guest_name = guest_name
+
+
+
 			if not self.room_id:
 				#get room info
 				#1 get room from reservation room rate
@@ -99,7 +109,14 @@ class FolioTransaction(Document):
 							self.room_number =room_rate_data[0].room_number 
 							self.room_type =room_rate_data[0].room_type
 					#end update room type and room number
-		
+			else:
+				#room id is manually set so we need to get room type id set to this folio transaction
+				room = frappe.get_doc("Room", self.room_id)
+				self.room_type_id = room.room_type_id
+				self.room_type = room.room_type
+
+
+
 			 
 		self.discount = self.discount if (self.discount or 0) >0 else 0
 
@@ -189,6 +206,9 @@ class FolioTransaction(Document):
 	
 		if not self.parent_reference:
 			update_sub_account_description(self)
+
+		
+
 
 
 	def after_insert(self):
@@ -389,6 +409,7 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 				)
 			else:
 				if amount> 0:
+					
 					doc = frappe.get_doc({
 						'doctype': 'Folio Transaction',
 						'transaction_type':self.transaction_type,
@@ -397,6 +418,10 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						'naming_series':self.name + '.-.##',
 						'folio_number':self.folio_number,
 						'property': self.property,
+						'room_type_id':self.room_type_id,
+						'room_type':self.room_type,
+						'room_number':self.room_number,
+						'room_id':self.room_id,
 						'reservation': self.reservation,
 						'reservation_stay': self.reservation_stay,
 						'posting_date': self.posting_date,
@@ -411,6 +436,7 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"parent_reference":self.name,
 						"is_auto_post":self.is_auto_post
 					}).insert()
+					
 
 
 @frappe.whitelist()

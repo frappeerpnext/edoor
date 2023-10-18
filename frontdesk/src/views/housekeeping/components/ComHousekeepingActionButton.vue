@@ -77,7 +77,7 @@ function onSaveChangeHousekeepingStatus() {
         hk.loadData().then((r)=>{
             hk.selectedRooms = []
         })
-        window.socket.emit("RefreshData", {property: setting.property.name,action:"refresh_hk_status"})
+        window.socket.emit("ComHousekeepingStatus", window.property_name)
         submitLoading.value = false
         selectedStatus.value = ""
     })

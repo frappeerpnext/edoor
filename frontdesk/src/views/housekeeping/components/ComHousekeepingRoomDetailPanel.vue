@@ -173,10 +173,8 @@ function onSelected($event){
             visible.value = false 
             hk.selectedRow.housekeeping_status = doc.housekeeping_status
             hk.selectedRow.status_color = doc.status_color
-            console.log(doc.housekeeping_status)
             toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
-            window.socket.emit("RefreshData", {property: setting.property.name,action:"refresh_hk"})
-            window.socket.emit("RefreshData", {property: setting.property.name,action:"refresh_hk_status"})
+            window.socket.emit("ComHousekeepingStatus", window.property_name)
             submitLoading.value = false
         })
         .catch((error) => {

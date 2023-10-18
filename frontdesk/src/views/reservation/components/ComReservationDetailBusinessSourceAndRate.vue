@@ -65,10 +65,8 @@
         opRateType.value.hide();
     }
     const onChangeBusinessSource = (doc) => {
-        // rs.reservation = doc
-        alert(window.reservation_stay)
-        // window.socket.emit("ReservationStayDetail", { reservation_stay: rs.reservationStays.name })
-        
+        console.log(doc.reservation.business_source)
+        rs.reservation.business_source = doc.reservation.business_source
         opBusinessSource.value.hide();
     }
 
@@ -76,7 +74,6 @@
         if(doc){
             rs.LoadReservation(rs.reservation.name)
             opRateType.value.hide();
-            window.socket.emit("ReservationDetail", window.reservation)
         }
             
     }

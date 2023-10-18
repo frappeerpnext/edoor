@@ -35,7 +35,6 @@ import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 
-// import ComBusinessSourceDetail from "./views/business_source/components/ComBusinessSourceDetail.vue";
 
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -68,7 +67,6 @@ if (localStorage.getItem("edoor_property") == null) {
 
 const actionClickHandler = async function (e) {
     
- 
 
     if (e.isTrusted && typeof (e.data) == 'string') {
 
@@ -126,7 +124,7 @@ const actionClickHandler = async function (e) {
         }
 
     }else if (e.data.extendedProps)  {
-       
+ 
         if(e.data.extendedProps.type=="room_block"){
             showRoomBlockDetail(e.data.publicId)
         }
@@ -140,7 +138,9 @@ const actionClickHandler = async function (e) {
         
         
     }else if(e.data.action){
-        onViewDailySummary(e.data.date,null)
+        if(e.data.action=="view_property_data_sumary_by_date"){ 
+            onViewDailySummary(e.data.date,null)
+        }
     }
 };
 
@@ -151,6 +151,8 @@ window.addEventListener('message', actionClickHandler, false);
 
 onUnmounted(() => {
     window.removeEventListener('message', actionClickHandler, false);
+    window.socket.off("UpdateCashierShift")
+    window.socket.off("RunNightAudit")
 })
 onMounted(() => {
     window.socket.on("UpdateCashierShift", (arg) => {
@@ -161,7 +163,7 @@ onMounted(() => {
 
 
     window.socket.on("RunNightAudit", (arg) => {
-        if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.property && arg.action=="reload_page" && window.session_id!=arg.session_id) {
+        if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.property && window.session_id!=arg.session_id) {
             window.location.reload()
         }
     })
@@ -446,7 +448,7 @@ function onViewDailySummary(date,room_type_id, title="") {
            name: JSON.parse(localStorage.getItem("edoor_property")).name,
            report_name: "Daily%20Property%20Data%20Summary",
            view:"ui",
-           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:room_type_id}],
+           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:(room_type_id || '')}],
            fullheight: true
        },
        props: {

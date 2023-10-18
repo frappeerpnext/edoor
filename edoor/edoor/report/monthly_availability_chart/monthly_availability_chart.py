@@ -104,9 +104,9 @@ def get_report_data(filters):
 		#start render room type record
 
 		room_types =  list(dict.fromkeys((d['room_type_id'], d['room_type']) for d in data))
+		
 	
 		for rt in room_types:
-
 			rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
 			
 			current_month_data = [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]]

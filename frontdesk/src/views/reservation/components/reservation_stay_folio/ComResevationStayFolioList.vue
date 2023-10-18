@@ -5,7 +5,7 @@
             <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
                 <div class="flex justify-content-between align-items-center p-2">
                     <span>Room Folio</span>
-                    <Button class="btn-add-folio" @click="onAddCreatNewFolio" v-tooltip.top="'Create Folio'">
+                    <Button class="btn-add-folio" @click="onAddCreatNewFolio"  v-tippy="'Create Folio'">
                         <img :src="plus_svg" style="height: 13px;">
                     </Button>
                 </div>
@@ -25,7 +25,7 @@
                             </span>
                             <span class="flex justify-content-between w-full">
                                 <span class="flex text-left line-height-2">
-                                    <span style="display:inline-block;max-width: 95px;" v-tooltip="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
+                                    <span style="display:inline-block;max-width: 95px;" v-tippy="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
                                         font-italic text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
                                         <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
                                         <span class="ms-1">{{ item.guest_name }}</span>

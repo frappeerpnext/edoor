@@ -15,6 +15,7 @@
   "room_number",
   "room_type_id",
   "room_type",
+  "room_type_alias",
   "type",
   "property",
   "is_arrival",
@@ -156,11 +157,18 @@
    "fieldname": "building",
    "fieldtype": "Data",
    "label": "Building"
+  },
+  {
+   "fetch_from": "room_type_id.alias",
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Type Alias"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-23 10:22:16.702200",
+ "modified": "2023-10-17 14:45:33.934718",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

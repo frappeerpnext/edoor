@@ -7,7 +7,7 @@
             <span class="con" @click="onViewReservationStayDetail(doc?.name)">
                 <ComTagReservation title="RES STAY#:" :value="doc?.name" class="link_line_action w-auto"></ComTagReservation>
             </span>
-            <div v-tooltip.top="'Split Room'" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="doc?.stays?.length >= 2" >
+            <div v-tippy ="'Split Room'" class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px" v-if="doc?.stays?.length >= 2" >
                 <ComIcon  icon="iconSplit" style="height:15px;" ></ComIcon>   
             </div>
             <span class="px-2 rounded-lg me-2 text-white p-1px" :style="{ background: doc?.status_color }">{{doc?.reservation_status }}</span>
@@ -25,16 +25,16 @@
                     </ComStayInfoNoBox>   
                     <ComStayInfoNoBox  label="Business Source" :value="doc?.business_source" /> 
                     <ComStayInfoNoBox  label="Reservation Type" :value="doc?.reservation_type">
-                        <span v-tooltip.top="'Res Color'" v-if="doc?.reservation_color" :style="{background:doc?.reservation_color}" class="px-3 rounded-lg font-semibold" >&nbsp;</span>
+                        <span v-tippy ="'Res Color'" v-if="doc?.reservation_color" :style="{background:doc?.reservation_color}" class="px-3 rounded-lg font-semibold" >&nbsp;</span>
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox v-if="doc?.reservation_type == 'GIT'" label="Group">
                         <div class="flex font-semibold text-right -ml-3">
-                            <sapn v-if="doc?.group_code" v-tooltip.top="'Group Code'">{{ doc?.group_code }}</sapn><span v-if="doc?.group_code && doc?.group_name">/</span> <span v-if="doc?.group_name" v-tooltip.top="'group_name'">{{ doc?.group_name }}</span>
+                            <sapn v-if="doc?.group_code" v-tippy ="'Group Code'">{{ doc?.group_code }}</sapn><span v-if="doc?.group_code && doc?.group_name">/</span> <span v-if="doc?.group_name" v-tippy ="'group_name'">{{ doc?.group_name }}</span>
                         </div>
                     </ComStayInfoNoBox> 
                     <ComStayInfoNoBox  label="Pax">
                         <div class="inline -ml-3 font-semibold">
-                            <sapn v-tooltip.top="'Adult'" >{{ doc?.adult }}</sapn> / <span v-tooltip.top="'Child'" >{{ doc?.child }}</span>
+                            <sapn v-tippy ="'Adult'" >{{ doc?.adult }}</sapn> / <span v-tippy ="'Child'" >{{ doc?.child }}</span>
                         </div>
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox v-if="doc?.stays.length>1"  label="Rooms">
@@ -43,13 +43,13 @@
                                 <span v-for="(i, index) in doc?.stays" :key="index">
                                     <div class="inline" v-if="index < 3">
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                        <span v-tooltip.top="i.room_type">{{i.room_type_alias}}</span>
+                                        <span v-tippy ="i.room_type">{{i.room_type_alias}}</span>
                                         <span v-if="i.room_number">/{{ i.room_number }}  
                                         </span>
                                         </div>
                                     </div>
                                 </span>
-                                <div v-if="doc?.stays.length>3" v-tooltip.top="{ value: `<div class='tooltip-room-stay'> ${doc?.stays.stays.slice(3).map(obj => obj.room_types + '/' + (obj.room_number || '')  ).join('\n')}</div>` 
+                                <div v-if="doc?.stays.length>3" v-tippy ="{ value: `<div class='tooltip-room-stay'> ${doc?.stays.stays.slice(3).map(obj => obj.room_types + '/' + (obj.room_number || '')  ).join('\n')}</div>` 
                                     ,escape: true, class: 'max-w-30rem' }" class="rounded-xl px-2 bg-purple-cs w-auto inline">
                                     {{ doc?.stays.length - 3 }} Mores
                                 </div> 
@@ -70,7 +70,7 @@
                             <div v-if="doc && doc?.stays">
                                     <div class="-ml-3"> 
                                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                                <span v-tooltip.top="data?.extendedProps?.room_type">{{data?.extendedProps?.room_type_alias}}</span>
+                                                <span v-tippy ="data?.extendedProps?.room_type">{{data?.extendedProps?.room_type_alias}}</span>
                                                 <span v-if="data?.extendedProps?.room_number"> / {{ data?.extendedProps?.room_number }}  
                                                 </span>
                                         </div>
@@ -99,7 +99,7 @@
                 <div class="inline -ml-3 ">
                     <template  v-if="new_data" >
                         <div class="rounded-xl px-2 me-1 bg-gray-edoor inline" >
-                        <sapn   v-tooltip.top="new_data?.extendedProps?.room_type" >{{ new_data?.extendedProps?.room_type_alias }}</sapn> / <span>{{ new_data?.title }}</span>
+                        <sapn   v-tippy ="new_data?.extendedProps?.room_type" >{{ new_data?.extendedProps?.room_type_alias }}</sapn> / <span>{{ new_data?.title }}</span>
                         </div>
                         <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-yellow-400 ">
                             <span style="font-weight: 700 !important;">Move</span>
@@ -109,7 +109,7 @@
                         <div v-if="doc && doc?.stays">
                             <div class=""> 
                                 <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
-                                    <span v-tooltip.top="data?.extendedProps?.room_type">{{data?.extendedProps?.room_type_alias}}</span>
+                                    <span v-tippy ="data?.extendedProps?.room_type">{{data?.extendedProps?.room_type_alias}}</span>
                                     <span v-if="data?.extendedProps?.room_number"> / {{ data?.extendedProps?.room_number }}  </span>
                                 </div>
                             </div>
@@ -217,16 +217,9 @@ function onSave(){
         isSaving.value = false
         //we delay wait data to update complete
         setTimeout(function(){
-  
-            window.socket.emit("RefresheDoorDashboard", doc.value.property);
-            window.socket.emit("RefreshData", {property:doc.value.property,action:"refresh_summary"})
-            window.socket.emit("RefreshData", {reservation_stay:doc.value.name,action:"refresh_reservation_stay"})
+            window.socket.emit("Frontdesk", window.property_name);
         }, 1000)
         
-
-
-        
-        window.socket.emit("RefreshData", { property: doc.value.property, action: "refresh_iframe_in_modal" })
         dialogRef.value.close(result);
     }).catch((err)=>{
         isSaving.value = false

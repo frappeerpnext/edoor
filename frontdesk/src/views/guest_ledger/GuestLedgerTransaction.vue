@@ -41,11 +41,7 @@
                             </div>
                         </div>
                         <div class="flex gap-3">
-                        
                             <ComOrderBy doctype="Account Code" @onOrderBy="onOrderBy" />
-                            <!-- <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"
-                                placeholder="Sort By" @change="onSelectOrderBy" />
-                            <Button @click="onOrderTypeClick">{{ filter.order_type }}</Button> -->
                         </div>
                     </div>
                 </div> 

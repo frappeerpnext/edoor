@@ -78,8 +78,6 @@ const onSave = () => {
     doc.group_name = doc.group_name || ""
     if (doc.reservation_date) doc.reservation_date = moment(doc.reservation_date).format("yyyy-MM-DD")
 
-
-  
     postApi("reservation.update_reservation_information",{
             doc:doc,
             apply_all_active_stay:apply_all_stay.value,
@@ -90,6 +88,7 @@ const onSave = () => {
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", window.reservation)
         emit("onClose", doc.message)
     }).catch((ex) => {
         isLoading.value = false;

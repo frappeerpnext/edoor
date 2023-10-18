@@ -236,7 +236,7 @@ app.use(
 			allowHTML: true,
 			followCursor: true,
 			
-			//interactive: true,
+			// interactive: true,
 		},
 	}
 )
@@ -304,7 +304,7 @@ if (setting) {
 
 
 
-	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound"]
+	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage"]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)

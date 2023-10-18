@@ -4,9 +4,17 @@
         <MultiSelect class="w-full" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
             @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
-        <Dropdown class="w-full" v-else :showClear="clear" :style="{ 'min-width': width }" v-model="selected" :filter="isFilter"
-            :options="dataOptions" :optionLabel="option.label" :optionValue="option.value" @update:modelValue="onUpdate"
-            :placeholder="placeholder">
+        <Dropdown 
+            class="w-full" v-else 
+            :showClear="clear" 
+            :style="{ 'min-width': width }"
+            v-model="selected" :filter="isFilter"
+            :options="dataOptions" 
+            :optionLabel="option.label" 
+            :optionValue="option.value" 
+            @update:modelValue="onUpdate"
+            :placeholder="placeholder"
+        >
         </Dropdown>
     </tippy>
     </div>

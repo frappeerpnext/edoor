@@ -6,8 +6,8 @@
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
-                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('MMM DD, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
-                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('MMM DD')}} - {{moment.utc(filter.end_date).add(-1,"days").format('MMM DD, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
                 </div>
             </template>
@@ -107,7 +107,7 @@
 
     </template>
 <script setup>
-import { h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
+import { useConfirm, h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList,updateDoc } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -128,8 +128,9 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import FullCalendar from '@fullcalendar/vue3'
+import ComDialogNote from '@/components/form/ComDialogNote.vue';
 
-
+const confirm = useConfirm()
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
@@ -249,7 +250,7 @@ const calendarOptions = reactive({
             }
         }
         info.el.addEventListener('click', function () {
-            window.postMessage({ "action": "view_product_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
+            window.postMessage({ "action": "view_property_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
         })
         info.el.style.cursor="pointer"
 
@@ -286,6 +287,50 @@ const calendarOptions = reactive({
             $event.revert()
             return
         }
+        if ($event.event._def.extendedProps.type=="room_block"){
+            const dialogRef = dialog.open(ComDialogNote, {
+            data:  {
+                api_url: "Room Block",
+                method: "PUT",
+                confirm_message: "Are you sure you want to change room block date?",
+                name:$event.event._def.publicId,
+                data: {
+                    
+                        start_date:moment($event.event.start).format("YYYY-MM-DD"), 
+                        end_date:moment($event.event.end).format("YYYY-MM-DD")
+
+                },
+
+            },
+            props: {
+                header: "Change Room Block Date",
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
+            },
+            onClose: (options) => {
+                const data = options.data;
+
+
+                if (data) {
+                   
+                }else {
+                    $event.revert()
+                }
+            }
+
+        })
+           
+ 
+        } else {
+
+      
+        
+        
 
         const dialogRef = dialog.open(ComConfirmChangeStay, {
             data: { event: $event.event, show_keep_rate: 0,old_event:{start:start_date, end:end_date} },
@@ -306,6 +351,7 @@ const calendarOptions = reactive({
                 }
             }
         });
+    }
     }),
 
     eventClick: ((info) => {
@@ -358,6 +404,54 @@ const calendarOptions = reactive({
                 title = "Move Room"
             }
         }
+
+        if ($event.event._def.extendedProps.type=="room_block"){
+         
+                if ($event.newResource) {
+                    $event.revert()
+            return
+                }  
+           
+            const dialogRef = dialog.open(ComDialogNote, {
+            data:  {
+                api_url: "Room Block",
+                method: "PUT",
+                confirm_message: "Are you sure you want to change room block date?",
+                name:$event.event._def.publicId,
+
+                data: {
+                    
+                        start_date:moment($event.event.start).format("YYYY-MM-DD"), 
+                        end_date:moment($event.event.end).format("YYYY-MM-DD")
+
+                },
+
+            },
+            props: {
+                header: "Change Room Block Date",
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
+            },
+            onClose: (options) => {
+                const data = options.data;
+
+
+                if (data) {
+                   
+                }else {
+                    $event.revert()
+                }
+            }
+
+        })
+           
+ 
+        } else { 
  
         const dialogRef = dialog.open(ComConfirmChangeStay, {
             data: { event: $event.event, show_keep_rate: 1, new_event: $event.newResource?._resource,old_event:{start:$event.oldEvent.start,end:$event.oldEvent.end} },
@@ -377,6 +471,7 @@ const calendarOptions = reactive({
                 }
             }
         });
+    }
     },
 })
 
@@ -392,6 +487,9 @@ function setRoomChartlocationStorage() {
         "view": filter.value.view_type || "room"
     }))
 }
+
+
+ 
 
 function onFilterToday() {
     if (gv.loading) {
@@ -599,7 +697,7 @@ function generateEventForRoomType(data) {
                     occupy_data = data.filter(c => c.date == moment(current_date).format("YYYY-MM-DD"))
                     const room_available = r.total_room - occupy_data.reduce((n, d) => n + (d.total || 0), 0)
                   
-                    
+                 
                     room_type_event.push(
                         {
                            
@@ -664,7 +762,7 @@ function generateEventForRoomType(data) {
                 room_type_event.push(
                     {
 
-                        color: "#3b82f6",
+                        color:( r.total_room - (occupy_data?.total || 0))<0?"red":"#3b82f6",
                         resourceId: r.id,
                         start: moment(current_date).format("YYYY-MM-DD") + "T00:00:00.000000",
                         end: moment(current_date).format("YYYY-MM-DD") + "T23:59:00.000000",
@@ -876,7 +974,9 @@ onMounted(() => {
 
     window.socket.on("Frontdesk", (arg) => {
         if (arg == window.property_name) {
-            getResourceAndEvent(false)
+           
+                getResourceAndEvent()
+          
         }
     })
 

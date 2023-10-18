@@ -41,6 +41,7 @@
     <img v-else-if="icon == 'roomRate'" :style="{'height' : height}" :class="class" :src="roomRate"/>
     <img v-else-if="icon == 'iconChangeStay'" :style="{'height' : height}" :class="class" :src="iconChangeStay"/>
     <img v-else-if="icon == 'iconSplit'" :style="{'height' : height}" :class="class" :src="iconSplit"/>
+    <img v-else-if="icon == 'iconConflictRoom'" :style="{'height' : height}" :class="class" :src="iconConflictRoom"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -95,5 +96,6 @@ import iconChangeStay from '@/assets/svg/icon-changestay.svg'
 import BilltoMasterRoomWhite from '@/assets/svg/icon-BilltoMasterRoomWhite.svg'
 import IconBillToCompanywhite from '@/assets/svg/IconBillToCompanywhite.svg'
 import iconSplit from '@/assets/svg/icon-split-blue.svg'
+import iconConflictRoom from '@/assets/svg/icon-conflict-room.svg'
 </script>
  

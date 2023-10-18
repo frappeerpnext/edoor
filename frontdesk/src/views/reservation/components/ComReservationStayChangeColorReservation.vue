@@ -27,6 +27,7 @@ function onSave(){
         window.socket.emit("Dashboard", rs.reservationStay.property)
         window.socket.emit("ReservationStayList", { property:window.property_name})
         window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+        window.socket.emit("Frontdesk", window.property_name)
         emit('onClose')
     }).catch(()=>{
         loading.value = false

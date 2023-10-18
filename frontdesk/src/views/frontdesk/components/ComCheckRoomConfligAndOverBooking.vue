@@ -1,5 +1,7 @@
 <template>
-    <Button @click="onView" v-if="show_warning">Show Warning Over booking and config room </Button>
+    <Button @click="onView" class="border-none" style="background-color: #ff0021;" v-if="show_warning">
+        <ComIcon icon="iconConflictRoom" class="me-2" height="18px" />
+        Room Conflict</Button>
 </template>
 
 <script setup>

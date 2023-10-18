@@ -241,13 +241,6 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
 
-window.socket.on("RefreshData", (arg) => {
-
-    if (arg.property == property.name && arg.action == "refresh_folio_transaction") {
-
-        loadData()
-    }
-})
 
 const viewCityLedgerReport = () => {
     dialog.open(ComPrintReservationStay, {

@@ -104,31 +104,25 @@ const rs = inject('$reservation_stay');
 const dialog = useDialog()
  
 function onSave() {
-
-
     isSaving.value = true;
     postApi("reservation.update_pickup_and_drop_off",{
         stays:stays.value,
         data:stay.value
     })
         .then((doc) => {
-            
+            isSaving.value = false
             if (rs?.reservationStay?.name && doc?.message){
-
                 rs.reservationStay = JSON.parse(JSON.stringify(doc.message))
             }
             dialogRef.value.close("refresh");
             window.socket.emit("Dashboard", window.property_name)
-            // window.socket.emit("RefreshReservationDetail", stay.value.reservation);
-            // window.socket.emit("RefreshData", {reservation_stay:rs.reservationStay.name,action:"refresh_reservation_stay"});
-            // window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
-            console.log(setting.property.name)
+            window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("TodaySummary", window.property_name)
         })
         .catch((error) => {
-           
             isSaving.value = false;
         })
-
 }
 function onAddDriver(type) {
     dialog.open(ComAddDriver, {

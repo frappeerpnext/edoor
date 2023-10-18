@@ -1,6 +1,6 @@
 <template>
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
-        <div class="text-center border-1 p-2 border-round-lg ">{{event.title}}</div>
+        <div class="text-center border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">{{event.title}}</div>
         <table class="tip_description_stay_table m-1 pt-3">
               <tbody>
             <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation || ''}}</td></tr>
@@ -10,6 +10,7 @@
             <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_type || ''}} {{event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}}</td></tr>    
             <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td></tr>
             <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A")}}</td></tr>
+            <tr class="table-rs-de"><td>Nights</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).diff(event.extendedProps?.arrival_date, 'days')}}</td></tr>
             <tr class="table-rs-de"><td>Room</td><td class="px-2">:</td><td>{{event.extendedProps.stay_rooms || event.extendedProps?.room_number}}</td></tr>
             <tr class="table-rs-de"><td>Pax</td><td class="px-2">:</td><td>{{event.extendedProps?.adult}} / {{event.extendedProps?.child}}</td></tr>
             <tr class="table-rs-de"><td>Source</td><td class="px-2">:</td><td>{{event.extendedProps?.business_source || ''}}</td></tr>
@@ -96,12 +97,12 @@
             </table>
     </div>
     <div v-else-if="event.extendedProps.type == 'room_inventory_room_type_summary'">
- 
+
             <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
                 <tbody>
                     <tr class="table-rs-de" ><td>Room Type</td><td class="px-3">:</td><td> {{event.extendedProps.room_type}}</td></tr>      
                     <tr class="table-rs-de" ><td>Date</td><td class="px-3">:</td><td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td></tr>      
-                    <tr class="table-rs-de" ><td>Vacant Room</td><td class="px-3">:</td><td> {{event.extendedProps.total_room || 0 }}</td></tr>      
+                    <tr class="table-rs-de" ><td>Vacant Room</td><td class="px-3">:</td><td> {{event.extendedProps.room_available || 0 }}</td></tr>      
                     <tr class="table-rs-de" ><td>Unassign Room</td><td class="px-3">:</td><td> {{event.extendedProps.unassign_room || 0 }}</td></tr>      
               </tbody>
             </table>

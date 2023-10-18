@@ -22,7 +22,7 @@ const chartData = computed(() => {
     const documentStyle = getComputedStyle(document.documentElement);
 
     return {
-        labels: [...new Set(props.data.map(r=>moment(r.start).format("DD/MMM")))].slice(0,-1),
+        labels: [...new Set(props.data.map(r=>moment(r.start).format("DD/MMM")))],
         datasets: [
             {
                 type: 'line',
@@ -41,21 +41,21 @@ const chartData = computed(() => {
                 type: 'bar',
                 label: 'Departure',
                 backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Checked Out").color,
-                data:  props.data.filter(r=>r.departure) .map(r=>parseFloat( r.departure))
+                data:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure))
             },
                 {
                     type: 'bar',
                     stacked: false,
                     label: 'Stay Over',
                     backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="In-house").color,
-                    data:   props.data.filter(r=>r.stay_over) .map(r=>parseFloat( r.stay_over))
+                    data:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over))
                 },
             {
                 type: 'bar',
                 label: 'Arrival',
                 stacked: false,
                 backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Reserved").color,
-                data:   props.data.filter(r=>r.arrival) .map(r=>parseFloat( r.arrival)),
+                data:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
                 borderColor: 'white',
             },
            

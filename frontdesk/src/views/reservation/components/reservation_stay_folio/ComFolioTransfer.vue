@@ -118,7 +118,7 @@ function onOk() {
             }).then((r) => {
                 loading.value = false
                 dialogRef.value.close("refresh_data")
-                window.socket.emit("RefreshData", { reservation_stay: data.value.reservation_stay, action: "refresh_reservation_stay" })
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             }).catch((err) => {
                 loading.value = false
             })

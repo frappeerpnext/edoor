@@ -59,6 +59,8 @@ def get_meta(doctype=None):
 
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None):
+ 
+    
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
     working_date =  frappe.utils.today() 
     if data:
@@ -68,7 +70,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         date = working_date 
     
     # get total_room
-    sql = "select count(name) as total from `tabRoom` where property='{}'".format(property)
+    sql = "select count(name) as total from `tabRoom` where property='{0}' and room_type_id=if('{1}'='',room_type_id,'{1}')".format(property,room_type_id or '')
     data = frappe.db.sql(sql, as_dict=1)
     total_room = 0
     if data:
@@ -137,8 +139,16 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
 
     #get stay over
     stay_sql = """SELECT 
-                    sum(if( is_active_reservation = 1, 1, 0)) AS `total_stay_over`
-                FROM `tabReservation Stay` WHERE   '{0}'> arrival_date and '{0}'< departure_date  AND  property = '{1}';""".format(date,property)
+                    count(name) AS `total_stay_over`
+                FROM `tabRoom Occupy` 
+                WHERE   
+                    type='Reservation' and
+                    is_departure=0 and 
+                    is_arrival = 0 and
+                    date = '{0}'  AND  
+                    property = '{1}' and 
+                    room_type_id = if('{2}'='',room_type_id,'{2}')
+                ;""".format(date,property,room_type_id or "")
     
  
 
@@ -154,7 +164,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                             reservation_status   in ('Reserved','Confirmed','In-house') and
                             reservation_type = 'GIT' and 
                             arrival_date = '{0}' and
-                            property = '{1}' 
+                            property = '{1}'
                     """.format(date, property)
     
     
@@ -260,7 +270,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
 
     sql = """select 
                 {0} as group_by, 
-                sum(if(type='Reservation',1,0)) as  total ,
+                sum(if(type='Reservation' and  is_departure=0,1,0)) as  total ,
                 sum(if(type='Reservation' and is_arrival=1,1,0)) as  arrival ,
                 sum(if(type='Reservation' and is_departure=1,1,0)) as  departure ,
                 sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0)) as  stay_over ,
@@ -824,7 +834,7 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
         select 
             room_type_id, 
             date,
-            count(name) as total, 
+            sum(if(is_departure=0 ,1,0)) as total, 
             sum(if(type='Block',1,0)) as block, 
             sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
             sum(is_arrival) as arrival,
@@ -915,8 +925,7 @@ def get_room_block_event(start,end,property):
             status_color as color,
             reason,
             'room_block' as type,
-            owner as block_by,
-            0 as editable
+            owner as block_by
 
         from 
             `tabRoom Block` 
@@ -937,7 +946,7 @@ def get_room_block_event(start,end,property):
     data = frappe.db.sql(sql, as_dict=1)
     
     for d in data:
-        d["editable"] = d["editable"]  == 1
+        d["can_resize"] = True
     
     return data
 

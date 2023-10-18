@@ -14,8 +14,8 @@ constructor() {
 	
 }
  
-loadData() {
-	this.loading = true
+loadData(show_loading=true) {
+	this.loading = show_loading
 	return new Promise((resolve, reject) => {
 		let filters = [
 			["property","=",this.property.name]

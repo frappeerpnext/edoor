@@ -781,8 +781,9 @@ span.p-button-icon.pi.pi-ellipsis-v{
 }
 .p-avatar img{
     object-fit: cover;
+    height: 100%;
 }
-.conten-btn, .spl__btn_cs.sp button, .conten-btn.tl{
+.conten-btn, .conten-btn.tl{
     padding: 0.45rem .65rem 0.45rem !important;
     line-height: 1.5;
     background: var(--bg-btn-dialog-inside);
@@ -792,7 +793,14 @@ span.p-button-icon.pi.pi-ellipsis-v{
     -moz-transition: all 0.3s;
     transition: all 0.3s;
 }
-.spl__btn_cs.sp button{
+.spl__btn_cs.sp button {
+    line-height: 1.5;
+    background: var(--bg-btn-dialog-inside);
+    border-color:var(--bg-purple-cs);
+    color: var(--bg-purple-cs);
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
     border: 1px solid;
 }
 .conten-btn:enabled:hover, 

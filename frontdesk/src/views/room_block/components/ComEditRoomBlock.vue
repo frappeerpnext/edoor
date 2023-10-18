@@ -11,13 +11,13 @@
                 <label> Room</label>
                 <div class="w-full">
                     <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room"
-                    @onSelected="onSearch" :filters="['property','=',property.name]" />
+                    @onSelected="onSearch" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
                 </div>
             </div>
             <div class="col-6">
                 <label>Start Date</label>
                 <div>
-                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.start_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.start_date"   dateFormat="dd-mm-yy"/>
                 </div>
             </div>
 
@@ -30,7 +30,7 @@
             <div class="col-12">
                 <label>Reason</label>
                 <div class=" card w-full flex justify-content-left">
-                    <Textarea class="w-full" v-model="data.reason" />
+                    <Textarea class="w-full" v-model="data.reason" autoResize />
                 </div>
             </div> 
         </div>
@@ -68,7 +68,9 @@ function onSave (){
     }
     createUpdateDoc('Room Block', {data: savedData}).then((r)=>{
         dialogRef.value.close(r)
-        window.socket.emit("RefreshData", {property:data.value.property,action:"refresh_room_block"})
+        window.socket.emit("RoomBlockList", window.property_name)
+        window.socket.emit("Frontdesk", window.property_name)
+        window.socket.emit("ComHousekeepingStatus", window.property_name)
         loading.value = false
     }).catch((err)=>{
         loading.value = false

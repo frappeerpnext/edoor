@@ -72,14 +72,12 @@ function onRefresh() {
 }
 
 onMounted(() => {
-
     window.socket.on("Housekeeping", (arg) => {
-
         if (arg.property == window.property_name) {
-            hk.loadData()
-            console.log("hk")
+            setTimeout(function(){
+                hk.loadData(false)
+            },3000) 
         }
-
     })
 
 

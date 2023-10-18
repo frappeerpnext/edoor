@@ -6,7 +6,7 @@
                     <div class="text-2xl">Guest Database</div>
                 </template>
                 <template #end>
-                    <Button v-tooltip.left="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
+                    <Button v-tippy="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
                         <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>
                         Add New Guest
                     </Button>
@@ -145,14 +145,7 @@ const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows:
 const skip_columns = ["customer_name_kh","customer_code_name","customer_code"]
 
 
-window.socket.on("RefreshData", (arg) => {
-   
-    if (arg.property == window.property_name && arg.action == "refresh_guest_database") {
-        setTimeout(function(){
-            loadData(false)
-        },3000) 
-    }
-})
+
 
 
 const columns = ref([
@@ -322,6 +315,14 @@ onMounted(() => {
         })
     })
 
+    window.socket.on("GuestList", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(function(){
+                loadData(false)
+            },3000) 
+        }
+    })
+
 })
 
 function onAddNewGuest(){
@@ -376,5 +377,7 @@ onMounted(()=>{
     dd.value = height
 })
 
-
+onUnmounted(() => {
+    window.socket.off("GuestList");
+})
 </script>

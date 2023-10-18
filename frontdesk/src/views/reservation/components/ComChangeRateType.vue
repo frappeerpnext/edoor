@@ -66,7 +66,11 @@ function onSave() {
         update_reservation: props.update_reservation
     })
         .then((result) => {
+            isLoading.value = false
             emit('onSave', result.message)
+            window.socket.emit("ReservationStayList", { property: window.property_name })
+            window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+            window.socket.emit("ReservationDetail", window.reservation)
         })
         .catch((error) => {
             isLoading.value = false

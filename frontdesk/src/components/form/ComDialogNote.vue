@@ -6,7 +6,7 @@
         </Message>
 
         <label for="reason-text" class="mb-1 font-medium block">Reason</label>
-        <Textarea v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
+        <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
 
 
         <div v-if="data?.data.show_reserved_room" class="py-2">
@@ -18,7 +18,7 @@
 </template>
 <script setup>
 import Message from 'primevue/message';
-import { ref, onMounted, inject, postApi, deleteApi } from '@/plugin'
+import { ref, onMounted, inject, postApi, deleteApi,updateDoc } from '@/plugin'
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
@@ -40,22 +40,46 @@ function onOk() {
         toast.add({ severity: 'warn', summary: 'Enter Note', detail: "Please Enter Note", life: 3000 })
         return
     }
-
-
     loading.value = true
 
     data.value.data.note = note.value
+
+    if(data.value.note_field){
+        data.value.data[data.value.note_field] = note.value  
+    }
+   
 
     if (data.value.method == "POST") {
         postApi(data.value.api_url, data.value.data).then((r) => {
             loading.value = false
             dialogRef.value.close(note.value)
             window.socket.emit("Dashboard", window.property_name)
-
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("Frontdesk", window.property_name)
+            window.socket.emit("TodaySummary", window.property_name)
             
         }).catch(() => {
             loading.value = false
         })
+    } else if(data.value.method=="PUT") {
+        updateDoc(data.value.api_url,data.value.name , data.value.data).then(r=>{
+            loading.value = false
+            dialogRef.value.close(note.value)
+            window.socket.emit("Dashboard", window.property_name)
+            window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("Frontdesk", window.property_name)
+            window.socket.emit("TodaySummary", window.property_name)
+        }).catch(() => {
+            loading.value = false
+          
+        })
+
     } else if(data.value.method=="DELETE") {
         deleteApi(data.value.api_url, data.value.data)
         .then((r) => {
@@ -67,8 +91,8 @@ function onOk() {
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
-
-
+            window.socket.emit("Frontdesk", window.property_name)
+            window.socket.emit("TodaySummary", window.property_name)
         }).catch(() => {
             loading.value = false
         })

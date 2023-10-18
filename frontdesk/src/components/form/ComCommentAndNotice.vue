@@ -219,11 +219,7 @@ function onRemove(selected) {
         }
     })
 }
-window.socket.on("RefreshData", (arg) => {
-  if (arg.property == property.name && arg.action=="refresh_comment_notice" && props.docname == arg.name ) {
-    onLoad()
-  }
-})
+
 
 function onLoadSocket(){
     window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })

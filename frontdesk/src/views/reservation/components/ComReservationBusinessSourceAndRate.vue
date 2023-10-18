@@ -59,16 +59,11 @@ function onChangeBusinessSource(result) {
         rs.reservation = doc
         rs.reservationStay.business_source = doc.business_source   
     }
-    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
-    window.socket.emit("ReservationDetail", window.reservation)
     opBusinessSource.value.hide();
 }
 
 function onChangeRateType(doc) { 
     rs.getReservationStay(rs.reservationStay.name)
-    window.socket.emit("ReservationStayList", { property: window.property_name })
-    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
-    window.socket.emit("ReservationDetail", window.reservation)
     opRateType.value.hide();
 }
 

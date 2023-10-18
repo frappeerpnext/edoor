@@ -1,8 +1,7 @@
 <template lang="">
     <div class="flex">
-     
         <template v-if="route.name != 'RoomInventory'">
-            <Button class="border-y-none border-left-none border-noround-right" v-tooltip.left="viewType == 'room_type' ? 'Room List View' : 'Room Type View'" @click="onView()">
+            <Button class="border-y-none border-left-none border-noround-right"  v-tippy = " v-tippy == 'room_type' ? 'Room List View' : 'Room Type View'" @click="onView()">
                 <img v-if="viewType == 'room_type'" class="icon-set-svg" :src="iconChangeRoom"/>
                 <img v-else style="height:19px" :src="iconChangeRoomOrderlist"/>
             </Button>
@@ -37,9 +36,9 @@
             </div>
         </template>
         
-        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tooltip.left="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
-        <Button @click="onToday('today')" v-tooltip.left="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
-        <Button @click="onPrevNext('next')" v-tooltip.left="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
+        <Button @click="onToday('today')"  v-tippy ="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
+        <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
     </div>
 </template> 
 <script setup>

@@ -1,5 +1,5 @@
 <template>
-    {{ rs }}
+    <!-- {{ rs }} -->
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
 
         <div class="mb-3">
@@ -177,6 +177,7 @@ function onOK() {
         window.socket.emit("GuestDetail", window.property_name)
         window.socket.emit("Dashboard", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
+        window.socket.emit("GuestList", window.property_name)
         if (window.reservation_stay) {
             window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
         }

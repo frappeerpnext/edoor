@@ -37,8 +37,6 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
-
- 
                 <DataTable 
                 class="res_list_scroll" 
                 :resizableColumns="true" 
@@ -389,6 +387,9 @@ onMounted(() => {
     });
     loadData()
     getApi("frontdesk.get_meta", { doctype: "Reservation" }).then((result) => {
+        
+        console.log(result.message.fields.filter(r => r.in_list_view == 1))
+
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
 

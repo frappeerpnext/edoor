@@ -5,11 +5,11 @@
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column class="w-15rem" field="start_date" header="Stay Date" >
                         <template #body="{ data }">
-                            <span v-tooltip.top="'Arrival Date'">
+                            <span v-tippy ="'Arrival Date'">
                             {{gv.dateFormat(data.start_date) }}
                             </span>
                             &#8594;
-                            <span v-tooltip.top="'Departure Date'">
+                            <span v-tippy="'Departure Date'">
                             {{gv.dateFormat(data.end_date) }}
                             </span> 
                         </template>
@@ -19,7 +19,7 @@
                     <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">
                         <div> 
-                            <span v-tooltip.top="data.room_type">
+                            <span v-tippy ="data.room_type">
                               {{ data.room_type_alias }}  
                             </span>/<span  v-if="data.room_number">
                                  {{data.room_number}}
@@ -121,7 +121,8 @@ function onUpgradeRoom() {
                 //we delay time to reload here to wait until equeue job is done in server
                 
                 setTimeout(() => {
-                    rs.getReservationDetail(rs.reservationStay.name)    
+                    rs.getReservationDetail(rs.reservationStay.name)  
+                    window.socket.emit("Frontdesk", window.property_name)
                 }, 1500);
                 
             }

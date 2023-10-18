@@ -44,7 +44,9 @@
 								</span> 
 							</div>
 						</div>
+						<span v-if="i?.guest_name"> - </span>
 						{{ i.guest_name }}
+						<span v-if="i?.room"> - </span>
 						{{ i.room }}
 						<div >
 							<span v-if="i.note_date" class="font-italic text-500 text-sm">
@@ -58,8 +60,8 @@
 						<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData"/>
 					</span>
 					<Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
-						<ComIcon v-tooltip.left="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
-						<ComIcon v-tooltip.left="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
+						<ComIcon v-tippy ="'Unpin Note'" v-if="i.is_pin" icon="pushPined" style="height:20px;"></ComIcon>
+						<ComIcon v-tippy ="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
 					</Button>
 				</div>
 			</div>

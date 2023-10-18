@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from frappe import _
 import calendar
+
 @frappe.whitelist()
 def get_chart():
     labels = ["January", "February", "March", "April", "May", "June", "July"]
@@ -724,13 +725,16 @@ def validate_role(role_name, message = None,is_backdate_transaction =True):
 
        
     
-def check_user_permission(role_name,message = None):
-    role = frappe.db.get_single_value("eDoor Setting",role_name)
+def check_user_permission(role_field_name,message = None):
+    role = frappe.db.get_single_value("eDoor Setting",role_field_name)
     if role:
         if not role in frappe.get_roles(frappe.session.user):
             frappe.throw(message or "You don't have permission to perform this action")
     else:
         frappe.throw(message or "You don't have permission to perform this action")
+
+def validate_backdate_permission():
+    check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
 
 @frappe.whitelist()
 def can_view_rate():

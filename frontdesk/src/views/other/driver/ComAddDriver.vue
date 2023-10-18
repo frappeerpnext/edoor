@@ -90,8 +90,10 @@ function onOK() {
         data.expired_date = ''
     
     createUpdateDoc('Drivers', { data: data }).then((r) => {
-        onClose(r)
         loading.value = false
+        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+        onClose(r)
     }).catch((err) => {
         loading.value = false
     })

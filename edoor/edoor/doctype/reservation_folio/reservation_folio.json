@@ -216,10 +216,11 @@
    "label": "Deleted Note"
   },
   {
-   "fetch_from": "reservation_stay.reservation_status",
+   "fetch_from": "reservation.reservation_status",
    "fieldname": "reservation_status",
-   "fieldtype": "Data",
-   "label": "Reservation Status"
+   "fieldtype": "Link",
+   "label": "Reservation Status",
+   "options": "Reservation Status"
   },
   {
    "fieldname": "room_data",
@@ -234,7 +235,7 @@
    "options": "Business Source"
   },
   {
-   "fetch_from": "reservation_stay.status_color",
+   "fetch_from": "reservation_status.color",
    "fieldname": "reservation_status_color",
    "fieldtype": "Data",
    "label": "Reservation Status Color"
@@ -262,7 +263,7 @@
    "link_fieldname": "folio_number"
   }
  ],
- "modified": "2023-10-12 00:22:49.063743",
+ "modified": "2023-10-18 11:30:25.430716",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Folio",

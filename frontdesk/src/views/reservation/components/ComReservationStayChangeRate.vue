@@ -7,7 +7,7 @@
         </div>
         <div class="flex gap-2 mb-2 mt-2">
             <div class="ch__rate_nres relative border-round-lg overflow-hidden">
-                <div @click="$emit('onUseRatePlan')" v-tooltip.top="'Reverse to Rate Plan'" class="cursor-pointer absolute h-full w-3rem border-y-1 border-round-y border-round-left border-left-1" style="background: var(--bg-input-field);border-color: #a0bde0;">
+                <div @click="$emit('onUseRatePlan')"  v-tippy="'Reverse to Rate Plan'" class="cursor-pointer absolute h-full w-3rem border-y-1 border-round-y border-round-left border-left-1" style="background: var(--bg-input-field);border-color: #a0bde0;">
                     <div class="translate-y-2/4 text-center">
                         <i class="pi pi-replay text-xl text-dark font-bold"></i>
                     </div>

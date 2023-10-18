@@ -140,13 +140,7 @@ const showAdvanceSearch = ref()
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == property.name && arg.action=="refresh_business_source" ) {
-        setTimeout(function () {
-            loadData()
-        }, 3000)
-}
-})
+
  
 const columns = ref([
     { fieldname: 'name', label: 'Business Source', fieldtype:"Link",default:true},

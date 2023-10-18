@@ -5,7 +5,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_oc
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_role
+from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -14,16 +14,49 @@ from frappe import _
 def test():
     data = frappe.db.get_all("Account Code", filters={"parent_account_code":"1000"}, order_by='lft')
     return data 
+@frappe.whitelist()
+def get_reservation_folio_list(reservation):
+    sql="""
+        select 
+            name,
+            guest_name,
+            guest,
+            rooms,
+            reservation_status,
+            status_color,
+            total_credit,
+            total_debit,
+            balance,
+            allow_post_to_city_ledger
+
+        from `tabReservation Stay` 
+        where 
+            name in (select reservation_stay from `tabReservation Folio` where reservation='{}') 
+        """.format(reservation)
+    
+    data = frappe.db.sql(sql,as_dict=1)
+    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note from `tabReservation Folio` where reservation='{}'".format(reservation)
+    folios = frappe.db.sql(sql,as_dict=1)
+    
+    if folios:
+        for d in data:
+            
+            d["folios"]=[f.update({"allow_post_to_city_ledger":d["allow_post_to_city_ledger"]}) or f for f in folios if f["reservation_stay"]==d["name"]]
+ 
+   
+    return data
 
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
     reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
+    total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
     return {
         "reservation":reservation,
         "reservation_stays":reservation_stays,
-        "master_guest": master_guest
+        "master_guest": master_guest,
+        "total_folio":total_folio or 0
     }
 
 
@@ -321,6 +354,7 @@ def add_new_reservation(doc):
             "is_master":d["is_master"],
             "group_code":reservation.group_code,
             "group_name":reservation.group_name,
+            "group_color":reservation.group_color,
             "adult":d["adult"],
             "child":d["child"],
             "stays":[
@@ -698,9 +732,11 @@ def check_out(reservation,reservation_stays=None):
     #validate cashier shift 
     #remove guest and stay number from room
     
-    validate_role("check_out_role")
-    
-    
+    check_user_permission("check_out_role")
+
+
+
+     
     doc = frappe.get_doc("Reservation",reservation)
     if not reservation:
         frappe.throw("There is no reservation to check out")
@@ -709,6 +745,9 @@ def check_out(reservation,reservation_stays=None):
    
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
+
+    #check backdate role
+    
 
     room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_out")
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
@@ -768,13 +807,22 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None):
     #validate backdate 
 
     #validate role
+    check_user_permission("undo_check_out_role")
+    allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
+
+
 
 
     room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_undo_check_out")
     for s in reservation_stays:
         
         stay_doc = frappe.get_doc("Reservation Stay", s)
-        if stay_doc.reservation_status =="Checked Out" and stay_doc.departure_date == working_day["date_working_day"]:
+        #validate backdate
+        if getdate(stay_doc.departure_date)<getdate(working_day["date_working_day"]):
+            validate_backdate_permission()
+
+        if (stay_doc.reservation_status =="Checked Out" and stay_doc.departure_date >= working_day["date_working_day"] ) or (stay_doc.reservation_status =="Checked Out" and int(allow_back_date)==1):
+            
             stay_doc.reservation_status = "In-house"
             stay_doc.is_undo_check_out = True
             stay_doc.save()
@@ -804,15 +852,10 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None):
         frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=reservation,run_commit=False)
     else:
         frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=stay_doc.reservation ,run_commit=False)
-         
-
-    
-
-
+          
     frappe.msgprint("Undo check out successfully")
     if not reservation:
         return stay_doc
-    #frappe.throw("undo check out ")
 
 @frappe.whitelist()
 def change_reservation_guest( guest, reservation='',reservation_stay='', is_apply_all_stays='false', is_apply_master_guest='false', is_only_master_guest='false'):
@@ -1066,7 +1109,17 @@ def change_stay(data):
          
         if available_room[0]["total_vacant_room"]<=0:
             frappe.throw("You cannot change stay of this reservation. Because you don't have enough room for room type {}".format(available_room[0]["room_type"]))
-        
+    else:
+        #check if the room is block
+        if room_id:        
+            check_room_occupy = frappe.db.sql("select stay_room_id, date from `tabTemp Room Occupy` where type='Block' and date between %(start_date)s and %(end_date)s and stay_room_id<>%(stay_room_id)s and room_id=%(room_id)s limit 1",
+                {"start_date":data["start_date"],"end_date":add_to_date(data["end_date"],days=-1),"stay_room_id":data["name"],"room_id":data["room_id"]},
+                as_dict = 1
+                )
+            
+            if check_room_occupy:
+                frappe.throw(_("You cannot change stay of this reservation. Because this room is not available or block on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
+            
     
     doc = frappe.get_doc("Reservation Stay",data['parent'])
     
@@ -1300,8 +1353,6 @@ def update_note(data):
 
 @frappe.whitelist(methods="POST")
 def update_reservation_status(reservation, stays, status, note,reserved_room=True):
-     
- 
     if status=="Cancelled":
         check_user_permission("cancel_reservation_role")
     elif status=="No Show":
@@ -1365,12 +1416,13 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
                             {"reservation_stay":stay.name})
 
         #close all folio
+        
         if status in ["Cancelled","No Show","Voided"]:
             color = frappe.db.get_value("Reservation Status",status,"color")
+            
+            frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}'".format(stay.name,color))
 
-            frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}' and status='Open'".format(stay.name,color))
-
-
+        
     #check if reservation dont have master stay room then update date the first active reservation to master room
 
     frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc_reservation.name, doc=None, run_commit=True)
@@ -1634,7 +1686,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":d.discount_amount,
                 "debit":0,
                 "balance":balance,
-                "total_amount":d.discount_amount
+                "total_amount":d.discount_amount,
+                "parent_reference": d["name"]
             })
         
         if  d.tax_1_amount > 0:
@@ -1644,7 +1697,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "debit":d.tax_1_amount,
                 "credit":0,
                 "balance":balance,
-                "total_amount":d.tax_1_amount
+                "total_amount":d.tax_1_amount,
+                "parent_reference": d["name"]
             })
 
         if  d.tax_2_amount > 0:
@@ -1655,6 +1709,7 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":0,
                 "balance":balance,
                 "total_amount":d.tax_2_amount,
+                "parent_reference": d["name"]
             })
 
         if  d.tax_3_amount > 0:
@@ -1665,6 +1720,7 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":0,
                 "balance":balance,
                 "total_amount":d.tax_3_amount,
+                "parent_reference": d["name"]
             })
         
         
@@ -1681,7 +1737,7 @@ def get_folio_transaction_summary(folio_number):
                         sum(amount) as amount
                     from `tabFolio Transaction` 
                     where 
-                        folio_number = '{}' 
+                        transaction_number = '{}' 
                         group by 
                             account_name ,
                             room_number,
@@ -2439,7 +2495,7 @@ def folio_transfer(data):
     #check reservation status in new folio is not allow to edit
     reservation_status_doc = frappe.get_doc("Reservation Status", new_folio_doc.reservation_status)
     if not reservation_status_doc.allow_user_to_edit_information or not reservation_status_doc.is_active_reservation:
-        frappe.throw(_("xxReservation stay # {} of target folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, new_folio_doc.name)))
+        frappe.throw(_("Reservation stay # {} of target folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, new_folio_doc.name)))
 
     
 

@@ -447,8 +447,12 @@ def change_room_occupy(self):
 def generate_stay_room_occupy(self):
 	self.update_room_occupy = False
 	for stay in self.stays:
-		dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
-	 
+		dates = []
+		if stay.name==self.stays[len(self.stays)-1].name and len(self.stays)>1:
+			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
+		else:
+			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=True)
+			 
 		for d in dates:
 			#generate room to temp room occupy
 			frappe.get_doc({

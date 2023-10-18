@@ -33,6 +33,7 @@
       </div>
     </div>
     <div class="overflow-auto h-full">
+    
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
           stateStorage="local" stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
@@ -47,13 +48,12 @@
                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
               </Button>
-              
+
               <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">
-                {{moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} 
-                </span>
-              <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
-              }}
-              
+                {{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
+              </span>
+              <span v-else-if="c.fieldtype == 'Datetime'">
+                {{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")}}
               </span>
               <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
               <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
@@ -64,8 +64,7 @@
                 </template>
               </div>
               <template v-else-if="c.fieldtype == 'Status'">
-
-                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
+                <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
                   <i class="pi pi-lock-open me-2" />
                   Unblock
                 </Chip>
@@ -84,12 +83,12 @@
       </ComPlaceholder>
     </div>
     <div>
-        <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
-          :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
-          <template #start="slotProps">
-            <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-          </template>
-        </Paginator>
+      <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
+        :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+        <template #start="slotProps">
+          <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+        </template>
+      </Paginator>
     </div>
   </div>
   <OverlayPanel ref="opShowColumn" style="width:30rem;">
@@ -128,23 +127,22 @@
           optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
           @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
         <div class="col-6" v-if="filter.search_date_type">
-          <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy" v-model="filter.date_range"
-            selectionMode="range" :manualInput="false" @date-select="onDateSelect" placeholder="Select Date Range" />
+          <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy"
+            v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+            placeholder="Select Date Range" />
         </div>
       </div>
     </ComOverlayPanelContent>
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed ,onUnmounted } from '@/plugin'
+import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed, onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
-import ComEditRoomBlock from "../../views/room_block/components/ComEditRoomBlock.vue";
+import ComEditRoomBlock from "@/views/room_block/components/ComEditRoomBlock.vue";
 const moment = inject("$moment")
-// const dialogRef = inject("dialogRef");
 const gv = inject("$gv")
-// const toast = useToast()
 const dialog = useDialog()
 const opShowColumn = ref()
 const data = ref([])
@@ -153,12 +151,6 @@ const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == property.name && arg.action=="refresh_room_block") {
-        loadData()
-    }
-})
 
 const columns = ref([
   { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
@@ -341,10 +333,8 @@ onMounted(() => {
   });
   loadData()
   getApi("frontdesk.get_meta", { doctype: "Room Block" }).then((result) => {
-    console.log(result.message)
     result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
       let header_class = ""
-
       if (["Date", "Int"].includes(r.fieldtype)) {
         header_class = "text-center"
       } else if (["Currency"].includes(r.fieldtype)) {
@@ -378,6 +368,7 @@ function onAddNewRommBlock(room_block) {
       const result = options.data;
       if (result) {
         loadData()
+        window.postMessage("view_room_block_detail|" + result.name, "*")
       }
     }
   })

@@ -121,14 +121,9 @@ function onModal(open){
 }
 function onSuccess(){
     visible.value = false
-    window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
+    alert(visible.value)
 }
 
-window.socket.on("RefreshData", (arg) => {
-    if (arg.property == property.name && arg.action=="refresh_document" ) {
-        onLoad()
-    }
-})
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
@@ -220,7 +215,7 @@ function onRemove(selected){
                 if(doc){
                     deleting.value = false
                     onLoad()
-                    window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
+                    window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
                 }
             }).catch((err)=>{
                 deleting.value = false
@@ -241,7 +236,7 @@ function onSave(){
         saving.value = false
         opEdit.value.hide()
         onLoad()
-        window.socket.emit("RefreshData", { property: property.name, action: "refresh_document" })
+        window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
     }).catch((err)=>{
         saving.value = false
     })

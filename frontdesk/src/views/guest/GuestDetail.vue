@@ -27,6 +27,13 @@
                 <TabPanel header="Folio">
                     <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;" :src="folioUrl"></iframe>
                 </TabPanel>
+                <TabPanel>
+                        <template #header>
+                            <span class="me-2">Document</span>
+                        </template>
+                        <ComDocument doctype="Customer" :docname="name" :fill="false" :attacheds="[name]"
+                            v-if="!loading" />
+                    </TabPanel>
             </TabView>
         </div>
         <template #footer-left>
@@ -116,6 +123,8 @@ function onDeleteGuest (name){
                 window.socket.emit("RefreshGuestDatabase", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationList", { property:window.property_name})
+                window.socket.emit("GuestList", window.property_name)
+
                 dialogRef.value.close()
             }).catch((err)=>{
                 loading.value = false

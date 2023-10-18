@@ -15,14 +15,10 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted,createUpdateDoc } from "@/plugin"
+import { inject, ref, onMounted,createUpdateDoc,getDoc } from "@/plugin"
 const dialogRef = inject("dialogRef");
-const frappe = inject('$frappe');
-const db = frappe.db();
-const rs = inject("$reservation_stay")
 const isSaving = ref(false)
 const doc = ref({})
-const reservation_stay = ref({})
 const guests = ref([])
 
 function onSave() {
@@ -32,8 +28,7 @@ function onSave() {
     .then((doc) => {
         dialogRef.value.close(doc)
         isSaving.value = false
-
-        window.socket.emit("RefreshData", {action:'refresh_reservation_stay',reservation_stay:reservation_stay.value.name})
+        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
     }).catch(()=>{
         isSaving.value = false
     })
@@ -41,27 +36,28 @@ function onSave() {
 
 
 onMounted(() => {
-    reservation_stay.value = dialogRef.value.data.reservation_stay
-    if(dialogRef.value.data.is_edit){
-        doc.value = rs.selectedFolio
-    }else{
-        doc.value.reservation_stay = reservation_stay.value.name
-        doc.value.guest = reservation_stay.value.guest
-    }
     
+
+        doc.value = dialogRef.value.data.folio
+   
     
-    let data = []
-    guests.value.push({
-        name: reservation_stay.value?.guest,
-        guest_name: reservation_stay.value?.guest_name,
+ 
+    getDoc("Reservation Stay", doc.value.reservation_stay).then((result)=>{
+        guests.value.push({
+        name: result.guest,
+        guest_name: result.guest_name,
     })
-    reservation_stay.value.additional_guests.forEach(r => {
+
+    result.additional_guests.forEach(r => {
         guests.value.push({
             name: r.guest,
             guest_name: r.guest_name
         })
 
     });
+    })
+    
+    
 
 
 });

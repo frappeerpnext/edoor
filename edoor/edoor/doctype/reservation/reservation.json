@@ -169,6 +169,7 @@
   {
    "fieldname": "child",
    "fieldtype": "Int",
+   "in_list_view": 1,
    "label": "Child"
   },
   {
@@ -655,7 +656,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-10-02 15:27:42.038087",
+ "modified": "2023-10-18 16:30:10.573809",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
