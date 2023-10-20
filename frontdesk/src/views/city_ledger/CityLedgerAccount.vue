@@ -30,12 +30,12 @@
                             <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
                                 <div class="grid">
                                     <div class="col-6">
-                                        <ComSelect :filters="[['property', '=', property.name]]"
+                                        <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_city_ledger_type" @onSelected="onSearch"
                                             placeholder="City Ledger Type" doctype="City Ledger Type" />
                                     </div>
                                     <div class="col-6">
-                                        <ComSelect :filters="[['property', '=', property.name]]"
+                                        <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_business_source" @onSelected="onSearch"
                                             placeholder="Business Source" doctype="Business Source" />
                                     </div>
@@ -205,8 +205,8 @@ function pageChange(page) {
     loadData()
 }
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     let filters = [
         ["property", "=", property.name]
     ]
@@ -279,9 +279,9 @@ onMounted(() => {
     //socket reload
 
     window.socket.on("CityLedgerAccount", (arg) => {
-        if (arg == property.name) {
+        if (arg == window.property_name) {
             setTimeout(function () {
-                loadData()
+                loadData(false)
             }, 3000)
         }
     })

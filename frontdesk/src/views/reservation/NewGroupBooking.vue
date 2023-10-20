@@ -292,14 +292,14 @@
                             <th class="text-center pb-1">
                                 <label class="text-center px-2">Total Room Available</label>
                             </th>
-                            <th class="text-right w-15rem pb-1">
+                            <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Rate</label>
                             </th>
 
-                            <th class="text-right w-15rem pb-1">
+                            <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Tax</label>
                             </th>
-                            <th class="text-right w-15rem pb-1">
+                            <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Amount</label>
                             </th>
                             <th class="pb-1">
@@ -330,13 +330,12 @@
                                     {{ d.total_vacant_room }}
                                 </div>
                             </td>
-                            <td class="padding-list-booking-group w-12rem text-center">
+                            <td v-if=" can_view_rate" class="padding-list-booking-group w-12rem text-center">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     <span @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic ">
-
-                                        <div v-tippy.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
+                                        <div  v-tippy.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
                                             class="link_line_action flex justify-between">
                                             <div class="text-left inline">
                                                 <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
@@ -348,13 +347,13 @@
                                 </div>
                             </td>
 
-                            <td class="padding-list-booking-group w-12rem text-right">
+                            <td v-if=" can_view_rate" class="padding-list-booking-group w-12rem text-right">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
                             </td>
-                            <td class="padding-list-booking-group w-12rem text-right">
+                            <td v-if=" can_view_rate" class="padding-list-booking-group w-12rem text-right">
                                 <div
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                    

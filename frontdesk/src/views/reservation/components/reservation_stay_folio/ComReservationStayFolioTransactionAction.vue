@@ -79,7 +79,8 @@ function onEditFolioTransaction() {
             if (data) {
                 //load folio list and folio transactgion 
  
-                window.postMessage({action:"load_reservation_folio_list"})
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
                 window.postMessage({action:"load_folio_transaction"})
 
 
@@ -146,9 +147,9 @@ function onOpenDelete() {
         },
         onClose: (options) => {
             if(options.data){
-                alert("after delete")
-                window.postMessage({action:"load_reservation_folio_list"})
-                window.postMessage({action:"load_folio_transaction"})
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+                window.postMessage({action:"load_folio_transaction"},"*")
             }
             
             loading.value = false;

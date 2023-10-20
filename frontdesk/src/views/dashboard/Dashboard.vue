@@ -1,4 +1,5 @@
 <template>
+
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="font-bold text-3xl text-overflow-ellipsis">{{ property.name }}</div>
@@ -78,7 +79,7 @@
     </div>
     <div class="mt-3">
         <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') +')'">
-            <MTDOccupancyChart />
+            <OccupancyChart />
         </ComPanel>
     </div>
     <div class="px-3 py-3 bg-white mt-2 border-round-xl tab-reserv-no">
@@ -130,7 +131,7 @@
             </TabPanel>
         </TabView>
     </div>
-    
+    <div id="myChart"></div>
 </template>
 
 <script setup>
@@ -144,11 +145,10 @@ import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
-import MTDOccupancyChart from './components/MTDOccupancyChart.vue';
+import OccupancyChart from './components/OccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
-
 
  
 const toast = useToast();
@@ -170,6 +170,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
 
+ 
 
  
 
@@ -492,14 +493,20 @@ const viewSummary = (name) => {
 onMounted(() => {
     window.socket.on("Dashboard", (arg) => {
         
+
+
     if(arg ==property.name){
         setTimeout(function(){
             getData(false)
         onRefreshIframe()
             },3000) 
 
-    }    
+    }   
+    
+    
 })
+
+
 })
 onUnmounted(() => {
     window.socket.off("Dashboard");

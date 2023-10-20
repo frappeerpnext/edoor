@@ -298,8 +298,8 @@ const onSearch = debouncer(() => {
     loadData();
 }, 500);
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
     filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
@@ -338,11 +338,11 @@ function loadData() {
 onMounted(() => {
 
     window.socket.on("GuestLedgerTransaction", (arg) => {
-        if (arg == property.name) {
-            setTimeout(function () {
-                loadData()
-            }, 3000)
-        }
+        if (arg.property == window.property_name) {
+        setTimeout(function () {
+            loadData(false)
+        }, 3000)
+    }
     })
 
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))

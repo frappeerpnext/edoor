@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent @onClose="onClose" :loading="loading" hideButtonOK>
-        {{ doc }}
        <Message v-if="doc?.docstatus==0">The status of this room block is currently in Draft mode. Please click on button <strong>Submit Room Block</strong> to block this room.
         <br/>
         <Button @click="onSubmitRoomBlock">Submit Room Block</Button>

@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestBusinessSource(FrappeTestCase):
+class TestDeskFolio(FrappeTestCase):
 	pass

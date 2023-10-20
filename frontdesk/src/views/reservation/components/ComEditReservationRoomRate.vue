@@ -483,6 +483,9 @@ function onSave() {
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.socket.emit("ComGuestLedger", { property:window.property_name})
+            window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+            window.socket.emit("Reports", window.property_name)
             dialogRef.value.close(doc.message)
         })
         .catch((error) => {

@@ -1,35 +1,32 @@
 <template>
-    <ComHeader isRefresh @onRefresh="onRefresh()">
-        <template #start>
-            <div class="flex">
-                <div class="flex align-items-center">
-                    <div @click="onRefresh()" class="text-2xl">Reports</div>
-                </div>
-                <div class="flex align-items-right">
-                    <SplitButton class="border-split-none" label="Print" icon="pi pi-print" @click="onPrint" />
+    <div class="grid mb-2 mt-2">
+        <div class="col flex gap-2 ">
+            <div class="text-2xl">Report</div>
+            <div class="col flex gap-2 justify-end ">
+                <div v-if="(view||'')!='ui'">
+                        
+                        <ComPrintButton :url="url"  @click="onPrint"/>
+                        
+                    </div>
+                <div >
+                    <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                 </div>
             </div>
-    <!-- <div class="wrap-dialog iframe-modal">
-        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid mb-3 ">
-                <div class="col flex gap-2 ">
+        </div>
+    </div> 
+    <!-- <ComHeader isRefresh @onRefresh="onRefresh()">
+        <template #start>
+            <div class="grid mb-3">
+                <div class="col flex gap-2 ml-2">
                     <div>
                         <div @click="onRefresh()" class="text-2xl">Reports</div>
                     </div>
-                </div>
-                <div class="col flex gap-2 justify-end">
-                    <div v-if="(view||'')!='ui'">
-                        <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" :model="items" />
-                        
-                    </div>
-                </div>
+                </div> 
+                 
             </div> 
-           
-        </div>
-    </div> -->
-            
         </template>
-    </ComHeader>
+    </ComHeader>  -->
+
     <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
         <SplitterPanel :size="25" class="pa-4">
             <ComReportTree @onSelectReport="onSelectReport" />
@@ -47,7 +44,7 @@
     </Splitter>
 </template>
 <script setup>
-import { ref, onMounted, inject } from "@/plugin"
+import { ref, onMounted, inject,onUnmounted } from "@/plugin"
 import ComReportTree from "@/views/report/components/ComReportTree.vue"
 import ComReportFilter from "@/views/report/components/ComReportFilter.vue"
 import Splitter from 'primevue/splitter';
@@ -62,6 +59,7 @@ const gv = inject("$gv")
 
 const selectedReport = ref()
 const filters = ref({})
+
 
 function onSelectReport(p) {
    
@@ -98,7 +96,7 @@ function onIframeLoaded() {
 function loadIframe() {
 
     if (selectedReport.value) {
-        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting.property.name + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=1"
+        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting.property.name + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=0"
 
 
         if (Object.keys(filters.value)) {
@@ -116,33 +114,26 @@ function loadIframe() {
 
 }
 function onPrint(){
-    if (selectedReport.value) {
-        url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting.property.name + "&format=" + gv.getCustomPrintFormat(selectedReport.value.report_name) + "&&settings=%7B%7D&show_toolbar=1"
-
-
-        if (Object.keys(filters.value)) {
-            Object.keys(filters.value).forEach(p => {
-                if (filters.value[p]) {
-                    url.value = url.value + "&" + p + "=" + filters.value[p]
-                }
-            });
-        }
-
-        url.value = url.value + "&trigger_print=1&refresh=" + (Math.random() * 16)
-        
-        document.getElementById("iframe").contentWindow.location.replace(url.value)
-    }
+    document.getElementById("iframe").contentWindow.print()
 }
 
 
 
 onMounted(() => {
-
     loadIframe()
+    window.socket.on("Reports", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(function () {
+                loadIframe()
+            }, 3000)
+        }
+    })
 
 });
 
-
+onUnmounted(() => {
+    window.socket.off("Reports");
+})
 
 
 </script> 

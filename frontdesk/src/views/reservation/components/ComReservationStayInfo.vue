@@ -9,7 +9,9 @@
         <template #content>
             <div class=""> 
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"  titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(stay.reservationStay?.reservation_date)"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')" 
+                     titleTooltip="Reservation Date" title="Res. Date" 
+                     :value="gv.dateFormat(stay.reservationStay?.reservation_date)"
                         valueClass="grow" :isAction="true" ></ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -148,12 +150,16 @@ const closeOverlay = ()=>{
     op.value.hide();
 }
 function onChangeDate($event){
+
     if(stay.reservationStay.stays.length > 1){
         gv.toast("warn","This reservation stay has multiple rooms. Please change in room stay.")
         return
     }
+
     toggle($event, 'change_date')
+
 }
+
 function onCloseRef(result){
     if(result){
         stay.reservationStay = result

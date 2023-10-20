@@ -28,7 +28,7 @@
                         <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
                     </ComOverlayPanelContent>
                 </OverlayPanel>        
-            </div>
+            </div>  
         </div>
         <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>

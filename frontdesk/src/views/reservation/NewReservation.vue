@@ -7,10 +7,10 @@
                     <div class="">
                         <div class="grid">
                             <div class="col">
-                                <label>Reservation Date<span class="text-red-500">*</span></label><br />
+                                <label>Reservation Date <span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
                                     v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
-                                    dateFormat="dd-mm-yy" showIcon showButtonBar :maxDate="moment(working_day.date_working_day).toDate()" />
+                                    dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" :maxDate="moment(working_day.date_working_day).toDate()" />
                             </div>
                             <div class="col-6"> </div>
                         </div>
@@ -235,10 +235,10 @@
                             <th class="text-left">
                                 <label class="px-2">Room Name</label>
                             </th>
-                            <th class="text-right">
+                            <th v-if="can_view_rate" class="text-right">
                                 <label class="px-2">Rate</label>
                             </th>
-                            <th class="text-right">
+                            <th v-if="can_view_rate" class="text-right">
                                 <label class="text-center px-2">Total Tax</label>
                             </th>
                             <th>
@@ -250,7 +250,7 @@
                             <th>
                                 <label class="text-center px-2">Total Nights</label>
                             </th>
-                            <th class="text-right">
+                            <th v-if="can_view_rate" class="text-right">
                                 <label class="px-2">Amount</label>
                             </th>
                         </tr>
@@ -275,7 +275,7 @@
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
-                            <td class="p-2 w-15rem text-right">
+                            <td v-if="can_view_rate" class="p-2 w-15rem text-right">
                                 <div class="box-input-detail">
                                     <div @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic inline ">
@@ -290,7 +290,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-2 w-12rem text-right">
+                            <td v-if="can_view_rate" class="p-2 w-12rem text-right">
                                 <div class="box-input-detail">
                                     <CurrencyFormat :value="roomRateTax(d)" />
                                 </div>
@@ -309,7 +309,7 @@
                                     {{ doc.reservation.room_night}}
                                 </div>
                             </td>
-                            <td class="p-2 w-10rem">
+                            <td v-if="can_view_rate" class="p-2 w-10rem">
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12" v-if="doc.tax_rule.rate_include_tax == 'Yes'">
                                     
                                     <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
@@ -356,27 +356,20 @@
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
     </ComDialogContent>
-    <!-- {{ doc }} -->
 </template>
 <script setup>
 import { ref, inject, computed, onMounted, postApi, getApi, getDoc } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
-// import ComBoxBetwenConten from '@/views/reservation/components/ComBoxBetwenConten.vue';
 
 
-
-
-// import { useToast } from "primevue/usetoast";
 const dialogRef = inject("dialogRef");
-// const toast = useToast();
 const moment = inject("$moment")
 const isSaving = ref(false)
 const gv = inject("$gv")
 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-// const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const room_types = ref([])
 const rooms = ref([])
 const working_day = ref({})
@@ -406,7 +399,6 @@ const doc = ref({
         group_code: "",
         group_name: "",
         allow_post_to_city_ledger:1
-
     },
     guest_info: {
         "doctype": "Customer",
@@ -610,11 +602,9 @@ function onSelectedCustomer(event) {
 }
 
 const onRoomNightChanged = (event) => {
-    
     doc.value.reservation.departure_date = moment(doc.value.reservation.arrival_date).add(event, "Days").toDate()
     getRoomType()
     getRooms()
-
 }
 
 const onUseTax1Change = (value) => {
@@ -688,7 +678,7 @@ onMounted(() => {
     }).then((result) => {
         working_day.value = (result.message)
         minDate.value = window.setting.allow_user_to_add_back_date_transaction==1? moment().add(-50, 'years').toDate():moment(working_day.value.date_working_day).toDate()
-       
+
         doc.value.reservation.reservation_date = moment(working_day.value.date_working_day).toDate()
 
         if (!dialogRef) {

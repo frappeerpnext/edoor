@@ -38,7 +38,7 @@
                     </div>
 
                     <div v-if="hasFilter('building')">
-                        <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building" doctype="Building"  :filters="[['property','=',setting?.property?.name]]">
+                        <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building" doctype="Building"  :filters="[['property','=',window.setting?.property?.name]]">
                         </ComSelect>
                     </div>
                     
@@ -58,7 +58,7 @@
                     <div v-if="hasFilter('room_type')">
                         <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type" optionValue="room_type"
                             @onSelected="reloadIframe" placeholder="Room Type" doctype="Room Type"
-                            :filters="[['property','=',setting?.property?.name]]"
+                            :filters="[['property','=',window.setting?.property?.name]]"
                             
                             ></ComSelect>
                     </div>
@@ -84,7 +84,9 @@
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view||'')!='ui'">
-                        <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />
+                        
+                        <ComPrintButton :url="url"  @click="onPrint"/>
+                        
                     </div>
                     <div>
                         <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b h-full"></Button>
@@ -102,8 +104,8 @@ import { ref, onMounted, inject,onUnmounted,useToast } from "@/plugin"
 
 const dialogRef = inject("dialogRef");
 
-const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+ 
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const url = ref("")
 const show_letter_head = ref(false)
 const letter_head = ref("");
@@ -119,7 +121,7 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 const gv = inject("$gv")
 
 
-letter_head.value = setting.property.default_letter_head
+letter_head.value = window.setting.property.default_letter_head
 
 const hasFilter = ref((f) => {
     if (filter_options.value) {
@@ -128,7 +130,6 @@ const hasFilter = ref((f) => {
     return false
 
 });
-
 
 function onIframeLoaded() {
     const iframe = document.getElementById(iframe_id);
@@ -155,7 +156,7 @@ function loadIframe() {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 
     } else {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=1"
+        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0"
     }
 
 
@@ -190,42 +191,7 @@ function loadIframe() {
    
 }
 function onPrint(){
-    if (view.value) {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
-
-    } else {
-        url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=1"
-    }
-
-
-    if (extra_params.value) {
-        extra_params.value.forEach(p => {
-            url.value = url.value + "&" + p.key + "=" + p.value
-        });
-    }
-    let start_date = moment().add(-50,"years").format("YYYY-MM-DD")
-    let end_date = moment().add(50,"years").format("YYYY-MM-DD")
-
-    if (Object.keys(filters.value)) {
-        Object.keys(filters.value).forEach(p => {
-
-            if (filters.value[p]) {
-                if(p=="start_date"){
-                    start_date = moment(filters.value[p]).format("YYYY-MM-DD")
-                } else if(p=="end_date"){
-                    end_date = moment(filters.value[p]).format("YYYY-MM-DD")
-                }else {
-                    url.value = url.value + "&" + p + "=" + filters.value[p]
-                }
-                
-            }
-        });
-    }
-    url.value = url.value + "&start_date=" + start_date + "&end_date=" + end_date
-
-    url.value = url.value + "&trigger_print=1&refresh=" + (Math.random() * 16)
-
-    document.getElementById(iframe_id).contentWindow.location.replace(url.value)
+    document.getElementById(iframe_id).contentWindow.print()
 }
 
 const reloadIframe = debouncer(() => {

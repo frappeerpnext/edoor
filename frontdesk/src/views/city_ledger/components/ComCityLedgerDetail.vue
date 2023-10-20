@@ -77,7 +77,10 @@
                 </div>
             </TabPanel>
             <TabPanel header="City Ledger Transaction">
+                
+                
                 <ComCityLedgerTransaction v-if="data"  :name="data?.name"/>
+            
             </TabPanel>
             <TabPanel header="Document">
                 <div>
@@ -96,7 +99,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, getDoc, inject, useDialog, onMounted,deleteDoc,useConfirm } from '@/plugin'
+import { ref, getDoc, inject, useDialog, onMounted,deleteDoc,useConfirm,onUnmounted } from '@/plugin'
 import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLedgerAccount.vue';
 import ComCityLedgerTransaction from '@/views/city_ledger/components/ComCityLedgerTransaction.vue';
 // import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
@@ -145,18 +148,20 @@ function onDeletecityLedger() {
         acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
-             deleteDoc('City Ledger',data.value.name)
-                 .then(() =>{
-                    loadData()
-                 } ).catch((err)=>{
-                    loading.value = false
-                 })         
+            deleteDoc('City Ledger',data.value.name)
+            .then((r) =>{
+                // loadData()
+                window.socket.emit("CityLedgerAccount",window.property_name)
+                dialogRef.value.close(r)
+            } ).catch((err)=>{
+                loading.value = false
+            })         
         },
     });
 }
 
-function loadData() {
-    loading.value = true
+function loadData(show_loading=true) {
+    loading.value = show_loading
     getDoc('City Ledger', dialogRef.value.data.name)
         .then((r) => {
             data.value = r
@@ -168,7 +173,15 @@ function loadData() {
 
 onMounted(() => {
     loadData()
-
+    window.socket.on("ComCityLedgerDetail", (arg) => {
+        if (arg == property.name) {
+            setTimeout(function () {
+                loadData(false)
+            }, 3000)
+        }
+    })  
 })
-
+onUnmounted(() => {
+    window.socket.off("ComCityLedgerDetail");
+})
 </script>

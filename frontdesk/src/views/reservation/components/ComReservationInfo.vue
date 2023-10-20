@@ -1,5 +1,5 @@
 <template>
-    <ComReservationStayPanel title="Stay Information">
+    <ComReservationStayPanel title="Stay Information" >
         <template #btn>
             <div class="flex items-center">
                 <span> Res {{ rs.reservation?.reservation_type }} Color </span> 
@@ -9,8 +9,10 @@
         <template #content>
             <div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'edit_reservation_information')"  :isAction="true" titleTooltip="Reservation Date" title="Res. Date" :value="gv.dateFormat(rs.reservation?.reservation_date)"
-                        valueClass="grow"></ComBoxStayInformation>
+                    <ComBoxStayInformation  @onClick="toggle($event, 'edit_reservation_information')"  
+                    :isAction="true" titleTooltip="Reservation Date" title="Res. Date" 
+                    :value="gv.dateFormat(rs.reservation?.reservation_date)" valueClass="grow">
+                    </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation @onClick="toggle($event, 'edit_reservation_information')" :isAction="true" titleTooltip="Reference Number" title="Ref. No"
@@ -91,11 +93,13 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :isAction="true" title="Departure"
+                    <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :isAction="true" title="Departure" 
                         :value="moment(rs.reservation?.departure_date).format('DD-MM-yyyy')"
-                        valueClass="col-4 " class_action="link_line_action" ></ComBoxStayInformation>
+                        valueClass="col-4 " class_action="link_line_action" >
+                    </ComBoxStayInformation>
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_date')" :isAction="true" :value="gv.timeFormat(rs.reservation?.departure_time)"
-                        valueClass="col" class_action="link_line_action" ></ComBoxStayInformation>
+                        valueClass="col" class_action="link_line_action" >
+                    </ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.departure_date).format('dddd')"
                         valueClass="col">
@@ -173,7 +177,12 @@ function onCloseRef(result){
     op.value.hide()
 }
 function onChangeDate($event){
-    //alert(123)
+    // if(stay.reservationStay.stays.length > 1){
+    //     gv.toast("warn","This reservation stay has multiple rooms. Please change in room stay.")
+    //     return
+    // }
+
+    // toggle($event, 'change_date')
 }
 
 

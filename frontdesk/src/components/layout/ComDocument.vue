@@ -32,9 +32,6 @@
                         <Column field="" header="">
                             <template #body="slotProps">
                                 <ComDocumentButtonAction :data="slotProps.data" @onDownload="onDownload" @onEdit="onEdit" @onDelete="onRemove"/>
-                                <!-- <Button @click="downloadURI(slotProps.data.file_url, slotProps.data.file_name)" text size="small" icon="pi pi-download" severity="success" /> 
-                                <Button :loading="loading" text size="small" icon="pi pi-file-edit" @click="onEdit($event,slotProps.data)" severity="primary" />
-                                <Button :loading="deleting" text size="small" icon="pi pi-trash" @click="onRemove(slotProps.data.name)" severity="danger" /> -->
                             </template>
                         </Column>
                     </DataTable>

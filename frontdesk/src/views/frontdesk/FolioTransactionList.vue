@@ -167,8 +167,7 @@ const columns = ref([
   { fieldname: 'modified', label: 'Last Modifield', fieldtype: "Timeago", header_class: "text-left", default: true },
   { fieldname: 'reservation_status', label: 'Res. Status', header_class: "text-center", fieldtype:"reservation_status" },
   { fieldname: 'posting_date', label: 'Date', header_class: "text-center", fieldtype: "Date" },
-  
-  
+
 ])
 
 const getColumns = computed(() => {

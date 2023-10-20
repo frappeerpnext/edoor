@@ -143,6 +143,7 @@ const props = defineProps({
     selectedReport: Object,
     filter: Object
 })
+
 function onShowfilter() {
     showFilter.value = !showFilter.value
     localStorage.setItem("edoor_show_filter", showFilter.value ? "1" : "0")

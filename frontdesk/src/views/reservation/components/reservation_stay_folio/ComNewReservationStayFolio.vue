@@ -22,13 +22,16 @@ const doc = ref({})
 const guests = ref([])
 
 function onSave() {
+    isSaving.value = true;
 
-    isSaving.value = true; 
-    createUpdateDoc('Reservation Folio', {data: doc.value})
+    createUpdateDoc('Reservation Folio', {data: doc.value })
     .then((doc) => {
         dialogRef.value.close(doc)
         isSaving.value = false
         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        window.socket.emit("ComGuestLedger", { property:window.property_name})
+        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+
     }).catch(()=>{
         isSaving.value = false
     })
@@ -36,30 +39,22 @@ function onSave() {
 
 
 onMounted(() => {
-    
-
-        doc.value = dialogRef.value.data.folio
-   
-    
- 
+    doc.value = dialogRef.value.data 
     getDoc("Reservation Stay", doc.value.reservation_stay).then((result)=>{
         guests.value.push({
-        name: result.guest,
-        guest_name: result.guest_name,
-    })
-
-    result.additional_guests.forEach(r => {
-        guests.value.push({
-            name: r.guest,
-            guest_name: r.guest_name
+            name: result.guest,
+            guest_name: result.guest_name,
         })
-
-    });
+        if(result.additional_guests && result.additional_guests.length > 0){
+            result.additional_guests.forEach(r => {
+                guests.value.push({
+                    name: r.guest,
+                    guest_name: r.guest_name
+                })
+            });
+        }
+        
     })
-    
-    
-
-
 });
 
 

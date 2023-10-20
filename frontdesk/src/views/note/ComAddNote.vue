@@ -10,17 +10,13 @@
           </div>
         </div>
       </div>
-      <div class="col-7"> 
+      <div class="col-6"> 
         <label for="Reservation">Room</label>
-        <div class="card flex justify-content-left"> 
-          <ComAutoComplete v-model="data.room_id" placeholder="Room" doctype="Room" />
-        </div>
+        <ComAutoComplete isFull v-model="data.room_id" placeholder="Room" doctype="Room" />
       </div>
-      <div class="col-7"> 
+      <div class="col-6"> 
         <label for="Reservation">Guest name</label>
-        <div class="card flex justify-content-left"> 
-          <ComAutoComplete v-model="data.guest" placeholder="Guest Name" doctype="Customer" />
-        </div>
+        <ComAutoComplete isFull v-model="data.guest" placeholder="Guest Name" doctype="Customer" />
       </div>
       <div class="col-6"> 
         <label for="Reservation">Reservation</label>

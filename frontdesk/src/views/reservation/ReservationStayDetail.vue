@@ -96,7 +96,11 @@
                     <TabPanel header="Room Rate" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
-                    <TabPanel header="Folio">
+                    <TabPanel >
+                        <template #header>
+                            <span class="me-2">Folio</span>
+                            <Badge :value="rs.totalFolio"></Badge>
+                        </template>
                         <ComReservationStayFolio />
                     </TabPanel>
                     <TabPanel>
@@ -104,7 +108,7 @@
                             <span class="me-2">Document</span>
                             <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading" />
                         </template>
-                        <ComDocument doctype=" Reservation Stay" :docname="name" :fill="false" :attacheds="[name]"
+                        <ComDocument doctype="Reservation Stay" :docname="name" :fill="false" :attacheds="[name]"
                             v-if="!rs.loading" />
                     </TabPanel>
                 </TabView>
@@ -227,21 +231,8 @@ const onRefresh = (showLoading = true) => {
         rs.getRoomRate(name.value)
     } else if (activeTab.value == 2) {
         //load folio
-        rs.onLoadReservationFolios(name.value)
-            .then((doc) => {
-
-                if (doc) {
-                    const masterFolio = doc.find(r => r.is_master == 1)
-                    if (masterFolio == undefined) {
-                        if (doc.length > 0) {
-                            rs.onLoadFolioTransaction(doc[0])
-                        }
-                    } else {
-                        rs.onLoadFolioTransaction(masterFolio)
-                    }
-                }
-
-            })
+        window.postMessage({action:"load_folio_transaction"},"*")
+        window.postMessage({action:"load_reservation_stay_folio_list"},"*")
     }
 
 
@@ -266,6 +257,9 @@ function onUnreservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ReservationList", { property: window.property_name })
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
             })
         },
 
@@ -288,6 +282,9 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
             })
         },
 
@@ -384,6 +381,9 @@ const onCheckIn = () => {
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.socket.emit("Reports", window.property_name)
                     onRefresh(false)
                 })
                     .catch((err) => {
@@ -424,6 +424,9 @@ const onCheckOut = () => {
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.socket.emit("Reports", window.property_name)
                 })
                 .catch((err) => {
                     rs.loading = false

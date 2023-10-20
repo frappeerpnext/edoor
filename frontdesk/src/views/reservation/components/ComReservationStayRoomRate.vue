@@ -25,9 +25,13 @@
       <Column field="room_number" header="Room">
         <template #body="slotProps">
           <div> 
-            <span  v-tippy="slotProps.data.room_type">{{ slotProps.data.room_type_alias }}</span>/<span>{{ slotProps.data.room_number }}</span>                               
+            <span  v-tippy="slotProps.data.room_type">
+              {{ slotProps.data.room_type_alias }}</span>/
+              <span v-if="slotProps.data.room_number">{{ slotProps.data.room_number }}</span>     
+              <span v-else>
+                Room No (Unassign)
+              </span>                          
           </div>
-          <!-- {{ slotProps.data.room_number }} - {{ slotProps.data.room_type }} -->
         </template>
       </Column>
       <Column field="rate_type" header="Rate Type">
@@ -100,6 +104,7 @@
 <script setup>
 import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
 import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
+import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 
 const rs = inject('$reservation_stay')
 const data = ref([])

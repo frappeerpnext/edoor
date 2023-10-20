@@ -174,8 +174,9 @@ function onSave() {
         
         window.socket.emit("ReservationDetail", reservation.value.name);
         window.socket.emit("ReservationList", { property:window.property_name})
-
-
+        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("ComGuestLedger", { property:window.property_name})
+        window.socket.emit("Reports", window.property_name)
         dialogRef.value.close("open_reservation_detail")
         loading.value = false
     }).catch((err) => {

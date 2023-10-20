@@ -279,6 +279,7 @@ function onCheckIn(){
                     rs.LoadReservation(rs.reservation.name);
                     window.socket.emit("Dashboard", property.name);
                     window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("Reports", window.property_name)
                 })
                     .catch((err) => {
                         rs.loading = false

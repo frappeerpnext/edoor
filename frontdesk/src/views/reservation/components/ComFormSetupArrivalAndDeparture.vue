@@ -119,6 +119,7 @@ function onSave() {
             window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.socket.emit("TodaySummary", window.property_name)
+            window.socket.emit("Reports", window.property_name)
         })
         .catch((error) => {
             isSaving.value = false;

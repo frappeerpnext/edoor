@@ -145,6 +145,9 @@ function onCheckIn() {
                         rs.LoadReservation(rs.reservation.name);
                         // window.socket.emit("RefresheDoorDashboard", rs.reservation.property); 
                         window.socket.emit("ReservationList", { property: window.property_name })
+                        window.socket.emit("ReservationStayList", { property: window.property_name })
+                        window.socket.emit("ComGuestLedger", { property:window.property_name})
+                        window.socket.emit("Reports", window.property_name)
 
                     })
                     .catch((err) => {
@@ -175,7 +178,9 @@ const onCheckOut = () => {
                 rs.loading = false
                 window.socket.emit("Dashboard", window.property_name);
                 window.socket.emit("ReservationList", { property: window.property_name })
-
+                window.socket.emit("ReservationStayList", { property: window.property_name })
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
                 // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
                 // window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
                 // window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
@@ -239,8 +244,10 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             if (data) {
                 setTimeout(function () {
                     rs.LoadReservation(rs.reservation.name)
-                    window.socket.emit("Dashboard", rs.reservation.property);
-                    window.socket.emit("ReservationList", { property: window.property_name })
+                    // window.socket.emit("Dashboard", rs.reservation.property);
+                    // window.socket.emit("ReservationList", { property: window.property_name })
+                    // window.socket.emit("ReservationStayList", { property: window.property_name })
+
 
                 }, 1500)
 
@@ -371,6 +378,8 @@ function onMarkAsMasterRoom() {
                 props.data.is_master = doc.message.is_master
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.socket.emit("ReservationStayDetail", {reservation_stay: resStay.reservationStay.name})
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+
             })
         },
     });

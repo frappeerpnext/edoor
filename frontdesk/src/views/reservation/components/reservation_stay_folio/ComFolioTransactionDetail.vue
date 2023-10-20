@@ -25,8 +25,8 @@
               <ComStayInfoNoBox label="Card Holder Name" v-if="doc?.card_holder_name" :value="doc?.card_holder_name" />
               <ComStayInfoNoBox label="Credit Expired Date" v-if="doc?.credit_expired_date"
                 :value="gv.datetimeFormat(doc?.credit_expired_date)" />
-              <ComStayInfoNoBox label="Bank Fee" v-if="doc?.bank_fee" :value="doc?.bank_fee" />
-              <ComStayInfoNoBox label="Bank Fee Amount" v-if="doc?.bank_fee_amount" :value="doc?.bank_fee_amount" />
+              <ComStayInfoNoBox label="Bank Fee" v-if="doc?.bank_fee" :value="doc?.bank_fee + ' %'"/>
+              <ComStayInfoNoBox label="Bank Fee Amount" v-if="doc?.bank_fee_amount" :value="'$ ' + doc?.bank_fee_amount" />
               <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'No' && account_code.allow_tax"
                 :value="doc?.rate_include_tax" />
               <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'Yes' && account_code.allow_tax"

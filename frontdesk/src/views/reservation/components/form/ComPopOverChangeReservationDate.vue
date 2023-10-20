@@ -78,6 +78,7 @@ function onSave(){
         loading.value = false
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationDetail", window.reservation)
+        window.socket.emit("Reports", window.property_name)
         // emit("onClose", r.message)
         // console.log(r)
     }).catch((err)=>{

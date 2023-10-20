@@ -112,9 +112,10 @@
 <OverlayPanel ref="showAdvanceSearch" style="width:40rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
-            <ComSelect class="col-6" width="100%" 
+            <ComAutoComplete class="col-6" width="100%" 
                 v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                 doctype="Business Source Type" />
+
             <ComSelect class="col-6" width="100%" v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
                     doctype="Country" isFilter />
         </div>
@@ -180,7 +181,7 @@ const getColumns = computed(()=>{
 function onOpenLink(column, data){
     const dialogRef = dialog.open(ComBusinessSourceDetail, {
         data: {
-            name: data.name
+            name: data.name,
         },
         props: {
             header: 'Business Source - ' + data.name,
@@ -212,8 +213,8 @@ function pageChange(page) {
     loadData()
 }
 
-function loadData() {
-    gv.loading = true
+function loadData(show_loading=true) {
+    gv.loading = show_loading
     let filters = [
     ["property","=",property.name]
     ]
@@ -321,12 +322,21 @@ onMounted(() => {
             })
         })
     })
+
+    window.socket.on("ComBusinessSource", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(function () {
+                loadData(false)
+            }, 3000)
+        }
+    })
 })
 
 function onAddNewBusinessSource(){
     dialog.open(ComAddBusinessSource, {
         data:{
             // name: name.value,
+            is_city_ledger: true
         },
         props: {
             header: `Add New Businese Source`,
@@ -368,6 +378,8 @@ const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
 
-
+onUnmounted(() => {
+    window.socket.off("ComBusinessSource");
+})
 
 </script>

@@ -27,7 +27,7 @@ import ComReservationStayAssignRoom from "./views/reservation/components/ComRese
 import { useDialog } from 'primevue/usedialog';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
-import ComFolioDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioDetail.vue';
+import ComFolioDetail from '@/views/reservation/components/folios/ComFolioDetail.vue';
 
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
@@ -365,23 +365,6 @@ function showCityLedgerDetail(name) {
         },
     });
 }
-// function showBusinessSourceDetail(name) {
-
-// const dialogRef = dialog.open(ComBusinessSourceDetail, {
-//     data: {
-//         name: name
-//     },
-//     props: {
-//         header: 'Business Source - ' + name,
-//         style: {
-//             width: '80vw',
-//         },
-//         modal: true,
-//         position:"top",
-//         closeOnEscape: false
-//     },
-// });
-// }
 
 function showFolioDetail(name) {
     const dialogRef = dialog.open(ComFolioDetail, {

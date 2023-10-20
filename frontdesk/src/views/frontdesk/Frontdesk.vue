@@ -1099,7 +1099,6 @@ provide('advance_filter', {
 })
 
 function showConflictRoom(conflig_rooms) {
-    console.log(conflig_rooms)
     setTimeout(() => {
          
         if (conflig_rooms) {
@@ -1159,7 +1158,6 @@ const removeDOM = () => {
 .fc .fc-timeline-header-row-chrono .fc-timeline-slot-frame {
     justify-content: center !important
 }
-
 .fc.fc-theme-standard>.room-status {
     display: none;
 }

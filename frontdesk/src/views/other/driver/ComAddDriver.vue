@@ -93,6 +93,7 @@ function onOK() {
         loading.value = false
         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+        window.socket.emit("Reports", window.property_name)
         onClose(r)
     }).catch((err) => {
         loading.value = false

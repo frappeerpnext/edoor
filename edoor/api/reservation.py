@@ -75,6 +75,7 @@ def get_reservation_stay_detail(name):
     if reservation.guest != reservation_stay.guest:
         master_guest = frappe.get_doc("Customer",reservation.guest)
 
+    total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
     
     return {
         "reservation":reservation,
@@ -82,7 +83,8 @@ def get_reservation_stay_detail(name):
         "reservation_stay":reservation_stay,
         "guest":guest,
         "master_guest":master_guest,
-        "reservation_stay_names":reservation_stay_names
+        "reservation_stay_names":reservation_stay_names,
+        "total_folio":total_folio or 0
     }
 
 

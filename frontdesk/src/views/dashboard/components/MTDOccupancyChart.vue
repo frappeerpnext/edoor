@@ -17,7 +17,7 @@
  
  
     <div class="card">
-        
+        <div id="occupancy_chart"></div>
         <Chart v-if="!loading" :type="view_chart_type"  :data="chartData" :options="chartOptions"  :plugins="plugins" class="h-30rem"  />
     </div>
 </template>
@@ -28,6 +28,7 @@ import { ref, onMounted ,getApi,computed} from "@/plugin";
 import Chart from 'primevue/chart';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
+// import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 
 const plugins = [ChartDataLabels]
 const duration_type = ref("Daily")
@@ -110,6 +111,8 @@ function getChartData(){
             view_chart_type:view_chart_type.value
         }
     ).then((result)=>{
+        console.log( result.message)
+        
         chartData.value = result.message;
         chartOptions.value = setChartOptions();
         loading.value  = false
@@ -120,6 +123,8 @@ function getChartData(){
 
 onMounted(() => {
     getChartData()
+
+    
 });
 
  

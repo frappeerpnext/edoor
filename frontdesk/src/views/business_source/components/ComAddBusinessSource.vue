@@ -12,10 +12,8 @@
                             </div>
                             <div class="col-6">
                                 <label>Business Source Type</label>
-                                <ComSelect v-model="data.business_source_type" class="w-full"
-                                    placeholder="Business Source Type" doctype="Business Source Type" />
+                                <ComAutoComplete  class="w-full" v-model="data.business_source_type" placeholder="Business Source Type" doctype="Business Source Type" />
                             </div>
-
                             <div class="col-6">
                                 <label>Country</label>
                                 <ComAutoComplete v-model="data.country" class="w-full" placeholder="Country"
@@ -61,9 +59,23 @@
                                 <InputText v-model="data.card_holder_name" type="text" class="w-full"
                                     placeholder="Card Holder Name" />
                             </div>
-                            <div class="col-7">
-                                <Checkbox v-model="checked" :binary="true" />
-                                <label for="ingredient1" class="ml-2"> Auto create business source </label>
+                        </div>
+                    </template>
+                </ComReservationStayPanel>
+            </div>
+            <div class="col-12" v-if="dialogRef.data.is_city_ledger">
+                <ComReservationStayPanel title="City Ledger Information">
+                    <template #content>
+                        <div class="grid">
+                            <div class="col-12">
+                                <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
+                                <label for="ingredient1" class="ml-2"> Auto create City Ledger Account</label>
+                            </div>
+
+                            <div class="col-12" v-if="data.auto_create_city_ledger_account">
+                                <label>City Ledger Type</label>
+                                <ComAutoComplete isIconSearch v-model="data.city_ledger_type" class="w-full"
+                                    placeholder="City Ledger Type" doctype="City Ledger Type" @onSelected="onSelectedCustomer" />
                             </div>
                         </div>
                     </template>
@@ -113,7 +125,7 @@ function onSave() {
         new_name: data.value.business_source
     }
     createUpdateDoc("Business Source", { data: data.value }, '', rename).then((r) => {
-        window.socket.emit("RefreshData", { property: property.name, action: "refresh_business_source" });
+        window.socket.emit("ComBusinessSource",window.property_name)
         dialogRef.value.close(rename.new_name)
         onLoad()
 

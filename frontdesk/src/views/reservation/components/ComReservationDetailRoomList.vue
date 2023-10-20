@@ -77,27 +77,27 @@
                                 <span v-tippy="'Adults'">{{slotProps.data.adult}}</span>/<span v-tippy ="'Children'">{{slotProps.data.child}}</span>
                             </template>
                         </Column>
-                        <Column class="text-right res__room-list-right" header="ADR">
+                        <Column v-if="can_view_rate" class="text-right res__room-list-right" header="ADR">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.adr"/>
                             </template>
                         </Column>
-                        <Column  class="text-right res__room-list-right" header="Total Rate">
+                        <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_room_rate"/>
                             </template>
                         </Column>
-                        <Column   class="text-right res__room-list-right" header="Debit">
+                        <Column v-if="can_view_rate" class="text-right res__room-list-right" header="Debit">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_debit"/>
                             </template>
                         </Column>
-                        <Column   class="text-right res__room-list-right" header="Credit">
+                        <Column v-if="can_view_rate"   class="text-right res__room-list-right" header="Credit">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_credit"/>
                             </template>
                         </Column>
-                        <Column  class="text-right res__room-list-right" header="Balance">
+                        <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Balance">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.balance"/>
                             </template>
@@ -152,6 +152,7 @@ const rs = inject("$reservation")
 const gv = inject("$gv")
 const dialog = useDialog()
 const moment = inject('$moment')
+const can_view_rate = ref(window.can_view_rate)
 // const name = ref("")
  
 function onViewCustomerDetail(name) {

@@ -19,7 +19,7 @@ export default class ReservationStay {
 		this.reservation = ref({})
 		this.reservationStayNames = ref([])
 		this.stay_summary = ref([])
-		this.folios = ref([])
+		this.folios = ref()
 		this.selectedFolio = ref({})
 		this.folioTransactions = ref([])
 		this.selectedFolioTransactions = ref([])
@@ -28,6 +28,7 @@ export default class ReservationStay {
 		this.folio_summary = ref([])
 		this.room_rates = ref([])
 		this.is_page = false
+		this.totalFolio = ref(0)
 
 	}
 
@@ -37,13 +38,15 @@ export default class ReservationStay {
 		call.get("edoor.api.reservation.get_reservation_stay_detail", {
 			name: name
 		}).then((result) => {
-
+			
+			this.totalFolio.value = result.message.total_folio 
 			this.reservation.value = result.message.reservation
 			this.reservationStay.value = result.message.reservation_stay
 			this.reservationStayNames.value = result.message.reservation_stay_names
 			this.guest.value = result.message.guest
 			this.masterGuest.value = result.message.master_guest 
 			this.loading.value = false
+			
 
 		}).catch((error) => {
 			this.loading.value = false
@@ -51,15 +54,9 @@ export default class ReservationStay {
 	}
 
 	getReservationStay(name) {
-
-
-		db.getDoc("Reservation Stay", name).
-			then((doc) => {
-				this.reservationStay = doc
-
-
-			})
-
+		db.getDoc("Reservation Stay", name).then((doc) => {
+			this.reservationStay = doc
+		})
 	}
 
 
@@ -152,7 +149,7 @@ export default class ReservationStay {
 	}
 
 
-	onLoadFolioTransaction(data) {
+	onLoadFolioTransaction(data) { 
 		const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 		if (data?.name) {
 
@@ -168,7 +165,6 @@ export default class ReservationStay {
 						// this.selectedFolio.balance =this.selectedFolio.total_debit -  this.selectedFolio.total_credit 
 
 						this.selectedFolio = data
-
 					})
 			} else {
 				db.getDocList("Folio Transaction", {
@@ -210,9 +206,7 @@ export default class ReservationStay {
 						r.price = r.type == "Credit" ? (r.price + r.bank_fee_amount) * -1 : r.price
 					});
 					this.folioTransactions = folio_transaction
-					this.selectedFolio = data
-
-
+					this.selectedFolio = data 
 				})
 
 

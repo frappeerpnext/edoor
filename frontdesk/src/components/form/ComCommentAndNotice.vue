@@ -191,8 +191,8 @@ function onSaveNote(doctype, data) {
             note_date: moment().toDate()
         }
         edit.value = data.value
-        op.value.hide()
         onLoadSocket()
+        op.value.hide()
     }).catch((err) => {
         saving.value = false
     })
@@ -221,8 +221,8 @@ function onRemove(selected) {
 }
 
 
-function onLoadSocket(){
-    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+function onLoadSocket(){ 
+    window.socket.emit("CommentAndNotice", { reservation_stay:window.reservation_stay })
 }
 
 </script>

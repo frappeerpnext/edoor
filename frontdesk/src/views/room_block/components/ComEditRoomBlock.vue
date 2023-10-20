@@ -1,4 +1,5 @@
 <template lang="">
+    {{data}}
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
         <div class="grid">
             <div class="col-6">
@@ -14,17 +15,28 @@
                     @onSelected="onSearch" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-5">
                 <label>Start Date</label>
                 <div>
-                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.start_date"   dateFormat="dd-mm-yy"/>
+                    {{data.start_date}}
+                    <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" dateFormat="dd-mm-yy"/>
                 </div>
             </div>
 
-            <div class="col-6">
+            <div class="col-2">
+                <div class="night__wfit col-fixed px-0" style="width: 150px;">
+                    <div>
+                        <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
+                    </div>
+                    <ComReservationInputNight v-model="data.total_night" />
+                </div>
+            </div>
+
+            <div class="col-5">
                 <label>Release Date</label>
                 <div> 
-                    <Calendar class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1,'days'))" dateFormat="dd-mm-yy"/>
+                    {{data.end_date}}
+                    <Calendar @date-select="onDateSelect" class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1, 'days').toDate())" dateFormat="dd-mm-yy"/>
                 </div>
             </div>
             <div class="col-12">
@@ -37,13 +49,15 @@
     </ComDialogContent>
 </template>
 <script setup>
-import {inject,ref, createUpdateDoc, onMounted} from '@/plugin'
+import {inject,ref, createUpdateDoc, onMounted, watch} from '@/plugin'
+import ComReservationInputNight from '@/views/reservation/components/ComReservationInputNight.vue';
 const dialogRef = inject('dialogRef');
 const gv = inject('$gv');
 const moment = inject('$moment');
 const data = ref({})
 const loading = ref(false)
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+ 
  
 function onSave (){
     if(!data.value.end_date){
@@ -81,7 +95,7 @@ function onClose(){
     dialogRef.value.close()
 }
 
-onMounted(()=>{
+onMounted(()=>{ 
     if(dialogRef.value.data.name){
         data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
         data.value.start_date =moment(data.value.start_date).toDate()
@@ -91,9 +105,22 @@ onMounted(()=>{
     }else {
         data.value.block_date = moment().toDate()
         data.value.start_date = moment().toDate()
-        data.value.end_date = moment().toDate()
+        data.value.end_date = moment(data.value.start_date).add(1, 'days').toDate()
         data.value.property = property.name
     }
+})
+
+const onSelectStartDate = (date) => {
+    if (moment(date).isSame(moment(data.value.end_date).format("yyyy-MM-DD")) || moment(date).isAfter(data.value.end_date)) {
+        data.value.end_date = moment(date).add(1, 'days').toDate();
+    }
+}
+
+const onRoomNightChanged = (event) => {
+    data.value.end_date = moment(data.value.start_date).add(event, "Days").toDate()
+}
+watch(data.value, async (newData, oldData) => {
+    data.value.total_night = moment(newData.end_date).diff(moment(newData.start_date), 'days')
 })
 </script>
 <style lang="">

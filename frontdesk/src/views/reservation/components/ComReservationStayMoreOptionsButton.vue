@@ -188,6 +188,8 @@ function onMarkAsMasterRoom() {
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+
             })
 
         },
@@ -223,7 +225,8 @@ function onUndoCheckIn() {
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("TodaySummary", window.property_name)
-
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
 
                 setTimeout(() => {
                     emit('onRefresh')
@@ -263,6 +266,8 @@ function OnUndoCheckOut() {
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
                 rs.loading = false
                 setTimeout(() => {
                     emit('onRefresh')
@@ -396,6 +401,8 @@ function onReservedRoom() {
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
                 
 
             })  
@@ -425,7 +432,8 @@ function onUnReservedRoom() {
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("Frontdesk", window.property_name)
-
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
             
             })  
         },
@@ -607,7 +615,7 @@ function onMarkasGITReservation() {
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                         window.socket.emit("Frontdesk", window.property_name)
-
+                        window.socket.emit("Reports", window.property_name)
                 })
         },
 
@@ -642,7 +650,7 @@ function onMarkasFITReservation() {
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                         window.socket.emit("Frontdesk", window.property_name)
-               
+                        window.socket.emit("Reports", window.property_name)
 
                 })
         },

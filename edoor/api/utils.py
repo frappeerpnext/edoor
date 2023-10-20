@@ -380,7 +380,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             sql = """
                 select 
                     min(rate) as rate,
-                    avg(rate) as adr,
+                    avg(total_rate) as adr,
                     sum(discount_amount) as discount_amount,
                     sum(tax_1_amount) as tax_1_amount,
                     sum(tax_2_amount) as tax_2_amount,

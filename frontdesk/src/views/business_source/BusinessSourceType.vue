@@ -18,7 +18,7 @@
         </div>
         <div class="">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="gv.search(data, filter.keyword).length > 0">
-                <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase())) -->
+                <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))  -->
                 <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
                     <Column field="business_source_type" header="Business Source Type"></Column>
                     <Column field="owner" header="Owner"></Column>
@@ -39,7 +39,7 @@
     </div>
 </template>
 <script setup>
-import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc } from '@/plugin'
+import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc,computed } from '@/plugin'
 import ComAddBusinessSourceType from "@/views/business_source/components/ComAddBusinessSourceType.vue"
 const gv = inject("$gv")
 const dialog = useDialog()

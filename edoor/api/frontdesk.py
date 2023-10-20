@@ -79,9 +79,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #get total room occupy
     total_room_occupy = 0
     unassign_room = 0
-    
-    #check if past date 
-    sql = "SELECT count(name) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE is_departure= 0 and  `date` = '{0}' AND property = '{1}' and type='Reservation' and room_type_id=if('{2}'='',room_type_id,'{2}');".format(date,property, room_type_id or '')
+
+    sql = "SELECT sum(if(reservation_status='No Show',0,1)) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE is_departure= 0 and  `date` = '{0}' AND property = '{1}' and type='Reservation' and room_type_id=if('{2}'='',room_type_id,'{2}');".format(date,property, room_type_id or '')
 
     #get all totoal unassign room
 
@@ -212,6 +211,76 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         
     }
 
+
+@frappe.whitelist()
+def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None):
+    
+    data =  ["hello"]
+    sql="""
+        select 
+            room_type_id,
+            room_type,
+            room_type_alias,
+            sum(if(reservation_status='No Show' and is_departure=0,0,1) ) as total_room_sold,
+            sum(if(reservation_status='No Show' and is_departure=0,0,adult) ) as adult,
+            sum(if(reservation_status='No Show' and is_departure=0,0,child) ) as child,
+            sum(reservation_status!='No Show' and is_departure=0 and reservation_type='FIT') as fit,
+            sum(reservation_status!='No Show' and is_departure=0 and reservation_type='GIT') as git,
+            sum(reservation_status!='No Show' and is_departure=0 and pick_up=1) as pick_up,
+            sum(reservation_status!='No Show' and is_departure=1 and drop_off=1) as drop_off,
+            sum(reservation_status!='No Show' and is_arrival=1) as arrival,
+            sum(reservation_status!='No Show' and is_arrival=1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(reservation_status!='No Show' and is_arrival=0 and is_departure=0 ) as stay_over,
+            sum(reservation_status!='No Show' and is_departure=1 ) as departure,
+            sum(reservation_status!='No Show' and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
+            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='No Show' ) as no_show ,
+            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='Void' ) as void ,
+            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
+            0 as adr,
+            0 as total_rate
+        from `tabRoom Occupy`
+        WHERE 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            type='Reservation' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+            room_type,
+            room_type_id,
+            room_type_alias
+    """.format(date,property, room_type_id or '') 
+
+    
+    data = frappe.db.sql(sql, as_dict=1)
+    
+    #get room rate 
+    sql="""
+        select 
+            room_type_id,
+            avg(total_rate) as adr,
+            sum(total_rate) as total_rate
+        from `tabReservation Room Rate`
+        WHERE 
+            is_active_reservation = 1 and 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+            room_type,
+            room_type_id,
+            room_type_alias
+    """.format(date,property, room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,as_dict=1)
+
+
+    
+    for d in data:
+        d["toal_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
+        d["adr"] = sum([r["adr"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
+
+    return data
+
 @frappe.whitelist()
 def get_house_keeping_status(property):
     #get house keeping status
@@ -317,53 +386,43 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
 
     chart_data = {
             "labels":[getdate(d).strftime('%d/%b') for d in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else series_label,
-            "datasets":[
-                {
-                "type": "line" if int(show_occupancy_only)==0 else  view_chart_type,
-                "label": 'Occupancy (%)',
-                "borderWidth": 2 if view_chart_type=="line" else 0,
-                "fill": False,
-                "tension": 0.4,
-                "data": occupancy_data,
-                "showPoint":True ,
-                "borderColor": "#3b82f6",
-                "backgroundColor": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
-            }]
+            "datasets":[]
+            # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
     }
- 
     if int(show_occupancy_only)==0:
         
-        chart_data["datasets"] = chart_data["datasets"]  +  [
+        chart_data["datasets"] =[
                 {
-                    "type": 'bar',
-                    "label": 'Room Block',
-                    "backgroundColor": frappe.db.get_single_value("eDoor Setting","room_block_color"),
-                    "data": block_data,
+                    "chartType": 'bar',
+                    "name": 'Room Block',
+                    "values": block_data,
                 },
 
                 {
-                    "type": 'bar',
-                    "label": 'Departure',
-                    "backgroundColor": frappe.db.get_value("Reservation Status","Checked Out","color"),
-                    "data": departure_data,
+                    "chartType": 'bar',
+                    "name": 'Departure',
+                    "values": departure_data,
                 },
                 {
-                    "type": 'bar',
-                    "label": 'Stay Over',
-                    "backgroundColor": frappe.db.get_value("Reservation Status","In-house","color"),
-                    "data": stay_over_data,
+                    "chartType": 'bar',
+                    "name": 'Stay Over',
+                    "values": stay_over_data,
                 },
                 {
-                    "type": 'bar',
-                    "backgroundColor": frappe.db.get_value("Reservation Status","Reserved","color"),
-                    "label": 'Arrival',
-                    "data": arrival_data,
+                    "chartType": 'bar',
+                    "name": 'Arrival',
+                    "values": arrival_data,
                 },
             
 
         ]
-    
- 
+    chart_data["datasets"].append({
+                "chartType": "line" if int(show_occupancy_only)==0 else  view_chart_type,
+                "name": 'Occupancy (%)',
+                "values": occupancy_data,
+                
+    })
+
     return chart_data
    
 
@@ -413,6 +472,7 @@ def get_edoor_setting(property = None):
         "powered_by_text": edoor_setting_doc.powered_by_text,
         "calculate_room_occupancy_include_room_block": edoor_setting_doc.calculate_room_occupancy_include_room_block,
         "search_table": [{"doctype":d.table_name,"title":d.title,"template":d.template} for d in edoor_setting_doc.search_table],
+        "room_block_color":edoor_setting_doc.room_block_color,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -454,7 +514,8 @@ def get_edoor_setting(property = None):
         "phone_number_1":property.phone_number_1,
         "phone_number_2":property.phone_number_1,
         "pos_profile":property.default_pos_profile,
-        "default_letter_head":property.default_letter_head
+        "default_letter_head":property.default_letter_head,
+        "edoor_letterhead":[d.letterhead for d in property.edoor_letterhead]
     }
 
 

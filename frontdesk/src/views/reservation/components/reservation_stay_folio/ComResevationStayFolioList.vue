@@ -11,7 +11,7 @@
                 </div>
                 <template v-if="rs.folios && rs.folios.length > 0">
 
-                    <Button :severity="item.name == rs.selectedFolio.name ? 'folio-active' : 'primary'"
+                    <Button :severity="item.selected ? 'folio-active' : 'primary'"
                         v-for="(item, index) in Enumerable.from(rs.folios).orderByDescending('$.is_master').toArray()"
                         :key="index" @click="onClick(item)" class="flex w-full btn-folio-name mr-1" style="z-index: 1;">
                         <span v-if="item.is_master == 1"><img :src="crown_svg" class="folio-is-mater-icon me-2"
@@ -83,27 +83,45 @@
 </template>
 <script setup>
 import Enumerable from 'linq';
-import { inject, useToast } from '@/plugin';
+import { inject } from '@/plugin';
 import crown_svg from '@/assets/svg/icon-crown.svg'
 import plus_svg from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
 import { useDialog } from 'primevue/usedialog';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
+
+const emit = defineEmits(["onSelectFolio"])
+
 const rs = inject('$reservation_stay');
 const dialog = useDialog();
-const toast = useToast();
-const gv = inject('$gv')
 const moment = inject('$moment')
 const can_view_rate= window.can_view_rate;
-function onClick(data) {
-    rs.onLoadFolioTransaction(data)
+
+const { loadReservationStayFolioList } = inject("reservation_stay")
+
+function onClick(f) {
+
+    clearSelectedFolio()
+        f.selected = true
+        emit("onSelectFolio",f)
 }
+function clearSelectedFolio() {
+    
+    const selected = rs.folios.find(x => x.selected == true)
+    if (selected) {
+        selected.selected = false
+    }
+
+}
+
 function onAddCreatNewFolio() {
 
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
         data: {
-            reservation_stay: rs.reservationStay,
-
+            guest: rs.reservationStay.guest,
+            reservation: rs.reservationStay.reservation,
+            reservation_stay: rs.reservationStay.name,
+            property: window.property_name
         },
         props: {
 
@@ -118,12 +136,11 @@ function onAddCreatNewFolio() {
         onClose: (options) => {
             const data = options.data;
             if (data != undefined) {
-                rs.onLoadReservationFolios().then(() => {
-                    onClick(data)
-                })
-              
+
+                loadReservationStayFolioList(data.name)
             }
         }
     })
+
 }
 </script>

@@ -118,7 +118,8 @@ function onUpload(){
         /** Docname associated with the file (mandatory if doctype is present) */
         "docname": props.docname,
         /** Field in the document **/
-        "fieldname": props.fieldname
+        "fieldname": props.fieldname,
+        "otherData":{title:"Hell World",description:"hello world"}
     })
 
     if(files.value.length > 0){

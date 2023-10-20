@@ -7,16 +7,10 @@
             </td>
             <td>
                 <div v-if="selectedFolio">
-
-                  
                     <ComFolioAction :folio="selectedFolio" />
-
                     <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                     <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
-                     
                 </div>
-                
-                
             </td>
         </tr>
     </table>
@@ -39,7 +33,6 @@
     const loading = ref(false)
     const confirm = useConfirm();
     function onSelectFolio(f){
-      
         selectedFolio.value=f
     }
     
@@ -60,9 +53,6 @@
         })
     }
 
-    provide('reservation', {
-        loadReservationFolioList
-    })
 
     function setSelectedFolio(selected_name=""){
         
@@ -117,17 +107,13 @@
     }
     
     const windowActionHandler = async function (e) {
-    if (e.isTrusted) {
-        if(e.data.action=="load_reservation_folio_list"){
-            setTimeout(function(){
-                loadReservationFolioList() 
-            },2000)
-            
+        if (e.isTrusted) {
+            if (e.data.action == "load_reservation_folio_list") {
+                    loadReservationFolioList((e.data.selected_folio_name || ""))
+            }
         }
-       
     }
-}
- 
+
 
     onMounted(() => {
         loadReservationFolioList()

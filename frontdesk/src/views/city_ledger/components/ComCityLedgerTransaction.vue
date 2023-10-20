@@ -379,6 +379,8 @@ function onDeleteCityLedgerTransaction(name) {
             deleteDoc('Folio Transaction', name)
                 .then(() => {
                     loadData()
+                    window.socket.emit("CityLedgerAccount",window.property_name)
+                    window.socket.emit("ComCityLedgerDetail",window.property_name)
                 }).catch((err) => {
                     loading.value = false
                 })

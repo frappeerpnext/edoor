@@ -14,7 +14,7 @@
                 </div>
                 <div class="col-6">
                     <label>Business Source</label>
-                    <ComSelect class="w-full" v-model="data.business_source" placeholder="Business Source" doctype="Business Source" />
+                    <ComAutoComplete class="w-full" v-model="data.business_source" placeholder="Business Source" doctype="Business Source" />
                 </div>
                 <div class="col-6">
                     <label>Company Name</label><br />
@@ -110,9 +110,13 @@ function onSave(){
     }
     loading.value = true
     createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
+        window.socket.emit("Dashboard",property.name)
+        window.socket.emit("CityLedgerAccount",window.property_name)
+        window.socket.emit("ComCityLedgerDetail",window.property_name)
+
         loading.value = false
         dialogRef.value.close(r)
-        window.socket.emit("RefresheDoorDashboard",property.name)
+        
     }).catch((err)=>{
         loading.value = false
     })

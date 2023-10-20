@@ -119,6 +119,10 @@ function onOk() {
                 loading.value = false
                 dialogRef.value.close("refresh_data")
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationStayList", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationList", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
             }).catch((err) => {
                 loading.value = false
             })

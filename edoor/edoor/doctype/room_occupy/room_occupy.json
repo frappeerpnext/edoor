@@ -11,6 +11,9 @@
   "date",
   "reservation",
   "reservation_stay",
+  "pick_up",
+  "drop_off",
+  "reservation_type",
   "room_id",
   "room_number",
   "room_type_id",
@@ -44,10 +47,11 @@
   },
   {
    "fieldname": "reservation",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Reservation"
+   "label": "Reservation",
+   "options": "Reservation"
   },
   {
    "fieldname": "reservation_stay",
@@ -164,11 +168,31 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Room Type Alias"
+  },
+  {
+   "fetch_from": "reservation.reservation_type",
+   "fieldname": "reservation_type",
+   "fieldtype": "Data",
+   "label": "Reservation Type"
+  },
+  {
+   "default": "0",
+   "fetch_from": ".",
+   "fieldname": "pick_up",
+   "fieldtype": "Check",
+   "label": "Pick Up"
+  },
+  {
+   "default": "0",
+   "fetch_from": ".",
+   "fieldname": "drop_off",
+   "fieldtype": "Check",
+   "label": "Drop Off"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-17 14:45:33.934718",
+ "modified": "2023-10-19 11:06:25.044098",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

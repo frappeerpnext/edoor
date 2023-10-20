@@ -170,7 +170,10 @@ if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || momen
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})      
                 window.socket.emit("Frontdesk", window.property_name)      
-                window.socket.emit("TodaySummary", window.property_name)      
+                window.socket.emit("TodaySummary", window.property_name)
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
 
             }).catch(()=>{
                 loading.value = false

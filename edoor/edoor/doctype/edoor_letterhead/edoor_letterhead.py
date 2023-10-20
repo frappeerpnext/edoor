@@ -4,5 +4,6 @@
 # import frappe
 from frappe.model.document import Document
 
-class BusinessSource(Document):
+
+class eDoorLetterhead(Document):
 	pass

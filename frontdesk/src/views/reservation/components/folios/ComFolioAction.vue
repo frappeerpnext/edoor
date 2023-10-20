@@ -97,7 +97,7 @@ const toast = useToast();
 const gv = inject("$gv")
 const setting =window.setting
 const folio_menu = ref();
-const {loadReservationFolioList} = inject("reservation")
+
 
  
 //trach user select new folio and reload folio information
@@ -209,17 +209,6 @@ function onAddFolioTransaction(account_code) {
      
                 if (data) {
                     reloadData()
-                  
-
-                    //will change this to use websocket
-
-                    // rs.onLoadReservationFolios()
-                    // rs.onLoadFolioTransaction(selectedFolio.value)
-                    // rs.getChargeSummary(selectedFolio.value.reservation_stay)
-                    // setTimeout(function () {
-                    //     rs.getReservationStay(selectedFolio.value.reservation_stay);
-                    // }, 2000)
-
                     if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {
                             showPrintPreview(data)
@@ -269,7 +258,11 @@ function EditFolio() {
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
 
         data: {
-            folio:selectedFolio.value
+            property: window.property_name,
+            name:selectedFolio.value.name,
+            reservation_stay: selectedFolio.value.reservation_stay,
+            guest: selectedFolio.value.guest,
+            note: selectedFolio.value.note
         },
         props: {
             header: 'Edit Folio  ' + selectedFolio.value.name,
@@ -284,7 +277,8 @@ function EditFolio() {
             let data = options.data;
             if (data != undefined) {
           
-                loadReservationFolioList()
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
                 window.socket.emit("ReservationDetail", selectedFolio.value.reservation)
 
             }
@@ -308,7 +302,10 @@ function MarkasMasterFolio() {
                     is_master: 1,
                 },"Mark Folio as Master Folio Successfully")
                     .then((doc) => {
-                        loadReservationFolioList(selectedFolio.value.name)
+                        window.postMessage({action:"load_reservation_folio_list",selected_folio_name:selectedFolio.value.name})
+                        window.socket.emit("ComGuestLedger", { property:window.property_name})
+                        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+
                     })
             },
         })
@@ -334,8 +331,9 @@ function openFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    // rs.onLoadReservationFolios()
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
                     window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
                 })
         },
 
@@ -358,9 +356,9 @@ function closeFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                   
                     window.socket.emit("ReservationStayList", { property: window.property_name })
-
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
                 })
         },
 
@@ -393,7 +391,9 @@ function deleteFilio() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                loadReservationFolioList()
+                window.postMessage({action:"load_reservation_folio_list"},"*")
+                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+                
             }
         }
     });

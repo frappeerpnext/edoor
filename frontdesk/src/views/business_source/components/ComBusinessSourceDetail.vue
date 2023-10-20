@@ -36,7 +36,8 @@ function onIframeLoaded(){
 function onEdit() { 
     dialog.open(ComAddBusinessSource, {
         data: {
-            name: name.value
+            name: name.value,
+            is_city_ledger: false
         },
         props: {
             header: `Edit Business Source: ${name.value}`,
@@ -75,7 +76,8 @@ function onDelete() {
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
                     dialogRef.value.close(r)
-                    window.socket.emit("RefreshData", {property:property.name,action:"refresh_business_source"});
+                    window.socket.emit("ComBusinessSource",window.property_name)
+                    
                     
                  } ).catch((err)=>{
                     loading.value = false

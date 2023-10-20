@@ -16,6 +16,8 @@
   "contact_name",
   "phone_number",
   "email",
+  "auto_create_city_ledger_account",
+  "city_ledger_type",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -94,11 +96,24 @@
    "fieldname": "keyword",
    "fieldtype": "Small Text",
    "label": "Keyword "
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_create_city_ledger_account",
+   "fieldtype": "Check",
+   "label": "Auto Create City Ledger Account"
+  },
+  {
+   "fieldname": "city_ledger_type",
+   "fieldtype": "Link",
+   "label": "City Ledger Type",
+   "mandatory_depends_on": "eval:doc.auto_create_city_ledger_account ==1",
+   "options": "City Ledger Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-17 15:26:44.357701",
+ "modified": "2023-10-20 12:13:49.951563",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

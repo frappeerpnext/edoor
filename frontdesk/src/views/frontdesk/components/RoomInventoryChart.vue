@@ -2,107 +2,77 @@
 <template>
     <div class="card" style="background:#fff; margin-bottom: 20px; border-radius: 10px; padding:10px; ">
  
- 
-        <Chart type="bar" :data="chartData" :options="chartOptions" class="h-30rem"   :plugins="plugins"/>
+        <div id="room_inventory_occupancy_chart"></div>
+    
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, inject } from "vue";
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-const plugins = [ChartDataLabels]
+import {  inject,watch } from "vue";
+import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
 const props = defineProps({ data: Object })
 const moment = inject("$moment")
 
-onMounted(() => {
-    chartOptions.value = setChartOptions();
-});
+watch(() => props.data, (newValue, oldValue) => {
+    renderChart();
+})
 
-const chartData = computed(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
 
-    return {
+function renderChart(){
+ 
+    const chartData = {
         labels: [...new Set(props.data.map(r=>moment(r.start).format("DD/MMM")))],
         datasets: [
             {
-                type: 'line',
-                label: 'Occupancy',
-                borderColor: documentStyle.getPropertyValue('--blue-500'),
-                borderWidth: 2,
-                fill: false,
-                tension: 0.4,
-                data: props.data.filter(r=>r.occupancy) .map(r=>parseFloat( r.occupancy)),
-                showPoint:true
-            },
-          
-            
-           
-            {
-                type: 'bar',
-                label: 'Departure',
-                backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Checked Out").color,
-                data:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure))
+                chartType: 'bar',
+                name: 'Departure',
+                values:  props.data.filter(r=>r.departure>=0).map(r=>parseFloat( r.departure))
             },
                 {
-                    type: 'bar',
-                    stacked: false,
-                    label: 'Stay Over',
-                    backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="In-house").color,
-                    data:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over))
+                    chartType: 'bar',
+                    name: 'Stay Over',
+                   
+                    values:   props.data.filter(r=>r.stay_over>=0) .map(r=>parseFloat( r.stay_over))
                 },
             {
-                type: 'bar',
-                label: 'Arrival',
-                stacked: false,
-                backgroundColor: window.setting.reservation_status.find(r=>r.reservation_status=="Reserved").color,
-                data:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
-                borderColor: 'white',
+                chartType: 'bar',
+                name: 'Arrival',
+                values:   props.data.filter(r=>r.arrival>=0) .map(r=>parseFloat( r.arrival)),
+                
+            },
+            {
+                chartType: 'line',
+                name: 'Occupancy',
+                values: props.data.filter(r=>r.occupancy) .map(r=>parseFloat( r.occupancy)),
             },
            
         ]
-    };
-})
-const chartOptions = ref();
+    }
 
-
-const setChartOptions = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
-    return {
-        maintainAspectRatio: false,
-        aspectRatio: 0.6,
-         plugins: {
-           
-            tooltips: {
-                mode: 'index',
-                intersect: true
-            },
-            legend: {
-                labels: {
-                    color: textColor
-                }
-            },
-        
+    const chartConfig = {
+        data: chartData,
+        height: 350,
+        colors: [
+            getStatusColor("Checked Out"), getStatusColor("In-house"), getStatusColor("Reserved"), "light-blue"],
+        axisOptions: {
+            xAxisMode: "tick",
+            xIsSeries: true
         },
-        scales: {
-            x: {
-                stacked:true,
-                ticks: {
-                    color: textColorSecondary
-                },
-               
-            },
-            y: {
-                stacked:true,
-                ticks: {
-                    color: textColorSecondary
-                },
-                
-            }
-        }
-    };
-}
+        barOptions: {
+            stacked: true,
+            spaceRatio: 0.3
+        },
+        valuesOverPoints: 1
+        ,
+    }
+    const chart = new Chart("#room_inventory_occupancy_chart",chartConfig)
+
+
+    }
+
+    function getStatusColor(status){
+    return window.setting.reservation_status.find(r=>r.name==status).color
+    }
+
+
 </script>

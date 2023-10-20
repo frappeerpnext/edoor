@@ -13,7 +13,8 @@
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view||'')!='ui'">
-                        <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" :model="items" />
+                        
+                        <ComPrintButton :url="url"  @click="onPrint"/>
                         
                     </div>
                     <div >
@@ -47,7 +48,7 @@ const report_name = ref("")
 letterHead.value = setting.property.default_letter_head
 
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=1"
+    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=0"
 
     if (selected_folio.value) {
         url.value = url.value + "&folio=" + selected_folio.value
@@ -62,13 +63,11 @@ function onIframeLoaded() {
     // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
 function onPrint(){
-    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=1"
 
     if (selected_folio.value) {
-        url.value = url.value + "&trigger_print=1&folio=" + selected_folio.value
+        document.getElementById("report-view").contentWindow.print()
     }
-
-    document.getElementById("report-view").contentWindow.location.replace(url.value)
+    
 }
 
 onMounted(() => {

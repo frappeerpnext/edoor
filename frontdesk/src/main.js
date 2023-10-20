@@ -50,6 +50,7 @@ import ReservationStay from './providers/reservation_stay';
 // directive
 import BadgeDirective from 'primevue/badgedirective';
 
+
 // prime components //
 import Button from "primevue/button"
 import Menu from 'primevue/menu';
@@ -128,7 +129,8 @@ import ComLastModifiedInfo from './components/layout/components/ComLastModifiedI
 import ComDocumentBadge from './components/layout/components/ComDocumentBadge.vue'
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css' // optional for styling
-
+import ComLetterHead from "@/components/form/ComLetterHead.vue"
+import ComPrintButton from "@/components/form/ComPrintButton.vue"
 
 
 // use components //
@@ -204,6 +206,8 @@ app.component('ComInputCurrency', ComInputCurrency)
 app.component('ComStayInfoNoBox', ComStayInfoNoBox)
 app.component('ComLastModifiedInfo', ComLastModifiedInfo)
 app.component('ComDocumentBadge', ComDocumentBadge)
+app.component('ComLetterHead', ComLetterHead)
+app.component('ComPrintButton', ComPrintButton)
 // Plugins
 app.use(frappe)
 

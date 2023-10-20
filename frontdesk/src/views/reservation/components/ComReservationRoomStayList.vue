@@ -132,6 +132,7 @@ function onUpgradeRoom() {
     
 function onAssignRoom(data){
     let getData = JSON.parse(JSON.stringify(data))
+    console.log(getData)
     getData.business_source = rs.reservationStay.business_source
     dialog.open(ComReservationStayAssignRoom, {
         data: {
@@ -154,9 +155,9 @@ function onAssignRoom(data){
         onClose: (options) => {
             if(options.data && options.data.message){
                 setTimeout(() => {
-                    rs.getReservationDetail(options.data.message.name)    
+                    rs.getReservationDetail(options.data.message.name)
+                    console.log(rs.getReservationDetail(options.data.message.name))    
                 }, 1500);
-                
             } 
         }
     })

@@ -219,6 +219,7 @@ function onBlankGuestRegistration() {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
             report_name: "eDoor%20Blank%20Guest%20Registration%20Card",
+            show_letter_head:1
         },
         props: {
             header: "Blank Guest Registration Card",

@@ -13,6 +13,7 @@ from edoor.api.utils import update_reservation
  
 class ReservationStay(Document):
 	def  validate(self):
+		
 		working_day = get_working_day(self.property)
 		
 		if not self.reservation:
@@ -164,6 +165,7 @@ class ReservationStay(Document):
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
 
+
 	def after_insert(self):
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
@@ -220,6 +222,19 @@ class ReservationStay(Document):
 		 where parent=%(name)s
 		""",data_for_udpate)
 	
+		#run equeue process to update picup and drop off to room_occupy
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_room_occupy", queue='short', self = self)
+
+def update_room_occupy(self):
+	frappe.db.sql("update `tabRoom Occupy` set pick_up=0, drop_off=0 where reservation_stay='{}'".format(self.name))
+	frappe.db.sql("update `tabTemp Room Occupy` set pick_up=0, drop_off=0 where reservation_stay='{}'".format(self.name))
+	if self.require_pickup==1:
+		frappe.db.sql("update `tabRoom Occupy` set pick_up=1 where reservation_stay='{}' and date='{}'".format(self.name,self.arrival_date))
+		frappe.db.sql("update `tabTemp Room Occupy` set pick_up=1 where reservation_stay='{}' and date='{}'".format(self.name,self.arrival_date))
+		
+	if self.require_drop_off==1:
+		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
+		frappe.db.sql("update `tabTemp Room Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
 
 
 
@@ -469,7 +484,9 @@ def generate_stay_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
+				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
+				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 
 
 			}).insert()
 
@@ -489,7 +506,9 @@ def generate_stay_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
+				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
+				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 
 				
 			}).insert()
 		

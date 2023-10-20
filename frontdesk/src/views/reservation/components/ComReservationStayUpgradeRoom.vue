@@ -312,6 +312,8 @@
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.socket.emit("ComGuestLedger", { property:window.property_name})
+            window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
             dialogRef.value.close(rs.reservationStay.name);
         }).catch((ex) => {
             loading.value = false;

@@ -33,7 +33,7 @@
                         </template>
                         <ComDocument doctype="Customer" :docname="name" :fill="false" :attacheds="[name]"
                             v-if="!loading" />
-                    </TabPanel>
+                </TabPanel>
             </TabView>
         </div>
         <template #footer-left>
@@ -124,6 +124,7 @@ function onDeleteGuest (name){
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("GuestList", window.property_name)
+                window.socket.emit("Reports", window.property_name)
 
                 dialogRef.value.close()
             }).catch((err)=>{

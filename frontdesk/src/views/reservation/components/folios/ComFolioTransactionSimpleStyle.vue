@@ -189,6 +189,7 @@ watch(() => props.folio, (newValue, oldValue) => {
 
     LoadFolioTransaction()
     selectedfolioTransactions.value = []
+    clearState(oldValue.name)
 })
 
 
@@ -373,7 +374,7 @@ onMounted(() => {
 
 })
 function clearState(name){
-    
+     
         let state = sessionStorage.getItem("folo_transaction_table_state_" + name )
         if(state){
             state = JSON.parse(state)

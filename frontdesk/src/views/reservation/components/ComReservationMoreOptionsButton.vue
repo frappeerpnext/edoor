@@ -286,6 +286,9 @@ function onGroupCheckIn() {
                     rs.LoadReservation(rs.reservation.name);
                     window.socket.emit("Dashboard", property.name);
                     window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("ReservationStayList", { property:window.property_name})
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("Reports", window.property_name)
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -326,6 +329,10 @@ function onGroupUndoCheckIn() {
                             rs.LoadReservation()
                         },1000)
                         window.socket.emit("ReservationList", { property:window.property_name})
+                        window.socket.emit("ReservationStayList", { property:window.property_name})
+                        window.socket.emit("ComGuestLedger", { property:window.property_name})
+                        window.socket.emit("Reports", window.property_name)
+                        
                     }
                 }).catch(err=>{
                     rs.loading = false
@@ -360,6 +367,9 @@ function onGroupCheckOut(is_not_undo = false) {
                 }).then((result) => {
                     if (result) {
                         window.socket.emit("ReservationList", { property:window.property_name})
+                        window.socket.emit("ReservationStayList", { property:window.property_name})
+                        window.socket.emit("ComGuestLedger", { property:window.property_name})
+                        window.socket.emit("Reports", window.property_name)
                         rs.LoadReservation()
                     }
                 }).catch((error) => {
@@ -623,7 +633,9 @@ function onMarkasGITReservation() {
                         });
                     // window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
                     window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("Dashboard", window.property_name)
+                    window.socket.emit("Reports", window.property_name)
 
                 })
         },
@@ -651,7 +663,9 @@ function onMarkasFITReservation() {
                             detail: 'Mark as FIT Reservation Successfully', life: 3000
                         });
                     window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("Dashboard", window.property_name)
+                    window.socket.emit("Reports", window.property_name)
 
 
                 })
