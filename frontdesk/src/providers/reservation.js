@@ -105,14 +105,16 @@ export default class Reservation {
 		return 0
 	}
 
-	getRoomRate(reservation) {
-
+	getRoomRate(reservation, showLoading = true) {
+		this.loading = showLoading
 		getApi('reservation.get_reservation_room_rate', {
 			reservation:reservation
 		}).then((result) => {
-			
+			this.loading = false
 			this.room_rates = result.message
 			this.room_rates.forEach(r=>r.date_search = moment(r.date).format("DD-MM-YYYY"))
+		}).catch((err) =>{
+			this.loading = false
 		})
 
 	}

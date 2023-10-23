@@ -73,6 +73,7 @@ function onSave(){
         loading.value = false
         dialogRef.value.close(rs.selecteds = [])
         window.socket.emit("ReservationList", { property:window.property_name})
+        window.socket.emit("ReservationDetail", window.reservation)
     }).catch((err) => {
         loading.value = false
     })

@@ -177,15 +177,14 @@ const canCheckIn = computed(() => {
 function onRefresh(showLoading = true) {
     if(activeTab.value==0){
         rs.LoadReservation(name.value, showLoading);
-    rs.getChargeSummary(name.value)
+        rs.getChargeSummary(name.value)
 
     } else if(activeTab.value==3) { 
         window.postMessage({action:"load_reservation_folio_list",reservation:name.value},"*")
         window.postMessage({action:"load_folio_transaction"},"*")
+    } else if(activeTab.value==2){
+        rs.getRoomRate(name.value, showLoading);
     }
-    
-
-
 }
 
 
@@ -218,8 +217,6 @@ onMounted(() => {
         else {
             onRefresh()
         }
-
-
     }
     
     window.reservation = name.value
@@ -228,10 +225,9 @@ onMounted(() => {
         if (reservation == name.value) {
             setTimeout(function(){
                 onRefresh(false)
-            },1500)
+            },3000)
         }
     })
-
 });
 
 // window.reservation = rs.reservation.name
@@ -276,10 +272,12 @@ function onCheckIn(){
                     reservation_stays: rs.selecteds.map(d => d["name"])
                 }).then((result) => {
                     rs.loading = false
-                    rs.LoadReservation(rs.reservation.name);
+                    rs.LoadReservation(rs.reservation.name, false);
                     window.socket.emit("Dashboard", property.name);
                     window.socket.emit("ReservationList", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    
                 })
                     .catch((err) => {
                         rs.loading = false

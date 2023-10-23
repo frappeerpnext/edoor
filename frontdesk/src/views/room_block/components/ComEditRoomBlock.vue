@@ -1,11 +1,10 @@
 <template lang="">
-    {{data}}
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
         <div class="grid">
             <div class="col-6">
                 <label>Block Date</label>
                 <div>
-                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.block_date" :disabled="data.name" dateFormat="dd-mm-yy"/>
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.block_date" :manualInput="false" :disabled="data.name" dateFormat="dd-mm-yy"/>
                 </div>
             </div> 
             <div class="col-6">
@@ -15,28 +14,27 @@
                     @onSelected="onSearch" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
                 </div>
             </div>
-            <div class="col-5">
-                <label>Start Date</label>
-                <div>
-                    {{data.start_date}}
-                    <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" dateFormat="dd-mm-yy"/>
-                </div>
-            </div>
-
-            <div class="col-2">
-                <div class="night__wfit col-fixed px-0" style="width: 150px;">
-                    <div>
-                        <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
+            <div class="col-12"> 
+                <div class="grid">
+                    <div class="col">
+                        <label>Start Date</label>
+                        <div>
+                            <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" dateFormat="dd-mm-yy"/>
+                        </div>
                     </div>
-                    <ComReservationInputNight v-model="data.total_night" />
-                </div>
-            </div>
-
-            <div class="col-5">
-                <label>Release Date</label>
-                <div> 
-                    {{data.end_date}}
-                    <Calendar @date-select="onDateSelect" class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1, 'days').toDate())" dateFormat="dd-mm-yy"/>
+                    <div class="night__wfit col-fixed px-0" style="width: 150px;">
+                        <div>
+                            <label class="invisible">Room Night<span class="text-red-500">*</span></label>
+                        </div>
+                        <ComReservationInputNight v-model="data.total_night"
+                            @onUpdate="onRoomNightChanged" />
+                    </div>
+                    <div class="col">
+                        <label>Release Date</label>
+                        <div>
+                            <Calendar @date-select="onDateSelect" class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1, 'days').toDate())" dateFormat="dd-mm-yy"/>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-12">
@@ -60,7 +58,11 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
  
  
 function onSave (){
-    if(!data.value.end_date){
+    if(!data.value.room_id){
+        gv.toast('warn', 'Please select room.')
+        return
+    }
+    else if(!data.value.end_date){
         gv.toast('warn', 'Please select release date.')
         return
     }
@@ -78,7 +80,8 @@ function onSave (){
         room_id: data.value.room_id,
         reason: data.value.reason,
         property: data.value.property,
-        is_auto_submit: true
+        is_auto_submit: true,
+        total_night_count: data.value.total_night
     }
     createUpdateDoc('Room Block', {data: savedData}).then((r)=>{
         dialogRef.value.close(r)
@@ -101,6 +104,7 @@ onMounted(()=>{
         data.value.start_date =moment(data.value.start_date).toDate()
         data.value.end_date = moment(data.value.end_date).toDate()
         data.value.block_date = moment(data.value.block_date).toDate()
+        data.value.total_night = moment(data.value.end_date).diff(moment(data.value.start_date), 'days')
       
     }else {
         data.value.block_date = moment().toDate()
@@ -119,9 +123,10 @@ const onSelectStartDate = (date) => {
 const onRoomNightChanged = (event) => {
     data.value.end_date = moment(data.value.start_date).add(event, "Days").toDate()
 }
-watch(data.value, async (newData, oldData) => {
-    data.value.total_night = moment(newData.end_date).diff(moment(newData.start_date), 'days')
-})
+
+watch(()=> [data.value.start_date,data.value.end_date], ([newStartDate,newEndDate],[oldStartDate,oldEndDate])=>{
+    data.value.total_night = moment(newEndDate).diff(moment(newStartDate), 'days')
+}) 
 </script>
 <style lang="">
     

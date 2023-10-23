@@ -464,7 +464,12 @@ function getEvents() {
                 if (r.id == "vacant_room") {
                     event.vacant_room = total_rooms -  result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)
                     event.title = event.vacant_room 
-                    event.color="#fd952c"
+                    if ((event.vacant_room || 0)<0){
+                        event.color="red"
+                    }else {
+                        event.color="#fd952c"
+                    }
+                    
                     event.textcolor="white"
                     
                 } 

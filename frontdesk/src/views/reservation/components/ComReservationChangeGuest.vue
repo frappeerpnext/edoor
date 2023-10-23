@@ -124,7 +124,11 @@ function onAdditionalSave(){
         if (r) { 
             window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
             window.socket.emit("ReservationDetail", window.reservation)
-            dialogRef.value.close() 
+            dialogRef.value.close()
+            window.socket.emit("Reports", window.property_name) 
+            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.socket.emit("ReservationList", { property:window.property_name})
+            
         }
         loading.value = false
     }).catch((err)=>{
@@ -163,6 +167,9 @@ function onStayGuestSave() {
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
                 dialogRef.value.close(r);
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ReservationList", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
             }
         }).catch(()=>{
             loading.value = false

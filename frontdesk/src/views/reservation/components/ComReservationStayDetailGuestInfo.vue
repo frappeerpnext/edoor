@@ -175,6 +175,9 @@ function onDeleteAdditionalGuest(){
             updateDoc('Reservation Stay', reservationStayData.name, reservationStayData, 'Deleted successful').then((doc) => {
                 rs.reservationStay = doc
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("Reports", window.property_name)
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ReservationList", { property:window.property_name})
             })
         }
     })
@@ -242,6 +245,7 @@ function onEditGuest(guest_type) {
                 }else{
                     getDoc('Reservation Stay', rs.reservationStay.name).then((r)=>{
                         rs.reservationStay = r
+                        window.socket.emit("Reports", window.property_name)
                     })
                 }
             }

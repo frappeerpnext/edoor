@@ -1,15 +1,6 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
-                <template #start>
-                    <div class="text-2xl">Reservation List</div>
-                </template>
-                <template #end>
-                    <NewFITReservationButton />
-                    <NewGITReservationButton />
-                </template>
-            </ComHeader>
             <div class="mb-3 flex justify-between">
                 <div class="flex gap-2">
                     <div>
@@ -24,11 +15,13 @@
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
                     </div>
-                   
+                    <div>
+                        
+                    </div>
                 </div>
                 <div class="flex gap-2">
                     <div>
-                        <ComOrderBy doctype="Reservation" @onOrderBy="onOrderBy" />
+                        <ComOrderBy doctype="Desk Folio" @onOrderBy="onOrderBy" />
                     </div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
@@ -37,6 +30,7 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
+           
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable 
                 class="res_list_scroll" 
@@ -44,7 +38,7 @@
                 columnResizeMode="fit" 
                 showGridlines
                 stateStorage="local" 
-                stateKey="table_reservation_list_state" 
+                stateKey="table_desk_folio_state" 
                 :reorderableColumns="true" 
                 :value="data"
                 tableStyle="min-width: 50rem" 
@@ -103,7 +97,7 @@
                     <i class="pi pi-search" />
                     <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
                 </span>
-            </template>
+            </template> 
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
@@ -118,19 +112,13 @@
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-            <div class="grid">
-                <ComAutoComplete class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
-                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                    doctype="Business Source Type" />
-                <ComAutoComplete class="col-3" width="100%" optionLabel="business_source" optionValue="name"
-                    v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source "
-                    doctype="Business Source" />
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
-                    placeholder="Reservation Type" :options="['GIT', 'FIT']" />
-
-                <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
-                    v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
-                    doctype="Reservation Status" />
+            <div class="grid"> 
+                <ComAutoComplete class="col-3" width="100%" optionLabel="customer_name_en" optionValue="name"
+                    v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest"
+                    doctype="Customer" />
+                <ComSelect class="col-3" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
+                    placeholder="Status" :options="['Open', 'Closed']" />
+ 
                 <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
                     v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
@@ -140,9 +128,6 @@
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
-                    optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
-                    @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
                         v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
@@ -154,10 +139,7 @@
 </template>
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed,onUnmounted } from '@/plugin'
-
 import { useDialog } from 'primevue/usedialog';
-import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
-import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -170,38 +152,26 @@ const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const columns = ref([
-    { fieldname: 'name', label: 'Reservation #', fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
-    { fieldname: 'reference_number', label: 'Ref. #' },
-    { fieldname: 'reservation_type', label: 'Res. Type', header_class: "text-center", default: true },
-    { fieldname: 'reservation_date', label: 'Res. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
-    { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
-    { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
-    { fieldname: 'room_nights', label: 'Room Nights', header_class: "text-center", default: true },
-    { fieldname: 'room_type_alias', label: 'Room Type', default: true },
-    { fieldname: 'room_numbers', label: 'Rooms', fieldtype: "Room", default: true },
-    { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
-    { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
-    { fieldname: 'guest_type', label: 'Guest Type ', default: true },
-    { fieldname: 'group_code', label: 'Group Code', extra_field: "group_name", extra_field_separator: "<br/>", default: true },
-    { fieldname: 'business_source', label: 'Business Source', default: true },
-    { fieldname: 'total_reservation_stay', label: 'Total Stay #', header_class: "text-center", default: true },
-    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate:window.can_view_rate?'Yes':'No' },
-    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true ,can_view_rate:window.can_view_rate?'Yes':'No' },
+    { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
+    { fieldname: 'room_number', label: 'Room', default: true },
+    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-",post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'room_type', label: 'Room Type', header_class: "text-center", default: true },
+    { fieldname: 'posting_date', label: 'Desk Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'owner', label: 'Created By' },
+    { fieldname: 'owner', label: 'Created By', default: true  },
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
-    { fieldname: 'reservation_status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
-    { fieldname: 'status_color' },
+    { fieldname: 'status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
 ])
 
 const getColumns = computed(() => {
     if (filter.value.search_field) {
         return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
     } else {
+        console.log(columns.value)
         return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
@@ -214,7 +184,7 @@ const toggleShowColumn = (event) => {
 function OnSaveColumn(event) {
     selectedColumns.value = columns.value.filter(r => r.selected).map(x => x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
-    localStorage.setItem("page_state_reservation", JSON.stringify(pageState.value))
+    localStorage.setItem("page_state_desk_folio", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
     loadData()
 }
@@ -222,11 +192,7 @@ const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
 
-const dataTypeOptions = reactive([
-    { label: 'Search Date', value: '' },
-    { label: 'Arrival Date', value: 'arrival_date' },
-    { label: 'Departure Date', value: 'departure_date' },
-    { label: 'Reservation Date', value: 'reservation_date' }])
+ 
 const data = ref([])
 
 const filter = ref({})
@@ -265,43 +231,31 @@ function pageChange(page) {
 function loadData(show_loading = true) {
     gv.loading = show_loading
     let filters = [
-        ["Reservation", "property", '=', property.name]
+        ["Desk Folio", "property", '=', property.name]
     ]
     if (filter.value?.keyword) {
-        filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
+        filters.push(["name", 'like', '%' + filter.value.keyword + '%'])
     }
-    if (filter.value?.selected_business_source_type) {
-        filters.push(["business_source_type", '=', filter.value.selected_business_source_type])
+    if (filter.value?.selected_status){
+        filters.push(["status", "=" , filter.value.selected_status])
     }
-    if (filter.value?.selected_business_source) {
-        filters.push(["business_source", '=', filter.value.selected_business_source])
+    if (filter.value?.selected_guest){
+        filters.push(["guest", "=" , filter.value.selected_guest])
     }
-    if (filter.value?.selected_reservation_status) {
-        filters.push(["reservation_status", '=', filter.value.selected_reservation_status])
-    }
-    if (filter.value?.selected_reservation_type) {
-        filters.push(["reservation_type", '=', filter.value.selected_reservation_type])
-    }
-
     if (filter.value?.selected_room_type) {
-        filters.push(["room_types", "like", "%" + filter.value.selected_room_type + "%"])
+        filters.push(["room_type_id", "=" , filter.value.selected_room_type])
     }
     if (filter.value?.selected_room_number) {
-        filters.push(["room_numbers", 'like', '%' + filter.value.selected_room_number + '%'])
-    }
-
-    if (filter.value?.search_date_type && filter.value.date_range != null) {
-        filters.push([filter.value.search_date_type, '>=', dateRange.start])
-        filters.push([filter.value.search_date_type, '<=', dateRange.end])
+        filters.push(["room_id", '=',filter.value.selected_room_number])
     }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
     fields = [...new Set(fields.filter(x => x))]
-    getDocList('Reservation', {
+    getDocList('Desk Folio', {
         fields: fields,
         orderBy: {
-            field: '`tabReservation`.' + pageState.value.order_by,
+            field: '`tabDesk Folio`.' + pageState.value.order_by,
             order: pageState.value.order_type,
         },
         filters: filters,
@@ -317,10 +271,11 @@ function loadData(show_loading = true) {
             toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
         });
     getTotalRecord(filters)
-    localStorage.setItem("page_state_reservation", JSON.stringify(pageState.value))
+    localStorage.setItem("page_state_desk_folio", JSON.stringify(pageState.value))
 }
+
 function getTotalRecord(filters) {
-    getCount('Reservation', filters)
+    getCount('Desk Folio', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
 }
 
@@ -372,7 +327,7 @@ onMounted(() => {
         }
     })
 
-    let state = localStorage.getItem("page_state_reservation")
+    let state = localStorage.getItem("page_state_desk_folio")
     if (state) {
         state = JSON.parse(state)
         state.page = 0
@@ -390,10 +345,7 @@ onMounted(() => {
         r.selected = selectedColumns.value.includes(r.fieldname)
     });
     loadData()
-    getApi("frontdesk.get_meta", { doctype: "Reservation" }).then((result) => {
-        
-        console.log(result.message.fields.filter(r => r.in_list_view == 1))
-
+    getApi("frontdesk.get_meta", { doctype: "Desk Folio" }).then((result) => {
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
 
@@ -414,8 +366,8 @@ onMounted(() => {
 })
 
 function onResetTable() {
-    localStorage.removeItem("page_state_reservation")
-    localStorage.removeItem("table_reservation_list_state")
+    localStorage.removeItem("page_state_desk_folio")
+    localStorage.removeItem("table_desk_folio_state")
     window.location.reload()
 }
 

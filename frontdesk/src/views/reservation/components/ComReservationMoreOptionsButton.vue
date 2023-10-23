@@ -141,35 +141,37 @@ const gv = inject("$gv")
 const rs = inject("$reservation")
 const frappe = inject('$frappe');
 const db = frappe.db();
- 
+const reservation = ref({})
 
 const toggle = (event) => {
     menu.value.toggle(event);
 }
-function onMarkAsReservationType() {
-    confirm.require({
-        message: `Are you sure you want to mark as ${rs.reservation.reservation_type == 'FIT' ? 'GIT' : 'FIT'} reservation?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            db.updateDoc('Reservation', rs.reservation?.name, {
-                reservation_type: rs.reservation.reservation_type == 'GIT' ? 'FIT' : 'GIT',
-            })
-                .then((doc) => {
-                    rs.reservation.reservation_type = doc.reservation_type
-                    toast.add({
-                        severity: 'success', summary: `Mark as ${rs.reservation.reservation_type} reservation`,
-                        detail: `Mark as ${rs.reservation.reservation_type} Reservation Successfully`, life: 3000
-                    });
-                })
-        },
+// function onMarkAsReservationType() {
+//     confirm.require({
+//         message: `Are you sure you want to mark as ${rs.reservation.reservation_type == 'FIT' ? 'GIT' : 'FIT'} reservation?`,
+//         header: 'Confirmation',
+//         icon: 'pi pi-exclamation-triangle',
+//         acceptClass: 'border-none crfm-dialog',
+//         rejectClass: 'hidden',
+//         acceptIcon: 'pi pi-check-circle',
+//         acceptLabel: 'Ok',
+//         accept: () => {
+//             db.updateDoc('Reservation', rs.reservation?.name, {
+//                 reservation_type: rs.reservation.reservation_type == 'GIT' ? 'FIT' : 'GIT',
+//             })
+//                 .then((doc) => {
+//                     rs.reservation.reservation_type = doc.reservation_type
+//                     window.socket.emit("ReservationDetail", reservation.value.name);
 
-    });
-}
+//                     toast.add({
+//                         severity: 'success', summary: `Mark as ${rs.reservation.reservation_type} reservation`,
+//                         detail: `Mark as ${rs.reservation.reservation_type} Reservation Successfully`, life: 3000
+//                     });
+//                 })
+//         },
+
+//     });
+// }
 function onChangeStatus(reservation_status) {
 
     if (validateSelectReservation()) {
@@ -225,8 +227,6 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             if (data) {
                 setTimeout(function () {
                     rs.LoadReservation(rs.reservation.name)
-                    window.socket.emit("Dashboard", rs.reservation.property);
-                    window.socket.emit("ReservationList", { property:window.property_name})
                 }, 1500)
 
 
@@ -283,12 +283,17 @@ function onGroupCheckIn() {
                     reservation_stays: rs.selecteds.map(d => d["name"])
                 }).then((result) => {
                     rs.loading = false
-                    rs.LoadReservation(rs.reservation.name);
+                    window.socket.emit("ReservationDetail", rs.reservation.name);
                     window.socket.emit("Dashboard", property.name);
                     window.socket.emit("ReservationList", { property:window.property_name})
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("ComGuestLedger", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
+                    console.log(rs.selecteds)
+                    rs.selecteds.forEach(r => {
+                        window.socket.emit("ReservationStayDetail", {reservation_stay:r.name})
+                    });
+                    
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -324,15 +329,13 @@ function onGroupUndoCheckIn() {
                 }).then((result) => {
                     if (result) {
                         //wait for equeue process finish
-                        
-                        setTimeout(()=>{
-                            rs.LoadReservation()
-                        },1000)
+                        rs.LoadReservation()
                         window.socket.emit("ReservationList", { property:window.property_name})
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
-                        
+                        window.socket.emit("ReservationDetail", window.reservation)
+                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     }
                 }).catch(err=>{
                     rs.loading = false
@@ -370,6 +373,8 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
+                        window.socket.emit("ReservationDetail", window.reservation)
+                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         rs.LoadReservation()
                     }
                 }).catch((error) => {
@@ -424,6 +429,8 @@ function onMarkAsPaidbyMasterroom() {
             }).then((result) => {
                 if (result) {
                     rs.LoadReservation()
+                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 }
             })
                 .catch((err) => {
@@ -457,9 +464,10 @@ function onUnMarkAsPaidbyMasterroom() {
                 stays: rs.selecteds.map(x => x.name),
                 paid_by_master_room: 0
             }).then((result) => {
-
                 if (result) {
                     rs.LoadReservation()
+                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 }
             })
                 .catch((err) => {
@@ -485,7 +493,8 @@ function onAllowPostToCityLedger() {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 1
             }).then((result) => {
-
+                window.socket.emit("ReservationDetail", window.reservation)
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
                 .catch((err) => {
                     submitLoading.value = false
@@ -509,7 +518,8 @@ function onUnAllowPostToCityLedger() {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 0
             }).then((result) => {
-
+                window.socket.emit("ReservationDetail", window.reservation)
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
                 .catch((err) => {
                     submitLoading.value = false
@@ -636,6 +646,8 @@ function onMarkasGITReservation() {
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("Dashboard", window.property_name)
                     window.socket.emit("Reports", window.property_name)
+                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
 
                 })
         },
@@ -666,7 +678,8 @@ function onMarkasFITReservation() {
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("Dashboard", window.property_name)
                     window.socket.emit("Reports", window.property_name)
-
+                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
 
                 })
         },

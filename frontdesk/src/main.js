@@ -131,6 +131,7 @@ import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css' // optional for styling
 import ComLetterHead from "@/components/form/ComLetterHead.vue"
 import ComPrintButton from "@/components/form/ComPrintButton.vue"
+import DeskFolio from './providers/desk_folio';
 
 
 // use components //
@@ -261,12 +262,14 @@ app.directive('debounce', vue3Debounce({ lock: true }))
 
 const gv = reactive(new Gv());
 const housekeeping = reactive(new Housekeeping());
+const desk_folio = reactive(new DeskFolio());
 const reservation = reactive(new Reservation());
 const reservation_stay = reactive(new ReservationStay());
  
 app.provide("$moment", moment)
 app.provide("$gv", gv)
 app.provide("$housekeeping", housekeeping)
+app.provide("$desk_folio", desk_folio)
 app.provide("$reservation", reservation)
 app.provide("$reservation_stay", reservation_stay)
 

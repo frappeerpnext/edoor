@@ -271,6 +271,7 @@ const columns = ref([
     { fieldname: 'room_number', label: 'Room Number', default: true, header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'modified', label: 'Modified', fieldtype: "Date", default: true, header_class: "text-center" },
     { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit", default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
     { fieldname: 'owner', label: 'User', default: true },

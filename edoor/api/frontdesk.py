@@ -171,7 +171,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     upcoming_note = frappe.db.sql("select count(name) as total  from `tabFrontdesk Note` where note_date>='{}' and property='{}'".format(date,property), as_dict=1)
     
     #get total room block 
-    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block';".format(date,property)
+    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id)
     total_room_block = frappe.db.sql(sql,as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
 
@@ -1334,5 +1334,6 @@ def post_room_change_to_folio(working_day):
 def check_room_config_and_over_booking(property):
     working_day = get_working_day(property)
     sql="select count(name) from `tabTemp Room Occupy` where type='Reservation' and is_departure=0  and ifnull(room_id,'') <> '' and date>='{}'   group by room_id,date   having count(name)>1".format(working_day["date_working_day"])
-    return frappe.db.sql(sql,as_dict=1)
+
+    return frappe.db.sql(sql)[0][0]
 

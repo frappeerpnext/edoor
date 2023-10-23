@@ -5,12 +5,12 @@ from datetime import datetime
 from edoor.api.utils import get_date_range
 import frappe
 from frappe.model.document import Document
-from frappe.utils.data import add_to_date, getdate, pretty_date
+from frappe.utils.data import add_to_date, getdate, pretty_date,date_diff
 from edoor.api.frontdesk import get_working_day
 
 class RoomBlock(Document):
 	def validate(self):
-	
+		
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
 		
@@ -19,7 +19,7 @@ class RoomBlock(Document):
 		
 		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() <= datetime.strptime(str(self.start_date), "%Y-%m-%d").date():
 			self.end_date = add_to_date(getdate(self.start_date),days=1)
-		
+		self.total_night_count = date_diff(self.end_date,self.start_date)
 		
 		
 	def before_submit(self):

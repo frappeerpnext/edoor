@@ -227,6 +227,7 @@ function onUndoCheckIn() {
                 window.socket.emit("TodaySummary", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("Housekeeping", {property:window.property_name})
 
                 setTimeout(() => {
                     emit('onRefresh')

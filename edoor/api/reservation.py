@@ -2425,23 +2425,26 @@ def update_pickup_and_drop_off(stays,data):
      
     for s in stays:
         doc = frappe.get_doc("Reservation Stay",s)
-        doc.require_pickup = data.require_pickup  
-        doc.require_drop_off = data.require_drop_off  
-        doc.pickup_time = data.pickup_time  
-        doc.arrival_mode = data.arrival_mode  
-        doc.arrival_flight_number = data.arrival_flight_number  
-        doc.pickup_location = data.pickup_location 
-        doc.pickup_driver = data.pickup_driver
-        doc.pickup_note = data.pickup_note
-        doc.drop_off_time = data.drop_off_time
-        doc.departure_mode = data.departure_mode
-        doc.departure_flight_number= data.departure_flight_number
-        doc.drop_off_location= data.drop_off_location
-        doc.drop_off_driver= data.drop_off_driver
-        doc.drop_off_note= data.drop_off_note
-        doc.last_update_pickup_and_drop_off= now()
-        doc.save()
-        stay = doc
+        if not doc.is_active_reservation and len(stays) == 1:
+            frappe.throw(_("This reservation stay cannot require pickup and drop off."))
+        else:
+            doc.require_pickup = data.require_pickup  
+            doc.require_drop_off = data.require_drop_off  
+            doc.pickup_time = data.pickup_time  
+            doc.arrival_mode = data.arrival_mode  
+            doc.arrival_flight_number = data.arrival_flight_number  
+            doc.pickup_location = data.pickup_location 
+            doc.pickup_driver = data.pickup_driver
+            doc.pickup_note = data.pickup_note
+            doc.drop_off_time = data.drop_off_time
+            doc.departure_mode = data.departure_mode
+            doc.departure_flight_number= data.departure_flight_number
+            doc.drop_off_location= data.drop_off_location
+            doc.drop_off_driver= data.drop_off_driver
+            doc.drop_off_note= data.drop_off_note
+            doc.last_update_pickup_and_drop_off= now()
+            doc.save()
+            stay = doc
     frappe.db.commit()
     frappe.msgprint("Update pick up and drop off successfully")
     if len(stays)==1:

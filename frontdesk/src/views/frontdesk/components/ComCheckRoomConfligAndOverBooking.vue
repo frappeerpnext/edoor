@@ -1,4 +1,5 @@
 <template>
+ 
     <Button @click="onView" class="border-none" style="background-color: #ff0021;" v-if="show_warning">
         <ComIcon icon="iconConflictRoom" class="me-2" height="18px" />
         Room Conflict</Button>
@@ -17,7 +18,7 @@ const dialog = useDialog();
 onMounted(()=>{
 loading.value = true;
     getApi("frontdesk.check_room_config_and_over_booking",{property:window.property_name}).then(r=>{
-    show_warning.value = r.message
+    show_warning.value = r.message>1
     loading.value = false
 }).catch(ex=>{
     loading.value = false

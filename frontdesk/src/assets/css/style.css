@@ -919,6 +919,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 .spl__btn_cs.sp button:last-child{
     border-left-color: rgba(67, 56, 202, .3) !important;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.spl__btn_cs.sp button:first-child{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 .p-timeline-event-opposite{
     flex: inherit !important;

@@ -222,7 +222,7 @@ function onRemove(selected) {
 
 
 function onLoadSocket(){ 
-    window.socket.emit("CommentAndNotice", { reservation_stay:window.reservation_stay })
+    // window.socket.emit("CommentAndNotice", { reservation_stay:window.reservation_stay })
 }
 
 </script>

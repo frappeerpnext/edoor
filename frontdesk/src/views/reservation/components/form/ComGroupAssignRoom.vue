@@ -172,12 +172,13 @@ function onSave() {
         window.socket.emit("Dashboard", window.property_name);
         window.socket.emit("Frontdesk", window.property_name);
         
-        window.socket.emit("ReservationDetail", reservation.value.name);
+        window.socket.emit("ReservationDetail", window.reservation)
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})
         window.socket.emit("ComGuestLedger", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)
         dialogRef.value.close("open_reservation_detail")
+        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
         loading.value = false
     }).catch((err) => {
         loading.value = false

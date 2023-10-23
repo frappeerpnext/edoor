@@ -20,7 +20,7 @@
         </tippy>
         <ComTodaySummarySep :isHousekeeping="isHousekeeping"  dialogKey="pickup_drop_off" title="Pickup / Drop Off">{{ data?.pick_up }} / {{ data?.drop_off }} </ComTodaySummarySep>
         <ComTodaySummarySep  dialogKey="no_show" title="No Show">{{data?.total_no_show || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep  dialogKey="cancelled" title="Cancelled">{{data?.total_cancel || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep  dialogKey="cancelled" title="Cancelled">{{data?.total_cancelled || 0}}</ComTodaySummarySep>
     </div>
 </template>
 <script setup>

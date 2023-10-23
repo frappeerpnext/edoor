@@ -116,7 +116,9 @@
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
       icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
       <div class="grid">
-
+        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="status_color"
+          optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room Status" doctype="Room"
+          isFilter />
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
           optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
           isFilter />
@@ -159,6 +161,7 @@ const columns = ref([
   { fieldname: 'end_date', label: 'Release Date', header_class: "text-center", fieldtype: "Date", default: true },
   { fieldname: 'room_number', label: 'Room Number', header_class: "text-center", default: true },
   { fieldname: 'room_type', label: 'Room Type', default: true },
+  { fieldname: 'total_night_count', label: 'Total Night(s)', header_class: "text-center", default: true },
   { fieldname: 'reason', label: 'Reason', default: true },
   { fieldname: 'unblock_date', label: 'Unblock Date', fieldtype: "Date", header_class: "text-center", default: true },
   { fieldname: 'unblock_note', label: 'Unblock Note', default: true },

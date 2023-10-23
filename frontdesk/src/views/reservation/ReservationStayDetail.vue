@@ -321,7 +321,7 @@ onMounted(() => {
         if (arg.reservation_stay == rs.reservationStay.name) {
             setTimeout(function () {
                 onRefresh(false)
-            }, 2000)
+            }, 3000)
         }
     })
 });

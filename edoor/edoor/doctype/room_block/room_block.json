@@ -13,6 +13,7 @@
   "block_date",
   "start_date",
   "end_date",
+  "total_night_count",
   "column_break_5",
   "room_id",
   "room_number",
@@ -174,12 +175,18 @@
    "fieldtype": "Small Text",
    "hidden": 1,
    "label": "keyword"
+  },
+  {
+   "fieldname": "total_night_count",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total Night(s)"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-15 16:10:11.223059",
+ "modified": "2023-10-21 09:06:02.972058",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

@@ -237,7 +237,7 @@ function onViewCustomerDetail(name) {
  
 onMounted(() => {
   
-  rs.getRoomRate(rs.reservation.name);
+  rs.getRoomRate(rs.reservation.name, false);
  
 });
 

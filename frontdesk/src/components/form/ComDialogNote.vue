@@ -1,10 +1,9 @@
 <template>
     <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
- 
         <Message v-if="data?.confirm_message">
             <div v-html="data?.confirm_message" />
         </Message>
-
+        
         <label for="reason-text" class="mb-1 font-medium block">Reason</label>
         <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
 
@@ -52,37 +51,14 @@ function onOk() {
     if (data.value.method == "POST") {
         postApi(data.value.api_url, data.value.data).then((r) => {
             loading.value = false
-            dialogRef.value.close(note.value)
-            window.socket.emit("Dashboard", window.property_name)
-            window.socket.emit("ReservationList", { property:window.property_name})
-            window.socket.emit("ReservationStayList", { property:window.property_name})
-            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
-            window.socket.emit("Frontdesk", window.property_name)
-            window.socket.emit("TodaySummary", window.property_name)
-            window.socket.emit("ComGuestLedger", { property:window.property_name})
-            window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-            window.socket.emit("Reports", window.property_name)
-
-            
+            onLoadSocket()            
         }).catch(() => {
             loading.value = false
         })
     } else if(data.value.method=="PUT") {
         updateDoc(data.value.api_url,data.value.name , data.value.data).then(r=>{
             loading.value = false
-            dialogRef.value.close(note.value)
-            window.socket.emit("Dashboard", window.property_name)
-            window.socket.emit("ReservationList", { property:window.property_name})
-            window.socket.emit("ReservationStayList", { property:window.property_name})
-            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
-            window.socket.emit("Frontdesk", window.property_name)
-            window.socket.emit("TodaySummary", window.property_name)
-            window.socket.emit("ComGuestLedger", { property:window.property_name})
-            window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-            window.socket.emit("Reports", window.property_name)
-
+            onLoadSocket()
 
         }).catch(() => {
             loading.value = false
@@ -93,27 +69,34 @@ function onOk() {
         deleteApi(data.value.api_url, data.value.data)
         .then((r) => {
             loading.value = false
-            dialogRef.value.close(note.value)
-
-            window.socket.emit("Dashboard", window.property_name)
-            window.socket.emit("ReservationList", { property:window.property_name})
-            window.socket.emit("ReservationStayList", { property:window.property_name})
-            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
-            window.socket.emit("Frontdesk", window.property_name)
-            window.socket.emit("TodaySummary", window.property_name)
-            window.socket.emit("ComGuestLedger", { property:window.property_name})
-            window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-            window.socket.emit("Reports", window.property_name)
+            onLoadSocket()
 
         }).catch(() => {
             loading.value = false
         })
     }
 }
+function onLoadSocket(){
+    dialogRef.value.close(note.value)
+    window.socket.emit("Dashboard", window.property_name)
+    window.socket.emit("ReservationList", { property:window.property_name})
+    window.socket.emit("ReservationStayList", { property:window.property_name})
+    window.socket.emit("Frontdesk", window.property_name)
+    window.socket.emit("TodaySummary", window.property_name)
+    window.socket.emit("ComGuestLedger", { property:window.property_name})
+    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+    window.socket.emit("Reports", window.property_name)
+    window.socket.emit("ReservationDetail", window.reservation)
 
+    if(data.value.data.stays && data.value.data.stays.length > 0){
+        data.value.data.stays.forEach(r => {
+            window.socket.emit("ReservationStayDetail", { reservation_stay:r.name})
+        });
+    }
+}
 onMounted(() => {
     data.value = dialogRef.value.data;
+    console.log(window.reservation)
 })
 
 

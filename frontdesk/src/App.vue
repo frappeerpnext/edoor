@@ -355,7 +355,7 @@ function showCityLedgerDetail(name) {
             name: name
         },
         props: {
-            header: 'City Ledger - ' + name,
+            header: 'City Ledgerxx - ' + name,
             style: {
                 width: '80vw',
             },

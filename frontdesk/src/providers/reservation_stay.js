@@ -41,10 +41,12 @@ export default class ReservationStay {
 			
 			this.totalFolio.value = result.message.total_folio 
 			this.reservation.value = result.message.reservation
+			window.reservation = this.reservation.value.name
 			this.reservationStay.value = result.message.reservation_stay
 			this.reservationStayNames.value = result.message.reservation_stay_names
 			this.guest.value = result.message.guest
 			this.masterGuest.value = result.message.master_guest 
+			
 			this.loading.value = false
 			
 

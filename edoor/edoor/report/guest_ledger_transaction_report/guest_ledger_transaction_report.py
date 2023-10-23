@@ -44,6 +44,7 @@ def get_columns():
 		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True},
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True},
 		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'post_message_action':"view_folio_transaction_detail","default":True},
+		
 		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'room_type','label':'Room Type',"default":True},
@@ -52,7 +53,7 @@ def get_columns():
 		{'fieldname':'parent_account_name','label':'Parent Account Name'},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		
+		{'fieldname':'creation','label':'Creation','fieldtype':'Datetime',"default":True},
 	]
 
 def get_folio_transaction_amount(filters):

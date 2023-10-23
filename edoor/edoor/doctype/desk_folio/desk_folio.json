@@ -16,10 +16,13 @@
   "property",
   "room_id",
   "room_number",
+  "room_type_id",
+  "room_type",
   "column_break_lblr",
   "total_debit",
   "total_credit",
   "balance",
+  "status",
   "guest_information_section",
   "guest",
   "guest_name",
@@ -147,11 +150,33 @@
   {
    "fieldname": "column_break_teoc",
    "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "room_id.room_type_id",
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Room Type"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nClosed"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-20 14:18:12.868759",
+ "modified": "2023-10-20 16:32:44.666749",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

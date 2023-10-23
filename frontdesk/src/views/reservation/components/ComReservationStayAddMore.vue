@@ -387,6 +387,7 @@ const onSave = () => {
             window.socket.emit("Dashboard", rs.reservation.property);
             // window.socket.emit("RefreshData", {property:setting.property.name,action:"refresh_summary"});
             window.socket.emit("ReservationList", { property:window.property_name})
+            window.socket.emit("ReservationDetail", window.reservation)
             dialogRef.value.close(r)
         }
 
@@ -551,6 +552,7 @@ onMounted(() => {
    
 
 })
+ 
 </script>
 <style>.ch__rate_nres input {
     text-align: right !important;

@@ -84,11 +84,6 @@
 </template>
 <script setup>
 import { ref, postApi, inject, onMounted,watch } from '@/plugin'
-// import ComReservationStayPanel from './ComReservationStayPanel.vue';
-const props = defineProps({
-    doctype: String
-})
-const reservation = inject('$reservation')
 const reservation_stay = inject('$reservation_stay')
 const gv = inject('$gv')
 const saving = ref(false)
@@ -137,34 +132,24 @@ function onSave() {
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
             saving.value = false
-            if (props.doctype == 'Reservation Stay') {
-                reservation_stay.reservationStay = r.message
-                updateDisplayNote()
-            }
-            else if (props.doctype == 'Reservation') {
-                reservation.reservation = r.message
-                updateDisplayNote()
-            }
+            reservation_stay.reservationStay = r.message
+            updateDisplayNote()
             onLoadSocket()
         }).catch((err) => {
             saving.value = false
         })
 }
 function onLoadSocket(){
-    const data = ref({
-        reservation: '',
-        reservation_stays: []
-    })
-    if (props.doctype == 'Reservation Stay') {
-        data.value.reservation = reservation_stay.reservationStay.reservation
-        data.value.reservation_stays.push(reservation_stay.reservationStay.name)
+    if(dataUpdate.value.is_apply_all_stays){
+        reservation_stay.reservationStayNames.forEach(r => {
+            window.socket.emit("ReservationStayDetail", {reservation_stay: r.name})
+            console.log('update multile',r.name)
+        });
+    }else{
+        console.log('update one:',reservation_stay.reservationStay.name)
+        window.socket.emit("ReservationStayDetail", {reservation_stay: reservation_stay.reservationStay.name})
     }
-    else if (props.doctype == 'Reservation') {
-        data.value.reservation = reservation.reservation.name
-        data.value.reservation_stays.push()
-    } 
-
-    window.socket.emit("ReservationStayDetail", {reservation_stay: reservation_stay.reservationStay.name})
+    
     window.socket.emit("ReservationDetail", reservation_stay.reservationStay.reservation)
     
 }
@@ -178,32 +163,17 @@ watch(()=> [reservation_stay.reservationStay.note,reservation.reservation.note],
     updateDisplayNote()
 }) 
 function updateDisplayNote() {
-    if (props.doctype == 'Reservation Stay') {
-        note.value = reservation_stay?.reservationStay?.note || ''
-        reservation_note.value.note_by = reservation_stay?.reservationStay?.note_by || ''
-        reservation_note.value.note_modified = reservation_stay?.reservationStay?.note_modified || ''
+    note.value = reservation_stay?.reservationStay?.note || ''
+    reservation_note.value.note_by = reservation_stay?.reservationStay?.note_by || ''
+    reservation_note.value.note_modified = reservation_stay?.reservationStay?.note_modified || ''
 
-        housekeeping_note.value = reservation_stay?.reservationStay?.housekeeping_note || ''
-        housekeeping.value.note_by = reservation_stay?.reservationStay?.housekeeping_note_by || ''
-        housekeeping.value.note_modified = reservation_stay?.reservationStay?.housekeeping_note_modified || ''
+    housekeeping_note.value = reservation_stay?.reservationStay?.housekeeping_note || ''
+    housekeeping.value.note_by = reservation_stay?.reservationStay?.housekeeping_note_by || ''
+    housekeeping.value.note_modified = reservation_stay?.reservationStay?.housekeeping_note_modified || ''
 
-        reservationName.value = reservation_stay.reservation.name || ''
-        docname.value = reservation_stay.reservationStay.name || ''
-        totalStay.value = reservation_stay.reservation.total_active_reservation_stay || 0
-    }
-    else if (props.doctype == 'Reservation') {
-        note.value = reservation?.reservation?.note || ''
-        reservation_note.value.note_by = reservation?.reservation?.note_by || ''
-        reservation_note.value.note_modified = reservation?.reservation?.note_modified || ''
-
-        housekeeping_note.value = reservation?.reservation?.housekeeping_note || ''
-        housekeeping.value.note_by = reservation?.reservation?.housekeeping_note_by || ''
-        housekeeping.value.note_modified = reservation?.reservation?.housekeeping_note_modified || ''
-
-        docname.value = reservation.reservation.name || ''
-        reservationName.value = reservation.reservation.name || ''
-        totalStay.value = reservation.reservation.total_active_reservation_stay || 0
-    }
+    reservationName.value = reservation_stay.reservation.name || ''
+    docname.value = reservation_stay.reservationStay.name || ''
+    totalStay.value = reservation_stay.reservation.total_active_reservation_stay || 0
     onClose()
 }
 </script>

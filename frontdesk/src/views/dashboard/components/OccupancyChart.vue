@@ -1,7 +1,7 @@
  
 <template>
-    <SplitButton   :model="items"  @click="save" class="mb-0 mt-2 mr-2" :label="view_chart_by"></SplitButton>
-    <SplitButton   :model="duration_types" :label="duration_type"   class="mb-0 mt-2"></SplitButton>
+    <SplitButton   :model="items"  @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="view_chart_by"></SplitButton>
+    <SplitButton   :model="duration_types" :label="duration_type"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
     <!-- <label for="show_occupancy_only" class="font-medium cursor-pointer ">Show occupancy only</label>
                                 <Checkbox 
                                 :trueValue="1"
@@ -17,7 +17,6 @@
  
     <div class="card">
         <div id="occupancy_chart"></div>
-       
     </div>
 </template>
 

@@ -163,6 +163,16 @@ const filters = [
             []
         )
     }
+
+    else if(props.dialogKey  == "void"){
+        onViewData(
+            'Business%20Branch',
+            "eDoor%20Void%20Reservation%20List",
+            'Void Reservation',
+            [{key:"date",value:working_day.date_working_day}],
+            []
+        )
+    }
   
 }
 

@@ -246,7 +246,7 @@ import Message from "primevue/message";
 // const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)
-const rs = inject('$reservation_stay')
+const rs = inject('$reservation')
 
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
@@ -486,6 +486,8 @@ function onSave() {
             window.socket.emit("ComGuestLedger", { property:window.property_name})
             window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
             window.socket.emit("Reports", window.property_name)
+            window.socket.emit("ReservationDetail", window.reservation)
+            rs.getRoomRate(window.reservation)
             dialogRef.value.close(doc.message)
         })
         .catch((error) => {

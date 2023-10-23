@@ -1,8 +1,9 @@
 <template>
+    {{ doc }}
     <ComDialogContent @onClose="onClose" :loading="loading" hideButtonOK>
        <Message v-if="doc?.docstatus==0">The status of this room block is currently in Draft mode. Please click on button <strong>Submit Room Block</strong> to block this room.
         <br/>
-        <Button @click="onSubmitRoomBlock">Submit Room Block</Button>
+        <Button class="border-0" @click="onSubmitRoomBlock">Submit Room Block</Button>
        </Message>
        <Message v-if="doc?.docstatus==1 && doc?.is_unblock==0">This room number <strong>{{doc?.room_number}}</strong> is blocked now. To unblock this room, please on button <strong>Unblock</strong>
         <br/>
@@ -17,18 +18,17 @@
             <ComStayInfoNoBox label="Room Type" v-if="doc?.room_type" :value="doc?.room_type"/>
             <ComStayInfoNoBox label="Start Date" v-if="doc?.start_date" :value="gv.dateFormat(doc?.start_date)"/>
             <ComStayInfoNoBox label="Release Date" v-if="doc?.end_date" :value="gv.dateFormat(doc?.end_date)"/>
+            <ComStayInfoNoBox label="Total Night(s)" v-if="doc?.total_night_count" :value="doc?.total_night_count"/>
             <ComStayInfoNoBox label="Blocked by" v-if="doc?.modified_by" :value="doc?.modified_by"/>
             <ComStayInfoNoBox label="Block Date" v-if="doc?.modified" :value="gv.datetimeFormat(doc?.modified)"/>
         </table>
         <div class="w-full h-10rem mb-4 mt-2">
             <label>Reason</label>
-            <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words" v-html="doc?.reason">
-               
-            </div>
-              </div>
+            <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc?.reason"></div>
+        </div>
             
         <template #footer-right>
-            <Button v-if="doc?.docstatus==0" @click="onSubmitRoomBlock">Submit Room Block</Button>
+            <Button v-if="doc?.docstatus==0" @click="onSubmitRoomBlock" class="border-0">Submit Room Block</Button>
             <Button v-if="!doc?.is_unblock" class="border-none" icon="pi pi-pencil text-sm" label="Edit" @click="onEdit" />
             <Button v-if="!doc?.is_unblock  && doc?.docstatus==1" class="border-none" icon="pi pi-lock-open text-sm" label="Unblock" @click="onUnblock" />
             <Button v-if="!doc?.is_unblock  && doc?.docstatus==0" class="border-none" icon="pi pi-trash text-sm" label="Delete" severity="danger"  @click="onDelete" />
@@ -89,6 +89,10 @@ function onSubmitRoomBlock(){
         message: 'Are you sure you want to block this room?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
             updateDoc("Room Block", doc.value.name ,{docstatus:1}).
@@ -110,6 +114,10 @@ function onDelete(){
         message: 'Are you sure you want to delete this room block?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
             deleteDoc("Room Block", doc.value.name).

@@ -148,7 +148,8 @@ function onCheckIn() {
                         window.socket.emit("ReservationStayList", { property: window.property_name })
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
-
+                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.socket.emit("ReservationDetail", window.reservation)
                     })
                     .catch((err) => {
                         rs.loading = false
@@ -181,6 +182,8 @@ const onCheckOut = () => {
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationDetail", window.reservation)
                 // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
                 // window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
                 // window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
@@ -239,19 +242,8 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
         },
         onClose: (options) => {
             const data = options.data;
-
-
             if (data) {
-                setTimeout(function () {
-                    rs.LoadReservation(rs.reservation.name)
-                    // window.socket.emit("Dashboard", rs.reservation.property);
-                    // window.socket.emit("ReservationList", { property: window.property_name })
-                    // window.socket.emit("ReservationStayList", { property: window.property_name })
-
-
-                }, 1500)
-
-
+                rs.LoadReservation(rs.reservation.name)
             }
         }
 
@@ -273,7 +265,8 @@ function onUnmarkasPaidbyMasterRoom() {
                 paid_by_master_room: 0,
             })
                 .then((doc) => {
-
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
                         severity: 'success', summary: 'Unmark as Piad by Master Room',
@@ -299,7 +292,8 @@ function onMarkasPaidbyMasterRoom() {
                 paid_by_master_room: 1,
             })
                 .then((doc) => {
-
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
                         severity: 'success', summary: 'Mark as Piad by Master Room',
@@ -325,6 +319,8 @@ function onAllowPosttoCityLedger() {
                 allow_post_to_city_ledger: 1,
             })
                 .then((doc) => {
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
                         severity: 'success', summary: 'Allow Post to City Ledger',
@@ -349,6 +345,8 @@ function onUnallowPosttoCityLedger() {
                 allow_post_to_city_ledger: 0,
             })
                 .then((doc) => {
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
                         severity: 'success', summary: 'Unallow Post to City Ledger',
@@ -376,8 +374,8 @@ function onMarkAsMasterRoom() {
             }).then((doc) => {
                 rs.reservationStays.forEach(r => r.is_master = false);
                 props.data.is_master = doc.message.is_master
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", window.reservation)
-                window.socket.emit("ReservationStayDetail", {reservation_stay: resStay.reservationStay.name})
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
 
             })
