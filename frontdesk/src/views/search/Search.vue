@@ -15,8 +15,9 @@
 <div v-if="ShowFilterSearch" class="col-12">
 
 <div class="flex gap-2">
-  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
+  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search " :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
 <i v-if="d.selected" class="pi pi-check ms-3"></i>    
+
 </Button>
 </div>
 </div>     
@@ -28,14 +29,13 @@
             <i class="pi pi-search text-yellow-200 text-2xl mx-2" />
             "
             <span class="text-md ms-4">
-            Please enter few keyword to search data from database 
+            Please enter few keyword to search data from database   
             </span>
         </div>
         <template v-else>
-            <div v-if="loading">Loading...</div>
-            <div v-else>
+            <div>
+                <ComPlaceholder :text="'No Data With  `  ' + keyword + '  `  Keyword'" :loading="loading" :is-not-empty="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype) ).length > 0">
                <div class="flex">
-                
                 <div class="col-2 bg-card-info p-0">
                 <Listbox filtericon="HI" v-model="selectedDoctype" :options="resultDoctypes" class="w-full bg-transparent p-2">
                     <template  #option="slotProps">
@@ -47,12 +47,13 @@
                     </template>
                 </Listbox>
                 </div>
-                        <div class="col-10 p-0">
-                <DataView :first="first" :value="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
+                        <div class="col-10 p-0">      
+                <DataView :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
+                
                     <template #list="slotProps">
-                        <div class="col-12">
+                        <div class="col-12 search-hover relative">
                             <div class="">
-                                <div v-html="getTemplate(slotProps.data)"></div>
+                                <div v-html="getTemplate(slotProps.data)" ></div>
                                 <!-- <Button v-if="slotProps.data.action_name" @click="onViewDetail(slotProps.data)">View
                                     Detail</Button> -->
                             </div>
@@ -62,7 +63,9 @@
                 </DataView>
                         </div>
                 </div>
+            </ComPlaceholder>
             </div>
+
         </template>
     
     </div>

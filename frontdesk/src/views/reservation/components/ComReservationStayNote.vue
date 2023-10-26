@@ -116,7 +116,6 @@ function onSave() {
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
             saving.value = false
-            alert(dataUpdate.value.is_apply_all_stays)
             if(dataUpdate.value.is_apply_all_stays){
                 rs.reservationStayNames.forEach(stay => {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:stay})

@@ -1,5 +1,4 @@
 <template>
-    {{ doc }}
     <ComDialogContent @onClose="onClose" :loading="loading" hideButtonOK>
        <Message v-if="doc?.docstatus==0">The status of this room block is currently in Draft mode. Please click on button <strong>Submit Room Block</strong> to block this room.
         <br/>
@@ -9,6 +8,15 @@
         <br/>
         <Button @click="onUnblock">Unblock this Room</Button>
        </Message>
+
+        <Chip class="text-white bg-orange-500 p-1px px-2" v-if="doc?.docstatus==0"><i class="pi pi-lock me-2" />Draft</Chip>
+        <Chip class="text-white surface-400 p-1px px-2"  v-if= "doc?.is_unblock != 0" ><i class="pi pi-lock-open me-2" /> Unblock</Chip>    
+        <Chip class="text-white bg-black-alpha-90 p-1px px-2"  v-if="doc?.docstatus==1 && doc?.is_unblock==0"><i class="pi pi-lock me-2" />Block</Chip> 
+        <div v-if="doc &&  doc?.is_unblock != 0">
+            <div>Unblock Date : {{ doc.unblock_date }}</div>
+            <div>Reason : {{ doc.unblock_note }}</div>
+            <div>Unblock Housekeeping Status : {{ doc.unblock_housekeeping_status }}</div>
+        </div>
         <table>
             <tr>
                 <td colspan="2" class="bg-slate-200 p-2 font-medium text-center border-1">Room Block</td>
@@ -36,10 +44,9 @@
     </ComDialogContent>
     <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }" position="top">
         <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()" :loading="unblock_loading">
- 
             <div class="grid">
                 <div class="col-12 lg:col-6">
-                    <label>Unblock Date</label>
+                    <label>Unblock Date </label>
                     <div class="card flex justify-content-left"> 
                         <Calendar selectOtherMonths class="w-full" showIcon v-model="data.unblock_date" dateFormat="dd-mm-yy"/>
                     </div>
@@ -47,20 +54,21 @@
                 <div class="col-12 lg:col-6">
                     <label>Housekeeping Status</label>
                     <div class="w-full">
-                      
-                    <ComSelect placeholder="Housekeeping Status" class="w-full" v-model="data.unblock_housekeeping_status" :options="housekeepingStatus"
-                    />
+                    <ComSelect placeholder="Housekeeping Status" class="w-full" v-model="data.unblock_housekeeping_status" :options="housekeepingStatus" />
                     </div>
                 </div>
                 <div class="col-12">
                     <label>Unblock Note</label>
                     <div class="w-full card flex justify-content-left">
-                        <Textarea class="w-full" v-model="data.unblock_note"  autoResize />
+                        <Textarea class="w-full" v-model="data.unblock_note" autoResize />
                     </div>
                 </div>
             </div>
         </ComDialogContent> 
     </Dialog>
+
+
+    
 </template>
 
 <script setup>
@@ -78,8 +86,6 @@ const gv = inject('$gv');
 const dialog = useDialog()
 
 const housekeepingStatus =ref( window.setting.housekeeping_status.filter(r=>r.is_room_occupy==0).map(r=>r.status)) ;
-
-
 
 const data = ref()
 

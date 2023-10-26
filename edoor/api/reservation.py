@@ -516,9 +516,11 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
 
 
     housekeeping_status =  frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_in")
- 
+    comment_doc = []
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
+        comment_doc.append({"subject":"Checked In","doc":stay})
+
         if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})==0:
             if s == stays[0]:
                 stay.is_master = 1
@@ -565,6 +567,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
         room.save()
         
         #create folio 
+
         master_folio = {}
         if stay.is_master:
             
@@ -573,6 +576,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
             folio = None
             if len(master_folios) == 0:
                 folio =create_folio(stay)
+                
             else:
                 folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
                 folio.status="Open"
@@ -1092,6 +1096,8 @@ def get_reservation_comment_note(doctype, docname):
     """
     sql = sql.format(doctype, docname)
     data = frappe.db.sql(sql, as_dict=1)
+    doc = frappe.get_doc(doctype,docname)
+    data.append({"name":doc.name,"subject":"Created this","creation":doc.creation,"owner":doc.owner,"full_name":frappe.db.get_value("User",doc.owner, "full_name"),"is_audit_trail":1,"type":"Info" })
     return data
 
 @frappe.whitelist(methods="POST")

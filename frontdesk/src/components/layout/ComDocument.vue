@@ -119,6 +119,8 @@ function onModal(open){
 function onSuccess(){
     visible.value = false
     onLoad()
+    window.socket.emit("ReservationDetail", window.reservation)            
+    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
 }
 
 function pageChange(page) {
@@ -234,6 +236,8 @@ function onSave(){
         opEdit.value.hide()
         onLoad()
         window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
+        window.socket.emit("ReservationDetail", window.reservation)
+        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
     }).catch((err)=>{
         saving.value = false
     })

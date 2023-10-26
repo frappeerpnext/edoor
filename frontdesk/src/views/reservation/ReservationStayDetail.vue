@@ -23,7 +23,7 @@
                             </Button>
                             <Button class="border-noround border-rl-ed border-none">{{
                                 (rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1 }} / {{
-        rs?.reservationStayNames.length }} </Button>
+         rs?.reservationStayNames.length }} </Button>
                             <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
                                 :disabled="rs?.canNavigateNext(name) || rs.loading"
                                 class="border-noround-left border-y-none border-right-none"
@@ -40,8 +40,6 @@
                         </span>
                         <Button @click="onUnreservedRoom" class="conten-btn border-1" serverity="waring">Unreserve
                             Room</Button>
-
-
                     </div>
                     <div class="flex items-center gap-3" v-else>
                         <span>We do not reserved room for this reservation.</span>

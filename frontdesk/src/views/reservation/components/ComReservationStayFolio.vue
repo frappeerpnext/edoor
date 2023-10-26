@@ -21,7 +21,6 @@
         </div> 
     </div>
 </template>
-
 <script setup>
 import { inject, ref, onUnmounted ,provide,getDocList,onMounted} from '@/plugin';
 import ComResevationStayFolioList from "@/views/reservation/components/reservation_stay_folio/ComResevationStayFolioList.vue"

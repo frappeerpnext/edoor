@@ -1,5 +1,5 @@
 <template>
- 
+ {{ filter_options }}
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
@@ -89,7 +89,7 @@
                         
                     </div>
                     <div>
-                        <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b h-full"></Button>
+                        <Button @click="loadIframe" icon="pi pi-refresh" class="btn-size2 d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b h-full"></Button>
                     </div>
                 </div>
             </div> 

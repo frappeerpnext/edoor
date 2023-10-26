@@ -24,8 +24,9 @@ export function getDocList(doctype, option){
             resolve(doc)
         })
         .catch((error) => {
+            const message = handleServerMessage(error)
             reject(error)
-            window.postMessage('show_error|' + 'Server Error', '*')
+           
         });
     })
 }

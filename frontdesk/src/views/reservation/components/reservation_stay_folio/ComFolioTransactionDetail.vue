@@ -263,7 +263,7 @@ const onSaveReferenceNumber = () => {
     doc.value.reference_number = r.message.reference_number
     saving.value = false
     window.socket.emit("FolioTransactionDetail", {property:window.property_name, name:window.folio_transaction_number})
-
+    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
 
     onCloseRefNumber()
   }).catch(() => {

@@ -1,17 +1,19 @@
  
 <template>
-    <SplitButton   :model="items"  @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="view_chart_by"></SplitButton>
-    <SplitButton   :model="duration_types" :label="duration_type"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
-    <!-- <label for="show_occupancy_only" class="font-medium cursor-pointer ">Show occupancy only</label>
-                                <Checkbox 
-                                :trueValue="1"
-                                :falseValue="0"
-                                    v-model="show_occupancy_only" :binary="true"
-                                    inputId="show_occupancy_only"
-                                    @change="onShowOccupancyOnly"
-                                     />
-    <Dropdown v-if="show_occupancy_only" @change="onViewChartTypeChange" v-model="view_chart_type" :options="['line','bar','pie','doughnut']"   class="w-full md:w-14rem"  />
-   -->
+    <div class="flex justify-content-end mr-5">
+        <SplitButton :model="items" @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="view_chart_by"></SplitButton>
+        <SplitButton :model="duration_types" :label="duration_type"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
+        <!-- <label for="show_occupancy_only" class="font-medium cursor-pointer ">Show occupancy only</label>
+                                    <Checkbox 
+                                    :trueValue="1"
+                                    :falseValue="0"
+                                        v-model="show_occupancy_only" :binary="true"
+                                        inputId="show_occupancy_only"
+                                        @change="onShowOccupancyOnly"
+                                        />
+        <Dropdown v-if="show_occupancy_only" @change="onViewChartTypeChange" v-model="view_chart_type" :options="['line','bar','pie','doughnut']"   class="w-full md:w-14rem"  />
+    -->
+    </div>
     <div class="card">
         <div id="occupancy_chart"></div>
     </div>

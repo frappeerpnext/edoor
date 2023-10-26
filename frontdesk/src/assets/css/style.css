@@ -793,6 +793,9 @@ span.p-button-icon.pi.pi-ellipsis-v{
     -moz-transition: all 0.3s;
     transition: all 0.3s;
 }
+.btn-size2{
+    padding: 0.45rem .65rem 0.45rem !important;
+}
 .spl__btn_cs.sp button {
     line-height: 1.5;
     background: var(--bg-btn-dialog-inside);
@@ -804,6 +807,29 @@ span.p-button-icon.pi.pi-ellipsis-v{
     border: 1px solid;
     padding: 0.45rem 0.65rem 0.45rem !important;
 }
+
+/* Set btn round part */
+.p-splitbutton .p-splitbutton-defaultbutton,
+.p-inputnumber .p-inputnumber-input
+{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.p-calendar .p-button-icon-only,
+.p-splitbutton .p-button-icon-only,
+.p-inputnumber .p-button-icon-only
+{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.p-inputnumber .p-inputnumber-button-up{
+    border-bottom-right-radius: 0;
+}
+.p-inputnumber .p-inputnumber-button-down{
+    border-top-right-radius: 0;
+}
+/* END Set btn round part */
+
 .conten-btn:enabled:hover, 
 .conten-btn:enabled:active,
 .btn-add-folio:enabled:hover,
@@ -1285,6 +1311,13 @@ ul.res__hideshow{
 span.row-disabled > :not(button) { 
     color: rgb(172, 172, 172) !important;
 }
-.box-shadow-box-search{
-    box-shadow: rgba(0, 0, 0, 0.15) 1.4px 1.4px 1.2px;
-} 
+.search-hover{
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    padding: 10px !important;
+    margin: 5px 10px ;
+}
+.search-hover:hover{
+    background-color: #a1dff831;
+}

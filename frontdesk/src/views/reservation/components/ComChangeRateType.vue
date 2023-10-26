@@ -6,7 +6,11 @@
             <div class="flex gap-2 flex-col mt-3">
                 <div class="flex gap-2" v-if="!hideApplyAll">
                     <Checkbox inputId="apply-all" v-model="applyToAllStay" :binary="true" />
-                    <label for="apply-all" class="cursor-pointer">Apply to All Stay ({{ rs?.reservationStayNames.length }})</label>
+                    <label for="apply-all" class="cursor-pointer">Apply to All Stay 
+                        <span v-if="rs.reservationStays">
+                        ({{ rs.reservationStays.filter(r=>r.is_active_reservation == 1).length }})
+                    </span>
+                    </label>
                 </div>
                 <div class="flex gap-2">
                     <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true" />
@@ -22,7 +26,7 @@ import { ref, inject, postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
-const rs = inject('$reservation_stay');
+const rs = inject('$reservation');
 const emit = defineEmits(['onClose', 'onSave'])
 const props = defineProps({
     rate_type: {

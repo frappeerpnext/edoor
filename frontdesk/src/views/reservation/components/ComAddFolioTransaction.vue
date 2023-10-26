@@ -526,6 +526,8 @@ function onSave() {
                 window.socket.emit("ComCityLedgerDetail",window.property_name)
                 window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("ReservationDetail", window.reservation)
+              
             }).catch((err) => {
                 isSaving.value = false;
             })

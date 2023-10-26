@@ -95,6 +95,7 @@ const dialog = useDialog();
 const confirm = useConfirm();
 const toast = useToast();
 const gv = inject("$gv")
+const rs = inject("$reservation_stay")
 const setting =window.setting
 const folio_menu = ref();
 
@@ -320,7 +321,11 @@ function MarkasMasterFolio() {
 }
 
 function openFolio() {
-    confirm.require({
+    if(rs.reservationStay.reservation_status=='No Show'){
+        gv.toast('warn', 'No Show reservation is not allow to opan folio.')
+    }
+    else{
+        confirm.require({
         header: 'Open Folio ' + selectedFolio.value.name,
         message: 'Are you sure you want to Open Folio ' + selectedFolio.value.name + '?',
         icon: 'pi pi-info-circle',
@@ -341,6 +346,8 @@ function openFolio() {
         },
 
     })
+    }
+    
 }
 
 

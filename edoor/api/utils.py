@@ -794,3 +794,8 @@ def update_doctype_data(data):
 def get_months(start_date,end_date):
 	months = [{'month_number': dt.month, 'month_name': dt.strftime('%B'),"year": dt.year, "total_day":  calendar.monthrange(dt.year, dt.month)[1]} for dt in rrule(MONTHLY, dtstart=start_date, until=end_date)]
 	return months
+
+def add_comment(data):
+    data["doctype"]="Comment"
+    data["is_audit_trail"]=1
+    frappe.get_doc(data).insert(ignore_permissions=True)

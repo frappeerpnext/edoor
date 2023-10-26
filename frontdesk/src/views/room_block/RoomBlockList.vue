@@ -63,11 +63,7 @@
                 </template>
               </div>
               <template v-else-if="c.fieldtype == 'Status'"> 
-                <!-- Design Block Status -->
-                <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
-                  <i class="pi pi-lock-open me-2" />
-                  Unblock
-                </Chip>
+                <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1"><i class="pi pi-lock-open me-2" /> Unblock</Chip>    
                 <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 1"><i class="pi pi-lock me-2" />Block</Chip>
                 <Chip class="text-white bg-orange-500 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 0"><i class="pi pi-lock me-2" />Draft</Chip>
               </template>
@@ -136,7 +132,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed, onUnmounted } from '@/plugin'
+import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'

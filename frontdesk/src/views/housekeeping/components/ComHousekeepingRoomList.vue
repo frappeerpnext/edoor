@@ -69,7 +69,7 @@
         </template>
     </Column>
     <div class="hkpanel">
-        <Sidebar :dismissable="false" class="top-20 -mt-1 w-3" v-model:visible="visibleRight" position="right"
+        <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-3" v-model:visible="visibleRight" position="right"
             @hide="SidebarClose">
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
         </Sidebar>
@@ -197,6 +197,10 @@ function onViewReservationStayDetail(rs) {
 .p-sidebar-mask.p-component-overlay {
     pointer-events: none !important;
 }
+.p-sidebar-mask {
+    background: transparent;
+}
+
 /* .hsk-wrapper .res_list_scroll{
     height: 100%;
     display: flex;

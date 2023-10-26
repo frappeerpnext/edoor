@@ -85,7 +85,6 @@
         <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
             <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>
             <div class="mb-5 leading-5 text-sm ">
-            <!-- {{ hk.reservationStay }}  -->
             <div class="mt-auto">
             <span class="italic">Created by: </span>
             <span class="text-500 font-italic">

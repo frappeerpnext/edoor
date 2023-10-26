@@ -179,7 +179,7 @@ class ReservationStay(Document):
 			},
 			page_length=100)
 			
-			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join(str(x.name) for x in reservation_stays)))
+			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join([str(x.name) for x in reservation_stays])))
 		data_for_udpate = {
 			"rooms":self.rooms,
 			"note":self.note,

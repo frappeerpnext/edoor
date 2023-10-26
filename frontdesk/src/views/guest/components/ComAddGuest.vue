@@ -26,15 +26,21 @@
                         <ComAutoComplete v-model="guest.customer_group" class="w-full" placeholder="Guest Type"
                             doctype="Customer Group" />
                     </div>
+                    <div class="col-12 lg:col-6 pt-2">
+                        <label>Province</label><br />
+                        <ComAutoComplete v-model="guest.province" class="w-full" placeholder="province" doctype="Province" />
+                    </div>
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Gender</label><br />
                         <Dropdown v-model="guest.gender" :options="optionGender" placeholder="Gender" class="w-full" />
                     </div>
+                    
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Date of birth</label><br />
                         <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
                             showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true" />
                     </div>
+                    
                     <!-- guest.date_of_birth -->
                     <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label class="opacity-0">Disabled</label><br />

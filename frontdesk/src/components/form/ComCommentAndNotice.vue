@@ -33,21 +33,23 @@
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
     <div v-for="(i, index) in list" :key="index" class="mb-3 p-3 rounded-xl shadow-card-edoor" :class="(i.note_type == 'Notice') ? 'bg-yellow-notice-bg text-yellow-700' : 'bg-commnet-cart' ">
-    <div class="flex justify-between">
+ 
+        <div class="flex justify-between">
         <div class="flex items-center">
             <i :class="(i.note_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i>
             <div class="ms-1 text-sm">
-                <span class="font-italic">{{i.note_type}} by:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.creation).format("DD-MM-yy h:ss a") }}, </span>
-                <span class="font-italic">Last Modified:</span> <span class="text-500 font-italic">{{i.owner}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
+                <span class="font-italic">{{i.note_type}} by:</span> <span class="text-500 font-italic">{{i.owner}} on {{moment(i.creation).format("DD-MM-yy h:ss a") }}, </span>
+                <span class="font-italic" v-if="i.modified">Last Modified:</span> <span class="text-500 font-italic" v-if="i.modified">{{i.modified_by}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
             </div> 
            
           
         </div>
-        <div class="gap-2 flex">
+        <div class="gap-2 flex" v-if="i.type!='Info'">
             <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onAddEdit($event,i)"></Button>
             <Button text icon="pi pi-trash" class="w-1rem h-1rem" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
         </div>
     </div>
+        <div class="whitespace-pre-wrap break-words py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.full_name }} {{i.subject}}</div>
         <div class="whitespace-pre-wrap break-words py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.note_date">
         Note Date: {{moment(i.note_date).format("DD-MM-YYYY")}} 
@@ -87,9 +89,9 @@ let op = ref()
 const loading = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
-const property = JSON.parse(localStorage.getItem('edoor_property'))
+
 const dialogConfirm = useConfirm();
-const currentUser = JSON.parse(localStorage.getItem('edoor_user'))
+const currentUser = window.user
 const create = ref({
     note_type: 'Comment',
     content: '',
@@ -101,6 +103,7 @@ const edit = ref({
 })
 const list = ref([])
 onMounted(() => {
+    
     onLoad()
 })
 function onLoad() {
@@ -170,7 +173,7 @@ function onSaveNote(doctype, data) {
     }
     saving.value = true
     if (!data.name) {
-        data.property = property.name
+        data.property = window.property_name
     }
     // for folio trancation
     if (props.doctype == 'Folio Transaction') {
@@ -192,7 +195,8 @@ function onSaveNote(doctype, data) {
         edit.value = data.value
         onLoad()
         op.value.hide()
-
+        window.socket.emit("ReservationDetail", window.reservation)
+        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
     }).catch((err) => {
         saving.value = false
     })
@@ -212,6 +216,8 @@ function onRemove(selected) {
                 if (doc) {
                     deleting.value = false
                     onLoad()
+                    window.socket.emit("ReservationDetail", window.reservation)     
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 }
             }).catch((err) => {
                 deleting.value = false

@@ -27,8 +27,12 @@ def search(doctypes=None, txt="" ,filters=None):
             if t.return_fields:
                 return_fields = return_fields + "," + t.return_fields
             
+            # default condition
+            default_condition = ""
+            if t.default_condition:
+                default_condition = " and " + t.default_condition
 
-            sql = "select '{0}' as doctype, {1} from `tab{0}` where concat({2}) like %(txt)s order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result)
+            sql = "select '{0}' as doctype, {1} from `tab{0}` where concat({2}) like %(txt)s {4} order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result,default_condition)
     
             
             data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)

@@ -32,7 +32,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">                 
                   <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.pickup_driver)" title="Driver"
-                    isAction="true" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="col">
+                    :isAction="rs.reservationStay?.pickup_driver" :value="rs.reservationStay?.pickup_driver_name" valueClass="col-7" titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -75,7 +75,7 @@
                 </div>
                 <div class="flex mt-2 gap-2">
                   <ComBoxStayInformation @onClick="onEditDriver(rs.reservationStay?.drop_off_driver)" title="Driver"
-                    isAction="true" :value="rs.reservationStay?.drop_off_driver_name" valueClass="col-7" titleClass="col">
+                    :isAction="rs.reservationStay?.drop_off_driver" :value="rs.reservationStay?.drop_off_driver_name" valueClass="col-7" titleClass="col">
                   </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">

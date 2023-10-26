@@ -1,7 +1,9 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        <Message v-if="hasFutureResertion" >This reference number <strrong>{{ doc.reservation.reference_number }}</strrong> already have in system <br/>
-        <Button @click="onViewFutureReservation">View Reservation</Button>
+        <Message v-if="hasFutureResertion" >
+            {{ checkFutureReservationInfo.message }} <br/>
+        
+            <Button class="border-none" @click="onViewFutureReservation">View Reservation</Button>
         </Message>
         <div class="n__re-custom grid">
             <div class="col">
@@ -111,14 +113,17 @@
 
                             <label>Return Guest</label>
                             <ComAutoComplete isIconSearch v-model="doc.reservation.guest" class="pb-2"
-                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer" />
+                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer" v-debounce="onReturnGuest"/>
                             <hr class="my-3" />
                             <div class="grid">
                                 <div class="col-12 pt-2">
                                     <label>New Guest Name<span class="text-red-500">*</span></label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="New Guest Name"
-                                        v-model="doc.guest_info.customer_name_en" :maxlength="50" />
-                                </div>
+                                        v-model="doc.guest_info.customer_name_en" :maxlength="50" v-debounce="onNewGuestName"/>
+                                    <Message v-if="doc?.guest_info?.customerExist">
+                                        <span>This guest is already exist. View guest detail | {{ doc.guest_info.existingGuest }}</span>
+                                    </Message>
+                                    </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
                                     <label>Guest Type<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.guest_info.customer_group" class="w-full"
@@ -137,12 +142,12 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Phone Number</label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
-                                        v-model="doc.guest_info.phone_number" :maxlength="50" />
+                                        v-model="doc.guest_info.phone_number" :maxlength="50" v-debounce="onChangeGuestPhoneNumber"/>
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-8 pt-1">
                                     <label>Email Address</label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email Address"
-                                        v-model="doc.guest_info.email_address" :maxlength="50" />
+                                        v-model="doc.guest_info.email_address" :maxlength="50" v-debounce="onChangeGuestEmail"/>
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Identity Type</label><br />
@@ -360,7 +365,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, postApi, getApi, getDoc,useDialog } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, getApi, getDoc,useDialog,getDocList } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
@@ -383,6 +388,7 @@ const can_view_rate = window.can_view_rate
 const room_tax = ref()
 const minDate = ref()
 const hasFutureResertion = ref(false)
+const checkFutureReservationInfo=ref({})
 
 
 
@@ -599,12 +605,28 @@ function onSelectedCustomer(event) {
                 doc.value.guest_info = d
                 doc.value.guest_info.expired_date = moment(doc.value.guest_info.expired_dat).toDate()
             })
+
+        //check future reservation
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest",value:event.value}).then(r=>{
+            hasFutureResertion.value = r.message
+            checkFutureReservationInfo.value = {
+                    message: `This guest id ${event.value} is already exist in the system`,
+                    fieldname:"guest",
+                    value:event.value,
+                }
+
+        })
+
     } else {
         doc.value.guest_info = {
             "doctype": "Customer",
             "gender": "Not Set"
         }
+
+        hasFutureResertion.value = false
     }
+
+
 
 }
 
@@ -644,25 +666,94 @@ function onChangeReference(v){
     if(v){ 
         getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"reference_number",value:v}).then(r=>{
             hasFutureResertion.value = r.message
-
+            if (r.message){
+                checkFutureReservationInfo.value = {
+                    message: `This reference number ${v} is already exist in the system`,
+                    fieldname:"reference_number",
+                    value:v,
+                }
+            }
         })
     }else {
         hasFutureResertion.value = false
     }
 }
 
+function onChangeGuestPhoneNumber(v){
+    if(v){ 
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_phone_number",value:v}).then(r=>{
+            hasFutureResertion.value = r.message
+            if (r.message){
+                checkFutureReservationInfo.value = {
+                    message: `This phone number ${v} is already exist in the system`,
+                    fieldname:"guest_phone_number",
+                    value:v,
+                }
+            }
+        })
+    }else {
+        hasFutureResertion.value = false
+    }
+}
+
+
+function onChangeGuestEmail(v){
+    if(v){ 
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_email",value:v}).then(r=>{
+            hasFutureResertion.value = r.message
+            if (r.message){
+                checkFutureReservationInfo.value = {
+                    message: `This email ${v} is already exist in the system`,
+                    fieldname:"guest_email",
+                    value:v,
+                }
+            }
+        })
+    }else {
+        hasFutureResertion.value = false
+    }
+}
+
+ 
+
+function onNewGuestName(v){
+    if(v){ 
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_name",value:v}).then(r=>{
+            hasFutureResertion.value = r.message
+            if (r.message){
+                checkFutureReservationInfo.value = {
+                    message: `This guest name ${v} is already exist in the system`,
+                    fieldname:"guest_name",
+                    value:v,
+                }
+            }
+        })
+
+        getDocList("Customer",{filters:[["customer_name_en","=",v]]}).then(data=>{
+            doc.value.guest_info.customerExist = data.length> 0
+            if(data.length>0){
+                doc.value.guest_info.existingGuest = data[0]["name"]
+            }
+        })
+
+    }else {
+        hasFutureResertion.value = false
+    }
+}
+
+
 function onViewFutureReservation(){
     const dialogRef = dialog.open(ComIFrameModal, {
        data: {
-           "doctype": "Business Branch",
+           "doctype": "Business%20Branch",
            name: window.property_name,
-           report_name: "xxx",
+           report_name: gv.getCustomPrintFormat("eDoor Existed Reservation"),
            view:"ui",
-           extra_params:[],
+           extra_params:[{key:"fieldname",value:checkFutureReservationInfo.value.fieldname },{key:"value",value:checkFutureReservationInfo.value.value}],
            fullheight: true
        },
        props: {
-           header:"View reservation by reference: 4587285"  ,
+           header: `View reservation by reference: ${doc.value.reservation.reference_number}`,
            style: {
                width: '90vw',
            },
