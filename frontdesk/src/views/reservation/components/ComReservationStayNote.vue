@@ -1,10 +1,9 @@
 <template>
-    <div>
+    <div v-if="rs.reservationStay">
         <div class="grid">
             <div class="col-12">
-                <div class="w-full"> 
-                    {{ reservation.reservation.note }}
-                    <div v-if="note" class="link_line_action_res_note px-3">
+                <div class="w-full">
+                    <div v-if="rs.reservationStay.note" class="link_line_action_res_note px-3">
                         <div class="pt-2 pb-3 text-color-black" >
                             <div class="">
                                 <div class="flex justify-content-between flex-wrap">
@@ -12,11 +11,11 @@
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onReseravationNote($event, 'note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ reservation_note.note_by }} {{ gv.datetimeFormat(reservation_note.modified) }}</span>
+                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ rs.reservationStay.note_by }} {{ gv.datetimeFormat(rs.reservationStay.note_modified) }}</span>
                                 </div>
                             </div>
                             <hr class="my-2">
-                            <div class="text-color wrap__sp_not">{{ note }}</div>
+                            <div class="text-color wrap__sp_not">{{ rs.reservationStay.note }}</div>
                         </div>
                     </div>
                     <div v-else class="link_line_action px-3" @click="onReseravationNote($event, 'note')">
@@ -29,7 +28,7 @@
             </div>
             <div class="col-12 pb-0">
                 <div class="w-full">
-                    <div class="link_line_action_res_note px-3" v-if="housekeeping_note">
+                    <div class="link_line_action_res_note px-3" v-if="rs.reservationStay.housekeeping_note">
                         <div class="pt-2 pb-3 text-color-black" >
                             <div class="">
                                 <div class="flex justify-content-between flex-wrap">
@@ -37,20 +36,19 @@
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onReseravationNote($event, 'housekeeping_note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ housekeeping.note_by }} {{ gv.datetimeFormat(housekeeping.note_modified) }}</span>
+                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{ rs.reservationStay.housekeeping_note_by }} {{ gv.datetimeFormat(rs.reservationStay.housekeeping_note_modified) }}</span>
                                 </div>
                             </div>
                             <hr class="my-2">
-                            <div class="text-color wrap__sp_not">{{ housekeeping_note }}</div>
+                            <div class="text-color wrap__sp_not">{{ rs.reservationStay.housekeeping_note }}</div>
                         </div>
                     </div>
-                    <div  v-else class="link_line_action px-3" @click="onReseravationNote($event, 'housekeeping_note')" >
+                    <div v-else class="link_line_action px-3" @click="onReseravationNote($event, 'housekeeping_note')" >
                         <div class="flex justify-center items-center my-3">
                             <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
                             <span class="text-xl">Add Housekeeping Note</span>
                         </div>
                     </div>
-                    
                 </div>
             </div>
         </div>
@@ -70,9 +68,9 @@
                     <div class="flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="dataUpdate.is_apply_all_stays" :binary="true" inputId="checkapplyall" />
-                            <label for="checkapplyall"> Apply all stays ({{ totalStay }})</label>
+                            <label for="checkapplyall"> Apply all stays ({{ rs.reservation.total_active_reservation_stay }})</label>
                         </div>
-                        <div class="flex align-items-center px-2" v-if="doctype != 'Reservation'">
+                        <div class="flex align-items-center px-2">
                             <Checkbox v-model="dataUpdate.is_apply_reseration" :binary="true" inputId="checkmasterguest" />
                             <label for="checkmasterguest"> Apply Reservation</label>
                         </div>
@@ -83,27 +81,14 @@
     </div>
 </template>
 <script setup>
-import { ref, postApi, inject, onMounted,watch } from '@/plugin'
-const reservation_stay = inject('$reservation_stay')
+import { ref, postApi, inject } from '@/plugin'
+const rs = inject('$reservation_stay')
 const gv = inject('$gv')
 const saving = ref(false)
 const op = ref()
-const housekeeping_note = ref('')
-const housekeeping = ref({
-    note_by: '',
-    note_modified: ''
-})
-const reservation_note = ref({
-    note_by: '',
-    note_modified: ''
-})
 
-const note = ref('')
-const reservationName = ref('')
-const docname = ref('')
-const totalStay = ref(0)
-const dataUpdate = ref({
-    doctype: props.doctype,
+const dataUpdate = ref({ 
+    doctype: "Reservation Stay",
     name: '',
     reservation: '',
     is_apply_all_stays: false,
@@ -113,68 +98,38 @@ const dataUpdate = ref({
     note_by: '',
     note_modified: '',
     housekeeping_note: '',
-    
-
 })
 
 function onReseravationNote($event, updating) {
-    dataUpdate.value.note = note.value
-    dataUpdate.value.housekeeping_note = housekeeping_note.value
+    const selected = JSON.parse(JSON.stringify(rs.reservationStay))
+    dataUpdate.value.note = selected.note
+    dataUpdate.value.housekeeping_note = selected.housekeeping_note
     dataUpdate.value.updating = updating
-    dataUpdate.value.name = docname.value
+    dataUpdate.value.name = rs.reservationStay.name,
     dataUpdate.value.is_apply_all_stays = false
     dataUpdate.value.is_apply_reseration = false
     op.value.toggle($event)
 }
 function onSave() {
     saving.value = true
-    dataUpdate.value.reservation = (dataUpdate.value.is_apply_reseration || dataUpdate.value.is_apply_all_stays) ? reservationName.value : ''
+    dataUpdate.value.reservation = (dataUpdate.value.is_apply_reseration || dataUpdate.value.is_apply_all_stays) ? rs.reservationStay.reservation : ''
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
             saving.value = false
-            reservation_stay.reservationStay = r.message
-            updateDisplayNote()
-            onLoadSocket()
+            alert(dataUpdate.value.is_apply_all_stays)
+            if(dataUpdate.value.is_apply_all_stays){
+                rs.reservationStayNames.forEach(stay => {
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:stay})
+                });
+            }else{
+                window.socket.emit("ReservationStayDetail", {reservation_stay: rs.reservationStay.name})
+            }
+            if(dataUpdate.value.is_apply_reseration)
+                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            op.value.hide()
         }).catch((err) => {
             saving.value = false
         })
-}
-function onLoadSocket(){
-    if(dataUpdate.value.is_apply_all_stays){
-        reservation_stay.reservationStayNames.forEach(r => {
-            window.socket.emit("ReservationStayDetail", {reservation_stay: r.name})
-            console.log('update multile',r.name)
-        });
-    }else{
-        console.log('update one:',reservation_stay.reservationStay.name)
-        window.socket.emit("ReservationStayDetail", {reservation_stay: reservation_stay.reservationStay.name})
-    }
-    
-    window.socket.emit("ReservationDetail", reservation_stay.reservationStay.reservation)
-    
-}
-function onClose() {
-    op.value.hide()
-}
-onMounted(() => {
-    updateDisplayNote()
-})
-watch(()=> [reservation_stay.reservationStay.note,reservation.reservation.note], ([new_reservation_stay,new_reservation],[old_reservation_stay,reservation])=>{
-    updateDisplayNote()
-}) 
-function updateDisplayNote() {
-    note.value = reservation_stay?.reservationStay?.note || ''
-    reservation_note.value.note_by = reservation_stay?.reservationStay?.note_by || ''
-    reservation_note.value.note_modified = reservation_stay?.reservationStay?.note_modified || ''
-
-    housekeeping_note.value = reservation_stay?.reservationStay?.housekeeping_note || ''
-    housekeeping.value.note_by = reservation_stay?.reservationStay?.housekeeping_note_by || ''
-    housekeeping.value.note_modified = reservation_stay?.reservationStay?.housekeeping_note_modified || ''
-
-    reservationName.value = reservation_stay.reservation.name || ''
-    docname.value = reservation_stay.reservationStay.name || ''
-    totalStay.value = reservation_stay.reservation.total_active_reservation_stay || 0
-    onClose()
 }
 </script>
 <style scoped>

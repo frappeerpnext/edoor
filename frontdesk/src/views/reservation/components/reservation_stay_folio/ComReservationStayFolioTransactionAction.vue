@@ -60,10 +60,13 @@ const toggle = (event) => {
     show.value.toggle(event)
 }
 
+ 
+
 function onEditFolioTransaction() {
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
-            folio_transaction_number: props.data.name
+            folio_transaction_number: props.data.name,
+            reservation:props.data.reservation
         },
         props: {
             header: 'Edit Folio Transaction - ' + props.data.name,

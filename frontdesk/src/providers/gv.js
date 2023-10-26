@@ -134,7 +134,7 @@ export default class Gv {
 			properties.trim().split(',').forEach(p => {
 				value = value + String(r[p] || '') + ' '
 			}); 
-			return value.toLowerCase().includes((keyword).toLowerCase())
+			return value.toLowerCase().includes((keyword).toLowerCase()) || ""
 		})
 	}
 	getCustomPrintFormat(name){

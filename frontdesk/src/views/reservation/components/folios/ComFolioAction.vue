@@ -180,6 +180,7 @@ print_menus.value.push({
 })
 
 function onAddFolioTransaction(account_code) {
+    console.log(selectedFolio.value)
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
@@ -190,8 +191,10 @@ function onAddFolioTransaction(account_code) {
                     reservation_stay: selectedFolio.value.reservation_stay,
                     property: window.property_name,
                     account_group: account_code.name
+                    
                 },
-                balance: selectedFolio.value.total_debit - selectedFolio.value.total_credit
+                balance: selectedFolio.value.total_debit - selectedFolio.value.total_credit,
+                business_source: selectedFolio.value.business_source
             },
             props: {
                 header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,

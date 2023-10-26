@@ -22,10 +22,10 @@
                                 </ComAvatar> 
                                 <Button text size="small" icon="pi pi-trash" @click="onRemoveTemplatingFile(file, removeFileCallback, index)" severity="danger" />
                             </div>
-                            <!-- <div>
+                            <div>
                                 <InputText type="text" class="p-inputtext-sm w-full mb-2" placeholder="title"  v-model="file.title" :maxlength="50" />
                                 <Textarea v-model="file.description" rows="3"  placeholder="Description" class="w-full"/>
-                            </div> -->
+                            </div>
                         </div>
                     </div> 
                     </div>
@@ -105,6 +105,10 @@ function onClose(){
     emit('onClose')
 }
 function onUpload(){
+    if (!files.value){
+        gv.toast('warn','Please choose files.')
+        return
+    }
     loading.value = true
     const fileArgs = ref({
         /** If the file access is private then set to TRUE (optional) */
@@ -119,14 +123,16 @@ function onUpload(){
         "docname": props.docname,
         /** Field in the document **/
         "fieldname": props.fieldname,
-        "otherData":{title:"Hell World",description:"hello world"}
+        
     })
+
 
     if(files.value.length > 0){
         uploadFiles(files.value, fileArgs.value).then(()=>{
             loading.value = false
             emit("onSuccess")
-           
+        }).catch(error=>{
+            loading.value = false
         })
     }else{
         loading.value = false

@@ -95,7 +95,7 @@ function loadData() {
 }
 
 window.socket.on("RefreshReservationStayList", (arg) => {
-    if(arg ==property.name){
+    if(arg ==window.property_name){
         loadData()
     }    
 })

@@ -3,7 +3,7 @@
     <div class="grid">
       <div class="col-12">
       <label>Guest Type</label>
-      <InputText class="w-full" type="text" v-model="guestType.customer_group_en" />
+      <InputText class="w-full" type="text" v-model="guestType.customer_group_en" placeholder="Guest Type"/>
       </div>
       <div class="col-12">
         <label>Note</label>

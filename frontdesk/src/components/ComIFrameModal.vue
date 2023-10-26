@@ -158,6 +158,8 @@ function loadIframe() {
     } else {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0"
     }
+ url.value = url.value +   "&date="+ window.current_working_date
+ 
 
 
     if (extra_params.value) {
@@ -186,7 +188,7 @@ function loadIframe() {
     url.value = url.value + "&start_date=" + start_date + "&end_date=" + end_date
 
     url.value = url.value + "&refresh=" + (Math.random() * 16)
-
+ 
     document.getElementById(iframe_id).contentWindow.location.replace(url.value)
    
 }
@@ -214,6 +216,7 @@ function debouncer(fn, delay) {
 
 onMounted(() => {
     window.socket.on("ComIframeModal", (arg) => {
+        console.log(arg)
         if(arg == window.property_name){
             loadIframe()
         }    

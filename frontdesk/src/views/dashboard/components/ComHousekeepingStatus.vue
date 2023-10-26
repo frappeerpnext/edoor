@@ -22,8 +22,6 @@ const dialog = useDialog();
 const loading = ref(false)
 
 
-
-
 function loadData(showLoading = true) {
     loading.value = showLoading
     getApi('frontdesk.get_house_keeping_status', {
@@ -52,6 +50,7 @@ const onViewRoomList = (status) => {
             data: {
                 "doctype": "Business%20Branch",
                 name: JSON.parse(localStorage.getItem("edoor_property")).name,
+                // report_name: "eDoor%20Housekeeping%20Status",
                 report_name: "eDoor%20Housekeeping%20Status",
                 extra_params: [{ key: "housekeeping_status", value: encodeURIComponent(status.value.status) }],
                 view: "ui",
@@ -73,7 +72,7 @@ const onViewRoomList = (status) => {
             data: {
                 "doctype": "Business%20Branch",
                 name: JSON.parse(localStorage.getItem("edoor_property")).name,
-                report_name: "eDoor%20Room%20Block",
+                report_name: "eDoor%20Room%20Block",//"eDoor%20Room%20Block",
                 extra_params: [{ key: "housekeeping_status", value: encodeURIComponent(status.value.status) }, { key: "date", value: working_day.date_working_day }],
                 view: "ui",
                 filter_options: ['keyword']

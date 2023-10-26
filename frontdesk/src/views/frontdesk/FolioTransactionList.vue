@@ -30,8 +30,7 @@
         </div>
       </div>
     </div>
-    <div class=" h-full">
-      
+    <div class=" h-full"> 
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
           stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"
@@ -42,10 +41,10 @@
             :bodyClass="c.header_class || ''" :frozen="c.frozen">
             <template #body="slotProps">
               <Button v-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
-                @click="onOpenLink(c, slotProps.data)" link>
-                {{ slotProps.data[c.fieldname] }}
+                @click="onOpenLink(c, slotProps.data)" link> 
                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                <span v-if="c.fieldname">{{ slotProps.data[c.fieldname] }}</span>
               </Button>
               <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>

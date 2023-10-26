@@ -211,14 +211,20 @@ export function renameDoc(doctype, old_name,new_name){
     })
 }
 export function uploadFiles(files, fileArgs = Object){
+    console.log(files)
     const frappe = new FrappeApp()
     const file = frappe.file();
     return new Promise((resolve, reject)=>{
         let countFile = 0
         files.forEach((r)=>{
+            fileArgs.otherData={title: r.title || "",description:r.description || ""}
+          
+
             file.uploadFile(
                 r,
-                fileArgs
+                fileArgs,
+                undefined,
+                "edoor.api.upload.upload_file"
             )
             .then((r) => {
                 if(r.data && r.data.message){

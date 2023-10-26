@@ -1,6 +1,8 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-
+        <Message v-if="hasFutureResertion" >This reference number <strrong>{{ doc.reservation.reference_number }}</strrong> already have in system <br/>
+        <Button @click="onViewFutureReservation">View Reservation</Button>
+        </Message>
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -18,7 +20,7 @@
                             <div class="col-6">
                                 <label>Reference No</label><br />
                                 <InputText type="text" class="p-inputtext-sm w-full" placeholder="Reference Number"
-                                    v-model="doc.reservation.reference_number" :maxlength="50" />
+                                    v-model="doc.reservation.reference_number" :maxlength="50" v-debounce="onChangeReference"/>
                             </div>
                             <div class="col-6">
                                 <label>Internal Ref. No</label><br />
@@ -168,7 +170,7 @@
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <div class="flex gap-2 align-items-center relative my-3" style="width: 12.7rem;">
-                        <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <label for="rate_tax" class="font-medium cursor-pointer">Rate Include Tax</label>
                         <span class="absolute right-0 w-full">
                             <Checkbox input-id="rate_tax" class="w-full flex justify-end"
                                 v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
@@ -358,12 +360,13 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, postApi, getApi, getDoc } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, getApi, getDoc,useDialog } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
+import ComIFrameModal from '@/components/ComIFrameModal.vue';
 
-
+const dialog = useDialog();
 const dialogRef = inject("dialogRef");
 const moment = inject("$moment")
 const isSaving = ref(false)
@@ -376,8 +379,12 @@ const working_day = ref({})
 const selectedStay = ref({})
 const rate = ref(0)
 const op = ref();
+const can_view_rate = window.can_view_rate
 const room_tax = ref()
 const minDate = ref()
+const hasFutureResertion = ref(false)
+
+
 
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
@@ -633,6 +640,39 @@ const onAddRoom = () => {
     )
 }
 
+function onChangeReference(v){
+    if(v){ 
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"reference_number",value:v}).then(r=>{
+            hasFutureResertion.value = r.message
+
+        })
+    }else {
+        hasFutureResertion.value = false
+    }
+}
+
+function onViewFutureReservation(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+       data: {
+           "doctype": "Business Branch",
+           name: window.property_name,
+           report_name: "xxx",
+           view:"ui",
+           extra_params:[],
+           fullheight: true
+       },
+       props: {
+           header:"View reservation by reference: 4587285"  ,
+           style: {
+               width: '90vw',
+           },
+           position:"top",
+           modal: true,
+           maximizable: true,
+           closeOnEscape: false
+       }
+   });
+}
 
 const onSave = () => {
 

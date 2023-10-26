@@ -24,10 +24,10 @@
                             </span>/<span  v-if="data.room_number">
                                  {{data.room_number}}
                             </span>
-                             <span @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
+                            <span @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
                                 <i class="pi pi-pencil"></i>
                                 Assign Room
-                             </span>
+                            </span>
                         </div>
                         </template>
                     </Column>

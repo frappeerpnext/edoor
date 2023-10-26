@@ -101,6 +101,7 @@
                             </div>
                         </div>
                     </div>
+                    <template v-if="doc.allow_discount==1">
                     <div class="col-4">
                         <label>Discount Type</label>
                         <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']"
@@ -118,6 +119,7 @@
                             <CurrencyFormat :value="discount_amount" />
                         </div>
                     </div>
+                    </template>
 
                     <div class="col-12 text-right"
                         v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
@@ -421,6 +423,11 @@ function onSelectRateType(selected) {
                 use_tax.value.use_tax_3 = doc.value.tax_3_rate>0
 
                 doc.value.tax_rule_data = JSON.stringify(tax_rule_data)
+                doc.value.allow_discount = result.message.allow_discount || 0
+                if(doc.value.allow_discount==0){
+                    doc.value.discount = 0
+                }
+                
 
             })
     } else {
@@ -432,6 +439,11 @@ function onSelectRateType(selected) {
                 doc.value.tax_3_rate = tax_rule_data?.tax_3_rate || 0
                 doc.value.tax_rule = tax_rule_data?.name || ""
                 doc.value.tax_rule_data = JSON.stringify(tax_rule_data)
+                doc.value.allow_discount = result.message.allow_discount || 0
+                if(doc.value.allow_discount==0){
+                    doc.value.discount = 0
+                }
+
             })
     }
 }
@@ -524,6 +536,13 @@ onMounted(() => {
         use_tax_3: doc.value.tax_3_rate > 0,
         use_tax_2: doc.value.tax_2_rate > 0
     }
+
+    //check if account code allow discount
+    getApi("utils.get_rate_type_info", { name: doc.value.rate_type })
+            .then(result => {
+                doc.value.allow_discount = result.message.allow_discount || 0
+ 
+            })
 
 });
 

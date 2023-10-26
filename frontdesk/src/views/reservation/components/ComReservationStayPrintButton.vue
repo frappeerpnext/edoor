@@ -56,7 +56,8 @@ items.value.push({
             data: {
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
-                report_name: "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
+                // report_name:  "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
+                report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Confirmation Voucher "),
             },
             props: {
                 header: "Confirmation Voucher",
@@ -88,7 +89,9 @@ items.value.push({
                         doctype: "Reservation%20Stay",
                         reservation_stay: props.reservation_stay,
                         folio_number:props.folio_number,
-                        report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                       // report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                         report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
+
                         view: "print"
                     },
                     props: {
@@ -125,7 +128,8 @@ items.value.push({
                         doctype: "Reservation%20Stay",
                         reservation_stay: props.reservation_stay,
                         folio_number:props.folio_number,
-                        report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                        report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"), //"eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                    
                         view: "print"
                     },
                     props: {

@@ -15,19 +15,27 @@
 <div v-if="ShowFilterSearch" class="col-12">
 
 <div class="flex gap-2">
-  <Button class="border-1 bg-transparent border-round-3xl text-md drop-shadow-lg" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
+  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
 <i v-if="d.selected" class="pi pi-check ms-3"></i>    
 </Button>
 </div>
 </div>     
 <div class="col-12">
+<hr class="drop-shadow-md">
 
-
-        <div v-if="!keyword">Please enter few keyword to search data from database x</div>
+        <div class="flex justify-center mt-4" v-if="!keyword">
+            "
+            <i class="pi pi-search text-yellow-200 text-2xl mx-2" />
+            "
+            <span class="text-md ms-4">
+            Please enter few keyword to search data from database 
+            </span>
+        </div>
         <template v-else>
             <div v-if="loading">Loading...</div>
             <div v-else>
                <div class="flex">
+                
                 <div class="col-2 bg-card-info p-0">
                 <Listbox filtericon="HI" v-model="selectedDoctype" :options="resultDoctypes" class="w-full bg-transparent p-2">
                     <template  #option="slotProps">
@@ -40,14 +48,13 @@
                 </Listbox>
                 </div>
                         <div class="col-10 p-0">
-                <hr />
-                <DataView :value="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
+                <DataView :first="first" :value="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
                     <template #list="slotProps">
                         <div class="col-12">
-                            <div class="flex flex-column xl:flex-row xl:align-items-start p-4 gap-4">
+                            <div class="">
                                 <div v-html="getTemplate(slotProps.data)"></div>
-                                <Button v-if="slotProps.data.action_name" @click="onViewDetail(slotProps.data)">View
-                                    Detail</Button>
+                                <!-- <Button v-if="slotProps.data.action_name" @click="onViewDetail(slotProps.data)">View
+                                    Detail</Button> -->
                             </div>
                         </div>
 
@@ -61,7 +68,6 @@
     </div>
 
     </div> 
-    {{ ShowFilterSearch }}
     </ComDialogContent>
 </template>
 <script setup>
@@ -81,6 +87,7 @@ const keyword = ref("")
 const search_table = ref(window.setting.search_table)
 const resultDoctypes = ref()
 const selectedDoctype = ref("")
+const first = ref(0)
 
 function debouncer(fn, delay) {
 
@@ -95,7 +102,9 @@ function debouncer(fn, delay) {
     };
 }
 const onSearch = debouncer(() => {
+    first.value = 0
     loadData();
+
 }, 500);
 
 

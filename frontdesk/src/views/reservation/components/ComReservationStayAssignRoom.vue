@@ -170,8 +170,8 @@
             return
         }
         loading.value = true
-        selectedStay.value.reservation_stay = dialogRef.value.options.data.reservation_stay_name ? dialogRef.value.options.data.reservation_stay_name : rs.reservationStay.name, 
-        postApi("reservation.assign_room",{data: selectedStay.value})
+ 
+         postApi("reservation.assign_room",{data: selectedStay.value})
         .then((r)=>{
             loading.value = false
             window.socket.emit("ComIframeModal", window.property_name)
@@ -206,6 +206,8 @@
     }
 
     onMounted(() => {
+        console.log(dialogRef.value.options.data)
+ 
         getApi("frontdesk.get_working_day", {
             property: property.name
         }).then((result) => {
@@ -213,40 +215,47 @@
             if(dialogRef.value.options.data.reservation_stay_name){
                 getDoc("Reservation Stay", dialogRef.value.options.data.reservation_stay_name).then((r)=>{
                     if(r){
+                      
                         const selected = r.stays.find((r)=> r.name == dialogRef.value.options.data.stay_room)
+        
                         selectedStay.value.room_type_id = selected.room_type_id
                         selectedStay.value.old_room_type_id = selected.room_type_id
                         selectedStay.value.room_type = selected.room_type
                         selectedStay.value.room_id = selected.room_id
-                        selectedStay.value.start_date = selected.start_date
-                        selectedStay.value.end_date = selected.end_date
+                        selectedStay.value.start_date = selected.arrival_date
+                        selectedStay.value.end_date = selected.departure_date
                         selectedStay.value.room_nights = selected.room_nights
-                        selectedStay.value.rate = selected.rate
-                        selectedStay.value.old_rate = selected.rate
+                        selectedStay.value.rate = selected.input_rate
+                        selectedStay.value.old_rate = selected.input_rate
                         selectedStay.value.rate_type = r.rate_type
                         selectedStay.value.business_source= r.business_source
                         selectedStay.value.stay_room = selected.name
                         selectedStay.value.is_manual_rate = selected.is_manual_rate
+                        selectedStay.value.reservation_stay = selected.parent
                          
                         getRoomType()
                         getRoom() 
                     }
                 })
             }else{ 
+                
                 const selected = dialogRef.value.options.data.stay_room
+       
                 selectedStay.value.room_type_id = selected.room_type_id
                 selectedStay.value.old_room_type_id = selected.room_type_id
                 selectedStay.value.room_type = selected.room_type
                 selectedStay.value.room_id = selected.room_id
-                selectedStay.value.start_date = selected.start_date
-                selectedStay.value.end_date = selected.end_date
+                selectedStay.value.start_date = selected.arrival_date
+                selectedStay.value.end_date = selected.departure_date
                 selectedStay.value.room_nights = selected.room_nights
-                selectedStay.value.rate = selected.rate
-                selectedStay.value.old_rate = selected.rate
+ 
+                selectedStay.value.rate = selected.input_rate
+                selectedStay.value.old_rate = selected.input_rate
                 selectedStay.value.rate_type = selected.rate_type
                 selectedStay.value.business_source = selected.business_source
                 selectedStay.value.stay_room = selected.name
                 selectedStay.value.is_manual_rate = selected.is_manual_rate
+                selectedStay.value.reservation_stay = selected.parent
                 getRoomType()
                 getRoom() 
             }

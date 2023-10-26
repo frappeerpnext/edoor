@@ -15,21 +15,21 @@
                 <ComStayInfoNoBox  label="Housekeeper" :value="hk.selectedRow?.housekeeper" /> 
             </table>
         </div>
-        <div class="grid mt-2">
-            <div class="col-6"> 
-                <SplitButton class="w-full" :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  
-                    :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :class="{ 'active-button': true }">
-                </SplitButton>
-            </div> 
-            <div class="col-6">
-                <Button class="w-full" label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
-                <OverlayPanel ref="opHousekeeper">
-                    <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
-                        <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
-                    </ComOverlayPanelContent>
-                </OverlayPanel>        
-            </div>  
-        </div>
+            <div class="grid mt-2">
+                <div class="col-6"> 
+                    <SplitButton :disabled="hk.selectedRow.housekeeping_status == 'Room Block'" class="w-full" :buttonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :label="hk.selectedRow?.housekeeping_status"  :model="items" :color="hk.selectedRow?.status_color"  
+                        :menuButtonProps="{style: {backgroundColor:hk.selectedRow?.status_color}}" :class="{ 'active-button': true }">
+                    </SplitButton>
+                </div> 
+                <div class="col-6">
+                    <Button class="w-full" label="Assign Housekeeper" severity="warning" @click="onAssignHousekeeper($event)" ></Button>
+                    <OverlayPanel ref="opHousekeeper">
+                        <ComOverlayPanelContent :loading="loading"  @onCancel="onAssignHousekeeper($event,{})" @onSave="onSaveAssignHousekeeper">
+                            <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper"  />
+                        </ComOverlayPanelContent>
+                    </OverlayPanel>        
+                </div>  
+            </div>
         <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
             <table>

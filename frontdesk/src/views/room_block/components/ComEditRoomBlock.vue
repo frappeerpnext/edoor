@@ -1,10 +1,11 @@
 <template lang="">
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
+    
         <div class="grid">
             <div class="col-6">
                 <label>Block Date</label>
                 <div>
-                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.block_date" :manualInput="false" :disabled="data.name" dateFormat="dd-mm-yy"/>
+                    <Calendar selectOtherMonths class="w-full" showIcon v-model="data.block_date" :manualInput="false" :disabled="true" :min-date="working_day" dateFormat="dd-mm-yy"/>
                 </div>
             </div> 
             <div class="col-6">
@@ -19,7 +20,7 @@
                     <div class="col">
                         <label>Start Date</label>
                         <div>
-                            <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" dateFormat="dd-mm-yy"/>
+                            <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" :min-date="working_day" dateFormat="dd-mm-yy"/>
                         </div>
                     </div>
                     <div class="night__wfit col-fixed px-0" style="width: 150px;">
@@ -55,6 +56,7 @@ const moment = inject('$moment');
 const data = ref({})
 const loading = ref(false)
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const working_day = moment(window.current_working_date).toDate()
  
  
 function onSave (){
@@ -107,8 +109,11 @@ onMounted(()=>{
         data.value.total_night = moment(data.value.end_date).diff(moment(data.value.start_date), 'days')
       
     }else {
-        data.value.block_date = moment().toDate()
-        data.value.start_date = moment().toDate()
+        data.value.block_date = moment(window.current_working_date).toDate()
+
+
+        data.value.start_date = moment(window.current_working_date).toDate()
+
         data.value.end_date = moment(data.value.start_date).add(1, 'days').toDate()
         data.value.property = property.name
     }

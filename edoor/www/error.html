@@ -1,0 +1,23 @@
+{%if frappe.session.user == 'Administrator'%}
+<div class="page-card">
+	<div class="page-card-head">
+		<span class="indicator red">{{ error_title }}</span>
+	</div>
+	<p>{{ error_message }}</p>
+	<div>
+		<a href="/" class="btn btn-primary btn-sm">{{ _("Home") }}</a>
+	</div>
+</div>
+<p class="text-muted text-center small" style="margin-top: -20px;">
+	{{ _("Error Code: {0}").format(http_status_code) }}
+</p>
+<div class="text-center mt-3">
+	<button class="btn btn-xs btn-link text-muted small view-error" >{{ _("Show Traceback") if not dev_server else _("Hide Traceback") }}</a>
+</div>
+
+<div class="error-content {{ 'hidden' if not dev_server else '' }}">
+	<pre><code>{{ error }}</code></pre>
+</div>
+{%else%}
+Helo
+{%endif%}

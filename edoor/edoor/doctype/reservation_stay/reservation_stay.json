@@ -209,7 +209,6 @@
   {
    "fieldname": "child",
    "fieldtype": "Int",
-   "in_list_view": 1,
    "label": "Child"
   },
   {
@@ -819,7 +818,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-10-02 15:26:37.492549",
+ "modified": "2023-10-25 09:21:19.589463",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

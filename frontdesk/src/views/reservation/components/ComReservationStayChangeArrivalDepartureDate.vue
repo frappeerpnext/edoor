@@ -81,6 +81,10 @@ function onSave(){
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.socket.emit("Frontdesk", window.property_name)
             window.socket.emit("Reports", window.property_name)
+            setTimeout(function(){
+                window.socket.emit("ComIframeModal", window.property_name)
+            }, 3000)
+  
             onClose()
         }    
     }).catch((err)=>{

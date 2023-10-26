@@ -70,16 +70,16 @@
                                         <ComReservationRoomStayList />
                                     </div>
                                     <div class="col-12">
-                                        <ComReservationNote
+                                        <!-- <ComReservationNote
                                             v-if="!rs.loading && rs.reservationStay && rs.reservationStay.name"
-                                            doctype="Reservation Stay" />
+                                            doctype="Reservation Stay" /> -->
+                                        <ComReservationStayNote/>
                                     </div>
                                     <div class="col-12">
                                         <hr>
                                     </div>
                                     <div class="col-12">
-                                        <ComCommentAndNotice v-if="!rs.loading && rs.reservationStay.name"
-                                            doctype="Reservation Stay" :docname="rs.reservationStay.name" />
+                                        <ComCommentAndNotice v-if="name" doctype="Reservation Stay" :docname="name" />
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@ import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
 import ComArrivalAndDeparture from './components/ComArrivalAndDeparture.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
-import ComReservationNote from './components/ComReservationNote.vue';
+import ComReservationStayNote from './components/ComReservationStayNote.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComReservationStayFolio from '@/views/reservation/components/ComReservationStayFolio.vue';
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
@@ -319,9 +319,7 @@ onMounted(() => {
 
     window.socket.on("ReservationStayDetail", (arg) => {
         if (arg.reservation_stay == rs.reservationStay.name) {
-            setTimeout(function () {
-                onRefresh(false)
-            }, 3000)
+            onRefresh(false)
         }
     })
 });

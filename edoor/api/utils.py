@@ -377,9 +377,12 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             del d["debit"]
         
         for stay in doc.stays:
+            #get rate from first stay of each room_type 
+
             sql = """
                 select 
                     min(rate) as rate,
+                    min(input_rate) as input_rate,
                     avg(total_rate) as adr,
                     sum(discount_amount) as discount_amount,
                     sum(tax_1_amount) as tax_1_amount,
@@ -397,7 +400,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             
             if data:
                 d = data[0]
-                stay.rate =  d["rate"]
+                stay.rate =  d["rate"] or 0
+                stay.input_rate =  d["input_rate"] or 0
                 stay.total_rate =  d["total_amount"] or  0
                 stay.adr =  d["adr"]
                 stay.discount_amount =d["discount_amount"] or 0
@@ -637,7 +641,8 @@ def get_rate_type_info(name):
     
     return {
         "name": name,
-        "tax_rule":tax_rule
+        "tax_rule":tax_rule,
+        "allow_discount": account_doc.allow_discount
     }
 
 @frappe.whitelist("POST")

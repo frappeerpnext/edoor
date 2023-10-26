@@ -119,6 +119,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                         select reservation_stay from `tabReservation Room Rate`
                         where
                             date = '{1}' and 
+                             property = '{0}' and 
                             room_type_id = if('{2}'='',room_type_id,'{2}')
                     )  and
                     property = '{0}';""".format(property,date, room_type_id or '')
@@ -131,8 +132,22 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                     SUM(if(reservation_status in ('In-house','Reserved','Confirmed'),1,0)) AS `departure_remaining`,
                     sum(if(is_active_reservation = 1, 1, 0)) AS `total_departure`,
                     SUM(if(require_drop_off = 1  AND  is_active_reservation = 1, 1, 0)) AS `drop_off`
-                FROM `tabReservation Stay` WHERE departure_date = '{0}' and  property = '{1}';""".format(date,property)
+                FROM `tabReservation Stay` 
+                WHERE 
+                     name in (
+                        select reservation_stay from `tabRoom Occupy`
+                        where
+                            date = '{1}' and 
+                            room_type_id = if('{2}'='',room_type_id,'{2}') and 
+                            property='{0}' and 
+                            is_departure = 1 and 
+                            is_active_reservation= 1
+
+                    ) and 
+                    
+                    property = '{0}';""".format(property,date, room_type_id or '')
     
+ 
     stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
 
 
@@ -146,7 +161,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                     is_arrival = 0 and
                     date = '{0}'  AND  
                     property = '{1}' and 
-                    room_type_id = if('{2}'='',room_type_id,'{2}')
+                    room_type_id = if('{2}'='',room_type_id,'{2}') and 
+                    reservation_status in ('In-house', 'Confirmed','Reserved')
                 ;""".format(date,property,room_type_id or "")
     
  
@@ -451,7 +467,7 @@ def get_edoor_setting(property = None):
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
      
     epos_setting = frappe.get_doc('ePOS Settings')
-    custom_print_format = frappe.db.sql("select name, print_format from `tabCustom Print Format` where ifnull(property,'')='' or property='{}'".format(property),as_dict=1)
+    custom_print_format = frappe.db.sql("select   print_format as name, custom_print_format as print_format from `tabCustom Print Format` where ifnull(property,'')='' or property='{}'".format(property),as_dict=1)
     
 
 
@@ -1334,6 +1350,7 @@ def post_room_change_to_folio(working_day):
 def check_room_config_and_over_booking(property):
     working_day = get_working_day(property)
     sql="select count(name) from `tabTemp Room Occupy` where type='Reservation' and is_departure=0  and ifnull(room_id,'') <> '' and date>='{}'   group by room_id,date   having count(name)>1".format(working_day["date_working_day"])
-
-    return frappe.db.sql(sql)[0][0]
-
+    data = frappe.db.sql(sql)
+    if data:
+        return data[0][0]
+    return 0

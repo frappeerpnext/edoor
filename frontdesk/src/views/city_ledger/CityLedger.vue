@@ -82,6 +82,7 @@
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
+                          
                             <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
                                 @click="onOpenLink(c, slotProps.data)" link>
                                 {{ slotProps.data[c.fieldname] }}
@@ -185,7 +186,7 @@ const columns = ref()
 const summary = ref()
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
-const filter = ref({ start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "" })
+const filter = ref({ start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword:"" })
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const order = ref({ order_by: "modified", order_type: "desc" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))

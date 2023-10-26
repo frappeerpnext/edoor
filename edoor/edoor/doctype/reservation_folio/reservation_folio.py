@@ -8,7 +8,9 @@ from frappe.model.document import Document
 class ReservationFolio(Document):
 	def validate(self):
 		#check reservation status if allow to edit
-		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+		
+		doc_status = frappe.get_doc("Reservation Status", self.reservation_status)
+		if doc_status.allow_user_to_edit_information==0 or  doc_status.is_active_reservation==0:
 			frappe.throw("{} reservation is not allow to add or update information".format(self.reservation_status) )
 		
 

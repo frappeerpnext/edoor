@@ -67,7 +67,7 @@ function loadReservationStayFolioList(selected_name=""){
         loading.value = true
 
         getDocList('Reservation Folio', {
-            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay"],
+            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source"],
             filters: [['reservation_stay', '=', rs.reservationStay.name]],
             limit: 1000
         })

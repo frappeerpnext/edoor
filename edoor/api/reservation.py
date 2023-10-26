@@ -507,14 +507,22 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
         stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
 
     #check if master room is already check in
-    if not is_master_room_check_in(doc.name,reservation_stays):
-        frappe.throw("Please check in master room first")
+    if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})>0:
+        if not is_master_room_check_in(doc.name,reservation_stays):
+            frappe.throw("Please check in master room first")
+
+        
+
 
 
     housekeeping_status =  frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_in")
  
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
+        if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})==0:
+            if s == stays[0]:
+                stay.is_master = 1
+
         #check if stay is not assign room then alert to user to asign room first
         if Enumerable(stay.stays).where(lambda x: (x.room_id or "") =="").count()>=1:
             frappe.throw("Please asign room to reservation stay #{}.".format(s))
@@ -601,6 +609,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False):
                     folio = create_folio(stay)
                 else:
                     folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
+                    folio.status="Open"
+                    folio.save()
                     
                 if folio:
                     #get first rate from reservation room rate
@@ -1004,8 +1014,14 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
         tax_rule = rate_type_info["tax_rule"]
     
      
+    #if have rate type check if rate is allow to discount or note
+    allow_discount = 0
+    if rate_type:
+        account_code = frappe.db.get_value("Rate Type",rate_type,"account_code")
+        if account_code:
+            allow_discount = frappe.db.get_value("Account Code",account_code, "allow_discount")
 
-    return {"rate":rate,"tax_rule":tax_rule}
+    return {"rate":rate,"tax_rule":tax_rule,"allow_discount":allow_discount}
 
 
 #@frappe.whitelist(methods="POST")
@@ -1080,6 +1096,8 @@ def get_reservation_comment_note(doctype, docname):
 
 @frappe.whitelist(methods="POST")
 def change_stay(data):
+    allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
+
     room_id = ""
     
     if 'room_id' in data and data["room_id"]:
@@ -1148,7 +1166,7 @@ def change_stay(data):
 
     #check if user move from departure date and move behind current working date 
     if getdate(data["end_date"])< getdate(working_day["date_working_day"]):
-        if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1:
+        if allow_back_date==1:
                 validate_role("role_for_back_date_transaction","You don't have permission to add back date reservation")
         else:
             frappe.throw(_("Depature date must be greater then or equal to current working date"))
@@ -1184,7 +1202,16 @@ def change_stay(data):
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
     stays = Enumerable(doc.stays).order_by(lambda x:datetime.strptime(str(x.start_date), '%Y-%m-%d').date()).to_list()
     
+    #validate if user change room after checkin and runnight audit
+    if data["name"] == stays[0].name:
+        if allow_back_date==0 and room_id:
+            if (doc.reservation_status=='In-house' and room_id != stays[0].room_id) or (doc.reservation_status=='In-house' and getdate(stays[0].start_date)!=getdate(data["start_date"])):
+                frappe.throw("In-house reservation is not allow to change date or room number")
+
+
     for s in stays:
+        
+            
         if s.name == data['name']:
             s.room_type_id=data["room_type_id"]
           
@@ -1200,6 +1227,8 @@ def change_stay(data):
             stays[index].start_date = s.end_date
             if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
                 frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
+
+        
     doc.save()
     frappe.db.commit()
     if doc: 
@@ -1633,6 +1662,7 @@ def get_folio_transaction(transaction_type, transaction_number):
             balance = balance + d.bank_fee_amount
           
             folio_transactions.append({ 
+                "reservation":d["reservation"],
                 "name":d["name"],
                 "room_number":d.room_number,
                 "account_name": "{}-{}".format(d.bank_fee_account, d.bank_fee_description)  if show_account_code else d.bank_fee_description,
@@ -1663,6 +1693,7 @@ def get_folio_transaction(transaction_type, transaction_number):
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
 
         folio_transactions.append({ 
+            "reservation":d["reservation"],
             "name":d["name"],
             "room_number":d.room_number,
             "account_name": "{}-{}".format(d.account_code, d.account_name)  if show_account_code else d.account_name,
@@ -1815,18 +1846,11 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
     #update to reservation stay
     #using enqure process 
     #loop from stays list to update room charge summary to reservation stay
-    if reservation_stays:
-        for s in reservation_stays:
-            update_reservation_stay(name=s, run_commit=False)
-    else:
-        update_reservation_stay(name=data["reservation_stay"], run_commit=False)
-
-    update_reservation(name=data["reservation"], run_commit=False)
-    #frappe.enqueue("edoor.api.utils.update_reservation_stay", queue='short', name=data["reservation_stay"], doc=None, run_commit=False)
-
+  
+    
     frappe.db.commit()
-    #update to reservation
-    # #using enqure process  
+    frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"], reservation_stay=reservation_stays)
+    
     return frappe.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":data["reservation_stay"]},limit_page_length=1000,order_by="date")
     
 @frappe.whitelist(methods="POST")
@@ -1994,6 +2018,7 @@ def unassign_room(reservation_stay, room_stay):
         doc.reservation_status ="Confirmed"
 
     doc.save()
+
     
     if doc:
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
@@ -2013,9 +2038,11 @@ def assign_room(data):
             frappe.throw(_("Please select a room to assign."))
     else:
         frappe.throw(_("Please select a room to assign."))
-
+ 
     for s in doc.stays:
+          
         if s.name == data['stay_room']:
+
             s.room_id = data['room_id'] or None
             s.room_type_id = data['room_type_id']
 
@@ -2581,3 +2608,39 @@ def folio_transfer(data):
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_folio=data["new_folio_number"] , reservation = new_folio_doc.reservation, reservation_stay=new_folio_doc.reservation_stay)    
 
     frappe.msgprint("Folio transfer successfully")
+
+
+
+@frappe.whitelist()
+def get_guest_by_reservation(reservation):
+    guests =[frappe.db.get_value("Reservation",reservation, "guest")]
+    sql = "select guest,name from `tabReservation Stay` where reservation='{}'".format(reservation)
+    data = frappe.db.sql(sql,as_dict=1)   
+    
+ 
+ 
+    guests = guests + [d["guest"] for d in data]
+ 
+
+    sql = "select distinct guest from `tabAdditional Stay Guest` where parent in %(reservatyion_stays)s"
+
+    data = frappe.db.sql(sql,{"reservatyion_stays":  [d["name"] for d in data]},as_dict=1) 
+
+    guests = guests + [d["guest"] for d in data]
+
+
+    return  set(guests)
+
+
+@frappe.whitelist()
+def check_reservation_exist_in_future(property, fieldname,value):
+    working_day = get_working_day(property)
+
+    is_exist = frappe.db.exists("Reservation Stay", {fieldname: value, "is_active_reservation":1,"property":property,"arrival_date":[">=",working_day["date_working_day"]]} ) 
+    if is_exist:
+        return is_exist
+    
+    is_exist = frappe.db.exists("Reservation", {fieldname: value,"property":property,"arrival_date":[">=",working_day["date_working_day"]]} )
+    return is_exist
+
+    

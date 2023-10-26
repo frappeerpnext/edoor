@@ -1,6 +1,7 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-
+        <Message v-if="hasFutureResertion" >This reference number <strrong>{{ doc.reservation.reference_number }}</strrong> already have in system <br/>
+        <Button @click="onViewFutureReservation">View Reservation</Button></Message>
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -19,7 +20,7 @@
                             <div class="col-6">
                                 <label>Reference No</label><br />
                                 <InputText type="text" class="p-inputtext-sm w-full" placeholder="Reference Number"
-                                    v-model="doc.reservation.reference_number" :maxlength="50" />
+                                    v-model="doc.reservation.reference_number" :maxlength="50" v-debounce="onChangeReference"/>
                             </div>
                             <div class="col-6">
                                 <label>Internal Ref. No</label><br />
@@ -212,12 +213,13 @@
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <div class="flex gap-2 align-items-center relative my-3" style="width: 12.7rem;">
-                        <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <label for="rate_tax" class="font-medium cursor-pointer">Rate Include Tax</label>
                         <span class="absolute right-0 w-full">
                             <Checkbox input-id="rate_tax" class="w-full flex justify-end"
                                 v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
                         </span>
                     </div>
+   
                     <div class="">
                         <div class="flex gap-3 flex-wrap">
                             <div class="flex gap-3 relative">
@@ -226,6 +228,8 @@
                                     {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
+                                        {{ useTax.use_tax_1 }} 
+                                      
                                         <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1"
                                             @input="onUseTax1Change" :binary="true" />
                                     </span>
@@ -438,6 +442,8 @@ const op = ref();
 const group_color = ref("#" + generateRandomColor())
 const room_tax = ref()
 const minDate = ref()
+const can_view_rate = window.can_view_rate
+const hasFutureResertion = ref(false)
 const onOpenChangeRate = (event, stay) => {
 
     selectedStay.value = stay
@@ -480,14 +486,11 @@ const doc = ref({
 
 const gender_list = ["Not Set", "Male", "Female"]
 
-const useTax = computed(() => {
-    return {
-        use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
+const useTax = ref( {use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
         use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
-        use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0
-    }
+        use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0})
 
-})
+   
 
 const roomRateTax = ref((d) => {
 
@@ -507,6 +510,16 @@ const rateTax = ref((d) => {
         return 0
     }
 })
+
+function onChangeReference(v){
+    if(v){ 
+        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"reference_number",value:v}).then(r=>{
+            hasFutureResertion.value = r.message
+        })
+    }else {
+        hasFutureResertion.value = false
+    }
+}
 
 function getTax1Amount(rate) {
 
@@ -540,9 +553,7 @@ function getTax2Amount(rate) {
         if (room_tax.value.calculate_tax_2_after_adding_tax_1 == 0 || (rate * (doc.value.tax_rule.tax_1_rate / 100)) == 0) {
             rate = rate
         } else { rate = rate + (rate * (doc.value.tax_rule.tax_1_rate / 100)) }
-        console.log("tax 2 rate amount ", rate)
-        console.log("tax 2 rate ", doc.value.tax_rule.tax_2_rate)
-        console.log((rate || 0) * (doc.value.tax_rule.tax_2_rate / 100 || 0))
+       
         return (rate || 0) * (doc.value.tax_rule.tax_2_rate / 100 || 0)
     } else {
         return 0
@@ -572,7 +583,7 @@ function getTax3Amount(rate) {
 const totalTax1Amount = computed(() => {
     let amount = 0
     room_types.value.filter(x => x.total_selected_room > 0).forEach(r => {
-        console.log(r.new_rate, "===", r.total_selected_room)
+ 
         amount = amount + (getTax1Amount(r.new_rate * r.total_selected_room))
     });
     return amount * doc.value.reservation.room_night
@@ -627,7 +638,6 @@ const getRoomType = () => {
         business_source: doc.value.reservation.business_source
     })
         .then((result) => {
-            console.log(result)
             result.message.forEach((r) => {
                
                 let rt = room_types.value?.find((t) => t.name == r.name)
@@ -683,7 +693,9 @@ const onRoomNightChanged = (event) => {
 }
 
 const onUseTax1Change = (value) => {
+      
     doc.value.tax_rule.tax_1_rate = value ? room_tax.value.tax_1_rate : 0
+ 
 }
 const onUseTax2Change = (value) => {
     doc.value.tax_rule.tax_2_rate = value ? room_tax.value.tax_2_rate : 0
@@ -840,6 +852,11 @@ const onRateTypeChange = (rate_type) => {
                 tax_3_rate: tax_rule?.tax_3_rate || 0,
             }
             room_tax.value = tax_rule
+
+            useTax.value= {use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
+                        use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
+                        use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0}
+                        
             doc.value.reservation.rate_type = rate_type.value
 
         })

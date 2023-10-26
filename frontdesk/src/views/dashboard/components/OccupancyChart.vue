@@ -12,9 +12,6 @@
                                      />
     <Dropdown v-if="show_occupancy_only" @change="onViewChartTypeChange" v-model="view_chart_type" :options="['line','bar','pie','doughnut']"   class="w-full md:w-14rem"  />
    -->
-
- 
- 
     <div class="card">
         <div id="occupancy_chart"></div>
     </div>

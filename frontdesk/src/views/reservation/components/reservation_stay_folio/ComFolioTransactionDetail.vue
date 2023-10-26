@@ -15,8 +15,14 @@
                 :value="doc?.credit_card_number" />
               <ComStayInfoNoBox label="Account Code" v-if="doc?.account_code" :value="doc?.account_code" />
               <ComStayInfoNoBox label="Account Name" v-if="doc?.account_name" :value="doc?.account_name" />
-              <ComStayInfoNoBox label="City Ledger Account"
-                v-if="doc.require_city_ledger_account == 1 && doc?.account_code" :value="doc?.city_ledger_name" />
+              <ComStayInfoNoBox label="City Ledger Account" isSlot :fill="false" v-if="doc.require_city_ledger_account == 1 && doc?.account_code">
+
+                <Button class="p-0 link_line_action1"
+                  @click="onCityLedgerDetail()" link>
+                  <span v-if="doc?.city_ledger_name">{{ doc?.city_ledger_name }}</span>
+                  <span v-else>xx</span>
+                </Button>
+              </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Post Amount" v-if="doc?.input_amount" :value="doc?.input_amount" isCurrency />
               <ComStayInfoNoBox label="Amount/Rate" v-if="doc?.amount" :value="doc?.amount" isCurrency />
               <ComStayInfoNoBox label="Qty"
@@ -125,8 +131,7 @@
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
-              <ComStayInfoNoBox label="Ref. No" isSlot :fill="false"
-               >
+              <ComStayInfoNoBox label="Ref. No" isSlot :fill="false">
                 <Button  class="p-0 link_line_action1"
                   @click="changeRef($event)" link>
                   <span v-if="doc?.reference_number">{{ doc?.reference_number }}</span>
@@ -377,6 +382,11 @@ function onPrintFolioTransaction() {
     },
   })
 }
+
+function onCityLedgerDetail(){
+  window.postMessage("view_city_ledger_detail|" + doc.value.city_ledger)
+}
+
 
 onUnmounted(() => {
   window.socket.off("FolioTransactionDetail")

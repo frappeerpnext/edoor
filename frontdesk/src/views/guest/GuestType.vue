@@ -16,7 +16,7 @@
                 </div>
             </div>
         </div>
-        <div class="rounded-xl">
+        <div class="rounded-xl"> 
             <ComPlaceholder text="No Data" :loading="gv.loading"
                 :is-not-empty="(data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))).length > 0">
                 <DataTable 
@@ -45,7 +45,7 @@ import ComAddGuestType from "@/views/guest/components/ComAddGuestType.vue"
 const gv = inject("$gv")
 const dialog = useDialog()
 const data = ref([])
-const filter = ref({})
+const filter = ref({}) 
 const loading = ref(false)
 const confirm = useConfirm()
 function onDelete(name) {

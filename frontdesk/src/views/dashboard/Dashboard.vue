@@ -42,6 +42,7 @@
                             <div class="grid mt-3 text-center">
                                 <ComShowCancelOcc @onClick="onViewCancelReservation" title="Cancelled" :value="data.total_cancelled"></ComShowCancelOcc>
                                 <ComShowCancelOcc  @onClick="onViewNoShowReservation" title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
+                                <ComShowCancelOcc  @onClick="onViewVoidReservation" title="Void" :value="data.total_void"></ComShowCancelOcc>
                             </div>
                         </div>
                     </div>
@@ -216,7 +217,8 @@ function onRefresh(loading = true){
 function onViewRoomOccupy(){
     onViewData(
         'Business%20Branch',
-        "eDoor%20Room%20Occupy%20List",
+        // "eDoor%20Room%20Occupy%20List",
+        gv.getCustomPrintFormat("eDoor Room Occupy List"),
         'Room Occupy',
         [{key:'date', value:selected_date}],
         ['keyword','business_source','room_type','reservation_status']
@@ -226,7 +228,8 @@ function onViewRoomOccupy(){
 function onViewVacantRoom(){
     onViewData(
         'Business%20Branch',
-        "eDoor%20Vacant%20Room",
+        // "eDoor%20Vacant%20Room",
+        gv.getCustomPrintFormat("eDoor Vacant Room"),
         'Vacant Room',
         [{key:'date', value:selected_date}],
         ['keyword','building','floor','room_type','housekeeping_status']
@@ -236,7 +239,8 @@ function onViewVacantRoom(){
 function onViewRoomList(){
     onViewData(
         'Business%20Branch',
-        "eDoor%20Room%20List",
+        // "eDoor%20Room%20List",
+        gv.getCustomPrintFormat("eDoor Room List"),
         'Room List',
         [],
         ['keyword','building','floor','room_type_group','room_type','housekeeping_status']
@@ -249,7 +253,7 @@ function onViewCancelReservation(){
         data: {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
-            report_name: "eDoor%20Cancel%20Reservation%20List",
+            report_name: gv.getCustomPrintFormat("eDoor Cancel Reservation List"),
             view:"ui",
             extra_params:[{key:"date", value:selected_date.value}]
         },
@@ -272,12 +276,34 @@ function onViewNoShowReservation(){
         data: {
             "doctype": "Business%20Branch",
             name: JSON.parse(localStorage.getItem("edoor_property")).name,
-            report_name: "eDoor%20No%20Show%20Reservation%20List",
+            report_name: gv.getCustomPrintFormat("eDoor No Show Reservation List"),
             view:"ui",
             extra_params:[{key:"date", value:selected_date.value}]
         },
         props: {
             header:"No Show Reservation List",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+    });
+}
+
+function onViewVoidReservation(){
+    const dialogRef = dialog.open(ComIFrameModal, {
+        data: {
+            "doctype": "Business%20Branch",
+            name: JSON.parse(localStorage.getItem("edoor_property")).name,
+            report_name: gv.getCustomPrintFormat("eDoor Void Reservation List"),
+            view:"ui",
+            extra_params:[{key:"date", value:selected_date.value}]
+        },
+        props: {
+            header:"Void Reservation List",
             style: {
                 width: '80vw',
             },
@@ -419,7 +445,8 @@ const viewSummary = (name) => {
     if(name == "Arrival"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Arrival%20Guest",
+            // "eDoor%20Dashboard%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest"),
             'Arrival Guest',
             [{key:'action', value:"view_arrival"},{key:"date", value:selected_date.value}],
             ['keyword','building','floor','room_type','reservation_status']
@@ -427,7 +454,8 @@ const viewSummary = (name) => {
     }else if(name=="Check-In Remaining") {
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Arrival%20Guest",
+            // "eDoor%20Dashboard%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest"),
             'Check-in Remaining',
             [{key:'action', value:"view_arrival_remaining"},{key:"date", value:selected_date.value}],
             ['keyword','building','floor','room_type']
@@ -436,7 +464,8 @@ const viewSummary = (name) => {
     else if(name == "Departure"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Departure%20Guest",
+            // "eDoor%20Dashboard%20Departure%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Departure Guest"),
             'Departure',
             [{key:'action', value:"view_departure"},{key:"date", value:selected_date.value}],
             ['keyword','building','floor','room_type','reservation_status','business_source']
@@ -445,7 +474,8 @@ const viewSummary = (name) => {
     else if(name == "Check-out remaining"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Departure%20Guest",
+            // "eDoor%20Dashboard%20Departure%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Departure Guest"),
             'Check-out Remaining',
             [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
             ['keyword','building','floor','room_type','reservation_status','business_source']
@@ -455,7 +485,8 @@ const viewSummary = (name) => {
 
             onViewData(
             'Business%20Branch',
-            "eDoor%20Unassign%20Room%20Reservation%20List",
+           // "eDoor%20Unassign%20Room%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Unassign Room Reservation List"),
             'Unassign Room Reservation List',
             [{key:"date", value:selected_date.value}],
             ['keyword','room_type','reservation_status','business_source']
@@ -464,7 +495,8 @@ const viewSummary = (name) => {
     else if(name == "Pickup and Drop Off"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+            // "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Pickup and Drop Off Reservation List"),
             'Pickup & Drop Off',
             [{key:'action', value:"view_departure_remaining"},{key:"date", value:selected_date.value}],
             ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
@@ -474,7 +506,8 @@ const viewSummary = (name) => {
     else if(name == "GIT Arrival"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20GIT%20Arrival%20Guest",
+            // "eDoor%20GIT%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor GIT Arrival Guest"),
             'GIT Arrival',
             [{key:"date", value:selected_date.value}],
             ['keyword','room_type','reservation_status','business_source']
@@ -483,7 +516,8 @@ const viewSummary = (name) => {
     else if(name == "Stay Over"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            // "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Stay Over Guest"),
             'Stay Over',
             [{key:"date", value:selected_date.value}],
             ['keyword','room_type','reservation_status','business_source']

@@ -117,7 +117,7 @@ const dialog = useDialog();
 const show = ref()
  
 function onRowSelection(r){
-    console.log(r)
+
    selectedfolioTransactions.value.push(...folioTransactions.value.filter(x=>x.parent_reference==r.data.name))
 
 }

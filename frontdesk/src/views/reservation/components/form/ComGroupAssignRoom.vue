@@ -168,10 +168,11 @@ function onSave() {
     postApi("reservation.bulk_assign_room", {
         reservation:reservation.value.name,
         reservation_stays: data.value.filter(r=>r.room_id)
+        
     }).then((result) => {
+        loading.value = false
         window.socket.emit("Dashboard", window.property_name);
         window.socket.emit("Frontdesk", window.property_name);
-        
         window.socket.emit("ReservationDetail", window.reservation)
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})
@@ -179,7 +180,9 @@ function onSave() {
         window.socket.emit("Reports", window.property_name)
         dialogRef.value.close("open_reservation_detail")
         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
-        loading.value = false
+        data.value.map(r=>r.reservation_stay).forEach(r => {
+            window.socket.emit("ReservationStayDetail", {reservation_stay:r})
+        });
     }).catch((err) => {
         loading.value = false
     })

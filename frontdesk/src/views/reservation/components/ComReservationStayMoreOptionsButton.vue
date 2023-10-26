@@ -1,5 +1,6 @@
 <template>
     <div>
+ 
           <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
             aria-haspopup="true" aria-controls="folio_menu" />
         <Menu ref="folio_menu" id="folio_menu" :popup="true">
@@ -11,7 +12,7 @@
                     <span class="ml-2">Mark as Master Room </span>
                 </button>
                 <button @click="onUndoCheckIn()"
-                    v-if="rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == working_day?.date_working_day"
+                    v-if="canUndoCheckIn"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
                     <span class="ml-2">Undo Check-In</span>
@@ -106,7 +107,7 @@
    
 </template>
 <script setup>
-import { inject, ref, useConfirm, useToast, postApi,useDialog,computed } from "@/plugin";
+import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 
 
@@ -119,9 +120,7 @@ const emit = defineEmits(['onAuditTrail', "onRefresh"])
 const items = ref([])
 const folio_menu = ref();
 const rs = inject("$reservation_stay")
-const working_day = ref(JSON.parse(localStorage.getItem("edoor_working_day")))
-const frappe = inject('$frappe');
-const db = frappe.db();
+const working_day =  window.working_day
 const loading = ref(false)
 
 
@@ -134,9 +133,21 @@ const canUndoCheckOut = computed(()=>{
 if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
     return rs.reservationStay.reservation_status == 'Checked Out' 
 }else {
-    return rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date >= working_day.value?.date_working_day 
+    return rs.reservationStay.reservation_status == 'Checked Out' && rs.reservationStay?.departure_date >= window.current_working_date 
 }
+
     
+})
+
+const canUndoCheckIn = computed(() =>{
+  
+    if (parseInt(window.setting.allow_user_to_add_back_date_transaction)==1){
+        return rs.reservationStay.reservation_status == 'In-house' 
+    }
+    else {
+        
+        return rs.reservationStay.reservation_status == 'In-house' && rs.reservationStay?.arrival_date == window.current_working_date
+    }
 })
 
 items.value.push({
@@ -454,7 +465,7 @@ function onMarkasPaidbyMasterRoom() {
             acceptIcon: 'pi pi-check-circle',
             acceptLabel: 'Ok',
             accept: () => {
-                db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                updateDoc('Reservation Stay', rs.reservationStay.name, {
                     paid_by_master_room: 1,
                 })
                     .then((doc) => {
@@ -492,7 +503,7 @@ function onUnmarkasPaidbyMasterRoom() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+            updateDoc('Reservation Stay', rs.reservationStay.name, {
                 paid_by_master_room: 0,
             })
                 .then((doc) => {
@@ -531,7 +542,7 @@ function onDisallowPosttoCityLedger(){
             acceptIcon: 'pi pi-check-circle',
             acceptLabel: 'Ok',
             accept: () => {
-                db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+                updateDoc('Reservation Stay', rs.reservationStay.name, {
                     allow_post_to_city_ledger: 0,
                 })
                     .then((doc) => {
@@ -565,7 +576,7 @@ function onAllowPosttoCityLedger(){
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            db.updateDoc('Reservation Stay', rs.reservationStay.name, {
+            updateDoc('Reservation Stay', rs.reservationStay.name, {
                 allow_post_to_city_ledger: 1,
             })
                 .then((doc) => {
@@ -600,7 +611,7 @@ function onMarkasGITReservation() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            db.updateDoc('Reservation', rs.reservation?.name, {
+            updateDoc('Reservation', rs.reservation?.name, {
                 reservation_type: "GIT",
             })
                 .then((doc) => {
@@ -634,7 +645,7 @@ function onMarkasFITReservation() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            db.updateDoc('Reservation', rs.reservation?.name, {
+            updateDoc('Reservation', rs.reservation?.name, {
                 reservation_type: "FIT",
             })
                 .then((doc) => {

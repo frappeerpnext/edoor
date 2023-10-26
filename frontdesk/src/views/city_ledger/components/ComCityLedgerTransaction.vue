@@ -248,7 +248,8 @@ const viewCityLedgerReport = () => {
             doctype: "Reservation%20Stay",
             reservation_stay: doc.value.reservation_stay,
             folio_number: name.value,
-            report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+            report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
+            // "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
             view: "print"
         },
         props: {

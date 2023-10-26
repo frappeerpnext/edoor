@@ -66,7 +66,7 @@ if (localStorage.getItem("edoor_property") == null) {
 
 
 const actionClickHandler = async function (e) {
-    
+    console.log(e)
 
     if (e.isTrusted && typeof (e.data) == 'string') {
 
@@ -139,14 +139,11 @@ const actionClickHandler = async function (e) {
         
     }else if(e.data.action){
         if(e.data.action=="view_property_data_sumary_by_date"){ 
-            onViewDailySummary(e.data.date,null)
+            onViewDailySummary(e.data.date,e.data.room_type_id, e.data.room_type)
         }
     }
 };
-
-
 window.addEventListener('message', actionClickHandler, false);
-
 
 
 onUnmounted(() => {
@@ -423,13 +420,14 @@ function showRoomBlockDetail(name) {
 }
 
 function onViewDailySummary(date,room_type_id, title="") {
-
+ 
+ 
     const dialogRef = dialog.open(ComIFrameModal, {
 
        data: {
            "doctype":   'Business%20Branch',
            name: JSON.parse(localStorage.getItem("edoor_property")).name,
-           report_name: "Daily%20Property%20Data%20Summary",
+           report_name: gv.getCustomPrintFormat("Daily Property Data Summary"),
            view:"ui",
            extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:(room_type_id || '')}],
            fullheight: true

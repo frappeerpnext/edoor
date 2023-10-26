@@ -802,6 +802,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
     -moz-transition: all 0.3s;
     transition: all 0.3s;
     border: 1px solid;
+    padding: 0.45rem 0.65rem 0.45rem !important;
 }
 .conten-btn:enabled:hover, 
 .conten-btn:enabled:active,
@@ -1284,3 +1285,6 @@ ul.res__hideshow{
 span.row-disabled > :not(button) { 
     color: rgb(172, 172, 172) !important;
 }
+.box-shadow-box-search{
+    box-shadow: rgba(0, 0, 0, 0.15) 1.4px 1.4px 1.2px;
+} 

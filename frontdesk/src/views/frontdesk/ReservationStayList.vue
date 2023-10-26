@@ -63,13 +63,19 @@
                                 <span v-else-if="c.fieldtype == 'Date'">{{
                                     moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
                                 <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
-                                </Timeago>
-                                <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.rooms">
-                                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                        <span>{{ item }}</span>
-                                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                                    </template>
-                                </div>
+                                </Timeago> 
+                                <template v-else-if="c.fieldtype == 'Room'">
+                                    <div v-if="slotProps?.data && slotProps?.data?.rooms">
+                                        <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                            <span>{{ item }}</span>
+                                            <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
+                                        </template>
+                                    </div>
+                                    <div @click="onAssignRoom(slotProps.data)" class="link_line_action w-auto" v-else>
+                                        <i class="pi pi-pencil"></i>
+                                        Assign Room
+                                    </div>
+                                </template>
                                 <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else-if="c.fieldtype == 'Status'"
                                     class="px-2 rounded-lg text-white p-1px border-round-3xl"
@@ -163,11 +169,12 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed ,onUnmounted} from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed,getDoc ,onUnmounted} from '@/plugin'
 
 import { useDialog } from 'primevue/usedialog';
-import NewFITReservationButton from '../reservation/components/NewFITReservationButton.vue';
+import NewFITReservationButton from '@/views/reservation/components/NewFITReservationButton.vue';
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
+import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -186,8 +193,11 @@ const columns = ref([
     { fieldname: 'reservation_date', label: 'Res. Date', header_class: "text-center", fieldtype: "Date", frozen: true, default: true },
     { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
-    { fieldname: 'room_nights', label: 'Room Nights', header_class: "text-center", default: true },
+    { fieldname: 'room_nights', label: 'Room Night(s)', header_class: "text-center", default: true },
     { fieldname: 'rooms', label: 'Rooms', fieldtype: "Room", header_class: "text-center", default: true },
+    { fieldname: 'rate_type', label: 'Rate Type', default:false },
+    { fieldname: 'room_types', label: 'Room Type', default:false },
+    { fieldname: 'room_rate', label: 'Room Rate', default:false },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'business_source', label: 'Business Source', default: true },
@@ -197,7 +207,7 @@ const columns = ref([
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'owner', label: 'Created By' },
-    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
+    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'reservation_status', fieldtype: "Status", label: "Status", header_class: "text-center" },
@@ -381,9 +391,6 @@ getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
     working_date.value = r.message?.date_working_day
-    // const startDate = moment(working_date.value)
-    // const endDate = moment(working_date.value).add(1, 'days')
-    // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
 
 onMounted(() => {
@@ -413,7 +420,6 @@ onMounted(() => {
     });
     loadData()
     getApi("frontdesk.get_meta", { doctype: "Reservation Stay" }).then((result) => {
-        console.log(result.message)
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
 
@@ -445,6 +451,42 @@ const onClearFilter = () => {
 }
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
+}
+
+function onAssignRoom(data){
+    getDoc("Reservation Stay",data.name).then(doc=>{
+        const stay_room = doc.stays.find(r=>!r.room_id) 
+        if(stay_room){
+            dialog.open(ComReservationStayAssignRoom, {
+        data:{stay_room:stay_room} ,
+        props: {
+            header: `Assign Room`,
+            style: {
+                width: '70vw',
+            },
+            
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        onClose: (options) => {
+            if(options.data && options.data.message){
+                setTimeout(() => {
+                    rs.getReservationDetail(options.data.message.name)
+                    console.log(rs.getReservationDetail(options.data.message.name))    
+                }, 1500);
+            } 
+        }
+    })
+        }
+    })
+  
+ 
+   
 }
 
 onUnmounted(() => {

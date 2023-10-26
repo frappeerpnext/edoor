@@ -43,8 +43,8 @@ def get_columns():
 	return [
 		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True},
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True},
+		{'fieldname':'transaction_number','label':'Res # Folio','fieldtype':'Link','options':"Reservation Folio",'post_message_action':"view_folio_detail","default":True},
 		{'fieldname':'name','label':'Folio Tran. #','fieldtype':'Link','options':"Folio Transaction",'post_message_action':"view_folio_transaction_detail","default":True},
-		
 		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'room_number','label':'Room ','align':'center',"header_class":'text-center',"default":True},
 		{'fieldname':'room_type','label':'Room Type',"default":True},
@@ -78,31 +78,40 @@ def get_report_data(folio_transaction_amount,filters):
 	#get folio number from folio folio transaction
 	folio_numbers = set([d["transaction_number"] for d in folio_transaction_amount])
 	filters.folio_numbers = folio_numbers or []
+	filters.keyword = "%{}%".format(filters.keyword or "")
+	return_culomn = [
+					"if(ifnull(parent_reference,'') = '',name,parent_reference) as name",
+					"modified",
+					"creation",
+					"owner",
+					"posting_date",
+					"room_number",
+					"room_id",
+					"room_type",
+					"account_name",
+					"transaction_number",
+					"account_code",
+					"type",
+					"amount",
+					"reservation",
+					"business_source",
+					"reservation_stay",
+					"is_master_folio",
+					"guest",
+					"guest_name",
+					"parent_account_name",
+					"reservation_status"]
+	if not filters.order_by in return_culomn and filters.order_by != "name":
+		return_culomn.append(
+			filters.order_by
+		)
 	if filters.folio_numbers:
 		sql ="""
 			select 
-				name ,
-				modified,
-				creation,
-				owner,
-				posting_date,
-				room_number,
-				room_id,
-				room_type,
-				account_name,
-				account_code,
-				type,
-				amount,
-				reservation,
-				business_source,
-				reservation_stay,
-				is_master_folio,
-				guest,
-				guest_name,
-				parent_account_name,
-				reservation_status
+			{1}
 			from `tabFolio Transaction` 
 			where
+				concat(name,' ',transaction_number ,' ' , ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like %(keyword)s and 
 				property = %(property)s and 
 				concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(room_number,'')) like '%{0}%' and
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
@@ -112,14 +121,13 @@ def get_report_data(folio_transaction_amount,filters):
 				ifnull(room_id,'') = if(%(room_id)s='',ifnull(room_id,''),%(room_id)s)  and
 				is_master_folio = if(%(is_master)s=0,is_master_folio,1) and 
 				transaction_type='Reservation Folio'
-		""".format(filters.keyword or '')
+		""".format(filters.keyword or '',','.join(return_culomn))
 		data = frappe.db.sql(sql,filters,as_dict=1)
 		for d in data:
 			if d["type"]=="Debit":
 				d["debit"] = d["amount"] or 0
 			else:
 				d["credit"] = d["amount"] or 0
-
 		return  sorted(data, key=lambda k: k[filters.order_by], reverse=True if filters.order_type=='desc' else False)
 	return []
 

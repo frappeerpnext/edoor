@@ -41,7 +41,7 @@
                             </div>
                         </div>
                         <div class="flex gap-3">
-                            <ComOrderBy doctype="Account Code" @onOrderBy="onOrderBy" />
+                            <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
                         </div>
                     </div>
                 </div> 
@@ -84,7 +84,7 @@
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
                         :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
-                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
+                            <Button v-if="c.fieldtype == 'Link'" :class="'p-0 ' + (slotProps.data[c.fieldname] != '' ? 'link_line_action1' : '')" @click="onOpenLink(c, slotProps.data)"
                                 link>
                                 {{ slotProps.data[c.fieldname] }}
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
@@ -114,12 +114,7 @@
             </ComPlaceholder>
         </div>
         <div>
-            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
-                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
-                <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-                </template>
-            </Paginator>
+            
         </div>
     </div>
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
@@ -299,6 +294,8 @@ const onSearch = debouncer(() => {
 }, 500);
 
 function loadData(show_loading=true) {
+    data.value = []
+    summary.value = []
     gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
     filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
@@ -322,6 +319,7 @@ function loadData(show_loading=true) {
         summary.value = result.message.report_summary
         sortOptions.value = [...sortOptions.value, ...columns.value]
         gv.loading = false
+      
     }).catch((err) => {
         gv.loading = false
         if (err._server_messages) {
@@ -351,6 +349,12 @@ onMounted(() => {
             selectedColumns.value = state.selectedColumns
         }
     }
+    const pagerState = JSON.parse(localStorage.getItem("table_guest_ledger_state"))
+    if(pagerState){
+        pagerState.first = 0
+        localStorage.setItem("table_guest_ledger_state",JSON.stringify(pagerState))
+    } 
+    
     loadData()
 })
 
@@ -377,9 +381,11 @@ const onCloseAdvanceSearch = () => {
 }
 
 function onOrderBy(data) {
-    order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
+    order.value.order_by = data.order_by
     pageState.value.order_type = data.order_type
-    pageState.value.page = 0
+    const pagerState = JSON.parse(localStorage.getItem("table_guest_ledger_state")) 
+    pagerState.first = 0
+    localStorage.setItem("table_guest_ledger_state",JSON.stringify(pagerState))
     loadData()
 }
 

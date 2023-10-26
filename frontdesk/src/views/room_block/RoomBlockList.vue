@@ -33,7 +33,6 @@
       </div>
     </div>
     <div class="overflow-auto h-full">
-    
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
           stateStorage="local" stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
@@ -63,12 +62,14 @@
                   <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                 </template>
               </div>
-              <template v-else-if="c.fieldtype == 'Status'">
+              <template v-else-if="c.fieldtype == 'Status'"> 
+                <!-- Design Block Status -->
                 <Chip class="text-white surface-400 p-1px px-2" v-if="slotProps.data[c.fieldname] == 1">
                   <i class="pi pi-lock-open me-2" />
                   Unblock
                 </Chip>
-                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else><i class="pi pi-lock me-2" />Block</Chip>
+                <Chip class="text-white bg-black-alpha-90 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 1"><i class="pi pi-lock me-2" />Block</Chip>
+                <Chip class="text-white bg-orange-500 p-1px px-2" v-else-if="slotProps.data[c.extra_field] == 0"><i class="pi pi-lock me-2" />Draft</Chip>
               </template>
               <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
               <span v-else>
@@ -111,14 +112,11 @@
       </template>
     </ComOverlayPanelContent>
   </OverlayPanel>
-
   <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
       icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
       <div class="grid">
-        <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="status_color"
-          optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room Status" doctype="Room"
-          isFilter />
+        <ComSelect class="col-6" width="100%" :options="['Draft','Blocked','Unblocked']" v-model="filter.block_status" @onSelected="onSearch" placeholder="Block Status" />
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
           optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
           isFilter />
@@ -165,7 +163,7 @@ const columns = ref([
   { fieldname: 'reason', label: 'Reason', default: true },
   { fieldname: 'unblock_date', label: 'Unblock Date', fieldtype: "Date", header_class: "text-center", default: true },
   { fieldname: 'unblock_note', label: 'Unblock Note', default: true },
-  { fieldname: 'is_unblock', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
+  { fieldname: 'is_unblock',extra_field:'docstatus', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
 
 ])
 
@@ -237,6 +235,19 @@ function loadData() {
   ]
   if (filter.value?.keyword) {
     filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
+  }
+  if(filter.value.block_status){
+    if(filter.value.block_status == 'Draft'){
+      filters.push(["docstatus","=",0])
+      filters.push(["is_unblock","=",0])
+    }
+    else if(filter.value.block_status == 'Blocked'){
+      filters.push(["docstatus","=",1])
+      filters.push(["is_unblock","=",0])
+    }
+    else if(filter.value.block_status == 'Unblocked'){
+      filters.push(["is_unblock","=",1])
+    }
   }
   if (filter.value?.selected_room_id) {
     filters.push(["room_id", '=', filter.value.selected_room_id])

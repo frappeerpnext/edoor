@@ -107,8 +107,7 @@
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'ReservationStatus'"
                                 class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]
-                                }}</span>
+                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]}}</span>
                             
                             <span v-else>
                                 <span>{{ slotProps.data[c.fieldname] }}</span>
@@ -209,7 +208,7 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword: "" })
+const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({order_by: "modified", order_type: "desc"})
 const loading = ref(false) 
@@ -230,8 +229,8 @@ const getColumns = computed(() => {
     }
 })
 
-const isFilter = computed(()=>{
-    if(moment().startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')){
+const isFilter = computed(()=>{  
+    if(moment(working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')){
         return true
     }
     else{

@@ -19,6 +19,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const moment = inject('$moment')
 const dialog = useDialog()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const gv = inject("$gv")
 
 const props = defineProps({
     title: String,
@@ -83,7 +84,8 @@ const filters = [
     if(props.dialogKey == "all_rooms"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Room%20List",
+            // "eDoor%20Room%20List",
+            gv.getCustomPrintFormat("eDoor Room List"),
             'Room List',
             [{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','building','floor','room_type_group','room_type','housekeeping_status']
@@ -91,7 +93,8 @@ const filters = [
     }else if(props.dialogKey  == "arrival"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Arrival%20Guest",
+            // "eDoor%20Dashboard%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest"),
             'Arrival Guest',
             [{key:'action', value:"view_arrival"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','building','floor','room_type','reservation_status']
@@ -100,7 +103,8 @@ const filters = [
     else if(props.dialogKey == "departure"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Departure%20Guest",
+            // "eDoor%20Dashboard%20Departure%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Departure Guest"),
             'Departure',
             [{key:'action', value:"view_departure"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','building','floor','room_type','reservation_status','business_source']
@@ -109,7 +113,8 @@ const filters = [
 
         onViewData(
             'Business%20Branch',
-            "eDoor%20Unassign%20Room%20Reservation%20List",
+            // "eDoor%20Unassign%20Room%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Unassign Room Reservation List"),
             'Unassign Room Reservation List',
             [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','room_type','start_date','end_date','business_source']
@@ -118,7 +123,8 @@ const filters = [
     else if(props.dialogKey == "pickup_drop_off"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+            // "eDoor%20Pickup%20and%20Drop%20Off%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Pickup and Drop Off Reservation List"),
             'Pickup & Drop Off',
             [{key:'action', value:"view_departure_remaining"},{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','room_type','reservation_status','business_source',"transportation_mode",'transportation_company']
@@ -128,7 +134,8 @@ const filters = [
     else if(props.dialogKey == "git_arrival"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20GIT%20Arrival%20Guest",
+            // "eDoor%20GIT%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor GIT Arrival Guest"),
             'GIT Arrival',
             [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','room_type','reservation_status','business_source']
@@ -137,7 +144,8 @@ const filters = [
     else if(props.dialogKey  == "stay_over"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            // "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Stay Over Guest"),
             'Stay Over',
             [{key:"date",value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
             ['keyword','room_type','reservation_status','business_source']
@@ -147,7 +155,8 @@ const filters = [
     
         onViewData(
             'Business%20Branch',
-            "eDoor%20No%20Show%20Reservation%20List",
+            // "eDoor%20No%20Show%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor No Show Reservation List"),
             'No Show',
             [{key:"date",value:working_day.date_working_day}],
             []
@@ -157,7 +166,8 @@ const filters = [
     else if(props.dialogKey  == "cancelled"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Cancel%20Reservation%20List",
+            // "eDoor%20Cancel%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Cancel Reservation List"),
             'Cancelled Reservation',
             [{key:"date",value:working_day.date_working_day}],
             []
@@ -167,7 +177,8 @@ const filters = [
     else if(props.dialogKey  == "void"){
         onViewData(
             'Business%20Branch',
-            "eDoor%20Void%20Reservation%20List",
+            // "eDoor%20Void%20Reservation%20List",
+            gv.getCustomPrintFormat("eDoor Void Reservation List"),
             'Void Reservation',
             [{key:"date",value:working_day.date_working_day}],
             []

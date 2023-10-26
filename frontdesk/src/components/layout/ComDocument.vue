@@ -118,7 +118,7 @@ function onModal(open){
 }
 function onSuccess(){
     visible.value = false
-    alert(visible.value)
+    onLoad()
 }
 
 function pageChange(page) {

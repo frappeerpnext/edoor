@@ -6,7 +6,7 @@
             <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
                                  placeholder="Note Date"
                                  v-model="create.note_date"
-                                  dateFormat="dd-mm-yy" showIcon showButtonBar />
+                                  dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" />
             </div>
             <div class="-mb-2 mt-3" v-if="create.note_type=='Notice'">
             </div>
@@ -71,7 +71,7 @@
 </template>
 <script setup>
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
-import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc } from '@/plugin'
+import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc,onUnmounted } from '@/plugin'
 import Enumerable from 'linq'
 const moment = inject("$moment");
 const gv = inject("$gv");
@@ -101,7 +101,6 @@ const edit = ref({
 })
 const list = ref([])
 onMounted(() => {
-
     onLoad()
 })
 function onLoad() {
@@ -191,8 +190,9 @@ function onSaveNote(doctype, data) {
             note_date: moment().toDate()
         }
         edit.value = data.value
-        onLoadSocket()
+        onLoad()
         op.value.hide()
+
     }).catch((err) => {
         saving.value = false
     })
@@ -211,7 +211,7 @@ function onRemove(selected) {
             deleteDoc(selected.note_type == 'Comment' ? 'Comment' : 'Frontdesk Note', selected.name).then((doc) => {
                 if (doc) {
                     deleting.value = false
-                    onLoadSocket()
+                    onLoad()
                 }
             }).catch((err) => {
                 deleting.value = false
@@ -220,10 +220,6 @@ function onRemove(selected) {
     })
 }
 
-
-function onLoadSocket(){ 
-    // window.socket.emit("CommentAndNotice", { reservation_stay:window.reservation_stay })
-}
 
 </script>
 <style scoped>

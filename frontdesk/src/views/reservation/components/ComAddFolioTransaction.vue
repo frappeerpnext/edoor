@@ -1,12 +1,16 @@
 <template>
-    
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col">
                 <div class="col-6 pl-0">
-                    <label for="room">Room</label>
+                    <label for="room">Room (Optional)</label>
                     <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
                         class="auto__Com_Cus w-full" :filters="{ 'property' : doc.property }" />
+                </div>
+                <div class="col-6 pl-0">
+                    <label for="room">Guest (Optional)</label>
+                    <ComAutoComplete   v-model="doc.guest" placeholder="Select Guest" doctype="Customer"
+                        class="auto__Com_Cus w-full"  :filters="{'name':['in',guests]}" />
                 </div>
                 <div class="grid">
                     
@@ -204,6 +208,7 @@
                         </div>
                         <div class="col-6">
                             <label for="credit_expired_date">Credit Expired Date</label>
+                            {{ doc.credit_expired_date }}
                             <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy" showIcon showButtonBar selectOtherMonths/>
                         </div>
                     </div>
@@ -264,7 +269,7 @@
 </template>
 <script setup>
 
-import { ref, inject, getDoc, computed, onMounted,createUpdateDoc } from "@/plugin"
+import { ref, inject, getDoc, computed, onMounted,createUpdateDoc, getDocList,getApi } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
 import InputNumber from 'primevue/inputnumber';
@@ -276,6 +281,10 @@ const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();
 const call = frappe.call()
+
+const guests = ref([])
+
+
 
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
@@ -526,11 +535,12 @@ function onSave() {
 
 onMounted(() => {
     balance.value = dialogRef.value.data.balance
+    let reservation=""
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
         isSaving.value = true
     
-
+        reservation = dialogRef.value.data.reservation
         call.get("edoor.api.reservation.get_folio_detail", {
             name: dialogRef.value.data.folio_transaction_number
             })
@@ -553,11 +563,25 @@ onMounted(() => {
         
         
     } else {
+        reservation = dialogRef.value.data.new_doc.reservation
               doc.value  = dialogRef.value.data.new_doc
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
+        getDocList("City Ledger", {filters:[["property", "=", window.property.name], ["business_source", "=", dialogRef.value.data.business_source]], fields: ['name', 'city_ledger_name'] }).then(result=>{
+            if (result.length > 0){
+                doc.value.city_ledger = result[0].name
+                doc.value.city_ledger_name = result[0].city_ledger_name
+                
+            }
+        })
    
 
     }
+
+    //get guest by reservation
+    getApi("reservation.get_guest_by_reservation",{reservation:reservation}).then(result=>{
+        guests.value = result.message
+    })
+
 });
 
  

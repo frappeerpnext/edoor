@@ -34,7 +34,8 @@ function viewFolioSummaryReport(){
                 doctype: "Reservation%20Stay",
                 reservation_stay: doc.value.reservation_stay,
                 folio_number: name.value,
-                report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                //report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
                 view: "print"
             },
             props: {
@@ -72,7 +73,9 @@ print_menus.value.push({
                 doctype: "Reservation%20Stay",
                 reservation_stay: doc.value.reservation_stay,
                 folio_number: name.value,
-                report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                //report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
+                report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
+
                 view: "print"
             },
             props: {
