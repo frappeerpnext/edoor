@@ -1,7 +1,7 @@
 <template>
     <ul>
         <template v-for="(s, index) in rs.reservationFolioList" :key="index">
-            <li>
+            <li> x
                 {{ s.name }} | {{ s.guest_name }} | {{ s.balance }} {{ s.reservation_status }} | {{ s.status_color }} | {{
                     s.rooms }}
                 <ul>

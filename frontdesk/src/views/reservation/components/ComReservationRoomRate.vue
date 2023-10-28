@@ -168,7 +168,7 @@ function onEditRoomRate(room_rate = null){
       onClose: (options) => {
         const result = options.data;
         if(result){
-            rs.getRoomRate(rs.reservation.name)
+            // rs.getRoomRate(rs.reservation.name)
             rs.getReservationDetail(rs.reservation.name);
            
         }
@@ -196,7 +196,7 @@ function onEditRoomRate(room_rate = null){
         const result = options.data;
         
         if(result){
-          rs.getRoomRate(rs.reservation.name)
+          // rs.getRoomRate(rs.reservation.name)
           rs.selectedRoomRates = []
           rs.getReservationDetail(rs.reservation.name);
            

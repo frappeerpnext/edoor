@@ -132,6 +132,43 @@ def update_insert_document(doc, method=None, *args, **kwargs):
     }).insert()
     frappe.db.commit()
 
+def update_comment_by(doc, method=None, *args, **kwargs):
+    
+    frappe.db.sql("update `tabComment` set comment_by='{}' where name='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"),doc.name))
+    frappe.db.commit()
+
+def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
+    submit_update_audit_trail_from_version(doc)
+    # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
+
+def submit_update_audit_trail_from_version(doc):
+    if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
+        doctype = frappe.get_doc("Audit Trail Document", doc.ref_doctype)
+        data = json.loads(doc.data)
+        data_changed = []
+        for d in data["changed"]:
+            if d[0] in [f.field_name for f in doctype.tracking_field]:
+                field = [f  for f in doctype.tracking_field if f.field_name==d[0]][0]
+                if field.field_type=="Check":
+                    data_changed.append(f'{field.label}: {"Yes" if d[1]==1 else "No"} <b>to</b> {"Yes" if d[2]==1 else "No"}')
+                else:
+                    data_changed.append(f'{field.label}: {d[1]} <b>to</b> {d[2]}')
+        
+        if len(data_changed)>0:
+            comment_doc = []
+            comment_doc.append({
+              "subject": "Change Value",
+              "reference_doctype":doc.ref_doctype,
+              "reference_name":doc.docname,
+              "content":", ".join(data_changed)  
+            })
+            frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
+
+
+    
+
+
+
 def check_field(doc, key):
     if key in doc.keys():
         if  doc[key].strip():
@@ -795,7 +832,11 @@ def get_months(start_date,end_date):
 	months = [{'month_number': dt.month, 'month_name': dt.strftime('%B'),"year": dt.year, "total_day":  calendar.monthrange(dt.year, dt.month)[1]} for dt in rrule(MONTHLY, dtstart=start_date, until=end_date)]
 	return months
 
-def add_comment(data):
-    data["doctype"]="Comment"
-    data["is_audit_trail"]=1
-    frappe.get_doc(data).insert(ignore_permissions=True)
+def add_audit_trail(data):
+    for d in data:
+        d["doctype"]="Comment"
+        d["comment_type"]="Info"
+        d["custom_is_audit_trail"]=1
+        d["comment_by"]:frappe.session.user.full_name
+        frappe.get_doc(d).insert(ignore_permissions=True)
+

@@ -111,7 +111,7 @@
             <div class="grid">
             <div class="col-6">
                 <label>Letter Head</label><br>
-                <ComSelect :clear="false" v-model="filter.letterhead" doctype="Letter Head" />
+                <ComLetterHead v-model="filter.letterhead"  @onSelect="onSelectLetterHead"/>
             </div>
             <div class="col-6">
                 <label>Language</label><br>
@@ -163,7 +163,6 @@ const advanceFilter = (event) => {
 }
 
 const filter = ref({
-    letterhead: setting.property.default_letter_head,
     _lang: user.language || "en",
     start_date: moment().toDate(),
     end_date: moment().toDate(),
@@ -173,7 +172,9 @@ const filter = ref({
     filter_date_by:"Arrival Date",
     summary_filter:"Business Source"
 })
-
+function onSelectLetterHead(l){
+    filter.value.letterhead = l
+}
 const hasFilter = ref((f) => {
     if (props.selectedReport) {
         return props.selectedReport.filter_option?.includes(f)

@@ -1,5 +1,5 @@
 <template>
-    <div class="grid mb-2 mt-2">
+    <div class="grid mb-2 mt-5">
         <div class="col flex gap-2 ">
             <div class="text-2xl">Report</div>
             <div class="col flex gap-2 justify-end ">

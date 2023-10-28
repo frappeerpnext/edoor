@@ -168,9 +168,17 @@ class ReservationStay(Document):
 
 	def after_insert(self):
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
-		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
-		generate_room_occupy(self)
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
+		# generate_room_occupy(self)
 		generate_room_rate(self)
+
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+			"subject":"Create New Reservation Stay",
+			"reference_doctype":"Reservation Stay",
+			"reference_name":self.name,
+			"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
+
+		}])
 
 	def on_update(self):
 		if self.is_master:

@@ -51,6 +51,7 @@ function onOk() {
     if (data.value.method == "POST") {
         postApi(data.value.api_url, data.value.data).then((r) => {
             loading.value = false
+            dialogRef.value.close({note:note.value,data:r})
             onLoadSocket()            
         }).catch(() => {
             loading.value = false
@@ -58,6 +59,7 @@ function onOk() {
     } else if(data.value.method=="PUT") {
         updateDoc(data.value.api_url,data.value.name , data.value.data).then(r=>{
             loading.value = false
+            dialogRef.value.close({note:note.value,data:r})
             onLoadSocket()
 
         }).catch(() => {
@@ -69,6 +71,7 @@ function onOk() {
         deleteApi(data.value.api_url, data.value.data)
         .then((r) => {
             loading.value = false
+            dialogRef.value.close({note:note.value,data:r})
             onLoadSocket()
 
         }).catch(() => {
@@ -77,7 +80,7 @@ function onOk() {
     }
 }
 function onLoadSocket(){
-    dialogRef.value.close(note.value)
+
     window.socket.emit("Dashboard", window.property_name)
     window.socket.emit("ReservationList", { property:window.property_name})
     window.socket.emit("ReservationStayList", { property:window.property_name})
@@ -94,6 +97,7 @@ function onLoadSocket(){
         });
     }
 }
+
 onMounted(() => {
     data.value = dialogRef.value.data;
     console.log(window.reservation)

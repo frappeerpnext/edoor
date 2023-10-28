@@ -103,6 +103,15 @@ doc_events = {
     "Comment":{
         "on_update":[
             "edoor.api.utils.update_deleted_document"
+		],
+        "after_insert":[
+            "edoor.api.utils.update_comment_by"
+		]
+        
+	},
+    "Version":{
+        "after_insert":[
+            "edoor.api.utils.update_audit_trail_from_version"
 		]
 	},
     "Reservation Folio":{

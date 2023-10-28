@@ -5,7 +5,7 @@ from datetime import datetime
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from frappe.utils import now,getdate
+from frappe.utils import now,getdate,add_to_date
 class Reservation(Document):
 	def validate(self):
 		 
@@ -49,12 +49,20 @@ class Reservation(Document):
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
 	
-		
-	
 	
 	def on_update(self):
 		frappe.db.sql("update `tabReservation Stay Room` set reservation_type = '{}' where reservation = '{}'".format(self.reservation_type, self.name))
-		
+
+	def after_insert(self):
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short',enqueue_after_commit=20,now=False, data =[{
+			"subject":"Create New Reservation",
+			"reference_doctype":"Reservation",
+			"reference_name":self.name,
+			"content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.name}'>{self.name}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
+
+		}])
+	 
+
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()

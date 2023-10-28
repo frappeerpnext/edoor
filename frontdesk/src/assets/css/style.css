@@ -448,7 +448,7 @@ span.p-button-icon.pi.pi-ellipsis-h {
     box-shadow: unset !important;
 }
 
-.no-btn-clear .p-datepicker-buttonbar button[aria-label="Clear"] {
+.no-btn-clear .p-datepicker-buttonbar button:nth-child(2) {
     display: none !important;
 }
 
@@ -810,7 +810,8 @@ span.p-button-icon.pi.pi-ellipsis-v{
 
 /* Set btn round part */
 .p-splitbutton .p-splitbutton-defaultbutton,
-.p-inputnumber .p-inputnumber-input
+.add-room-reserv .p-inputnumber .p-inputnumber-input,
+.wp-number-cus .p-inputnumber .p-inputnumber-input
 {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -1317,6 +1318,9 @@ span.row-disabled > :not(button) {
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
     padding: 10px !important;
     margin: 5px 10px ;
+}
+.box-shadow-box-search{
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 1px 0px;
 }
 .search-hover:hover{
     background-color: #a1dff831;

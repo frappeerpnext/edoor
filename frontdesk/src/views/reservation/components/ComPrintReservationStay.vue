@@ -8,7 +8,8 @@
                 placeholder="Select Folio" class="w-full md:w-14rem" @change="refreshReport" />
                     </div>
                     <div>
-                        <ComSelect v-model="letterHead" doctype="Letter Head" @change="refreshReport" />
+                        <ComLetterHead v-model="letterHead"  @onSelect="onSelectLetterHead"/>
+                        <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
                     </div>
                 </div>
                 <div class="col flex gap-2 justify-end">
@@ -45,8 +46,10 @@ const selected_folio = ref("all")
 const reservation_stay = ref("")
 const report_name = ref("")
 
-letterHead.value = setting.property.default_letter_head
-
+function onSelectLetterHead(l){
+    letterHead.value = l
+    refreshReport()
+}
 const refreshReport = () => {
     url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + letterHead.value + "&show_toolbar=0"
 
@@ -62,6 +65,7 @@ function onIframeLoaded() {
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     // iframe.height = iframe.contentWindow.document.body.scrollHeight;
 }
+
 function onPrint(){
 
     if (selected_folio.value) {

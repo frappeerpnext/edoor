@@ -1,7 +1,7 @@
 
 <template>
     <div class="card flex justify-content-center">
-        <Dropdown v-model="selectedLetterhead" @change="onChange" :options="options"  placeholder="Letter Head" class="w-full md:w-14rem" />
+        <Dropdown v-model="selectedLetterhead" @change="onChange" :options="options"  placeholder="Letter Head" class="w-full " />
     </div>
 </template>
 

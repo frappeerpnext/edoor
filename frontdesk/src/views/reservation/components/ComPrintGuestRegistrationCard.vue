@@ -6,25 +6,28 @@
 
 <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid mb-3 ">
-                <div class="col flex gap-2 ">
-                    <div>
+            <div class="grid mb-3">
+                <div class="col flex align-items-center gap-2">
+                    <div class="col">
+                        <label>Select Guest</label>
                         <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
-                placeholder="Select Guest" class="w-full md:w-14rem mb-3" @change="refreshReport" />
+                placeholder="Select Guest" class="w-full " @change="refreshReport" />
                     </div>
-                    <div>
-                        <ComLetterHead v-model="letter_head"  @onSelect="onSelectLetterHead"/>
+                    <div class="col">
+                        <label>Letter Head</label>
+                        
+                        <ComLetterHead v-model="letter_head" class="w-full"  @onSelect="onSelectLetterHead"/>
                         <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
                     </div>
                 </div>
-                <div class="col flex gap-2 justify-end">
+                <div class="col flex justify-content-end align-items-center gap-2 pt-4">
                     <div v-if="(view||'')!='ui'">
                         
                         <ComPrintButton :url="url"  @click="onPrint"/>
                         
                     </div>
-                    <div >
-                        <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                    <div>
+                        <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b btn-size2"></Button>
                     </div>
                 </div>
             </div> 

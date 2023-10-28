@@ -108,12 +108,20 @@
                             <span v-else-if="c.fieldtype == 'ReservationStatus'"
                                 class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
                                 :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]}}</span>
-                            
+                            <span v-else-if="c.fieldtype == 'Check'" >
+                                <span v-if="slotProps.data[c.fieldname]">
+                                    <ComIcon v-if="c.label =='Master Folio'" v-tippy="'Is Master Folio'" style="height: 14px;margin: auto;" icon="iconCrown" />
+                                    <span v-else>YES</span>
+                                </span>
+                                <span v-else>
+                                </span>
+                            </span>
                             <span v-else>
                                 <span>{{ slotProps.data[c.fieldname] }}</span>
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
                             </span>
+                           
                         </template>
                     </Column>
                 </DataTable> 

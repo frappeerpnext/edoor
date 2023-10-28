@@ -1,7 +1,7 @@
 <template>
    <ComOverlayPanelContent style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
      
-    <div class="grid py-2">
+    <div class="grid py-2 wp-number-cus">
             <div class="col-6">
                 <label>Arrival Date</label>
                 <Calendar :selectOtherMonths="true" showIcon v-model="data.arrival_date"  :min-date="new Date(moment(data.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>

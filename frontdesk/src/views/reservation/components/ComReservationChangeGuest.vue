@@ -146,13 +146,16 @@ function onOK(){
     }
 }
 function onStayGuestSave() {
+
     loading.value = true 
+    alert(rs.reservation.name)
     if (rs.reservation.name) {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'
         }
         const saveGuest = JSON.parse(JSON.stringify(guest.value))
     saveGuest.expired_date = moment(saveGuest.expired_date).format("YYYY-MM-DD")
+
         getApi("reservation.change_reservation_guest", {
             reservation: rs.reservation.name,
             reservation_stay: rs.reservationStay.name,

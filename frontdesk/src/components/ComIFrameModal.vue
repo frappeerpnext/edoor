@@ -1,11 +1,10 @@
 <template>
- {{ filter_options }}
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
                 <div class="col flex gap-2 ">
                     <div v-if="show_letter_head">
-                        <ComSelect v-model="letter_head" doctype="Letter Head" @change="loadIframe"/>
+                        <ComLetterHead v-model="letter_head"  @onSelect="onSelectLetterHead"/>
                     </div>
                     <div>
                         <InputText v-if="hasFilter('keyword')" type="text" class="p-inputtext-sm w-full w-12rem" @input="reloadIframe"
@@ -121,7 +120,10 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 const gv = inject("$gv")
 
 
-letter_head.value = window.setting.property.default_letter_head
+function onSelectLetterHead(l){
+    letter_head.value = l
+    refreshReport()
+}
 
 const hasFilter = ref((f) => {
     if (filter_options.value) {
@@ -158,9 +160,8 @@ function loadIframe() {
     } else {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) +  "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0"
     }
- url.value = url.value +   "&date="+ window.current_working_date
- 
 
+ 
 
     if (extra_params.value) {
         extra_params.value.forEach(p => {
@@ -188,6 +189,12 @@ function loadIframe() {
     url.value = url.value + "&start_date=" + start_date + "&end_date=" + end_date
 
     url.value = url.value + "&refresh=" + (Math.random() * 16)
+    
+    if (extra_params.value?.filter(r=>r.key=='date').length==0){
+ 
+        url.value = url.value +   "&date="+ window.current_working_date
+    }
+    
  
     document.getElementById(iframe_id).contentWindow.location.replace(url.value)
    

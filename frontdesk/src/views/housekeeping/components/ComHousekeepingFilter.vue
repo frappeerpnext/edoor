@@ -1,5 +1,9 @@
 <template>
     <div class="flex gap-2">
+        <div>
+            {{ hk.filter.selected_date }}
+            <Calendar :selectOtherMonths="true" class="w-full" v-model="hk.filter.selected_date" @date-select="onSearch" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+        </div>
         <div class="p-0 w-15rem">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
@@ -57,6 +61,9 @@ import { ref,inject } from '@/plugin';
 const showAdvanceSearch = ref()
 const hk = inject("$housekeeping")
 const gv = inject("$gv")
+const moment = inject("$moment")
+const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
+hk.filter.selected_date = moment( working_date.date_working_day).toDate() 
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);

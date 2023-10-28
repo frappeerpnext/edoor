@@ -1,6 +1,6 @@
 <template>
     <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div class="flex gap-3 my-2">
+        <div class="wp-number-cus flex gap-3 my-2">
         <div class="flex flex-col">
         <label>Adult</label>
         <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"

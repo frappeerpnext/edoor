@@ -23,6 +23,11 @@
             </div>
     
         </template>
+
+        <label for="reason-text" class="mb-1 font-medium block">Note</label>
+        <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please enter check in note" class="w-full" />
+
+
         <div class="relative">
             <span class="absolute w-full"><Checkbox class="w-full" v-model="isConfirm" :binary="true" /></span>
             <span class="pl-5">I am verify that all information is correct</span>
@@ -42,12 +47,13 @@ import { onUnmounted } from 'vue';
 const dialogRef = inject("dialogRef");
 const rs = inject("$reservation_stay")
 const isConfirm = ref(false)
+const note = ref()
 const moment = inject("$moment")
 
 const reservationStays = ref([])
 
 function onOk() {
-    dialogRef.value.close("Ok");
+    dialogRef.value.close({"note":note.value});
 }
 
 onMounted(() => {

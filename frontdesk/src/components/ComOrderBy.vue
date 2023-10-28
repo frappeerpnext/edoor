@@ -5,8 +5,8 @@
     :options="sortOptions" />
 
     <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">
-        <i v-if="data.order_type == 'desc'" class="pi pi-sort-alpha-down" /> 
-        <i v-if="data.order_type == 'asc'" class="pi pi-sort-alpha-up" />  
+        <i v-if="data.order_type == 'desc'" class="pi pi-sort-alpha-down-alt" /> 
+        <i v-if="data.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
     </Button>
 </div>
 </template>

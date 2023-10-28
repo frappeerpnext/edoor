@@ -33,7 +33,7 @@
                                     </div>
                                 </span>
                                 <span v-if="roomData.length > 3"
-                                    v-tippy="{ value: getTooltip(), escape: true, class: 'max-w-30rem' }"
+                                    v-tippy="getTooltip()"
                                     class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer whitespace-nowrap">
                                     {{ roomData.length - 3 }} Mores
                                 </span>
@@ -60,8 +60,24 @@
                     <tbody>
                         <ComStayInfoNoBox label="Res Stay. No" :value="stay_reservation?.name" />
                         <ComStayInfoNoBox label="Business Source" :value="stay_reservation?.business_source" />
-                        <ComStayInfoNoBox label="Room"
-                            :value="stay_reservation?.room_type_alias + '/' + stay_reservation?.room_numbers" />
+                        <ComStayInfoNoBox label="Room">
+                            <div class="flex">
+                            <span v-for="(i, index) in roomData" :key="index">
+                                    <div class="inline font-semibold text-right -ml-2" v-if="index < 3">
+                                        <div class="rounded-xl px-2 me-1 bg-gray-edoor inline">
+                                            <span v-tippy="i.room_type">{{ i.room_type_alias }} </span>
+                                            <span v-if="i.room_number">/{{ i.room_number }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </span>
+                                <span v-if="roomData.length > 3"
+                                    v-tippy="getTooltip()"
+                                    class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer whitespace-nowrap">
+                                    {{ roomData.length - 3 }} Mores
+                                </span>
+                            </div>
+                        </ComStayInfoNoBox>
                         <ComStayInfoNoBox label="Date"
                             :value="moment(stay_reservation?.arrival_date).format('DD-MM-yyyy')" />
                     </tbody>
@@ -262,7 +278,9 @@ const showCheckUpdateFutureStayRoomRate = ref(false)
 const updateFutureRoomRate = ref(false)
 const futureRoomRates = ref([])
 const roomData = computed(() => {
-    if (stay.value?.rooms_data) {
+    if (stay_reservation.value?.rooms_data) {
+        return JSON.parse(stay_reservation.value?.rooms_data)
+    }else if(stay.value?.rooms_data){
         return JSON.parse(stay.value?.rooms_data)
     }
     return []
@@ -274,11 +292,11 @@ function getTooltip() {
     roomData.value.forEach(e => {
         index = index + 1
         if (index > 3) {
-            html = html + ` ${e.room_type}/${e.room_number ? e.room_number : ''}\n`
+            html = html + ` ${e.room_type}/${e.room_number ? e.room_number : ''}<br/>`
         }
 
     });
-    return `<div class='tooltip-room-stay'>${html}</div>`
+    return `${html}`
 
 }
 let arrival_date = moment(stay_reservation?.value.arrival_date).format("YYYY-MM-DD")
@@ -498,7 +516,6 @@ function onSave() {
             window.socket.emit("ComGuestLedger", { property:window.property_name})
             window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
             window.socket.emit("Reports", window.property_name)
-            window.socket.emit("ReservationDetail", window.reservation)
             rs.getRoomRate(window.reservation)
             dialogRef.value.close(doc.message)
         })

@@ -3,7 +3,7 @@
     <div>
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
-            <div class="n__re-custom">
+            <div class="n__re-custom wp-number-cus">
                 <table class="w-full">
                     <thead>
                         <tr>

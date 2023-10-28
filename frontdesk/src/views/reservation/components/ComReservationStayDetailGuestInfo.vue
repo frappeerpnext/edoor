@@ -188,7 +188,7 @@ function onAdvancedSearch(guest_type) {
     
     dialog.open(ComReservationChangeGuest, {
         props: {
-            header: `${guest_type == 'master_guest' ? 'Change Master Guest' : (guest_type == 'stay_guest' ? 'Change Stay Guest' : (guest_type == 'additional_guest' ? 'Add Additional Guest' : '')) }`,
+            header: `${guest_type == 'master_guest' ? 'Change Master Guest' : (guest_type == 'stay_guest' ? 'Add Stay Guest' : (guest_type == 'additional_guest' ? 'Add Additional Guest' : '')) }`,
             keyword: '',
             doctype: 'Customer',
             style: {

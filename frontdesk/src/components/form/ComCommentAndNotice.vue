@@ -1,5 +1,5 @@
 <template lang="">
-    <div>
+    <div> 
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.note_type}}</label><br/>
             <div v-if="create.note_type=='Notice'">
@@ -36,20 +36,25 @@
  
         <div class="flex justify-between">
         <div class="flex items-center">
+
             <i :class="(i.note_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i>
             <div class="ms-1 text-sm">
-                <span class="font-italic">{{i.note_type}} by:</span> <span class="text-500 font-italic">{{i.owner}} on {{moment(i.creation).format("DD-MM-yy h:ss a") }}, </span>
-                <span class="font-italic" v-if="i.modified">Last Modified:</span> <span class="text-500 font-italic" v-if="i.modified">{{i.modified_by}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
+                
+                <span class="font-italic" v-if="i.note_type!='Info'">{{i.note_type}}</span> <span class="text-500 font-italic"> by: {{i.owner}}    
+                    <Timeago  :datetime="i.creation" long>
+                                </Timeago> 
+                                 </span>
+                <span class="font-italic" v-if="i.modified">, Last Modified:</span> <span class="text-500 font-italic" v-if="i.modified">{{i.modified_by}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
             </div> 
            
           
         </div>
-        <div class="gap-2 flex" v-if="i.type!='Info'">
+        <div class="gap-2 flex" v-if="i.note_type!='Info'">
             <Button text icon="pi pi-file-edit" class="w-1rem h-1rem" @click="onAddEdit($event,i)"></Button>
             <Button text icon="pi pi-trash" class="w-1rem h-1rem" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
         </div>
     </div>
-        <div class="whitespace-pre-wrap break-words py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.full_name }} {{i.subject}}</div>
+        <div class="whitespace-pre-wrap break-words py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.user_full_name }} {{i.subject}}</div>
         <div class="whitespace-pre-wrap break-words py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.note_date">
         Note Date: {{moment(i.note_date).format("DD-MM-YYYY")}} 
@@ -73,8 +78,9 @@
 </template>
 <script setup>
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
-import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc,onUnmounted } from '@/plugin'
+import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted } from '@/plugin'
 import Enumerable from 'linq'
+import { Timeago } from 'vue2-timeago'
 const moment = inject("$moment");
 const gv = inject("$gv");
 const props = defineProps({
@@ -102,12 +108,26 @@ const edit = ref({
     content: ''
 })
 const list = ref([])
+const onLoadComment = async function (e) {
+
+    if (e.data.action == "load_comment") {
+        setTimeout(function () {
+            onLoad(false)
+        }, e.data.timeout || 5000)
+
+    }
+}
 onMounted(() => {
-    
+    window.addEventListener('message', onLoadComment, false);
     onLoad()
 })
-function onLoad() {
-    loading.value = true
+
+onUnmounted(() => {
+    window.removeEventListener('message', onLoadComment, false);
+})
+
+function onLoad(show_loading = true) {
+    loading.value = show_loading
     getApi('reservation.get_reservation_comment_note', {
         doctype: props.doctype,
         docname: props.docname
@@ -118,11 +138,26 @@ function onLoad() {
             list.value = []
 
         loading.value = false
+        //add event listener to click view detail popup
 
+        setTimeout(function () {
+            document.querySelectorAll('[data-action]').forEach(el => {
+                
+                if (!el.dataset.click) {
+                    el.addEventListener('click', function () {
+                        window.postMessage(el.dataset.action + "|" + el.dataset.name, "*")
+
+                    })
+                    el.setAttribute('data-click', '1');
+                    
+                }
+            })
+        }, 2000)
     }).catch((err) => {
         loading.value = false
     })
 }
+
 function onClose() {
     op.value.hide()
 }
@@ -195,8 +230,6 @@ function onSaveNote(doctype, data) {
         edit.value = data.value
         onLoad()
         op.value.hide()
-        window.socket.emit("ReservationDetail", window.reservation)
-        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
     }).catch((err) => {
         saving.value = false
     })
@@ -216,8 +249,8 @@ function onRemove(selected) {
                 if (doc) {
                     deleting.value = false
                     onLoad()
-                    window.socket.emit("ReservationDetail", window.reservation)     
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    // window.socket.emit("ReservationDetail", window.reservation)     
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                 }
             }).catch((err) => {
                 deleting.value = false

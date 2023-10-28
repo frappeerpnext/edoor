@@ -38,7 +38,7 @@
                 <Column field="reservation_status" header="Reservation Status" headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
-                        <ComReservationStatus v-if="slotProps.data.guest" :statusName="slotProps.data.reservation_status" />
+                        <ComHkReservationStatus :statusName="slotProps.data.reservation_status" />
                     </template>
                 </Column>
                 <Column field="housekeeper" header="Housekeeper">
@@ -64,7 +64,6 @@
     </OverlayPanel>
     <Column field="housekeeping_status" header="Status" class="text-left">
         <template #body="slotProps">
-            <!-- <Tag :value="slotProps.data.housekeeping_status" :style="{ background: slotProps.data.status_color }"></Tag>  -->
             <ComHousekeepingChangeStatusButton @onSelected="onSelected" :data="slotProps.data" />
         </template>
     </Column>
@@ -79,6 +78,9 @@
 import { ref, inject, postApi, computed , onUnmounted } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
+import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReservationStatus.vue'
+
+
 import { useDialog } from 'primevue/usedialog';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 const dialog = useDialog();
@@ -98,7 +100,7 @@ const db = frappe.db()
 
 
 const data = computed(() => {
-    return gv.search(hk.room_list, hk.filter.keyword, 'room_number,guest,guest_name,room_type,housekeeper,reservation_stay')
+    return hk.room_list
 })
 function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
@@ -201,10 +203,5 @@ function onViewReservationStayDetail(rs) {
     background: transparent;
 }
 
-/* .hsk-wrapper .res_list_scroll{
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-} */
+ 
 </style>

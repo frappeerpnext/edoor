@@ -34,7 +34,7 @@ import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
 import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
-
+import ComBusinessSourceDetail from '@/views/business_source/components/ComBusinessSourceDetail.vue';
 
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -66,7 +66,7 @@ if (localStorage.getItem("edoor_property") == null) {
 
 
 const actionClickHandler = async function (e) {
-    console.log(e)
+   
 
     if (e.isTrusted && typeof (e.data) == 'string') {
 
@@ -100,9 +100,9 @@ const actionClickHandler = async function (e) {
             } else if (data[0] == "view_city_ledger_detail") {
                 showCityLedgerDetail(data[1])
             }
-            // else if (data[0] == "view_business_source_detail") {
-            //     showBusinessSourceDetail(data[1])
-            // }
+            else if (data[0] == "view_business_source_detail") {
+                showBusinessSourceDetail(data[1])
+            }
             else if (data[0] == "assign_room") {
                 onAssignRoom(data[1], data[2])
             }
@@ -188,6 +188,22 @@ onMounted(() => {
     }
 })
 
+function showBusinessSourceDetail(name){
+    const dialogRef = dialog.open(ComBusinessSourceDetail, {
+        data: {
+            name: name,
+        },
+        props: {
+            header: 'Business Source - ' + name,
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            position:"top",
+            closeOnEscape: false
+        }
+    });
+}
 
 function showGuestDetail(name) {
 

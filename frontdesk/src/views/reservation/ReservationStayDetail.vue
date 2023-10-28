@@ -219,11 +219,14 @@ const isPage = computed(() => {
 
 
 const onRefresh = (showLoading = true) => {
-
+ 
     rs.getReservationDetail(name.value, showLoading)
     rs.getChargeSummary(name.value)
     rs.selectedRoomRates = []
 
+    //load comment 
+
+    window.postMessage({action:"load_comment"},"*")
 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
@@ -232,6 +235,8 @@ const onRefresh = (showLoading = true) => {
         window.postMessage({action:"load_folio_transaction"},"*")
         window.postMessage({action:"load_reservation_stay_folio_list"},"*")
     }
+
+
 
 
 }
@@ -366,20 +371,23 @@ const onCheckIn = () => {
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
                     reservation_stays: [rs.reservationStay.name],
+                    note:result.note
 
                 }).then((result) => {
                     rs.loading = false
+
+                  
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
                     window.socket.emit("Dashboard", window.property_name);
-                    window.socket.emit("RefreshReservationDetail", rs.reservation.name);
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+                    
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
                     window.socket.emit("ComGuestLedger", { property:window.property_name})
                     window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
+
                     onRefresh(false)
                 })
                     .catch((err) => {

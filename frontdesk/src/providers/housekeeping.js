@@ -1,4 +1,6 @@
 import { FrappeApp } from 'frappe-js-sdk'; 
+import { getApi } from '@/plugin';
+import moment from "../utils/moment";
 const frappe = new FrappeApp();
 const db = frappe.db();
 export default class Housekeeping {
@@ -11,7 +13,7 @@ constructor() {
 	this.reservationStay = {}
 	this.loading = false
 	this.property = JSON.parse(localStorage.getItem("edoor_property"))
-	
+	this.moment = moment
 }
  
 loadData(show_loading=true) {
@@ -20,14 +22,14 @@ loadData(show_loading=true) {
 		let filters = [
 			["property","=",this.property.name]
 		]
-		if (this.filter.selected_room_type && this.filter.selected_room_type.length > 0) {
-			filters.push(["room_type_id", 'in', this.filter.selected_room_type])
+		// if (this.filter.selected_room_type && this.filter.selected_room_type.length > 0) {
+		// 	filters.push(["room_type_id", 'in', this.filter.selected_room_type])
 
-		}
+		// }
 		
-		if (this.filter.selected_housekeeping_status && this.filter.selected_housekeeping_status.length > 0) {
-			filters.push(["housekeeping_status", 'in', this.filter.selected_housekeeping_status])
-		}
+		// if (this.filter.selected_housekeeping_status && this.filter.selected_housekeeping_status.length > 0) {
+		// 	filters.push(["housekeeping_status", 'in', this.filter.selected_housekeeping_status])
+		// }
 
 		
 		if (this.filter.selected_building && this.filter.selected_building.length > 0) {
@@ -46,22 +48,33 @@ loadData(show_loading=true) {
 			filters.push(["housekeeper", 'in', this.filter.selected_housekeeper])
 		}
 
-		db.getDocList('Room', {
-			fields: ['name','guest','guest_name', "room_type_id", "room_type", "room_number", "housekeeping_status", "status_color", "housekeeper","reservation_stay","reservation_status"],
-			filters: filters,
-			limit: 1000,
-		})
-			.then((docs) => {
-					
-				this.room_list =  docs
-				this.loading = false
-				resolve(docs)
+		if(this.filter.selected_date){
+			this.filter.selected_date = this.moment(this.filter.selected_date).format("yyyy-MM-DD")
+		}
+
+		getApi("housekeeping.get_room_list",{
+            filter: {
+				'date': this.filter.selected_date || '',
+				'property':this.property.name,
+				'room_type_id':this.filter.selected_room_type || [],
+				'housekeeping_status':this.filter.selected_housekeeping_status || [],
+				'building':this.filter.selected_building,
+				'floor':this.filter.selected_floor,
+				'room_type_group':this.filter.selected_room_type_group,
+				'housekeeper':this.filter.selected_housekeeper,
+				'keyword':this.filter.keyword
 			}
-		)
-		.catch((error) => {
-			this.loading = false
-			reject(error)
-		});
+		})
+			.then((result) => {
+                this.room_list =  result.message
+                this.loading = false
+                resolve(result)
+            }
+        )
+        .catch((error) => {
+            this.loading = false
+            reject(error)
+        });
 		
 	});
 }

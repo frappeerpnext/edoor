@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
-    <div class="">
+    <div class="wp-number-cus">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
             <template #content>
             <div class="n__re-custom">

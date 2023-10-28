@@ -1,6 +1,6 @@
 <template >
     <ComDialogContent :hideButtonOK="data?.length == 0 ? true : false" :hideButtonClose="data?.length == 0 ? true : false"  @onClose="onClose" @onOK="onSave" :loading="loading">
-    <ComReservationStayPanel title="Group Assign Room">
+    <ComReservationStayPanel title="Group Assign Roomxx">
         <template #content> 
     <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
     <table class="w-full " v-else>
@@ -59,6 +59,7 @@
             <td class="text-right w-10rem">
                 <div class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                 <CurrencyFormat :value="d.rate"></CurrencyFormat>
+                    {{ d.input_rate }}
                 </div>
             </td>
 

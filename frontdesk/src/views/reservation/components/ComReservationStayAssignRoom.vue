@@ -84,14 +84,23 @@
             </div>
             </template>
         </ComReservationStayPanel>
+        <Button type="button" label="View Room Inventory" @click="onViewRoomInventory"  />
+        <Button type="button" label="View Room Available" @click="onViewRoomAvailable"  />
+        
+        
 
     </div>
 </ComDialogContent>
 </template>
 <script setup>
-    import {inject,ref, getApi, onMounted,postApi,getDoc} from '@/plugin'
+    import {inject,ref, getApi, onMounted,postApi,getDoc,useDialog} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
+    import ComRoomInventory from  "@/components/ComRoomInventory.vue"
+    import ComRoomAvailable from  "@/components/ComRoomAvailable.vue"
+
+
     const property = JSON.parse(localStorage.getItem("edoor_property"))
+
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')
@@ -101,7 +110,7 @@
     const selectedStay = ref({})
     const rooms = ref([])
     const room_types = ref([])
-
+    const dialog = useDialog();
  
     const onClose = (r) =>{ 
         dialogRef.value.close(r);
@@ -203,6 +212,35 @@
                     rooms.value = result.message;
                     
                 })
+    }
+    
+    function onViewRoomInventory(){
+        const dialogRef = dialog.open(ComRoomInventory, {
+        props: {
+            header: 'Room Inventory',
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top"
+        },
+    });
+    }
+    function onViewRoomAvailable(){
+        const dialogRef = dialog.open(ComRoomAvailable, {
+        props: {
+            header: 'Room Available',
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top"
+        },
+    });
     }
 
     onMounted(() => {

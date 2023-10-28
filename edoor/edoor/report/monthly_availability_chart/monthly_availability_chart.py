@@ -44,6 +44,24 @@ def get_month(filters):
 
 	return months
 
+# def get_report_chart(filters):
+# 	dataset = []
+# 	colors = []
+
+# 	chart = {
+# 		'data':{
+# 			'labels':  dataset,
+# 			'datasets':dataset
+# 		},
+# 		"type": filters.chart_type,
+# 		# "lineOptions": {
+# 		# 	"regionFill": 1,
+# 		# },
+# 		'valuesOverPoints':1,
+# 		"axisOptions": {"xIsSeries": 1},
+		
+# 	}
+# 	return chart
 
 def get_report_data(filters):
 	sql="""

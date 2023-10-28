@@ -597,7 +597,7 @@ const handleScroll = (event) => {
 
 onMounted(() => {
 
-    window.socket.on("Room Inventory", (arg) => {
+    window.socket.on("RoomInventory", (arg) => {
         if (arg == window.property_name) {
             getResources(false)
         }
@@ -635,7 +635,7 @@ function getEndDate(start, period) {
 }
 
 onUnmounted(() => {
-    window.socket.off("Frontdesk");
+    window.socket.off("RoomInventory");
     document.body.removeEventListener('scroll', handleScroll);
 })
  

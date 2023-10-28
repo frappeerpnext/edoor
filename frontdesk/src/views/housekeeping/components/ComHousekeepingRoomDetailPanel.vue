@@ -30,7 +30,7 @@
                     </OverlayPanel>        
                 </div>  
             </div>
-        <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
+            <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay ).length > 0" >
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
             <table>
                 <ComStayInfoNoBox label="Res No">
@@ -38,14 +38,13 @@
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Res Stay No">
                     <Button @click="onViewReservationStayDetail(hk?.reservationStay?.name)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.name }}</Button>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox  label="Type" :value="hk?.reservationStay?.reservation_type" />
-                <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'"  label="Group">
+                </ComStayInfoNoBox> 
+                <ComStayInfoNoBox  label="Type" :value="hk?.reservationStay?.reservation_type"  v-tippy="hk?.reservationStay?.reservation_type"/>
+                <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'" label="Group">
                     <div class="w-full overflow-hidden white-space-nowrap -ml-3 text-overflow-ellipsis">
                         <div v-tippy="hk?.reservationStay?.group_code" class="inline">
                            {{ hk?.reservationStay?.group_code }} 
                         </div>
-                         / 
                         <div v-tippy="hk?.reservationStay?.group_name" class="inline">
                            {{ hk?.reservationStay?.group_name }}
                         </div>
@@ -58,8 +57,8 @@
                     <Button @click="onViewCustomerDetail(hk?.reservationStay?.guest)" class="-ml-3 link_line_action1" text>{{ hk?.reservationStay?.guest }} - {{ hk?.reservationStay?.guest_name }}</Button>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox  label="Nationality" :value="hk?.reservationStay?.nationality" /> 
-                <!-- <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
-                <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />   --> 
+                <ComStayInfoNoBox  label="Phone Number" :value="hk?.reservationStay?.guest_phone_number" />  
+                <ComStayInfoNoBox  label="Email" :value="hk?.reservationStay?.guest_email" />   
                 <ComStayInfoNoBox  label="PAX" :value="hk?.reservationStay?.adult + ' / ' + hk?.reservationStay?.child" /> 
                 <ComStayInfoNoBox  label="Arrival">
                     <span class="-ms-3 font-semibold">

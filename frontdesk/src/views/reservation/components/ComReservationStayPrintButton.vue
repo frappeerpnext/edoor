@@ -8,7 +8,7 @@ import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const dialog = useDialog();
-
+const gv = inject("$gv")
 const toast = useToast();
 const props = defineProps({
     reservation: String,

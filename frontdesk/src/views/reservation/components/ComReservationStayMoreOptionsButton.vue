@@ -209,30 +209,38 @@ function onMarkAsMasterRoom() {
 }
 
 function onUndoCheckIn() {
-    confirm.require({
-        message: 'Are you sure you want to undo check in this reservation?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            rs.loading = true
-            postApi("reservation.undo_check_in", {
+    
+        const dialogRef = dialog.open(ComDialogNote, {
+        data:  {
+            api_url: "reservation.undo_check_in",
+            method: "POST",
+            confirm_message: "Are you sure you want to undo check in this reservation?",
+            data: {
                 reservation_stay: rs.reservationStay.name,
                 reservation: rs.reservationStay.reservation,
                 property:window.property.name
+            }
+        },
+        props: {
+            header: "Undo Checked In",
+            style: {
+                width: '50vw',
             },
-                "Undo check in successfully"
-            ).then((doc) => {
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            const data = options.data 
+            if (options.data){
                 rs.loading = false
-                rs.reservationStay = doc.message
+                rs.reservationStay = data.data.message
                 window.socket.emit("ComHousekeepingStatus", window.property_name)
                 window.socket.emit("Dashboard", window.property_name)
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("TodaySummary", window.property_name)
@@ -243,54 +251,56 @@ function onUndoCheckIn() {
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
-
-
-            }).catch((err) => {
-                rs.loading = false
-            })
-
-        },
+            }
+              
+         }
 
     });
+    
 }
 
 function OnUndoCheckOut() {
-    confirm.require({
-        message: 'Are you sure you want to undo check out this reservation?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            rs.loading = true
-            postApi("reservation.undo_check_out", {
+    const dialogRef = dialog.open(ComDialogNote, {
+        data:  {
+            api_url: "reservation.undo_check_out",
+            method: "POST",
+            confirm_message: "Are you sure you want to undo check out this reservation?",
+            data: {
                 property: rs.reservationStay.property,
                 reservation_stays:[rs.reservationStay.name] 
             }
-            ).then((doc) => {
-                rs.reservationStay = doc.message
+        },
+        props: {
+            header: "Undo Checked Out",
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            const data = options.data 
+            if (options.data){
+                rs.reservationStay = data.data.message
                 window.socket.emit("ComHousekeepingStatus", window.property_name)
                 window.socket.emit("Dashboard", window.property_name)
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
                 rs.loading = false
+
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
-
-
-            }).catch((err) => {
-                rs.loading = false
-            })
-
-        },
+            }
+              
+         }
 
     });
 }
@@ -336,6 +346,7 @@ function onUpdateReservationStatus(header="Confirm Note",data){
              const data = options.data;
              if (data) {
                 rs.getReservationDetail(rs.reservationStay.name)
+
              }
          }
 

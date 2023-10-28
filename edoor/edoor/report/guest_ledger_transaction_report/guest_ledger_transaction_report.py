@@ -78,7 +78,6 @@ def get_report_data(folio_transaction_amount,filters):
 	#get folio number from folio folio transaction
 	folio_numbers = set([d["transaction_number"] for d in folio_transaction_amount])
 	filters.folio_numbers = folio_numbers or []
-	filters.keyword = "%{}%".format(filters.keyword or "")
 	return_culomn = [
 					"if(ifnull(parent_reference,'') = '',name,parent_reference) as name",
 					"modified",
@@ -111,16 +110,16 @@ def get_report_data(folio_transaction_amount,filters):
 			{1}
 			from `tabFolio Transaction` 
 			where
-				concat(name,' ',transaction_number ,' ' , ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like %(keyword)s and 
+				transaction_type='Reservation Folio' and
 				property = %(property)s and 
-				concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(room_number,'')) like '%{0}%' and
+				concat(name,' ',reservation ,' ',reservation_stay , ' ' ,' ',transaction_number ,' ', ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like '%{0}%' and
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
 				ifnull(account_code,'') = if(%(account_code)s='',ifnull(account_code,''),%(account_code)s)  and
 				ifnull(room_id,'') = if(%(room_id)s='',ifnull(room_id,''),%(room_id)s)  and
-				is_master_folio = if(%(is_master)s=0,is_master_folio,1) and 
-				transaction_type='Reservation Folio'
+				is_master_folio = if(%(is_master)s=0,is_master_folio,1)
+				
 		""".format(filters.keyword or '',','.join(return_culomn))
 		data = frappe.db.sql(sql,filters,as_dict=1)
 		for d in data:

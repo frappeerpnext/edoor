@@ -1,6 +1,6 @@
 <template>
     <ComOverlayPanelContent title="Change Date" style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
-        <div class="grid py-2">
+        <div class="grid py-2 wp-number-cus">
             <div class="col-6">
                 <label>Arrival Date</label>
                 <Calendar hideOnDateTimeSelect :disabled="(stay.can_arrival) || (rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>

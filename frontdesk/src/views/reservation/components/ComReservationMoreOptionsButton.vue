@@ -222,15 +222,6 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
         },
         onClose: (options) => {
             const data = options.data;
-
-
-            if (data) {
-                setTimeout(function () {
-                    rs.LoadReservation(rs.reservation.name)
-                }, 1500)
-
-
-            }
         }
 
     });
@@ -334,7 +325,6 @@ function onGroupUndoCheckIn() {
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("ReservationDetail", window.reservation)
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     }
                 }).catch(err=>{
@@ -373,7 +363,6 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("ReservationDetail", window.reservation)
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         rs.LoadReservation()
                     }
@@ -429,7 +418,6 @@ function onMarkAsPaidbyMasterroom() {
             }).then((result) => {
                 if (result) {
                     rs.LoadReservation()
-                    window.socket.emit("ReservationDetail", window.reservation)
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 }
             })
@@ -466,7 +454,6 @@ function onUnMarkAsPaidbyMasterroom() {
             }).then((result) => {
                 if (result) {
                     rs.LoadReservation()
-                    window.socket.emit("ReservationDetail", window.reservation)
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 }
             })
@@ -493,7 +480,7 @@ function onAllowPostToCityLedger() {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 1
             }).then((result) => {
-                window.socket.emit("ReservationDetail", window.reservation)
+                rs.LoadReservation()
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
                 .catch((err) => {
@@ -518,7 +505,7 @@ function onUnAllowPostToCityLedger() {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 0
             }).then((result) => {
-                window.socket.emit("ReservationDetail", window.reservation)
+                rs.LoadReservation()
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
                 .catch((err) => {

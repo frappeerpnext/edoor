@@ -120,10 +120,10 @@ import ComConfirmChangeStay from "@/views/frontdesk/components/ComConfirmChangeS
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
-import ComRoomChartFilter from './components/ComRoomChartFilter.vue'
+import ComRoomChartFilter from '@/views/frontdesk/components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
-import ComTodaySummary from './components/ComTodaySummary.vue'
-import ComRoomChartFilterSelect from './components/ComRoomChartFilterSelect.vue'
+import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue'
+import ComRoomChartFilterSelect from '@/views/frontdesk/components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'

@@ -75,9 +75,12 @@
               </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Discount Type"
                 v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code"
-                :value="doc?.discount_type" />
+                :value="doc?.discount_type +  '  ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '') "  />
+              <!-- <ComStayInfoNoBox label="Discount"
+                v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code && doc?.discount_type=='Percent'"
+                :value="doc?.discount + '%'"  /> -->
               <!-- <ComStayInfoNoBox :label="`Room Discount - ${doc?.discount}%`" v-if="account_code?.allow_discount && doc?.account_code" :value="`${doc?.discount}%`" /> -->
-              <ComStayInfoNoBox label="Total Discount"
+              <ComStayInfoNoBox label="Amount Discount"
                 v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code"
                 :value="doc?.discount_amount" isCurrency />
               <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency

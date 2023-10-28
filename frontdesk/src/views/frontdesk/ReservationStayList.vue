@@ -80,7 +80,11 @@
                                 <span v-else-if="c.fieldtype == 'Status'"
                                     class="px-2 rounded-lg text-white p-1px border-round-3xl"
                                     :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                                    }}</span>
+                                    }}
+                                </span>
+                                <span v-else-if="c.fieldname == 'reservation_type'" v-tippy="slotProps.data[c.fieldname]=='FIT'?'Free Independent Traveler':'Group Inclusive Tour'">
+                                    {{ slotProps.data[c.fieldname] }}
+                                </span>
                                 <span v-else>
                                     {{ slotProps.data[c.fieldname] }}
                                     <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>

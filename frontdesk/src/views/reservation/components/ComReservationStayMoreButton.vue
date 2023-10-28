@@ -243,7 +243,7 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                rs.LoadReservation(rs.reservation.name)
+                // rs.LoadReservation(rs.reservation.name)
             }
         }
 

@@ -113,7 +113,7 @@
 
                             <label>Return Guest</label>
                             <ComAutoComplete isIconSearch v-model="doc.reservation.guest" class="pb-2"
-                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer" v-debounce="onReturnGuest"/>
+                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer"/>
                             <hr class="my-3" />
                             <div class="grid">
                                 <div class="col-12 pt-2">
@@ -121,7 +121,7 @@
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="New Guest Name"
                                         v-model="doc.guest_info.customer_name_en" :maxlength="50" v-debounce="onNewGuestName"/>
                                     <Message v-if="doc?.guest_info?.customerExist">
-                                        <span>This guest is already exist. View guest detail | {{ doc.guest_info.existingGuest }}</span>
+                                        <span>This guest is already exist. View guest detail | <a class="p-0 link_line_action1" @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{ doc.guest_info.existingGuest }}</a></span>
                                     </Message>
                                     </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
@@ -741,6 +741,9 @@ function onNewGuestName(v){
     }
 }
 
+const onViewGuestDetail =(name)=>{
+    window.postMessage('view_guest_detail|' + name, '*');
+}
 
 function onViewFutureReservation(){
     const dialogRef = dialog.open(ComIFrameModal, {
