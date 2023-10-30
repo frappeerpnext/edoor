@@ -57,4 +57,16 @@ class ReservationFolio(Document):
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
+
+	def after_insert(self):
+		comment = {
+			"subject":"Create New Guest Folio",
+			"reference_doctype":"Reservation Folio",
+			"reference_name":self.name,
+			"content":f"New guest folio added. Folio #:<a data-action='view_folio_detail' data-name='{self.name}'>{self.name}</a> Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'>{self.reservation}</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+		}
 		
+		if (self.note):
+			comment["content"] = comment["content"] + "<br /> Note: " + self.note
+
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[comment])

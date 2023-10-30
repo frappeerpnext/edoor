@@ -21,7 +21,7 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                <ComCheckRoomConfligAndOverBooking/>
+                    <ComCheckRoomConfligAndOverBooking/>
                 </div>
             </template>
         </ComHeader>

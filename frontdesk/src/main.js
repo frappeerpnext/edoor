@@ -316,6 +316,7 @@ if (setting) {
 	window.property_name = setting.edoor_setting?.property?.name
 	window.user =  setting.user
 	window.current_working_date =  setting.working_day?.date_working_day
+	window.working_day =  setting.working_day
 	
 	
 	//attach permission

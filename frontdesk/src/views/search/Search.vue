@@ -47,7 +47,7 @@
                     </template>
                 </Listbox>
                 </div>
-                        <div class="col-10 p-0">      
+                        <div class="col-10 p-0 search_style_section">      
                 <DataView :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
                 
                     <template #list="slotProps">

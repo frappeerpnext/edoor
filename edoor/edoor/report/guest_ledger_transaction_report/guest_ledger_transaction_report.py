@@ -77,6 +77,7 @@ def get_folio_transaction_amount(filters):
 def get_report_data(folio_transaction_amount,filters):
 	#get folio number from folio folio transaction
 	folio_numbers = set([d["transaction_number"] for d in folio_transaction_amount])
+	filters.keyword = "%{}%".format(filters.keyword or "")
 	filters.folio_numbers = folio_numbers or []
 	return_culomn = [
 					"if(ifnull(parent_reference,'') = '',name,parent_reference) as name",
@@ -112,7 +113,7 @@ def get_report_data(folio_transaction_amount,filters):
 			where
 				transaction_type='Reservation Folio' and
 				property = %(property)s and 
-				concat(name,' ',reservation ,' ',reservation_stay , ' ' ,' ',transaction_number ,' ', ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like '%{0}%' and
+				concat(name , ' ' ,' ',transaction_number ,' ', ifnull(room_number,'') , ' ', guest_name, ' ',account_code, ' ' ,account_name) like %(keyword)s and
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(reservation,'') = if(%(reservation)s='',ifnull(reservation,''),%(reservation)s)  and 
 				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 

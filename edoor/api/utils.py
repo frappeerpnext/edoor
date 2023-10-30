@@ -1,4 +1,4 @@
-import datetime 
+import datetime
 import frappe
 import json
 from dateutil.rrule import rrule, MONTHLY
@@ -9,6 +9,25 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from frappe import _
 import calendar
+
+
+@frappe.whitelist()
+def get_working_day(property = ''):
+    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
+    cashier_shift = None
+    if len(working_day)>0:
+        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
+        
+        if len(data)>0:
+            cashier_shift = data[0]
+        
+    return {
+        "date_working_day": working_day[0]["date"] if len(working_day)>0 else '',
+        "name":working_day[0]["name"] if len(working_day)>0 else '',
+        "cashier_shift":cashier_shift
+    }
+
+
 
 @frappe.whitelist()
 def get_chart():
@@ -833,10 +852,18 @@ def get_months(start_date,end_date):
 	return months
 
 def add_audit_trail(data):
+    
     for d in data:
+        doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
+        if hasattr(doc,"property"):
+            working_day = get_working_day(doc.property)
+            d["custom_posting_date"]= working_day["date_working_day"]
+            d["custom_property"]= doc.property
+
         d["doctype"]="Comment"
         d["comment_type"]="Info"
         d["custom_is_audit_trail"]=1
         d["comment_by"]:frappe.session.user.full_name
+
         frappe.get_doc(d).insert(ignore_permissions=True)
 

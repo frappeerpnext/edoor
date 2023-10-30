@@ -1,10 +1,44 @@
 <template>
+    
     <ul>
         <template v-for="(s, index) in rs.reservationFolioList" :key="index">
-            <li> x
+            <li> 
+   
+    <div class="card">
+        
+        <Accordion :selectOnFocus="true" :multiple="true" :activeIndex="0">
+    <AccordionTab>
+        <template #header>
+            <span class="flex align-items-center gap-2 w-full">
                 {{ s.name }} | {{ s.guest_name }} | {{ s.balance }} {{ s.reservation_status }} | {{ s.status_color }} | {{
                     s.rooms }}
-                <ul>
+                
+            </span>
+            <Button @click="onAddNewFolio(s); $event.stopPropagation()" v-tippy="'Add New Folio'" class="p-2 ml-auto" icon="pi pi-plus" aria-label="Submit" />
+          
+        </template>
+        <p class="m-0">
+           <div v-for="(d, index) in s.folios" :key="index">
+            <Button @click="onSelectFolio(d)" v-if="d.selected" style="background-color: red;">
+                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
+                                d.selected }} | Is Master:{{ d.is_master }} <br />
+                            Balance:{{ d.balance }}
+                        </Button>
+                        <Button @click="onSelectFolio(d)" v-else>
+                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
+                                d.selected }} | Is Master:{{ d.is_master }}
+                            <br />
+                            Balance:{{ d.balance }}
+                            Status: {{ d.status }}
+                        </Button>
+           </div>
+        </p>
+    </AccordionTab>
+</Accordion>
+    </div>
+                <!-- {{ s.name }} | {{ s.guest_name }} | {{ s.balance }} {{ s.reservation_status }} | {{ s.status_color }} | {{
+                    s.rooms }} -->
+                <!-- <ul>
                     <li v-for="(d, index) in s.folios" :key="index">
                         <Button @click="onSelectFolio(d)" v-if="d.selected" style="background-color: red;">
                             {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
@@ -20,15 +54,17 @@
                         </Button>
 
                     </li>
-                </ul>
+                </ul> -->
 
-                <Button @click="onAddNewFolio(s)">Add New Folio</Button>
+                <!-- <Button @click="onAddNewFolio(s)">Add New Folio</Button> -->
             </li>
         </template>
     </ul>
 </template>
 <script setup>
 import {  inject, useDialog } from '@/plugin';
+import Accordion from 'primevue/accordion';
+import AccordionTab from 'primevue/accordiontab';
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
 
 const dialog = useDialog();

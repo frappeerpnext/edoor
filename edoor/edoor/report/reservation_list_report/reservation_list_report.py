@@ -140,6 +140,9 @@ def get_filters(filters):
 
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
+		frappe.throw(str(filters.reservation_status))
+		
+
 	
 	if filters.reservation_type:
 		sql = sql + " and rst.reservation_type = %(reservation_type)s"

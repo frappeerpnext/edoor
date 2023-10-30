@@ -4,7 +4,7 @@
             {{ title }}
         </div>
         <div class="flex-none">
-            <div class="px-2 py-1 border-round-lg text-white " :class="class">{{ value }}</div>
+            <div class="px-2 py-1 border-round-lg text-white " :class="class" :style="style">{{ value }}</div>
         </div>
     </div>
 </template>
@@ -12,7 +12,8 @@
 const props = defineProps({
     value: [String, Number],
     title: String,
-    class: String
+    class: String,
+    style: String
 })
 const emit = defineEmits(["onClick"])
 function onClick (){

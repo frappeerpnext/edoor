@@ -1,7 +1,6 @@
 <template>
     <div class="flex gap-2">
         <div>
-            {{ hk.filter.selected_date }}
             <Calendar :selectOtherMonths="true" class="w-full" v-model="hk.filter.selected_date" @date-select="onSearch" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
         </div>
         <div class="p-0 w-15rem">
@@ -24,8 +23,12 @@
                         ></ComSelect>
         </div>
         <div class="w-15rem">
-            <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" isFilter v-model="hk.filter.selected_housekeeping_status"
-                placeholder="Housekeeping Status" doctype="Housekeeping Status" @onSelected="onSearch" />
+            <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
+                isFilter 
+                v-model="hk.filter.selected_housekeeping_status"
+                placeholder="Housekeeping Status" 
+                doctype="Housekeeping Status" 
+                @onSelected="onSearch" />
         </div>
         <div class="">
             <div class="flex gap-2">
@@ -57,13 +60,12 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { ref,inject } from '@/plugin';
+import { ref,inject,onMounted } from '@/plugin';
 const showAdvanceSearch = ref()
 const hk = inject("$housekeeping")
 const gv = inject("$gv")
 const moment = inject("$moment")
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
-hk.filter.selected_date = moment( working_date.date_working_day).toDate() 
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);
@@ -84,10 +86,15 @@ const advanceFilter = (event) => {
 }
 
 const onClearFilter = () => {
-    hk.filter = {};
+    hk.filter = {
+        date: moment( working_date.date_working_day).toDate()
+    };
     hk.loadData();
     showAdvanceSearch.value.hide()
 }
+onMounted(() => {
+    hk.filter.selected_date = moment.utc(moment(working_date.date_working_day).format("YYYY-MM-DD")).toDate()
+})
 
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()

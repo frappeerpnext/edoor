@@ -18,7 +18,7 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div class="flex gap-2">
                     <div class="flex justify-center items-center overflow-hidden rounded-lg h-full">
                         <button type="button" @click="hk.view_type = 'table'"
                             :class="(hk.view_type == 'table') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
@@ -28,6 +28,11 @@
                             :class="(hk.view_type == 'kanban') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
                             <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''" class="pi pi-th-large me-2" />Kanban
                         </button>
+                    </div>
+                    <div>
+                        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
+                        <Button @click="onToday('today')"  v-tippy ="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
+                        <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
                     </div>
                 </div>
             </div>
@@ -53,6 +58,7 @@ import ComHousekeepingStatistic from "./components/ComHousekeepingStatistic.vue"
 const edoorShowhousekeepingSummary = localStorage.getItem("edoor_hhowhousekeeping_summary")
 import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
+import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
 const hk = inject("$housekeeping")
 const showSummary = ref(true)
 

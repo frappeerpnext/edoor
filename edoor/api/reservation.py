@@ -1452,7 +1452,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
     working_day =get_working_day(doc_reservation.property)
     if not working_day["cashier_shift"]:
         frappe.throw("Please start cashier shift first") 
-    
+    comment_doc = []
     for s in stays:
         if not  s["reservation_status"] in ["Reserved" , "Confirmed"]:
             frappe.throw("You can {} on Confirmed and Reserved reservation only".format(status))
@@ -1508,7 +1508,22 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
             
             frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}'".format(stay.name,color))
 
+        #create audit trail
+        comment = {
+            "reference_doctype":"Reservation Stay",
+            "reference_name":stay.name,
+            "subject": stay.reservation_status + " Reservation Stay",
+
+        }
+        comment["content"] = f"{stay.reservation_status} reservation stay. Reservation #: <a data-action='view_reservation_detail' data-name='{stay.reservation}'>{stay.reservation}</a>, reservation stay #: <a data-action='view_reservation_stay_detail' data-name='{stay.name}'>{stay.name}</a>, Room: {stay.rooms}, Guest:<a data-action='view_guest_detail' data-name='{stay.guest}'>{stay.guest} - {stay.guest_name}</a>"
+        if stay.reservation_status =='No Show':
+            comment["content"] = comment["content"] + f", reserved room: {'Yes' if reserved_room else 'No'}"
+        if note:
+            comment["content"] = comment["content"] + "<br/> Note: " + note
+        comment_doc.append(comment)
+
         
+     
     #check if reservation dont have master stay room then update date the first active reservation to master room
 
     frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=doc_reservation.name, doc=None, run_commit=True)
@@ -1517,6 +1532,9 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
 
     frappe.msgprint("{} reservation successfully".format(status))
     frappe.enqueue("edoor.api.reservation.update_master_room", queue='short', reservation=reservation)
+    frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
+
+
     return stays
 
 
@@ -2267,11 +2285,11 @@ def reserved_room(property, reservation_stay):
                 frappe.throw("Room type {} is not available".format(s.room_type))
 
         #check if current room is already assign room 
-        if s.room_id:
+        # if s.room_id:
             
-            data = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure = 0 and room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
-            if data:
-                frappe.throw("Room {} is not available now".format(s.room_number))
+        #     data = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure = 0 and room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
+        #     if data:
+        #         frappe.throw("Room {} is not available now".format(s.room_number))
     
     stay.is_reserved_room=1
     stay.save()

@@ -1325,3 +1325,15 @@ span.row-disabled > :not(button) {
 .search-hover:hover{
     background-color: #a1dff831;
 }
+.search_style_section{
+    max-height: 60vh;
+    overflow: auto;
+    padding-right: 16px !important;
+}
+.search_style_section .p-dataview-list .p-paginator-bottom{
+    position: absolute;
+    left: 0;
+    bottom: -50px;
+    width: 100%;
+    z-index: 100;
+}

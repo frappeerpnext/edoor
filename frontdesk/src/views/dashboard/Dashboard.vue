@@ -39,11 +39,18 @@
                             </ComChartStatus>
                             <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
                             </ComChartStatus>
-                            <div class="grid mt-3 text-center">
+
+                            <ComChartStatus @onClick="onViewCancelReservation" :value="data.total_cancelled" title="Cancelled" class="btn-sec-edoor">
+                            </ComChartStatus>
+                            <ComChartStatus @onClick="onViewNoShowReservation" :value="data.total_no_show" title="No-show" class="btn-sec-edoor">
+                            </ComChartStatus>
+                            <ComChartStatus @onClick="onViewVoidReservation" :value="data.total_void" title="Void" class="btn-sec-edoor">
+                            </ComChartStatus>
+                            <!--<div class="grid mt-3 text-center">
                                 <ComShowCancelOcc @onClick="onViewCancelReservation" title="Cancelled" :value="data.total_cancelled"></ComShowCancelOcc>
                                 <ComShowCancelOcc  @onClick="onViewNoShowReservation" title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
                                 <ComShowCancelOcc  @onClick="onViewVoidReservation" title="Void" :value="data.total_void"></ComShowCancelOcc>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </ComPanel>

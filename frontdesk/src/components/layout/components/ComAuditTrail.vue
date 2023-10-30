@@ -1,205 +1,45 @@
 <template>
-    <ComDialogContent hideButtonOK @onClose="onClose">
-        <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data.length > 0">
-        <Timeline :value="data">
-            <template #marker="slotProps">
-                <div class="surface-ground w-2rem h-2rem border-circle h-full border-1" style="background: var(--bg-btn-dialog-inside);">
-                    <span class="flex align-items-center justify-center h-full" v-if="slotProps?.item?.type == 'Version'">
-                        <i class="pi pi-pencil"></i>
-                    </span>
-                    <span class="flex align-items-center justify-center h-full" v-else-if="slotProps?.item?.type == 'Frontdesk Note'">
-                        <i class="pi pi-bookmark text-yellow-700"></i>
-                    </span>
-                    <span class="flex align-items-center justify-center h-full" v-else-if="slotProps?.item?.type == 'Comment'">
-                        <i class="pi pi-upload" v-if="slotProps?.item?.comment_type == 'Attachment'"></i>
-                        <i class="pi pi-plus-circle" v-else-if="slotProps?.item?.comment_type == 'Created'"></i>
-                        <i class="pi pi-comment" v-else-if="slotProps?.item?.comment_type == 'Comment'"></i>
-                        <i class="pi pi-trash text-red-500" v-else-if="slotProps?.item?.comment_type == 'Attachment Removed' || slotProps?.item?.comment_type == 'Deleted Folio'"></i>
-                    </span>
-                    <span class="flex align-items-center justify-center h-full" v-else-if="slotProps?.item?.type == 'Folio Transaction'">
-                        <i class="pi pi-dollar"></i>
-                    </span>
-                </div>
-            </template>
-            <template #content="slotProps"> 
-                <div v-if="slotProps?.item?.type == 'Version'" class="mb-3 content">
-                    <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
-                        <div class="hover:underline text-gray-700" v-html="slotProps?.item?.description"></div>
-                    </Button>
-                    <div class="text-500">
-                        <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                        <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
-                        <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
-                    </div>
-                </div>
-                <div v-else-if="slotProps?.item?.type == 'Comment'">
-                    <div v-if="slotProps?.item?.comment_type == 'Comment'" style="background-color: var(--bg-comment);" class="cmmt-section mb-3 p-3 border-round-xl">
-                        <div class="flex gap-3 mb-1">
-                            <div>{{slotProps?.item?.owner == current_user ? 'You commented' : slotProps?.item?.owner}}</div>
-                            <div class="text-500">
-                                <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                                <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
-                                <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
-                            </div>
-                        </div>
-                        <div v-html="slotProps?.item?.content" class="content break-words"></div>
-                    </div>
-                    <div v-else-if="slotProps?.item?.comment_type == 'Deleted Folio'" class="mb-3">
-                        <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
-                            <div v-if="slotProps?.item && slotProps?.item?.content">
-                                <span class="hover:underline text-gray-700">
-                                    {{slotProps?.item?.owner == current_user ? 'You deleted' : slotProps?.item?.owner}} 
-                                    <span class="lowercase">{{ slotProps.item?.doctype }}</span> on 
-                                    Res. No: <strong>{{ slotProps?.item?.content.split('|')[0]}}, </strong>
-                                    Res. Stay No: <strong>{{ slotProps?.item?.content.split('|')[1]}}, </strong>
-                                    <span>
-                                        <span v-if="slotProps?.item?.content.split('|')[2] === slotProps?.item?.content.split('|')[3]">folio number: <strong>{{ slotProps?.item?.content.split('|')[2]}}, </strong></span>
-                                        <span v-else>folio number: <strong>{{slotProps?.item?.content.split('|')[3]}}, </strong></span>
-                                    </span>
-                                    Reason: <strong>{{ slotProps?.item?.content.split('|')[5]}}</strong>
-                                </span>
-                                
-                            </div>
-                        </Button>
-                        <div class="text-500">
-                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                            <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Folio Transaction'" :value="slotProps?.item?.doctype"/>
-                            <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
-                        </div>
-                    </div>
-                    <div v-else-if="slotProps?.item?.comment_type == 'Created'">
-                        <Button class="p-0 text-left" link @click="onDetail(slotProps.item)">
-                            <div class="hover:underline text-gray-700" v-html="slotProps?.item?.description"></div>
-                        </Button>
-                        <div class="text-500">
-                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                        </div>
-                    </div>
-                    <div v-else>
-                        <div v-html="slotProps?.item?.content "></div>
-                        <div class="text-500">
-                            <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                            <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
-                            <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
-                        </div>
-                    </div>
-                </div>
-                <div v-else-if="slotProps?.item?.type == 'Frontdesk Note'" class="ntd-section mb-3 p-3 border-round-xl" style="background-color: #faf6e9;">
-                    <div class="">
-                        <div class="flex gap-3 mb-1">
-                            <div>{{slotProps?.item?.owner == current_user ? 'You noted' : slotProps?.item?.owner}}</div>
-                            <div class="text-500">
-                                <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                                <ComNoticeAuditTrail v-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation'" :value="slotProps?.item?.docname"/>
-                                <ComNoticeAuditTrail v-else-if="dialogRef.data?.doctype == 'Reservation' && slotProps?.item?.doctype == 'Reservation Stay'" :value="slotProps?.item?.docname"/>
-                            </div>
-                        </div>
-                        <div v-html="slotProps?.item?.content" class="content break-words"></div>
-                    </div>
-                </div>
-                <div class="mb-3" v-else>
-                    <div class="flex gap-1">
-                        <div>{{slotProps?.item?.owner == current_user ? 'You' : slotProps?.item?.owner}}</div>
-                        <div v-html="slotProps?.item?.content" class="content break-words"></div>
-                    </div>
-                    <div class="text-500">
-                        <span>{{gv.datetimeFormat(slotProps?.item?.creation)}}</span>
-                    </div>
-                </div>
-            </template>
-        </Timeline>
-    </ComPlaceholder>
-    </ComDialogContent>
-    <Dialog v-model:visible="visible" modal header="Audit Trail Detail" position="top" :style="{ width: '50vw' }">
-        <ComAuditTrailDetail :data="selected" @onClose="onCloseDetail"/>
-    </Dialog>
+
+ <InputText  placeholder="Search" @input="onSearch" />
+ <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
+ <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+<div><ComOrderBy doctype="Comment" @onOrderBy="onOrderBy" /></div>
+
+<DataTable :value="data" paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
+    <Column field="reference_doctype" header="Audit date"></Column>
+    <Column field="reference_doctype" header=" Reference Type"></Column>
+    <Column field="reference_name" header="Reference Name"></Column>
+    <Column field="subject" header="Subject"></Column>
+    <Column field="content" header="Description"></Column>
+    <Column field="comment_by" header="Modified By"></Column>
+    <Column field="creation" header="Date"></Column>
+    <Column field="creation" header="Time"></Column>
+
+
+</DataTable>
+
 </template>
+
 <script setup>
-    import {getApi, inject,ref,onMounted, onUnmounted} from '@/plugin'
-    import Enumerable from 'linq'
-    import {Timeago} from 'vue2-timeago'
-    import ComAuditTrailDetail from './ComAuditTrailDetail.vue';
-    import ComNoticeAuditTrail from './ComNoticeAuditTrail.vue';
-import ComAuditTrailDetailCreatedDoc from './ComAuditTrailDetailCreatedDoc.vue';
-    const dialogRef = inject("dialogRef");
-    const data = ref([])
-    const gv = inject('$gv')
-    const loading = ref(true)
-    const current_user = JSON.parse(localStorage.getItem('edoor_user')).name
-    const visible = ref(false)
-    const selected = ref({})
-    onMounted(async () => {
-        if(dialogRef.value.data){
-            await onLoad(dialogRef.value?.data?.doctype, dialogRef.value?.data?.docname)
-        }  
-        setEventListener()
-    })
-    async function onLoad(doctype, docname){
-        if(doctype && docname){
-            loading.value = true
-            await getApi('reservation.get_audit_trail',{
-                doctype: doctype,
-                docname: docname
-            }).then((r)=>{
-                data.value = Enumerable.from(r.message).orderByDescending("$.creation").toArray()
-                loading.value = false
-               
-            }).catch((err)=>{
-                loading.value = false
-            })
-        }
-    }
 
-    function setEventListener(){
-        document.querySelectorAll(".reservation-stay").forEach(el=>{
-            el.addEventListener("click", function(){
-             
-                window.postMessage(`${el.dataset.action}|${el.dataset.key}`, '*')
-                
-            })
-        })
-    }
-    
-    function onDetail(record){
-        selected.value = record
-        visible.value = true
-    }
-    
-    function onCloseDetail(){
-        visible.value = false
-    }
-    function onClose(){
-        dialogRef.value.close()
-    }
-    onUnmounted(() => {
-        data.value = []
-    })
-
-
-    // @media screen and (max-width: 960px) {
-    //     ::v-deep(.customized-timeline) {
-    //         .p-timeline-event:nth-child(even) {
-    //             flex-direction: row !important;
-
-    //             .p-timeline-event-content {
-    //                 text-align: left !important;
-    //             }
-    //         }
-
-    //         .p-timeline-event-opposite {
-    //             flex: 0;
-    //         }
-
-    //         .p-card {
-    //             margin-top: 1rem;
-    //         }
-    //     }
-    // }
-  
-</script>
-<style scoped>
-
-.cmmt-section, .ntd-section{
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+import { ref,inject,onMounted,getDocList } from '@/plugin';
+const loading = ref(false);
+const gv = inject("$gv")
+const data = ref([])
+function onLoadData(){
+	loading.value = true
+	getDocList('Comment', {	
+		fields: ['reference_doctype','reference_name','subject','content','comment_by', "creation"],
+	}).then((doc) => {
+		data.value = doc
+		loading.value = false			
+	}).catch((rr)=>{
+		gv.toast('error', rr)
+	})
 }
-</style>
+onMounted(() => {
+	onLoadData()
+})
+
+
+</script>
