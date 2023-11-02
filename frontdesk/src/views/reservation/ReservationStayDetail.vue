@@ -104,10 +104,13 @@
                     <TabPanel>
                         <template #header>
                             <span class="me-2">Document</span>
-                            <ComDocumentBadge :attacheds="[name]" v-if="name && !rs.loading" />
+                            
+                            <ComDocumentBadge doctype="Reservation Stay"  :doctypes="['Reservation Stay','Reservation Folio','Folio Transaction']"  :docname="name"   :attacheds="rs.attacheds" v-if="name && rs.attacheds.length>0" />
                         </template>
-                        <ComDocument doctype="Reservation Stay" :docname="name" :fill="false" :attacheds="[name]"
-                            v-if="!rs.loading" />
+                    
+                        <ComDocument doctype="Reservation Stay" :doctypes="['Reservation Stay','Reservation Folio','Folio Transaction']"  :docname="name" :fill="false" :attacheds="rs.attacheds"
+                             />
+                             
                     </TabPanel>
                 </TabView>
             </div>
@@ -194,6 +197,7 @@ import ComReservationStayFolio from '@/views/reservation/components/ComReservati
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import Message from 'primevue/message';
 const rs = inject('$reservation_stay');
@@ -209,13 +213,15 @@ const dialogRef = inject("dialogRef");
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
-
+const props = defineProps({
+    data: Object,
+    
+})
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
-
 
 
 const onRefresh = (showLoading = true) => {
@@ -234,6 +240,10 @@ const onRefresh = (showLoading = true) => {
         //load folio
         window.postMessage({action:"load_folio_transaction"},"*")
         window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+    } else if(activeTab.value==3){
+        window.postMessage({action:"refresh_document",docname:name.value})
+        window.postMessage({action:"refresh_document_count",docname:name.value})
+        
     }
 
 
@@ -375,12 +385,9 @@ const onCheckIn = () => {
 
                 }).then((result) => {
                     rs.loading = false
-
-                  
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
@@ -476,7 +483,7 @@ function onAuditTrail() {
         props: {
             header: 'Audit Trail',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
             modal: true,
             maximizable: true,

@@ -274,16 +274,17 @@ function onGroupCheckIn() {
                     reservation_stays: rs.selecteds.map(d => d["name"])
                 }).then((result) => {
                     rs.loading = false
-                    window.socket.emit("ReservationDetail", rs.reservation.name);
-                    window.socket.emit("Dashboard", property.name);
+                    window.socket.emit("ReservationDetail", window.reservation);
+                    window.socket.emit("Dashboard", window.property_name);
+                    window.socket.emit("Frontdesk", window.property_name);
                     window.socket.emit("ReservationList", { property:window.property_name})
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("ComGuestLedger", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
-                    console.log(rs.selecteds)
                     rs.selecteds.forEach(r => {
                         window.socket.emit("ReservationStayDetail", {reservation_stay:r.name})
                     });
+
                     
                 })
                     .catch((err) => {
@@ -320,12 +321,14 @@ function onGroupUndoCheckIn() {
                 }).then((result) => {
                     if (result) {
                         //wait for equeue process finish
-                        rs.LoadReservation()
+                        // rs.LoadReservation(window.reservation, false)
                         window.socket.emit("ReservationList", { property:window.property_name})
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.socket.emit("ReservationDetail", window.reservation)
+                        window.socket.emit("Frontdesk", window.property_name)
                     }
                 }).catch(err=>{
                     rs.loading = false
@@ -359,6 +362,8 @@ function onGroupCheckOut(is_not_undo = false) {
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {
+                        window.socket.emit("Frontdesk", window.property_name);
+                        window.socket.emit("Dashboard", window.property_name);
                         window.socket.emit("ReservationList", { property:window.property_name})
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ComGuestLedger", { property:window.property_name})

@@ -23,11 +23,12 @@
                     <div v-if="gv.isNotEmpty(filter)">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                     </div>
-                    <div>
+                    
+                </div>
+                <div class="flex grap-2">
+                    <div class="px-2">
                         <ComOrderBy doctype="Business Source" @onOrderBy="onOrderBy" />
                     </div>
-                </div>
-                <div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
@@ -112,12 +113,12 @@
 <OverlayPanel ref="showAdvanceSearch" style="width:40rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
-            <ComAutoComplete class="col-6" width="100%" 
-                v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                doctype="Business Source Type" />
-
-            <ComSelect class="col-6" width="100%" v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
-                    doctype="Country" isFilter />
+            <div class="col-6">
+                <ComAutoComplete isFull v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type" doctype="Business Source Type" />
+            </div>
+            <div class="col-6">
+                <ComSelect isFull v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country" doctype="Country" isFilter />
+            </div>
         </div>
     </ComOverlayPanelContent>
 </OverlayPanel>

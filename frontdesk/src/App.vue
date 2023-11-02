@@ -66,7 +66,7 @@ if (localStorage.getItem("edoor_property") == null) {
 
 
 const actionClickHandler = async function (e) {
-   
+   console.log(e.data)
 
     if (e.isTrusted && typeof (e.data) == 'string') {
 

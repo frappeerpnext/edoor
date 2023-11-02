@@ -28,11 +28,11 @@
                     <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;" :src="folioUrl"></iframe>
                 </TabPanel>
                 <TabPanel>
-                        <template #header>
-                            <span class="me-2">Document</span>
-                        </template>
-                        <ComDocument doctype="Customer" :docname="name" :fill="false" :attacheds="[name]"
-                            v-if="!loading" />
+                    <template #header>
+                        <span class="me-2">Document</span>
+                        <ComDocumentBadge :docname="name" :doctypes="['Customer']" :attacheds="[name]" v-if="name"/>
+                    </template>
+                        <ComDocument doctype="Customer" :docname="name" :fill="false" :attacheds="[name]"/>
                 </TabPanel>
             </TabView>
         </div>

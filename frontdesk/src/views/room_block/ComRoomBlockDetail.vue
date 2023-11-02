@@ -6,12 +6,12 @@
        </Message>
        <Message v-if="doc?.docstatus==1 && doc?.is_unblock==0">This room number <strong>{{doc?.room_number}}</strong> is blocked now. To unblock this room, please on button <strong>Unblock</strong>
         <br/>
-        <Button @click="onUnblock">Unblock this Room</Button>
+        <Button class="border-none" @click="onUnblock">Unblock this Room</Button>
        </Message>
 
         <Chip class="text-white bg-orange-500 p-1px px-2" v-if="doc?.docstatus==0"><i class="pi pi-lock me-2" />Draft</Chip>
         <Chip class="text-white surface-400 p-1px px-2"  v-if= "doc?.is_unblock != 0" ><i class="pi pi-lock-open me-2" /> Unblock</Chip>    
-        <Chip class="text-white bg-black-alpha-90 p-1px px-2"  v-if="doc?.docstatus==1 && doc?.is_unblock==0"><i class="pi pi-lock me-2" />Block</Chip> 
+        <!-- <Chip class="text-white bg-black-alpha-90 p-1px px-2"  v-if="doc?.docstatus==1 && doc?.is_unblock==0"><i class="pi pi-lock me-2" />Block</Chip>  -->
         <div v-if="doc &&  doc?.is_unblock != 0">
             <div>Unblock Date : {{ doc.unblock_date }}</div>
             <div>Reason : {{ doc.unblock_note }}</div>
@@ -107,6 +107,8 @@ function onSubmitRoomBlock(){
                loading.value = false
                window.socket.emit("Frontdesk", window.property_name)
                window.socket.emit("ComHousekeepingStatus", window.property_name)
+                window.socket.emit("RoomBlockList", window.property_name)
+
             }).catch(err=>{
                 loading.value = false
             })
@@ -178,6 +180,8 @@ function onSave (){
         window.socket.emit("RoomBlockList",window.property_name)
         window.socket.emit("Dashboard",window.property_name)
         window.socket.emit("ComHousekeepingStatus",window.property_name)
+        window.socket.emit("Housekeeping",{property:window.property_name})
+        window.socket.emit("ComHousekeepingRoomDetailPanel",{property:window.property_name})
         doc.value = r
         unblockvisible.value =false
         unblock_loading.value = false

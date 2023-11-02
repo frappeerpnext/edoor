@@ -1,6 +1,6 @@
 <template>
     <div class="pb-20">
-       <div class="">
+        <div class="">
             <div class="line-height-1 absolute top-4">
                 <div class="text-2xl">Detail OF</div>
                 <div class="text-sm">{{hk.selectedRow?.room_type}} # {{hk.selectedRow?.room_number}}</div>
@@ -8,8 +8,6 @@
             <hr class="mb-3">
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room</div>
             <table>
-                <ComStayInfoNoBox  label="Room No" :value="hk.selectedRow?.name" /> 
-                <ComStayInfoNoBox  label="Room Type Id" :value="hk.selectedRow?.room_type_id" /> 
                 <ComStayInfoNoBox  label="Room Number" :value="hk.selectedRow?.room_number" /> 
                 <ComStayInfoNoBox  label="Status" :value="hk.selectedRow?.housekeeping_status" /> 
                 <ComStayInfoNoBox  label="Housekeeper" :value="hk.selectedRow?.housekeeper" /> 
@@ -70,7 +68,7 @@
                         {{ gv.dateFormat(hk?.reservationStay?.departure_date) }} - {{ gv.timeFormat(hk?.reservationStay?.departure_time)  }}
                     </span>
                 </ComStayInfoNoBox> 
-                <ComStayInfoNoBox  label="Night" :value="hk?.reservationStay?.room_nights" /> 
+                <ComStayInfoNoBox  label="Night(s)" :value="hk?.reservationStay?.room_nights" /> 
             </table>
             <template  >
             <div class="py-2 mt-3 border-1  bg-slate-200 font-medium text-center">Housekeeping Charge Summary</div> 
@@ -114,10 +112,29 @@
                 </div>
             </div>
         </div>
+        
+        <div v-if="hk.room_block">
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
+            <table>
+                
+                <ComStayInfoNoBox  label="Block Date">
+                    <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{ hk?.room_block?.block_date }}</Button>
+                </ComStayInfoNoBox> 
+                <ComStayInfoNoBox  label="Start Date">
+                    <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{ hk?.room_block?.start_date }}</Button>
+                </ComStayInfoNoBox> 
+                <ComStayInfoNoBox  label="End Date">
+                    <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{ hk?.room_block?.end_date }}</Button>
+                </ComStayInfoNoBox> 
+                <ComStayInfoNoBox  label="Night(s)" :value="hk?.room_block?.total_night_count" /> 
+                <ComStayInfoNoBox  label="Room Type" :value="hk?.room_block?.room_type" /> 
+            </table>
+        </div>
+        
     </div>
 </template>
 <script setup>
-import { inject, ref, useToast} from '@/plugin';
+import { inject, ref, useToast, onMounted, onUnmounted} from '@/plugin';
 const hk = inject("$housekeeping")
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
 const housekeeping_status = ref(edoor_setting.housekeeping_status)
@@ -204,8 +221,18 @@ function onSaveAssignHousekeeper($event) {
     } 
 }
 
-function whatup($event){
-    alert("Hello ")
+onMounted(() => {
+    window.socket.on("ComHousekeepingRoomDetailPanel", (arg) => {
+        if (arg.property == window.property_name) {
+            setTimeout(function(){
+                hk.loadData(false)
+            },3000) 
+        }
+    })
+})
+
+function onOpenLink(data) {
+    window.postMessage('view_room_block_detail' + "|" + data, '*')
 }
 
 function onViewCustomerDetail(name) {
@@ -220,4 +247,8 @@ function onViewReservationStayDetail(rs){
 function onViewReservationDetail(rs){
     window.postMessage('view_reservation_detail|'+rs, '*')
 }
+
+onUnmounted(() => {
+    window.socket.off("ComHousekeepingRoomDetailPanel")
+})
 </script>

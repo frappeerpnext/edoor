@@ -23,9 +23,12 @@
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
             <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
-          <ComOrderBy doctype="Room Block" @onOrderBy="onOrderBy" />
         </div>
-        <div>
+        
+        <div class="flex">
+          <div class="px-2">
+            <ComOrderBy doctype="Room Block" @onOrderBy="onOrderBy" />
+          </div>
           <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
             <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
           </Button>
@@ -132,7 +135,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed } from '@/plugin'
+import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, useDialog, computed,onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
@@ -224,8 +227,9 @@ function pageChange(page) {
   loadData()
 }
 
-function loadData() {
-  gv.loading = true
+function loadData(show_loading=true) {
+
+  gv.loading = show_loading
   let filters = [
     ["property", "=", property.name]
   ]
@@ -360,6 +364,13 @@ onMounted(() => {
       })
     })
   })
+  window.socket.on("RoomBlockList", (arg) => {
+        if (arg == window.property_name) {
+            setTimeout(function(){
+                loadData(false)
+            },3000) 
+        }
+    })
 
 })
 function onAddNewRommBlock(room_block) {
@@ -400,4 +411,8 @@ const onCloseAdvanceSearch = () => {
 const onCloseColumn = () => {
   opShowColumn.value.hide()
 }
+
+onUnmounted(() => {
+    window.socket.off("RoomBlockList");
+})
 </script>

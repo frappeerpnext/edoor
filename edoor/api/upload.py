@@ -233,6 +233,7 @@ def upload_file():
 				"title":title,
 				"description":description,
 				"content": content,
+				"custom_show_in_edoor":1
 			}
 		).save(ignore_permissions=ignore_permissions)
 

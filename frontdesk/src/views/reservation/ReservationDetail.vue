@@ -99,20 +99,19 @@
                     </template>
                    <ComReservationFolio />
                 </TabPanel>
-
                 <TabPanel > 
                     <template #header>
                         <span class="me-2">Document</span>
-                        <ComDocumentBadge :attacheds="rs.attacheds" v-if="name && !rs.loading"/>
+                        <ComDocumentBadge :docname="name" :doctypes="['Reservation Stay', 'Reservation','Customer','Reservation Folio','Folio Transaction']"  :attacheds="rs.attacheds" v-if="name && !rs.loading"/>
                     </template>
-                    <ComDocument doctype="Reservation" :extraFilters="rs.reservationStays" :attacheds="rs.attacheds" :docname="name"/>
+                   
+                    <ComDocument doctype="Reservation"   :doctypes="['Reservation Stay', 'Reservation','Customer','Reservation Folio','Folio Transaction']" :attacheds="rs.attacheds" :docname="name"/>
                 </TabPanel>
 
             </TabView>
         </div>
         <template #footer-left>
             <div class="flex justify-end gap-2">  
-                
                 <ComReservationMoreOptionsButton />
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
             </div>
@@ -174,7 +173,7 @@ const canCheckIn = computed(() => {
 });
 
 
-function onRefresh(showLoading = true) {
+const onRefresh = debouncer((showLoading = true) => {
     if(activeTab.value==0){
         rs.LoadReservation(name.value, showLoading);
         rs.getChargeSummary(name.value)
@@ -185,7 +184,26 @@ function onRefresh(showLoading = true) {
     } else if(activeTab.value==2){
         rs.getRoomRate(name.value, showLoading);
     }
+    else if(activeTab.value==4){
+        window.postMessage({action:"refresh_document",docname:name.value})
+        window.postMessage({action:"refresh_document_count",docname:name.value})
+    }
+}, 500);
+
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
+
+
+ 
 
 
 function onRoute() {

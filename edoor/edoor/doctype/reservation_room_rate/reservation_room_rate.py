@@ -7,9 +7,12 @@ import frappe
 from frappe.model.document import Document
 from edoor.api.utils import get_base_rate
 import json
+
+from frappe.utils.data import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
-	 
+		 
+		
 		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:
 			if hasattr(self,"regenerate_rate") and  self.regenerate_rate:

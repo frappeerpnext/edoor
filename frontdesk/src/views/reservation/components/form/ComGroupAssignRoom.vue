@@ -180,7 +180,6 @@ function onSave() {
         window.socket.emit("ComGuestLedger", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)
         dialogRef.value.close("open_reservation_detail")
-        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
         data.value.map(r=>r.reservation_stay).forEach(r => {
             window.socket.emit("ReservationStayDetail", {reservation_stay:r})
         });

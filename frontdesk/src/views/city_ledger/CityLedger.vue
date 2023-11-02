@@ -28,21 +28,22 @@
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <Dropdown v-model="order.order_by" :options="sortOptions" optionValue="fieldname"
-                                optionLabel="label" placeholder="Sort By" @change="onSelectOrderBy" />
-                        </div>
-                        <div>
-                            <!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
-                            <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">
-                                <i v-if="order.order_type == 'desc'" class="pi pi-sort-alpha-down" />
-                                <i v-if="order.order_type == 'asc'" class="pi pi-sort-alpha-up" />
-                            </Button>
-                        </div>
+                        
 
                     </div>
                 </div>
-                <div>
+                <div class="flex gap-2">
+                    <div>
+                        <Dropdown v-model="order.order_by" :options="sortOptions" optionValue="fieldname"
+                            optionLabel="label" placeholder="Sort By" @change="onSelectOrderBy" />
+                    </div>
+                    <div>
+                        <!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
+                        <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">
+                            <i v-if="order.order_type == 'desc'" class="pi pi-sort-alpha-down" />
+                            <i v-if="order.order_type == 'asc'" class="pi pi-sort-alpha-up" />
+                        </Button>
+                    </div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
@@ -159,7 +160,6 @@
                 <div class="col-4">
                     <ComAutoComplete v-model="filter.business_source" class="pb-2 w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
-                    {{ filter.guest }}
                 </div>
                 <div class="col-4">
                     <ComAutoComplete v-model="filter.city_ledger_type" class="pb-2 w-full" placeholder="City Ledger Type"
@@ -178,6 +178,7 @@ import ComIFrameModal from '@/components/ComIFrameModal.vue';
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const data = ref()
 const frappe = inject('$frappe');
 const gv = inject('$gv');
@@ -186,7 +187,7 @@ const columns = ref()
 const summary = ref()
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
-const filter = ref({ start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword:"" })
+const filter = ref({ start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword:"" })
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const order = ref({ order_by: "modified", order_type: "desc" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
@@ -364,15 +365,14 @@ const onCloseAdvanceSearch = () => {
 
 const onClearFilter = () => {
     filter.value = JSON.parse(JSON.stringify(defaultFilter))
-    filter.value.start_date = gv.dateApiFormat(filter.value.start_date)
-    filter.value.end_date = gv.dateApiFormat(filter.value.end_date)
+    filter.value.start_date = moment(filter.value.start_date).toDate()
+    filter.value.end_date = moment(filter.value.end_date).toDate()
     loadData()
     showAdvanceSearch.value.hide()
 }
 
 const isFilter = computed(() => {
-    if (moment().startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
-        console.log('deferece date')
+    if (moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
         return true
     }
     else {

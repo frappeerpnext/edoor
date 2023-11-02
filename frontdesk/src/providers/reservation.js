@@ -19,6 +19,7 @@ export default class Reservation {
 		this.reservationFolioList=[]
 		this.selectedFolio = null
 		this.totalFolio = 0
+		
 
 
 	}
@@ -35,8 +36,13 @@ export default class Reservation {
 			this.masterGuest = result.message.master_guest
 			this.getRoomList()
 			var attachedsFiles = this.reservationStays.map(r=>r.name)
+
 			attachedsFiles[attachedsFiles.length] = name || this.reservation?.name
+
 			this.attacheds = attachedsFiles
+			this.attacheds =  this.attacheds.concat(result.message.folio_names)
+			this.attacheds =  this.attacheds.concat(result.message.folio_transaction_names)
+
 			this.totalFolio = result.message.total_folio
 			this.loading = false
 		}).catch((err) => {
@@ -141,5 +147,6 @@ export default class Reservation {
 			this.room_rates = []
 			this.selectedRoomRates = [],
 			this.reservationFolioList=[]
+			this.attacheds.value=[]
 		}
 	}

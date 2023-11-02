@@ -553,7 +553,7 @@ onMounted(() => {
     columns.value.forEach(r => {
         r.selected = selectedColumns.value.includes(r.fieldname)
     });
-    loadData()
+    
     getApi("frontdesk.get_meta", { doctype: "Folio Transaction" }).then((result) => {
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
@@ -571,6 +571,7 @@ onMounted(() => {
                 selected: selectedColumns.value.includes(r.fieldname)
             })
         })
+        loadData()
     })
 })
 

@@ -18,12 +18,15 @@
           <div>
             <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
           </div>
+          
+        </div>
+        <div class="flex">
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
             <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
-          <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
-        </div>
-        <div>
+          <div class="px-2">
+            <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
+          </div>
           <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
             <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
           </Button>
@@ -134,7 +137,7 @@
   </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
+import { inject, ref, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'

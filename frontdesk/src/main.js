@@ -98,6 +98,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Calendar from 'primevue/calendar';
 import Chart from 'primevue/chart';
 import Message from 'primevue/message';
+import ComTimeago from '@/components/ComTimeago.vue'
 // custom components //
 import ComAvatar from './components/form/ComAvatar.vue'
 import ComAutoComplete from './components/form/ComAutoComplete.vue'
@@ -209,6 +210,7 @@ app.component('ComLastModifiedInfo', ComLastModifiedInfo)
 app.component('ComDocumentBadge', ComDocumentBadge)
 app.component('ComLetterHead', ComLetterHead)
 app.component('ComPrintButton', ComPrintButton)
+app.component('ComTimeago', ComTimeago)
 // Plugins
 app.use(frappe)
 
@@ -220,19 +222,7 @@ app.use(PrimeVue, {
 		button: {
 			class: 'submit'
 		}
-	},
-	locale: {
-		dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-		dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-		dayNamesMin: ["Su","Mo","Tu","We","Th","Fr","Sa"],
-		monthNames: ["January","February","March","April","May","June","July","August","September","October","November","December"],
-		monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-		today: 'Today',
-		weekHeader: 'Wk',
-		firstDayOfWeek: 0,
-		dateFormat: 'mm/dd/yy',
-		currentYear: new Date()
-  }
+	}
 })
  
 app.use(ToastService);

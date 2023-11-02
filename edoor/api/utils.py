@@ -99,87 +99,74 @@ def update_keyword(doc, method=None, *args, **kwargs):
             
 
 
-def update_deleted_document(doc, method=None, *args, **kwargs):
-    if doc.comment_type == 'Deleted' and (doc.reference_doctype == "Folio Transaction" or doc.reference_doctype == "Reservation Folio" or doc.reference_doctype == "Reservation Room Rate"):
-        docname = doc.subject.replace((doc.reference_doctype + ' '), '')
-        sql = "SELECT `name`,`data` FROM `tabDeleted Document` WHERE deleted_name = '{}'".format(docname)
-        deleted = frappe.db.sql(sql, as_dict=1)
 
-        if(deleted):
-            data = json.loads(deleted[0]['data'])
-            deleted_note = ""
-          
-            if "deleted_note" in data:
-                
-                deleted_note = data['deleted_note'] or ""
-            
-            
-         
-            reservation_folio = data['name']
-            if doc.reference_doctype == "Folio Transaction":
-                reservation_folio = data['folio_number']
-            sql = """UPDATE `tabComment` 
-                    SET  
-                        reservation = '{0}', 
-                        reservation_stay = '{1}', 
-                        reservation_folio = '{2}', 
-                        folio_number = '{3}',
-                        deleted_document = '{4}',
-                        reason = '{5}',
-                        subject= concat(subject, ', Reason: ', '{5}' )
-                    WHERE 
-                        `name` = '{6}'
-                    """.format(
-                            data['reservation'],
-                            data['reservation_stay'],
-                            reservation_folio,
-                            data['name'],
-                            deleted[0]['name'],
-                            deleted_note,
-                            doc.name)
-            frappe.db.sql(sql)
-
-def update_insert_document(doc, method=None, *args, **kwargs):
-    frappe.get_doc({
-        "doctype":"Comment",
-        "comment_type":'Created',
-        "reference_doctype":doc.doctype,
-        "reservation":doc.reservation,
-        "reservation_stay":doc.reservation_stay,
-        "folio_number":doc.name,
-        "content": frappe.as_json(doc)
-    }).insert()
-    frappe.db.commit()
 
 def update_comment_by(doc, method=None, *args, **kwargs):
     
     frappe.db.sql("update `tabComment` set comment_by='{}' where name='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"),doc.name))
     frappe.db.commit()
 
+def update_comment_keyword(doc, method=None, *args, **kwargs):
+    if doc.custom_is_audit_trail==1:
+        frappe.db.sql("update `tabComment` set custom_keyword=concat(ifnull(subject,''), ' ', ifnull(content,''), ' ', ifnull(reference_name,''),' ',ifnull(custom_item_description,''), ' ', ifnull(custom_note,'')  ) where name='{}'".format(doc.name))
+        frappe.db.commit()
+
 def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
-    submit_update_audit_trail_from_version(doc)
-    # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
+    # submit_update_audit_trail_from_version(doc)
+    frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
 
 def submit_update_audit_trail_from_version(doc):
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         doctype = frappe.get_doc("Audit Trail Document", doc.ref_doctype)
         data = json.loads(doc.data)
+
         data_changed = []
+        if doc.ref_doctype == "Reservation Room Rate":
+            data_changed.append("<b>Date:</b> " +  frappe.db.get_value("Reservation Room Rate", doc.docname,"date").strftime('%d-%m-%Y'))
+
+
         for d in data["changed"]:
-            if d[0] in [f.field_name for f in doctype.tracking_field]:
+            if d[0] in [f.field_name for f in doctype.tracking_field] and ((d[1] or '')!='' or (d[2] or '')!=''):
                 field = [f  for f in doctype.tracking_field if f.field_name==d[0]][0]
                 if field.field_type=="Check":
-                    data_changed.append(f'{field.label}: {"Yes" if d[1]==1 else "No"} <b>to</b> {"Yes" if d[2]==1 else "No"}')
+                    data_changed.append(f'<b>{field.label}</b>: {"Yes" if d[1]==1 else "No"} <b>to</b> {"Yes" if d[2]==1 else "No"}')
+                elif 'tax_' in field.field_name:
+                    ref_doc = frappe.get_doc(doc.ref_doctype,doc.docname)
+                    if field.field_name == 'tax_1_rate':
+                        data_changed.append(f'<b>{ref_doc.tax_1_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
+                    elif field.field_name == 'tax_1_amount':
+                        data_changed.append(f'<b>{ref_doc.tax_1_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                    elif field.field_name == 'tax_2_rate':
+                        data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
+                    elif field.field_name == 'tax_2_amount':
+                        data_changed.append(f'<b>{ref_doc.tax_2_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                    elif field.field_name == 'tax_2_rate':
+                        data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
+                    
+                    elif field.field_name == 'tax_3_rate':
+                        data_changed.append(f'<b>{ref_doc.tax_3_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
+                    elif field.field_name == 'tax_3_amount':
+                        data_changed.append(f'<b>{ref_doc.tax_3_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                        
                 else:
-                    data_changed.append(f'{field.label}: {d[1]} <b>to</b> {d[2]}')
-        
+                    if field.hide_old_value==1:
+                        data_changed.append(f'<b>{field.label}</b>: {d[2]}')
+                    else:
+                        data_changed.append(f'<b>{field.label}</b>: {d[1]} <b>to</b> {d[2]}')
+
+
+        if doc.ref_doctype == "Reservation Room Rate":
+            if len(data_changed)==1:
+                #we skip it cause have only 1 record is date
+                return
+
         if len(data_changed)>0:
             comment_doc = []
             comment_doc.append({
-              "subject": "Change Value",
-              "reference_doctype":doc.ref_doctype,
-              "reference_name":doc.docname,
-              "content":", ".join(data_changed)  
+            "subject": "Change Value",
+            "reference_doctype":doc.ref_doctype,
+            "reference_name":doc.docname,
+            "content":", ".join(data_changed)  
             })
             frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
 
@@ -669,6 +656,14 @@ def clear_reservation():
     frappe.db.sql("delete from `tabFrontdesk Note`")
     frappe.db.sql("delete from `tabRoom Block`")
 
+    frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
+    frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
+    frappe.db.sql("delete from `tabVersion` where ref_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
+
+
+
+
+
     room_list = frappe.db.get_all("Room")
 
     for r in room_list:
@@ -854,14 +849,17 @@ def get_months(start_date,end_date):
 def add_audit_trail(data):
     
     for d in data:
-        doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
-        if hasattr(doc,"property"):
-            working_day = get_working_day(doc.property)
-            d["custom_posting_date"]= working_day["date_working_day"]
-            d["custom_property"]= doc.property
+        if not hasattr(d,"custom_property"):
+            doc = frappe.get_doc(d["reference_doctype"],d["reference_name"])
+            if hasattr(doc,"property"):
+                working_day = get_working_day(doc.property)
+                d["custom_posting_date"]= working_day["date_working_day"]
+                d["custom_property"]= doc.property
 
         d["doctype"]="Comment"
-        d["comment_type"]="Info"
+        if not hasattr(d,"comment_type"):
+            d["comment_type"]="Info"
+            
         d["custom_is_audit_trail"]=1
         d["comment_by"]:frappe.session.user.full_name
 

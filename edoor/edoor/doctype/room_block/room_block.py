@@ -57,6 +57,17 @@ class RoomBlock(Document):
 
 				generate_block_date(self)
 
+				working_day = get_working_day(self.property)
+				room_doc = frappe.get_doc("Room",self.room_id)
+				if  getdate(self.start_date)<= getdate(working_day["date_working_day"])  and getdate(self.end_date) > getdate(working_day["date_working_day"]):
+					
+					room_doc.housekeeping_status = frappe.db.get_single_value("eDoor Setting","room_block_status")
+				else:
+					room_doc.housekeeping_status = frappe.db.get_single_value("eDoor Setting","hk_status_rb_release_after_audit")
+				room_doc.save()
+
+
+
 
 	def on_cancel(self):
 		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))

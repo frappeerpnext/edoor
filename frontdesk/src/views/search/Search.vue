@@ -48,14 +48,18 @@
                 </Listbox>
                 </div>
                         <div class="col-10 p-0 search_style_section">      
-                <DataView :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
+                <DataView @page="pagechange()" :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
                 
                     <template #list="slotProps">
-                        <div class="col-12 search-hover relative">
+                        <div class="col-12 search-hover relative" id="contentContainer">
                             <div class="">
-                                <div v-html="getTemplate(slotProps.data)" ></div>
-                                <!-- <Button v-if="slotProps.data.action_name" @click="onViewDetail(slotProps.data)">View
-                                    Detail</Button> -->
+                                <div v-html="getTemplate(slotProps.data)"></div>
+                               <span>
+                                <div class="text-500 text-md absolute bottom-5 right-10">
+{{ slotProps.data.modified_by }} -  <ComTimeago :date="slotProps.data.modified"></ComTimeago>
+</div>
+                               
+                               </span>
                             </div>
                         </div>
 
@@ -74,9 +78,9 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { getApi, ref, postApi, computed } from "@/plugin"
+import { getApi, ref, postApi, computed , onMounted , } from "@/plugin"
 import Mustache from 'mustache';
-import ComDialogContent from '../../components/form/ComDialogContent.vue';
+import ComDialogContent from '@/components/form/ComDialogContent.vue';
 import DataView from 'primevue/dataview';
 const ShowFilterSearch = ref(true)
 function onShowFilter() {
@@ -164,7 +168,21 @@ function getTemplate(d) {
 
     return renderTemplate(table.template, d);
 }
+const scrollToTop = () => {
+    const contentContainer = document.querySelector('.search_style_section');
+    console.log(contentContainer.scrollTop)
+ 
+  if (contentContainer) {
+    contentContainer.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+};
 
+function pagechange(){
+    scrollToTop();
+}
 </script>
 <style scoped>
 ::v-deep .p-listbox .p-listbox-list .p-listbox-item {

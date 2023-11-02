@@ -169,6 +169,7 @@
   {
    "fieldname": "child",
    "fieldtype": "Int",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Child"
   },
@@ -648,6 +649,7 @@
    "label": "Rooms Data"
   }
  ],
+ "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
  "links": [
   {
@@ -656,7 +658,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-10-18 16:30:10.573809",
+ "modified": "2023-11-01 14:16:26.980755",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

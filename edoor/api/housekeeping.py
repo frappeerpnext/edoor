@@ -32,8 +32,7 @@ def update_housekeeper(rooms, housekeeper):
 @frappe.whitelist(methods="POST")
 def get_room_list(filter={}):
    filter["keyword"] = f"%{filter['keyword'] }%" 
-
-   working_day =  get_working_day(filter["property"])
+   working_day = get_working_day(filter["property"])
 
     
    sql ="""
@@ -41,26 +40,36 @@ def get_room_list(filter={}):
          name,
          room_number,
          housekeeping_status,
+         '' as reservation_status,
          status_color,
          housekeeper,
          room_type,
-         guest,
-         guest_name
+         floor,
+         '' as room_block
       from `tabRoom`
       where
-         property = %(property)s  and
-         room_number like %(keyword)s 
+         property = %(property)s  and 
+         room_number like %(keyword)s
    """.format(filter["keyword"])
 
    if len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
    
-   elif len(filter["housekeeping_status"])>0:
+   if len(filter["housekeeping_status"])>0:
       sql = sql + " and housekeeping_status in %(housekeeping_status)s "
    
-   # elif len(filter["building"])>0:
-   #    sql = sql + " and building in %(building)s "
-
+   if len(filter["building"])>0:
+      sql = sql + " and building = %(building)s "
+   
+   if len(filter["floor"])>0:
+      sql = sql + " and floor = %(floor)s "
+   
+   if len(filter["room_type_group"])>0:
+      sql = sql + " and room_type_group = %(room_type_group)s "
+   
+   if len(filter["housekeeper"])>0:
+      sql = sql + " and housekeeper = %(housekeeper)s "
+ 
    
    data = frappe.db.sql(sql,filter,as_dict=1)
    sql ="""
@@ -72,7 +81,8 @@ def get_room_list(filter={}):
             reservation_stay,                      
             reservation_status,
             type,
-            building
+            stay_room_id
+
       from `tabTemp Room Occupy`
       where 
          ifnull(room_id,'') !='' and 
@@ -84,42 +94,61 @@ def get_room_list(filter={}):
       sql = sql + " and room_type_id in %(room_type_id)s "
    
    if len(filter["building"])>0:
-      sql = sql + " and building in %(building)s "
+      sql = sql + " and building = %(building)s "
 
+   if len(filter["floor"])>0:
+      sql = sql + " and floor = %(floor)s "
+   
+   if len(filter["room_type_group"])>0:
+      sql = sql + " and room_type_group = %(room_type_group)s "
+   
+   if len(filter["housekeeper"])>0:
+      sql = sql + " and housekeeper = %(housekeeper)s "
 
-   #filter form room occpuy on have room in room list 
+   if len(filter["housekeeping_status"])>0:
+      sql = sql + " and housekeeping_status in %(housekeeping_status)s "
+
+   #filter from room occpuy in have room in room list 
    if len(data)>0:
       filter["room_ids"]=[d["name"] for d in data]
-      sql = sql + " and room_id in %(room_ids)s "
+      sql = sql + " and room_id in %(room_ids)s " 
+        
 
    occupy_data= frappe.db.sql(sql,filter,as_dict=1)
    
-
-
+ 
    for d in occupy_data:
-      room = [r for r in data if r["name"]==d["room_id"] ][0]
-
-      if d["type"] =="Reservation":
-         room["reservation_stay"] = d["reservation_stay"]
+      data_room = [r for r in data if r["name"]==d["room_id"] ]
+      room = None
+      if data_room:
+         room = data_room[0]
+      
+      if room:
+         if d["type"] =="Reservation":
+            room["reservation_stay"] = d["reservation_stay"]
+            
+            room["reservation_status"] =d["reservation_status"]
          
-         room["reservation_status"] =d["reservation_status"]
 
-         if d["is_arrival"]==1:
-            if working_day["date_working_day"] == d["date"] and d["reservation_status"]=="Reserved":
-               room["reservation_status"] = "Arrival"
+            if d["is_arrival"]==1:
+               if working_day["date_working_day"] == d["date"] and d["reservation_status"]=="Reserved":
+                  room["reservation_status"] = "Arrival"
 
-         elif  d["is_departure"] ==1 and d["reservation_status"] in ["In-house","Reserved"]:
-            room["reservation_status"] = "Departure"
-         elif d["is_arrival"]==0 and d["is_departure"] ==0 and d["reservation_status"] in ["In-house"]:
-            room["reservation_status"] = "Stay Over"
+            elif  d["is_departure"] ==1 and d["reservation_status"] in ["In-house","Reserved"]:
+               room["reservation_status"] = "Departure"
+            elif d["is_arrival"]==0 and d["is_departure"] ==0 and d["reservation_status"] in ["In-house"]:
+               room["reservation_status"] = "Stay Over"
 
-         #get guest and guest name from stay
-         if d["reservation_stay"]:
-            guest, guest_name = frappe.db.get_value('Reservation Stay', d["reservation_stay"] , ['guest', 'guest_name'])
-            room["guest"] =guest
-            room["guest_name"] =guest_name
-      else:
-         #room block
-         pass
-         # room["reservation_status"] =d["reservation_status"]
+            #get guest and guest name from stay
+            if d["reservation_stay"]:
+               guest, guest_name = frappe.db.get_value('Reservation Stay', d["reservation_stay"] , ['guest', 'guest_name'])
+               room["guest"] =guest
+               room["guest_name"] =guest_name
+         else:
+         #if block
+            room["room_block"] = d["stay_room_id"]
+            room["housekeeping_status"] = frappe.db.get_single_value("eDoor Setting","room_block_status")
+            room["status_color"] = frappe.db.get_single_value("eDoor Setting","room_block_color")
+
+
    return data

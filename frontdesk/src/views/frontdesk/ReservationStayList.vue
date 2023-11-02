@@ -21,15 +21,15 @@
                     <div>
                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                     </div>
+                </div>
+                <div class="flex">
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
                             @click="onClearFilter" />
                     </div>
-                    <div>
+                    <div class="px-2">
                         <ComOrderBy doctype="Reservation Stay" @onOrderBy="onOrderBy" />
                     </div>
-                </div>
-                <div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
@@ -132,7 +132,7 @@
                 <ComAutoComplete class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                     doctype="Business Source Type"/>
-
+                    
                 <ComAutoComplete class="col-3" width="100%" isFilter groupFilterField="business_source_type"
                     :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                     optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"

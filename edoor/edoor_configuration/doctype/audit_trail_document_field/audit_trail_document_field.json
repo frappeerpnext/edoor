@@ -10,7 +10,8 @@
  "field_order": [
   "field_name",
   "label",
-  "field_type"
+  "field_type",
+  "hide_old_value"
  ],
  "fields": [
   {
@@ -31,12 +32,19 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Label"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_old_value",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Hide old value"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-10-28 09:13:00.195043",
+ "modified": "2023-10-31 14:58:51.937421",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Audit Trail Document Field",

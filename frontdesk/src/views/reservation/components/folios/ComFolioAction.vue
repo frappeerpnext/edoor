@@ -181,7 +181,6 @@ print_menus.value.push({
 })
 
 function onAddFolioTransaction(account_code) {
-    console.log(selectedFolio.value)
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {

@@ -1,7 +1,7 @@
 <template>
     <div :class="class">
         <tippy :content="tooltip || doctype">
-        <MultiSelect class="w-full" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+        <MultiSelect class="w-full md:w-15rem" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
             @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
         <Dropdown 
@@ -187,7 +187,7 @@ function onDocList() {
         data.value = []
     });
 }
-function onUpdate(r) { 
+function onUpdate(r) {
     let result = null
     if (props.isMultipleSelect) {
         result = []
@@ -202,10 +202,10 @@ function onUpdate(r) {
     } else {
         result = data.value.find(d => d[option.value] == r)
     }
-
-    emit('onSelectedValue', r)
-    emit('onSelected', result)
     emit('update:modelValue', r)
+    emit('onSelectedValue', result)
+    emit('onSelected', r)
+    
 }
 
 </script>

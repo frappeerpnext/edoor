@@ -15,7 +15,11 @@ class FolioTransaction(Document):
 					if not hasattr(self,"ignore_validate_auto_post"):
 						frappe.throw("You cannot edit auto post transaction")
 		
-
+		#validate folio status
+		if self.transaction_type =='Reservation Folio':
+			if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
+				frappe.throw(f"This folio {self.transaction_number} is already closed")
+				
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:
 			self.note_by = frappe.session.user
@@ -215,7 +219,23 @@ class FolioTransaction(Document):
 	def after_insert(self):
 		if self.require_city_ledger_account==1 and  self.city_ledger :
 			post_to_city_ledger(self)
- 
+
+		if not self.parent_reference:
+			
+			if self.transaction_type=="Reservation Folio":
+				content = f"Post {self.account_group_name} to guest folio. Folio #: {self.transaction_number}, {'To folio: ' + self.folio_number + ',' if self.folio_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+
+				if hasattr(self, "is_folio_transfer_from"):
+					content = f"Post {self.account_group_name} from guest folio. Folio #: {self.transaction_number}, From Folio: {self.folio_number} , Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+
+				frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+					"comment_type":"Created",
+					"subject":"Post " + self.account_group_name,
+					"reference_doctype":"Folio Transaction",
+					"reference_name":self.name,
+					"content":content
+				}])
+
 
 
 	def on_update(self):
@@ -278,6 +298,25 @@ class FolioTransaction(Document):
 			frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
 			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.city_ledger, doc=None, run_commit=False)
 		
+
+		#add to audit trail
+		working_day = get_working_day(self.property)
+		comment = {
+			"comment_type":"Deleted",
+			"subject":"Delete Folio Transaction",
+			"reference_doctype":self.transaction_type,
+			"reference_name":self.transaction_number,
+			"custom_property":self.property,
+			"custom_posting_date": working_day["date_working_day"]
+		}
+		if self.transaction_type =="Reservation Folio":
+			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Folio #:<a data-action='view_folio_detail' data-name='{self.transaction_number}'>{self.transaction_number}</a>, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+		else:
+			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+		if (self.deleted_note):
+			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
+
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[comment])
 
 			
 
@@ -451,7 +490,8 @@ def transfer_folio_balance(self):
 		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.transaction_number, self.room_number),
 		"is_auto_post":1,
 		"require_select_a_folio": 0,
-		"reference_folio_transaction":self.name
+		"reference_folio_transaction":self.name,
+		"is_folio_transfer_from":1 #we use this to change message of folio transfer to and from
 	}).insert()
 
 	

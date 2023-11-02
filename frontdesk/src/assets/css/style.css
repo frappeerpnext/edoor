@@ -830,7 +830,13 @@ span.p-button-icon.pi.pi-ellipsis-v{
     border-top-right-radius: 0;
 }
 /* END Set btn round part */
-
+.wrp-housekeeping .p-listbox-item
+{
+    padding: 0 !important;
+}
+.wrp-housekeeping .p-listbox-list-wrapper .border-b.border-color-edoor{
+    padding: 0.5rem;;
+}
 .conten-btn:enabled:hover, 
 .conten-btn:enabled:active,
 .btn-add-folio:enabled:hover,
@@ -1336,4 +1342,28 @@ span.row-disabled > :not(button) {
     bottom: -50px;
     width: 100%;
     z-index: 100;
+}
+.active_reservation_folio{
+    color: var(--bg-og-color-hover) !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+.header_folio_active{
+    color: var(--bg-og-color-hover) !important;
+}
+.box_shadow_for_box{
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+.fofio_class_btn_child{
+    color: var(--bg-purple-cs);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    border: 1px solid;
+}
+.fofio_class_btn_child:hover{
+    color: var(--bg-og-color-hover) !important;
+    border-color: var(--bg-og-color-hover) !important;
+}
+.reservatin_folio_list_box .p-accordion-tab.p-accordion-tab-active {
+    border: 1px solid rgba(87, 87, 87, 0.651);
+    border-radius: 0px 0px 7px 7px;
+    overflow: hidden;
 }

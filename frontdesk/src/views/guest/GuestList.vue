@@ -23,14 +23,15 @@
                     <div>
                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/>
                     </div>
+                    
+                </div>
+                <div class="flex">
                     <div v-if="gv.isNotEmpty(filter)">
                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                     </div>
-                    <div>
+                    <div class="px-2">
                         <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
                     </div>
-                </div>
-                <div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>

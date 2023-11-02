@@ -41,8 +41,7 @@
             <div class="ms-1 text-sm">
                 
                 <span class="font-italic" v-if="i.note_type!='Info'">{{i.note_type}}</span> <span class="text-500 font-italic"> by: {{i.owner}}    
-                    <Timeago  :datetime="i.creation" long>
-                                </Timeago> 
+                    <ComTimeago  :date="i.creation"/> 
                                  </span>
                 <span class="font-italic" v-if="i.modified">, Last Modified:</span> <span class="text-500 font-italic" v-if="i.modified">{{i.modified_by}} {{moment(i.modified).format("DD-MM-yy h:ss a") }}</span>
             </div> 
@@ -80,7 +79,6 @@
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import { ref, inject, getApi, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted } from '@/plugin'
 import Enumerable from 'linq'
-import { Timeago } from 'vue2-timeago'
 const moment = inject("$moment");
 const gv = inject("$gv");
 const props = defineProps({

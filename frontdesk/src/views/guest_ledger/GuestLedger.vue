@@ -37,15 +37,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-3">
+                        
+                    </div>
+                </div> 
+                <div class="flex">
+                    <div class="px-2">
                             <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
                             <!-- <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"
                                 placeholder="Sort By" @change="onSelectOrderBy" />
                             <Button @click="onOrderTypeClick">{{ filter.order_type }}</Button> -->
-                        </div>
                     </div>
-                </div> 
-                <div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
@@ -238,11 +239,13 @@ const getColumns = computed(() => {
 })
 
 const isFilter = computed(()=>{  
-    if(moment(working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment().format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')){
+    if(moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')){
         return true
+        
     }
     else{
-        return gv.isNotEmpty(filter.value,'start_date,end_date',{ status: 'All Status'})
+        return gv.isNotEmpty(filter.value,'start_date,end_date,order_by,order_type',{ status: 'All Status'})
+        
     }
 })
 
@@ -387,8 +390,8 @@ const advanceFilter = (event) => {
 
 const onClearFilter = () => {
     filter.value = JSON.parse(JSON.stringify(defaultFilter))
-    filter.value.start_date = gv.dateApiFormat(filter.value.start_date)
-    filter.value.end_date = gv.dateApiFormat(filter.value.end_date)
+    filter.value.start_date = moment(filter.value.start_date).toDate();
+    filter.value.end_date = moment(filter.value.end_date).toDate();
     loadData()
     showAdvanceSearch.value.hide()
 }

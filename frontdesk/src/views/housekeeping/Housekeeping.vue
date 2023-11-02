@@ -30,9 +30,9 @@
                         </button>
                     </div>
                     <div>
-                        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
-                        <Button @click="onToday('today')"  v-tippy ="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
-                        <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+                        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'Back day'" class="border-noround-right border-y-none border-left-none h-full"></Button>
+                        <Button @click="onToday()" v-tippy ="'Today'"  class="border-noround border-none h-full"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
+                        <Button @click="onPrevNext('next')"  v-tippy ="'Next day'" class="border-noround-left border-y-none border-right-none h-full" icon="pi pi-angle-double-right"></Button>
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@
     </div>
 </template>
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from "@/plugin"
+import { ref, inject, onMounted, onUnmounted, reactive } from "@/plugin"
 import ComHousekeepingFilter from "./components/ComHousekeepingFilter.vue";
 import ComHousekeepingActionButton from "./components/ComHousekeepingActionButton.vue";
 import ComHousekeepingStatistic from "./components/ComHousekeepingStatistic.vue";
@@ -59,9 +59,11 @@ const edoorShowhousekeepingSummary = localStorage.getItem("edoor_hhowhousekeepin
 import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
+import { hydrate } from "vue";
 const hk = inject("$housekeeping")
+const moment = inject("$moment")
 const showSummary = ref(true)
-
+const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 if (edoorShowhousekeepingSummary) {
     showSummary.value = edoorShowhousekeepingSummary == "1";
@@ -73,8 +75,6 @@ function onShowSummary() {
 
 function onRefresh() {
     hk.loadData()
-
-
 }
 
 onMounted(() => {
@@ -86,13 +86,30 @@ onMounted(() => {
         }
     })
 
-
-    hk.loadData()
+    hk.loadData()    
 })
+
+const dateOptions = reactive ({
+    dateIncrement: {days:1}
+})
+
+const onPrevNext = (key) => {
+    if (key == 'prev'){
+        hk.filter.selected_date = moment(hk.filter.selected_date).add(dateOptions.dateIncrement.days * -1, 'days').toDate()
+    }
+    else{
+        hk.filter.selected_date = moment(hk.filter.selected_date).add(dateOptions.dateIncrement.days, 'days').toDate()
+    }
+    hk.loadData()
+}
+
+const onToday = () => {
+    hk.filter.selected_date = moment(working_date.date_working_day).toDate()
+    hk.loadData()
+}
 
 onUnmounted(() => {
     window.socket.off("Housekeeping")
-
 })
 
 </script>

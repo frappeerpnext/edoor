@@ -11,16 +11,17 @@
         </div>
         <div class="w-auto max-w-25rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
-                        isFilter
-                        groupFilterField="room_type_group"
-                        :groupFilterValue="hk.filter.selected_room_type_group"  
-                        v-model="hk.filter.selected_room_type" 
-                        optionLabel="room_type"
-                        optionValue="name" 
-                        @onSelected="onSearch" 
-                        placeholder="Room Type" 
-                        doctype="Room Type"
-                        ></ComSelect>
+                isFilter
+                groupFilterField="room_type_group"
+                :groupFilterValue="hk.filter.selected_room_type_group"  
+                v-model="hk.filter.selected_room_type" 
+                optionLabel="room_type"
+                optionValue="name" 
+                @onSelected="onSearch" 
+                placeholder="Room Type" 
+                doctype="Room Type"
+                :maxSelectLabel="3">
+            </ComSelect>
         </div>
         <div class="w-15rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
@@ -33,7 +34,7 @@
         <div class="">
             <div class="flex gap-2">
                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/> 
-                <div v-if="gv.isNotEmpty(hk.filter)">
+                <div v-if="isFilter">
                     <Button class="content_btn_b white-space-nowrap" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
             </div>
@@ -60,7 +61,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { ref,inject,onMounted } from '@/plugin';
+import { ref,inject,onMounted,computed } from '@/plugin';
 const showAdvanceSearch = ref()
 const hk = inject("$housekeeping")
 const gv = inject("$gv")
@@ -69,7 +70,14 @@ const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);
-
+const isFilter = computed(() => {
+    if (moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(hk.filter.selected_date).format('yyyy-MM-DD')) {
+        return true
+    }
+    else {
+        return gv.isNotEmpty(hk.filter, 'selected_date')
+    }
+})
 function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {
@@ -87,18 +95,18 @@ const advanceFilter = (event) => {
 
 const onClearFilter = () => {
     hk.filter = {
-        date: moment( working_date.date_working_day).toDate()
+        selected_date: moment(working_date.date_working_day).toDate()
     };
     hk.loadData();
     showAdvanceSearch.value.hide()
 }
-onMounted(() => {
-    hk.filter.selected_date = moment.utc(moment(working_date.date_working_day).format("YYYY-MM-DD")).toDate()
-})
 
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
+onMounted(() => {
+    hk.filter.selected_date = moment(working_date.date_working_day).toDate()
+})
 </script>
 <style scoped>
 .linelight-edor{

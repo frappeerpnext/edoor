@@ -9,20 +9,22 @@
                     <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
                 </template>
             </ComHeader>
-            <div class="flex gap-2">
-                <div class="col-2 p-0">
-                    <div class="p-input-icon-left w-full">
-                        <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+            <div class="mb-3 flex justify-between">
+                <div class="flex gap-2">
+                    <div class="col-6 p-0">
+                        <div class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+                        </div>
                     </div>
-                </div>
-                <div class="col-2 p-0">
-                    <div class="flex relative">
-                        <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
-                            v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-                            placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon />
-                        <div class="check-box-filter">
-                            <Checkbox v-model="filter.search_by_date" :binary="true" @change="onChecked" />
+                    <div class="col-6 p-0">
+                        <div class="flex relative">
+                            <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
+                                v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                                placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon />
+                            <div class="check-box-filter">
+                                <Checkbox v-model="filter.search_by_date" :binary="true" @change="onChecked" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -30,6 +32,7 @@
                     <ComOrderBy doctype="Frontdesk Note" @onOrderBy="onOrderBy" />
                 </div>
             </div>
+            
         </div>
         <div class="overflow-auto h-full mb-3">
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="notes.length > 0">

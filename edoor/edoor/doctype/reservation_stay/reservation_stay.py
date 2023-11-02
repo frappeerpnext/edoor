@@ -173,6 +173,7 @@ class ReservationStay(Document):
 		generate_room_rate(self)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+			"comment_type":"Created",
 			"subject":"Create New Reservation Stay",
 			"reference_doctype":"Reservation Stay",
 			"reference_name":self.name,

@@ -154,7 +154,7 @@
       </div>
     </div>
     <hr class="my-2">
-    <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" />
+    <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" :attacheds="[doc?.name]"/>
 
     <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
       <div class="pt-2 pb-3 text-color-black">

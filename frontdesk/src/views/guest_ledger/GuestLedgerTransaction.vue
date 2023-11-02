@@ -31,6 +31,7 @@
                             <ComAutoComplete v-model="filter.account_code" class="w-full" placeholder="Account Code" doctype="Account Code"
                                 @onSelected="onSearch" />
                         </div>
+                        
                         <div>
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
@@ -40,12 +41,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex gap-3">
-                            <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
-                        </div>
+                        
                     </div>
                 </div> 
-                <div>
+                <div class="flex">
+                    <div class="px-2">
+                        <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
+                    </div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>

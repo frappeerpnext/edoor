@@ -1,72 +1,84 @@
 <template>
-    
-    <ul>
-        <template v-for="(s, index) in rs.reservationFolioList" :key="index">
-            <li> 
-   
-    <div class="card">
-        
-        <Accordion :selectOnFocus="true" :multiple="true" :activeIndex="0">
-    <AccordionTab>
+    <div class="card mt-1 border-round-lg reservatin_folio_list_box">
+        <!-- expandIcon="pi" collapseIcon="pi" -->
+        <Accordion  :multiple="true" :activeIndex="[0]">
+            <template v-for="(s, index) in rs.reservationFolioList" :key="index">
+    <AccordionTab class="bg-red-500">
         <template #header>
-            <span class="flex align-items-center gap-2 w-full">
-                {{ s.name }} | {{ s.guest_name }} | {{ s.balance }} {{ s.reservation_status }} | {{ s.status_color }} | {{
-                    s.rooms }}
-                
+            <div  class="flex flex flex-column w-full -mr-3 ps-2 -ml-3 -mt-2 -mb-2 ">
+                <div class="flex">
+            <span class="flex align-items-center gap-2 w-full line-height-3">
+                <div class="ml-2">
+                    <div class="flex gap-2 align-items-center">
+                        <span class="link_line_action1 " @click="onViewReservationStayDetail(s.name); $event.stopPropagation()" :class="s.folios.some(d => d.selected) ? 'header_folio_active' : ''" >{{ s.name }}</span>
+                        <span class="px-2 rounded-lg text-white font-light" :style="{backgroundColor:s.status_color}">{{ s.reservation_status }}</span>              
+
+                        <span v-tippy="'FoLio'" class="px-2 bg-gray-400 rounded-lg text-white font-light" >
+                            {{ s.folios.length }}
+                        </span>
+                    </div>
+                    <div class="flex gap-2 align-items-center">
+                    <div class="font-light">{{ s.guest_name }} |</div>
+                    <span class="font-light" > Room: {{ s.rooms }}</span>
+                    </div>
+                   
+                </div>
             </span>
-            <Button @click="onAddNewFolio(s); $event.stopPropagation()" v-tippy="'Add New Folio'" class="p-2 ml-auto" icon="pi pi-plus" aria-label="Submit" />
-          
+            <spna class="flex align-items-center" >
+            </spna>
+            <Button @click="onAddNewFolio(s); $event.stopPropagation()" v-tippy="'Add New Folio To ' + s.name" class="py-2 px-3 ml-auto btn-add-folio w-2rem h-2rem font-bold" style="color:#4338ca;" icon="pi pi-plus" />
+            </div>
+            <div class="flex gap-2 mt-2 ms-2 justify-content-between">
+                <div class="col flex flex-column text-end bg-white box_shadow_for_box border-round-lg line-height-1"> <span  class="font-light w-full">Debit</span> <span> <CurrencyFormat :value="s.total_debit" /> </span> </div>
+                <div class="col flex flex-column text-end bg-white box_shadow_for_box border-round-lg line-height-1"> <span  class="font-light">Credit</span> <span> <CurrencyFormat :value="s.total_credit" /> </span> </div>
+                <div class="col flex flex-column text-end bg-green-100 box_shadow_for_box border-round-lg line-height-1"> <span  class="font-light">Balance</span> <span> <CurrencyFormat :value="s.balance" /> </span> </div>
+            </div>
+            </div>
         </template>
-        <p class="m-0">
-           <div v-for="(d, index) in s.folios" :key="index">
-            <Button @click="onSelectFolio(d)" v-if="d.selected" style="background-color: red;">
-                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
-                                d.selected }} | Is Master:{{ d.is_master }} <br />
-                            Balance:{{ d.balance }}
-                        </Button>
-                        <Button @click="onSelectFolio(d)" v-else>
-                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
-                                d.selected }} | Is Master:{{ d.is_master }}
-                            <br />
-                            Balance:{{ d.balance }}
-                            Status: {{ d.status }}
-                        </Button>
-           </div>
-        </p>
-    </AccordionTab>
-</Accordion>
+        <div class="m-0 p-2">
+           <div  v-for="(d, index) in s.folios" :key="index">
+            <Button class="fofio_class_btn_child w-full flex gap-2 py-1 justify-content-between align-items-center px-3 bg-white" @click="onSelectFolio(d)" :class="[d.selected ? 'active_reservation_folio' : '', index > 0 ? 'mt-2' : '']" >
+    <div class="flex align-items-center gap-3 line-height-2">
+        <ComIcon v-if="d.is_master" style="height: 14px;" icon="iconCrown" />
+        <div class="text-start">
+            <div>
+                {{ d.name }}
+            </div>
+            <div >
+                {{ d.guest_name }}
+                <span class="line-height-2 font-italic text-sm folio-remark me-1" :class="d.status == 'Open' ? 'text-green-700' : 'text-orange-700'" >{{ d.status }}</span>
+                
+            </div>
+        </div>
     </div>
-                <!-- {{ s.name }} | {{ s.guest_name }} | {{ s.balance }} {{ s.reservation_status }} | {{ s.status_color }} | {{
-                    s.rooms }} -->
-                <!-- <ul>
-                    <li v-for="(d, index) in s.folios" :key="index">
-                        <Button @click="onSelectFolio(d)" v-if="d.selected" style="background-color: red;">
-                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
-                                d.selected }} | Is Master:{{ d.is_master }} <br />
-                            Balance:{{ d.balance }}
-                        </Button>
-                        <Button @click="onSelectFolio(d)" v-else>
-                            {{ d.name }} | {{ d.posting_date }} | {{ d.guest_name }} | {{ d.balance }} | selected :{{
-                                d.selected }} | Is Master:{{ d.is_master }}
-                            <br />
-                            Balance:{{ d.balance }}
-                            Status: {{ d.status }}
-                        </Button>
-
-                    </li>
-                </ul> -->
-
-                <!-- <Button @click="onAddNewFolio(s)">Add New Folio</Button> -->
-            </li>
-        </template>
-    </ul>
+    <div class="text-end">
+        <div><CurrencyFormat :value="d.balance" /></div>
+        <div class="white-space-nowrap">{{ gv.dateFormat(d.posting_date)
+                            }}</div>
+        
+    </div>
+            </Button>
+           </div>
+        </div>
+    </AccordionTab>
+</template>
+</Accordion>
+    </div> 
+    <div class="flex flex-column bg-white mt-3 fixed total_foliolist " style="width: 350px; bottom: 0px; z-index: 1;">
+        <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2"><div class="pr-3"><label>Total Debit</label></div><div><span><span class="white-space-nowrap font-medium"></span></span></div></div>
+        <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2"><div class="pr-3"><label>Total Credit</label></div><div><span><span class="white-space-nowrap font-medium"></span></span></div></div>
+        <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2"><div class="pr-3"><label>Balance</label></div><div><span><span class="white-space-nowrap font-medium"></span></span></div></div>
+    </div>
+    <div class="h-7rem relative">
+   
+</div>
 </template>
 <script setup>
 import {  inject, useDialog } from '@/plugin';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
-
+const gv = inject('$gv');
 const dialog = useDialog();
 const rs = inject("$reservation")
 const emit = defineEmits(["onSelectFolio"])
@@ -91,12 +103,10 @@ function clearSelectedFolio() {
 function onAddNewFolio(stay) {
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
         data: {
-            folio: {
                 guest: stay.guest,
-                reservation: stay.reservation,
+                reservation:stay.folios[0].reservation,
                 reservation_stay: stay.name,
                 property: window.property_name
-            },
         },
         props: {
 
@@ -118,5 +128,8 @@ function onAddNewFolio(stay) {
     })
 }
 
+function onViewReservationStayDetail(rs){
+    window.postMessage('view_reservation_stay_detail|'+rs, '*')
 
+}
 </script>

@@ -107,7 +107,7 @@
 
     </template>
 <script setup>
-import { useConfirm, h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList,updateDoc } from '@/plugin'
+import { useConfirm, h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed } from '@/plugin'
 import '@fullcalendar/core/vdom' // solves problem with Vite
 import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -530,6 +530,7 @@ function onPrevNext(key) {
     let visible_date = {}
     if (key == 'prev') {
         visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days * -1, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days * -1, "days").toDate() }
+
     } else {
         visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days, "days").toDate() };
     }

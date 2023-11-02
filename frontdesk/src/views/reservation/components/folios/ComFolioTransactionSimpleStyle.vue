@@ -72,7 +72,9 @@
             <Column field="owner" header="Owner"></Column>
             <Column field="creation" header="Created">
                 <template #body="slotProps">
-                    <span v-if="slotProps.data.creation">{{ gv.datetimeFormat(slotProps.data.creation) }}</span>
+                    <span v-if="slotProps.data.creation">
+                        <ComTimeago :date="slotProps.data.creation" />
+                    </span>
                 </template>
             </Column>
             <Column>
@@ -201,6 +203,7 @@ function LoadFolioTransaction(){
 					fields: [
 						"name",
 						'posting_date',
+                        "reservation",
 						"room_number",
 						"parent_reference",
 						"type",

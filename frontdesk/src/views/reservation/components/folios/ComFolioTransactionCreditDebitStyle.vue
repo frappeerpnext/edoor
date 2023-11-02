@@ -57,7 +57,7 @@
         <Column field="owner" header="Made By"></Column>
         <Column field="creation" header="Created">
             <template #body="slotProps">
-                <span v-if="slotProps.data.creation">{{ gv.datetimeFormat(slotProps.data.creation) }}</span>
+                <span v-if="slotProps.data.creation"> <ComTimeago :date="slotProps.data.creation" /></span>
             </template>
         </Column>
         <Column header="">

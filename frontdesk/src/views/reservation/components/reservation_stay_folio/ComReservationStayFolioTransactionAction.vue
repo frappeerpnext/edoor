@@ -1,5 +1,6 @@
 <template lang="">
     <div> 
+  
     <div class="flex items-center justify-end">
         <div class="res_btn_st">
             <Button class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded icon="pi pi-ellipsis-v"
@@ -80,7 +81,7 @@ function onEditFolioTransaction() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                //load folio list and folio transactgion 
+                //load folio list and folio transaction 
  
                 window.postMessage({action:"load_reservation_folio_list"},"*")
                 window.postMessage({action:"load_reservation_stay_folio_list"},"*")

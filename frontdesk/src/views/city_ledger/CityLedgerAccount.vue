@@ -26,30 +26,34 @@
                                 </div>
                             </div>
                         </div>
-                        <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+                        <OverlayPanel ref="showAdvanceSearch">
                             <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-                                <div class="grid">
-                                    <div class="col-6">
+                                <div class="flex gap-2">
+                                    <div class="">
                                         <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_city_ledger_type" @onSelected="onSearch"
-                                            placeholder="City Ledger Type" doctype="City Ledger Type" />
+                                            placeholder="City Ledger Type" doctype="City Ledger Type"  class="pb-2 w-full"/> 
                                     </div>
-                                    <div class="col-6">
+                                    <div class="">
                                         <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_business_source" @onSelected="onSearch"
-                                            placeholder="Business Source" doctype="Business Source" />
+                                            placeholder="Business Source" doctype="Business Source"  class="pb-2 w-full"/>
                                     </div>
                                 </div>
                             </ComOverlayPanelContent>
                         </OverlayPanel>
-                        <div>
+                        
+                    </div>
+                    <div class="flex grap-2">
+                        <div class="px-2">
                             <ComOrderBy doctype="City Ledger" @onOrderBy="onOrderBy" />
                         </div>
-                    </div>
-                    <div>
-                        <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
+                        <div>
+                            <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                             <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                         </Button>
+                        </div>
+                        
                     </div>
                 </div>
             </div>

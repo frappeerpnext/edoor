@@ -29,6 +29,7 @@ export default class ReservationStay {
 		this.room_rates = ref([])
 		this.is_page = false
 		this.totalFolio = ref(0)
+		this.attacheds = ref([])
 
 	}
 
@@ -48,6 +49,10 @@ export default class ReservationStay {
 			this.masterGuest.value = result.message.master_guest 
 			
 			this.loading.value = false
+			this.attacheds.value = [name]
+			this.attacheds.value = this.attacheds.value.concat(result.message.folio_names)
+			this.attacheds.value = this.attacheds.value.concat(result.message.folio_transaction_names)
+
 			
 
 		}).catch((error) => {
@@ -269,6 +274,9 @@ export default class ReservationStay {
 		this.selectedRoomRates = []
 		this.folioTransactions.value = ref([])
 		this.selectedFolioTransactions.value = ref([])
+		this.attacheds =[]
+
+
 
 
 		//clear state key seletion of folio transaction

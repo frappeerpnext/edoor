@@ -9,7 +9,9 @@
             
             <ComSelect class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Buildings" v-model="filter.building" doctype="Building" optionLabel="building" optionValue="name"></ComSelect>
             <ComSelect class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Floors" v-model="filter.floor" doctype="Floor" :groupFilterValue="filter.building" groupFilterField="building" optionLabel="floor" optionValue="name"></ComSelect>
-            <ComAutoComplete class="col-4" :filters="[['property', '=', edoor_property.name]]" placeholder="All Business Source" v-model="filter.business_source" doctype="Business Source" optionLabel="business_source" optionValue="name" />
+            <div class="col-4">
+                <ComAutoComplete isFull :filters="[['property', '=', edoor_property.name]]" placeholder="All Business Source" v-model="filter.business_source" doctype="Business Source" optionLabel="business_source" optionValue="name"/>
+            </div>
         </div>
     </ComOverlayPanelContent>
 </template>

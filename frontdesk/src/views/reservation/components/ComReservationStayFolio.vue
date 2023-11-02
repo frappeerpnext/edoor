@@ -18,7 +18,7 @@
                 <Button class="conten-btn" label="Create Folio" icon="pi pi-folder-open" @click="onAddCreatNewFolio()"></Button>
             </div>
             <div class="text-center text-600">Create a Folio to post transactions.</div>
-        </div> 
+        </div>
     </div>
 </template>
 <script setup>

@@ -1,4 +1,5 @@
 <template>
+
     <div>
         <div class="mt-3 min-h-folio-cus" :class="{'unset-min-h' : fill}">
         <div class="flex justify-end mb-3">
@@ -27,6 +28,12 @@
                                 <div class="break-words whitespace-break-spaces">
                                     {{ slotProps.data.description }}
                                 </div>
+                            </template>
+                        </Column>
+                        <Column field="modified" header="Last Modified">
+                            <template #body="slotProps">
+                                   <ComTimeago :date='slotProps.data.modified' />
+                                
                             </template>
                         </Column>
                         <Column field="" header="">
@@ -68,15 +75,20 @@
     </div>
 </template>
 <script setup>
-import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,postApi} from '@/plugin'
-import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
+import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount} from '@/plugin'
+
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
+
 const props = defineProps({
     doctype:{
         type: String,
         require: true
     },
+    doctypes:{
+        type: Object,
+    },
+
     docname: {
         type: String,
         required: true
@@ -112,15 +124,14 @@ const selected =ref({})
 const dialogConfirm = useConfirm();
 const dialog = useDialog();
 const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
-const dialogRef = inject("dialogRef");
 function onModal(open){
     visible.value = open
 }
 function onSuccess(){
     visible.value = false
-    onLoad()
-    window.socket.emit("ReservationDetail", window.reservation)            
-    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+    window.postMessage({action:"refresh_document"})
+
+
 }
 
 function pageChange(page) {
@@ -129,30 +140,36 @@ function pageChange(page) {
     onLoad()
 }
 function getTotalDocument(){
-    const attacheds = ref()
-    if(props.attacheds){
-        attacheds.value = props.attacheds.join("','")
-    }
-    else{
-        attacheds.value = props.docname
-    }
-    postApi("reservation.get_document_count",{attacheds: `'${attacheds.value}'`},'',false).then((r)=>{
-        pageState.value.totalRecords = r.message
-    })
-}
-function onLoad(){
-    loading.value = true
     let dataFilter = []
-    if(props.extraFilters.length > 0){
-        props.extraFilters.forEach((r)=>{
-            dataFilter.push(['attached_to_name','=',r[props.extraFilterFieldName]])
-        })
-    }
-    dataFilter.push(['attached_to_name','=',props.docname])
+    let ref_doctypes = [props.doctype]
+    ref_doctypes = ref_doctypes.concat(props.doctypes || [])
+
+
+    dataFilter.push(['attached_to_doctype','in',ref_doctypes])
+    dataFilter.push(['attached_to_name','in',props.attacheds])
+    dataFilter.push(["custom_show_in_edoor","=",1])
+    
+    getCount('File', dataFilter, true)
+  .then((count) => pageState.value.totalRecords = count)
+
+   
+}
+function onLoad(showLoading=true){
+    loading.value = showLoading
+    let dataFilter = []
+
+    let ref_doctypes = [props.doctype]
+    ref_doctypes = ref_doctypes.concat(props.doctypes || [])
+
+    dataFilter.push(['attached_to_doctype','in',ref_doctypes])
+    dataFilter.push(['attached_to_name','in',props.attacheds])
+    dataFilter.push(["custom_show_in_edoor","=",1])
+    
+
     getTotalDocument()
     getDocList('File', {
-        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation"],
-        orFilters: dataFilter,
+        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation","modified"],
+        filters: dataFilter,
         limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
         limit: pageState.value?.rows || 20,
         orderBy: {
@@ -169,33 +186,13 @@ function onLoad(){
 }
 
 function onDetail(data){
-    if(data.attached_to_doctype == 'Reservation Stay'){
-        showReservationStayDetail(data.attached_to_name)
-    }
+   
+        
+        window.postMessage("view_" + data.attached_to_doctype.replaceAll(" ","_").toLowerCase() +"_detail|" + data.attached_to_name,"*")
+     
  
 }
-function showReservationStayDetail(name) {
 
-const dialogRef = dialog.open(ReservationStayDetail, {
-    data: {
-        name: name
-    },
-    props: {
-        header: 'Reservation Stay Detail',
-        contentClass: 'ex-pedd',
-        style: {
-            width: '80vw',
-        },
-        maximizable: true,
-        modal: true,
-        closeOnEscape: false,
-        position: 'top'
-    },
-    onClose: (options) => {
-        const data = options.data;
-    }
-});
-}
 function onDownload(data){
     downloadURI(data.file_url, data.file_name)
 }
@@ -214,7 +211,7 @@ function onRemove(selected){
                 if(doc){
                     deleting.value = false
                     onLoad()
-                    window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
+                    window.postMessage({"action":"refresh_document_count", docname:props.docname},"*")
                 }
             }).catch((err)=>{
                 deleting.value = false
@@ -251,8 +248,25 @@ const downloadURI = (uri, name) => {
   document.body.removeChild(link);
 }
 onMounted(() => {
+    window.addEventListener('message', actionHandler, false);
    onLoad() 
 })
+
+
+const actionHandler = async function (e) {
+       if (e.isTrusted ) {
+        // if(e.data.action=='refresh_document' && e.data.docname == props.docname){
+        if(e.data.action=='refresh_document'){
+            onLoad(false)
+        }
+   }
+}
+ 
+onUnmounted(() => {
+    window.removeEventListener('message', actionHandler, false);
+   
+})
+
 
 </script>
 <style lang="">

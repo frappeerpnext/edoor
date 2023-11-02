@@ -187,7 +187,9 @@ function showReservationDetail(selected) {
 function onLoadData(){
 	loading.value = true
 	let filters = [
-		["property", "=", property.name]
+		["custom_property", "=", window.property_name]
+		["custom_is_audit_trail", "=",1],
+		
 	]
 	filters.push(["note_date",">=", working_day.date_working_day])
 	if (keyword.value){

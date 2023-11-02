@@ -138,8 +138,7 @@ async function getData(keyword) {
     let apiParams = { doctype: props.doctype, txt: keyword }
     if (props.filters) {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
-    }
-    console.log
+    } 
     await call.get('frappe.desk.search.search_link', apiParams).then((result) => {
         options.value = result.results
         options.value = options.value.map(r => r.label == '' || r.label == null ? { ...r, label: r.value } : r)
@@ -196,11 +195,12 @@ function onBlur() {
     }
 }
 function onFocus() {
+
     if (options.value.length == 0) {
         if(props.valueFilter)
             getDataByFilter('')
         else
-            getData('')
+            search({query:''}) 
     }
 
 }

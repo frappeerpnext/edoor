@@ -1,5 +1,4 @@
-<template>
-
+<template> 
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="font-bold text-3xl text-overflow-ellipsis">{{ property.name }}</div>
@@ -38,13 +37,12 @@
                             <ComChartStatus @onClick="onViewVacantRoom" :value="data.total_room_vacant" title="Vacant" class="bg-warning-edoor">
                             </ComChartStatus>
                             <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" title="Total rooms" class="btn-sec-edoor">
+                            </ComChartStatus> 
+                            <ComChartStatus @onClick="onViewCancelReservation" :value="data.total_cancelled" title="Cancelled" :style="{backgroundColor: statusColor.cancelled}">
                             </ComChartStatus>
-
-                            <ComChartStatus @onClick="onViewCancelReservation" :value="data.total_cancelled" title="Cancelled" class="btn-sec-edoor">
+                            <ComChartStatus @onClick="onViewNoShowReservation" :value="data.total_no_show" title="No-show" :style="{backgroundColor: statusColor.no_show}">
                             </ComChartStatus>
-                            <ComChartStatus @onClick="onViewNoShowReservation" :value="data.total_no_show" title="No-show" class="btn-sec-edoor">
-                            </ComChartStatus>
-                            <ComChartStatus @onClick="onViewVoidReservation" :value="data.total_void" title="Void" class="btn-sec-edoor">
+                            <ComChartStatus @onClick="onViewVoidReservation" :value="data.total_void" title="Void" :style="{backgroundColor: statusColor.void}">
                             </ComChartStatus>
                             <!--<div class="grid mt-3 text-center">
                                 <ComShowCancelOcc @onClick="onViewCancelReservation" title="Cancelled" :value="data.total_cancelled"></ComShowCancelOcc>
@@ -143,7 +141,7 @@
 </template>
 
 <script setup>
-import { inject, ref, onUnmounted,onMounted} from '@/plugin'
+import { inject, ref, onUnmounted,onMounted,computed} from '@/plugin'
 import { useToast } from "primevue/usetoast";
 import { useDialog } from 'primevue/usedialog';
 
@@ -177,7 +175,16 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
-
+const statusColor = computed(()=>{
+    if(setting.reservation_status){
+        return {
+            cancelled: setting.reservation_status.find((r)=>r.reservation_status == 'Cancelled') ? setting.reservation_status.find((r)=>r.reservation_status == 'Cancelled').color || '#ed6396' : '#ed6396',
+            no_show: setting.reservation_status.find((r)=>r.reservation_status == 'No Show') ? setting.reservation_status.find((r)=>r.reservation_status == 'No Show').color || '#828205' : '#828205',
+            void: setting.reservation_status.find((r)=>r.reservation_status == 'Void') ? setting.reservation_status.find((r)=>r.reservation_status == 'Void').color || '#ff0000' : '#ff0000'
+        }
+    }
+    
+})
  
 
  

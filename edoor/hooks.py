@@ -101,8 +101,8 @@ app_license = "MIT"
 
 doc_events = {
     "Comment":{
-        "on_update":[
-            "edoor.api.utils.update_deleted_document"
+       "on_update":[
+            "edoor.api.utils.update_comment_keyword"
 		],
         "after_insert":[
             "edoor.api.utils.update_comment_by"
@@ -112,21 +112,6 @@ doc_events = {
     "Version":{
         "after_insert":[
             "edoor.api.utils.update_audit_trail_from_version"
-		]
-	},
-    "Reservation Folio":{
-        "after_insert":[
-            "edoor.api.utils.update_insert_document"
-		]
-	},
-    "Folio Transaction":{
-        "after_insert":[
-            "edoor.api.utils.update_insert_document"
-		]
-	},
-    "Reservation Room Rate":{
-        "after_insert":[
-            "edoor.api.utils.update_insert_document"
 		]
 	},
 	"*": {

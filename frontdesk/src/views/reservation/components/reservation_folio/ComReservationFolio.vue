@@ -1,23 +1,33 @@
 <template>
 <div v-if="rs.reservationFolioList.length>0">
-    <table style="width: 100%;">
-        <tr>
-            <td>
-                <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
-            </td>
-            <td>
-                <div v-if="selectedFolio">
+    <div class="flex gap-2 w-full">
+        <div class="col-3 px-0 relative" style="width: 350px;">
+            <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
+        </div>
+        <div class="col-9 px-0 pt-3">
+            
+            <div v-if="selectedFolio">
+                <div class="w-full p-2 border-1 border-round-lg mb-3 flex">
+                    <span v-if="selectedFolio.is_master" class="bg-purple-100 p-2 w-3rem  flex justify-content-center align-items-center border-round-lg"> <ComIcon style="height: 14px;" icon="iconCrown" /> </span>
+                    <div class="line-height-2 ms-2">
+                    <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? 'text-green-700' : 'text-orange-700'" class="line-height-2 font-italic  folio-remark font-light ms-2 " >{{ selectedFolio.status }}</span>  </div>
+                    
+                    <span class="font-light">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</span>
+                    </div>
+                    
+                </div>
                     <ComFolioAction :folio="selectedFolio" />
                     <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                     <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
-                </div>
-            </td>
-        </tr>
-    </table>
+            </div>
+        </div>
+    </div>
 </div>
-<div v-else> 
-    <Button @click="onCreateMasterFolio">Create a Master Folio</Button>
-    Create a  Folio to post transactions.
+<div v-else class="min-h-folio-cus flex flex-column justify-content-center"> 
+    <div class="text-center mb-3">
+        <Button class="conten-btn" label="Create a Master Folio" icon="pi pi-folder-open"  @click="onCreateMasterFolio"></Button>
+    </div>
+    <div class="text-center text-600">Create a Folio to post transactions.</div>
 </div>
    
 </template>
@@ -84,7 +94,11 @@
             message: 'Are you sure you want to create master folio?',
             header: 'Confirmation',
             icon: 'pi pi-info-circle',
-            
+            acceptLabel: 'Create',
+            acceptIcon: 'pi pi-check-circle',
+            acceptClass: 'border-none btn-ok_ss',
+            rejectClass: 'hidden',
+
             accept: () => {
                 const doc = {
                     property:window.property_name,
@@ -94,7 +108,6 @@
                 }
                 createUpdateDoc('Reservation Folio', {data: doc})
                 .then((doc) => {
-                    
                     loadReservationFolioList(doc.name)
                     loading.value = false
                     window.socket.emit("ReservationDetail", {reservation_stay:rs.reservation.name})

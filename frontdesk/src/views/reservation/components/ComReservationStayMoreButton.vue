@@ -70,7 +70,7 @@
                         <button v-else @click="onUnallowPosttoCityLedger()"
                             class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
                             <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
-                            Unallow Post to City Ledger
+                            Disallow Post to City Ledger
                         </button>
                     </div>
                 </template>

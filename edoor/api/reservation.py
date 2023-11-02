@@ -52,12 +52,17 @@ def get_reservation_detail(name):
     reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
+    folio_names =frappe.get_all("Reservation Folio",filters={"reservation":name}, page_length=10000,pluck='name')
+    folio_transaction_names =frappe.get_all("Folio Transaction",filters={"reservation":name}, page_length=10000,pluck='name')
     return {
         "reservation":reservation,
         "reservation_stays":reservation_stays,
         "master_guest": master_guest,
-        "total_folio":total_folio or 0
+        "total_folio":total_folio or 0,
+        "folio_names":folio_names,
+        "folio_transaction_names":folio_transaction_names
     }
+
 
 
 @frappe.whitelist()
@@ -76,7 +81,9 @@ def get_reservation_stay_detail(name):
         master_guest = frappe.get_doc("Customer",reservation.guest)
 
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
-    
+    folio_names =frappe.get_all("Reservation Folio",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+    folio_transaction_names =frappe.get_all("Folio Transaction",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+
     return {
         "reservation":reservation,
         "total_reservation_stay": total_reservation_stay,
@@ -84,7 +91,9 @@ def get_reservation_stay_detail(name):
         "guest":guest,
         "master_guest":master_guest,
         "reservation_stay_names":reservation_stay_names,
-        "total_folio":total_folio or 0
+        "total_folio":total_folio or 0,
+        "folio_names":folio_names or [],
+        "folio_transaction_names": folio_transaction_names or []
     }
 
 
@@ -296,9 +305,9 @@ def add_new_reservation(doc):
         guest = frappe.get_doc(doc["guest_info"]).save()
     
     #prevent code call on_pdate to reservation stay
-   
+ 
     reservation = frappe.get_doc(doc["reservation"]).insert()
-    
+    frappe.msgprint(str(reservation.group_color))
     
     #start insert insert reservation stay
     i = 0
@@ -1283,7 +1292,7 @@ def change_stay(data):
             if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
                 frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
 
-        
+    doc.change_stay_note = data["note"]  
     doc.save()
     frappe.db.commit()
     if doc: 
@@ -2642,6 +2651,7 @@ def folio_transfer(data):
             {
                 "reference_doctype":"Folio Transaction",
                 "reference_name":folio_transaction_doc.name,
+                "subject":"Transfer folio item",
                 "content":f'Folio Transfer from room # {old_folio_doc.rooms}. Folio Number  {data["folio_number"]}, Reservation Stay # {old_folio_doc.reservation}, Reservation # {old_folio_doc.reservation_stay}, Note: {data["note"]}'
             }
         )

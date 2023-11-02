@@ -432,7 +432,6 @@ const total_amount = computed(() => {
 });
 
 function onSelectAccountCode(data) {
-
     if(data.value){
         getDoc('Account Code', data.value)
         .then((d) => {
@@ -447,6 +446,7 @@ function onSelectAccountCode(data) {
             doc.value.show_print_preview = d.show_print_preview
             doc.value.print_format= d.print_format
             doc.value.discount_type = "Percent"
+            doc.value.discount = 0
             doc.value.input_amount = 0
             doc.value.quantity = 1
             if (d.tax_rule) {
@@ -462,12 +462,11 @@ function onSelectAccountCode(data) {
 
             }
             if (d.use_folio_balance_as_default_amount == 1) {
-                 doc.value.input_amount = Math.abs(  balance.value || 0)
+                doc.value.input_amount = Math.abs(balance.value || 0)
             }
             if (d.price>0 && !doc.value.name) {
                 doc.value.input_amount =d.price
-            }
-
+            } 
             const input = document.getElementById("input_amount").querySelector('input')
             input.focus()
             input.select()
@@ -492,10 +491,8 @@ function onSelectCityLedger(data) {
         .then((d) => {
             city_ledger.value = d
             doc.value.city_ledger_name = d.city_ledger_name
+            
         })
-        .catch((error) => {
-
-        });
     }else {
         doc.value.city_ledger_name = ''
     }
@@ -541,7 +538,6 @@ onMounted(() => {
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
         isSaving.value = true
-    
         reservation = dialogRef.value.data.reservation
         call.get("edoor.api.reservation.get_folio_detail", {
             name: dialogRef.value.data.folio_transaction_number
@@ -572,7 +568,6 @@ onMounted(() => {
             if (result.length > 0){
                 doc.value.city_ledger = result[0].name
                 doc.value.city_ledger_name = result[0].city_ledger_name
-                
             }
         })
    

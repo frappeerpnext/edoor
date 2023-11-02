@@ -11,8 +11,8 @@
             </template>
             <template #content="{ files, uploadedFiles, removeUploadedFileCallback, removeFileCallback }">
                 <div v-if="files.length > 0"> 
-                    <div class="flex flex-wrap p-0 gap-5">
-                        <div v-for="(file, index) of files" :key="file.name + file.type + file.size" class="card m-0 p-3 rounded-md flex flex-column border-1 surface-border gap-3">
+                    <div class="flex flex-column p-0 gap-5">
+                        <div v-for="(file, index) of files" :key="file.name + file.type + file.size" class="card col-12 m-0 p-3 rounded-md flex flex-column border-1 surface-border gap-3">
                             <div class="flex"> 
                                 <ComAvatar size="xlarge" :image="file.objectURL" :fileName="file.name" align="justify-start">
                                     <div class="text-sm">
@@ -93,8 +93,12 @@ const props = defineProps({
 })
 
 const onSelectedFiles = (event) => {
+    
+    
+
     files.value = event.files;
     files.value.forEach((file) => {
+        file.title=file.name.split(".")[0]
         totalSize.value += parseInt(formatSize(file.size));
     });
 }; 
@@ -130,6 +134,9 @@ function onUpload(){
     if(files.value.length > 0){
         uploadFiles(files.value, fileArgs.value).then(()=>{
             loading.value = false
+ 
+            window.postMessage({"action":"refresh_document_count", docname:props.docname},"*")
+            
             emit("onSuccess")
         }).catch(error=>{
             loading.value = false

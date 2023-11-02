@@ -33,7 +33,7 @@ const sortOptions = ref([
 ])
 
 function onSelectOrderBy(d){
-    data.value.order_by = d.fieldname
+    data.value.order_by = d
     emit("onOrderBy",data.value)
 }
 

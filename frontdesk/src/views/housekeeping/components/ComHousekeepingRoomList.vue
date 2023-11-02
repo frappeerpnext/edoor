@@ -1,10 +1,19 @@
 <template>
     <div class="hsk-wrapper h-full">
         <ComPlaceholder text="No Data" :loading="hk.loading" :is-not-empty="data.length > 0">
-            <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer res_list_scroll" dataKey="name"
-                :value="data" stateStorage="local" stateKey="table_house_keeping_room_state" @row-dblclick="onDblClick"
-                @row-click="onRowSelect" tableStyle="min-width: 50rem" paginator showGridlines :rows="20"
-                :rowsPerPageOptions="[20, 30, 40, 50]">
+            <DataTable 
+                v-model:selection="hk.selectedRooms" 
+                class="cursor-pointer res_list_scroll" 
+                dataKey="name"
+                :value="data" 
+                stateStorage="local" 
+                stateKey="table_house_keeping_room_state" 
+                @row-click="onRowSelect" 
+                tableStyle="min-width: 50rem" 
+                paginator 
+                showGridlines 
+                :rows="20"
+                :rowsPerPageOptions="[20, 30, 40, 50]" >
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                 <Column class="text-center" field="room_number" header="Room #"></Column>
                 <Column header="Status" headerClass="text-center" bodyClass="text-center">
@@ -38,6 +47,7 @@
                 <Column field="reservation_status" header="Reservation Status" headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
+                      
                         <ComHkReservationStatus :statusName="slotProps.data.reservation_status" />
                     </template>
                 </Column>
@@ -75,7 +85,7 @@
     </div>
 </template>
 <script setup>
-import { ref, inject, postApi, computed , onUnmounted } from '@/plugin';
+import { ref, inject, postApi, computed , getDoc,onUnmounted } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReservationStatus.vue'
@@ -131,6 +141,7 @@ function SidebarClose() {
     });
 }
 function onRowSelect(r) {
+ 
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
         visibleRight.value = false;
@@ -156,6 +167,14 @@ function onRowSelect(r) {
     else {
         hk.reservationStay = {}
     }
+    hk.room_block=undefined
+
+    if (r.data.room_block){
+        getDoc("Room Block",r.data.room_block).then(r=>{
+           hk.room_block=r
+
+        })
+    }
 }
 function getHKSummary() {
     postApi('reservation.get_reservation_housekeeping_charge_summary', { reservation_stay: hk.selectedRow.reservation_stay }, '', false)
@@ -164,9 +183,7 @@ function getHKSummary() {
     })
     .catch((error) => console.error(error));
 }
-function onDblClick(r) {
-    alert("you double click on row: " + r.data.room_number)
-}
+ 
 function onViewCustomerDetail(name) {
     const dialogRef = dialog.open(GuestDetail, {
         data: {
