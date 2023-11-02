@@ -153,7 +153,6 @@ function onSearchLink() {
 
     })
         .catch((error) => {
-             console.log(error);
             
             return []
         });

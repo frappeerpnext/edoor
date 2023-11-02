@@ -12,7 +12,7 @@ export default class Gv {
 
 	handleServerMessage(message){ 
 		const frappe = inject('$frappe')
-		console.log(frappe)
+ 
 	}
 	showErrorMessage(error){ 
 	 

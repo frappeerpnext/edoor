@@ -65,7 +65,7 @@
         opRateType.value.hide();
     }
     const onChangeBusinessSource = (doc) => {
-        console.log(doc.reservation.business_source)
+ 
         rs.reservation.business_source = doc.reservation.business_source
         opBusinessSource.value.hide();
     }

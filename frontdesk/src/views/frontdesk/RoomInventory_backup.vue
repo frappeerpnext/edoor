@@ -543,7 +543,7 @@ borderColor="rgb(0 185 26 / 30%)"
 
     })
         .catch((error) => {
-            console.log(error)
+ 
             toast.add({ severity: 'warn', summary: 'Info', detail: "Loading data fail. Please try again", life: 3000 })
             gv.loading = false
         });

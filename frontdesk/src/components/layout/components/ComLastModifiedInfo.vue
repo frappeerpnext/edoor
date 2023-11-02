@@ -21,7 +21,6 @@
             is_last_modified: true
         }).then((r)=>{
             data.value = r.message
-            console.log(r.message)
             loading.value = false
         }).catch((err)=>{
             loading.value = false

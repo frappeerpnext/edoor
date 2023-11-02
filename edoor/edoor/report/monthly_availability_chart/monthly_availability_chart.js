@@ -65,7 +65,6 @@ frappe.query_reports["Monthly Availability Chart"] = {
 	]
 	,
 	"formatter": function(value, row, column, data, default_formatter) {
- console.log(row)
  
 	value = default_formatter(value, row, column, data);
 		if(data.indent==2 && column.is_date==1){

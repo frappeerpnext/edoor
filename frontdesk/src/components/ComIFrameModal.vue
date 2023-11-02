@@ -223,7 +223,7 @@ function debouncer(fn, delay) {
 
 onMounted(() => {
     window.socket.on("ComIframeModal", (arg) => {
-        console.log(arg)
+
         if(arg == window.property_name){
             loadIframe()
         }    

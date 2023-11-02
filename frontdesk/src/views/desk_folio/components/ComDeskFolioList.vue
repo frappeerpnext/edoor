@@ -171,7 +171,7 @@ const getColumns = computed(() => {
     if (filter.value.search_field) {
         return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
     } else {
-        console.log(columns.value)
+   
         return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })

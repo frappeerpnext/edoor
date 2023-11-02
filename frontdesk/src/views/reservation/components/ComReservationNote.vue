@@ -83,7 +83,7 @@ const rs = inject('$reservation')
 const gv = inject('$gv')
 const saving = ref(false)
 const op = ref()
-console.log(rs)
+
 const dataUpdate = ref({ 
     doctype: "Reservation",
     name: '',

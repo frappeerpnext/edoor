@@ -111,7 +111,7 @@ function getChartData(){
             view_chart_type:view_chart_type.value
         }
     ).then((result)=>{
-        console.log( result.message)
+
         
         chartData.value = result.message;
         chartOptions.value = setChartOptions();

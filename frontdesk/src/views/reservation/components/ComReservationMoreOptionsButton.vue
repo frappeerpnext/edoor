@@ -700,7 +700,7 @@ function onPickDrop() {
                 position: 'top'
             },
             onClose: (options) => {
-                console.log(options)
+                
                 if (options.data) {
                     rs.selecteds = []
                 }

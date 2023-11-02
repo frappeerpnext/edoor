@@ -149,7 +149,34 @@ items.value.push({
     }
 })
 
-
+//reservation stay detail
+items.value.push({
+    label: "Reservation Stay Detail",
+    icon: 'pi pi-check-circle',
+    acceptClass: 'border-none crfm-dialog',
+    rejectClass: 'hidden',
+    acceptIcon: 'pi pi-check-circle',
+    acceptLabel: 'Ok',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation%20Stay",
+                name: props.reservation_stay,
+                // report_name:  "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
+                report_name:  gv.getCustomPrintFormat("Reservation Stay Detail"),
+            },
+            props: {
+                header: "Reservation Stay Detail",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
 
 
 onMounted(() => {
@@ -166,14 +193,13 @@ onMounted(() => {
         })
             .then((doc) => {
 
-                console.log(doc)
                 doc.forEach(d => {
                     items.value.push({
                         label: d.title,
                         name: d.name,
                         icon: 'pi pi-refresh',
                         command: (r) => {
-                            console.log(r.item)
+           
                             dialog.open(ComPrintReservationStay, {
                                 data: {
                                     doctype: "Reservation%20Stay",

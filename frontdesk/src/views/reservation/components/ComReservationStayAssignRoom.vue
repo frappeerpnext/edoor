@@ -244,7 +244,7 @@
     }
 
     onMounted(() => {
-        console.log(dialogRef.value.options.data)
+
  
         getApi("frontdesk.get_working_day", {
             property: property.name

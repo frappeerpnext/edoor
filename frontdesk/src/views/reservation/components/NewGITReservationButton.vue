@@ -68,7 +68,7 @@ function onViewReservationDetail(name) {
             position:"top"
         },
         onClose: (options) => {
-            console.log(options)
+    
         }
     });
 }

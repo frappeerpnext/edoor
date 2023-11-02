@@ -170,7 +170,7 @@ function getTemplate(d) {
 }
 const scrollToTop = () => {
     const contentContainer = document.querySelector('.search_style_section');
-    console.log(contentContainer.scrollTop)
+
  
   if (contentContainer) {
     contentContainer.scrollTo({

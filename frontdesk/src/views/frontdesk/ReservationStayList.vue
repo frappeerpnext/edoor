@@ -129,39 +129,46 @@
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <ComAutoComplete class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
-                    v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                    doctype="Business Source Type"/>
-                    
-                <ComAutoComplete class="col-3" width="100%" isFilter groupFilterField="business_source_type"
+                <div class="col-3">
+                    <ComAutoComplete  isFilter optionLabel="business_source_type" optionValue="name"
+                        v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
+                        doctype="Business Source Type"/>
+                    </div>
+                <div class="col-3">
+                <ComAutoComplete isFilter groupFilterField="business_source_type"
                     :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                     optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
                     placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" />
-
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
-                    placeholder="Reservation Type" :options="['GIT', 'FIT']" />
-
-                <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
-                    v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
-                    doctype="Reservation Status"  />
-
-                <ComSelect class="col-3" width="100%" optionLabel="building" optionValue="name"
+                </div>
+                <div class="col-3">
+                    <ComSelect isFilter v-model="filter.selected_reservation_type" @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']" />
+                </div>
+                <div class="col-3">
+                    <ComSelect isFilter optionLabel="reservation_status" optionValue="name"
+                        v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
+                        doctype="Reservation Status"  />
+                </div>
+                <div class="col-3">
+                <ComSelect isFilter optionLabel="building" optionValue="name"
                     v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" :filters="[['property', '=', property.name]]"  />
-
-                <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
-                    v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="[['property', '=', property.name]]" >
-                </ComSelect>
-
-                <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
-                    :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
-                    v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room" :filters="[['property', '=', property.name]]" >
-                </ComSelect>
-
-                <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
+                </div>
+                <div class="col-3">
+                    <ComSelect isFilter optionLabel="room_type" optionValue="name"
+                        v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="[['property', '=', property.name]]" >
+                    </ComSelect>
+                </div>
+                <div class="col-3">
+                    <ComSelect isFilter groupFilterField="room_type_id"
+                        :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
+                        v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room" :filters="[['property', '=', property.name]]" >
+                    </ComSelect>
+                </div>
+                <div class="col-3">
+                <ComSelect isFilter v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
                     @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" >
                 </ComSelect>
-
+                </div>
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"

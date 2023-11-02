@@ -53,6 +53,7 @@
 					<Column field="comment_by" header="By"></Column>
 					<Column field="modified" header=" Date & Time"><template #body="slotProps">
 							<Timeago :datetime="slotProps.data.modified" long></Timeago>
+							<!-- <ComTimeago :datetime="slotProps.data.modified"  /> -->
 						</template>
 					</Column>
 				</DataTable>

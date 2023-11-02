@@ -308,7 +308,7 @@ onMounted(() => {
     });
     loadData()
     getApi("frontdesk.get_meta", { doctype: "City Ledger" }).then((result) => {
-        console.log(result.message)
+ 
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
             if (["Date", "Int"].includes(r.fieldtype)) {

@@ -33,6 +33,7 @@
                         <Column field="modified" header="Last Modified">
                             <template #body="slotProps">
                                    <ComTimeago :date='slotProps.data.modified' />
+                                   
                                 
                             </template>
                         </Column>

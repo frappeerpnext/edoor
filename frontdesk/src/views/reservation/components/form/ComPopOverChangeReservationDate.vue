@@ -80,7 +80,7 @@ function onSave(){
         window.socket.emit("ReservationDetail", window.reservation)
         window.socket.emit("Reports", window.property_name)
         // emit("onClose", r.message)
-        // console.log(r)
+
     }).catch((err)=>{
         loading.value = false
     })

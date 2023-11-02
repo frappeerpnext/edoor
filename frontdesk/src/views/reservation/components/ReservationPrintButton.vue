@@ -21,14 +21,14 @@ db.getDocList('Print Format', {
 
 })
     .then((doc) => {
-        console.log(doc)
+
         doc.forEach(d => {
             items.value.push({
                 label: d.title,
                 name:"Pheakdey",
                 icon: 'pi pi-refresh',
                 command: (r) => {
-                    console.log(r)
+               
                     toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
                 }
             })

@@ -75,7 +75,6 @@ const taxData = ref()
 const opTax = ref();
 const toggleTAX = (event) => {
     opTax.value.toggle(event);
-    console.log(opTax.value)
 
 }
 function onClick(){

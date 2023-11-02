@@ -60,7 +60,7 @@ function onShowImage(){
 onMounted(() => {
     if(props.fileName){
         extension.value = props.fileName.substring(props.fileName.lastIndexOf(".") + 1);
-        console.log(extension.value)
+
         if(extension.value == 'pdf'){
             icon.value = 'pi pi-file-pdf'
         }else if(extension.value == 'doc' || extension.value == 'docx'){

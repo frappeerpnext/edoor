@@ -204,7 +204,7 @@ function onViewCustomerDetail(name) {
             maximizable: true
         },
         onClose: (options) => {
-            console.log(options)
+           
         }
     });
 }
