@@ -1,5 +1,6 @@
 <template>
     <div>
+        
         <FileUpload name="demo[]" @clear="onClear" @upload="onTemplatedUpload($event)" :multiple="true" accept="image/*,.pdf,.doc,.docx,.xlsx,.xls" :maxFileSize="1000000000" @select="onSelectedFiles">
             <template #header="{ chooseCallback, uploadCallback, clearCallback, files }">
                 <div class="flex flex-wrap justify-content-between align-items-center flex-1 gap-2">

@@ -170,7 +170,8 @@ const filter = ref({
     is_active_reservation: "1" ,
     sort_order: "ASC",
     filter_date_by:"Arrival Date",
-    summary_filter:"Business Source"
+    summary_filter:"Business Source",
+
 })
 function onSelectLetterHead(l){
     filter.value.letterhead = l

@@ -462,7 +462,6 @@ function getEvents() {
 
     })
         .catch((error) => {
-            console.log(error)
             toast.add({ severity: 'warn', summary: 'Info', detail: "Loading data fail. Please try again", life: 3000 })
             loading.value = false
         });

@@ -1,19 +1,17 @@
 <template>
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
-
             <div :class="[isPage, 'bg-white']">
                 <div class="flex mb-3 justify-between">
                     <ComReservationStayHeaderStatus />
-
                     <div class="flex gap-2">
                         <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
                             class="rounded-lg conten-btn flex" link>
                             <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                             </icon>
                         </button>
-                        <button @click="onRoute" v-tippy ="'Open New Window'" v-if="!isPage"
-                            class="rounded-lg conten-btn " link>
+                        <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn "
+                            link>
                             <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                         </button>
                         <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
@@ -23,7 +21,7 @@
                             </Button>
                             <Button class="border-noround border-rl-ed border-none">{{
                                 (rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1 }} / {{
-         rs?.reservationStayNames.length }} </Button>
+        rs?.reservationStayNames.length }} </Button>
                             <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
                                 :disabled="rs?.canNavigateNext(name) || rs.loading"
                                 class="border-noround-left border-y-none border-right-none"
@@ -32,7 +30,6 @@
                     </div>
                 </div>
                 <Message v-if="rs.reservationStay && rs.reservationStay?.reservation_status == 'No Show'">
-
                     <div class="flex items-center gap-3"
                         v-if="rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0 && rs.reservationStay?.reservation_status == 'No Show'">
                         <span>
@@ -71,13 +68,16 @@
                                         <!-- <ComReservationNote
                                             v-if="!rs.loading && rs.reservationStay && rs.reservationStay.name"
                                             doctype="Reservation Stay" /> -->
-                                        <ComReservationStayNote/>
+                                        <ComReservationStayNote />
                                     </div>
                                     <div class="col-12">
                                         <hr>
                                     </div>
                                     <div class="col-12">
-                                        <ComCommentAndNotice v-if="name" doctype="Reservation Stay" :docname="name" />
+                                        <ComCommentAndNotice v-if="name && rs.attacheds.length > 0" doctype="Reservation Stay"
+                                            :docname="name"
+                                            :reference_doctypes="['Reservation Stay', 'Reservation Room Rate', 'Reservation Folio', 'Folio Transaction']"
+                                            :docnames="rs.attacheds" />
                                     </div>
                                 </div>
                             </div>
@@ -90,11 +90,10 @@
                             </div>
                         </div>
                     </TabPanel>
-
                     <TabPanel header="Room Rate" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
-                    <TabPanel >
+                    <TabPanel>
                         <template #header>
                             <span class="me-2">Folio</span>
                             <Badge :value="rs.totalFolio"></Badge>
@@ -104,13 +103,13 @@
                     <TabPanel>
                         <template #header>
                             <span class="me-2">Document</span>
-                            
-                            <ComDocumentBadge doctype="Reservation Stay"  :doctypes="['Reservation Stay','Reservation Folio','Folio Transaction']"  :docname="name"   :attacheds="rs.attacheds" v-if="name && rs.attacheds.length>0" />
+                            <ComDocumentBadge doctype="Reservation Stay"
+                                :doctypes="['Reservation Stay', 'Reservation Folio', 'Folio Transaction']" :docname="name"
+                                :attacheds="rs.attacheds" v-if="name && rs.attacheds.length > 0" />
                         </template>
-                    
-                        <ComDocument doctype="Reservation Stay" :doctypes="['Reservation Stay','Reservation Folio','Folio Transaction']"  :docname="name" :fill="false" :attacheds="rs.attacheds"
-                             />
-                             
+                        <ComDocument doctype="Reservation Stay"
+                            :doctypes="['Reservation Stay', 'Reservation Folio', 'Folio Transaction']" :docname="name"
+                            :fill="false" :attacheds="rs.attacheds" />
                     </TabPanel>
                 </TabView>
             </div>
@@ -133,15 +132,13 @@
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
                         <span class="italic">Checked-in by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date)
-                            }}
+                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date) }}
                         </span>
                     </div>
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
                         <span class="italic">Checked-out by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date)
-                            }}
+                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date)}}
                         </span>
                     </div>
                 </div>
@@ -168,24 +165,17 @@
                 @click="onCheckOut" class="bg-red-400 border-none">
                 <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
             </Button>
-
         </template>
-
     </ComDialogContent>
 </template>
 
 <script setup>
-
 import { inject, ref, onMounted, computed, useRoute, useRouter, onUnmounted, useDialog, postApi } from '@/plugin'
 import { useConfirm } from "primevue/useconfirm";
-
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
-
 import ComReservationStayRoomRate from '@/views/reservation/components/ComReservationStayRoomRate.vue';
-
 import ComReservationStayDetailGuestInfo from './components/ComReservationStayDetailGuestInfo.vue';
 import ComReservationStayDetailChargeSummary from './components/ComReservationStayDetailChargeSummary.vue';
-
 import ComReservationBusinessSourceAndRate from '@/views/reservation/components/ComReservationBusinessSourceAndRate.vue';
 import ComReservationStayInfo from './components/ComReservationStayInfo.vue';
 import ComReservationRoomStayList from './components/ComReservationRoomStayList.vue'
@@ -197,63 +187,40 @@ import ComReservationStayFolio from '@/views/reservation/components/ComReservati
 import ComReservationStayHeaderStatus from '@/views/reservation/components/ComReservationStayHeaderStatus.vue'
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
-import ComIFrameModal from "@/components/ComIFrameModal.vue";
-
 import Message from 'primevue/message';
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
 const route = useRoute()
 const router = useRouter()
-
 const moment = inject("$moment")
 const confirm = useConfirm()
-
 const dialogRef = inject("dialogRef");
-
 const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
-const props = defineProps({
-    data: Object,
-    
-})
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
-
-
 const onRefresh = (showLoading = true) => {
- 
     rs.getReservationDetail(name.value, showLoading)
     rs.getChargeSummary(name.value)
     rs.selectedRoomRates = []
-
     //load comment 
-
-    window.postMessage({action:"load_comment"},"*")
-
+    window.postMessage({ action: "load_comment" }, "*")
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
     } else if (activeTab.value == 2) {
         //load folio
-        window.postMessage({action:"load_folio_transaction"},"*")
-        window.postMessage({action:"load_reservation_stay_folio_list"},"*")
-    } else if(activeTab.value==3){
-        window.postMessage({action:"refresh_document",docname:name.value})
-        window.postMessage({action:"refresh_document_count",docname:name.value})
-        
+        window.postMessage({ action: "load_folio_transaction" }, "*")
+        window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
+    } else if (activeTab.value == 3) {
+        window.postMessage({ action: "refresh_document", docname: name.value })
+        window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
-
-
-
-
 }
-
-
 function onUnreservedRoom() {
-
     confirm.require({
         message: 'Are you sure you want to unreserve room for this reservation?',
         header: 'Confirmation',
@@ -270,12 +237,11 @@ function onUnreservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ReservationList", { property: window.property_name })
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                window.socket.emit("ComGuestLedger", { property: window.property_name })
+                window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                 window.socket.emit("Reports", window.property_name)
             })
         },
-
     });
 }
 function onReservedRoom() {
@@ -295,72 +261,52 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name)
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                window.socket.emit("ComGuestLedger", { property: window.property_name })
+                window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                 window.socket.emit("Reports", window.property_name)
             })
         },
-
     });
 }
-
 onMounted(() => {
     if (!dialogRef) {
         rs.is_page = true
         if (route.params.name) {
             name.value = route.params.name
-
             rs.getReservationDetail(name.value);
-
             rs.getChargeSummary(name.value)
-
         } else {
-            alert("Go back to reserveatin list")
         }
         window.reservation_stay = route.params.name
-
     } else {
-
         name.value = dialogRef.value.data.name;
         rs.getReservationDetail(name.value);
         rs.getChargeSummary(name.value)
         rs.is_page = false
         window.reservation_stay = dialogRef.value.data.name
     }
-
-   
-
     window.socket.on("ReservationStayDetail", (arg) => {
         if (arg.reservation_stay == rs.reservationStay.name) {
             onRefresh(false)
         }
     })
 });
-
 function onNavigateStay(isNext) {
     const stay_name = rs.getStayName(name.value, isNext)
-
     if (stay_name) {
-
         if (isPage.value) {
-
             router.push({ name: 'ReservationStayDetail', params: { name: stay_name } })
         }
         name.value = stay_name
         onRefresh()
     }
-
-
 }
-
 function onRoute() {
     window.open('stay-detail/' + name.value, '_blank')
 }
 const onClose = () => {
     dialogRef.value.close()
 }
-
-
 //check in
 const onCheckIn = () => {
     const dialogRef = dialog.open(ComConfirmCheckIn, {
@@ -370,19 +316,16 @@ const onCheckIn = () => {
                 width: '450px',
             },
             modal: true,
-
             closeOnEscape: false
         },
         onClose: (options) => {
             const result = options.data;
-
             if (result) {
                 rs.loading = true
                 postApi("reservation.check_in", {
                     reservation: rs.reservation.name,
                     reservation_stays: [rs.reservationStay.name],
-                    note:result.note
-
+                    note: result.note
                 }).then((result) => {
                     rs.loading = false
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
@@ -391,10 +334,9 @@ const onCheckIn = () => {
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.socket.emit("ComGuestLedger", { property: window.property_name })
+                    window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
-
                     onRefresh(false)
                 })
                     .catch((err) => {
@@ -402,13 +344,9 @@ const onCheckIn = () => {
                     })
             }
         }
-
-
     })
 }
-
 const onCheckOut = () => {
-
     confirm.require({
         message: 'Are you sure you want to check out this room?',
         header: 'Confirmation',
@@ -431,12 +369,12 @@ const onCheckOut = () => {
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay })
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.socket.emit("ComGuestLedger", { property: window.property_name })
+                    window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
                 })
                 .catch((err) => {
@@ -444,13 +382,8 @@ const onCheckOut = () => {
                 })
         }
     });
-
 }
-
 const OnViewReservation = () => {
-
-
-
     if (window.has_reservation_detail_opened == true) {
         if (window.reservation = rs.reservationStay.reservation) {
             dialogRef.value.close();
@@ -461,24 +394,25 @@ const OnViewReservation = () => {
         dialogRef.value.close();
         window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
     }
-
-
-
-
 }
-
 onUnmounted(() => {
     rs.clear()
     window.socket.off('ReservationStayDetail');
     window.reservation_stay = ""
 })
-
-
 function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
             doctype: 'Reservation Stay',
-            docname: name.value
+            docname: name.value,
+            referenceTypes: [
+                { doctype: 'Reservation Stay', label: 'Reservation stay' },
+                { doctype: 'Reservation Room Rate', label: 'Room Rate' },
+                { doctype: 'Customer', label: 'Guest' },
+                { doctype: 'Reservation Folio', label: 'Reservation Folio' },
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+            ],
+            docnames: rs.attacheds
         },
         props: {
             header: 'Audit Trail',
@@ -490,17 +424,14 @@ function onAuditTrail() {
             closeOnEscape: false,
             position: "top"
         },
-
     });
 }
-
 </script>
 <style scoped>
 .border-rl-ed {
     border-right: 1px solid var(--btn-border-color) !important;
     border-left: 1px solid var(--btn-border-color) !important;
 }
-
 .min-whidth-modified {
     line-height: 1.4;
 }</style>

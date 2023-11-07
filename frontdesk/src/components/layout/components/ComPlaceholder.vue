@@ -1,8 +1,8 @@
 <template>
     <div v-if="loading">
         <div class="p-6 text-center" :class="classColor">
-            <div><i class="pi pi-spin pi-spinner" style="font-size:60px"></i></div>
-            <div class="text-sm italic">Loading...</div>
+            <div><i class="pi pi-spin pi-spinner" style="font-size:35px"></i></div>
+            <div class="text-sm">Loading...</div>
         </div>
     </div>
     <template v-else>
@@ -15,7 +15,7 @@
             </template>
             <div v-else>
                 <div class="p-6 text-center" :class="classColor" :style="{height: height}" >
-                    <div><img :src="iconNoData" style="width: 150px; margin: 0 auto;"></div>
+                    <div><img :src="iconNoData" style="width: 130px; margin: 0 auto;"></div>
                     <div class="mt-2 text-sm italic">{{ text }}</div>
                 </div>
             </div>

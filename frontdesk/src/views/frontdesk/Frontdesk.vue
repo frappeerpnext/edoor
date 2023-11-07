@@ -372,6 +372,8 @@ const calendarOptions = reactive({
             return
         }
         const event = $event.event._def
+        event.start_date =  $event.event.start
+                event.end_date=  $event.event.end
         const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
         elements.forEach(e=>{
             e.parentNode.parentNode.parentNode.style.boxShadow = '2px 2px 5px 1px rgba(0, 0, 0, 0.8)';
@@ -379,6 +381,7 @@ const calendarOptions = reactive({
         if (!$event.el.getAttribute("has_tippy")) {
             $event.el.setAttribute("has_tippy", "yes");
             const { tippyInstance } = useTippy($event.el, {
+               
                 content: h(ComCalendarEventTooltip, { event: event }),
             })
         }
@@ -868,7 +871,7 @@ function onSearch(key) {
 }
 
 function getTotalNote() {
-    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day], ['property', '=', property.name]]).then((docs) => {
+    getCount('Comment', [["custom_note_date", ">=", working_day.date_working_day],["custom_is_note", "=", 1],["comment_type", "=", "Comment"],["custom_is_audit_trail","=",1], ['custom_property', '=', property.name]]).then((docs) => {
         totalNotes.value = docs
     })
 }
@@ -1102,7 +1105,6 @@ provide('advance_filter', {
 
 function showConflictRoom(conflig_rooms) {
     setTimeout(() => {
-         
         if (conflig_rooms) {
             if (filter.value.view_type == "room_type") {
             resources.value.forEach((r) => {
@@ -1142,7 +1144,7 @@ function showConflictRoom(conflig_rooms) {
         }
         }
 
-    }, 1000);
+    }, 3000);
 }
 
 //Remove tippy tooltips when room chart DOM removed

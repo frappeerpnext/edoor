@@ -101,9 +101,34 @@ def update_keyword(doc, method=None, *args, **kwargs):
 
 
 
-def update_comment_by(doc, method=None, *args, **kwargs):
+def update_comment_after_insert(doc, method=None, *args, **kwargs):
+    #if doc have property field then update property, audit_date and is audit trail to true
+    update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
+    icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.comment_type), as_dict=1)
+    icon = 'pi-apple'
+    if icon_data:
+        icon = icon_data[0]["icon"]
+
+    update_files.append("custom_icon='{}'".format(icon))
+
+    if doc.reference_name and not doc.custom_property:
+        ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
+        if hasattr(ref_doc, "property"):
+            working_day = get_working_day(ref_doc.property)
+            update_files.append("custom_property='{}'".format(ref_doc.property))
+            update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"]))
+            update_files.append("custom_is_audit_trail=1")
     
-    frappe.db.sql("update `tabComment` set comment_by='{}' where name='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"),doc.name))
+    if not doc.subject:
+        if doc.comment_type=="Attachment Removed":
+            update_files.append("subject='Removed Attachment'".format(doc.comment_type))
+        else:
+            if not  doc.subject:
+                update_files.append("subject='Adding {}'".format(doc.comment_type))
+
+    
+
+    frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name))
     frappe.db.commit()
 
 def update_comment_keyword(doc, method=None, *args, **kwargs):
@@ -135,18 +160,18 @@ def submit_update_audit_trail_from_version(doc):
                     if field.field_name == 'tax_1_rate':
                         data_changed.append(f'<b>{ref_doc.tax_1_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
                     elif field.field_name == 'tax_1_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_1_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                        data_changed.append(f'<b>{ref_doc.tax_1_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
                     elif field.field_name == 'tax_2_rate':
                         data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
                     elif field.field_name == 'tax_2_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_2_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                        data_changed.append(f'<b>{ref_doc.tax_2_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
                     elif field.field_name == 'tax_2_rate':
                         data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
                     
                     elif field.field_name == 'tax_3_rate':
                         data_changed.append(f'<b>{ref_doc.tax_3_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
                     elif field.field_name == 'tax_3_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_3_name} Amount </b>: {d[1]}<b>to</b> {d[2]}')
+                        data_changed.append(f'<b>{ref_doc.tax_3_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
                         
                 else:
                     if field.hide_old_value==1:

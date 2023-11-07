@@ -4,10 +4,10 @@
             <slot name="default"></slot>
             <div v-if="loading">
                 <div  class="overlay-loading-dialog">
-                <span class="is-loading-page text-white flex justify-center flex-col">
-                    <i  class="pi pi-spin pi-spinner w-4rem h-4rem" style="font-size:4rem"></i>
-                    <span class="text-sm mt-1">Loading....</span>
-                </span>
+                <div class="is-loading-page text-white flex justify-center flex-col">
+                    <div><i class="pi pi-spin pi-spinner" style="font-size:35px"></i></div>
+                    <div class="text-sm">Loading....</div>
+                </div>
                 </div>    
             </div>
         </div>

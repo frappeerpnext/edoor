@@ -2,7 +2,7 @@
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
       
         <div class="grid">
-            <div class="col" v-if="guests && doc">
+            <div class="col-4" v-if="guests && doc">
                 <label>Stay Guest</label><br/>
                 <ComSelect class="mb-3 w-full" v-model="doc.guest" :options="guests" optionLabel="guest_name" optionValue="name" :clear="false" />
             </div>

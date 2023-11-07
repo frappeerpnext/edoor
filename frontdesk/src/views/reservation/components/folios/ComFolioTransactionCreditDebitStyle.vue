@@ -258,6 +258,15 @@ onMounted(() => {
     window.addEventListener('message', windowActionHandler, false);
 
     LoadFolioTransaction()
+    //load stay from storate 
+    let state = sessionStorage.getItem('folo_transaction_table_state_' + selectedFolio.value.name)
+    if (state){
+        state = JSON.parse(state)
+        state.first = 0
+        sessionStorage.setItem('folo_transaction_table_state_' + selectedFolio.value.name,JSON.stringify(state))
+
+
+    }
 
 })
 function clearState(name){

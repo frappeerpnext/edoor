@@ -51,7 +51,7 @@
                             </div>
                             <div class="flex gap-10 relative,">
                                 <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_2_name }}{{ room_tax.tax_2_rate }}%</label>
+                                    room_tax.tax_2_name }} {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2"
@@ -64,7 +64,7 @@
                             </div>
                             <div class="flex gap-10 relative">
                                 <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_3_name }}{{ room_tax.tax_3_rate }}%</label>
+                                    room_tax.tax_3_name }} {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3"
@@ -120,7 +120,6 @@
                                     class="w-full" >
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
-                                           
                                             <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
                                         </div>
                                     </template>
@@ -432,6 +431,8 @@ function onClose() {
 }
 function onNight(newValue) {
     data.value.departure_date = moment(data.value.arrival_date).add(newValue, 'days').toDate()
+    getRoomType()
+    getRooms()
 }
 function onEndDate(newValue) {
     data.value.room_nights = moment(data.value.departure_date).diff(moment(data.value.arrival_date), 'days')
@@ -453,7 +454,8 @@ function onStartDate(newValue) {
 
 
 const getRoomType = () => {
-
+console.log(data.value.arrival_date)
+console.log(data.value.departure_date)
     getApi("reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(data.value.arrival_date).format("yyyy-MM-DD"),
@@ -468,7 +470,7 @@ const getRoomType = () => {
 }
 
 const getRooms = () => {
-
+    console.log(data.value.arrival_date)
     getApi("reservation.check_room_availability", {
         property: property.name,
         start_date: moment(data.value.arrival_date).format("yyyy-MM-DD"),

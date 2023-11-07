@@ -830,6 +830,12 @@ span.p-button-icon.pi.pi-ellipsis-v{
     border-top-right-radius: 0;
 }
 /* END Set btn round part */
+.wrap-master-list-folio .reservatin_folio_list_box .p-accordion-tab.p-accordion-tab-active{
+    border: 1px solid transparent !important;
+}
+.wrap-master-list-folio .p-accordion .p-accordion-header:not(.p-disabled) .p-accordion-header-link:focus{
+    box-shadow: none !important;
+}
 .wrp-housekeeping .p-listbox-item
 {
     padding: 0 !important;
@@ -1363,7 +1369,20 @@ span.row-disabled > :not(button) {
     border-color: var(--bg-og-color-hover) !important;
 }
 .reservatin_folio_list_box .p-accordion-tab.p-accordion-tab-active {
-    border: 1px solid rgba(87, 87, 87, 0.651);
+    border: 1px solid #e8e9fd;
     border-radius: 0px 0px 7px 7px;
     overflow: hidden;
+}
+.w-status-reservation-folio{
+    width: 18.8px;
+    height: 18.8px;
+}
+.header_folio_active .p-accordion-header-link {
+background-color: #6365f125 !important;
+}
+.max-width-name-text{
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

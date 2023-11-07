@@ -60,7 +60,6 @@
                             Mark as Paid by Master Room
                         </button>
                     </div>
-
                     <div>
                         <button v-if="!props.data.allow_post_to_city_ledger" @click="onAllowPosttoCityLedger()"
                             class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
@@ -268,10 +267,6 @@ function onUnmarkasPaidbyMasterRoom() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
-                    toast.add({
-                        severity: 'success', summary: 'Unmark as Piad by Master Room',
-                        detail: 'Unmark as Piad by Master Room Successfully', life: 3000
-                    });
                 })
 
         },
@@ -295,10 +290,7 @@ function onMarkasPaidbyMasterRoom() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
-                    toast.add({
-                        severity: 'success', summary: 'Mark as Piad by Master Room',
-                        detail: 'Mark as Piad by Master Room Successfully', life: 3000
-                    });
+                   
                 })
 
         },
@@ -348,10 +340,7 @@ function onUnallowPosttoCityLedger() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
-                    toast.add({
-                        severity: 'success', summary: 'Unallow Post to City Ledger',
-                        detail: 'Unallow Post to City Ledger Successfully', life: 3000
-                    });
+                 
                 })
         },
 

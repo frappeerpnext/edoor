@@ -18,7 +18,6 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
       
       // Check if the window has been scrolled
   if(window.scrollY > 60){
-    alert('xdx')
   }
       isScrolled.value = window.scrollY > 60;
     };

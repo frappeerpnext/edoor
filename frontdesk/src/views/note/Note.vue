@@ -29,7 +29,7 @@
                     </div>
                 </div>
                 <div>
-                    <ComOrderBy doctype="Frontdesk Note" @onOrderBy="onOrderBy" />
+                    <ComOrderBy doctype="Comment" @onOrderBy="onOrderBy" />
                 </div>
             </div>
             
@@ -42,36 +42,24 @@
                         <div class="flex flex-col">
                             <div class="line-height-1 w-full flex justify-between ">
                                 <div class="my-auto">
-                                    <div v-if="i.reservation || i.reservation_stay" class="text-xl font-medium inline ">{{ i.reference_doctype }} </div>
-                                    <span v-if="i.reference_doctype &&(i.reservation || i.reservation_stay)"> - </span>
-                                    <div class="inline" v-if="i.reference_doctype == 'Folio Transaction'">
-                                        <span class="link_line_action  border-none p-0 w-auto"
-                                            @click="onViewFolioDetail(i?.reference_name)">
-                                            {{ i.reference_name }}
-                                        </span>
-                                        <div class="w-full">
-                                            <span v-if="i.reservation_stay"
-                                                class="link_line_action border-none p-0 text-sm w-auto"
-                                                @click="onViewDetailReservationStay(i.reservation_stay)">
-                                                {{ i.reservation_stay }}
-                                            </span>
-                                            <span> - </span>
-                                            <span v-if="i.reservation" class="link_line_action  border-none p-0 text-sm w-auto"
-                                                @click="onViewDetailReservation(i.reservation)">
-                                                {{ i.reservation }}
-                                            </span>
-                                        </div>
-                                    </div>
-						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation Stay' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservation(i.reservation)" v-if="i.reference_doctype == 'Reservation' || i.reservation">
-							{{i.reservation}} 
+                                    <div v-if="i.reference_doctype">
+						<span class="text-lg" >
+							{{ i.reference_doctype }}
+						</span>
+						-
+						<div @click="onViewDetail(i)" class="text-lg inline link_line_action  border-none p-0 w-auto" >
+							 {{ i.reference_name }}
 						</div>
-						<span v-if="!(i.reference_doctype) &&  i.reservation && i.reservation_stay"> - </span>
-						<div class="link_line_action  border-none p-0 " :class="i.reference_doctype == 'Reservation' ? 'text-sm w-full' : 'inline w-auto'" @click="onViewDetailReservationStay(i.reservation_stay)" v-if="i.reference_doctype == 'Reservation Stay' || i.reservation_stay">
-							{{i.reservation_stay}}
 						</div>
+                        <div v-else>
+							<span class="text-lg" >
+								General Note
+						</span>
+                        </div>
+                        
                                 </div>
                                 <div class="flex absolute right-3 gap-2">
-                                    <Button :class="i.is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note "
+                                    <Button :class="i.custom_is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note "
                                         text rounded @click="onPin(i)">
                                         <ComIcon v-tippy ="'Unpin Note'" v-if="i.is_pin" icon="pushPined"
                                             style="height:20px;"></ComIcon>
@@ -80,8 +68,8 @@
                                     </Button>
                                 </div>
                             </div>
-                            <div :class="i.reservation || i.reservation_stay ? 'text-500 text-sm ' : ''"> 
-                                Note Date: {{ gv.dateFormat(i.note_date) }}</div>
+                            <div class="text-500 text-sm"> 
+                                Note Date: <ComTimeago :date="i.custom_note_date" /></div>
                         </div>
                         {{ i.room}}
                         {{ i.guest_name }}
@@ -149,33 +137,13 @@ const moment = inject("$moment")
 const filter = ref({})
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
-function onViewDetailReservationStay(rs) {
-    window.postMessage("view_reservation_stay_detail|" + rs, '*')
-}
-function onViewDetailReservation(rs) {
-    window.postMessage("view_reservation_detail|" + rs, '*')
+function onViewDetail(d){
+    window.postMessage("view_" + d.reference_doctype.toLowerCase().replaceAll(" ","_") + "_detail|" + d.reference_name ,"*")
 }
 const Refresh = () => {
     onLoadData()
 }
-function onViewFolioDetail(selected) {
-    const dialogRef = dialog.open(ComFolioTransactionDetail, {
-        data: {
-            folio_transaction_number: selected
-        },
-        props: {
-            header: 'Folio Transaction Detail - ' + selected,
-            style: {
-                width: '50vw',
-            },
-            modal: true,
-            position: 'top',
-            closeOnEscape: false
-        },
 
-    });
-
-}
 function onEdit(name) {
     const dialogRef = dialog.open(ComAddNote, {
         data: {
@@ -209,8 +177,8 @@ function onEdit(name) {
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 
 function onPin(i) {
-    i.is_pin = !i.is_pin
-    updateDoc('Frontdesk Note', i.name, i).then((r) => {
+    i.custom_is_pin = !i.custom_is_pin
+    updateDoc('Comment', i.name, i).then((r) => {
         onLoadData()
     })
 }
@@ -239,21 +207,25 @@ function onLoadData() {
 
     loading.value = true
     gv.loading = true
-    let filters = [
-        ["property", "=", property.name]
-    ]
+   	let filters = [
+		["custom_property", "=", window.property_name],
+		["custom_is_audit_trail", "=",1],
+		["custom_is_note", "=",1],
+		["comment_type","=","Comment"]
+	]
+	filters.push(["custom_note_date",">=", working_day.date_working_day])
 
     if (filter.value.keyword) {
         filters.push(["content", "like", '%' + filter.value.keyword + '%'])
     }
 
     if (filter.value.date_range && filter.value.search_by_date) {
-        filters.push(['note_date', 'between', [moment(filter.value.date_range[0]).format("YYYY-MM-DD"), moment(filter.value.date_range[1]).format("YYYY-MM-DD")]])
+        filters.push(['custom_note_date', 'between', [moment(filter.value.date_range[0]).format("YYYY-MM-DD"), moment(filter.value.date_range[1]).format("YYYY-MM-DD")]])
     }
 
 
-    getDocList('Frontdesk Note', {
-        fields: ['name', 'note_date', 'reference_doctype', 'is_pin', 'reference_name', "reservation", "reservation_stay", "content", "modified_by", 'modified', 'owner', 'creation','room','guest_name'],
+    getDocList('Comment', {
+        fields:  ["name","creation", "custom_is_pin", "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
         filters: filters,
         orderBy: {
             field: pageState.value.order_by,
@@ -276,10 +248,8 @@ function onLoadData() {
 }
 
 function getTotalRecord(filters) {
-
-    getCount('Frontdesk Note', filters)
+    getCount('Comment', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
-
 }
 
 function onOrderBy(data) {
@@ -312,7 +282,7 @@ function onDelete(name) {
         acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
-            deleteDoc('Frontdesk Note', name)
+            deleteDoc('Comment', name)
                 .then(() => {
                     onLoadData()
 

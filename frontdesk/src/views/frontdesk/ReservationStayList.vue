@@ -1,4 +1,5 @@
 <template>
+
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
@@ -62,8 +63,7 @@
                                 </Button>
                                 <span v-else-if="c.fieldtype == 'Date'">{{
                                     moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                                <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
-                                </Timeago> 
+                                <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
                                 <template v-else-if="c.fieldtype == 'Room'">
                                     <div v-if="slotProps?.data && slotProps?.data?.rooms">
                                         <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
@@ -130,47 +130,47 @@
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-3">
-                    <ComAutoComplete  isFilter optionLabel="business_source_type" optionValue="name"
+                    <ComAutoComplete isFull optionLabel="business_source_type" optionValue="name"
                         v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                         doctype="Business Source Type"/>
-                    </div>
+                </div>
                 <div class="col-3">
-                <ComAutoComplete isFilter groupFilterField="business_source_type"
+                <ComAutoComplete isFull groupFilterField="business_source_type"
                     :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                     optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
                     placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" />
                 </div>
                 <div class="col-3">
-                    <ComSelect isFilter v-model="filter.selected_reservation_type" @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']" />
+                    <ComSelect isFull v-model="filter.selected_reservation_type" @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']" />
                 </div>
                 <div class="col-3">
-                    <ComSelect isFilter optionLabel="reservation_status" optionValue="name"
+                    <ComSelect isFull optionLabel="reservation_status" optionValue="name"
                         v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
                         doctype="Reservation Status"  />
                 </div>
                 <div class="col-3">
-                <ComSelect isFilter optionLabel="building" optionValue="name"
+                <ComSelect isFull optionLabel="building" optionValue="name"
                     v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" :filters="[['property', '=', property.name]]"  />
                 </div>
                 <div class="col-3">
-                    <ComSelect isFilter optionLabel="room_type" optionValue="name"
+                    <ComSelect isFull optionLabel="room_type" optionValue="name"
                         v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="[['property', '=', property.name]]" >
                     </ComSelect>
                 </div>
                 <div class="col-3">
-                    <ComSelect isFilter groupFilterField="room_type_id"
+                    <ComSelect isFull groupFilterField="room_type_id"
                         :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
                         v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room" :filters="[['property', '=', property.name]]" >
                     </ComSelect>
                 </div>
                 <div class="col-3">
-                <ComSelect isFilter v-model="filter.search_date_type" :options="dataTypeOptions"
+                <ComSelect isFull v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
                     @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" >
                 </ComSelect>
                 </div>
                 <div class="col-6" v-if="filter.search_date_type">
-                    <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-MM-yy" class="w-full" v-model="filter.date_range"
+                    <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-mm-yy" class="w-full" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
@@ -260,7 +260,9 @@ const dataTypeOptions = reactive([
     { label: 'Search Date', value: '' },
     { label: 'Arrival Date', value: 'arrival_date' },
     { label: 'Departure Date', value: 'departure_date' },
-    { label: 'Reservation Date', value: 'reservation_date' }])
+    { label: 'Reservation Date', value: 'reservation_date' },
+    {label: 'Cancel/No Show/Voided Date', value: 'cancelled_date' }
+])
 const data = ref([])
 
 const filter = ref({})
@@ -325,9 +327,10 @@ function loadData(show_loading=true) {
     }
 
     if (filter.value?.search_date_type && filter.value.date_range != null) {
-        filters.push([filter.value.search_date_type, '>=', dateRange.start])
-        filters.push([filter.value.search_date_type, '<=', dateRange.end])
+        filters.push([filter.value.search_date_type.value, '>=', dateRange.start])
+        filters.push([filter.value.search_date_type.value, '<=', dateRange.end])
     }
+ 
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
@@ -487,8 +490,7 @@ function onAssignRoom(data){
         onClose: (options) => {
             if(options.data && options.data.message){
                 setTimeout(() => {
-                    rs.getReservationDetail(options.data.message.name)
-                    console.log(rs.getReservationDetail(options.data.message.name))    
+                    rs.getReservationDetail(options.data.message.name) 
                 }, 1500);
             } 
         }

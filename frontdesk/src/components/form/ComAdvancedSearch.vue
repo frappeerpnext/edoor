@@ -64,7 +64,6 @@ function onSearch() {
         data.value = result.values
     })
     .catch((error) => {
-        alert("load data fiale")
     }); 
 }
 function onEnter(){

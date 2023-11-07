@@ -19,7 +19,7 @@ def execute(filters=None):
 
 def get_columns(filters):
 	columns = [
-		{'fieldname':'row_header','align':'center','label':'Room',"width":200 ,"show_in_report":1},
+		{'fieldname':'row_header','align':'left','label':'Room',"width":150 ,"show_in_report":1},
 		{'fieldname':'occupancy','align':'center','label':'Occ(%)',"width":75 ,"show_in_report":1},
 		
 	]
@@ -44,24 +44,27 @@ def get_month(filters):
 
 	return months
 
-# def get_report_chart(filters):
-# 	dataset = []
-# 	colors = []
+def get_report_chart(filters):
+	chart_series = filters.chart_option
+	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
+		return None
+	dataset = []
+	colors = []
 
-# 	chart = {
-# 		'data':{
-# 			'labels':  dataset,
-# 			'datasets':dataset
-# 		},
-# 		"type": filters.chart_type,
-# 		# "lineOptions": {
-# 		# 	"regionFill": 1,
-# 		# },
-# 		'valuesOverPoints':1,
-# 		"axisOptions": {"xIsSeries": 1},
+	chart = {
+		'data':{
+			'labels':  dataset,
+			'datasets':dataset
+		},
+		"type": filters.chart_type,
+		# "lineOptions": {
+		# 	"regionFill": 1,
+		# },
+		'valuesOverPoints':1,
+		"axisOptions": {"xIsSeries": 1},
 		
-# 	}
-# 	return chart
+	}
+	return chart
 
 def get_report_data(filters):
 	sql="""
@@ -76,9 +79,9 @@ def get_report_data(filters):
 				`tabRoom` r
 			where
 				3=3
-				{}
+				{0}
 			
-		""".format(get_filters(filters))
+		""".format(get_filters(filters),get_month(filters))
 
 	reservation_status = get_reservation_status()
 	months = get_month(filters)
@@ -103,6 +106,7 @@ def get_report_data(filters):
 		month_record = {
 			"indent":0,
 			"row_header": m["month_name"],
+			"header":1,
 			"occupancy": round(totol_room_sold / total_rooms * 100,2) 
 		}
 		for n in range(1,total_day +1):
@@ -136,6 +140,7 @@ def get_report_data(filters):
 			room_type_record = {
 			"indent":1,
 			"row_header": rt[1],
+			"month":m["month_name"],
 			"occupancy": round(totol_room_sold / total_rooms * 100,2)
 			}
 			for n in range(1,total_day +1):
@@ -177,7 +182,8 @@ def get_report_data(filters):
 	report_data.append({
 		"indent":0,
 		"row_header":"Grand Total",
-		"occupancy":round(totol_room_sold / total_rooms * 100,2)
+		"occupancy":round(totol_room_sold / total_rooms * 100,2),
+		"is_grand_total":1
 	})
 
 	return report_data

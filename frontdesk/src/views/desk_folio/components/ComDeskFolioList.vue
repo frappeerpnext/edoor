@@ -58,7 +58,7 @@
                             </Button>
                             <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
                             </span>
-                            <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long></Timeago>
+                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
                                 <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
                                     <span>{{ item }}</span>

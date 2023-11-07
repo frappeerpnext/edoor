@@ -212,14 +212,14 @@ export function renameDoc(doctype, old_name,new_name){
     })
 }
 export function uploadFiles(files, fileArgs = Object){
-    console.log(files)
+
     const frappe = new FrappeApp()
     const file = frappe.file();
     return new Promise((resolve, reject)=>{
         let countFile = 0
         files.forEach((r)=>{
             fileArgs.otherData={title: r.title || "",description:r.description || ""}
-          
+          console.log(r)
 
             file.uploadFile(
                 r,

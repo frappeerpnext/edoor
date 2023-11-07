@@ -42,14 +42,15 @@
         </table>
     </div>
     <div v-else-if="event.extendedProps.type == 'room_block'" class="w-full p-2">
-       
         <div class="text-center border-1 p-2 border-round-lg"> {{event.title}}</div>
         
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
+                
                 <tr class="table-rs-de" ><td>Block Number</td><td class="px-3">:</td><td> {{event?.publicId || ''}}</td></tr>  
-                <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td> {{moment(event?.start).format('DD-MM-YYYY')}}</td></tr>
-                <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td> {{moment(event?.end).format('DD-MM-YYYY')}}</td></tr>
+                <tr class="table-rs-de"><td>Start Date</td><td class="px-3">:</td><td> {{moment(event?.start_date).format('DD-MM-YYYY')}}</td></tr>
+                <tr class="table-rs-de"><td>Release Date</td><td class="px-3">:</td><td> {{moment(event?.end_date).format('DD-MM-YYYY')}}</td></tr>
+                <tr class="table-rs-de" ><td>Night Of Block</td> <td class="px-3">:</td><td>{{ moment(event?.end_date).diff(event?.start_date, 'days') }} Nights </td></tr> 
                 <tr class="table-rs-de"><td>Blocked by</td><td class="px-3">:</td><td> {{event.extendedProps?.block_by || ''}}</td></tr>
                 <tr><td><span class="mt-2">Reason</span></td></tr>
                 <tr><td colspan="3"><div class="border-round-lg p-2 reason-box-style" > {{event.extendedProps?.reason}}</div></td></tr>

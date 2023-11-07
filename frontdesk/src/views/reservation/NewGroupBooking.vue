@@ -234,7 +234,7 @@
                                     {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
-                                        {{ useTax.use_tax_1 }} 
+ 
                                       
                                         <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1"
                                             @input="onUseTax1Change" :binary="true" />
@@ -957,7 +957,7 @@ const onBusinessSourceChange = (source) => {
 }
 const onRateTypeChange = (rate_type) => {
     if (rate_type) {
-        getApi("utils.get_rate_type_info", { name: rate_type.value }).then((result) => {
+        getApi("utils.get_rate_type_info", { name: rate_type }).then((result) => {
             //check if rate type change then resert room revenue code and tax
 
             doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
@@ -974,11 +974,11 @@ const onRateTypeChange = (rate_type) => {
                         use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
                         use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0}
                         
-            doc.value.reservation.rate_type = rate_type.value
+            doc.value.reservation.rate_type = rate_type
 
         })
 
-        doc.value.reservation.rate_type = rate_type.value
+        doc.value.reservation.rate_type = rate_type
     }
 
     //check if stay have not manully rate update

@@ -181,6 +181,7 @@ print_menus.value.push({
 })
 
 function onAddFolioTransaction(account_code) {
+     
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
@@ -193,13 +194,13 @@ function onAddFolioTransaction(account_code) {
                     account_group: account_code.name
                     
                 },
-                balance: selectedFolio.value.total_debit - selectedFolio.value.total_credit,
+                balance: selectedFolio.value.balance,
                 business_source: selectedFolio.value.business_source
             },
             props: {
                 header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
                 style: {
-                    width: '50vw',
+                    width: '750px',
                 },
 
                 modal: true,

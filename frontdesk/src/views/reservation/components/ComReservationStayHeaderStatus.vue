@@ -26,7 +26,7 @@
                     </div>
                 </div>
             </ComTagReservation>
-            <div  v-tippy="{ value: `<span class='text-white w-30rem whitespace-nowrap'>Allow Post To City Ledger</span>`, escape: true, class: 'w-50-ed' }" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
+            <div  v-tippy="'Allow Post To City Ledger'" v-if="rs.reservationStay && rs.reservationStay?.allow_post_to_city_ledger"
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-card-info p-1px">
                 <ComIcon  icon="IconBillToCompany" style="height:15px;width:15px;" ></ComIcon>
             </div>
@@ -42,13 +42,14 @@
                 class="flex justify-center items-center px-2 rounded-lg me-2 bg-purple-100 p-1px">
                 <ComIcon style="height: 14px;" icon="iconCrown" />
             </div>
-        <div  v-tippy="rs.reservationStay?.reservation_type" v-if="rs.reservationStay?.reservation_type == 'FIT'"
+        <div v-if="rs.reservationStay?.reservation_type == 'FIT'" v-tippy="rs.reservationStay?.reservation_type !== 'FIT' ? 'Free Independent Traveler' : 'Free Independent Traveler'"
             class="px-2 rounded-lg me-2 text-white p-1px bg-teal-500 flex items-center justify-center">
             <span>
             <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
             </span>
         </div>
-        <div  v-tippy="rs.reservationStay?.reservation_type" v-else class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
+        <div v-else="rs.reservationStay?.reservation_type == 'GIT'" v-tippy="rs.reservationStay?.reservation_type !== 'GIT' ? 'Group Inclusive Tour' : 'Group Inclusive Tour'"
+        class="px-2 rounded-lg me-2 text-white p-1px bg-yellow-500 flex items-center justify-center">
             <span>
             <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
             </span>

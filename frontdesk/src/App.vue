@@ -73,7 +73,7 @@ const actionClickHandler = async function (e) {
 
         if (data.length > 0) {
 
-            if (data[0] == "view_guest_detail") {
+            if (data[0] == "view_guest_detail" || data[0] == "view_customer_detail"  ) {
 
                 showGuestDetail(data[1])
             } else if (data[0] == "view_reservation_stay_detail") {
@@ -83,13 +83,13 @@ const actionClickHandler = async function (e) {
             } else if (data[0] == "view_reservation_detail") {
                 showReservationDetail(data[1])
 
-            } else if (data[0] == "view_edit_room_rate") {
+            } else if (data[0] == "view_edit_room_rate" || data[0] == "view_reservation_room_rate_detail") {
                 onEditRoomRate(data[1])
 
             } else if (data[0] == "view_folio_transaction_detail") {
                 showFolioTransactionDetail(data[1])
             
-            } else if (data[0] == "view_folio_detail") {
+            } else if (data[0] == "view_folio_detail" || data[0] == "view_reservation_folio_detail") {
                 showFolioDetail(data[1])
             } else if (data[0] == "view_cashier_shift_detail") {
                 showCashierShiftDetail(data[1])
@@ -367,7 +367,7 @@ function showCityLedgerDetail(name) {
             name: name
         },
         props: {
-            header: 'City Ledgerxx - ' + name,
+            header: 'City Ledger - ' + name,
             style: {
                 width: '80vw',
             },

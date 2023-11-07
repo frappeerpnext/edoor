@@ -44,7 +44,7 @@
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-             deleteDoc('Frontdesk Note',props.data.name )
+             deleteDoc('Comment',props.data.name )
                  .then(() =>{
                     deleteNote.value = props.data.name
                     emit('onDeleted')

@@ -1,5 +1,6 @@
 <template>
-	<div class="flex-col flex" style="height: calc(100vh - 92px);">
+	<ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
+{{ ref_data }}
 		<div>
 			<div class="mb-3 flex justify-between">
 				<div class="flex gap-2">
@@ -18,17 +19,23 @@
 				</div>
 				<div class="flex gap-2">
 					<div>
-						<Dropdown v-model="order.order_by" :options="actions" optionValue="fieldname" optionLabel="label"
+						<Dropdown v-model="pageState.order_by" :options="actions" optionValue="fieldname" optionLabel="label"
 							placeholder="Sort By" @change="loadData" />
 					</div>
 					<div>
 						<!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
-						<Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">
-							<i v-if="order.order_type == 'desc'" class="pi pi-sort-alpha-down" />
-							<i v-if="order.order_type == 'asc'" class="pi pi-sort-alpha-up" />
+						{{ pageState }}
+						<Button class="content_btn_b h-full px-3" @click="onOrderBy()">
+							<i v-if="pageState.order_type == 'desc'" class="pi pi-sort-alpha-down-alt" /> 
+        					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<SplitButton class="border-split-none" label="Print" icon="pi pi-print" :model="items" />
+					<Button label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+
+					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
+						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
+						</icon>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -43,7 +50,15 @@
 						</template>
 					</Column>
 					<Column field="reference_doctype" header="Reference Type"></Column>
-					<Column field="reference_name" header="Reference Name"></Column>
+					<Column field="reference_name" header="Reference Name">
+						<template #body="slotProps">
+							<Button class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>
+								{{ slotProps.data.reference_name }}
+
+							</Button>
+						</template>
+
+					</Column>
 					<Column field="subject" header="Subject"></Column>
 					<Column field="content" header="Description">
 						<template #body="slotProps">
@@ -52,8 +67,8 @@
 					</Column>
 					<Column field="comment_by" header="By"></Column>
 					<Column field="modified" header=" Date & Time"><template #body="slotProps">
-							<Timeago :datetime="slotProps.data.modified" long></Timeago>
-							<!-- <ComTimeago :datetime="slotProps.data.modified"  /> -->
+							<ComTimeago :date="slotProps.data.modified" />
+
 						</template>
 					</Column>
 				</DataTable>
@@ -61,57 +76,61 @@
 		</div>
 		<div>
 			<Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
-				:totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50, 100,500]" @page="pageChange">
+				:totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" @page="pageChange">
 				<template #start="slotProps">
 					<strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
 				</template>
 			</Paginator>
 		</div>
-	</div>
-	<OverlayPanel ref="opShowColumn" id="res_list_hideshow">
-		<ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
-			@onCancel="onCloseColumn">
-			<template #top>
-				<span class="p-input-icon-left w-full mb-3">
-					<i class="pi pi-search" />
-					<InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
-				</span>
-			</template>
-			<ul class="res__hideshow">
-				<li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
-					<Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-					<label :for="c.fieldname">{{ c.label }}</label>
-				</li>
-			</ul>
-			<template #footer-left>
-				<Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
-			</template>
-		</ComOverlayPanelContent>
-	</OverlayPanel>
-	<OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-		<ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
-			icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-			<div class="grid">
-				<div>
-					<span>
-						<div class="card flex justify-content-center"> 
-							<ComSelect v-model="filter.type" :options="referenceType" isMultipleSelect optionLabel="label"
-								placeholder="Select Filter" :maxSelectedLabels="3" @onSelected="loadData(false, $event)"/>
-						</div>
+
+
+		<OverlayPanel ref="opShowColumn" id="res_list_hideshow">
+			<ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
+				@onCancel="onCloseColumn">
+				<template #top>
+					<span class="p-input-icon-left w-full mb-3">
+						<i class="pi pi-search" />
+						<InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
 					</span>
+				</template>
+				<ul class="res__hideshow">
+					<li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
+						<Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
+						<label :for="c.fieldname">{{ c.label }}</label>
+					</li>
+				</ul>
+				<template #footer-left>
+					<Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+				</template>
+			</ComOverlayPanelContent>
+		</OverlayPanel>
+		<OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
+			<ComOverlayPanelContent style="min-width:50rem" title="Advance Filter" @onSave="onClearFilter"
+				titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
+				@onCancel="onCloseAdvanceSearch">
+				<div class="grid">
+					<div class="col-6">
+						<Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
+							placeholder="Please Select Date" dateFormat="dd-mm-yy" @onSelected="loadData(false, $event)" showIcon />
+					</div>
+					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" isMultipleSelect
+						optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
+						@onSelected="loadData(false, $event)" />
+					<ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
+						placeholder="Please Select User" doctype="User" @onSelected="loadData(false, $event)" />
 				</div>
-			</div>
-		</ComOverlayPanelContent>
-	</OverlayPanel>
+
+			</ComOverlayPanelContent>
+		</OverlayPanel>
+	</ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, useDialog, getApi, computed, onUnmounted } from '@/plugin'
 
-import { useDialog } from 'primevue/usedialog';
+
 import Paginator from 'primevue/paginator';
-import ComOrderBy from '@/components/ComOrderBy.vue';
-import { Timeago } from 'vue2-timeago'
 
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
@@ -119,21 +138,13 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const loading = ref(false)
-const selectedReferenceType = ref();
-const referenceType = ref([
-	{ fieldname: 'Reservation', label: 'Reservation' },
-	{ fieldname: 'Reservation Stay', label: 'Reservation stay' },
-	{ fieldname: 'guest', label: 'Guest' },
-	{ fieldname: 'Reservation Folio', label: 'Reservation Folio' },
-	{ fieldname: 'Folio Transaction', label: 'Folio Transaction' },
-	{ fieldname: 'owner', label: 'Create By' },
-	{ fieldname: 'custom_posting_date', label: 'Audit Date' }
+const dialogRef = inject("dialogRef");
 
-]);
+const ref_data = ref()
+
 
 const actions = ref([
 	{ label: 'Creation', fieldname: 'creation' },
-	
 	{ label: 'Last Update On', fieldname: 'modified' },
 	{ label: 'Audit Date', fieldname: 'custom_posting_date' },
 	{ label: 'Reference Document', fieldname: 'reference_doctype' },
@@ -141,12 +152,10 @@ const actions = ref([
 	{ label: 'Subject', fieldname: 'subject' },
 	{ label: 'Description', fieldname: 'content' },
 	{ label: 'Created By', fieldname: 'comment_by' }
-
 ])
-const order = ref({ order_by: "modified", order_type: "desc" })
-const toggleShowColumn = (event) => {
-	opShowColumn.value.toggle(event);
-}
+
+
+
 const data = ref([])
 
 const filter = ref({})
@@ -158,13 +167,17 @@ let dateRange = reactive({
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const dialog = useDialog();
 
-function onOpenLink(column, data) {
-	window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
+function onOpenLink(data) {
+	const action = ("view_" + data.reference_doctype.toLowerCase().replaceAll(" ", "_") + "_detail")
+
+	window.postMessage(action + '|' + data.reference_name, '*')
 }
 
 function Refresh() {
-	pageState.value.page = 0
+
 	loadData()
+	pageState.value.page = 0
+
 }
 
 
@@ -182,26 +195,42 @@ function pageChange(page) {
 	loadData()
 }
 
- 
+
 
 function loadData(show_loading = true) {
+
 	loading.value = show_loading
 	let filters = ([
 		["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1]
 	])
 	if (filter.value?.keyword) {
-		filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
+		filters.push(["custom_keyword", 'like', '%' + filter.value.keyword + '%'])
 	}
+
 	if (filter.value.type && filter.value.type.length > 0) {
-    	filters.push(["reference_doctype", 'in', filter.value.type.map((r)=>r.label)])
-  	} 
+		filters.push(["reference_doctype", 'in', filter.value.type.map((r) => r.doctype)])
+	} else {
+		filters.push(["reference_doctype", 'in', ref_data.value.referenceTypes.map((r) => r.doctype)])
+	}
+	filters.push(["reference_name", 'in', ref_data.value.docnames.filter(r=>r)])
+
+	if (filter.value?.selected_comment_by) {
+		filters.push(["comment_by", '=', filter.value.selected_comment_by])
+	}
+	if (filter.value?.custom_posting_date) {
+    console.log('Custom posting date exists:', filter.value.custom_posting_date);
+    filters.push(["custom_posting_date", '=', filter.value.custom_posting_date]);
+} else {
+    console.log('Custom posting date is not set.');
+}
+
 	getDocList('Comment', {
 		fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified"],
 		orderBy: {
 			field: pageState.value.order_by,
 			order: pageState.value.order_type,
 		},
-		filters: filters, 
+		filters: filters,
 		limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
 		limit: pageState.value?.rows || 20,
 	})
@@ -221,8 +250,12 @@ function getTotalRecord(filters) {
 }
 
 function onOrderBy(data) {
-	pageState.value.order_by = data.order_by
-	pageState.value.order_type = data.order_type
+	if(pageState.value.order_type=='asc'){
+		pageState.value.order_type='desc'
+	}
+	else{
+		pageState.value.order_type='asc'
+	}
 	pageState.value.page = 0
 	loadData()
 }
@@ -252,8 +285,12 @@ function debouncer(fn, delay) {
 
 
 onMounted(() => {
-
+	ref_data.value = dialogRef.value.data;
 	loadData()
+
+
+
+
 })
 const advanceSearch = (event) => {
 	showAdvanceSearch.value.toggle(event);
@@ -268,5 +305,35 @@ const onClearFilter = () => {
 const onCloseAdvanceSearch = () => {
 	showAdvanceSearch.value.hide()
 }
+
+function onPrint() {
+	 
+
+	dialog.open(ComIFrameModal, {
+		data: {
+			doctype: "Business Branch",
+			name: window.property_name,
+			report_name: gv.getCustomPrintFormat("Document Audit Trail"),
+			show_letter_head:true,
+			extra_params:[
+				{key:'ref_doctype', value:ref_data.value.doctype},
+				{key:'ref_docname', value:ref_data.value.docname},
+				{key:'ref_doctypes', value:ref_data.value.referenceTypes.map(r=>r.doctype).join(",")},
+				{key:'ref_docnames', value:ref_data.value.docnames.filter(r=>r).join(",")},
+				{key:'order_by', value:pageState.value.order_by + ' ' + pageState.value.order_type},
+			],
+		},
+		props: {
+			header: "Audit Trail Detail for " + ref_data.value.doctype + " - " + ref_data.value.docname,
+			style: {
+				width: '80vw',
+			},
+			position: "top",
+			modal: true,
+			maximizable: true,
+		},
+	});
+}
+
 
 </script>

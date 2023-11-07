@@ -105,7 +105,7 @@ doc_events = {
             "edoor.api.utils.update_comment_keyword"
 		],
         "after_insert":[
-            "edoor.api.utils.update_comment_by"
+            "edoor.api.utils.update_comment_after_insert"
 		]
         
 	},
@@ -223,6 +223,7 @@ fixtures = [
     {"dt": "Reservation Status"},
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
+    {"dt": "Audit Trail Document"},
     
     {"dt": "Website Theme","filters": [["name", "=", "estc theme"]]},
     {"dt": "Color"},

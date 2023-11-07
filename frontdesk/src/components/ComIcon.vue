@@ -42,6 +42,7 @@
     <img v-else-if="icon == 'iconChangeStay'" :style="{'height' : height}" :class="class" :src="iconChangeStay"/>
     <img v-else-if="icon == 'iconSplit'" :style="{'height' : height}" :class="class" :src="iconSplit"/>
     <img v-else-if="icon == 'iconConflictRoom'" :style="{'height' : height}" :class="class" :src="iconConflictRoom"/>
+    <img v-else-if="icon == 'iconCamera'" :style="{'height' : height}" :class="class" :src="iconCamera"/>
 </template>
 <script setup>
 const props = defineProps({
@@ -55,10 +56,10 @@ const props = defineProps({
     },
     height: String
 })
-import iconEdoorReservation from '../assets/svg/icon-reservation.svg'
-import reservation from '../assets/svg/icon-reservation.svg'
-import frontdesk from '../assets/svg/icon-frontdesk.svg'
-import iconBed from '../assets/svg/icon-bed.svg'
+import iconEdoorReservation from '@/assets/svg/icon-reservation.svg'
+import reservation from '@/assets/svg/icon-reservation.svg'
+import frontdesk from '@/assets/svg/icon-frontdesk.svg'
+import iconBed from '@/assets/svg/icon-bed.svg'
 import BtnCheckinIcon from '@/assets/svg/icon-check-in.svg'
 import BtnCheckinIconBlack from '@/assets/svg/icon-check-in-black.svg'
 import BtnCheckoutIcon from '@/assets/svg/icon-check-out.svg'
@@ -97,5 +98,6 @@ import BilltoMasterRoomWhite from '@/assets/svg/icon-BilltoMasterRoomWhite.svg'
 import IconBillToCompanywhite from '@/assets/svg/IconBillToCompanywhite.svg'
 import iconSplit from '@/assets/svg/icon-split-blue.svg'
 import iconConflictRoom from '@/assets/svg/icon-conflict-room.svg'
+import iconCamera from '@/assets/svg/icon-camera.svg'
 </script>
  

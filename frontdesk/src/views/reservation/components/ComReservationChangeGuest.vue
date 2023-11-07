@@ -148,7 +148,6 @@ function onOK(){
 function onStayGuestSave() {
 
     loading.value = true 
-    alert(rs.reservation.name)
     if (rs.reservation.name) {
         if (!guest.value.doctype) {
             guest.value.doctype = 'Customer'

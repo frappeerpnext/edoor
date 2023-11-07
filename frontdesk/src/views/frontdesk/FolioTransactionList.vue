@@ -370,7 +370,7 @@ onMounted(() => {
     if (arg == property.name) {
       setTimeout(() => {
         loadData(false)
-      }, 2000)
+      }, 3000)
     }
   })
 

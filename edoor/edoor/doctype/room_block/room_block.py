@@ -48,7 +48,7 @@ class RoomBlock(Document):
 			old_doc = frappe.get_doc("Room Block", self.name)
 			if self.end_date != old_doc.end_date or  self.start_date != old_doc.start_date:
 				#check if next block date have room occupy 
-				sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id='{}' and date between '{}' and '{}' and property='{}' and stay_room_id != '{}' limit 1 "
+				sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id='{}' and date between '{}' and '{}' and property='{}' and stay_room_id != '{}' and is_departure=0 limit 1 "
 				sql = sql.format(self.name, self.room_id, self.start_date, add_to_date(getdate(self.end_date),days=-1), self.property,self.name)
  
 				data = frappe.db.sql(sql, as_dict=1)
@@ -67,7 +67,15 @@ class RoomBlock(Document):
 				room_doc.save()
 
 
-
+	def after_insert(self):
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+			"comment_type":"Created",
+			"custom_property": self.property,
+			"subject":"Create New Room Block",
+			"reference_doctype":"Room Block",
+			"reference_name":self.name,
+			"content":f"Create new room block. <b>Room Block #</b>:<a data-action='view_room_block_detail' data-name='{self.name}'>{self.name}</a>, <b>Room #</b>: {self.room_number}, <b>from</b> { getdate(self.start_date).strftime('%d-%m-%Y')} to { add_to_date(getdate(self.end_date),days=-1).strftime('%d-%m-%Y')}<br/> <b>Reason</b>: {self.reason}"
+		}])
 
 	def on_cancel(self):
 		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))

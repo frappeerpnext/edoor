@@ -110,9 +110,9 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT 
-                    SUM(if(reservation_status = 'No Show',1,0)) AS `total_no_show`, 
-                    SUM(if(reservation_status = 'Cancelled',1,0)) AS `total_cancelled`, 
-                    SUM(if(reservation_status = 'Void',1,0)) AS `total_void`, 
+                    SUM(if(reservation_status = 'No Show' and (arrival_date='{1}' or is_reserved_room=1),1,0)) AS `total_no_show`, 
+                    SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
+                    SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}' AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
@@ -123,13 +123,29 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                         select reservation_stay from `tabReservation Room Rate`
                         where
                             date = '{1}' and 
-                             property = '{0}' and 
+                            property = '{0}' and 
                             room_type_id = if('{2}'='',room_type_id,'{2}')
                     )  and
                     property = '{0}';""".format(property,date, room_type_id or '')
     
+    
     stay = frappe.db.sql(stay_sql, as_dict=1)
     
+    # get today cancell by cannel date
+    stay_sql = """SELECT 
+                    SUM(if(a.reservation_status = 'No Show',1,0)) AS `today_no_show`, 
+                    SUM(if(a.reservation_status = 'Cancelled',1,0)) AS `today_cancelled`, 
+                    SUM(if(a.reservation_status = 'Void',1,0)) AS `today_void`
+                FROM `tabReservation Stay` a
+                    inner join `tabReservation Stay Room` b on b.parent = a.name
+                    
+                WHERE  
+                    b.room_type_id = if('{2}'='',room_type_id,'{2}') and 
+                    a.cancelled_date = '{1}' and 
+                    a.property = '{0}';""".format(property,date, room_type_id or '')
+    
+    
+    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
 
     #filter base on departure date
     stay_sql = """SELECT 
@@ -188,7 +204,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     
     
     #count upcommintg note
-    upcoming_note = frappe.db.sql("select count(name) as total  from `tabFrontdesk Note` where note_date>='{}' and property='{}'".format(date,property), as_dict=1)
+    upcoming_note = frappe.db.sql("select count(name) as total  from `tabComment` where custom_is_note=1 and  custom_note_date>='{}' and custom_property='{}'".format(date,property), as_dict=1)
     
     #get total room block 
     sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id)
@@ -217,6 +233,9 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "pick_up":stay[0]["pick_up"] or 0,
         "drop_off":stay[0]["drop_off"] or 0,
         "unassign_room":unassign_room or 0,
+        "today_no_show":stay[0]["today_no_show"] or 0,
+        "today_cancelled":stay[0]["today_cancelled"] or 0,
+        "today_void":stay[0]["today_void"] or 0,
         "total_no_show":stay[0]["total_no_show"] or 0,
         "total_cancelled":stay[0]["total_cancelled"] or 0,
         "total_void":stay[0]["total_void"] or 0,
@@ -227,8 +246,6 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "total_unassign_room":total_unassign_room,
         "total_room_block": total_room_block,
         "occupancy":occupancy
-        
-        
     }
 
 

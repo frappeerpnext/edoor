@@ -49,10 +49,7 @@ export default class ReservationStay {
 			this.masterGuest.value = result.message.master_guest 
 			
 			this.loading.value = false
-			this.attacheds.value = [name]
-			this.attacheds.value = this.attacheds.value.concat(result.message.folio_names)
-			this.attacheds.value = this.attacheds.value.concat(result.message.folio_transaction_names)
-
+			this.attacheds.value =   [...new Set(result.message.related_reference_number.filter(r=>r))] 
 			
 
 		}).catch((error) => {

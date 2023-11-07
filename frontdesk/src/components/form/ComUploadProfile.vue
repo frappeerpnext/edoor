@@ -142,7 +142,6 @@ function onUpdateDoctype(file_url){
             photo:dataUpdate.photo
         }}
         ).then((r)=>{
-            console.log(r)
             emit('update:modelValue', dataUpdate.photo)
         })
         

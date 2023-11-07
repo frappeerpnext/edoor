@@ -223,8 +223,7 @@
                                         <CurrencyFormat :value="totalTax3Amount" />
                                     </div>
                                 </div>
-                            </div>
-                            
+                            </div> 
                         </div>
                     </div>
                 </div>
@@ -896,8 +895,9 @@ const onBusinessSourceChange = (source) => {
 }
 const onRateTypeChange = (rate_type) => {
 
+
     if (rate_type) {
-        getApi("utils.get_rate_type_info", { name: rate_type.value })
+        getApi("utils.get_rate_type_info", { name: rate_type })
         .then((result) => {
 
             //check if rate type change then resert room revenue code and tax
@@ -910,7 +910,7 @@ const onRateTypeChange = (rate_type) => {
                 tax_3_rate: tax_rule?.tax_3_rate || 0,
             }
             room_tax.value = tax_rule
-            doc.value.reservation.rate_type = rate_type.value
+            doc.value.reservation.rate_type = rate_type
 
                 //check if stay have not manully rate update
             if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {

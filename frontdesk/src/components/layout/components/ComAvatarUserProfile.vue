@@ -17,6 +17,11 @@
                                         <i class="pi pi-refresh" />
                                         <span class="ml-2">Refresh</span>
                                     </button>
+                                    <button @click="onRoute"
+                                        class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                                        <i class="pi pi-book" />
+                                        <span class="ml-2">document</span>
+                                    </button>
             <button @click="onLogout"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="pi pi-sign-out !text-red-500" />
@@ -34,6 +39,7 @@ const serverUrl = window.location.protocol + "//" + window.location.hostname + "
 const props = defineProps({
     user: Object
 })
+
 function onLogout() {
     auth.logout().then(() => {
         
@@ -41,13 +47,16 @@ function onLogout() {
         
     }).catch((error) => toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 }));
 }
-
+function onRoute() {
+    window.open(serverUrl+'/edoor-front-desk/welcome')
+}
 const onClick = (event) => {
     show.value.toggle(event);
 };
 function onRefresh() {
 
 window.location.reload();
+
 }
 
 

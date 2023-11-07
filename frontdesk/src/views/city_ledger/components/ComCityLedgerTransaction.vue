@@ -113,6 +113,7 @@
                 </div>
             </div>
         </div>
+        {{ data }}
         <div style="min-height:42rem;">
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
                 <DataTable 
@@ -140,8 +141,7 @@
                                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
                             <span v-else-if="c.fieldtype == 'Datetime'">{{
                                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }} </span>
-                            <Timeago v-else-if="c.fieldtype == 'Timeago'" :datetime="slotProps.data[c.fieldname]" long>
-                            </Timeago>
+                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                                 v-if="slotProps?.data && slotProps?.data?.rooms">
                                 <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
@@ -269,7 +269,7 @@ const viewCityLedgerReport = () => {
 const columns = ref([
     { fieldname: 'name', label: 'Folio Transaction Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", default: true, header_class: "text-center" },
-    { fieldname: 'room_number', label: 'Room Number', default: true, header_class: "text-center" },
+    { fieldname: 'room_number', label: 'Room Number',fieldtype: "Rooms" ,  header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'modified', label: 'Modified', fieldtype: "Date", default: true, header_class: "text-center" },

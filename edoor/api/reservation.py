@@ -83,6 +83,15 @@ def get_reservation_stay_detail(name):
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
     folio_names =frappe.get_all("Reservation Folio",filters={"reservation_stay":name}, page_length=10000,pluck='name')
     folio_transaction_names =frappe.get_all("Folio Transaction",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+    reservaiton_room_rates =frappe.get_all("Reservation Room Rate",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+
+    related_reference_number = [name, guest.name, master_guest.name]
+    related_reference_number = related_reference_number + folio_names
+    related_reference_number = related_reference_number + reservaiton_room_rates
+    related_reference_number = related_reference_number + folio_transaction_names
+    
+
+    
 
     return {
         "reservation":reservation,
@@ -92,8 +101,7 @@ def get_reservation_stay_detail(name):
         "master_guest":master_guest,
         "reservation_stay_names":reservation_stay_names,
         "total_folio":total_folio or 0,
-        "folio_names":folio_names or [],
-        "folio_transaction_names": folio_transaction_names or []
+        "related_reference_number": related_reference_number
     }
 
 
@@ -560,10 +568,10 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
             if stay.is_active_reservation == 1:
                 frappe.throw("You cannot Check In  No Show reservation # {}. Because this reservation don't have a reserve room.".format(stay.name))
                 
-
+   
         #validate check if current room is still have guest in house
         room_id = stay.stays[0].room_id
-        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,stay.departure_date),as_dict=1)
+        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,add_to_date( stay.departure_date,days=-1)),as_dict=1)
        
         if check_room_in_house:
              frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
@@ -815,12 +823,19 @@ def check_out(reservation,reservation_stays=None):
         if not (stay.departure_date <= working_day["date_working_day"] or stay.departure_date ==add_to_date (working_day["date_working_day"] ,days=1)):
             
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
-       
-        if abs(round(stay.balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
-            frappe.throw("Reservation Stay {}, room {} cannot check out because the balance is greater than zero".format(stay.name,stay.rooms))
+
+        #validate folio balance
+        data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
+        if data_balance:
+            balance = data_balance[0]["balance"] or 0
+            
+
+            if abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+                frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
 
         stay.checked_out_by = frappe.session.user
         stay.checked_out_date = now()
+        stay.checked_out_system_date = working_day["date_working_day"]
         stay.reservation_status = "Checked Out"
         stay.save()
 
@@ -848,7 +863,7 @@ def check_out(reservation,reservation_stays=None):
         comment_doc.append(comment)
 
         
-
+    #TODO
     doc = update_reservation(name=reservation,run_commit=False)
 
     
@@ -1154,8 +1169,8 @@ def get_current_room_reservation(room_id):
 @frappe.whitelist()
 def get_reservation_comment_note(doctype, docname,):
     data = []
-    data = data + frappe.db.sql("SELECT `name`, creation,note_date, reference_doctype, reference_name,`owner` , owner as user_full_name,'' as subject , content, 'Notice' AS note_type FROM `tabFrontdesk Note` WHERE reference_doctype ='{0}' AND reference_name = '{1}' order by modified desc".format(doctype, docname),as_dict=1)
-    data = data + frappe.db.sql("SELECT `name`, creation ,NULL as note_date, reference_doctype, reference_name,owner, comment_by as user_full_name,subject, content, comment_type AS note_type FROM `tabComment` WHERE comment_type in ('Comment','Info') AND reference_doctype ='{0}' AND reference_name = '{1}' order by modified desc limit 20".format(doctype, docname),as_dict=1)
+    
+    data =  frappe.db.sql("SELECT `name`, creation ,custom_note_date, reference_doctype, reference_name,owner, comment_by as user_full_name,subject, content, comment_type, custom_icon,custom_is_note FROM `tabComment` WHERE comment_type in ('Comment','Info','Deleted','Attachment','Attachment Removed') AND reference_doctype ='{0}' AND reference_name = '{1}' and custom_is_audit_trail=1 order by modified desc limit 20".format(doctype, docname),as_dict=1)
     return data
 
 @frappe.whitelist(methods="POST")
@@ -1292,7 +1307,9 @@ def change_stay(data):
             if datetime.strptime(str(stays[index].start_date), '%Y-%m-%d').date() >= datetime.strptime(str(stays[index].end_date), '%Y-%m-%d').date():
                 frappe.throw("Start date cannot greater than end date.{}".format(str(index)))
 
-    doc.change_stay_note = data["note"]  
+    if hasattr(data,"note"):
+        doc.change_stay_note = data["note"]  
+        
     doc.save()
     frappe.db.commit()
     if doc: 
@@ -1457,6 +1474,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
 
 
     doc_reservation = frappe.get_doc("Reservation", reservation)
+    currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
 
     working_day =get_working_day(doc_reservation.property)
     if not working_day["cashier_shift"]:
@@ -1472,9 +1490,13 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
             frappe.throw("Reservation stay {}, room {}, Arrival date of date of No Show reservation must be equal to current working date".format(stay.name,stay.rooms ))
         
         #validate folio balance
-        if stay.balance> 0:
-            frappe.throw("You have folio balance in reservation stay {}. To {} a reservation, balace must be 0".format(stay.name, status))
+        data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
+        balance = 0
+        if data_balance:
+            balance = data_balance[0]["balance"] or 0
 
+        if abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+            frappe.throw("You have folio balance in reservation stay {}. To {} a reservation, balace must be 0".format(stay.name, status))
 
         stay.reservation_status = status
         stay.reservation_status_note = note
@@ -1482,13 +1504,11 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
 
         if status=="No Show":
             stay.is_reserved_room = (1 if reserved_room ==True else 0)
-            stay.no_show_note = note
-            stay.no_show_by = frappe.session.user
-            stay.no_show_date = now()
-        elif status == "Cancelled":
-            stay.cancelled_note = note
-            stay.cancelled_by = frappe.session.user
-            stay.cancelled_date = now()
+
+        stay.cancelled_note = note
+        stay.cancelled_by = frappe.db.get_value("User", frappe.session.user,"full_name")
+        
+        stay.cancelled_date = working_day["date_working_day"]
         stay.save()
         #update is active reservation to room rate 
         frappe.db.sql("update `tabReservation Room Rate` set is_active_reservation = 0 where reservation_stay='{}'".format(s['name']))

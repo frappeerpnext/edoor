@@ -232,7 +232,6 @@ const calendarOptions = reactive({
             showReservationStayDetail(data.reservation_stay)
         } else {
             info.event._def.date = info.event.start;
-            alert("open list of " +   info.event.extendedProps.type )
             window.postMessage(info.event._def, '*')
         }
 

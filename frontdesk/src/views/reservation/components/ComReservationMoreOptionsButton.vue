@@ -525,7 +525,18 @@ function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
             doctype: 'Reservation',
-            docname: rs.reservation.name
+            docname: rs.reservation.name,
+            referenceTypes:[
+                { doctype: 'Reservation', label: 'Reservation' },
+                { doctype: 'Reservation Stay', label: 'Reservation stay' },
+                { doctype: 'Reservation Room Rate', label: 'Room Rate' },
+                { doctype: 'Customer', label: 'Guest' },
+                { doctype: 'Reservation Folio', label: 'Reservation Folio' },
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+                
+            ],
+            docnames: rs.attacheds
+
         },
         props: {
             header: 'Audit Trail',

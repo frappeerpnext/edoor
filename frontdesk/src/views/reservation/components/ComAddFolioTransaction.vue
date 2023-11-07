@@ -97,8 +97,25 @@
                         <div class="col-12">
                             <label>Folio Number</label>
                             <ComAutoComplete :disabled="!canEdit"  @onSelected="onSelectFolioNumber" v-model="doc.folio_number" placeholder="Select Folio" doctype="Reservation Folio"
-                            class="auto__Com_Cus w-full" :filters="{'property':doc.property, status:'Open','name':['!=',doc.transaction_number]}"/>
+                            class="auto__Com_Cus w-full" :filters="folioNumberFilter"/>
                         </div>
+                        <div class="flex gap-3 p-2">
+                            <div>
+                                <Checkbox inputId="on-filter-folio-res-stay" 
+                                    @input="onFilterFolioNumber"
+                                    v-model="doc.select_folio_in_reservation_stay" :binary="true" :trueValue="1" :falseValue="0"
+                                    />
+                                <label for="on-filter-folio-res-stay">by stay</label>
+                            </div>
+                            <div>
+                                <Checkbox inputId="on-filter-folio-res" 
+                                    @input="onFilterFolioNumberRes"
+                                    v-model="doc.select_folio_in_reservation" :binary="true" :trueValue="1" :falseValue="0"
+                                    />
+                                <label for="on-filter-folio-res">by reservation</label>
+                            </div>  
+                        </div>
+                                    
                         <div v-if="doc.folio_number" class="col-12 -mt-2">
                             <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
                                 
@@ -284,8 +301,6 @@ const call = frappe.call()
 
 const guests = ref([])
 
-
-
 const moment = inject("$moment")
 const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
@@ -298,13 +313,20 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
- 
+
+
 const doc = ref({});
+const folioNumberFilter =ref()
+
+ 
 const rs = inject('$reservation_stay')
 // const socket = inject("$socket")
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
 }
+
+
+
 function onUseTax2Change(value) {
 
     doc.value.tax_2_rate = value ? tax_rule.value.tax_2_rate : 0
@@ -447,7 +469,7 @@ function onSelectAccountCode(data) {
             doc.value.print_format= d.print_format
             doc.value.discount_type = "Percent"
             doc.value.discount = 0
-            doc.value.input_amount = 0
+              
             doc.value.quantity = 1
             if (d.tax_rule) {
                 const tax_rule = JSON.parse(account_code.value.tax_rule_data)
@@ -461,7 +483,8 @@ function onSelectAccountCode(data) {
                 }
 
             }
-            if (d.use_folio_balance_as_default_amount == 1) {
+
+            if (account_code.value.use_folio_balance_as_default_amount == 1) {
                 doc.value.input_amount = Math.abs(balance.value || 0)
             }
             if (d.price>0 && !doc.value.name) {
@@ -502,6 +525,31 @@ function onSelectCityLedger(data) {
 function onSelectFolioNumber(data) {
    doc.value.selected_folio_number_description = data.description
 }
+
+ 
+
+function onFilterFolioNumber(r) {
+ 
+   if(doc.value.select_folio_in_reservation_stay==1){
+    folioNumberFilter.value.reservation_stay = doc.value.reservation_stay
+    
+   }else {
+    delete folioNumberFilter.value.reservation_stay
+   } 
+   if(r) doc.value.select_folio_in_reservation  = false
+}
+
+
+function onFilterFolioNumberRes(r) {
+   if(doc.value.select_folio_in_reservation==1){
+    folioNumberFilter.value.reservation = doc.value.reservation
+   }else {
+    delete folioNumberFilter.value.reservation
+   }
+   if(r) doc.value.select_folio_in_reservation_stay  = false
+}
+
+
 
 
 function onSave() {
@@ -554,6 +602,7 @@ onMounted(() => {
                     doc.value.posting_date = moment(doc.value.posting_date ).toDate();
                     
                 isSaving.value = false   
+                folioNumberFilter.value= {'property':window.property_name, status:'Open','name':['!=',doc.value.transaction_number]}
             }).catch(()=>{
                 isSaving.value = false
             })
@@ -564,6 +613,7 @@ onMounted(() => {
         reservation = dialogRef.value.data.new_doc.reservation
               doc.value  = dialogRef.value.data.new_doc
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
+        folioNumberFilter.value= {'property':window.property_name, status:'Open','name':['!=',doc.value.transaction_number]}
         getDocList("City Ledger", {filters:[["property", "=", window.property.name], ["business_source", "=", dialogRef.value.data.business_source]], fields: ['name', 'city_ledger_name'] }).then(result=>{
             if (result.length > 0){
                 doc.value.city_ledger = result[0].name
@@ -578,6 +628,8 @@ onMounted(() => {
     getApi("reservation.get_guest_by_reservation",{reservation:reservation}).then(result=>{
         guests.value = result.message
     })
+
+ 
 
 });
 

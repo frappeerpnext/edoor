@@ -123,6 +123,7 @@
   "checked_in_date",
   "checked_out_by",
   "checked_out_date",
+  "checked_out_system_date",
   "cancelled_by",
   "cancelled_note",
   "cancelled_date",
@@ -130,7 +131,8 @@
   "no_show_date",
   "no_show_note",
   "rooms_data",
-  "is_reserved_room"
+  "is_reserved_room",
+  "is_early_checked_out"
  ],
  "fields": [
   {
@@ -739,7 +741,7 @@
   },
   {
    "fieldname": "cancelled_date",
-   "fieldtype": "Datetime",
+   "fieldtype": "Date",
    "label": "Cancelled Date"
   },
   {
@@ -823,6 +825,17 @@
    "fieldname": "guest_photo",
    "fieldtype": "Attach Image",
    "label": "Guest Photo"
+  },
+  {
+   "fieldname": "checked_out_system_date",
+   "fieldtype": "Date",
+   "label": "Checked Out System Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_early_checked_out",
+   "fieldtype": "Check",
+   "label": "Is Early Checked Out"
   }
  ],
  "image_field": "guest_photo",
@@ -834,7 +847,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-11-01 15:13:45.018590",
+ "modified": "2023-11-07 16:00:47.480066",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

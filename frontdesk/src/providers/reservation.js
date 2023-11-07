@@ -40,10 +40,11 @@ export default class Reservation {
 			attachedsFiles[attachedsFiles.length] = name || this.reservation?.name
 
 			this.attacheds = attachedsFiles
-			this.attacheds =  this.attacheds.concat(result.message.folio_names)
-			this.attacheds =  this.attacheds.concat(result.message.folio_transaction_names)
+			this.attacheds =   [...new Set(this.attacheds.concat(result.message.related_reference_number.filter(r=>r)))]
+			
 
 			this.totalFolio = result.message.total_folio
+
 			this.loading = false
 		}).catch((err) => {
 			this.loading = false

@@ -100,7 +100,6 @@ function onLoadSocket(){
 
 onMounted(() => {
     data.value = dialogRef.value.data;
-    console.log(window.reservation)
 })
 
 

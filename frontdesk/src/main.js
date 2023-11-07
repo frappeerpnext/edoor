@@ -133,6 +133,7 @@ import 'tippy.js/dist/tippy.css' // optional for styling
 import ComLetterHead from "@/components/form/ComLetterHead.vue"
 import ComPrintButton from "@/components/form/ComPrintButton.vue"
 import DeskFolio from './providers/desk_folio';
+import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 
 
 // use components //
@@ -211,6 +212,7 @@ app.component('ComDocumentBadge', ComDocumentBadge)
 app.component('ComLetterHead', ComLetterHead)
 app.component('ComPrintButton', ComPrintButton)
 app.component('ComTimeago', ComTimeago)
+app.component('ComAttachWebcam', ComAttachWebcam)
 // Plugins
 app.use(frappe)
 

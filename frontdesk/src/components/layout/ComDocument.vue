@@ -3,7 +3,14 @@
     <div>
         <div class="mt-3 min-h-folio-cus" :class="{'unset-min-h' : fill}">
         <div class="flex justify-end mb-3">
-            <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
+            <div class="flex gap-2">
+                <div>
+                    <Button class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
+                </div>
+                <div>
+                    <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
+                </div>
+            </div>
         </div>
         <div>
             <ComPlaceholder text="No Documents" :loading="loading" :isNotEmpty="data.length > 0">
@@ -72,6 +79,8 @@
                 <ComAttachFile :docname="docname" :doctype="doctype" @onSuccess="onSuccess" @onClose="onModal(false)"/>
             </ComDialogContent>
         </Dialog>
+        
+         
         </div>
     </div>
 </template>
@@ -80,6 +89,8 @@ import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDi
 
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
+import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
+
 
 const props = defineProps({
     doctype:{
@@ -116,6 +127,7 @@ const props = defineProps({
 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const visible = ref(false)
+const visibleWebcam = ref(false)
 const loading = ref(false)
 const deleting = ref(false)
 const saving = ref(false)
@@ -128,12 +140,34 @@ const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 function onModal(open){
     visible.value = open
 }
+
+function onModalWebcam(open){
+    const dialogRef = dialog.open(ComAttachWebcam, {
+        data: {
+            doctype: props.doctype,
+            docname: props.docname
+        },
+        props: {
+            header: 'Upload Photo by Webcam',
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        }, 
+    });
+}
+
 function onSuccess(){
     visible.value = false
     window.postMessage({action:"refresh_document"})
-
-
-}
+} 
 
 function pageChange(page) {
     pageState.value.page = page.page
@@ -235,7 +269,9 @@ function onSave(){
         onLoad()
         window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
         window.socket.emit("ReservationDetail", window.reservation)
+        window.socket.emit("GuestDetail", window.property_name)
         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        
     }).catch((err)=>{
         saving.value = false
     })

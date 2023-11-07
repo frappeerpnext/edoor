@@ -73,7 +73,11 @@ const props = defineProps({
     },
     maxSelectLabel: Number,
     class: String,
-    tooltip:String
+    tooltip:String,
+    maxSelectedLabels: {
+        type: Number,
+        default: null
+    }
 })
 const toast = useToast();
 const frappe = inject('$frappe')

@@ -11,12 +11,12 @@
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                <div v-tippy="rs.reservation?.reservation_type" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                                <div v-tippy="rs.reservation?.reservation_type + '(Free Independent Travelers)'" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                                     <span class="">
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
                                 </div>
-                                <div v-tippy="rs.reservation?.reservation_type" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                                <div v-tippy="rs.reservation?.reservation_type + '(Group Inclusive Tour)'" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
                                     <span>
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
                                     </span>
@@ -80,7 +80,7 @@
                     <hr class="my-3" />
                     <div>
                         <div class="border-round-xl">
-                            <ComCommentAndNotice v-if="!rs.loading && rs.reservation && rs.reservation.name" doctype="Reservation"
+                            <ComCommentAndNotice v-if="!rs.loading && rs.attacheds" :docnames="rs.attacheds" :reference_doctypes="['Reservation','Reservation Stay','Reservation Room Rate','Folio Transaction','Reservation Folio']" doctype="Reservation"
                                 :docname="rs.reservation.name" />
                         </div>
                     </div>
@@ -113,8 +113,10 @@
         <template #footer-left>
             <div class="flex justify-end gap-2">  
                 <ComReservationMoreOptionsButton />
+                <ReservationPrintButton :reservation="name"/>
                 <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
             </div>
+            
         </template>
         <template #footer-right>
           
@@ -141,7 +143,7 @@ import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationNote from './components/ComReservationNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import ComReservationFolio from '@/views/reservation/components/reservation_folio/ComReservationFolio.vue'
-
+import ReservationPrintButton from '@/views/reservation/components/ReservationPrintButton.vue'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
@@ -151,8 +153,6 @@ const activeTab = ref(0)
 const route = useRoute()
 
 const rs = inject("$reservation")
-
- 
 
 const toast = useToast()
 const dialogRef = inject("dialogRef");
