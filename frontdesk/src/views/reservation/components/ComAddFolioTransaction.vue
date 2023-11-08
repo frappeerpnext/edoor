@@ -1,7 +1,8 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
-            <div class="col">
+            <div class="col pb-0">
+                <div class="flex gap-2">
                 <div class="col-6 pl-0">
                     <label for="room">Room (Optional)</label>
                     <ComAutoComplete  :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
@@ -11,6 +12,7 @@
                     <label for="room">Guest (Optional)</label>
                     <ComAutoComplete   v-model="doc.guest" placeholder="Select Guest" doctype="Customer"
                         class="auto__Com_Cus w-full"  :filters="{'name':['in',guests]}" />
+                </div>
                 </div>
                 <div class="grid">
                     
@@ -36,11 +38,15 @@
                     <label for="input_amount">Amount</label>
                     <ComInputCurrency classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount" id="input_amount" />
                     </div>
-                    <div v-if="doc.account_name" class="col-12 -mt-2">
+                    
+                    <div v-if="doc.account_name" class="col-12 ">
                         <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
                             <span class="text-500 font-italic">You Selected Account Code</span> {{ doc.account_name }}
                         </div>
                     </div>
+                    <div v-if="doc.account_name" class="col-12 -mb-2 ">
+                <hr>
+            </div>
                     <!-- Quantity -->
                     <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
                         <label for="quantity">Quantity</label>
@@ -60,7 +66,7 @@
                             <div class="col-12 md:col-6 lg:col-4">
                                 <label for="minmaxfraction">Discount</label>
                                 <div class="w-full">
-                                <InputNumber inputClass="w-full" :disabled="!canEdit" v-model="doc.discount" inputId="minmaxfraction" id="discount"
+                                <InputNumber class="w-full" inputClass="w-full" :disabled="!canEdit" v-model="doc.discount" inputId="minmaxfraction" id="discount"
                                     :minFractionDigits="2" :maxFractionDigits="10" />
                                 </div>
                             </div>
@@ -128,7 +134,7 @@
                 </div>
             </div>
             <!-- end input -->
-            <div v-if="((tax_rule && account_code.allow_tax) || (account_code.show_payment_information) || (account_code.allow_bank_fee)) && doc?.account_code" class="col-5">
+            <div v-if="((tax_rule && account_code.allow_tax) || (account_code.show_payment_information) || (account_code.allow_bank_fee)) && doc?.account_code" class="col-12">
                 <div class="grid h-full">
                 <!-- tax -->
                 <div v-if="tax_rule && account_code.allow_tax" class="col-12 mt-auto">
@@ -211,11 +217,11 @@
                 <!-- Bank -->
                 <div v-if="account_code.show_payment_information" class="col-12">
                     <div class="grid">
-                        <div class="col-12">
+                        <div class="col-6">
                             <label for="credit_card_number">Credit Card Number</label>
                             <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
                         </div>
-                        <div class="col-12">
+                        <div class="col-6">
                             <label for="bank_name">Bank Name</label>
                             <InputText class="w-full" type="text" v-model="doc.bank_name" />
                         </div>
@@ -529,12 +535,10 @@ function onSelectFolioNumber(data) {
  
 
 function onFilterFolioNumber(r) {
- 
    if(doc.value.select_folio_in_reservation_stay==1){
-    folioNumberFilter.value.reservation_stay = doc.value.reservation_stay
-    
+        folioNumberFilter.value.reservation_stay = doc.value.reservation_stay
    }else {
-    delete folioNumberFilter.value.reservation_stay
+        delete folioNumberFilter.value.reservation_stay
    } 
    if(r) doc.value.select_folio_in_reservation  = false
 }
@@ -542,15 +546,12 @@ function onFilterFolioNumber(r) {
 
 function onFilterFolioNumberRes(r) {
    if(doc.value.select_folio_in_reservation==1){
-    folioNumberFilter.value.reservation = doc.value.reservation
+        folioNumberFilter.value.reservation = doc.value.reservation
    }else {
-    delete folioNumberFilter.value.reservation
+        delete folioNumberFilter.value.reservation
    }
    if(r) doc.value.select_folio_in_reservation_stay  = false
 }
-
-
-
 
 function onSave() {
     isSaving.value = true
@@ -576,8 +577,6 @@ function onSave() {
             }).catch((err) => {
                 isSaving.value = false;
             })
-   
-
 }
 
 onMounted(() => {
@@ -628,9 +627,6 @@ onMounted(() => {
     getApi("reservation.get_guest_by_reservation",{reservation:reservation}).then(result=>{
         guests.value = result.message
     })
-
- 
-
 });
 
  

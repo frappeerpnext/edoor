@@ -1,6 +1,6 @@
 <template>
 	<ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
-{{ ref_data }}
+
 		<div>
 			<div class="mb-3 flex justify-between">
 				<div class="flex gap-2">
@@ -24,7 +24,6 @@
 					</div>
 					<div>
 						<!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
-						{{ pageState }}
 						<Button class="content_btn_b h-full px-3" @click="onOrderBy()">
 							<i v-if="pageState.order_type == 'desc'" class="pi pi-sort-alpha-down-alt" /> 
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
@@ -36,6 +35,7 @@
 						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
 						</icon>
 					</button>
+					
 				</div>
 			</div>
 		</div>
@@ -113,7 +113,7 @@
 						<Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
 							placeholder="Please Select Date" dateFormat="dd-mm-yy" @onSelected="loadData(false, $event)" showIcon />
 					</div>
-					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" isMultipleSelect
+					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" v-if="ref_data?.referenceTypes.length>1" isMultipleSelect
 						optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
 						@onSelected="loadData(false, $event)" />
 					<ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
@@ -173,12 +173,10 @@ function onOpenLink(data) {
 	window.postMessage(action + '|' + data.reference_name, '*')
 }
 
-function Refresh() {
-
-	loadData()
+const Refresh = debouncer(() => {
+	loadData();
 	pageState.value.page = 0
-
-}
+}, 500);
 
 
 function onDateSelect() {
@@ -215,17 +213,14 @@ function loadData(show_loading = true) {
 	filters.push(["reference_name", 'in', ref_data.value.docnames.filter(r=>r)])
 
 	if (filter.value?.selected_comment_by) {
-		filters.push(["comment_by", '=', filter.value.selected_comment_by])
+		filters.push(["comment_email", '=', filter.value.selected_comment_by])
 	}
 	if (filter.value?.custom_posting_date) {
-    console.log('Custom posting date exists:', filter.value.custom_posting_date);
     filters.push(["custom_posting_date", '=', filter.value.custom_posting_date]);
-} else {
-    console.log('Custom posting date is not set.');
-}
+	} 
 
 	getDocList('Comment', {
-		fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified"],
+		fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified","comment_email"],
 		orderBy: {
 			field: pageState.value.order_by,
 			order: pageState.value.order_type,
@@ -334,6 +329,7 @@ function onPrint() {
 		},
 	});
 }
+
 
 
 </script>

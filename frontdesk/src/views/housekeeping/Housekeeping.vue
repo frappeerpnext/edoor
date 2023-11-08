@@ -73,10 +73,20 @@ function onShowSummary() {
     localStorage.setItem("edoor_hhowhousekeeping_summary", showSummary.value ? "1" : "0")
 }
 
-function onRefresh() {
+const onRefresh = debouncer(() => {
     hk.loadData()
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
-
 onMounted(() => {
     window.socket.on("Housekeeping", (arg) => {
         if (arg.property == window.property_name) {

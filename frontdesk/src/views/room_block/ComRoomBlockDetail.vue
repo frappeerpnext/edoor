@@ -30,10 +30,6 @@
                     Room</Button>
             </div>
         </Message>
-
-
-
-
         <div v-if="doc && doc?.is_unblock != 0">
             <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
                 UnBlock
@@ -73,7 +69,6 @@
             <ComCommentAndNotice v-if="doc?.name" doctype="Room Block" :docname="doc?.name"
                 :reference_doctypes="['Room Block']" :docnames="[doc?.name]" />
         </div>
-
         <template #footer-right>
             <Button v-if="doc?.docstatus == 0" @click="onSubmitRoomBlock" class="border-0"> <i class="pi pi-send me-3" />
                 Submit Room Block</Button>
@@ -82,6 +77,10 @@
                 label="Unblock" @click="onUnblock" />
             <Button v-if="!doc?.is_unblock && doc?.docstatus == 0" class="border-none" icon="pi pi-trash text-sm"
                 label="Delete" severity="danger" @click="onDelete" />
+        </template>
+        <template #footer-left>
+            <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
+            <!-- <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print" /> -->
         </template>
     </ComDialogContent>
     <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }"
@@ -110,35 +109,27 @@
                 </div>
             </div>
         </ComDialogContent>
-
     </Dialog>
-    <button @click="onAuditTrail"
-        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-        <i class="pi pi-history" />
-        <span class="ml-2">Audit Trail</span>
-    </button>
 </template>
-
 <script setup>
 import { ref, getDoc, onMounted, inject, useDialog, updateDoc, useConfirm, deleteDoc } from "@/plugin"
 import ComEditRoomBlock from "./components/ComEditRoomBlock.vue";
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
-
+import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 const confirm = useConfirm()
 const unblockvisible = ref(false);
 const unblock_loading = ref(false);
-
 const dialogRef = inject("dialogRef");
 const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
-
 const dialog = useDialog()
-
 const housekeepingStatus = ref(window.setting.housekeeping_status.filter(r => r.is_room_occupy == 0).map(r => r.status));
-
 const data = ref()
-
+function Refresh() {
+    pageState.value.page = 0
+    loadData()
+}
 
 function onSubmitRoomBlock() {
     confirm.require({
@@ -194,6 +185,35 @@ function onDelete() {
     });
 }
 
+function onAuditTrail() {
+    const dialogRef = dialog.open(ComAuditTrail, {
+        data: {
+            doctype: 'Room Block',
+            docname: doc?.value.name,
+            referenceTypes: [{ doctype: 'Room Block', label: 'Room Block' }],
+            docnames: [doc?.value.name],
+        },
+
+        props: {
+            header: 'Audit Trail for Room Block',
+            style: {
+                width: '75vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: 'top',
+        },
+        onClose: (options) => {
+            // Handle dialog closure here
+        },
+    });
+}
+
 function onEdit() {
     const dialogRef = dialog.open(ComEditRoomBlock, {
         data: doc.value,
@@ -216,6 +236,7 @@ function onEdit() {
     })
 
 }
+
 function onSave() {
     unblock_loading.value = true
     var savedData = {
@@ -241,6 +262,16 @@ function onSave() {
     })
 
 }
+function loadData() {
+    loading.value = true
+    loading.value = true
+    getDoc("Room Block", dialogRef.value.data.name).then((r) => {
+        doc.value = r
+        loading.value = false
+    }).catch((err) => {
+        loading.value = false
+    })
+}
 
 function onUnblock() {
     data.value = JSON.parse(JSON.stringify(doc.value))
@@ -250,13 +281,7 @@ function onUnblock() {
 }
 
 onMounted(() => {
-    loading.value = true
-    getDoc("Room Block", dialogRef.value.data.name).then((r) => {
-        doc.value = r
-        loading.value = false
-    }).catch((err) => {
-        loading.value = false
-    })
+    loadData()
 });
 
 const onClose = () => {

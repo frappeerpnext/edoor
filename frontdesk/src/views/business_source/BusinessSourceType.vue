@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComHeader isRefresh @onRefresh="loadData()">
+        <ComHeader isRefresh @onRefresh="Refresh()">
             <template #start>
                 <div class="text-2xl">Business Source Type</div>
             </template>
@@ -107,6 +107,21 @@ function loadData() {
         gv.loading = false
 
     });
+}
+const Refresh = debouncer(() => {
+    loadData()
+}, 500);
+
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
 
 function onAddNewBusinessSourceType() {

@@ -1,11 +1,10 @@
 <template>
-
     <div>
         <div class="mt-3 min-h-folio-cus" :class="{'unset-min-h' : fill}">
         <div class="flex justify-end mb-3">
             <div class="flex gap-2">
                 <div>
-                    <Button class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
+                    <Button v-if="onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
                 </div>
                 <div>
                     <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
@@ -85,12 +84,13 @@
     </div>
 </template>
 <script setup>
-import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount} from '@/plugin'
+import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount,useToast} from '@/plugin'
 
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 
+const toast = useToast()
 
 const props = defineProps({
     doctype:{
@@ -126,6 +126,7 @@ const props = defineProps({
     }
 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port
 const visible = ref(false)
 const visibleWebcam = ref(false)
 const loading = ref(false)
@@ -136,33 +137,41 @@ const opEdit = ref()
 const selected =ref({})
 const dialogConfirm = useConfirm();
 const dialog = useDialog();
+const onUrl = ref(false)
 const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 function onModal(open){
     visible.value = open
 }
 
 function onModalWebcam(open){
-    const dialogRef = dialog.open(ComAttachWebcam, {
-        data: {
-            doctype: props.doctype,
-            docname: props.docname
-        },
-        props: {
-            header: 'Upload Photo by Webcam',
-            style: {
-                width: '80vw',
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const dialogRef = dialog.open(ComAttachWebcam, {
+            data: {
+                doctype: props.doctype,
+                docname: props.docname
             },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position: "top"
-        }, 
-    });
+            props: {
+                header: 'Upload Photo by Webcam',
+                style: {
+                    width: '80vw',
+                },
+                breakpoints: {
+                    '960px': '100vw',
+                    '640px': '100vw'
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
+            }, 
+        });
+    }
+    else{
+        toast.add({ severity: 'warn', summary: "Please setup your webcam", life: 3000 })
+        return
+    }
 }
+
 
 function onSuccess(){
     visible.value = false
@@ -286,13 +295,16 @@ const downloadURI = (uri, name) => {
 }
 onMounted(() => {
     window.addEventListener('message', actionHandler, false);
-   onLoad() 
+    onLoad() 
+    onUrl.value = isHTTPS(serverUrl)
 })
 
+function isHTTPS(serverUrl) {
+  return serverUrl.startsWith("https://");
+}
 
 const actionHandler = async function (e) {
        if (e.isTrusted ) {
-        // if(e.data.action=='refresh_document' && e.data.docname == props.docname){
         if(e.data.action=='refresh_document'){
             onLoad(false)
         }

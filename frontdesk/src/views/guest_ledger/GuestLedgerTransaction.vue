@@ -1,7 +1,7 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="loadData()">
+            <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
@@ -292,6 +292,10 @@ function onDateSelect(d) {
 }
 
 const onSearch = debouncer(() => {
+    loadData();
+}, 500);
+const Refresh = debouncer(() => {
+    pageState.value.page=0
     loadData();
 }, 500);
 

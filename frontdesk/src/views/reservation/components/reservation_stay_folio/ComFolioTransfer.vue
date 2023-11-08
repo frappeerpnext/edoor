@@ -1,4 +1,5 @@
 <template>
+    {{ doc }}
     <ComDialogContent :loading="loading" @onOK="onOk" :hideButtonClose="true" @onClose="onClose">
         <div class="grid">
             <div class="col-12">
@@ -13,9 +14,26 @@
                                 selectedFolio?.description }}</div>
                         </Message>
                         <label>Folio Number</label>
-                        <ComAutoComplete @onSelected="onSelectFolioNumber" v-model="data.new_folio_number"
+                        <ComAutoComplete @onSelected="onSelectFolioNumber" v-model="data.folio_number"
                             placeholder="Select Folio" doctype="Reservation Folio" class="auto__Com_Cus w-full"
-                            :filters="{ 'property': property_name, status: 'Open',is_active_reservation: 1, 'name': ['!=', data.folio_number] }" />
+                            :filters="folioNumberFilter" />
+
+                        <div class="flex gap-3 p-2">
+                            <div>
+                                <Checkbox inputId="on-filter-folio-res-stay" 
+                                    @input="onFilterFolioNumber"
+                                    v-model="data.select_folio_in_reservation_stay" :disabled="disFirstbox" :binary="true" :trueValue="1" :falseValue="0"
+                                    />
+                                <label for="on-filter-folio-res-stay">by stay</label>
+                            </div>
+                            <div>
+                                <Checkbox inputId="on-filter-folio-res" 
+                                    @input="onFilterFolioNumberRes"
+                                    v-model="data.select_folio_in_reservation" :disabled="disSecondbox" :binary="true" :trueValue="1" :falseValue="0"
+                                    />
+                                <label for="on-filter-folio-res">by reservation</label>
+                            </div>  
+                        </div>
                         <label>Note</label>
                
                         <Textarea class="w-full" placeholder="Note" v-model="data.note" autoResize rows="2" />
@@ -74,6 +92,9 @@ const data = ref({})
 const selectedFolio = ref({})
 const loading = ref(false)
 const toast = useToast()
+const folioNumberFilter = ref() 
+const disFirstbox = ref(false)
+const disSecondbox = ref(false)
 
 function onSelectFolioNumber(data) {
     selectedFolio.value = data
@@ -85,6 +106,7 @@ const rowClass = (data) => {
 };
 onMounted(() => {
     data.value = dialogRef.value.data
+    folioNumberFilter.value= {'property':window.property_name, status:'Open','name':['!=',data.value.transaction_number]}
 })
 
 function onOk() {
@@ -133,5 +155,34 @@ function onOk() {
     });
 
 
+}
+
+function onFilterFolioNumber(r) {
+    if(data.value.select_folio_in_reservation_stay==r){
+        folioNumberFilter.value.reservation_stay = data.value.reservation_stay
+    }else {
+        delete folioNumberFilter.value.reservation_stay
+    } 
+    if(r==1) {
+        data.value.select_folio_in_reservation=0
+        disSecondbox.value = true
+    } else {
+        disSecondbox.value = false
+    }
+}
+
+
+function onFilterFolioNumberRes(r) {
+    if(data.value.select_folio_in_reservation==r){
+        folioNumberFilter.value.reservation = data.value.reservation
+    }else {
+        delete folioNumberFilter.value.reservation
+    }
+    if(r==1) {
+        data.value.select_folio_in_reservation_stay=0
+        disFirstbox.value = true
+    } else {
+        disFirstbox.value = false
+    }
 }
 </script>

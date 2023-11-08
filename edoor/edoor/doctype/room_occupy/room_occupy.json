@@ -191,7 +191,7 @@
    "label": "Drop Off"
   },
   {
-   "default": "1",
+   "default": "0",
    "description": "When generate these record, we set last stay is_departure = 1 and is_active = 0. When reservation is early check out, we set remove last record and set previous record is_departure = 1 and is_active = 1, Occupancy calculation must be check with is_active = 1",
    "fieldname": "is_active",
    "fieldtype": "Check",
@@ -200,7 +200,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-07 15:59:51.085154",
+ "modified": "2023-11-07 17:46:42.696118",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

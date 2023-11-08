@@ -3,7 +3,8 @@
         <template #btn>
             <div class="flex items-center">
                 <span> Res {{ stay?.reservationStay?.reservation_type }} Color </span> 
-                <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>
+                <!-- <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button> -->
+                <ComAutoComplete isFull v-model="filter.reservation_color" @onSelected="onSearch" placeholder="Reservation Color" doctype="Reservation" />
             </div>
         </template>
         <template #content>
@@ -92,7 +93,8 @@
                         valueClass="col-4 " :isAction="true" >
                     </ComBoxStayInformation>
                     <ComBoxStayInformation  @onClick="onChangeDate($event)" :value="gv.timeFormat(stay.reservationStay?.departure_time)"
-                        valueClass="col color-purple-edoor" :isAction="true" ></ComBoxStayInformation>
+                        valueClass="col color-purple-edoor" :isAction="true" >
+                    </ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(stay.reservationStay?.departure_date).format('dddd')"
                         valueClass="col">

@@ -31,14 +31,15 @@
                             </template>
                         </Column>
                         <Column header="Nights" headerClass="text-center" bodyClass="text-center">
-                            <template #body="slotProps">
-                              <div>
+                        <template #body="slotProps">
+                            <div>
                                 <span>
-                                    {{moment(slotProps.data.departure_date).diff(moment(slotProps.data.arrival_date), 'days')}}
+                                    {{ rs.reservation?.room_nights || 0 }}
                                 </span>
-                              </div>                              
-                            </template>
-                        </Column>
+                            </div>
+                        </template>
+</Column>
+
                         <Column header="Room">
                             <template #body="slotProps">
                                 <div> 
@@ -142,7 +143,7 @@
     </ComReservationStayPanel> 
 </template>
 <script setup>
-import {inject,ref,useDialog} from '@/plugin'
+import { inject, ref, useDialog } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComReservationStayMoreButton from '../components/ComReservationStayMoreButton.vue'
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
@@ -154,7 +155,7 @@ const dialog = useDialog()
 const moment = inject('$moment')
 const can_view_rate = ref(window.can_view_rate)
 // const name = ref("")
- 
+
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
@@ -173,31 +174,31 @@ status.value.push(
     }
 )
 const rowClass = (data) => {
-     
-    return [{ 'bg-purple-100': data.is_master===1 }];
+
+    return [{ 'bg-purple-100': data.is_master === 1 }];
 };
 
-function getTooltip(p){
-   var data = JSON.parse(p.rooms_data)
-   var html = ''
-   var index = 0
-   data.forEach(e => {
+function getTooltip(p) {
+    var data = JSON.parse(p.rooms_data)
+    var html = ''
+    var index = 0
+    data.forEach(e => {
         index = index + 1
-        if(index > 3){
+        if (index > 3) {
             html = html + `${e.room_type}/${e.room_number ? e.room_number : ''}\n`
         }
-        
-   });
+
+    });
     return `<div class='tooltip-room-stay'>${html}</div>`
- 
+
 }
 
-function onFilterSelectStatus(r){
+function onFilterSelectStatus(r) {
     rs.getRoomList(r)
 }
 function showReservationStayDetail(selected) {
     let stayName = selected
-    if(selected.data && selected.data.name){
+    if (selected.data && selected.data.name) {
         stayName = selected.data.name
     }
     const dialogRef = dialog.open(ReservationStayDetail, {
@@ -213,16 +214,16 @@ function showReservationStayDetail(selected) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position:"top"
-        }, 
+            position: "top"
+        },
     });
 }
-function onAssignRoom(room_name, reservation_stay){
+function onAssignRoom(room_name, reservation_stay) {
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')
 }
 </script>
 <style scoped>
-    .p-datatable > .p-datatable-wrapper {
-        border-radius: 0.75rem !important;
-    }
+.p-datatable>.p-datatable-wrapper {
+    border-radius: 0.75rem !important;
+}
 </style>

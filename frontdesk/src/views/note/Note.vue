@@ -69,7 +69,7 @@
                                 </div>
                             </div>
                             <div class="text-500 text-sm"> 
-                                Note Date: <ComTimeago :date="i.custom_note_date" /></div>
+                                Note Date: {{ gv.dateFormat(i.custom_note_date) }} </div>
                         </div>
                         {{ i.room}}
                         {{ i.guest_name }}
@@ -81,11 +81,11 @@
                         <div class="flex flex-col font-italic  line-height-2 absolute bottom-2 modifiad-note-cs"
                             style="font-size: 10px;">
                             <div>
-                                Noted by <span class=" text-500 "> {{ i.owner }} - {{ gv.datetimeFormat(i.creation) }}</span>
+                                Noted by <span class=" text-500 "> {{ i.comment_by }} - <ComTimeago :date="i.creation"></ComTimeago></span>
                             </div>
-                            <div v-if="i.modified_by">
+                            <div v-if="i.modified">
                                 Last Modified by : <span class=" text-500 ">{{ i.modified_by }} -
-                                    {{ gv.datetimeFormat(i.modified) }}</span>
+                                    <ComTimeago :date="i.modified" /></span>
                             </div>
                             <div class="absolute right-2">
                                 <div class="flex">
@@ -140,9 +140,10 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 function onViewDetail(d){
     window.postMessage("view_" + d.reference_doctype.toLowerCase().replaceAll(" ","_") + "_detail|" + d.reference_name ,"*")
 }
-const Refresh = () => {
+
+const Refresh = debouncer(() => {
     onLoadData()
-}
+}, 500);
 
 function onEdit(name) {
     const dialogRef = dialog.open(ComAddNote, {
@@ -225,7 +226,7 @@ function onLoadData() {
 
 
     getDocList('Comment', {
-        fields:  ["name","creation", "custom_is_pin", "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+        fields:  ["name","creation", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
         filters: filters,
         orderBy: {
             field: pageState.value.order_by,

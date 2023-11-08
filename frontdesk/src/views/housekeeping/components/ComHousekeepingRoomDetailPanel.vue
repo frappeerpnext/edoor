@@ -100,13 +100,16 @@
                 <div class="mt-auto">
                     <span class="italic">Created by: </span>
                     <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.owner }} {{ gv.datetimeFormat(hk.reservationStay?.creation) }}
+                        {{ hk.reservationStay?.owner.split("@")[0] }} 
+                        <ComTimeago :date="hk.reservationStay?.creation"/>                      
                     </span>
                 </div>
                 <div class="mt-auto">
                     <span class="italic"> Last Modified: </span>
                     <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.modified_by }} {{ gv.datetimeFormat(hk.reservationStay?.modified) }}
+                        {{ hk.reservationStay?.modified_by.split("@")[0] }} 
+                        <ComTimeago :date="hk.reservationStay?.modified" />
+                         
                     </span>
                 </div>
                 <div>
@@ -114,15 +117,15 @@
                         <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
                             <span class="italic">Checked-in by: </span>
                             <span class="text-500 font-italic">
-                                {{ hk.reservationStay?.checked_in_by }} {{
-                                    gv.datetimeFormat(hk.reservationStay?.checked_in_date) }}
+                                {{ hk.reservationStay?.checked_in_by.split("@")[0] }} 
+                                <ComTimeago :date="hk.reservationStay?.checked_in_date" />
                             </span>
                         </div>
                         <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
                             <span class="italic"> Checked-out by: </span>
                             <span class="text-500 font-italic">
-                                {{ hk.reservationStay?.checked_out_by }} {{
-                                    gv.datetimeFormat(hk.reservationStay?.checked_out_date) }}
+                                {{ hk.reservationStay?.checked_out_by.split("@")[0] }} 
+                                <ComTimeago :date="hk.reservationStay?.checked_out_date" />
                             </span>
                         </div>
                     </div>

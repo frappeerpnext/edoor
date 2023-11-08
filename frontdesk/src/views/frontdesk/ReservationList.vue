@@ -247,10 +247,10 @@ function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 
-function Refresh() {
-    pageState.value.page = 0
-    loadData()
-}
+const Refresh = debouncer(() => {
+	loadData();
+	pageState.value.page = 0
+}, 500);
 
 function onDateSelect() {
     if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {

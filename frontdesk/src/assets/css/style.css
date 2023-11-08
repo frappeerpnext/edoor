@@ -1386,3 +1386,7 @@ background-color: #6365f125 !important;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.content-note-comment a{
+    color:var(--bg-purple-cs) !important ;
+    cursor: pointer;
+}

@@ -54,11 +54,14 @@ class Reservation(Document):
 		frappe.db.sql("update `tabReservation Stay Room` set reservation_type = '{}' where reservation = '{}'".format(self.reservation_type, self.name))
 
 	def after_insert(self):
+		
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short',enqueue_after_commit=20,now=False, data =[{
 			"comment_type":"Created",
 			"subject":"Create New Reservation",
 			"reference_doctype":"Reservation",
 			"reference_name":self.name,
+			"custom_audit_trail_type":"Created",
+			"custom_icon":"#TODO#",
 			"content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.name}'>{self.name}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
 
 		}])

@@ -19,7 +19,7 @@
 			<div class="flex justify-between items-center " style="min-height: 26px;">
 				<div class="line-height-2 mt-2" > 
 					<div class="font-medium">
-						<div v-if="i.reference_doctype">
+						<div class="text-overflow-ellipsis white-space-nowrap overflow-hidden" v-if="i.reference_doctype">
 						<span class="text-lg" >
 							{{ i.reference_doctype }}
 						</span>

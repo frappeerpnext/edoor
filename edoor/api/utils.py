@@ -1,6 +1,7 @@
 import datetime
 import frappe
 import json
+import re
 from dateutil.rrule import rrule, MONTHLY
 from py_linq import Enumerable
 from frappe import local
@@ -104,12 +105,13 @@ def update_keyword(doc, method=None, *args, **kwargs):
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
-    icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.comment_type), as_dict=1)
-    icon = 'pi-apple'
-    if icon_data:
-        icon = icon_data[0]["icon"]
+    if not doc.custom_icon:
+        icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.custom_audit_trail_type), as_dict=1)
+        icon = 'pi pi-stop'
+        if icon_data:
+            icon = icon_data[0]["icon"]
 
-    update_files.append("custom_icon='{}'".format(icon))
+        update_files.append("custom_icon='{}'".format(icon))
 
     if doc.reference_name and not doc.custom_property:
         ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
@@ -118,6 +120,16 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
             update_files.append("custom_property='{}'".format(ref_doc.property))
             update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"]))
             update_files.append("custom_is_audit_trail=1")
+            if doc.comment_type=="Attachment":
+                
+                link = doc.content
+                file_name = re.search(r'<a href="([^"]+)"', link).group(1) # extract the text between the quotes
+                file_name = file_name.split('/')[-1] # get the last part 
+                file_data = frappe.db.get_list("File", filters={"file_name": file_name})
+                if len(file_data)>0:
+                    file_doc = frappe.get_doc("File", file_data[0]["name"])
+                    if file_doc.custom_show_in_edoor==0:
+                        update_files.append("custom_is_audit_trail=0")
     
     if not doc.subject:
         if doc.comment_type=="Attachment Removed":
@@ -189,6 +201,8 @@ def submit_update_audit_trail_from_version(doc):
             comment_doc = []
             comment_doc.append({
             "subject": "Change Value",
+            "custom_audit_trail_type":"Updated",
+            "custom_icon":"pi pi-file-edit",
             "reference_doctype":doc.ref_doctype,
             "reference_name":doc.docname,
             "content":", ".join(data_changed)  

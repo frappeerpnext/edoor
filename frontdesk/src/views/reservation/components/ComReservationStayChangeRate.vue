@@ -12,7 +12,7 @@
                         <i class="pi pi-replay text-xl text-dark font-bold"></i>
                     </div>
                 </div>
-                <InputNumber class="text-right" v-model="rate" :min="0" :minFractionDigits="2" :maxFractionDigits="5"/>
+                <InputNumber v-model="rate" :min="0" :minFractionDigits="2" :maxFractionDigits="5"/>
             </div>
         </div>
         <template #footer-right>

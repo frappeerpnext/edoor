@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ComHeader isRefresh @onRefresh="loadData()">
+        <ComHeader isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="text-2xl">Guest Type</div>
             </template>
@@ -94,7 +94,9 @@ function onEdit(edit) {
         }
     });
 }
-
+const onRefresh = debouncer(() => {
+    loadData();
+}, 500);
 function loadData(show_loading=true) {
     gv.loading = show_loading
     getDocList('Customer Group', {
@@ -109,6 +111,17 @@ function loadData(show_loading=true) {
         gv.loading = false
 
     });
+}
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
 
 function onAddNewGuestType() {

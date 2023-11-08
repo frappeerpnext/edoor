@@ -84,7 +84,18 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     total_room_occupy = 0
     unassign_room = 0
 
-    sql = "SELECT sum(if(reservation_status='No Show',0,1)) AS `total_room_occupy`, SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` FROM `tabRoom Occupy` WHERE is_departure= 0 and  `date` = '{0}' AND property = '{1}' and type='Reservation' and room_type_id=if('{2}'='',room_type_id,'{2}');".format(date,property, room_type_id or '')
+    sql = """
+        SELECT 
+            sum(if(reservation_status='No Show',0,1)) AS `total_room_occupy`, 
+            SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` 
+        FROM `tabRoom Occupy` 
+        WHERE 
+            is_active= 1 and  
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            type='Reservation' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}');
+    """.format(date,property, room_type_id or '')
 
     #get all totoal unassign room
 
@@ -207,7 +218,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     upcoming_note = frappe.db.sql("select count(name) as total  from `tabComment` where custom_is_note=1 and  custom_note_date>='{}' and custom_property='{}'".format(date,property), as_dict=1)
     
     #get total room block 
-    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id)
+    sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id or '')
     total_room_block = frappe.db.sql(sql,as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
 
@@ -217,9 +228,10 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
 
     occupancy = 0
     if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
-        occupancy = (total_room_occupy or 0)  / (total_room or 1) * 100
+        occupancy = round( (total_room_occupy or 0)  / (total_room or 1) * 100,2)
     else:
-        occupancy = (total_room_occupy or 0)  / ((total_room or 1) - total_room_block) * 100
+        occupancy = round( (total_room_occupy or 0)  / ((total_room or 1) - total_room_block) * 100,2)
+       
 
     return {
         "working_date":working_date,
@@ -376,7 +388,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
 
     sql = """select 
                 {0} as group_by, 
-                sum(if(type='Reservation' and  is_departure=0,1,0)) as  total ,
+                sum(if(type='Reservation' and  is_active=1,1,0)) as  total ,
                 sum(if(type='Reservation' and is_arrival=1,1,0)) as  arrival ,
                 sum(if(type='Reservation' and is_departure=1,1,0)) as  departure ,
                 sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0)) as  stay_over ,
@@ -406,14 +418,15 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                 total_rooms = total_room * sum([m["total_day"] for m in months if m["month_name"] == d])
             else:
                 total_rooms = total_room * sum([m["total_day"] for m in months])
-
+        
         if  calculate_room_occupancy_include_room_block==1:
-            occupancy = round( occupancy / total_rooms * 100,2)
+            occupancy = round(occupancy /  total_rooms * 100,2)
         else:
-            occupancy =round( occupancy / (total_rooms - (block or 0)) * 100,2)
+
+            occupancy =round( occupancy /   (total_rooms - (block or 0))  * 100,2)
         
         
-        occupancy_data.append(occupancy or 0)
+        occupancy_data.append(occupancy or 0.00)
  
         if int(show_occupancy_only)==0:
             arrival_data.append(sum([x["arrival"] for x in data if x["group_by"] == d]))
@@ -459,7 +472,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                 "values": occupancy_data,
                 
     })
-
+  
     return chart_data
    
 
@@ -827,7 +840,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             concat(start_date,'T','12:00:00') as start ,
             concat(end_date,'T','12:00:00') as end,
             guest_name as title,
-            status_color as color,
+            if(reservation_status='Reserved',if(ifnull(reservation_color,'')='',status_color,reservation_color),status_color) as color,
             adult,
             reservation_stay_adr,
             child,
@@ -1347,14 +1360,14 @@ def update_room_status(working_day=None):
 @frappe.whitelist()
 def post_room_change_to_folio(working_day):
     
-    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date})
+    room_rates = frappe.db.get_all("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date },page_length=1000)
 
     for r in room_rates:
         stay_doc = frappe.get_doc("Reservation Stay",r.reservation_stay)
-        if stay_doc.is_active_reservation==1:
+        if stay_doc.is_active_reservation==1 and stay_doc.reservation_status=="In-house":
             folio = None
             if stay_doc.paid_by_master_room == 0:
-                master_folios = frappe.db.get_list("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1})
+                master_folios = frappe.db.get_all("Reservation Folio",fields=["*"],filters={"reservation_stay":r.reservation_stay,"is_master":1},page_length=1000)
                 if master_folios:
                     folio = master_folios[0]
             else:

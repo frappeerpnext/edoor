@@ -98,6 +98,7 @@ class ReservationStay(Document):
 			d.group_code = self.group_code
 			d.group_name = self.group_name
 			d.group_color = self.group_color
+			d.reservation_color = self.reservation_color
 			d.guest = self.guest
 			d.guest_name = self.guest_name
 			d.email = self.guest_email
@@ -177,6 +178,8 @@ class ReservationStay(Document):
 			"subject":"Create New Reservation Stay",
 			"reference_doctype":"Reservation Stay",
 			"reference_name":self.name,
+			"custom_audit_trail_type":"Created",
+			"custom_icon":"#TODO#",
 			"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
 
 		}])
@@ -276,13 +279,13 @@ def generate_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
-
-
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
+				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 			}).insert()
 
 
 			#generate room to room occupy
+
 			frappe.get_doc({
 				"doctype":"Room Occupy",
 				"room_type_id":stay.room_type_id,
@@ -297,7 +300,8 @@ def generate_room_occupy(self):
 				"child":self.child,
 				"pax":self.pax,
 				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 
+				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
+				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 
 			}).insert()
 
@@ -478,7 +482,7 @@ def generate_stay_room_occupy(self):
 			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
 		else:
 			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=True)
-			 
+
 		for d in dates:
 			#generate room to temp room occupy
 			frappe.get_doc({
@@ -497,10 +501,10 @@ def generate_stay_room_occupy(self):
 				"is_arrival":1 if d==self.arrival_date else 0,
 				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
 				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 
-
+				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 ,
+				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 			}).insert()
-
+			
 
 			#generate room to room occupy
 			frappe.get_doc({
@@ -519,7 +523,8 @@ def generate_stay_room_occupy(self):
 				"is_arrival":1 if d==self.arrival_date else 0,
 				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
 				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 
+				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 ,
+				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 				
 			}).insert()
 		

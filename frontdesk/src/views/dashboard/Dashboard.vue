@@ -49,7 +49,7 @@
                                 class="btn-sec-edoor">
                             </ComChartStatus>
                             <tippy
-                                :content="'Today No Show ' + data.today_no_show + ' & No show ' + data.total_no_show">
+                                :content="'No Show Whit Reserved Room ' + data.today_no_show + ' & No Show No Reserved Room ' + data.total_no_show">
                                 <ComChartStatus @onClick="onViewNoShowReservation"
                                     :value="!gv.loading ? (data?.today_no_show + ' / ' + data?.total_no_show) : ''"
                                     title="No-show" :style="{ backgroundColor: statusColor.no_show }">
@@ -263,11 +263,10 @@ function onViewData(doctype, report_name, title, extra_params, filter_options) {
     });
 }
 
-function onRefresh(loading = true) {
+const onRefresh = debouncer(() => {
+    getData()
+}, 500);
 
-    getData(loading)
-
-}
 
 function onViewRoomOccupy() {
     onViewData(
@@ -579,11 +578,20 @@ const viewSummary = (name) => {
         )
     }
 }
+
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
 onMounted(() => {
-    window.socket.on("Dashboard", (arg) => {
-
-
-
+    window.socket.on("Dashboard", (arg) => { 
         if (arg == property.name) {
             setTimeout(function () {
                 getData(false)

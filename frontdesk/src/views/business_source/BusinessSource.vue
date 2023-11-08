@@ -202,10 +202,11 @@ function onOpenLink(column, data){
     });
 }
 
-function Refresh() {
+
+const Refresh = debouncer(() => {
     pageState.value.page = 0
     loadData()
-}
+}, 500);
 
 function pageChange(page) {
     pageState.value.page = page.page

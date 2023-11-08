@@ -230,6 +230,8 @@ class FolioTransaction(Document):
 
 				frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
 					"comment_type":"Created",
+					"custom_audit_trail_type":"Created",
+					"custom_icon":"pi pi-dollar",
 					"subject":"Post " + self.account_group_name,
 					"reference_doctype":"Folio Transaction",
 					"reference_name":self.name,

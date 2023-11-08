@@ -45,9 +45,7 @@ const toast = useToast()
 let streams;
 function initializeWebcam() {
     const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const captureButton = document.getElementById("capture");
-
+    const canvas = document.getElementById("canvas"); 
     navigator.mediaDevices
         .getUserMedia({ video: true })
         .then((stream) => {
@@ -90,11 +88,7 @@ function dataURLtoBlob(dataurl) {
 
 onMounted(() => {
     initializeWebcam()
-
     data.value = dialogRef.value.data
-
-
-
 })
 
 

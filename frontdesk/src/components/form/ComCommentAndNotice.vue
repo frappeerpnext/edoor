@@ -29,6 +29,10 @@
                 <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{create.comment_type}}
             </Button>
         </div>
+        <button @click="onRefresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
+            <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
+            </icon>
+        </button>
     </div>
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
@@ -36,10 +40,9 @@
  
         <div class="flex justify-between">
         <div class="flex items-center">
-
             <!-- <i :class="(i.comment_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i> -->
-            <i class="pi pi-comment"></i>
-            <div class="ms-1 text-sm">
+            <i :class="i.custom_icon"></i>
+            <div class="ms-1 text-sm ">
                 
                 <span class="font-italic" v-if="i.comment_type!='Info'">{{i.comment_type}}</span> <span class="text-500 font-italic"> by: {{i.comment_by}}    
                     <ComTimeago  :date="i.creation"/> 
@@ -60,7 +63,7 @@
     {{i.reference_doctype}} | <a @click="onViewDetail(i)"> {{i.reference_name}}</a>
     </div>
         <div class="whitespace-pre-wrap break-words py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} {{i.subject}}</div>
-        <div class="whitespace-pre-wrap break-words py-1" v-html="i.content"></div>
+        <div class="whitespace-pre-wrap content-note-comment break-words py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date">
         Note Date: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
         </div>
@@ -96,6 +99,20 @@ const props = defineProps({
     docnames: Object
 
 })
+const onRefresh = debouncer(() => {
+    onLoad();
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
 
 let op = ref()
 const loading = ref(false)
@@ -142,15 +159,10 @@ function onLoad(show_loading = true) {
 	let filters = ([
 		["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1]
 	])
-	 
-
- 
 	filters.push(["reference_doctype", 'in', props.reference_doctypes])
 	filters.push(["reference_name", 'in', props.docnames])
- 
-
     getDocList('Comment', {
-		fields: ["name","creation", "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {
 			field: "creation",
 			order:"DESC",
@@ -159,7 +171,7 @@ function onLoad(show_loading = true) {
 		limit_start: 0,
 		limit: 20,
 	}).then((r) => {
-        console.log(r)
+        
             list.value = r
   
 
@@ -203,6 +215,7 @@ function onCreate() {
     op.value = {}
     let note_data = JSON.parse(JSON.stringify(create.value))
     note_data.subject = note_data.custom_is_note==1?"Adding Note":"Adding Comment"
+    note_data.custom_audit_trail_type = note_data.custom_is_note==1?"Note":"Comment"
     note_data.custom_note_date = moment(note_data.custom_note_date).format("YYYY-MM-DD")
     
    

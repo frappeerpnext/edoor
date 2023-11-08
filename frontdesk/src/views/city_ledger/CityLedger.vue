@@ -1,7 +1,7 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="loadData()">
+            <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-2xl">City Ledger</div>
                 </template>
@@ -286,6 +286,9 @@ const onSearch = debouncer(() => {
     loadData();
 }, 500);
 
+const Refresh = debouncer(() => {
+    loadData();
+}, 500);
 function loadData() {
     gv.loading = true
     const filters = JSON.parse(JSON.stringify(filter.value))

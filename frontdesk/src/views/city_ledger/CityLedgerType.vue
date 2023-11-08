@@ -1,6 +1,6 @@
 <template>
  
-        <ComHeader isRefresh @onRefresh="loadData()">
+        <ComHeader isRefresh @onRefresh="Refresh()">
             <template #start>
                 <div class="text-2xl">City Ledger Account Type</div>
             </template>
@@ -133,6 +133,20 @@ function onAddCityLedgerAccountType(){
 			}
         }
     });  
+}
+const Refresh = debouncer(() => {
+    loadData();
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
 
 onMounted(() => {

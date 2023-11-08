@@ -121,24 +121,33 @@
                 <div>
                     <span class="italic">Created by: </span>
                     <span class="text-500 font-italic">
-                        {{ rs.reservationStay?.owner }} {{ gv.datetimeFormat(rs.reservation?.creation) }}
+                        {{ rs.reservationStay?.owner?.split("@")[0] }}
+                        <ComTimeago :date="rs.reservationStay?.creation"/>  
                     </span>
+                </div>
+                <div>
                     <span class="italic"> Last Modified: </span>
                     <span class="text-500 font-italic">
-                        {{ rs.reservationStay?.modified_by }} {{ gv.datetimeFormat(rs.reservation?.modified) }}
+                        {{ rs.reservationStay?.modified_by?.split("@")[0] }}
+                        <ComTimeago :date="rs.reservationStay?.modified"/>  
+
                     </span>
                 </div>
                 <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
                         <span class="italic">Checked-in by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay.checked_in_by }} {{ gv.datetimeFormat(rs.reservationStay.checked_in_date) }}
+                            {{ rs.reservationStay.checked_in_by?.split("@")[0] }}
+                        <ComTimeago :date="rs.reservationStay?.checked_in_date"/>  
+
                         </span>
                     </div>
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
                         <span class="italic">Checked-out by: </span>
                         <span class="text-500 font-italic">
-                            {{ rs.reservationStay?.checked_out_by }} {{ gv.datetimeFormat(rs.reservation?.checked_out_date)}}
+                            {{ rs.reservationStay?.checked_out_by?.split("@")[0] }} 
+                        <ComTimeago :date="rs.reservationStay?.checked_out_date"/>  
+
                         </span>
                     </div>
                 </div>

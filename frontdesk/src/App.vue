@@ -35,6 +35,7 @@ import ComCloseShift from "./views/shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 import ComBusinessSourceDetail from '@/views/business_source/components/ComBusinessSourceDetail.vue';
+import ComRoomDetail from '@/views/housekeeping/components/ComRoomDetail.vue';
 
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -119,6 +120,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_sale_detail") {
                 showSaleDetail(data[1])
+            }
+            else if (data[0] == "view_room_detail") {
+                showRoomDetail(data[1])
             }
         }
 
@@ -223,6 +227,27 @@ function showGuestDetail(name) {
 
     });
 }
+function showRoomDetail(name) {
+
+const dialogRef = dialog.open(ComRoomDetail, {
+    data: {
+        name: name
+    },
+    props: {
+        header: 'Room Detail',
+        style: {
+            width: '80vw',
+        },
+        maximizable: true,
+        modal: true,
+        closeOnEscape: false,
+        position: "top"
+    },
+
+});
+}
+
+
 
 function showReservationDetail(name) {
     

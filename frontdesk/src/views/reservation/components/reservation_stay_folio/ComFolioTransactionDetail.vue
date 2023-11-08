@@ -315,7 +315,11 @@ function onAuditTrail() {
   const dialogRef = dialog.open(ComAuditTrail, {
     data: {
       doctype: 'Folio Transaction',
-      docname: doc.value.name
+      docname: doc?.value.name,
+      referenceTypes:[
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+            ],
+      docnames: [doc?.value.name]
     },
     props: {
       header: 'Audit Trail',

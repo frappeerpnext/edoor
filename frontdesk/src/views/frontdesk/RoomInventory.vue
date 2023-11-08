@@ -231,7 +231,8 @@ const calendarOptions = reactive({
             }
         }
         info.el.addEventListener('click', function () {
-            window.postMessage({ "action": "view_product_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
+            
+            window.postMessage({ "action": "view_property_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
         })
         info.el.style.cursor="pointer"
 
@@ -479,11 +480,11 @@ function getEvents() {
                     event.textcolor="white"
                     
                 } else if (r.id == "occupany") {
-                    if (window.setting.calculate_room_occupancy_include_room_block=0){
+                    if (window.setting.calculate_room_occupancy_include_room_block==0){
                         const room_block = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.block || 0), 0)
-                        event.occupancy = ( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ (total_rooms - room_block)    * 100).toFixed(2)   
+                        event.occupancy =( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ (total_rooms - room_block)    * 100).toFixed(2)   
                     }else {
-                        event.occupancy = ( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ total_rooms  * 100).toFixed(2) 
+                        event.occupancy =( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ total_rooms  * 100).toFixed(2) 
                     }
 
                     event.title = event.occupancy + "%"

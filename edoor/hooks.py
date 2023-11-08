@@ -224,10 +224,10 @@ fixtures = [
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
     {"dt": "Audit Trail Document"},
-    
     {"dt": "Website Theme","filters": [["name", "=", "estc theme"]]},
     {"dt": "Color"},
     {"dt": "Account Category"},
+    {"dt": "App Icons"},
 ]
 
 # website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]

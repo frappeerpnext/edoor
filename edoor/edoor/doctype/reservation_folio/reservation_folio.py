@@ -66,6 +66,7 @@ class ReservationFolio(Document):
 	def after_insert(self):
 		comment = {
 			"comment_type":"Created",
+			"custom_audit_trail_type":"Created",
 			"subject":"Create New Guest Folio",
 			"reference_doctype":"Reservation Folio",
 			"reference_name":self.name,

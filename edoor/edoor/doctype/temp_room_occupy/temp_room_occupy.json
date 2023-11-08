@@ -23,6 +23,7 @@
   "type",
   "is_arrival",
   "is_departure",
+  "is_active",
   "adult",
   "child",
   "pax",
@@ -185,11 +186,18 @@
    "fieldname": "housekeeper",
    "fieldtype": "Data",
    "label": "Housekeeper"
+  },
+  {
+   "default": "0",
+   "description": "When generate these record, we set last stay is_departure = 1 and is_active = 0. When reservation is early check out, we set remove last record and set previous record is_departure = 1 and is_active = 1, Occupancy calculation must be check with is_active = 1\n\n",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-28 15:54:19.548952",
+ "modified": "2023-11-07 17:13:57.787304",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",
