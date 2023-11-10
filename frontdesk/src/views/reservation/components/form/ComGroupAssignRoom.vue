@@ -1,6 +1,6 @@
 <template >
     <ComDialogContent :hideButtonOK="data?.length == 0 ? true : false" :hideButtonClose="data?.length == 0 ? true : false"  @onClose="onClose" @onOK="onSave" :loading="loading">
-    <ComReservationStayPanel title="Group Assign Roomxx">
+    <ComReservationStayPanel title="Group Assign Room">
         <template #content> 
     <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
     <table class="w-full " v-else>

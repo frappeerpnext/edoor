@@ -9,14 +9,14 @@
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
-            <div class="flex gap-2 col-10 pl-0">
-                <div class="w-3">
+            <div class="flex gap-2">
+                <div>
                     <div class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
                         <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
                     </div>
                 </div>
-                <div class="w-3">
+                <div class="w-5">
                     <ComAutoComplete class="w-full" v-model="filter.selected_guest" @onSelected="onSearch"
                         placeholder="Guest" doctype="Customer" isFilter />
                 </div>
@@ -27,11 +27,12 @@
                             @click="onClearFilter" />
                     </div>
                 </div>
-                <div>
+                
+            </div>
+            <div class="flex grap-2">
+                <div class="px-2">
                     <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
                 </div>
-            </div>
-            <div class="col-fixed">
                 <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                     <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                 </Button>
@@ -113,7 +114,6 @@
                 </div>
             </div>
         </div>
-        {{ data }}
         <div style="min-height:42rem;">
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
                 <DataTable 
@@ -137,11 +137,10 @@
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
                             </Button>
-                            <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
-                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                            <span v-else-if="c.fieldtype == 'Datetime'">{{
-                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }} </span>
-                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
+                            <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
+                            </span>
+                            
+                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
                             <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                                 v-if="slotProps?.data && slotProps?.data?.rooms">
                                 <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
@@ -149,6 +148,13 @@
                                     <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                                 </template>
                             </div>
+                            <template v-else-if="c.fieldtype == 'Owner'">
+                                    <div v-if="slotProps?.data && slotProps?.data?.owner">
+                                        <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                                            <span>{{ item }}</span>
+                                        </template>
+                                    </div>
+                                </template>
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />
@@ -220,7 +226,7 @@
 import { inject, ref, useConfirm, watch, getCount, getDocList, onMounted, onUnmounted, getApi, useDialog, computed, deleteDoc } from '@/plugin'
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import { Timeago } from 'vue2-timeago'
+import ComDialogNote from "@/components/form/ComDialogNote.vue";
 
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 const props = defineProps({
@@ -240,7 +246,6 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
-
 
 const viewCityLedgerReport = () => {
     dialog.open(ComPrintReservationStay, {
@@ -272,13 +277,14 @@ const columns = ref([
     { fieldname: 'room_number', label: 'Room Number',fieldtype: "Rooms" ,  header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
-    { fieldname: 'modified', label: 'Modified', fieldtype: "Date", default: true, header_class: "text-center" },
     { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit", default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
-    { fieldname: 'owner', label: 'User', default: true },
+    { fieldname: 'owner', label: 'User', default: true,fieldtype:"Owner" },
     { fieldname: 'note', label: 'Note', default: true },
     { fieldname: 'type', default: true },
     { fieldname: 'parent_reference' },
+    { fieldname: 'modified_by', label: 'Modified By'},
+    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
 ])
 
 const selectedColumns = ref([]);
@@ -309,7 +315,6 @@ const getColumns = computed(() => {
 })
 
 function AddTransaction(account_code) {
-
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             new_doc: {
@@ -368,37 +373,40 @@ function onEditFolioTransaction(name) {
 }
 
 function onDeleteCityLedgerTransaction(name) {
-    confirm.require({
-        message: 'Are you sure you want to delete city ledger transaction?',
-        header: 'Confirmation ' + name,
-        icon: 'pi pi-exclamation-triangle',
-        acceptClass: 'border-none crfm-dialog',
-        rejectClass: 'hidden',
-        acceptIcon: 'pi pi-check-circle',
-        acceptLabel: 'Ok',
-        accept: () => {
-            loading.value = true
-            deleteDoc('Folio Transaction', name)
-                .then(() => {
-                    loadData()
-                    window.socket.emit("CityLedgerAccount",window.property_name)
-                    window.socket.emit("ComCityLedgerDetail",window.property_name)
-                }).catch((err) => {
-                    loading.value = false
-                })
+    const dialogRef = dialog.open(ComDialogNote, {
+        data: {
+                api_url: "utils.delete_doc",
+                method: "DELETE",
+                confirm_message: "Are you sure you want to delete this record?",
+                data:{ doctype: "Folio Transaction", name: name },
+            },
+        props: {
+            header: "Delete Transaction" + " " + name,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: false,
+            closeOnEscape: false,
+            position: "top"
         },
+        onClose: (options) => {
+            if(options.data){
+                loadData()
+                window.socket.emit("CityLedgerAccount",window.property_name)
+                window.socket.emit("ComCityLedgerDetail",window.property_name)
+            }
+            
+            loading.value = false;
+            
+         }
     });
+ 
 }
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
-
-function Refresh() {
-    pageState.value.page = 0
-    loadData()
-}
-
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
@@ -511,8 +519,10 @@ function onOrderBy(data) {
 
 }
 
-
-
+const Refresh = debouncer(() => {
+    pageState.value.page = 0
+    loadData()
+}, 500);
 
 const onSearch = debouncer(() => {
     loadData();

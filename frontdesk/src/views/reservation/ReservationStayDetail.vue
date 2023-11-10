@@ -64,10 +64,7 @@
                                     <div class="col-12">
                                         <ComReservationRoomStayList />
                                     </div>
-                                    <div class="col-12">
-                                        <!-- <ComReservationNote
-                                            v-if="!rs.loading && rs.reservationStay && rs.reservationStay.name"
-                                            doctype="Reservation Stay" /> -->
+                                    <div class="col-12"> 
                                         <ComReservationStayNote />
                                     </div>
                                     <div class="col-12">
@@ -212,8 +209,9 @@ const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
-const onRefresh = (showLoading = true) => {
-    rs.getReservationDetail(name.value, showLoading)
+
+const onRefresh = debouncer(() => {
+    rs.getReservationDetail(name.value)
     rs.getChargeSummary(name.value)
     rs.selectedRoomRates = []
     //load comment 
@@ -228,7 +226,7 @@ const onRefresh = (showLoading = true) => {
         window.postMessage({ action: "refresh_document", docname: name.value })
         window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
-}
+}, 500);
 function onUnreservedRoom() {
     confirm.require({
         message: 'Are you sure you want to unreserve room for this reservation?',
@@ -252,6 +250,19 @@ function onUnreservedRoom() {
             })
         },
     });
+}
+
+
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
 }
 function onReservedRoom() {
     confirm.require({

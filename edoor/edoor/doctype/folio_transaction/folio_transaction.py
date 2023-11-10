@@ -4,9 +4,9 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import update_city_ledger, update_reservation_folio, get_base_rate
+from edoor.api.utils import check_user_permission, update_city_ledger, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
-from frappe.utils.data import now
+from frappe.utils.data import add_to_date, getdate,now
 
 class FolioTransaction(Document):
 	def validate(self):
@@ -14,7 +14,9 @@ class FolioTransaction(Document):
 				if self.is_auto_post ==1:
 					if not hasattr(self,"ignore_validate_auto_post"):
 						frappe.throw("You cannot edit auto post transaction")
-		
+		if self.require_city_ledger_account==0:
+			self.city_ledger = None
+			
 		#validate folio status
 		if self.transaction_type =='Reservation Folio':
 			if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
@@ -76,6 +78,13 @@ class FolioTransaction(Document):
 			
 			if not working_day["cashier_shift"]["name"]:
 				frappe.throw("Please start cashier shift")
+
+			#validate record for back date trasaction
+
+			if getdate(working_day["date_working_day"])> getdate(self.posting_date):
+				check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
+
+
 			
 
 			self.working_day = working_day["name"]
@@ -247,13 +256,21 @@ class FolioTransaction(Document):
 
 	def on_trash(self):
 		#if this transaction is auto post 
+
 		if self.is_auto_post:
 			if (frappe.db.get_default("allow_user_to_daddelete_auto_post_transaction") or 0)==0:
 				frappe.throw("Auto post transaction is not allow to delete.")
+		
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
 		
+		#validate record for back date trasaction
+		working_day = get_working_day(self.property)
+		if getdate(working_day["date_working_day"])> getdate(self.posting_date):
+			check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
+
+
 		#validate delete folio transaction that have reference to folio transaction like folio transfer or city ledget
 		account_doc = frappe.get_doc("Account Code",self.account_code)
 		if account_doc.require_select_a_folio:
@@ -273,14 +290,19 @@ class FolioTransaction(Document):
 		#frappe.throw("You cannot delete me")
 	
 	def after_delete(self):
+		reservation_names=[]
+		reservation_stay_names=[]
 	
 		frappe.db.delete("Folio Transaction", filters={"parent_reference":self.name})
 		
 
 		if self.transaction_type=='Reservation Folio':
 			update_reservation_folio(self.transaction_number, None, False)
+		
+		reservation_names.append(self.reservation)
+		reservation_stay_names.append(self.reservation_stay)
 
-		frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
+		# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 		#update reservation stay and reservation of target folio transfer after delete
 		sql = "select distinct transaction_type, transaction_number, reservation, reservation_stay from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
@@ -292,7 +314,9 @@ class FolioTransaction(Document):
 			if d["transaction_type"] =="Reservation Folio":
 				frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='short', name=d["transaction_number"], doc=None, run_commit=False)
 			
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=d["reservation_stay"],reservation=d["reservation"])
+			reservation_names.append(d["reservation"])
+			reservation_stay_names.append(d["reservation_stay"])
+			# frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=d["reservation_stay"],reservation=d["reservation"])
 
 		
 		#check if folio transaction is city ledger then update city leder summary
@@ -309,6 +333,8 @@ class FolioTransaction(Document):
 			"reference_doctype":self.transaction_type,
 			"reference_name":self.transaction_number,
 			"custom_property":self.property,
+			"custom_audit_trail_type":"Delete",
+			"custom_icon":"pi pi-trash",
 			"custom_posting_date": working_day["date_working_day"]
 		}
 		if self.transaction_type =="Reservation Folio":
@@ -317,6 +343,9 @@ class FolioTransaction(Document):
 			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
 		if (self.deleted_note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
+
+		if len(reservation_names)> 0 or len(reservation_stay_names)> 0:
+			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[comment])
 

@@ -174,8 +174,8 @@ const canCheckIn = computed(() => {
 
 
 const onRefresh = debouncer((showLoading = true) => {
+    rs.LoadReservation(name.value, showLoading);
     if(activeTab.value==0){
-        rs.LoadReservation(name.value, showLoading);
         rs.getChargeSummary(name.value)
 
     } else if(activeTab.value==3) { 

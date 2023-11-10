@@ -21,7 +21,7 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                    <ComCheckRoomConfligAndOverBooking/>
+                    
                 </div>
             </template>
         </ComHeader>
@@ -126,7 +126,7 @@ import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue'
 import ComRoomChartFilterSelect from '@/views/frontdesk/components/ComRoomChartFilterSelect.vue'
 import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
-import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
+
 import FullCalendar from '@fullcalendar/vue3'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 

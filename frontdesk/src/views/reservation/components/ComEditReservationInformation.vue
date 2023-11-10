@@ -66,9 +66,7 @@ onMounted(() => {
     }
     data.value.reservation_date = moment(data.value.reservation_date).toDate();
 })
-
-
-
+ 
 const onSave = () => {
     isLoading.value = true;
     let doc = JSON.parse(JSON.stringify(data.value))
@@ -94,8 +92,5 @@ const onSave = () => {
     }).catch((ex) => {
         isLoading.value = false;
     })
-}
-
-
-
+} 
 </script>

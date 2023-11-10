@@ -73,6 +73,7 @@
               </template>
               <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
               <span v-else-if="c.fieldtype=='reservation_status'" class="px-2 rounded-lg text-white p-1px border-round-3xl" :style="`background: ${slotProps.data.reservation_status_color}`">{{ slotProps.data[c.fieldname] }}</span>
+              <span v-else-if="c.fieldtype=='username'" >{{ slotProps.data[c.fieldname].split("@")[0] }}</span>
               <span v-else>
                 {{ slotProps.data[c.fieldname] }}
                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
@@ -166,7 +167,7 @@ const columns = ref([
   { fieldname: 'total_tax', label: 'Total Tax', header_class: "text-right",fieldtype:"Currency", default: true },
   { fieldname: 'bank_fee', label: 'Bank Fee', header_class: "text-right",fieldtype:"Currency", default: true },
   { fieldname: 'total_amount', label: 'Total Amount', header_class: "text-right",fieldtype:"Currency", default: true },
-  { fieldname: 'modified_by', label: 'Modifield By', header_class: "text-left", default: true },
+  { fieldname: 'modified_by', label: 'Modifield By', header_class: "text-left", default: true,fieldtype:"username" },
   { fieldname: 'modified', label: 'Last Modifield', fieldtype: "Timeago", header_class: "text-left", default: true },
   { fieldname: 'reservation_status', label: 'Res. Status', header_class: "text-center", fieldtype:"reservation_status" },
   { fieldname: 'posting_date', label: 'Date', header_class: "text-center", fieldtype: "Date" },

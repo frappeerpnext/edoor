@@ -1,36 +1,83 @@
 <template>
     <ComOverlayPanelContent title="Change Color" :loading="loading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div>
-            <ComColorPicker v-model="color"/>
+    <div class="card flex justify-content-center">
+        <Dropdown  v-model="reservation_color_code" :options="items" optionLabel="name" showClear placeholder="Select a City" class="w-full md:w-18rem" >
+            <template #value="slotProps">
+        <div v-if="slotProps.value" class="flex align-items-center">
+            <div :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.value.color"></div>
+            <div  >{{ slotProps.value.name }}</div>
         </div>
+        <span v-else>
+            {{ slotProps.placeholder }}
+        </span>
+    </template> 
+    <template #option="slotProps">
+        <div class="flex align-items-center">
+            <div :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.option.color"> </div>
+            <div  >{{ slotProps.option.name }}</div>
+        </div>
+    </template>
+        </Dropdown>
+
+    </div>
+    <div class="col flex gap-3" >
+        <Checkbox v-model="checked" :binary="true" :trueValue = "1" :falseValue = "0"/>
+        <label> Apply to all reservation</label>
+    </div>
+   
     </ComOverlayPanelContent> 
 </template>     
 <script setup>
-import { ref, inject, postApi } from "@/plugin"
+import { ref, inject,getDocList, onMounted,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 const emit = defineEmits(['onClose'])
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');
 const loading = ref(false)
-const stay = ref(JSON.parse(JSON.stringify(rs.reservationStay)))
-const color = ref(stay.value.reservation_color)
-function onSave(){
-    if(!stay.value.is_active_reservation){
-        gv.toast('warn','Cannot change color on unactive reservation.')
+const checked = ref(0);
+const items = ref([]);
+
+const reservation_color_code = ref()
+
+function onSave() {
+    if (!rs.reservationStay.is_active_reservation) {
+        gv.toast('warn', 'Cannot change color on unactive reservation.')
         return
     }
+
+    if (!reservation_color_code.value || !reservation_color_code.value.color) {
+        gv.toast('warn', 'Please select status color code')
+        return
+    }
+
     loading.value = true
-    stay.value.reservation_color = color.value || ''
-    postApi('reservation.update_reservation_color',{data: stay.value}).then((r)=>{
+
+    const stay = {
+        name: rs.reservationStay.name,
+        reservation_color: reservation_color_code.value.color || '',
+        reservation_color_code: reservation_color_code.value.name || '',
+        apply_to_all_reservation: checked.value !== undefined ? checked.value : null 
+    }
+
+    postApi('reservation.update_reservation_stay_color', { data: stay }).then((r) => {
         rs.reservationStay = r.message
         loading.value = false
-        window.socket.emit("Dashboard", rs.reservationStay.property)
-        window.socket.emit("ReservationStayList", { property:window.property_name})
-        window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+        window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
         window.socket.emit("Frontdesk", window.property_name)
         emit('onClose')
-    }).catch(()=>{
+    }).catch(() => {
         loading.value = false
     })
 }
+
+
+onMounted(()=>{
+    reservation_color_code.value = {name: rs.reservationStay.reservation_color_code, color: rs.reservationStay.reservation_color}
+    getDocList("Reservation Color Code", {
+        fields: ["name","color"],
+        limit:1000
+    }).then(data=>{
+        items.value = data
+    })
+})
 </script>

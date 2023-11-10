@@ -33,7 +33,6 @@ import authRoutes from './auth';
 
 
 let routes = [
-  { path: "/frontdesk", redirect: '/frontdesk/dashboard' }, 
   { path: "/frontdesk/dashboard", name: "Dashboard", component: Dashboard, meta: { layout: 'main_layout', title: 'Dashboard' } },
   { path: "/frontdesk/frontdesk", name: "Frontdesk", component: Frontdesk, meta: { layout: 'main_layout', title: 'Front Desk' } },
   { path: "/frontdesk/reservations", name: "ReservationList", component: ReservationList, meta: { layout: 'main_layout', title: 'Reservations' } },
@@ -73,8 +72,13 @@ export  const  getRoutes = function  (whitelist_route,edoor_menu) {
   let default_menu = edoor_menu.filter(r=>r.parent_edoor_menu=="All Menus")[0]
   if(default_menu){
     const default_route =JSON.parse(JSON.stringify( routes.filter(r=>r.name ==default_menu.menu_name)))
-      routes.push({
+    routes.push({
         path:"/",
+        redirect: default_route[0].path 
+      })
+     
+      routes.push({
+        path:"/frontdesk",
         redirect: default_route[0].path 
       })
      
@@ -82,7 +86,7 @@ export  const  getRoutes = function  (whitelist_route,edoor_menu) {
   }
   
 
-  routes = routes.filter(r=>whitelist_route?.includes(r.name) || r.path=="/")
+  routes = routes.filter(r=>whitelist_route?.includes(r.name) || r.path=="/" || r.path=='/frontdesk')
   
    const   router = createRouter({
 		base: "/edoor/frontdesk/",

@@ -74,6 +74,7 @@ function onShowSummary() {
 }
 
 const onRefresh = debouncer(() => {
+    hk.pageState.page = 0
     hk.loadData()
 }, 500);
 function debouncer(fn, delay) {

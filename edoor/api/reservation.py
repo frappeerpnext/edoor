@@ -49,7 +49,7 @@ def get_reservation_folio_list(reservation):
 @frappe.whitelist()
 def get_reservation_detail(name):
     reservation= frappe.get_doc("Reservation",name)
-    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information"])
+    reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information","room_nights"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
     
@@ -460,7 +460,7 @@ def stay_add_more_rooms(reservation=None, data=None):
                 frappe.throw("You don't have enought room for room type {}. Room available {}, but you book {}".format(available_room[0]["room_type"], 0 if vacant_room< 0 else vacant_room, total_rooms))
  
     #END VALIDATE ROOM OVER BOOKING
-
+    stay_doc_names = []
     for d in data["reservation_stays"]:
          
         if data['departure_date'] <= data['arrival_date']:
@@ -496,11 +496,12 @@ def stay_add_more_rooms(reservation=None, data=None):
                 "is_manual_rate":d["is_manual_rate"]
             }]
         }
-        frappe.get_doc(stay).insert()
+        stay_doc =  frappe.get_doc(stay).insert()
+        stay_doc_names.append(stay_doc.name)
 
-        frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=reservation.name, doc=None, run_commit=True)
 
     frappe.db.commit()
+    frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation.name, reservation_stay=stay_doc_names)
     return reservation
 @frappe.whitelist(methods="POST")
 def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
@@ -549,6 +550,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
             "subject":"Checked In",
             "reference_doctype":"Reservation Stay",
             "reference_name":s,
+            "custom_audit_trail_type":"Check In",
+			"custom_icon":"pi pi-sign-in",
             "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}
         if note:
             comment["content"] = comment["content"] + f"<br/> Note: {note}"
@@ -709,6 +712,8 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
                 "subject":"Undo Checked In",
                 "reference_doctype":"Reservation Stay",
                 "reference_name":s, 
+                "custom_audit_trail_type":"Undo",
+			    "custom_icon":"pi pi-replay",
                 "content": f"Reservation stay #: {doc.name}, Ref. #: {doc.reference_number}, Room #: {doc.rooms}, Guest: {doc.guest}-{doc.guest_name}"}
 
         if note:
@@ -720,8 +725,12 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
             frappe.throw("Reservation status of stay # {} must be In-house".format(s))
 
         #validate arrival date
+
         if getdate(doc.arrival_date)!=getdate(working_day["date_working_day"]):
-            frappe.throw("Arrival date of reservation stay # {} must be equal to current working date".format(s))
+            if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")==1:
+                check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
+            else:
+                frappe.throw("Arrival date of reservation stay # {} must be equal to current working date".format(s))
         
   
 
@@ -876,6 +885,8 @@ def check_out(reservation,reservation_stays=None):
             "subject":"Checked Out",
             "reference_doctype":"Reservation Stay",
             "reference_name":s,
+            "custom_audit_trail_type":"Checked Out",
+			"custom_icon":"pi pi-sign-out",
             "content": f"Reservation stay #:<a data-action='view_reservation_stay_detail' data-name='{stay.name}'> {stay.name}</a>, Reservation #:<a data-action='view_reservation_detail' data-name='{stay.reservation}'> {stay.reservation}</a>, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest:<a data-action='view_guest_detail' data-name='{stay.guest}'> {stay.guest}-{stay.guest_name}</a>"
         }
         comment_doc.append(comment)
@@ -959,6 +970,8 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             "subject":"Undo Checked Out",
             "reference_doctype":"Reservation Stay",
             "reference_name":s,
+            "custom_audit_trail_type":"Undo",
+			"custom_icon":"pi pi-replay",
             "content": f"Reservation stay #:<a data-action='view_reservation_stay_detail' data-name='{stay_doc.name}'> {stay_doc.name}</a>, Reservation #:<a data-action='view_reservation_detail' data-name='{stay_doc.reservation}'> {stay_doc.reservation}</a>, Ref. #: {stay_doc.reference_number}, Room #: {stay_doc.rooms}, Guest:<a data-action='view_guest_detail' data-name='{stay_doc.guest}'> {stay_doc.guest}-{stay_doc.guest_name}</a>"
         }
         if note:
@@ -1269,7 +1282,7 @@ def change_stay(data):
             frappe.throw(_("Checked-In reservation is not allow to change arrival date"))
         
         if  getdate(working_day["date_working_day"])>=getdate( stay_room.start_date) and doc.reservation_status =='In-house' and getdate(stay_room.start_date) !=getdate(data["start_date"]) :
-            frappe.throw(_("Checked-In reservation is not allow to change arrival datex"))
+            frappe.throw(_("Checked-In reservation is not allow to change arrival date"))
 
 
     #check if user move from departure date and move behind current working date 
@@ -2292,6 +2305,30 @@ def update_reservation_color(data):
 
 
 @frappe.whitelist(methods="POST")
+def update_reservation_stay_color(data):
+    stay_doc = frappe.get_doc("Reservation Stay", data["name"])
+    if (stay_doc.allow_user_to_edit_information==1):
+        stay_doc.reservation_color_code = data["reservation_color_code"]
+        stay_doc.reservation_color = data["reservation_color"]
+        stay_doc.save()
+        #apply_to_all_reservation
+        if data["apply_to_all_reservation"] == 1:
+            other_stays = frappe.db.sql("select name  from `tabReservation Stay` where allow_user_to_edit_information=1 and reservation='{}' and name <>'{}'".format(stay_doc.reservation, stay_doc.name), as_dict=1)
+            for d in other_stays:
+                frappe.enqueue("edoor.api.reservation.update_reservation_stay_color", queue='short' , data = {
+                    "name":d["name"],
+                    "apply_to_all_reservation":0,
+                    "reservation_color_code":data["reservation_color_code"],
+                    "reservation_color":data["reservation_color"],
+                })
+
+    else:
+        frappe.throw("This reservation stay is not allow to change information")
+
+    return stay_doc
+
+
+@frappe.whitelist(methods="POST")
 def unreserved_room(property, reservation_stay):
     working_day = get_working_day (property)
     if not working_day["cashier_shift"]:
@@ -2560,9 +2597,7 @@ def update_allow_post_to_city_ledger(stays, allow_post_to_city_ledger):
         frappe.msgprint("Unallow post to city ledger successfully")
 
 
-@frappe.whitelist(methods="POST")
-def group_change_stay(data):
-    frappe.msgprint("Change Stay successfully")
+
     
 @frappe.whitelist(methods="POST")
 def get_pickup_and_drop_off_data(stays):
@@ -2701,6 +2736,8 @@ def folio_transfer(data):
                 "reference_doctype":"Folio Transaction",
                 "reference_name":folio_transaction_doc.name,
                 "subject":"Transfer folio item",
+                "custom_audit_trail_type":"Folio",
+			    "custom_icon":"pi pi-dollar",
                 "content":f'Folio Transfer from room # {old_folio_doc.rooms}. Folio Number  {data["folio_number"]}, Reservation Stay # {old_folio_doc.reservation}, Reservation # {old_folio_doc.reservation_stay}, Note: {data["note"]}'
             }
         )

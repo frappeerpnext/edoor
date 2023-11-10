@@ -84,9 +84,10 @@
             </div>
             </template>
         </ComReservationStayPanel>
-        <Button type="button" label="View Room Inventory" @click="onViewRoomInventory"  />
-        <Button type="button" label="View Room Available" @click="onViewRoomAvailable"  />
-        
+        <div class="flex gap-3 justify-content-end mt-3">
+        <Button type="button" class="border-none" label="View Room Inventory" @click="onViewRoomInventory"  />
+        <Button type="button" class="border-none" label="View Room Available" @click="onViewRoomAvailable"  />
+    </div>
         
 
     </div>

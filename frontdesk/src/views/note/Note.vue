@@ -84,7 +84,7 @@
                                 Noted by <span class=" text-500 "> {{ i.comment_by }} - <ComTimeago :date="i.creation"></ComTimeago></span>
                             </div>
                             <div v-if="i.modified">
-                                Last Modified by : <span class=" text-500 ">{{ i.modified_by }} -
+                                Last Modified by : <span class=" text-500 ">{{ i.modified_by.split("@")[0] }} -
                                     <ComTimeago :date="i.modified" /></span>
                             </div>
                             <div class="absolute right-2">

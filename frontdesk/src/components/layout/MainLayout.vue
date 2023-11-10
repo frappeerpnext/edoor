@@ -19,7 +19,7 @@
                                     <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group && hasChildren(m.name)" class="pi pi-angle-down"></i></p>
                                 </template>
                             </ComHeaderBarItemButton>
-                        </template>  
+                        </template>                     
                     </div>
                 </div>
                 <div class="flex-grow">
@@ -77,14 +77,16 @@
 
                                 </template>
                             </Menu>
+                            
                         </div>
                         <ComAvatarUserProfile :user="user" />
                     </div>
+                  
                 </div>
+               
             </div>
-            
         </div>
-        
+        <ComCheckRoomConfligAndOverBooking/>  
         <div>
             <div class="wrap-page-content -mb-2 px-2">
                 
@@ -95,6 +97,7 @@
         </div>
 
     </div>
+   
 </template>
 
 <script setup>
@@ -114,6 +117,7 @@ import iconOpenCashierShift from '@/assets/svg/icon-open-cashier-shift.svg'
 import iconViewShiftDetail from '@/assets/svg/icon-view-cashier-shift.svg'
 import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
+import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 
 const dialog = useDialog();

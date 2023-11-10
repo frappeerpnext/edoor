@@ -171,21 +171,12 @@ const closeOverlay = ()=>{
     op.value.hide();
 }
 function onCloseRef(result){
+
     if(result){
         rs.reservation = result
     }
     op.value.hide()
-}
-function onChangeDate($event){
-    // if(stay.reservationStay.stays.length > 1){
-    //     gv.toast("warn","This reservation stay has multiple rooms. Please change in room stay.")
-    //     return
-    // }
-
-    // toggle($event, 'change_date')
-}
-
-
+}  
 </script>
 <style scoped>
 

@@ -21,7 +21,15 @@
                 <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))  -->
                 <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
                     <Column field="business_source_type" header="Business Source Type"></Column>
-                    <Column field="owner" header="Owner"></Column>
+                    <Column header="Owner">
+                        <template #body="slotProps">
+                            <div v-if="slotProps?.data && slotProps?.data?.owner">
+                                <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                                    <span>{{ item }}</span>
+                                </template>
+                            </div>  
+                        </template>
+                    </Column>
                     <Column field="note" class="w-6" header="Note"></Column>
                     <Column header="Action" class="text-center w-10rem">
                         <template #body="slotProps">

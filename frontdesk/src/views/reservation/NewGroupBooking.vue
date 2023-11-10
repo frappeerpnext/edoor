@@ -214,7 +214,6 @@
                 </div>
             </div>
         </div>
-
         <div class="grid pt-2" v-if="room_tax && (room_tax.tax_1_rate + room_tax.tax_2_rate + room_tax.tax_3_rate) > 0">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">

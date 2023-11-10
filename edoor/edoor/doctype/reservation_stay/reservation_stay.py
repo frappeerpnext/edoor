@@ -14,6 +14,7 @@ from edoor.api.utils import update_reservation
 class ReservationStay(Document):
 	def  validate(self):
 		
+		
 		working_day = get_working_day(self.property)
 		
 		if not self.reservation:
@@ -51,7 +52,9 @@ class ReservationStay(Document):
 				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
 
-			
+		if not self.reservation_color_code:
+			self.reservation_color = None
+
 		#validate select uniue guest in additional guest
 		master_guest = frappe.db.get_value('Reservation', self.reservation, 'guest')	
 		validate_guests = [x for x in self.additional_guests if x.guest == self.guest or x.guest == master_guest]
@@ -179,7 +182,7 @@ class ReservationStay(Document):
 			"reference_doctype":"Reservation Stay",
 			"reference_name":self.name,
 			"custom_audit_trail_type":"Created",
-			"custom_icon":"#TODO#",
+			"custom_icon":"pi pi-file",
 			"content":f"New reservation stay added. Reservation Stay #: <a target='_blank' href='/frontdesk/stay-detail/{self.name}'>{self.name}</a>,  Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.reservation}'>{self.reservation}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
 
 		}])
@@ -247,6 +250,7 @@ def update_room_occupy(self):
 	if self.require_drop_off==1:
 		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
 		frappe.db.sql("update `tabTemp Room Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
+
 
 
 
@@ -443,6 +447,10 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
 				"is_active_reservation":1
 			}).insert()
+	
+ 
+
+	 
 			
 
 	

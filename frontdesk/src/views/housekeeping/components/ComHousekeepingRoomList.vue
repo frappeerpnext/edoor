@@ -9,8 +9,7 @@
                 stateStorage="local" 
                 stateKey="table_house_keeping_room_state" 
                 @row-click="onRowSelect" 
-                tableStyle="min-width: 50rem" 
-                paginator 
+                tableStyle="min-width: 50rem"  
                 showGridlines 
                 :rows="20"
                 :rowsPerPageOptions="[20, 30, 40, 50]" >
@@ -59,11 +58,19 @@
                         </Button>
                     </template>
                 </Column>
-                <div class="absolute bottom-6 left-4 z-5">
+                <!-- <div class="absolute bottom-6 left-4 z-5">
                     <strong>Total Records: <span class="ttl-column_re">{{ hk.room_list.length }}</span></strong>
-                </div>
+                </div> -->
             </DataTable>
         </ComPlaceholder>
+        <div>
+			<Paginator class="p__paginator" v-model:first="hk.pageState.activePage" :rows="hk.pageState.rows"
+				:totalRecords="hk.pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" @page="pageChange">
+				<template #start="slotProps">
+					<strong>Total Records: <span class="ttl-column_re">{{ hk.pageState.totalRecords }}</span></strong>
+				</template>
+			</Paginator>
+		</div>
     </div>
     <OverlayPanel ref="opHousekeeper" >
         <ComOverlayPanelContent width="15rem" :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
@@ -85,7 +92,7 @@
     </div>
 </template>
 <script setup>
-import { ref, inject, postApi, computed , getDoc,onUnmounted } from '@/plugin';
+import { ref, inject, postApi, computed , getDoc } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReservationStatus.vue'
@@ -93,6 +100,7 @@ import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReserva
 
 import { useDialog } from 'primevue/usedialog';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
+import Paginator from 'primevue/paginator';
 const dialog = useDialog();
 const loading = ref(false)
 const selected = ref({
@@ -108,6 +116,11 @@ const visibleRight = ref(false);
 const db = frappe.db()
 
 
+function pageChange(page) {
+	hk.pageState.page = page.page
+	hk.pageState.rows = page.rows
+	hk.loadData()
+}
 
 const data = computed(() => {
     return hk.room_list
@@ -140,8 +153,7 @@ function SidebarClose() {
         elements_row_hk.classList.remove('active_row_hk');
     });
 }
-function onRowSelect(r) {
- 
+function onRowSelect(r) { 
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
         visibleRight.value = false;

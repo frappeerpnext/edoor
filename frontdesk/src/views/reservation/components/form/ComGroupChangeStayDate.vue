@@ -19,8 +19,7 @@
             <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
             v-model="data.departure_date"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
-        </div>
-        
+        </div>    
    <div class="col-12">
         <div class="flex flex-wrap gap-3 justify-end mt-3 ">
             <div class="flex align-items-center ">
@@ -45,8 +44,9 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { inject, ref, onMounted ,postApi,computed} from '@/plugin'
+import { inject, ref, onMounted ,postApi,computed,useToast} from '@/plugin'
 import ComReservationInputNight from '../ComReservationInputNight.vue';
+const toast = useToast();
 const dialogRef = inject("dialogRef");
 const stays = ref([])
 const loading = ref(false)
@@ -60,17 +60,21 @@ const onRoomNightChanged = (event) => {
 
 function onSave(){
     loading.value = true
-    postApi("reservation.group_change_stay", { 
+    postApi("group_operation.group_change_stay", { 
         data:{ 
-            // stays:stays.value.map(function(a) {return a.name;}),
             stays:stays.value.filter(r => r.name).map(r => r.name),
             arrival:moment(data.value.arrival_date).format("YYYY-MM-DD"),
-            depature:moment(data.value.departure_date).format("YYYY-MM-DD"),
+            departure:moment(data.value.departure_date).format("YYYY-MM-DD"),
             note:data.value.note,
-            generate_new_stay_rate_by:data.value.generate_new_stay_rate_by
+            generate_new_stay_rate_by:data.value.generate_new_stay_rate_by,
+            property:window.property_name,
+            reservation: rs.reservation.name
         }
     }).then((result) => {   
         loading.value = false
+        result.message.forEach(x => {
+            toast.add({ severity: 'warn', summary:"Reservation Stay #" +  x.reservation_stay, detail: x.message, life: 7000 }) 
+        });
         dialogRef.value.close(rs.selecteds = [])
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationDetail", window.reservation)

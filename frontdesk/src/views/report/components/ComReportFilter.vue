@@ -35,7 +35,16 @@
                 optionLabel="room_type" optionValue="room_type"
                 extraFields="room_type"
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
-                    :filters="{ property: property.name }"></ComSelect>
+                    :filters="{ property: property.name }" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('room_type_name')">
+                <label>Room Type</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="room_type" optionValue="name"
+                extraFields="room_type"
+                    v-model="filter.room_type_name"   placeholder="Room Type" doctype="Room Type"
+                    :filters="{ property: property.name }" :isMultipleSelect="true"></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>

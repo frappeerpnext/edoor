@@ -28,7 +28,7 @@
                     </div>
                     <div v-if="hasFilter('building')">
                         <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building"
-                            doctype="Building" :filters="[['property', '=', window.setting?.property?.name]]">
+                            doctype="Building" :filters="[['property', '=', property_name]]">
                         </ComSelect>
                     </div>
                     <div v-if="hasFilter('floor')">
@@ -42,7 +42,7 @@
                     <div v-if="hasFilter('room_type')">
                         <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type"
                             optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type" doctype="Room Type"
-                            :filters="[['property', '=', window.setting?.property?.name]]"></ComSelect>
+                            :filters="[['property', '=', property_name]]"></ComSelect>
                     </div>
                     <div v-if="hasFilter('reservation_status')">
                         <ComSelect v-model="filters.reservation_status" placeholder="Reservation Status"
@@ -67,7 +67,7 @@
                     </div>
                     <div>
                         <Button @click="loadIframe" icon="pi pi-refresh"
-                            class="btn-size2 d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b h-full"></Button>
+                            class="btn-size2 d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
             </div>
@@ -92,6 +92,8 @@ const view = ref("")
 const extra_params = ref([])
 const filter_options = ref([]) // list array string like ["keyword","business_source","room_type"]
 const gv = inject("$gv")
+const property_name = ref(window.property_name)
+
 
 function onSelectLetterHead(l) {
     letter_head.value = l

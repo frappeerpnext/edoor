@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent :hideButtonClose="true"  :hideButtonOK="true" :loading="loading">
+        <Message>Change rate is affect only current and future stay date</Message>
         <ComReservationStayPanel title="Apply To">
             <template #content>
         <div class="gap-3">
@@ -92,6 +93,26 @@
             </div>
         </template>
     </ComReservationStayPanel>
+    <div>
+        <label>Rate Include Tax</label>
+        <Checkbox v-model="checked" :binary="true" />
+    </div>
+    <div>
+        <span>
+            <label>Service Charge 5%</label>
+            <Checkbox v-model="checked" :binary="true" />
+        </span>
+        <span>
+            <label>Acc. Tax 2%</label>
+        <Checkbox v-model="checked" :binary="true" />
+        </span>
+        <span>  
+            <label>VAT 10%</label>
+        <Checkbox v-model="checked" :binary="true" />
+        </span>
+       
+    </div>
+
     </ComDialogContent>
 </template>
 <script setup>
@@ -103,6 +124,8 @@ const loading = ref(false)
 const data = ref({change_date_type:'full_stay'})
 const dialogRef=inject("dialogRef")
 const change_rate = ref([])
+const checked = ref(false);
+const rate = ref(0)
 onMounted(()=>{
     change_rate.value=dialogRef.value.data
     data.value.arrival_date = Enumerable.from(change_rate.value).select(x => new Date(x.arrival_date)).min();

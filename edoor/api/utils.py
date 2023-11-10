@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 from frappe import _
 import calendar
-
+import urllib.parse
+import time
 
 @frappe.whitelist()
 def get_working_day(property = ''):
@@ -125,6 +126,8 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                 link = doc.content
                 file_name = re.search(r'<a href="([^"]+)"', link).group(1) # extract the text between the quotes
                 file_name = file_name.split('/')[-1] # get the last part 
+                file_name = urllib.parse.unquote(file_name)
+
                 file_data = frappe.db.get_list("File", filters={"file_name": file_name})
                 if len(file_data)>0:
                     file_doc = frappe.get_doc("File", file_data[0]["name"])
@@ -150,9 +153,13 @@ def update_comment_keyword(doc, method=None, *args, **kwargs):
 
 def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
     # submit_update_audit_trail_from_version(doc)
-    frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
+    if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
+        
+
+        frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
 
 def submit_update_audit_trail_from_version(doc):
+
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         doctype = frappe.get_doc("Audit Trail Document", doc.ref_doctype)
         data = json.loads(doc.data)
@@ -207,7 +214,8 @@ def submit_update_audit_trail_from_version(doc):
             "reference_name":doc.docname,
             "content":", ".join(data_changed)  
             })
-            frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
+            # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
+            add_audit_trail(comment_doc)
 
 
     
@@ -224,7 +232,6 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
  
     # Create an empty list to store the generated dates.
     dates = []
-     
     for i in range((end_date - start_date).days + 1):
         
         if start_date + datetime.timedelta(days=i) == end_date:
@@ -424,14 +431,12 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
-   
+ 
     if name or doc:
         if name:
             doc = frappe.get_doc("Reservation Stay",name)
 
         #1 update data to reservation stay room the rest will update from reservation stay validate event
-    
-
         sql_folio = """
         select  
                 account_category as label,
@@ -479,6 +484,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             """.format(stay.name)
         
             data = frappe.db.sql(sql,as_dict=1)
+            
+
             
             if data:
                 d = data[0]
@@ -794,13 +801,19 @@ def update_reservation_stay_and_reservation(reservation_stay, reservation, reser
     if reservation_folio:
         update_reservation_folio(name=reservation_folio, doc=None, run_commit=True)
     #check if user pass array
+    
     if isinstance(reservation_stay, list):
-        for s in reservation_stay:
+        for s in list(set(reservation_stay)):
+           
             update_reservation_stay ( name=s, doc=None, run_commit=True)
     else:
         update_reservation_stay ( name=reservation_stay, doc=None, run_commit=True)
-
-    update_reservation(name=reservation, doc=None, run_commit=True)
+    
+    if isinstance(reservation, list):
+        for s in list(set(reservation)):
+            update_reservation(name=s, doc=None, run_commit=True)
+    else:
+        update_reservation(name=reservation, doc=None, run_commit=True)
 
 
 
@@ -903,4 +916,8 @@ def add_audit_trail(data):
         d["comment_by"]:frappe.session.user.full_name
 
         frappe.get_doc(d).insert(ignore_permissions=True)
+
+
+def can_change_stay_date(stay_name, arrival,departure):
+    pass
 

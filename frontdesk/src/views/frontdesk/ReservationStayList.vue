@@ -76,6 +76,13 @@
                                         Assign Room
                                     </div>
                                 </template>
+                                <template v-else-if="c.fieldtype == 'Owner'">
+                                    <div v-if="slotProps?.data && slotProps?.data?.owner">
+                                        <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                                            <span>{{ item }}</span>
+                                        </template>
+                                    </div>
+                                </template>
                                 <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else-if="c.fieldtype == 'Status'"
                                     class="px-2 rounded-lg text-white p-1px border-round-3xl"
@@ -217,7 +224,7 @@ const columns = ref([
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No' },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'owner', label: 'Created By' },
+    { fieldname: 'owner', label: 'Created By',fieldtype:"Owner" },
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },

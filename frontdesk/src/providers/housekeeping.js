@@ -6,8 +6,7 @@ const db = frappe.db();
 export default class Housekeeping {
 constructor() {
 	this.view_type ="table"//table, kanban
-	this.room_list = []
-	
+	this.room_list = [] 
 	this.selectedRooms = []
 	this.selectredRow = {}
 	this.reservationStay = {}
@@ -16,6 +15,14 @@ constructor() {
 	this.moment = moment
 	this.filter = {}
 	this.room_block = undefined
+	this.pageState = {
+		order_by: "modified", 
+		order_type: "desc", 
+		page: 0, 
+		rows: 20, 
+		totalRecords: 0, 
+		activePage: 0
+	}
 }
  
 loadData(show_loading=true) {
@@ -40,7 +47,8 @@ loadData(show_loading=true) {
 			}
 		},"",false)
 			.then((result) => {
-                this.room_list =  result.message
+                this.room_list = result.message
+				this.pageState.totalRecords = result.message.length
                 this.loading = false
                 resolve(result)
             }

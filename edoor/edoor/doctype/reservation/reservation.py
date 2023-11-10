@@ -61,7 +61,7 @@ class Reservation(Document):
 			"reference_doctype":"Reservation",
 			"reference_name":self.name,
 			"custom_audit_trail_type":"Created",
-			"custom_icon":"#TODO#",
+			"custom_icon":"pi pi-file",
 			"content":f"New reservation added. Reservation # <a target='_blank' href='/frontdesk/reservation-detail/{self.name}'>{self.name}</a>, Ref #: {self.reference_number or ''}, Reservation Type: {self.reservation_type}, Guest: {self.guest} - {self.guest_name}, Bussiness Source: {self.business_source}"
 
 		}])

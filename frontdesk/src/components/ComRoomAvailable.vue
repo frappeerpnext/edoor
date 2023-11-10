@@ -1,6 +1,7 @@
 <template lang=""> 
-  <div>
-      <div class="flex justify-between mb-3 filter-calen-fro " id="front_desk_search_sticky"> 
+ <ComDialogContent  hideButtonOK style="min-height:80vh;" :hideButtonClose="false"   @onClose="onClose">
+  <div class="">
+      <div class="flex mt-3 justify-between filter-calen-fro  " style="z-index:1000;" id="front_desk_search_sticky"> 
           <div class="flex gap-2">
               <div>
                   <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
@@ -29,8 +30,8 @@
           </div>
       </div>
 
-      <div >
-          <div id="fron__desk-fixed-top">
+      <div class="relative room-avaiable-dailog pt-5" >
+          <div id="fron__desk-fixed-top"  >
               <div>
                   <div class="relative" aria-haspopup="true" aria-controls="overlay_menu">
                     <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
@@ -47,7 +48,7 @@
       <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
   </OverlayPanel>
 
-
+ </ComDialogContent>
   </template>
 <script setup>
 import {  h, ref, reactive, inject, onUnmounted, onMounted, getApi, provide, computed, getDocList,updateDoc } from '@/plugin'
@@ -56,19 +57,11 @@ import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
-
- 
-
-
 import ComRoomChartFilter from '@/views/frontdesk/components/ComRoomChartFilter.vue'
-
-
 import ComRoomChartFilterSelect from '@/views/frontdesk/components/ComRoomChartFilterSelect.vue'
-
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
-
 import FullCalendar from '@fullcalendar/vue3'
-
+const dialogRef = inject("dialogRef")
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
@@ -79,6 +72,9 @@ const filter = ref({
   period: "15_days"
 })
 
+const onClose = () => {
+    dialogRef.value.close()
+}
 
 const showAdvanceSearch = ref()
 let currentHightlightResourceId = ""

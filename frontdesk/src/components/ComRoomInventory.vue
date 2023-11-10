@@ -1,7 +1,8 @@
 <template lang=""> 
+<ComDialogContent  hideButtonOK style="min-height:80vh;" :hideButtonClose="false" @onClose="onClose" >
     <div>
        
-        <div class="flex justify-between mb-3 filter-calen-fro" id="front_desk_search_sticky"> 
+        <div class="flex justify-between mt-2 mb-4 filter-calen-fro" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
@@ -41,7 +42,7 @@
         </div>
     </div>
 
-
+</ComDialogContent>
     </template>
 <script setup>
 import { h, ref, reactive, inject, onUnmounted, useToast, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
@@ -50,21 +51,10 @@ import { useTippy } from 'vue-tippy'
 import interactionPlugin from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline';
 import ComCalendarEventTooltip from '@/views/frontdesk/components/ComCalendarEventTooltip.vue'
-
-
-
 import ComRoomChartFilter from '@/views/frontdesk/components/ComRoomChartFilter.vue'
-
-
-
-
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
-
-
 import FullCalendar from '@fullcalendar/vue3'
-
-
-
+const dialogRef = inject("dialogRef")
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
@@ -75,7 +65,9 @@ const filter = ref({
     period: "15_days"
 })
 
-
+const onClose = () => {
+    dialogRef.value.close()
+}
 
 const fullCalendar = ref(null)
 

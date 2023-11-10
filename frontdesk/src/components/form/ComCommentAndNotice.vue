@@ -29,10 +29,7 @@
                 <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{create.comment_type}}
             </Button>
         </div>
-        <button @click="onRefresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
-            <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
-            </icon>
-        </button>
+        <ComHeader isRefresh @onRefresh="onRefresh()"/>
     </div>
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
@@ -41,7 +38,9 @@
         <div class="flex justify-between">
         <div class="flex items-center">
             <!-- <i :class="(i.comment_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i> -->
-            <i :class="i.custom_icon"></i>
+            <span class="">
+            <i :class="i.custom_icon" class="text-md me-2"></i>
+            </span>
             <div class="ms-1 text-sm ">
                 
                 <span class="font-italic" v-if="i.comment_type!='Info'">{{i.comment_type}}</span> <span class="text-500 font-italic"> by: {{i.comment_by}}    
@@ -59,11 +58,11 @@
             <Button text icon="pi pi-trash" class="w-1rem h-1rem" :loading="deleting" severity="danger" @click="onRemove(i)"></Button>
         </div>
     </div>
-    <div v-if="doctype!=i.reference_doctype">
+    <div class="content-note-comment" v-if="doctype!=i.reference_doctype">
     {{i.reference_doctype}} | <a @click="onViewDetail(i)"> {{i.reference_name}}</a>
     </div>
-        <div class="whitespace-pre-wrap break-words py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} {{i.subject}}</div>
-        <div class="whitespace-pre-wrap content-note-comment break-words py-1" v-html="i.content"></div>
+        <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} {{i.subject}}</div>
+        <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date">
         Note Date: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
         </div>

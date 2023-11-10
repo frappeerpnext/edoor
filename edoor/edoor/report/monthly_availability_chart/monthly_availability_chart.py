@@ -81,7 +81,7 @@ def get_report_data(filters):
 				3=3
 				{0}
 			
-		""".format(get_filters(filters),get_month(filters))
+		""".format(get_filters(filters))
 
 	reservation_status = get_reservation_status()
 	months = get_month(filters)
@@ -101,7 +101,9 @@ def get_report_data(filters):
 		if calculate_room_occupancy_include_room_block ==0:
 			total_rooms = total_rooms - len( [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["type"]=="Block"])
 		
+		#start render room type record
 
+		room_types =  list(dict.fromkeys((d['room_type_id'], d['room_type']) for d in data))
 		#get month occupancy
 		month_record = {
 			"indent":0,
@@ -123,9 +125,6 @@ def get_report_data(filters):
 
 
 		#end render month record
-		#start render room type record
-
-		room_types =  list(dict.fromkeys((d['room_type_id'], d['room_type']) for d in data))
 		
 	
 		for rt in room_types:

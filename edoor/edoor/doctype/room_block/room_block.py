@@ -73,6 +73,8 @@ class RoomBlock(Document):
 			"custom_property": self.property,
 			"subject":"Create New Room Block",
 			"reference_doctype":"Room Block",
+			"custom_audit_trail_type":"Created",
+			"custom_icon":"pi pi-file",
 			"reference_name":self.name,
 			"content":f"Create new room block. <b>Room Block #</b>:<a data-action='view_room_block_detail' data-name='{self.name}'>{self.name}</a>, <b>Room #</b>: {self.room_number}, <b>from</b> { getdate(self.start_date).strftime('%d-%m-%Y')} to { add_to_date(getdate(self.end_date),days=-1).strftime('%d-%m-%Y')}<br/> <b>Reason</b>: {self.reason}"
 		}])

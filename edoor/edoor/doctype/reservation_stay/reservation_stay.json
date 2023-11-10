@@ -15,6 +15,7 @@
   "cashier_shift",
   "column_break_3",
   "naming_series",
+  "reservation_color_code",
   "reservation_color",
   "internal_reference_number",
   "reservation",
@@ -127,9 +128,6 @@
   "cancelled_by",
   "cancelled_note",
   "cancelled_date",
-  "no_show_by",
-  "no_show_date",
-  "no_show_note",
   "rooms_data",
   "is_reserved_room",
   "is_early_checked_out"
@@ -632,6 +630,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "reservation_color_code.color",
    "fieldname": "reservation_color",
    "fieldtype": "Color",
    "label": "Reservation Color"
@@ -745,21 +744,6 @@
    "label": "Cancelled Date"
   },
   {
-   "fieldname": "no_show_by",
-   "fieldtype": "Data",
-   "label": "No Show By"
-  },
-  {
-   "fieldname": "no_show_date",
-   "fieldtype": "Datetime",
-   "label": "No Show Date"
-  },
-  {
-   "fieldname": "no_show_note",
-   "fieldtype": "Small Text",
-   "label": "No Show Note"
-  },
-  {
    "fieldname": "pickup_driver",
    "fieldtype": "Link",
    "label": "Pickup Driver",
@@ -836,6 +820,12 @@
    "fieldname": "is_early_checked_out",
    "fieldtype": "Check",
    "label": "Is Early Checked Out"
+  },
+  {
+   "fieldname": "reservation_color_code",
+   "fieldtype": "Link",
+   "label": "Reservation Color Code",
+   "options": "Reservation Color Code"
   }
  ],
  "image_field": "guest_photo",
@@ -847,7 +837,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-11-07 16:00:47.480066",
+ "modified": "2023-11-09 14:27:37.451752",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

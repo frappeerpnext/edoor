@@ -20,7 +20,15 @@
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
                 <DataTable showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
                     <Column field="city_ledger_type" header="City Ledger Type"></Column>
-                    <Column field="owner" header="Owner"></Column>
+                    <Column header="Owner">
+                        <template #body="slotProps">
+                            <div v-if="slotProps?.data && slotProps?.data?.owner">
+                                <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                                    <span>{{ item }}</span>
+                                </template>
+                            </div>  
+                        </template>
+                    </Column>
                     <Column field="note" class="w-6" header="Note"></Column>
                     <Column header="Action" class="text-center w-10rem">
                         <template #body="slotProps">

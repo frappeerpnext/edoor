@@ -71,6 +71,13 @@
                                     <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
                                 </template>
                                 </div>
+                                <template v-else-if="c.fieldtype == 'Owner'">
+                                    <div v-if="slotProps?.data && slotProps?.data?.owner">
+                                        <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                                            <span>{{ item }}</span>
+                                        </template>
+                                    </div>
+                            </template>
                                 <CurrencyFormat  v-else-if="c.fieldtype=='Currency'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>
                                     {{ slotProps.data[c.fieldname] }}
@@ -160,7 +167,7 @@ const columns = ref([
     { fieldname: 'phone_number', label: 'Phone Number' ,default:true},
     { fieldname: 'email_address', label: 'Email' ,default:true},
     { fieldname: 'identity_type', label: 'Identity Type' ,default:true},
-    { fieldname: 'owner' ,  label: 'Created By'},
+    { fieldname: 'owner' ,  label: 'Created By', fieldtype:'Owner'},
     { fieldname: 'creation' , fieldtype:"Date",  label: 'Creation', header_class:"text-center", default:true},
     { fieldname: 'modified_by' ,  label: 'Modified By'},
     { fieldname: 'modified' , fieldtype:"Timeago",  label: 'Last Modified', header_class:"text-center"},

@@ -1,4 +1,4 @@
-{%if frappe.session.user == 'Administrator'%}
+
 <div class="page-card">
 	<div class="page-card-head">
 		<span class="indicator red">{{ error_title }}</span>
@@ -18,6 +18,3 @@
 <div class="error-content {{ 'hidden' if not dev_server else '' }}">
 	<pre><code>{{ error }}</code></pre>
 </div>
-{%else%}
-Helo
-{%endif%}

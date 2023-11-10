@@ -29,7 +29,7 @@
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<Button label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+					<Button class="border-none" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
 
 					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
 						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
@@ -41,36 +41,44 @@
 		</div>
 		<div class="overflow-auto h-full">
 			<ComPlaceholder text="No Data" height="70vh" :loading="loading.value" :is-not-empty="data.length > 0">
-				<DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
-					stateStorage="local" stateKey="table_audit_trail_list_state" :reorderableColumns="true" :value="data"
-					tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
-					<Column field="custom_posting_date" header="Audit date">
-						<template #body="slotProps">
-							{{ moment(slotProps.data.custom_posting_date).format("DD-MM-YYYY") }}
-						</template>
-					</Column>
-					<Column field="reference_doctype" header="Reference Type"></Column>
-					<Column field="reference_name" header="Reference Name">
-						<template #body="slotProps">
-							<Button class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>
-								{{ slotProps.data.reference_name }}
+				<DataTable 
+					class="res_list_scroll" 
+					:resizableColumns="true" 
+					columnResizeMode="fit" 
+					showGridlines
+					stateStorage="local" 
+					stateKey="table_audit_trail_list_state" 
+					:reorderableColumns="true" 
+					:value="data"
+					tableStyle="min-width: 50rem" 
+					@row-dblclick="onViewReservationStayDetail">
+						<Column field="custom_posting_date" header="Audit date">
+							<template #body="slotProps">
+								{{ moment(slotProps.data.custom_posting_date).format("DD-MM-YYYY") }}
+							</template>
+						</Column>
+						<Column field="reference_doctype" header="Reference Type"></Column>
+						<Column field="reference_name" header="Reference Name">
+							<template #body="slotProps">
+								<Button class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>
+									{{ slotProps.data.reference_name }}
 
-							</Button>
-						</template>
+								</Button>
+							</template>
 
-					</Column>
-					<Column field="subject" header="Subject"></Column>
-					<Column field="content" header="Description">
-						<template #body="slotProps">
-							<div v-html="slotProps.data.content"></div>
-						</template>
-					</Column>
-					<Column field="comment_by" header="By"></Column>
-					<Column field="modified" header=" Date & Time"><template #body="slotProps">
-							<ComTimeago :date="slotProps.data.modified" />
+						</Column>
+						<Column field="subject" header="Subject"></Column>
+						<Column field="content" header="Description">
+							<template #body="slotProps">
+								<div v-html="slotProps.data.content"></div>
+							</template>
+						</Column>
+						<Column field="comment_by" header="By"></Column>
+						<Column field="modified" header=" Date & Time"><template #body="slotProps">
+								<ComTimeago :date="slotProps.data.modified" />
 
-						</template>
-					</Column>
+							</template>
+						</Column>
 				</DataTable>
 			</ComPlaceholder>
 		</div>
@@ -282,10 +290,6 @@ function debouncer(fn, delay) {
 onMounted(() => {
 	ref_data.value = dialogRef.value.data;
 	loadData()
-
-
-
-
 })
 const advanceSearch = (event) => {
 	showAdvanceSearch.value.toggle(event);

@@ -34,7 +34,7 @@
                         <template #body="slotProps">
                             <div>
                                 <span>
-                                    {{ rs.reservation?.room_nights || 0 }}
+                                    {{ slotProps.data.room_nights || 0 }}
                                 </span>
                             </div>
                         </template>

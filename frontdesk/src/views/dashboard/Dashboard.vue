@@ -49,10 +49,10 @@
                                 class="btn-sec-edoor">
                             </ComChartStatus>
                             <tippy
-                                :content="'No Show Whit Reserved Room ' + data.today_no_show + ' & No Show No Reserved Room ' + data.total_no_show">
+                                :content="'No-Show Whit Reserved Room ' + data.today_no_show + ' & No-Show No Reserved Room ' + data.total_no_show">
                                 <ComChartStatus @onClick="onViewNoShowReservation"
                                     :value="!gv.loading ? (data?.today_no_show + ' / ' + data?.total_no_show) : ''"
-                                    title="No-show" :style="{ backgroundColor: statusColor.no_show }">
+                                    title="No-Show" :style="{ backgroundColor: statusColor.no_show }">
                                 </ComChartStatus>
                             </tippy>
                             <tippy

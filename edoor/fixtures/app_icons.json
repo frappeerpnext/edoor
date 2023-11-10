@@ -1,0 +1,18 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "App Icons",
+  "icon": "pi pi-comment",
+  "icon_name": "Comment",
+  "modified": "2023-11-06 10:02:20.922608",
+  "name": "Comment"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "App Icons",
+  "icon": "pi pi-bookmark",
+  "icon_name": "Note",
+  "modified": "2023-11-08 13:40:30.822135",
+  "name": "Note"
+ }
+]

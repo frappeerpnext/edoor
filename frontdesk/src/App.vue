@@ -236,7 +236,7 @@ const dialogRef = dialog.open(ComRoomDetail, {
     props: {
         header: 'Room Detail',
         style: {
-            width: '80vw',
+            width: '60vw',
         },
         maximizable: true,
         modal: true,

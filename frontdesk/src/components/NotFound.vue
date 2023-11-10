@@ -11,4 +11,8 @@ Sorry, page you looking for is not found.
     </div>
 </template>   
 <script setup>
+import {useRoute, useRouter,} from "@/plugin"
+const route = useRoute()
+const router = useRouter()
+console.log(route) 
 </script>

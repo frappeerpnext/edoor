@@ -1,6 +1,5 @@
 <template>
- 
-    <Button @click="onView" class="border-none" style="background-color: #ff0021;" v-if="show_warning">
+    <Button @click="onView" class="border-none fixed bottom-8 right-8 " style="background-color: #ff0021;z-index:900;" v-if="show_warning">
         <ComIcon icon="iconConflictRoom" class="me-2" height="18px" />
         Room Conflict</Button>
 </template>
@@ -8,6 +7,7 @@
 <script setup>
 import {getApi,ref,useDialog,onMounted, inject} from "@/plugin"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import Message from 'primevue/message';
 const gv = inject("$gv")
 const loading = ref(false)
 const show_warning = ref(false)

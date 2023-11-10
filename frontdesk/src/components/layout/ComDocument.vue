@@ -4,7 +4,7 @@
         <div class="flex justify-end mb-3">
             <div class="flex gap-2">
                 <div>
-                    <Button v-if="onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
+                    <Button v-if="!onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
                 </div>
                 <div>
                     <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>

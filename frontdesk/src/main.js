@@ -321,12 +321,14 @@ if (setting) {
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)
+
+
 	app.use(router);
 	app.mount("#app");
 
 
 	router.beforeEach(async (to, from, next) => {
-		
+ 
 		document.title = (to.meta.title || '') + ' | eDoor Front Desk'
 		if (to.matched.some((record) => !record.meta.isLoginPage)) {
 			// this route requires auth, check if logged in
@@ -367,7 +369,7 @@ if (setting) {
 						next({ name: 'Dashboard' });
 					}
 				}
-
+f
 
 			} else {
 
@@ -380,6 +382,8 @@ if (setting) {
 
 		}
 	});
+
+	
 
 }
 

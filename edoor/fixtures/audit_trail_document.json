@@ -1,0 +1,794 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Reservation",
+  "modified": "2023-11-08 12:29:31.498574",
+  "name": "Reservation",
+  "tracking_field": [
+   {
+    "field_name": "business_source",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Business Source",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reference #",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reservation_date",
+    "field_type": "Date",
+    "hide_old_value": 0,
+    "label": "Reservation Date",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "guest",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Guest",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "guest_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Guest Name",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reservation Note",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "housekeeping_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Housekeeping Note",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reservation_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reservation Type",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "business_source",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Business Source",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Type",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reservation_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reservation Date",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reference Number",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "internal_reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Internal Reference Number",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "arrival_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Arrival Date",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "departure_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Departure Date",
+    "parent": "Reservation",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Reservation Stay",
+  "modified": "2023-11-08 12:29:20.382777",
+  "name": "Reservation Stay",
+  "tracking_field": [
+   {
+    "field_name": "require_pickup",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Pickup",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "pickup_time",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Pickup Time",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "arrival_mode",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Arrival Mode",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "arrival_flight_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Arrival Flight #",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "pickup_location",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Pickup Location",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "guest",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Guest",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "guest_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Guest name",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reservation_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reservation Date",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reference #",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "arrival_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Arrival Date",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "departure_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Departure Date",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reservation Note",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "housekeeping_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Housekeeping Note",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "pickup_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Pickup Note",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "pickup_driver",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Pickup Driver",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_time",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Drop Off Time",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "departure_mode",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Departure Mode",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "departure_flight_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Departure Flight Number",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_location",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Drop Off Location",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_driver",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Drop Off Driver",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_driver_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Drop Off Driver Name",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_driver_phone_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Phone Number",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "drop_off_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Drop Off Note",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Type",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_reserved_room",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Reserved Room for No Show Reservation",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "adult",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Adult",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "child",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Child",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Type",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "room_types",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Room Type",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rooms",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Room",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "change_stay_note",
+    "field_type": "Data",
+    "hide_old_value": 1,
+    "label": "Change Stay Note",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "business_source",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Business Source",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Reservation Folio",
+  "modified": "2023-10-31 15:26:02.594726",
+  "name": "Reservation Folio",
+  "tracking_field": [
+   {
+    "field_name": "status",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Change Status",
+    "parent": "Reservation Folio",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Folio Transaction",
+  "modified": "2023-11-01 10:02:28.917271",
+  "name": "Folio Transaction",
+  "tracking_field": [
+   {
+    "field_name": "input_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Amount",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "quantity",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Quantity",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount Type",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount Amount",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "account_code",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Account Code",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "account_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Account Name",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "total_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Total Amount",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "total_tax",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Total Tax",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_include_tax",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Include Tax",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Ref. #",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Note",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Reservation Room Rate",
+  "modified": "2023-11-01 12:35:37.809901",
+  "name": "Reservation Room Rate",
+  "tracking_field": [
+   {
+    "field_name": "input_rate",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount Type",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount Amount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Note",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_manual_rate",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Use Manual Rate",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Type",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "rate_include_tax",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Rate Include Tax",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_1_rate",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_1_rate",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_2_rate",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_2_rate",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_3_rate",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_3_rate",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_1_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_1_amount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_2_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_2_amount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "tax_3_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "tax_3_amount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Room Block",
+  "modified": "2023-11-04 11:58:22.936123",
+  "name": "Room Block",
+  "tracking_field": [
+   {
+    "field_name": "reason",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reason",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "start_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Start Date",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "end_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Release Date",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "room_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Room #:",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_unblock",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Unblock",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "unblock_date",
+    "field_type": "Data",
+    "hide_old_value": 1,
+    "label": "Unblock Date",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "unblock_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Unblock Note",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 1,
+    "label": "Change Block Date Reason",
+    "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ }
+]

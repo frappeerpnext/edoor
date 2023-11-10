@@ -840,7 +840,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             concat(start_date,'T','12:00:00') as start ,
             concat(end_date,'T','12:00:00') as end,
             guest_name as title,
-            if(reservation_status='Reserved',if(ifnull(reservation_color,'')='',status_color,reservation_color),status_color) as color,
+            if(reservation_status in('Reserved','In-house'),if(ifnull(reservation_color,'')='',status_color,reservation_color),status_color) as color,
             adult,
             reservation_stay_adr,
             child,

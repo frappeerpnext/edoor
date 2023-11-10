@@ -19,9 +19,6 @@ export default class Reservation {
 		this.reservationFolioList=[]
 		this.selectedFolio = null
 		this.totalFolio = 0
-		
-
-
 	}
 
 	LoadReservation(name, showLoading = true) {

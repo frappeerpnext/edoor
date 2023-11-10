@@ -23,7 +23,7 @@
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + '/' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep  dialogKey="pickup_drop_off" title="Pickup/Drop Off">{{ data?.pick_up || 0 }} / {{data?.drop_off || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep v-tippy="'No Show Whit Reserved Room ' + data.today_no_show + ' & No Show No Reserved Room ' + data.total_no_show"  dialogKey="no_show" title="No Show"> {{ data?.today_no_show }} / {{data?.total_no_show || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep v-tippy="'No-Show Whit Reserved Room ' + data.today_no_show + ' & No-Show No Reserved Room ' + data.total_no_show"  dialogKey="no_show" title="No-Show"> {{ data?.today_no_show }} / {{data?.total_no_show || 0}}</ComTodaySummarySep>
         <ComTodaySummarySep v-tippy="'Today Cancell ' + data.today_cancelled + ' & Cancelled ' + data.total_cancelled " dialogKey="cancelled" title="Cancelled"> {{ data?.today_cancelled }} / {{data?.total_cancelled || 0}}</ComTodaySummarySep>
         <ComTodaySummarySep v-tippy="'Today Void ' + data.today_void + ' & Void ' + data.total_void" dialogKey="void" title="Void"> {{ data?.today_void }} / {{data?.total_void || 0}}</ComTodaySummarySep>
         

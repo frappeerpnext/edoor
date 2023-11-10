@@ -322,7 +322,7 @@ function onAuditTrail() {
       docnames: [doc?.value.name]
     },
     props: {
-      header: 'Audit Trail',
+      header: 'Audit Trail for Folio Transaction',
       style: {
         width: '75vw',
       },
