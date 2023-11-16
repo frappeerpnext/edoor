@@ -1,5 +1,6 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
+        
         <DataTable v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail"
             :value="folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass" paginator
             :stateKey="'folo_transaction_table_state_' + selectedFolio.name" :rows="10"
@@ -8,7 +9,7 @@
                 <strong>Total Records: <span class="ttl-column_re">{{ folioTransactions.length }}</span></strong>
             </div>
 
-            <Column selectionMode="multiple" headerStyle="width: 3rem">
+            <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
 
             </Column>
             <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
@@ -108,6 +109,10 @@ const props = defineProps({
     folio: Object, doctype: {
         type: String,
         default: "Reservation Folio"
+    },
+    showCheckbox:{
+        type:Boolean,
+        default:true
     }
 })
 const selectedFolio = ref(props.folio)

@@ -1,36 +1,36 @@
 <template>
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
         <div v-if="doc">
-            <ComFolioAction :folio="doc" :newDoc="newDoc" />
-            <table class="mb-4">
+            <ComDepositLedgerAction :folio="doc"  :newDoc="newDoc" @onClose="onClose" />
+                <table class="mb-4">
                 <tr>
                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
                         Deposit Ledger
                     </th>
                 </tr>
+                <ComStayInfoNoBox label="Posting Date">
+                    {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
+                </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Guest">
                     <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 text-right link_line_action1">
                         {{ doc.guest }} - {{ doc.guest_name }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Debit">
-                    <span class="font-semibold text-right">
-                        {{ doc.total_debit }}
-                    </span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Credit">
-                    <span  class=" font-semibold text-right ">
-                        {{ doc.total_credit }}
-                    </span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Balance">
-                    <span class=" text-right font-semibold">
-                        {{ doc.balance }}
-                    </span>
-                </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Room">
                     <span class="font-semibold text-right">
-                        {{ doc.room_number }}
+                        {{ doc.room_number }}  <span v-if="doc.room_number">({{ doc.room_type }})</span>
+                    </span>
+                </ComStayInfoNoBox>
+                
+
+                <ComStayInfoNoBox label="Debit" :value="doc?.total_debit" isCurrency />
+                <ComStayInfoNoBox label="Credit" :value="doc?.total_credit" isCurrency />
+                <ComStayInfoNoBox label="Balance" :value="doc?.balance" isCurrency />
+                
+                
+                <ComStayInfoNoBox label="Note">
+                    <span class="font-semibold text-right">
+                        {{ doc.note }}
                     </span>
                 </ComStayInfoNoBox>
             </table>
@@ -67,9 +67,9 @@
                     </div>
                 </div>
             </div>
-            
-            <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" />
-            <ComFolioTransactionSimpleStyle v-else :folio="doc"  doctype="Deposit Ledger"/>
+            <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" doctype="Deposit Ledger" :showCheckbox="false"/>
+            <ComFolioTransactionSimpleStyle v-else :folio="doc"  doctype="Deposit Ledger" :showCheckbox="false"/>
+
         </div>
         <template #footer-left>
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
@@ -78,16 +78,19 @@
 </template>
 <script setup>
 
-import { ref, onMounted, inject, getDoc, useDialog,computed } from '@/plugin'
+import { ref, onMounted, inject, getDoc, useDialog,computed , onUnmounted} from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
-import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction.vue"
+import ComDepositLedgerAction from "@/views/deposit_ledger/components/ComDepositLedgerAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
-
+const moment = inject("$moment")
 const name = ref()
 const doc = ref()
+
+
+
 
 const dialogRef = inject("dialogRef");
 
@@ -107,7 +110,9 @@ function onOk() {
 
 }
 
-
+function onViewCustomerDetail(g){
+    window.postMessage("view_guest_detail|" + g)
+}
 function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
@@ -154,8 +159,19 @@ const onClose = () => {
 onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
+    window.socket.on("ComDepositLedgerDetail", (arg) => {
+      
+        if (arg.name == name.value) {
+         
+                getData()
+          
+        }
+    })
 })
 
+onUnmounted(() => {
+    window.socket.off("ComDepositLedgerDetail")
+})
 
 
 

@@ -76,9 +76,16 @@
                                </template>
                            </div>
                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-                           <span v-else-if="c.fieldtype == 'Status'" class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                               :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                               }}</span>
+                           <template v-else-if="c.fieldtype == 'Status'">
+                                <span v-if="slotProps.data[c.fieldname] == 'Open'"
+                                    class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                    :style="{ backgroundColor: 'green' }">{{ slotProps.data[c.fieldname]
+                                    }}</span>
+                                <span v-else class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                    :style="{ backgroundColor: 'red' }">{{ slotProps.data[c.fieldname]
+                                    }}</span>
+
+                            </template>
                            <span v-else>
                                {{ slotProps.data[c.fieldname] }}
                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>

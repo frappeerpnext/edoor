@@ -4,7 +4,7 @@
         <div class="flex justify-end mb-3">
             <div class="flex gap-2">
                 <div>
-                    <Button v-if="!onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
+                    <Button v-if="onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
                 </div>
                 <div>
                     <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
@@ -84,7 +84,7 @@
     </div>
 </template>
 <script setup>
-import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount,useToast} from '@/plugin'
+import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount,useToast,computed} from '@/plugin'
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
@@ -304,9 +304,9 @@ onMounted(() => {
     onUrl.value = isHTTPS(serverUrl)
 })
 
-function isHTTPS(serverUrl) {
-  return serverUrl.startsWith("https://");
-}
+const isHTTPS = ((serverUrl) => {
+   return serverUrl.startsWith("https://");
+})
  
 onUnmounted(() => {
     window.removeEventListener('message', actionHandler, false);

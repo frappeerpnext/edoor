@@ -434,6 +434,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_deposit_ledger(name=None, doc=None,run_commit=True):
+
     if name:
         doc = frappe.get_doc("Deposit Ledger",name)
     sql_folio = """
@@ -450,9 +451,10 @@ def update_deposit_ledger(name=None, doc=None,run_commit=True):
 
     folio_data = frappe.db.sql(sql_folio, as_dict=1)
 
+
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
-    doc.save()
+    doc.save(ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
         

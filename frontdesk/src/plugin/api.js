@@ -110,15 +110,18 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
     })
 }
 export function deleteDoc(doctype, name, message){
+ 
     const frappe = new FrappeApp()
     const db = frappe.db()
     return new Promise((resolve, reject)=>{
         db.deleteDoc(doctype, name)
         .then((doc) => {
+           
             resolve(doc.message)
             window.postMessage('show_success|' + `${message ? message : 'Deleted successful'}`, '*')
         })
         .catch((error) => {
+     
             const message = handleServerMessage(error)
             reject(message) 
         });

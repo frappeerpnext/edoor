@@ -11,7 +11,7 @@
             :value="folioTransactions?.filter(r => (r.parent_reference || '') == '')" tableStyle="min-width: 120rem"
            
             :rowClass="onRowClass">
-            <Column selectionMode="multiple" headerStyle="width: 3rem" />
+            <Column selectionMode="multiple" headerStyle="width: 3rem"  v-if="showCheckbox"/>
             <Column field="name" header="No." headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1">{{slotProps.data?.name}}</button>
@@ -95,7 +95,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Total:" :colspan="5" footerStyle="text-align:right" />
+                    <Column footer="Total:" :colspan="showCheckbox?5:4" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
 
@@ -187,11 +187,16 @@ const props = defineProps({
     doctype:{
         type:String,
         default:"Reservation Folio"
+    },
+    showCheckbox:{
+        type:Boolean,
+        default:true
     }
+
 })
  
 const selectedFolio = ref(props.folio)
-const gv = inject('$gv');
+
 const can_view_rate=window.can_view_rate;
 const folioTransactions = ref([])
 const selectedfolioTransactions = ref([])
@@ -203,7 +208,7 @@ const setting = window.setting
 
 watch(() => props.folio, (newValue, oldValue) => {
     selectedFolio.value = newValue
-
+    
     LoadFolioTransaction()
     selectedfolioTransactions.value = []
     clearState(oldValue.name)
@@ -217,6 +222,7 @@ function LoadFolioTransaction(){
 				getDocList("Folio Transaction", {
 					fields: [
 						"name",
+                        "transaction_number",
 						'posting_date',
                         "reservation",
 						"room_number",
@@ -267,7 +273,7 @@ function LoadFolioTransaction(){
 }
 
 
-
+ 
 const getTotal = ref((column_name) => {
     if (folioTransactions.value?.filter(r => (r.parent_reference || '') == '').length == 0) {
         return 0
@@ -379,13 +385,13 @@ const windowActionHandler = async function (e) {
     if (e.isTrusted) {
         if(e.data.action=="load_folio_transaction") {
             LoadFolioTransaction()
-
-            
+ 
         }
        
     }
 }
 onMounted(() => {
+
     window.addEventListener('message', windowActionHandler, false);
 
     LoadFolioTransaction()

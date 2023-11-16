@@ -28,7 +28,7 @@
                                     <div>
                                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                                     </div>
-                                    <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
+                                    <div v-if="isFilter">
                                         <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
                                             @click="onClearFilter" />
                                     </div>
@@ -51,13 +51,25 @@
                         </div>
 
                         <!-- Show aduti trail list -->
-<Button @click="onToggleView">Toggle Display</Button>
+<div class="flex h-3rem justify-end items-end overflow-hidden rounded-lg mb-3">
+                        <button type="button" @click="onToggleView"
+                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+                        </button>
+                        <button @click="onToggleView"
+                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+                        </button>
+                    </div>
+
+                    <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data && data.length > 0">
                         <ComActivityTimeLine :data="data" v-if="toggleView"/>
                         <ComActivityTable v-else :data="data" />
-                      
+                    </ComPlaceholder>  
                       
 
                         <!-- pagger -->
+                        <div class="mt-3">
                         <Paginator  v-model:first="pageState.activePage" :rows="pageState.rows"
                             :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[ 50, 100, 500]"
                             @page="pageChange">
@@ -66,6 +78,7 @@
                                 }}</span></strong>
                             </template>
                         </Paginator>
+                        </div>
                         <!-- end pager -->
                    
 
@@ -81,9 +94,12 @@
             @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-6">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
-                        placeholder="Please Select Date" dateFormat="dd-mm-yy" @onSelected="loadData(false, $event)"
-                        showIcon />
+                    <Calendar class="w-full" :showButtonBar="true" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
+                        dateFormat="dd-mm-yy" @date-select="loadData(false, $event)" showIcon />
+                </div>
+                <div class="col-6">
+                    <Calendar class="w-full" :selectOtherMonths="true" :minDate="filter.start_date" v-model="filter.end_date" placeholder="End Date"
+                        dateFormat="dd-mm-yy" showIcon @date-select="loadData(false, $event)"  />
                 </div>
                 <ComSelect class="col-6 " v-model="filter.type" :options="reference_doctypes" isMultipleSelect
                     optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
@@ -96,14 +112,16 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { ref, inject, onMounted, onUnmounted, getDocList, getCount } from "@/plugin"
+import { ref, inject, onMounted, onUnmounted, getDocList, getCount ,computed} from "@/plugin"
 import Paginator from 'primevue/paginator';
 import ComHousekeepingStatistic from "@/views/housekeeping/components/ComHousekeepingStatistic.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
 import ComActivityTable from "@/views/activities/components/ComActivityTable.vue";
 const edoor_activity_show_summary = localStorage.getItem("edoor_activity_show_summary")
 const gv = inject("$gv")
-const filter = ref({})
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+const filter = ref({ start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword:"" })
+
 const data = ref()
 const showSummary = ref(true)
 const toggleView = ref(true)//true view as timeline, false view as table
@@ -153,10 +171,13 @@ function onShowSummary() {
 
 
 function loadData(show_loading = true) {
-
+    filter.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
+    filter.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
+    
     gv.loading = show_loading
     let filters = ([
-        ["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1]
+        ["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1],
+        ['custom_posting_date', 'between', [moment(filter.value.start_date).format("YYYY-MM-DD"), moment(filter.value.end_date).format("YYYY-MM-DD")]]
     ])
     if (filter.value?.keyword) {
         filters.push(["custom_keyword", 'like', '%' + filter.value.keyword + '%'])
@@ -170,14 +191,14 @@ function loadData(show_loading = true) {
 
     if (filter.value?.selected_comment_by) {
         filters.push(["comment_email", '=', filter.value.selected_comment_by])
+      
     }
-
-    if (filter.value?.custom_posting_date) {
-        filters.push(["custom_posting_date", '=', filter.value.custom_posting_date]);
+    if (filter.value?.start_date || filter.value?.end_date) {
+        filters.push(['custom_posting_date', 'between', [moment(filter.value.start_date).format("YYYY-MM-DD"), moment(filter.value.end_date).format("YYYY-MM-DD")]])
     }
 
     getDocList('Comment', {
-        fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified", "comment_email","custom_icon","custom_comment_by_photo"],
+        fields: ["custom_posting_date", "creation" , "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified", "comment_email","custom_icon","custom_comment_by_photo"],
         orderBy: {
             field: pageState.value.order_by,
             order: pageState.value.order_type,
@@ -212,11 +233,13 @@ function onOrderBy(data) {
     loadData()
 }
 const onClearFilter = () => {
-	filter.value = {}
+	filter.value = { start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate() }
 	loadData()
 	showAdvanceSearch.value.hide()
 }
-
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
 function pageChange(page) {
 	pageState.value.page = page.page
 	pageState.value.rows = page.rows
@@ -253,6 +276,14 @@ onMounted(() => {
 
 onUnmounted(() => {
     window.socket.off("Activity")
+})
+const isFilter = computed(() => {
+    if (moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
+        return true
+    }
+    else {
+        return gv.isNotEmpty(filter.value, 'start_date,end_date')
+    }
 })
 
 </script>

@@ -1,6 +1,5 @@
 <template>
 	<ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
-
 		<div>
 			<div class="mb-3 flex justify-between">
 				<div class="flex gap-2">
@@ -29,7 +28,7 @@
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+					<!-- <Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" /> -->
 
 					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
 						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
@@ -90,8 +89,6 @@
 				</template>
 			</Paginator>
 		</div>
-
-
 		<OverlayPanel ref="opShowColumn" id="res_list_hideshow">
 			<ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
 				@onCancel="onCloseColumn">
@@ -119,7 +116,7 @@
 				<div class="grid">
 					<div class="col-6">
 						<Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
-							placeholder="Please Select Date" dateFormat="dd-mm-yy" @onSelected="loadData(false, $event)" showIcon />
+							placeholder="Please Select Date" dateFormat="dd-mm-yy"  @update:modelValue="loadData(false, $event)" showIcon />
 					</div>
 					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" v-if="ref_data?.referenceTypes.length>1" isMultipleSelect
 						optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
@@ -127,17 +124,13 @@
 					<ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
 						placeholder="Please Select User" doctype="User" @onSelected="loadData(false, $event)" />
 				</div>
-
 			</ComOverlayPanelContent>
 		</OverlayPanel>
 	</ComDialogContent>
 </template>
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, useDialog, getApi, computed, onUnmounted } from '@/plugin'
-
-
 import Paginator from 'primevue/paginator';
-
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 const showAdvanceSearch = ref()
@@ -162,10 +155,7 @@ const actions = ref([
 	{ label: 'Created By', fieldname: 'comment_by' }
 ])
 
-
-
 const data = ref([])
-
 const filter = ref({})
 let dateRange = reactive({
 	start: '',
@@ -200,9 +190,6 @@ function pageChange(page) {
 	pageState.value.rows = page.rows
 	loadData()
 }
-
-
-
 function loadData(show_loading = true) {
 
 	loading.value = show_loading
@@ -224,6 +211,8 @@ function loadData(show_loading = true) {
 		filters.push(["comment_email", '=', filter.value.selected_comment_by])
 	}
 	if (filter.value?.custom_posting_date) {
+		alert()
+		
     filters.push(["custom_posting_date", '=', filter.value.custom_posting_date]);
 	} 
 
@@ -251,7 +240,6 @@ function getTotalRecord(filters) {
 	getCount('Comment', filters)
 		.then((count) => pageState.value.totalRecords = count || 0)
 }
-
 function onOrderBy(data) {
 	if(pageState.value.order_type=='asc'){
 		pageState.value.order_type='desc'

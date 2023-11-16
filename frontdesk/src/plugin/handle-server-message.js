@@ -16,7 +16,11 @@ export function handleServerMessage(m){
  
 		 
 			_server_messages.forEach(r => {
-                window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ",""), '*')
+                if(JSON.parse(r).message){
+                    window.postMessage('show_alert|' + JSON.parse(r).message.replace("Error: ",""), '*')
+                }
+                 
+                
 			});
 			
         }

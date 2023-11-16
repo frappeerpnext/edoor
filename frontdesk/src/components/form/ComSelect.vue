@@ -7,7 +7,7 @@
         <Dropdown 
             class="w-full" v-else 
             :showClear="clear" 
-            :style="{ 'min-width': width }"
+            :style="{ 'min-width': width , 'max-width':maxWidth }"
             v-model="selected" :filter="isFilter"
             :options="dataOptions" 
             :optionLabel="option.label" 
@@ -16,6 +16,7 @@
             :placeholder="placeholder"
         >
         </Dropdown>
+       
     </tippy>
     </div>
 </template>
@@ -48,6 +49,10 @@ const props = defineProps({
         default: []
     },
     width: {
+        type: String,
+        default: '100%'
+    },
+    maxWidth: {
         type: String,
         default: '100%'
     },

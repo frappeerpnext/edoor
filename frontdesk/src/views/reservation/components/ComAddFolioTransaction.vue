@@ -1,9 +1,10 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+        
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
                 <div class="flex gap-2">
-                    <div class="col-6 pl-0">
+                    <div class="col-6 pl-0" v-if="(dialog_data?.show_room || false)">
                         <label for="room">Room (Optional)</label>
                         <ComAutoComplete :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
                             class="auto__Com_Cus w-full" :filters="{ 'property': doc.property }" />
@@ -105,7 +106,9 @@
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.city_ledger"
                                     placeholder="Select City Ledger Name" doctype="City Ledger" class="auto__Com_Cus w-full"
                                     @onSelected="onSelectCityLedger" :filters="{ property: doc.property }" :suggestions="doc.selected_city_ledger_account"/>
+
                             </div>
+ 
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
                                     <span class="text-500 font-italic">You Selected</span> {{ doc.city_ledger_name }}
@@ -358,6 +361,7 @@ const extra_account_code_filter = ref({})
 const doc = ref({}) 
 const disFirstbox = ref()
 const disSecondbox = ref()
+const dialog_data =ref()
 
 const accountCodeFilter = computed(()=>{
     if(extra_account_code_filter.value){
@@ -623,6 +627,7 @@ function onSave() {
 onMounted(() => { 
     balance.value = dialogRef.value.data.balance
     let reservation = ""
+    dialog_data.value = dialogRef.value.data
     if (dialogRef.value.data.folio_transaction_number) {
         //when use edit folio transacitn
         isSaving.value = true
@@ -649,12 +654,9 @@ onMounted(() => {
  
     } else {
         //when user add new folio transaction
-
         reservation = dialogRef.value.data.new_doc.reservation
-        doc.value = dialogRef.value.data.new_doc
+        doc.value = dialogRef.value.data.new_doc     
         extra_account_code_filter.value = dialogRef.value.data.account_code_filter
- 
-
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
         folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }
         
@@ -672,10 +674,6 @@ onMounted(() => {
                 }
 })
         }
-     
-
-        
-
     }
     //get guest by reservation
     if (reservation) {

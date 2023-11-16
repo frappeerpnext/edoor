@@ -5,7 +5,9 @@
                 <Button class="conten-btn" @click="AddTransaction(d)"
                     v-for="(d, index) in setting.account_group.filter(r => r.is_city_ledger_account == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
-                <SplitButton @click="viewCityLedgerReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
+                <Button @click="viewCityLedgerReport" class="conten-btn">
+                    <i class="pi pi-print mr-2"></i> Print 
+                </Button>
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
@@ -20,10 +22,10 @@
                     <ComAutoComplete class="w-full" v-model="filter.selected_guest" @onSelected="onSearch"
                         placeholder="Guest" doctype="Customer" isFilter />
                 </div>
-                <div class="flex gap-3">
+                <div class="flex gap-2">
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                     <div v-if="gv.isNotEmpty(filter)">
-                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
+                        <Button class="content_btn_b w-max" label="Clear Filter" icon="pi pi-filter-slash"
                             @click="onClearFilter" />
                     </div>
                 </div>
@@ -173,15 +175,9 @@
                         </template>
 
                     </Column>
-                    <Column columWidths="min-width:50px">
+                    <Column>
                         <template #body="slotProps">
-                            <div class="flex gap-2 justify-end cityledger_btn" v-if="!slotProps.data.parent_reference">
-                                <Button @click="onEditFolioTransaction(slotProps.data.name)" icon="pi pi-pencil text-sm"
-                                    iconPos="right" class="h-2rem border-none" label="Edit" rounded />
-                                <Button @click="onDeleteCityLedgerTransaction(slotProps.data.name)" severity="danger"
-                                    icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete"
-                                    rounded />
-                            </div>
+                            <ComCityLedgerTransactionMoreOption @onEdit="onEditFolioTransaction(slotProps.data.name)" @onDelete="onDeleteCityLedgerTransaction(slotProps.data.name)"/>
                         </template>
                     </Column>
                 </DataTable>
@@ -223,6 +219,7 @@ import { inject, ref, useConfirm, watch, getCount, getDocList, onMounted, onUnmo
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
+import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTransactionMoreOption.vue"
 
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 const props = defineProps({
@@ -285,6 +282,8 @@ const columns = ref([
     { fieldname: 'parent_reference' },
     { fieldname: 'modified_by', label: 'Modified By' , fieldtype: "Owner"},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
+    { fieldname: 'payment_by', label: 'Pay by' },
+    { fieldname: 'payment_by_phone_number', label: 'Phone No.' },
 ])
 
 const selectedColumns = ref([]);

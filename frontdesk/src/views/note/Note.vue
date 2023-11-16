@@ -217,7 +217,7 @@ function onLoadData() {
 	filters.push(["custom_note_date",">=", working_day.date_working_day])
 
     if (filter.value.keyword) {
-        filters.push(["content", "like", '%' + filter.value.keyword + '%'])
+        filters.push(["custom_keyword", "like", '%' + filter.value.keyword + '%'])
     }
 
     if (filter.value.date_range && filter.value.search_by_date) {
@@ -226,7 +226,7 @@ function onLoadData() {
 
 
     getDocList('Comment', {
-        fields:  ["name","creation", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+        fields:  ["name","creation",  "custom_keyword", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
         filters: filters,
         orderBy: {
             field: pageState.value.order_by,

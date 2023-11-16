@@ -61,8 +61,6 @@ const toggle = (event) => {
     show.value.toggle(event)
 }
 
- 
-
 function onEditFolioTransaction() {
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
@@ -132,6 +130,7 @@ function onPrintFolioTransaction() {
 }
 
 function onOpenDelete() {
+   
     const dialogRef = dialog.open(ComDialogNote, {
         data: {
                 api_url: "utils.delete_doc",
@@ -154,6 +153,9 @@ function onOpenDelete() {
                 window.postMessage({action:"load_reservation_folio_list"},"*")
                 window.postMessage({action:"load_reservation_stay_folio_list"},"*")
                 window.postMessage({action:"load_folio_transaction"},"*")
+             
+                
+                window.socket.emit("ComDepositLedgerDetail",{name:props.data.transaction_number})
             }
             
             loading.value = false;

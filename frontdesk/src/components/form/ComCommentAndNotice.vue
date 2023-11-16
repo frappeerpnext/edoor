@@ -160,7 +160,7 @@ function onLoad(show_loading = true) {
 	filters.push(["reference_doctype", 'in', props.reference_doctypes])
 	filters.push(["reference_name", 'in', props.docnames])
     getDocList('Comment', {
-		fields: ["name","creation", "custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_keyword" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {
 			field: "creation",
 			order:"DESC",

@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="w-auto max-w-25rem">
-            <ComSelect :maxSelectedLabels="3" :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
+            <ComSelect :maxSelectedLabels="3" mClass="w-20rem text-overflow-ellipsis" :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex max-w-25rem" :isMultipleSelect="true" 
                 isFilter
                 groupFilterField="room_type_group"
                 :groupFilterValue="hk.filter.selected_room_type_group"  
@@ -22,6 +22,11 @@
                 doctype="Room Type"
                 :maxSelectLabel="3">
             </ComSelect>
+            <div class="card flex justify-content-center">
+        <MultiSelect v-model="hk.filter.selected_room_type" display="chip" :options="cities" optionLabel="name" placeholder="Select Cities"
+            :maxSelectedLabels="3" class="w-full md:w-20rem" />
+    </div>
+            
         </div>
         <div class="w-15rem">
             <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
@@ -67,6 +72,13 @@ const hk = inject("$housekeeping")
 const gv = inject("$gv")
 const moment = inject("$moment")
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
+const cities = ref([
+    { name: 'New York', code: 'NY' },
+    { name: 'Rome', code: 'RM' },
+    { name: 'London', code: 'LDN' },
+    { name: 'Istanbul', code: 'IST' },
+    { name: 'Paris', code: 'PRS' }
+]);
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);

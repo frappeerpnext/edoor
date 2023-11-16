@@ -209,6 +209,9 @@ onMounted(() => {
     getMeta()
     if (dialogRef.value.data.name) {
         onLoad()
+    }else {
+        //whenn add new guest check if have default guest name
+        guest.value.customer_name_en = dialogRef.value.data.guest_name || ""
     }
 })
 </script>

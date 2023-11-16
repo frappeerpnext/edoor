@@ -30,11 +30,11 @@
                 <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onClose">Close</Button>
             </div>
             <div class="">
-                <template v-if="currentStep == 4">
+                <template v-if="currentStep == 5">
                     <Checkbox inputId="verify-night-audit-data01" v-model="isConfirmRoomRate" :binary="true" />
                     <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">I am verify that all room rate above is correct.</label>
                 </template>
-                <template v-if="currentStep == 5">
+                <template v-if="currentStep == 6">
                     <Checkbox inputId="verify-night-audit-data02" v-model="isConfirmFolioPosting" :binary="true" />
                     <label for="verify-night-audit-data02" class="mr-3 cursor-pointer">I am verify that all other charges and payments has been posted to guest folio.</label>
                 </template>
@@ -61,13 +61,14 @@ const loading = ref(false)
 
 const steps = ref([
     { step: 1, label: "Welcome", is_selected: true },
-    { step: 2, label: "Today<br>Reservation", is_selected: false },
+    { step: 2, label: "Today<br>Arrival", is_selected: false },
     { step: 3, label: "Today<br>Departure", is_selected: false },
-    { step: 4, label: "Posting<br>Room Charge", is_selected: false },
-    { step: 5, label: "Posting<br>Folio & Deposit", is_selected: false },
-    { step: 6, label: "Today<br>Shift", is_selected: false },
-    { step: 7, label: "Finish<br>Create New Day", is_selected: false },
-    { step: 8, label: "Thank You!", is_selected: false },
+    { step: 4, label: "Today<br>Reservation", is_selected: false },
+    { step: 5, label: "Posting<br>Room Charge", is_selected: false },
+    { step: 6, label: "Today<br>Posting Transaction", is_selected: false },
+    { step: 7, label: "Today<br>Shift", is_selected: false },
+    { step: 8, label: "Finish<br>Create New Day", is_selected: false },
+    { step: 9, label: "Thank You!", is_selected: false },
 ])
 
 
@@ -81,7 +82,7 @@ function onNext() {
                 property: setting?.property?.name,
                 step: currentStep.value
             }, "", false).then((result) => {
-                if (currentStep.value == 4) {
+                if (currentStep.value == 5) {
                     //confrim room rate
                     if (result.message) {
                         if (isConfirmRoomRate.value == false) {
@@ -90,7 +91,7 @@ function onNext() {
                             return
                         }
                     }
-                } else if (currentStep.value == 5) {
+                } else if (currentStep.value == 6) {
                     //confrim folio posting
                     if (result.message) {
                         if (isConfirmFolioPosting.value == false) {

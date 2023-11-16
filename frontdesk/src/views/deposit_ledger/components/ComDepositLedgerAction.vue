@@ -1,11 +1,11 @@
 <template>
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div>
+
             <template
-                v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
+                v-for="(d, index) in accountGroups"
                 :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
-                    v-if="showAccountGroup(d)">
+                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1">
                     Post {{ d.account_name }}
                 </Button>
             </template>
@@ -14,29 +14,7 @@
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
-                    <template
-                        v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 0)"
-                        :key="index">
-                        <button
-                        v-if="showAccountGroup(d)"
-                            @click="onAddFolioTransaction(d)"
-                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <i :class="d.icon" />
-                            <span class="ml-2 ">Post {{ d.account_name }}</span>
-                        </button>
-                    </template>
-                    <button v-if="!selectedFolio.is_master" @click="MarkasMasterFolio"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-verified" />
-                        <span class="ml-2"> Mark as Master Folio</span>
-                    </button>
-
-                    <button @click="onTransferFolioItem"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-arrow-right-arrow-left" />
-                        <span class="ml-2">Transfer Items</span>
-                    </button>
-
+                    
                     <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-ban" />
@@ -54,7 +32,7 @@
                         <span class="ml-2">Open Folio</span>
                     </button>
 
-                    <button @click="deleteFilio"
+                    <button @click="onDeleteFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
                         <span class="ml-2">Delete Folio</span>
@@ -66,6 +44,8 @@
         <div>
             <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
                 :model="print_menus" />
+                <Button   @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b ml-2"></Button>
+
         </div>
     </div>
 
@@ -80,17 +60,19 @@ import { inject, ref, useToast, updateDoc,watch } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
-import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
+
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
+import ComAddDepositLedger from "@/views/deposit_ledger/components/ComAddDepositLedger.vue";
  
 const props = defineProps({
     folio:Object,
-    newDoc:Object,
-    accountCodeFilter:Object,
-    accountGroups:Object
 })
+const emit = defineEmits(["onClose"])
+
+const accountGroups = ref(window.setting.account_group.filter(r=>r.show_in_deposit_ledger==1))
+
 
 const selectedFolio = ref(props.folio)
 
@@ -207,18 +189,14 @@ function onAddFolioTransaction(account_code) {
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
-                    new_doc: props.newDoc?props.newDoc:{
-                        transaction_type: "Reservation Folio",
+                    new_doc: {
+                        transaction_type: "Deposit Ledger",
                         transaction_number: selectedFolio.value.name,
-                        reservation: selectedFolio.value.reservation,
-                        reservation_stay: selectedFolio.value.reservation_stay,
                         property: window.property_name,
                         account_group: account_code.name
                     },
                     balance: selectedFolio.value.balance,
-                    business_source: selectedFolio.value.business_source,
-                    account_code_filter:props.accountCodeFilter,
-                    show_room:true
+                    account_code_filter:{is_deposit_ledger_account:1}
             },
             props: {
                 header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
@@ -232,7 +210,7 @@ function onAddFolioTransaction(account_code) {
             },
             onClose: (options) => {
                 const data = options.data;
- 
+  
      
                 if (data) {
                     reloadData()
@@ -253,12 +231,28 @@ function onAddFolioTransaction(account_code) {
 }
 
 function reloadData(){
+    window.socket.emit("DepositLedger",{property:window.property_name})
+    window.socket.emit("ComDepositLedgerDetail",{name:selectedFolio.value.name})
+    
 
-    window.postMessage({action:"load_reservation_folio_list",reservation:selectedFolio.value.reservation},"*")
-
-    window.postMessage({action:"load_folio_transaction",name:selectedFolio.value.name},"*")
 
 }
+ 
+const onRefresh = debouncer(() => {
+    window.socket.emit("ComDepositLedgerDetail",{name:selectedFolio.value.name})
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
+
 function showPrintPreview(data) {
 
     const dialogRef = dialog.open(ComIFrameModal, {
@@ -282,17 +276,13 @@ function showPrintPreview(data) {
 
 function EditFolio() {
  
-    const dialogRef = dialog.open(ComNewReservationStayFolio, {
+    const dialogRef = dialog.open(ComAddDepositLedger, {
 
         data: {
-            property: window.property_name,
             name:selectedFolio.value.name,
-            reservation_stay: selectedFolio.value.reservation_stay,
-            guest: selectedFolio.value.guest,
-            note: selectedFolio.value.note
         },
         props: {
-            header: 'Edit Folio  ' + selectedFolio.value.name,
+            header: 'Edit Deposit Ledger' + selectedFolio.value.name,
             style: {
                 width: '50vw',
             },
@@ -303,103 +293,65 @@ function EditFolio() {
         onClose: (options) => {
             let data = options.data;
             if (data != undefined) {
-          
-                window.postMessage({action:"load_reservation_folio_list"},"*")
-                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
-                window.socket.emit("ReservationDetail", selectedFolio.value.reservation)
-
+                window.socket.emit("ComDepositLedgerDetail",{name:data.name})
+                window.socket.emit("DepositLedger",{property:window.property_name})
             }
         }
     })
 }
 
-function MarkasMasterFolio() {
-    if (selectedFolio.value.status == "Open") {
-        confirm.require({
-            header: 'Mark Folio ' + selectedFolio.value.name + ' as Master Folio',
-            message: 'Do you want to Mark this Folio ' + selectedFolio.value.name + ' as Master Folio?',
-            icon: 'pi pi-info-circle',
-            acceptClass: 'border-none crfm-dialog',
-            rejectClass: 'hidden',
-            acceptLabel: 'Ok',
-            acceptIcon: 'pi pi-check-circle',
-
-            accept: () => {
-                updateDoc('Reservation Folio', selectedFolio.value.name, {
-                    is_master: 1,
-                },"Mark Folio as Master Folio Successfully")
-                    .then((doc) => {
-                        window.postMessage({action:"load_reservation_folio_list",selected_folio_name:selectedFolio.value.name})
-                        window.socket.emit("ComGuestLedger", { property:window.property_name})
-                        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-
-                    })
-            },
-        })
-    }
-    else {
-        gv.toast('warn', 'Folio closed not allow to Mark as Master Folio.')
-    }
-
-}
-
 function openFolio() {
-    alert("pls fix me remove rs.reservationstay")
-    if(rs.reservationStay.reservation_status=='No Show'){
-        gv.toast('warn', 'No Show reservation is not allow to opan folio.')
-    }
-    else{
+    
         confirm.require({
-        header: 'Open Folio ' + selectedFolio.value.name,
-        message: 'Are you sure you want to Open Folio ' + selectedFolio.value.name + '?',
+        header: 'Open Deposit Ledger ' + selectedFolio.value.name,
+        message: 'Are you sure you want to open this deposit ledger ' + selectedFolio.value.name + '?',
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         rejectClass: 'hidden',
         accept: () => {
-            updateDoc('Reservation Folio', selectedFolio.value.name, {
+            updateDoc('Deposit Ledger', selectedFolio.value.name, {
                 status: 'Open',
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.socket.emit("ComDepositLedgerDetail", { name:selectedFolio.value.name})
+                    window.socket.emit("DepositLedger", { property: window.property_name })
                 })
         },
 
     })
-    }
     
 }
 
 
 function closeFolio() {
     confirm.require({
-        header: 'Close Folio ' + selectedFolio.value.name,
-        message: 'Are you sure you want to Close Folio ' + selectedFolio.value.name + '?',
+        header: 'Close Deposit Ledger ' + selectedFolio.value.name,
+        message: 'Are you sure you want to close this deposit ledger ' + selectedFolio.value.name + '?',
         icon: 'pi pi-info-circle',
         acceptClass: 'border-none crfm-dialog',
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         rejectClass: 'hidden',
         accept: () => {
-            updateDoc('Reservation Folio', selectedFolio.value.name, {
+            updateDoc('Deposit Ledger', selectedFolio.value.name, {
                 status: 'Closed',
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    
+                    window.socket.emit("ComDepositLedgerDetail", { name:selectedFolio.value.name})
+                    window.socket.emit("DepositLedger", { property:window.property_name})
                 })
         },
 
     });
 }
 
-function deleteFilio() {
+
+function onDeleteFolio() {
     if (!selectedFolio.value.name) {
         gv.toast('warn', 'Please select a Folio.')
         return
@@ -410,10 +362,10 @@ function deleteFilio() {
             api_url: "utils.delete_doc",
             method: "DELETE",
             confirm_message: "Are you sure you want to delete this folio?",
-            data: { doctype: "Reservation Folio", name: selectedFolio.value.name },
+            data: { doctype: "Deposit Ledger", name: selectedFolio.value.name },
         },
         props: {
-            header: "Delete Folio Number" + " " + selectedFolio.value.name,
+            header: "Delete Deposit Ledger" + " " + selectedFolio.value.name,
             style: {
                 width: '50vw',
             },
@@ -425,9 +377,12 @@ function deleteFilio() {
         onClose: (options) => {
             const data = options.data;
             if (data) {
-                window.postMessage({action:"load_reservation_folio_list"},"*")
-                window.postMessage({action:"load_reservation_stay_folio_list"},"*")
+                window.socket.emit("DepositLedger",{"property":window.property_name})
+              
+             
                 
+                emit("onClose")
+
             }
         }
     });

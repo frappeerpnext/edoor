@@ -1,4 +1,5 @@
 <template>
+  {{ doc }}}
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
     <div class="border-round-xl h-full">
       <div class="grid">
@@ -74,15 +75,16 @@
                 </OverlayPanel>
               </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Discount Type"
-                v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code"
+                v-if="doc?.discount > 0 && doc?.account_code"
                 :value="doc?.discount_type +  '  ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '') "  />
               <!-- <ComStayInfoNoBox label="Discount"
                 v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code && doc?.discount_type=='Percent'"
                 :value="doc?.discount + '%'"  /> -->
               <!-- <ComStayInfoNoBox :label="`Room Discount - ${doc?.discount}%`" v-if="account_code?.allow_discount && doc?.account_code" :value="`${doc?.discount}%`" /> -->
               <ComStayInfoNoBox label="Amount Discount"
-                v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code"
+                v-if="doc?.discount > 0 && doc?.account_code"
                 :value="doc?.discount_amount" isCurrency />
+
               <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency
                 isSlot>
                 <Button v-if="doc?.amount || doc?.total_tax || doc?.discount" @click="togglePostAmount"
@@ -104,10 +106,10 @@
                         </td>
                       </tr>
                       <tr class='border-top-1'
-                        v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code">
-                        <td class='p-2'>- Discount : </td>
+                        v-if="doc?.discount > 0 && doc?.account_code">
+                        <td class='p-2'>Discount : </td>
                         <td class='p-2 text-end'>
-                          <CurrencyFormat :value="doc?.discount_amount ? doc?.discount_amount : '0'" />
+                          - <CurrencyFormat :value="doc?.discount_amount ? doc?.discount_amount : '0'" />
                         </td>
                       </tr>
                       <tr class="border-top-1 border-black-alpha-90" v-if="doc?.total_amount">

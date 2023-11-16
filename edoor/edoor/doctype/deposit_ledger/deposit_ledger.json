@@ -135,7 +135,8 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Guest",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1
   },
   {
    "fetch_from": "guest.customer_name_en",
@@ -176,7 +177,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-14 23:23:48.639508",
+ "modified": "2023-11-16 09:10:24.791102",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Deposit Ledger",

@@ -3,6 +3,7 @@
         <div class="p-3 view-table-iframe-dialog" >
             <div class="grid mb-3 ">
                 <div class="col flex gap-2 ">
+                 
                     <div v-if="show_letter_head">
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
@@ -184,9 +185,10 @@ onMounted(() => {
         }
     })
     show_toolbar.value = dialogRef.value.data.show_toolbar || 1
-    show_letter_head.value = dialogRef.value.data.show_letter_head || false
+  
+    show_letter_head.value = dialogRef.value.data.show_letter_head ==undefined?true:dialogRef.value.data.show_letter_head 
     view.value = dialogRef.value.data.view
-    extra_params.value = dialogRef.value.data.extra_params
+    extra_params.value = dialogRef.value.data.extra_params 
     filter_options.value = dialogRef.value.data.filter_options
     loadIframe()
 });

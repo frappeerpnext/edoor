@@ -1,6 +1,5 @@
 <template>
     <div class="relative">
-
         <AutoComplete   :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
@@ -124,7 +123,7 @@ const search = (event) => {
 }
 const onSelected = (event) => {
     if (event.value.description == addNewKey) {
-        emit("onAddNew")
+        emit("onAddNew",keyword.value || "")
     }
     if (event.value.description == AdvancedSearchKey) {
         selected.value = ''

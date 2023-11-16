@@ -78,7 +78,19 @@ class FolioTransaction(Document):
 
 			elif self.transaction_type == "Reservation":
 				self.property = ref_doc.property
-			
+			elif self.transaction_type == "Deposit Ledger":
+				#set default guest and room to folio transaction when we add deposit ledger transaction
+				#validate if deposit ledger is still open
+				deposit_ledger_doc = frappe.get_doc("Deposit Ledger",self.transaction_number)
+				if deposit_ledger_doc.status =="Closed":
+					frappe.throw("You cannot post transaction to the close deposit ledger")
+
+				
+				self.guest = deposit_ledger_doc.guest
+				self.guest_name =  deposit_ledger_doc.guest_name
+				self.room_id =  deposit_ledger_doc.room_id
+				self.room_number =  deposit_ledger_doc.room_number
+
 
 			if not self.property:
 				if self.reservation:
@@ -313,6 +325,9 @@ class FolioTransaction(Document):
 
 		if self.transaction_type=='Reservation Folio':
 			update_reservation_folio(self.transaction_number, None, False)
+		elif self.transaction_type=='Deposit Ledger':
+			update_deposit_ledger(self.transaction_number, None, False)
+		
 		
 		reservation_names.append(self.reservation)
 		reservation_stay_names.append(self.reservation_stay)
@@ -376,6 +391,7 @@ def update_folio_transaction(self):
 	#4. Tax 2 Account 
 	#5. Tax 3 Account 
 	#6. Bank Fee Account
+ 
 
 	account_doc = frappe.get_doc("Account Code", self.account_code)
 	#discount
@@ -412,11 +428,11 @@ def update_folio_transaction(self):
 		if self.transaction_type=="Reservation Folio": 
 			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
-		
+
 	if self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
-	
-	if self.transaction_type =="Desk Folio":
+	elif self.transaction_type =="Deposit Ledger":
+		
 		update_deposit_ledger(self.transaction_number, None, False)
 
 	#check if it is is folio transfer then queue add record to folio transaction

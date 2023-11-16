@@ -18,7 +18,7 @@
                 </div>
                 <Message severity="warn" v-if="regenerateNewRate">Generate new rate will be affect only active reservation and future stay</Message>
             </div>
-            <div v-if="rate_type_data?.tax_rule">
+            <div class="flex gap-2 flex-col mt-2" v-if="rate_type_data?.tax_rule">
                     <div>
                         <Checkbox v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
                             :falseValue="0" />

@@ -68,6 +68,7 @@ function onOk() {
         })
 
     } else if(data.value.method=="DELETE") {
+        
         deleteApi(data.value.api_url, data.value.data)
         .then((r) => {
             loading.value = false

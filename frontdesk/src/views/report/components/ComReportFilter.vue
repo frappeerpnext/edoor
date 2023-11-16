@@ -104,13 +104,14 @@
                 <label>Order By</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by" placeholder="Order By"
                     :options="['Last Update On', 'Created On', 'Reservation','Reservation Stay','Arrival Date','Departure Date','Room Type','Reservation Status']" 
-                    :default="['Last Update On']" />
+                    :default="['Last Update On']" 
+                    :clear="false"/>
             </div>
             <div class="col" v-if="hasFilter('audit_order')">
                 <label>Order By</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.audit_order" placeholder="Order By"
                     :options="['Last Update On', 'Created On', 'Reference Document','Reference Name','Audit Date','Subject','Description','Created By']" 
-                />
+                    :clear="false"/>
             </div>
             <div class="col" v-if="hasFilter('sort_order')">
                 <label>Sort Order</label><br/>
