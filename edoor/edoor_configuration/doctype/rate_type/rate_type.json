@@ -10,6 +10,7 @@
  "field_order": [
   "rate_type",
   "account_code",
+  "allow_discount",
   "disable_get_rate_room_room_type",
   "note"
  ],
@@ -40,11 +41,18 @@
    "fieldname": "disable_get_rate_room_room_type",
    "fieldtype": "Check",
    "label": "Disable get rate from room type"
+  },
+  {
+   "default": "0",
+   "fetch_from": "account_code.allow_discount",
+   "fieldname": "allow_discount",
+   "fieldtype": "Check",
+   "label": "Allow Discount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-31 09:34:36.288567",
+ "modified": "2023-11-10 16:24:46.326591",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

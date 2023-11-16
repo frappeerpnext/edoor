@@ -1,4 +1,5 @@
 <template>
+ 
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
         <div class="text-center border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">{{event.title}}</div>
         <table class="tip_description_stay_table m-1 pt-3">

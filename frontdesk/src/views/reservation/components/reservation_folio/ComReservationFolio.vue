@@ -1,13 +1,13 @@
 <template>
 <div v-if="rs.reservationFolioList.length>0">
     <div class="flex gap-2 min-h-folio-cus w-full">
-        <div class="col-fixed res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
+        <div class="col-fixed mt-2 res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
             <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
         </div>
-        <div class="col px-0 pt-3 overflow-auto">
+        <div class="col px-0 pt-2 overflow-auto">
             
             <div v-if="selectedFolio">
-                <div class="w-full p-2 border-1 border-round-lg mb-3 flex ">
+                <div class="w-full p-2 border-1 border-round-lg mb-2 flex ">
                     <span v-if="selectedFolio.is_master" class="bg-purple-100 p-2 w-4rem  flex justify-content-center align-items-center border-round-lg"> <ComIcon style="height: 14px;" icon="iconCrown" /> </span>
                     <div class=" ms-2 white-space-nowrap flex justify-content-between flex-column">
                     <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? 'text-green-700' : 'text-orange-700'" class="line-height-2 font-italic  folio-remark font-light ms-2 " >{{ selectedFolio.status }}</span>  </div>
@@ -15,13 +15,9 @@
                     <div class="font-light mt-auto">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</div>
                  
                     </div>
-            <div class="flex gap-2 w-full ms-2 justify-content-between ms-3">
-                <div class="col flex flex-column text-end bg-white box_shadow_for_box border-round-lg line-height-1 font-semibold"> <span  class="font-light w-full">Debit</span> <span> <CurrencyFormat :value="selectedFolio.total_debit" /> </span> </div>
-                <div class="col flex flex-column text-end bg-white box_shadow_for_box border-round-lg line-height-1 font-semibold"> <span  class="font-light">Credit</span> <span> <CurrencyFormat :value="selectedFolio.total_credit" /> </span> </div>
-                <div class="col flex flex-column text-end bg-green-100 box_shadow_for_box border-round-lg line-height-1 font-semibold"> <span  class="font-light">Balance</span> <span> <CurrencyFormat :value="selectedFolio.balance" /> </span> </div>
-            </div>
                 </div>
-                    <ComFolioAction :folio="selectedFolio" />
+                     
+                    <ComFolioAction :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
                     <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                     <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
             </div>
@@ -37,12 +33,15 @@
    
 </template>
 <script setup>
-    import {ref,inject, onMounted,onUnmounted,getApi,provide,useConfirm,createUpdateDoc} from "@/plugin"
+    import {ref,inject, onMounted,onUnmounted,getApi,provide,useConfirm,createUpdateDoc,useToast} from "@/plugin"
     import ComReservationFolioList from "@/views/reservation/components/reservation_folio/ComReservationFolioList.vue"
     import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
     import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
     import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction.vue"
+    const toast = useToast();
     const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
+    const accountGroups = ref(window.setting.account_group)
+
     const rs = inject("$reservation")
     const selectedFolio = ref()
     const loading = ref(false)
@@ -94,6 +93,10 @@
     }
 
     function onCreateMasterFolio(){
+        if (rs.roomList.filter(r => r.is_master == 1 ).length == 0) {
+            toast.add({ severity: 'warn', detail: "Cannot Create Folio With No Reservation Stay" ,  life: 3000 })
+            return
+        }
         loading.value = true
         confirm.require({
             message: 'Are you sure you want to create master folio?',

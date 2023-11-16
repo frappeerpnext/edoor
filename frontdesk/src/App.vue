@@ -36,6 +36,8 @@ import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 import ComBusinessSourceDetail from '@/views/business_source/components/ComBusinessSourceDetail.vue';
 import ComRoomDetail from '@/views/housekeeping/components/ComRoomDetail.vue';
+import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail.vue";
+import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
 
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -99,6 +101,9 @@ const actionClickHandler = async function (e) {
           
             } else if (data[0] == "view_city_ledger_detail") {
                 showCityLedgerDetail(data[1])
+            
+            } else if (data[0] == "view_deposit_ledger_detail") {
+                showDepositLedgerDetail(data[1])
             }
             else if (data[0] == "view_business_source_detail") {
                 showBusinessSourceDetail(data[1])
@@ -120,6 +125,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_sale_detail") {
                 showSaleDetail(data[1])
+            }
+            else if (data[0] == "view_desk_folio_detail") {
+                showDeskFolioDetail(data[1])
             }
             else if (data[0] == "view_room_detail") {
                 showRoomDetail(data[1])
@@ -403,6 +411,24 @@ function showCityLedgerDetail(name) {
     });
 }
 
+function showDepositLedgerDetail(name) {
+
+    const dialogRef = dialog.open(ComDepositLedgerDetail, {
+        data: {
+            name: name
+        },
+        props: {
+            header: 'Deposit Ledger - ' + name,
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            position:"top",
+            closeOnEscape: false
+        },
+    });
+}
+
 function showFolioDetail(name) {
     const dialogRef = dialog.open(ComFolioDetail, {
         data: {
@@ -458,6 +484,7 @@ function showRoomBlockDetail(name) {
        
     });
 }
+
 
 function onViewDailySummary(date,room_type_id, title="") {
  
@@ -523,7 +550,24 @@ function showSaleDetail(name) {
    });
 }
 
-
+function showDeskFolioDetail(name) {
+    const dialogRef = dialog.open(ComDeskFolioDetail, {
+        data: {
+            name: name,
+        },
+        props: {
+            header:"Desk Folio Detail - " + name,
+            style: {
+                width: '60vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
 
 </script>
 <style>

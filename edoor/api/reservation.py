@@ -35,12 +35,11 @@ def get_reservation_folio_list(reservation):
         """.format(reservation)
     
     data = frappe.db.sql(sql,as_dict=1)
-    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note from `tabReservation Folio` where reservation='{}'".format(reservation)
+    sql = "select name, reservation_stay,reservation, posting_date, guest,guest_name, total_credit,total_debit,balance ,status,is_master,note,business_source from `tabReservation Folio` where reservation='{}'".format(reservation)
     folios = frappe.db.sql(sql,as_dict=1)
     
     if folios:
         for d in data:
-            
             d["folios"]=[f.update({"allow_post_to_city_ledger":d["allow_post_to_city_ledger"]}) or f for f in folios if f["reservation_stay"]==d["name"]]
  
    
@@ -324,7 +323,7 @@ def add_new_reservation(doc):
     #prevent code call on_pdate to reservation stay
  
     reservation = frappe.get_doc(doc["reservation"]).insert()
-    frappe.msgprint(str(reservation.group_color))
+    # frappe.msgprint(str(reservation.group_color))
     
     #start insert insert reservation stay
     i = 0
@@ -498,6 +497,18 @@ def stay_add_more_rooms(reservation=None, data=None):
         }
         stay_doc =  frappe.get_doc(stay).insert()
         stay_doc_names.append(stay_doc.name)
+
+
+    #update master
+    if not frappe.db.exists("Reservation Stay", {"reservation": reservation.name,"is_master":1,"is_active_reservation":1}):
+        stay_name   = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}' limit 1".format(reservation.name),as_dict=1)
+        if len(stay_name)>0:
+            stay_doc = frappe.get_doc("Reservation Stay", stay_name[0]["name"])
+            stay_doc.is_master = 1
+            if len(stay_doc.stays)>0:
+                stay_doc.stays[0].is_master = 1
+            stay_doc.save()
+
 
 
     frappe.db.commit()
@@ -749,13 +760,20 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         
 
         #delete auto post transaction
-        folio_numbers = frappe.db.sql("select distinct transaction_number from `tabFolio Transaction` where reservation_stay = '{}' and is_auto_post=1 and transaction_type='Reservation Folio'".format(s),as_dict=1)
-        frappe.db.delete("Folio Transaction", {"reservation_stay":doc.name, "is_auto_post":1})
+        folio_numbers = frappe.db.sql("""select distinct transaction_number from `tabFolio Transaction` where reservation_stay = '{0}' and is_auto_post=1 and transaction_type='Reservation Folio' 
+                                      and 
+                                      reservation_room_rate in (select name from `tabReservation Room Rate` where reservation_stay='{0}')
+                                      """.format(s),as_dict=1)
+        
+        frappe.db.sql("delete from `tabFolio Transaction` where is_auto_post=1 and reservation_room_rate in (select name from `tabReservation Room Rate` where reservation_stay='{}')".format(s))
+
 
         if folio_numbers:
             for f in folio_numbers:           
                 update_reservation_folio(f["transaction_number"], None, run_commit=False)
 
+        #end loop stay
+        
 
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation, reservation_stay=stays)
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
@@ -831,6 +849,7 @@ def check_out(reservation,reservation_stays=None):
     room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_out")
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     comment_doc = []
+    
     for s in reservation_stays:
 
         stay = frappe.get_doc("Reservation Stay", s)
@@ -2274,6 +2293,7 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
     reservation = frappe.get_doc("Reservation",doc["reservation"] if doc["doctype"]=="Reservation Stay" else doc["name"])
     reservation.group_code = doc["group_code"] 
     reservation.group_name = doc["group_name"]
+    reservation.group_color = doc["group_color"]
     if update_to_reservation or  doc["doctype"]=="Reservation":
         reservation.reference_number = doc["reference_number"]
         reservation.internal_reference_number = doc["internal_reference_number"]
@@ -2303,6 +2323,13 @@ def update_reservation_color(data):
         doc.save()
     return frappe.get_doc(data['doctype'], data['name'])
 
+@frappe.whitelist(methods="POST")
+def update_group_color(data):
+    frappe.db.sql("update `tabReservation` set group_color='{}' where name='{}'".format(data['group_color'],data['reservation']))
+    frappe.db.sql("update `tabReservation Stay` set group_color='{}' where reservation='{}'".format(data['group_color'],data['reservation']))
+    frappe.db.sql("update `tabReservation Stay Room` set group_color='{}' where reservation='{}'".format(data['group_color'],data['reservation']))
+    frappe.db.commit()
+    frappe.msgprint("Update Group Color successfully")
 
 @frappe.whitelist(methods="POST")
 def update_reservation_stay_color(data):

@@ -106,6 +106,8 @@ def update_keyword(doc, method=None, *args, **kwargs):
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
+    update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
+    
     if not doc.custom_icon:
         icon_data = frappe.db.sql("select icon from `tabApp Icons` where name='{}'".format(doc.custom_audit_trail_type), as_dict=1)
         icon = 'pi pi-stop'
@@ -127,8 +129,10 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                 file_name = re.search(r'<a href="([^"]+)"', link).group(1) # extract the text between the quotes
                 file_name = file_name.split('/')[-1] # get the last part 
                 file_name = urllib.parse.unquote(file_name)
+                
 
-                file_data = frappe.db.get_list("File", filters={"file_name": file_name})
+                file_data = frappe.db.get_list("File", filters={"file_url":"/files/" + file_name})
+
                 if len(file_data)>0:
                     file_doc = frappe.get_doc("File", file_data[0]["name"])
                     if file_doc.custom_show_in_edoor==0:
@@ -152,11 +156,10 @@ def update_comment_keyword(doc, method=None, *args, **kwargs):
         frappe.db.commit()
 
 def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
-    # submit_update_audit_trail_from_version(doc)
+    
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
-        
-
-        frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
+        submit_update_audit_trail_from_version(doc)
+        # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
 
 def submit_update_audit_trail_from_version(doc):
 
@@ -340,13 +343,13 @@ def update_reservation(name=None,doc=None, run_commit = True):
         doc.total_reservation_stay = data[0][ "total_stay"]
         doc.total_active_reservation_stay = data[0][ "total_active_stay"]
 
-        doc.reserved= data[0]["total_reserved"]
-        doc.total_confirmed= data[0]["total_confirmed"]
-        doc.total_checked_in= data[0]["total_checked_in"]
-        doc.total_checked_out= data[0]["total_checked_out"]
-        doc.total_cancelled= data[0]["total_cancelled"]
-        doc.total_void= data[0]["total_void"]
-        doc.total_no_show= data[0]["total_no_show"]
+        doc.reserved= data[0]["total_reserved"] or 0
+        doc.total_confirmed= data[0]["total_confirmed"] or 0
+        doc.total_checked_in= data[0]["total_checked_in"] or 0
+        doc.total_checked_out= data[0]["total_checked_out"] or 0
+        doc.total_cancelled= data[0]["total_cancelled"] or 0
+        doc.total_void= data[0]["total_void"] or 0
+        doc.total_no_show= data[0]["total_no_show"] or 0
 
 
         #update room info
@@ -376,14 +379,14 @@ def update_reservation(name=None,doc=None, run_commit = True):
         doc.rooms_data = json.dumps(room_stay_json_list)
     
         #update reservation status
-    
-        if doc.total_confirmed>0:
+      
+        if (doc.total_confirmed or 0) >0:
             doc.reservation_status = 'Confirmed'
-        elif doc.reserved>0:
+        elif (doc.reserved or 0)>0:
             doc.reservation_status = 'Reserved'
-        elif doc.total_checked_in>0 and  doc.reserved==0:
+        elif (doc.total_checked_in or 0)>0 and  (doc.reserved or 0)==0:
             doc.reservation_status = 'In-house'
-        elif  doc.reserved == 0 and doc.total_checked_in==0 and doc.total_checked_out > 0:
+        elif  (doc.reserved or 0)== 0 and (doc.total_checked_in or 0)==0 and (doc.total_checked_out or 0) > 0:
             doc.reservation_status = 'Checked Out'
         elif (doc.total_no_show+ doc.total_cancelled + doc.total_void > 0 ) and doc.total_active_reservation_stay == 0:
             if doc.total_no_show > 0:
@@ -428,6 +431,33 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
         frappe.db.commit()
         
     return doc
+
+@frappe.whitelist()
+def update_deposit_ledger(name=None, doc=None,run_commit=True):
+    if name:
+        doc = frappe.get_doc("Deposit Ledger",name)
+    sql_folio = """
+        select 
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                transaction_type = 'Deposit Ledger' and 
+                transaction_number = '{}'
+        """.format(
+                doc.name
+            )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+    doc.total_debit =  folio_data[0]["debit"]
+    doc.total_credit=folio_data[0]["credit"]
+    doc.save()
+    if run_commit:
+        frappe.db.commit()
+        
+    return doc
+
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
@@ -654,7 +684,8 @@ def add_room_charge_to_folio(folio,rate):
         "tax_3_rate":rate.tax_3_rate,
         "rate_include_tax":rate.rate_include_tax,
         "is_auto_post":1,
-        "valiate_input_amount": False
+        "valiate_input_amount": False,
+        "reservation_room_rate": rate.name
     }).insert()
 
 
@@ -835,6 +866,7 @@ def validate_role(role_name, message = None,is_backdate_transaction =True):
     
 def check_user_permission(role_field_name,message = None):
     role = frappe.db.get_single_value("eDoor Setting",role_field_name)
+    
     if role:
         if not role in frappe.get_roles(frappe.session.user):
             frappe.throw(message or "You don't have permission to perform this action")

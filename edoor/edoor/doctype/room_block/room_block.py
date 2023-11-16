@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 from datetime import datetime
-from edoor.api.utils import get_date_range
+from edoor.api.utils import check_user_permission, get_date_range
 import frappe
 from frappe.model.document import Document
 from frappe.utils.data import add_to_date, getdate, pretty_date,date_diff
@@ -11,6 +11,7 @@ from edoor.api.frontdesk import get_working_day
 class RoomBlock(Document):
 	def validate(self):
 		
+
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
 		
@@ -34,7 +35,20 @@ class RoomBlock(Document):
 	def on_submit(self):
 		generate_block_date(self)
 		
-	def on_update_after_submit(self):
+	def before_update_after_submit(self):
+		self.total_night_count = date_diff(self.end_date,self.start_date)
+		if frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction") == 0:
+			
+			old_start_date = frappe.db.get_value("Room Block", self.name, "start_date")
+			if getdate(old_start_date) != getdate(self.start_date):
+				working_date = get_working_day(self.property)
+				if getdate(self.start_date) <= getdate(working_date["date_working_day"]):
+					frappe.throw("Cannot change room block to the past date")
+		else: 
+			check_user_permission("role_for_back_date_transaction")
+
+	def on_update_after_submit(self): 
+		
 		if self.is_unblock ==1:
 			if not self.unblock_housekeeping_status:
 				frappe.throw("Please select current room housekeeping status.")

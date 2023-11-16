@@ -54,7 +54,7 @@
                             </span>
                         </template>
                     </Column>
-                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Charge">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate">
                         <template #body="{ data }">
                             <span class="text-end">
                             <CurrencyFormat :value="data.total_rate"/>

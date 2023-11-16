@@ -247,6 +247,7 @@ function onUndoCheckIn() {
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
                 window.socket.emit("Housekeeping", {property:window.property_name})
+                window.socket.emit("FolioTransactionList", window.property_name)
 
                 setTimeout(() => {
                     emit('onRefresh')
@@ -293,6 +294,8 @@ function OnUndoCheckOut() {
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("FolioTransactionList", window.property_name)
+
                 rs.loading = false
 
                 setTimeout(() => {
@@ -426,6 +429,8 @@ function onReservedRoom() {
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("FolioTransactionList", window.property_name)
+
                 
 
             })  
@@ -457,6 +462,8 @@ function onUnReservedRoom() {
                 window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
+                window.socket.emit("FolioTransactionList", window.property_name)
+
             
             })  
         },
@@ -542,7 +549,7 @@ function onUnmarkasPaidbyMasterRoom() {
     }
 
 }
-function onDisallowPosttoCityLedger(){
+function onDisallowPosttoCityLedger(){ 
     if(rs.reservationStay.is_active_reservation){
         confirm.require({
             message: 'Are you sure you want to Disallow Post to City Ledger?',
@@ -555,14 +562,11 @@ function onDisallowPosttoCityLedger(){
             accept: () => {
                 updateDoc('Reservation Stay', rs.reservationStay.name, {
                     allow_post_to_city_ledger: 0,
-                })
+                    },
+                    "Disallow Post to City Ledger Successfully"
+                )
                     .then((doc) => {
-                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
-                        toast.add({
-                            severity: 'success', summary: 'Disallow Post to City Ledger',
-                            detail: 'Disallow Post to City Ledger Successfully', life: 3000
-                        });
-
+                        rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;  
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     })
@@ -589,14 +593,11 @@ function onAllowPosttoCityLedger(){
         accept: () => {
             updateDoc('Reservation Stay', rs.reservationStay.name, {
                 allow_post_to_city_ledger: 1,
-            })
+                },
+                "Allow Post to City Ledger Successfully"
+            )
                 .then((doc) => {
-                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
-                    toast.add({
-                        severity: 'success', summary: 'Allow Post to City Ledger',
-                        detail: 'Allow Post to City Ledger Successfully', life: 3000
-                    });
-
+                    rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger; 
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 })

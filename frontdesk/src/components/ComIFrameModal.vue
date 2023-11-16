@@ -1,6 +1,6 @@
 <template>
     <div class="wrap-dialog iframe-modal" :class="{ 'full-height': dialogRef.data.fullheight }">
-        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
+        <div class="p-3 view-table-iframe-dialog" >
             <div class="grid mb-3 ">
                 <div class="col flex gap-2 ">
                     <div v-if="show_letter_head">
@@ -122,6 +122,7 @@ function onIframeLoaded() {
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 }
 function loadIframe() {
+   
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 

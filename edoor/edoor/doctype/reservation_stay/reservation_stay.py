@@ -73,10 +73,10 @@ class ReservationStay(Document):
 		rooms_data = []
 		self.pax = self.adult + self.child 	
 		if self.stays:
-			
 			self.rooms = ','.join([(d.room_number or '') for d in self.stays if (d.room_number or '') !='' ])
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
+		
 
 				
 		for d in self.stays:
@@ -85,6 +85,8 @@ class ReservationStay(Document):
 			d.reservation_status = self.reservation_status
 			d.is_active_reservation = self.is_active_reservation
 			d.allow_user_to_edit_information = self.allow_user_to_edit_information
+
+			d.additional_guest_name= ' / '.join(set([d.guest_name for d in self.additional_guests]))
 
 			if self.is_reserved_room:
 			 
@@ -195,6 +197,7 @@ class ReservationStay(Document):
 			page_length=100)
 			
 			frappe.db.sql("update `tabReservation Stay Room` set is_master = 0 where is_master = 1 and parent in('{}')".format("','".join([str(x.name) for x in reservation_stays])))
+		
 		data_for_udpate = {
 			"rooms":self.rooms,
 			"note":self.note,
@@ -406,7 +409,6 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	rate_type = stay_doc.rate_type
 	is_manual_rate = 0
 	#3 if user resize from the end forward
-	
 	if add_to_date(getdate(old_stay_date[0]["end_date"]),days=1) <getdate(data["end_date"]):	
 		
 		date_range = get_date_range(add_to_date(getdate(old_stay_date[0]["end_date"]), days=1), getdate( data["end_date"]))
@@ -417,7 +419,6 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
 	else:# if user resize from arrival date back ward
-		
 		date_range = get_date_range( getdate( data["start_date"]),getdate(old_stay_date[0]["start_date"]))
 		if data["generate_rate_type"] =="stay_rate":
 			room_rate_doc = frappe.db.sql("select rate_type, input_rate,is_manual_rate from `tabReservation Room Rate` where stay_room_id ='{}' and date='{}'".format(data["name"],old_stay_date[0]["start_date"]),as_dict=1)
@@ -427,6 +428,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
 
 	for d in date_range:
+ 
 		frappe.get_doc({
 				"doctype":"Reservation Room Rate",
 				"reservation":stay_doc.reservation,
@@ -438,7 +440,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"tax_3_rate":stay_doc.tax_3_rate,
 				"stay_room_id":data["name"],
 				"room_type_id":data["room_type_id"],
-				"room_id": data["room_id"]  if hasattr(data,"room_id") and data["room_id"]  else None,
+				"room_id": data["room_id"]  if "room_id" in data and data["room_id"]  else None,
 				"date":d,
 				"input_rate": room_rate,
 				"rate_type":rate_type,

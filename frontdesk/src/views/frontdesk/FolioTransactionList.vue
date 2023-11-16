@@ -43,11 +43,11 @@
             :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
             :bodyClass="c.header_class || ''" :frozen="c.frozen">
             <template #body="slotProps">
-              <Button v-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
-                @click="onOpenLink(c, slotProps.data)" link> 
-                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                <span v-if="c.fieldname">{{ slotProps.data[c.fieldname] }}</span>
+              <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                  @click="onOpenLink(c, slotProps.data)" link>
+                  {{ slotProps.data[c.fieldname] }}
+                  <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                  <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
               </Button>
               <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
@@ -75,10 +75,10 @@
               <span v-else-if="c.fieldtype=='reservation_status'" class="px-2 rounded-lg text-white p-1px border-round-3xl" :style="`background: ${slotProps.data.reservation_status_color}`">{{ slotProps.data[c.fieldname] }}</span>
               <span v-else-if="c.fieldtype=='username'" >{{ slotProps.data[c.fieldname].split("@")[0] }}</span>
               <span v-else>
-                {{ slotProps.data[c.fieldname] }}
-                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-              </span>
+                    {{ slotProps.data[c.fieldname] }}
+                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                </span>
             </template>
           </Column>
         </DataTable>
@@ -160,7 +160,7 @@ const columns = ref([
   { fieldname: 'reservation_stay', label: 'Stay #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_stay_detail", default: true },
   { fieldname: 'transaction_number', label: 'Folio #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_detail", default: true },
   { fieldname: 'room_number', label: 'Rooms', header_class: "text-center", default: true },
-  { fieldname: 'guest_name', label: 'Guest Name', header_class: "text-left", default: true },
+  { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
   { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
   { fieldname: 'amount', label: 'Amount', header_class: "text-right", fieldtype: "Currency", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
   { fieldname: 'discount_amount', label: 'Total Discount', header_class: "text-right",fieldtype:"Currency", default: true },
@@ -368,7 +368,7 @@ onMounted(() => {
 
   })
 
-  window.socket.on("RefreshFolioTransaction", (arg) => {
+  window.socket.on("FolioTransactionList", (arg) => {
     if (arg == property.name) {
       setTimeout(() => {
         loadData(false)
@@ -397,7 +397,7 @@ const onCloseColumn = () => {
 }
 
 onUnmounted(() => {
-  window.socket.off("RefreshFolioTransaction")
+  window.socket.off("FolioTransactionList")
 })
 
 </script>

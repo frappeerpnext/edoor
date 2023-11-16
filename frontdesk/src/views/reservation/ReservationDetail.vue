@@ -81,7 +81,7 @@
                     <div>
                         <div class="border-round-xl">
                             <ComCommentAndNotice v-if="!rs.loading && rs.attacheds" :docnames="rs.attacheds" :reference_doctypes="['Reservation','Reservation Stay','Reservation Room Rate','Folio Transaction','Reservation Folio']" doctype="Reservation"
-                                :docname="rs.reservation.name" />
+                                :docname="rs?.reservation?.name" />   
                         </div>
                     </div>
                 </TabPanel>
@@ -92,7 +92,7 @@
                     <ComReservationRoomRate />
                 </TabPanel>
 
-                <TabPanel>
+                <TabPanel v-if="can_view_rate">
                     <template #header>
                         <span class="me-2">Folio</span>
                         <Badge :value="rs.totalFolio"></Badge>
@@ -295,6 +295,8 @@ function onCheckIn(){
                     window.socket.emit("ReservationList", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        	        window.socket.emit("FolioTransactionList", window.property_name)
+
                     
                 })
                     .catch((err) => {

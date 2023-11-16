@@ -2,11 +2,9 @@
     <ComReservationStayPanel title="Stay Information">
         <template #btn>
             <div class="flex items-center">
-                <span>{{ stay?.reservationStay?.reservation_color_code || "Change Reservatin Color Code" }}</span> 
+                <span>{{ stay?.reservationStay?.reservation_color_code || "Select Reservation Color Code" }}</span> 
                 <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>
                 <span>
-                <!-- <AutoComplete v-model="selectedCountry" optionLabel="name" :suggestions="filteredCountries" @complete="search" /> -->
-
                 </span>
             </div>
         </template>
@@ -37,11 +35,14 @@
                 </div>
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"   titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
-                        <button class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
+                        <div class="flex align-items-center">
+                        <div v-tippy="'Group Color'" class=" px-3 h-1rem py-2 me-3 border-round-lg inline-block group_color_reservation" :style="{background:stay.reservationStay?.group_color}">
+                        </div>
+                        <button v-tippy="'Group Name & Group Code'" class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
                             <i class="pi pi-pencil"></i>
                             ...
                         </button>
-                        <div v-else class="flex gap-2">
+                        <div v-else class="flex gap-2 w-full">
                             <a v-tippy="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left overflow-hidden" >{{ stay.reservationStay?.group_name }}</a>
                             <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
@@ -56,6 +57,7 @@
                                 ...  
                             </button>
                         </div>
+                    </div>
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
@@ -159,11 +161,8 @@ function onChangeDate($event){
         gv.toast("warn","This reservation stay has multiple rooms. Please change in room stay.")
         return
     }
-
     toggle($event, 'change_date')
-
 }
-
 function onCloseRef(result){
     if(result){
         stay.reservationStay = result

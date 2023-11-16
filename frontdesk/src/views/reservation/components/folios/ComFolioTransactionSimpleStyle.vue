@@ -1,5 +1,6 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
+ 
         <DataTable v-model:selection="selectedfolioTransactions"
             @row-dblclick="onViewFolioDetail"
             paginator  
@@ -69,7 +70,15 @@
                     </div>
                 </template>
             </Column>
-            <Column field="owner" header="Owner"></Column>
+            <Column header="Owner">
+                <template #body="slotProps">
+                    <div v-if="slotProps?.data && slotProps?.data?.owner">
+                        <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
+                            <span>{{ item }}</span>
+                        </template>
+                    </div>  
+                </template>
+                    </Column>
             <Column field="creation" header="Created">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.creation">
@@ -173,18 +182,24 @@ import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInfo
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
 
 import Enumerable from 'linq'
-const props = defineProps({folio:Object})
+const props = defineProps({
+    folio:Object, 
+    doctype:{
+        type:String,
+        default:"Reservation Folio"
+    }
+})
+ 
 const selectedFolio = ref(props.folio)
 const gv = inject('$gv');
 const can_view_rate=window.can_view_rate;
 const folioTransactions = ref([])
 const selectedfolioTransactions = ref([])
 const folio_summary = ref()
-
 const dialog = useDialog();
 const show = ref()
  
-
+const setting = window.setting
 
 watch(() => props.folio, (newValue, oldValue) => {
     selectedFolio.value = newValue
@@ -198,7 +213,7 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction(){
-
+    
 				getDocList("Folio Transaction", {
 					fields: [
 						"name",
@@ -227,7 +242,7 @@ function LoadFolioTransaction(){
 						"is_auto_post",
 						"allow_enter_quantity"
 					],
-					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", "Reservation Folio"]],
+					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", props.doctype]],
 					limit: 1000
 				}).then((result) => {
                    

@@ -1,12 +1,14 @@
 <template>
-    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-3">
+    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div>
+  
             <template
-                v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 1 && r.show_in_folio_tab == 1)"
+                v-for="(d, index) in accountGroups.filter(r => r.show_in_shortcut_menu == 1)"
                 :key="index">
                 <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
-                    v-if="(d.is_city_ledger_account || 0) == 0 || ((d.is_city_ledger_account || 0) == 1 && (folio.allow_post_to_city_ledger || 0) == 1)">Post
-                    {{ d.account_name }}</Button>
+                    v-if="showAccountGroup(d)">
+                    Post {{ d.account_name }}
+                </Button>
             </template>
 
             <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
@@ -14,10 +16,10 @@
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
                     <template
-                        v-for="(d, index) in setting?.account_group.filter(r => r.show_in_shortcut_menu == 0 && r.show_in_folio_tab == 1)"
+                        v-for="(d, index) in accountGroups.filter(r => r.show_in_shortcut_menu == 0)"
                         :key="index">
                         <button
-                            v-if="d.is_city_ledger_account == 0 || (d.is_city_ledger_account == 1 && rs.reservationStay.allow_post_to_city_ledger == 1)"
+                        v-if="showAccountGroup(d)"
                             @click="onAddFolioTransaction(d)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i :class="d.icon" />
@@ -75,7 +77,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch,onMounted } from '@/plugin';
+import { inject, ref, useToast, updateDoc,watch } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -85,7 +87,10 @@ import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
  
 const props = defineProps({
-    folio:Object
+    folio:Object,
+    newDoc:Object,
+    accountCodeFilter:Object,
+    accountGroups:Object
 })
 
 const selectedFolio = ref(props.folio)
@@ -100,7 +105,14 @@ const setting =window.setting
 const folio_menu = ref();
 
 
- 
+function showAccountGroup(account_code){
+    if (selectedFolio.value.allow_post_to_city_ledger==0){
+        if((account_code.is_city_ledger_account || 0) == 1){
+            return false
+        }
+    }
+    return true
+}
 //trach user select new folio and reload folio information
 
 watch(() => props.folio, (newValue, oldValue) => {
@@ -181,21 +193,32 @@ print_menus.value.push({
 })
 
 function onAddFolioTransaction(account_code) {
+    if(props.newDoc){
+        props.newDoc.account_group =account_code.name
+    }
+    if (account_code.is_city_ledger_account==1){
+        if(selectedFolio.value.allow_post_to_city_ledger==0){
+            toast.add({ severity: 'warn', summary: "", detail: "This reservation is not allow to post charge to city ledger.", life: 5000 })
+            return
+        }
+    }
+   
+ 
      
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
-                new_doc: {
-                    transaction_type: "Reservation Folio",
-                    transaction_number: selectedFolio.value.name,
-                    reservation: selectedFolio.value.reservation,
-                    reservation_stay: selectedFolio.value.reservation_stay,
-                    property: window.property_name,
-                    account_group: account_code.name
-                    
-                },
-                balance: selectedFolio.value.balance,
-                business_source: selectedFolio.value.business_source
+                    new_doc: props.newDoc?props.newDoc:{
+                        transaction_type: "Reservation Folio",
+                        transaction_number: selectedFolio.value.name,
+                        reservation: selectedFolio.value.reservation,
+                        reservation_stay: selectedFolio.value.reservation_stay,
+                        property: window.property_name,
+                        account_group: account_code.name
+                    },
+                    balance: selectedFolio.value.balance,
+                    business_source: selectedFolio.value.business_source,
+                    account_code_filter:props.accountCodeFilter
             },
             props: {
                 header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
@@ -321,6 +344,7 @@ function MarkasMasterFolio() {
 }
 
 function openFolio() {
+    alert("pls fix me remove rs.reservationstay")
     if(rs.reservationStay.reservation_status=='No Show'){
         gv.toast('warn', 'No Show reservation is not allow to opan folio.')
     }

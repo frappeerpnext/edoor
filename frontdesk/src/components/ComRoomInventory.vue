@@ -105,7 +105,7 @@ const calendarOptions = reactive({
     resources: resources,
     events: events,
     eventAllow: function (dropInfo, draggedEvent) {
-        return draggedEvent._def.extendedProps.can_resize == 1
+        return false
     },
     selectable: true,
     editable: true,
@@ -137,21 +137,11 @@ const calendarOptions = reactive({
                 info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
             }
         }
-        info.el.addEventListener('click', function () {
-            window.postMessage({ "action": "view_product_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
-        })
+        
         info.el.style.cursor="pointer"
 
     },
  
- 
-    eventClick: ((info) => {
- 
-
-        const data = info.event._def.extendedProps;
-        info.event._def.date = info.event.start;
-        window.postMessage(info.event._def, '*')
-    }),
 
     eventMouseEnter: (($event)=>{
        

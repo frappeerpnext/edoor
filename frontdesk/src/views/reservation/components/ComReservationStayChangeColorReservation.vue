@@ -1,7 +1,7 @@
 <template>
     <ComOverlayPanelContent title="Change Color" :loading="loading" @onSave="onSave" @onCancel="emit('onClose')">
     <div class="card flex justify-content-center">
-        <Dropdown  v-model="reservation_color_code" :options="items" optionLabel="name" showClear placeholder="Select a City" class="w-full md:w-18rem" >
+        <Dropdown  v-model="reservation_color_code" :options="items" optionLabel="name" showClear placeholder="Select Reservation Color Code" class="w-full md:w-21rem" >
             <template #value="slotProps">
         <div v-if="slotProps.value" class="flex align-items-center">
             <div :style="'height: 20px;width: 20px;border-radius: 10px;margin-right: 8px;background:' + slotProps.value.color"></div>
@@ -41,43 +41,51 @@ const reservation_color_code = ref()
 
 function onSave() {
     if (!rs.reservationStay.is_active_reservation) {
-        gv.toast('warn', 'Cannot change color on unactive reservation.')
+        gv.toast('warn', 'Cannot change color on an inactive reservation.')
         return
     }
 
-    if (!reservation_color_code.value || !reservation_color_code.value.color) {
-        gv.toast('warn', 'Please select status color code')
-        return
-    }
-
-    loading.value = true
+    loading.value = true;
 
     const stay = {
         name: rs.reservationStay.name,
-        reservation_color: reservation_color_code.value.color || '',
-        reservation_color_code: reservation_color_code.value.name || '',
-        apply_to_all_reservation: checked.value !== undefined ? checked.value : null 
-    }
+        reservation_color: reservation_color_code.value ? reservation_color_code.value.color : '',
+        reservation_color_code: reservation_color_code.value ? reservation_color_code.value.name : '',
+        apply_to_all_reservation: checked.value !== undefined ? checked.value : null,
+    };
 
-    postApi('reservation.update_reservation_stay_color', { data: stay }).then((r) => {
-        rs.reservationStay = r.message
-        loading.value = false
-        window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
-        window.socket.emit("Frontdesk", window.property_name)
-        emit('onClose')
-    }).catch(() => {
-        loading.value = false
-    })
+    postApi('reservation.update_reservation_stay_color', { data: stay })
+        .then((r) => {
+            rs.reservationStay = r.message;
+            loading.value = false;
+            window.socket.emit('ReservationStayDetail', { reservation_stay: window.reservation_stay });
+            window.socket.emit('Frontdesk', window.property_name);
+            emit('onClose');
+        })
+        .catch(() => {
+            loading.value = false;
+            gv.toast('error', 'Failed to update reservation color.');
+        });
 }
 
 
-onMounted(()=>{
-    reservation_color_code.value = {name: rs.reservationStay.reservation_color_code, color: rs.reservationStay.reservation_color}
+
+onMounted(() => {
     getDocList("Reservation Color Code", {
-        fields: ["name","color"],
-        limit:1000
-    }).then(data=>{
-        items.value = data
-    })
-})
+        fields: ["name", "color"],
+        limit: 1000
+    }).then(data => {
+        items.value = data;
+        // Check if reservation color code is present; if not, set the value to null
+        if (!rs.reservationStay.reservation_color_code) {
+            reservation_color_code.value = null;
+        } else {
+            reservation_color_code.value = {
+                name: rs.reservationStay.reservation_color_code,
+                color: rs.reservationStay.reservation_color
+            };
+        }
+    });
+});
+
 </script>

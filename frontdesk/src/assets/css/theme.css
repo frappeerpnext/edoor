@@ -7352,3 +7352,9 @@ span.p-column-title {
 .p-dialog-mask .p-component-overlay .p-component-overlay-enter{
 z-index: 900 !important;
 }
+/*=============*/
+.p-multiselect-label-container {
+  overflow: hidden;
+  flex: 1 1 auto;
+  cursor: pointer;
+}

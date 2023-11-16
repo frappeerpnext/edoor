@@ -11,8 +11,10 @@
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
             <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
-            <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar" panelClass="no-btn-clear"
+                <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar" panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+
+              
         </template>
         <template #end>
             <div class="flex gap-2 justify-content-end">
@@ -49,14 +51,14 @@
                                 class="btn-sec-edoor">
                             </ComChartStatus>
                             <tippy
-                                :content="'No-Show Whit Reserved Room ' + data.today_no_show + ' & No-Show No Reserved Room ' + data.total_no_show">
+                                :content="'Today No-Show ' + data.today_no_show + ' & No-Show With Reserved Room  ' + data.total_no_show">
                                 <ComChartStatus @onClick="onViewNoShowReservation"
                                     :value="!gv.loading ? (data?.today_no_show + ' / ' + data?.total_no_show) : ''"
                                     title="No-Show" :style="{ backgroundColor: statusColor.no_show }">
                                 </ComChartStatus>
                             </tippy>
                             <tippy
-                                :content="'<span> Today Cancell ' + data.today_cancelled + ' & Cancelled ' + data.total_cancelled + '</span>'">
+                                :content="'<span> Today Cancelled ' + data.today_cancelled + ' & Cancelled ' + data.total_cancelled + '</span>'">
                                 <ComChartStatus @onClick="onViewCancelReservation"
                                     :value="!gv.loading ? (data.today_cancelled + ' / ' + data.total_cancelled) : ''"
                                     title="Cancelled" :style="{ backgroundColor: statusColor.cancelled }">
@@ -67,11 +69,6 @@
                                 :value="!gv.loading ? (data.today_void + ' / ' + data.total_void) : ''" title="Void"
                                 :style="{ backgroundColor: statusColor.void }">
                             </ComChartStatus>
-                            <!--<div class="grid mt-3 text-center">
-                                <ComShowCancelOcc @onClick="onViewCancelReservation" title="Cancelled" :value="data.total_cancelled"></ComShowCancelOcc>
-                                <ComShowCancelOcc  @onClick="onViewNoShowReservation" title="No-show" :value="data.total_no_show"></ComShowCancelOcc>
-                                <ComShowCancelOcc  @onClick="onViewVoidReservation" title="Void" :value="data.total_void"></ComShowCancelOcc>
-                            </div>-->
                         </div>
                     </div>
                 </ComPanel>
@@ -197,7 +194,7 @@ import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 
-
+ 
 const toast = useToast();
 const moment = inject("$moment")
 const gv = inject("$gv")

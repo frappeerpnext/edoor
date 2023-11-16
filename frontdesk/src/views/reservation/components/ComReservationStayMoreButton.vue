@@ -46,21 +46,21 @@
                         <ComIcon icon="checkoutBlack" class="me-2" style="height: 12px;" />
                         Check Out
                     </button>
-                    <div>
-                        <button v-if="props.data.paid_by_master_room && !props.data.is_master"
+                    <div v-if="props.data.is_active_reservation" >
+                        <button v-if="props.data.paid_by_master_room && !props.data.is_master "
                             @click="onUnmarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
                             Unmark as Paid by Master Room
                         </button>
-                        <button v-else-if="!props.data.paid_by_master_room && !props.data.is_master"
+                        <button v-else-if="!props.data.paid_by_master_room && !props.data.is_master "
                             @click="onMarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
                             Mark as Paid by Master Room
                         </button>
                     </div>
-                    <div>
+                    <div v-if="props.data.is_active_reservation">
                         <button v-if="!props.data.allow_post_to_city_ledger" @click="onAllowPosttoCityLedger()"
                             class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
                             <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
@@ -149,6 +149,8 @@ function onCheckIn() {
                         window.socket.emit("Reports", window.property_name)
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", window.reservation)
+                        window.socket.emit("FolioTransactionList", window.property_name)
+
                     })
                     .catch((err) => {
                         rs.loading = false
@@ -183,6 +185,8 @@ const onCheckOut = () => {
                 window.socket.emit("Reports", window.property_name)
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", window.reservation)
+                window.socket.emit("FolioTransactionList", window.property_name)
+
                 // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
                 // window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
                 // window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
@@ -310,7 +314,7 @@ function onAllowPosttoCityLedger() {
             db.updateDoc('Reservation Stay', props.data.name, {
                 allow_post_to_city_ledger: 1,
             })
-                .then((doc) => {
+                .then((doc) => { 
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
@@ -336,7 +340,7 @@ function onUnallowPosttoCityLedger() {
             db.updateDoc('Reservation Stay', props.data.name, {
                 allow_post_to_city_ledger: 0,
             })
-                .then((doc) => {
+                .then((doc) => { 
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;

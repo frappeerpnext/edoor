@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
                 <div class="flex gap-2">
@@ -32,13 +31,14 @@
                         <label for="account_code">Account Code</label>
                         <ComAutoComplete :disabled="!canEdit" v-model="doc.account_code" placeholder="Select Account Code"
                             doctype="Account Code" class="auto__Com_Cus w-full" @onSelected="onSelectAccountCode"
-                            :filters="{ 'account_group': doc.account_group }" />
+                            :filters="accountCodeFilter" />
 
                     </div>
                     <div class="col-6">
                         <label for="input_amount">Amount</label>
                         <ComInputCurrency classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount"
                             id="input_amount" />
+                            
                     </div>
 
                     <div v-if="doc.account_name" class="col-12 ">
@@ -46,35 +46,21 @@
                             <span class="text-500 font-italic">You Selected Account Code</span> {{ doc.account_name }}
                         </div>
                     </div>
-                    <div class="col-12 -mb-2 ">
-                        <hr>
-                    </div>
-                    <!-- Guest Detail -->
-                    <div class="col-12" v-if="!doc.reservation">
-                        <div class="grid p-0">
-                            <div class="col-6">
-                                <label for="room">Return Guest</label>
-                                <ComAutoComplete :disabled="!canEdit" v-model="doc.guest" placeholder="Return Guest" doctype="Customer"
-                                    class="auto__Com_Cus w-full" @onSelected="onSelectedCustomer" />
-                            </div>
-                            <div class="col-6">
-                                <label for="room">Guest Name</label>
-                                <InputText class="w-full" type="text" placeholder="Guest Name" v-model="data.guest_info.customer_name_en"/>
-                            </div>
-                            <div class="col-6">
-                                <label for="room">Phone Number</label>
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number" v-model="data.guest_info.phone_number" :maxlength="50"/>
-                            </div>
-                            <div class="col-6">
-                                <label for="room">Email Address</label>
-                                <InputText class="p-inputtext-sm w-full" type="text" placeholder="Email Address" v-model="data.guest_info.email_address" :maxlength="50"/>
-                            </div>
-                        </div>
-                        <div v-if="doc.account_name" class="col-12 -mb-2">
+                    <div class="col-12" v-if="account_code.show_payment_by==1">
+                        <div class="col-12 -mb-2 px-0">
                             <hr>
                         </div>
-                    </div>
-                    <!-- ------ -->
+                        <div class="grid">
+                            <div class="col-6">
+                                <label>Payment By</label>
+                                <InputText class="w-full" type="text" v-model="doc.payment_by" placeholder="Name"/>
+                            </div>
+                            <div class="col-6">
+                                <label>Phone Number</label>
+                                <InputText  class="w-full" type="text" v-model="doc.payment_by_phone_number" placeholder="phone number"/>
+                            </div>
+                        </div>
+                    </div>  
                     <!-- Quantity -->
                     <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
                         <label for="quantity">Quantity</label>
@@ -118,7 +104,7 @@
                                 <label>City Ledger Name</label>
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.city_ledger"
                                     placeholder="Select City Ledger Name" doctype="City Ledger" class="auto__Com_Cus w-full"
-                                    @onSelected="onSelectCityLedger" :filters="{ property: doc.property }" />
+                                    @onSelected="onSelectCityLedger" :filters="{ property: doc.property }" :suggestions="doc.selected_city_ledger_account"/>
                             </div>
                             <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
@@ -139,13 +125,13 @@
                             </div>
                             <div class="flex gap-3 p-2">
                                 <div>
-                                    <Checkbox inputId="on-filter-folio-res-stay" @input="onFilterFolioNumber"
+                                    <Checkbox inputId="on-filter-folio-res-stay" @input="onFilterFolioNumber" :disabled="disFirstbox"
                                         v-model="doc.select_folio_in_reservation_stay" :binary="true" :trueValue="1"
                                         :falseValue="0" />
                                     <label for="on-filter-folio-res-stay">by stay</label>
                                 </div>
                                 <div>
-                                    <Checkbox inputId="on-filter-folio-res" @input="onFilterFolioNumberRes"
+                                    <Checkbox inputId="on-filter-folio-res" @input="onFilterFolioNumberRes" :disabled="disSecondbox"
                                         v-model="doc.select_folio_in_reservation" :binary="true" :trueValue="1"
                                         :falseValue="0" />
                                     <label for="on-filter-folio-res">by reservation</label>
@@ -270,9 +256,9 @@
                             </div>
                             <div class="col-6">
                                 <label for="credit_expired_date">Credit Expired Date</label>
-                                {{ doc.credit_expired_date }}
+                              
                                 <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy"
-                                    showIcon showButtonBar selectOtherMonths />
+                                    showIcon showButtonBar  />
                             </div>
                         </div>
                     </div>
@@ -368,29 +354,22 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
+const extra_account_code_filter = ref({}) 
+const doc = ref({}) 
+const disFirstbox = ref()
+const disSecondbox = ref()
 
-
-const doc = ref({});
-const folioNumberFilter = ref()
-
-const data = ref({  
-    guest_info: {
-        customer_name_en:'',
-        phone_number: '',
-        email_address: ''        
-    },
-     
+const accountCodeFilter = computed(()=>{
+    if(extra_account_code_filter.value){
+        return {...{ 'account_group': doc.value.account_group },...extra_account_code_filter.value}
+    }else {
+        return { 'account_group': doc.value.account_group }
+    } 
 })
-
-
-const rs = inject('$reservation_stay')
-// const socket = inject("$socket")
+const folioNumberFilter = ref()
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
-}
-
-
-
+} 
 function onUseTax2Change(value) {
 
     doc.value.tax_2_rate = value ? tax_rule.value.tax_2_rate : 0
@@ -400,9 +379,7 @@ function onUseTax3Change(value) {
 
     doc.value.tax_3_rate = value ? tax_rule.value.tax_3_rate : 0
 
-}
-
-
+} 
 const canEdit = computed(() => {
     return edoor_setting?.folio_transaction_style_credit_debit == 0 || doc.value.name == undefined;
 });
@@ -533,7 +510,9 @@ function onSelectAccountCode(data) {
                 doc.value.print_format = d.print_format
                 doc.value.discount_type = "Percent"
                 doc.value.discount = 0
-
+                doc.value.target_account_type = d.target_account_type
+                doc.value.target_account_code= d.target_account_code
+                
                 doc.value.quantity = 1
                 if (d.tax_rule) {
                     const tax_rule = JSON.parse(account_code.value.tax_rule_data)
@@ -595,20 +574,22 @@ function onSelectFolioNumber(data) {
 function onFilterFolioNumber(r) {
     if (doc.value.select_folio_in_reservation_stay == 1) {
         folioNumberFilter.value.reservation_stay = doc.value.reservation_stay
+        disSecondbox.value = r
     } else {
         delete folioNumberFilter.value.reservation_stay
-    }
-    if (r) doc.value.select_folio_in_reservation = false
+        disSecondbox.value = r
+    } 
 }
 
 
 function onFilterFolioNumberRes(r) {
     if (doc.value.select_folio_in_reservation == 1) {
         folioNumberFilter.value.reservation = doc.value.reservation
+        disFirstbox.value = r
     } else {
         delete folioNumberFilter.value.reservation
-    }
-    if (r) doc.value.select_folio_in_reservation_stay = false
+        disFirstbox.value = r
+    } 
 }
 
 function onSave() {
@@ -631,13 +612,15 @@ function onSave() {
             window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
             window.socket.emit("Reports", window.property_name)
             window.socket.emit("ReservationDetail", window.reservation)
+            window.socket.emit("FolioTransactionList", window.property_name)
+
 
         }).catch((err) => {
             isSaving.value = false;
         })
 }
 
-onMounted(() => {
+onMounted(() => { 
     balance.value = dialogRef.value.data.balance
     let reservation = ""
     if (dialogRef.value.data.folio_transaction_number) {
@@ -665,17 +648,33 @@ onMounted(() => {
             })
  
     } else {
+        //when user add new folio transaction
+
         reservation = dialogRef.value.data.new_doc.reservation
         doc.value = dialogRef.value.data.new_doc
+        extra_account_code_filter.value = dialogRef.value.data.account_code_filter
+ 
+
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
         folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }
-        getDocList("City Ledger", { filters: [["property", "=", window.property.name], ["business_source", "=", dialogRef.value.data.business_source]], fields: ['name', 'city_ledger_name'] }).then(result => {
-            if (result.length > 0) {
-                doc.value.city_ledger = result[0].name
-                doc.value.city_ledger_name = result[0].city_ledger_name
-            }
-        })
+        
+        if(dialogRef.value.data.business_source){
+            getDocList("City Ledger", { filters: [["property", "=", window.property.name], ["business_source", "=", dialogRef.value.data.business_source]], fields: ['name', 'city_ledger_name','keyword'] }).then(result => {
+ 
+                if (result.length > 0) {
+                    doc.value.city_ledger = result[0].name
+                    doc.value.city_ledger_name = result[0].city_ledger_name
+                    doc.value.selected_city_ledger_account = [
+                        { 'value':  result[0].name, 'description':  result[0].keyword , 'label':  result[0].name }
+                    ]
+                }else {
+                    doc.value.selected_city_ledger_account = null
+                }
+})
+        }
+     
 
+        
 
     }
     //get guest by reservation
@@ -684,17 +683,7 @@ onMounted(() => {
             guests.value = result.message
         })
     }
-});
-
-
-function onSelectedCustomer(event) { 
-    if (event) {
-        getDoc('Customer', event.value)
-            .then((d) => {
-                data.value.guest_info = d
-            })  
-    } 
-} 
+}); 
 
 </script>
 <style scoped>.h-edoor-35 {

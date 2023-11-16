@@ -29,7 +29,7 @@
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<Button class="border-none" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+					<Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
 
 					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
 						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
@@ -70,7 +70,7 @@
 						<Column field="subject" header="Subject"></Column>
 						<Column field="content" header="Description">
 							<template #body="slotProps">
-								<div v-html="slotProps.data.content"></div>
+								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
 						</Column>
 						<Column field="comment_by" header="By"></Column>

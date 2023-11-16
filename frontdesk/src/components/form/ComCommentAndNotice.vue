@@ -29,7 +29,7 @@
                 <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{create.comment_type}}
             </Button>
         </div>
-        <ComHeader isRefresh @onRefresh="onRefresh()"/>
+        <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
     </div>
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
@@ -95,8 +95,7 @@ const props = defineProps({
     doctype: String,
     docname: String,
     reference_doctypes: Object,
-    docnames: Object
-
+    docnames: Object,
 })
 const onRefresh = debouncer(() => {
     onLoad();

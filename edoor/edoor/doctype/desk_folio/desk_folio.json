@@ -38,7 +38,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Folio Number",
-   "options": "FN.YYYY.-.####"
+   "options": "DF.YYYY.-.####"
   },
   {
    "fieldname": "column_break_ioxz",
@@ -176,7 +176,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-20 16:32:44.666749",
+ "modified": "2023-11-13 12:19:53.624306",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",

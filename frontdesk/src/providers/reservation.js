@@ -48,7 +48,7 @@ export default class Reservation {
 		})
 	}
 
-	getRoomList(filter = null) {
+	getRoomList(filter = null) {  
 		if (filter && filter.length > 0) {
 			var list = []
 			filter.forEach(f => {
@@ -56,7 +56,7 @@ export default class Reservation {
 				if(f.name == 'require_pickup' || f.name == 'require_drop_off'){
 					data.value = this.reservationStays.filter(r => r[f.name] == true)
 				}else{
-					data.value = this.reservationStays.filter(r => r.reservation_status == f.name)
+					data.value = this.reservationStays.filter(r => r.reservation_status == f)
 				}
 				
 				if (data.value.length > 0) {
@@ -146,5 +146,6 @@ export default class Reservation {
 			this.selectedRoomRates = [],
 			this.reservationFolioList=[]
 			this.attacheds.value=[]
+			this.roomList=[]
 		}
 	}

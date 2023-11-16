@@ -201,7 +201,7 @@ function onSave(){
         {
             data:{
                 room_id: new_data.value?new_data.value.id: data.value.extendedProps.room_id ,
-                property: doc.value.property,
+                property: window.property_name,
                 room_type_id:new_data.value?new_data.value.parentId:data.value.extendedProps.room_type_id,
                 start_date:moment(data.value.start).format("YYYY-MM-DD"),
                 end_date:moment(data.value.end).format("YYYY-MM-DD"),

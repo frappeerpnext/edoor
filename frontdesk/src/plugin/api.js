@@ -219,8 +219,6 @@ export function uploadFiles(files, fileArgs = Object){
         let countFile = 0
         files.forEach((r)=>{
             fileArgs.otherData={title: r.title || "",description:r.description || ""}
-          console.log(r)
-
             file.uploadFile(
                 r,
                 fileArgs,

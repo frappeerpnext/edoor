@@ -27,6 +27,7 @@
   "is_manual_rate",
   "input_rate",
   "rate",
+  "allow_discount",
   "discount_section",
   "discount_type",
   "column_break_18",
@@ -334,11 +335,17 @@
    "fieldname": "tax_3_name",
    "fieldtype": "Data",
    "label": "Tax 3 Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_discount",
+   "fieldtype": "Check",
+   "label": "Allow Discount"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-01 11:07:12.464317",
+ "modified": "2023-11-10 16:20:02.387998",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

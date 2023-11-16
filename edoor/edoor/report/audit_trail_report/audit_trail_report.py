@@ -20,12 +20,12 @@ def execute(filters=None):
 
 def get_columns(filters):
 	columns = [
-		{'fieldname':'custom_posting_date','fieldtype':'Date','align':'left','label':'Audit Date',"width":150 ,"show_in_report":1},
+		{'fieldname':'custom_posting_date','fieldtype':'Date','align':'left','label':'Audit Date',"width":90 ,"show_in_report":1},
 		{'fieldname':'reference_doctype','align':'left','label':'Ref Type #',"width":150 ,"show_in_report":1},
-		{'fieldname':'reference_name','align':'left','label':'Ref Name #',"width":150 ,"show_in_report":1},
+		{'fieldname':'reference_name','align':'left','label':'Ref Name #',"width":100 ,"show_in_report":1},
 		{'fieldname':'subject','align':'left','label':'Subject',"width":200 ,"show_in_report":1},
-		{'fieldname':'content','align':'left','label':'Content',"width":450 ,"show_in_report":1},
-		{'fieldname':'comment_by','align':'left','label':'By',"width":100 ,"show_in_report":1},
+		{'fieldname':'content','align':'left','label':'Content',"width":550 ,"show_in_report":1},
+		{'fieldname':'comment_by','align':'left','label':'By',"width":150 ,"show_in_report":1},
 		{'fieldname':'modified','align':'left','fieldtype':'Datetime','label':'Date & Time',"width":200 ,"show_in_report":1},
 	]
 	return columns
@@ -38,7 +38,7 @@ def get_filters(filters):
 		sql = sql + " and c.reference_doctype in %(select_filter)s"
 
 	sql = sql + " order by {} {}".format(
-		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
+		[d for d in  get_order_field() if d["label"] == filters.order_by_audit][0]["field"],
 		filters.sort_order
 	)
 

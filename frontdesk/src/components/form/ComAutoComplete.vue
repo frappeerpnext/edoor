@@ -1,6 +1,7 @@
 <template>
     <div class="relative">
-        <AutoComplete :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
+
+        <AutoComplete   :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
             :placeholder="placeholder">
@@ -32,6 +33,7 @@ const props = defineProps({
     doctype: String,
     modelValue: [String, Number],
     filters: [Object, String],
+    suggestions:Object,
     isIconSearch: {
         type: Boolean,
         default: false
@@ -103,6 +105,10 @@ let selected = ref('')
 let selectedObj = ref({})
 const toast = useToast()
 const dialog = useDialog();
+if (props.suggestions){
+    options.value = props.suggestions
+}
+
 
 const search = (event) => {
     keyword.value = event.query

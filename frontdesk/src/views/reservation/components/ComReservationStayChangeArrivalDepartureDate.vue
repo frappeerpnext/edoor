@@ -59,7 +59,6 @@ function onStartDate(newValue){
     stay.value.room_nights = moment(stay.value.departure_date).diff(moment(newValue), 'days')
 }
 function onSave(){
- 
     const data = {
         reservation_stay: rs.reservationStay.name,
         arrival_date: gv.dateApiFormat(stay.value.arrival_date),
@@ -76,7 +75,6 @@ function onSave(){
             window.socket.emit("Dashboard",window.property_name)
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayList", { property:window.property_name})
-            
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.socket.emit("Frontdesk", window.property_name)

@@ -85,7 +85,6 @@
 </template>
 <script setup>
 import {deleteDoc, getDocList,updateDoc, ref,onMounted, useConfirm, inject,useDialog,onUnmounted,getCount,useToast} from '@/plugin'
-
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
@@ -199,6 +198,7 @@ function getTotalDocument(){
    
 }
 function onLoad(showLoading=true){
+    data.value = []
     loading.value = showLoading
     let dataFilter = []
 
@@ -229,12 +229,8 @@ function onLoad(showLoading=true){
     })
 }
 
-function onDetail(data){
-   
-        
-        window.postMessage("view_" + data.attached_to_doctype.replaceAll(" ","_").toLowerCase() +"_detail|" + data.attached_to_name,"*")
-     
- 
+function onDetail(data){    
+    window.postMessage("view_" + data.attached_to_doctype.replaceAll(" ","_").toLowerCase() +"_detail|" + data.attached_to_name,"*")
 }
 
 function onDownload(data){
@@ -293,6 +289,15 @@ const downloadURI = (uri, name) => {
   link.click();
   document.body.removeChild(link);
 }
+
+const actionHandler = async function (e) {
+       if (e.isTrusted ) {
+        if(e.data.action=='refresh_document'){
+            onLoad(false)
+        }
+   }
+}
+
 onMounted(() => {
     window.addEventListener('message', actionHandler, false);
     onLoad() 
@@ -301,14 +306,6 @@ onMounted(() => {
 
 function isHTTPS(serverUrl) {
   return serverUrl.startsWith("https://");
-}
-
-const actionHandler = async function (e) {
-       if (e.isTrusted ) {
-        if(e.data.action=='refresh_document'){
-            onLoad(false)
-        }
-   }
 }
  
 onUnmounted(() => {

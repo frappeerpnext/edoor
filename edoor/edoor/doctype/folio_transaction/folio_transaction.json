@@ -91,12 +91,16 @@
   "account_group",
   "account_group_name",
   "deleted_note",
+  "target_account_code",
+  "target_account_type",
   "column_break_73",
   "account_category",
   "account_category_sort_order",
   "allow_enter_quantity",
   "show_print_preview",
   "print_format",
+  "payment_by",
+  "payment_by_phone_number",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -115,6 +119,7 @@
   "tax_3_description",
   "section_break_89",
   "bank_fee_account",
+  "reservation_room_rate",
   "column_break_91",
   "bank_fee_description",
   "is_auto_post",
@@ -780,11 +785,37 @@
    "fieldname": "reservation_status_color",
    "fieldtype": "Data",
    "label": "Reservation Status Color"
+  },
+  {
+   "fieldname": "payment_by",
+   "fieldtype": "Data",
+   "label": "Payment By"
+  },
+  {
+   "fieldname": "payment_by_phone_number",
+   "fieldtype": "Data",
+   "label": "Payment By Phone Number"
+  },
+  {
+   "description": "We use this field to reference auto post transaction for room charge ",
+   "fieldname": "reservation_room_rate",
+   "fieldtype": "Data",
+   "label": "Reservation Room Rate"
+  },
+  {
+   "fieldname": "target_account_code",
+   "fieldtype": "Data",
+   "label": "Target Account Code"
+  },
+  {
+   "fieldname": "target_account_type",
+   "fieldtype": "Data",
+   "label": "Target Account Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-01 09:25:35.538502",
+ "modified": "2023-11-15 22:34:20.637556",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

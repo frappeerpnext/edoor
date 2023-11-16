@@ -60,7 +60,7 @@
 					Noted by : <span class=" text-500 "> {{ i.comment_by }} -<ComTimeago  :date="i.creation"/></span>
 				</div>
 				<div v-if="i.modified">
-					Last Modified by : <span class=" text-500 ">{{ i.modified_by }} - <ComTimeago  :date="i.modified"/> </span>
+					Last Modified by : <span class=" text-500 ">{{ i.modified_by.split("@")[0] }} - <ComTimeago  :date="i.modified"/> </span>
 				</div>
 			</div>
 		</div>
@@ -160,7 +160,7 @@ function onLoadData(){
 		filters.push(["content","like", '%' + keyword.value + '%'])
 	}
 	db.getDocList('Comment', {
-		fields: ["name","creation", "custom_is_pin", "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
 		filters:filters,
 		orderBy: {
 			field: 'creation',

@@ -71,6 +71,9 @@
                                 <ComPanel title="Reservation Status" class="pb-3">
                                     <ReservationStatusLabel/>
                                 </ComPanel>
+                                <ComPanel title="Reservation Special Color" class="pb-3 mt-3">
+                                    <ComReservationColorCodeDetail/>
+                                </ComPanel>
                             </div> 
                         </div>
                         <div class="mt-2" style="height: 22px;"></div>
@@ -120,6 +123,7 @@ import ComConfirmChangeStay from "@/views/frontdesk/components/ComConfirmChangeS
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import ReservationStatusLabel from '@/views/frontdesk/components/ReservationStatusLabel.vue';
+import ComReservationColorCodeDetail from '@/views/frontdesk/components/ComReservationColorCodeDetail.vue';
 import ComRoomChartFilter from '@/views/frontdesk/components/ComRoomChartFilter.vue'
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComTodaySummary from '@/views/frontdesk/components/ComTodaySummary.vue'

@@ -18,6 +18,11 @@
                 <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
+            <div class="col" v-if="hasFilter('select_filter')">
+                <label>Select Filter</label><br>
+                <ComSelect class="w-full" :selectOtherMonths="true" v-model="filter.select_filter" placeholder="Select Filter"
+                :options="['Reservation','Reservation Stay','Reservation Room Rate','Guest','Reservation Folio','Folio Transaction']" />
+            </div>
             <div class="col"  v-if="hasFilter('business_source')">
                 <label>Business Source</label><br>
                 <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
@@ -82,6 +87,13 @@
                 extraFields="customer_name_en"
                     v-model="filter.guest"   placeholder="Guest" doctype="Customer"></ComSelect>
             </div> 
+            <div class="col" v-if="hasFilter('select_user')">
+                <label>Select User</label><br/>
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="username" optionValue="name"
+                extraFields="username"
+                    v-model="filter.select_user"   placeholder="Select User" doctype="User"></ComSelect>
+            </div> 
             <div class="col" v-if="hasFilter('group_by')">
                 <label>Group By</label><br/>
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.group_by" placeholder="Group By"
@@ -93,6 +105,12 @@
                 <ComSelect class="auto__Com_Cus w-full" v-model="filter.order_by" placeholder="Order By"
                     :options="['Last Update On', 'Created On', 'Reservation','Reservation Stay','Arrival Date','Departure Date','Room Type','Reservation Status']" 
                     :default="['Last Update On']" />
+            </div>
+            <div class="col" v-if="hasFilter('audit_order')">
+                <label>Order By</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.audit_order" placeholder="Order By"
+                    :options="['Last Update On', 'Created On', 'Reference Document','Reference Name','Audit Date','Subject','Description','Created By']" 
+                />
             </div>
             <div class="col" v-if="hasFilter('sort_order')">
                 <label>Sort Order</label><br/>
@@ -176,6 +194,7 @@ const filter = ref({
     start_date: moment().toDate(),
     end_date: moment().toDate(),
     order_by:"Last Update On",
+    audit_order:"Last Update On",
     is_active_reservation: "1" ,
     sort_order: "ASC",
     filter_date_by:"Arrival Date",

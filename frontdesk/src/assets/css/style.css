@@ -661,13 +661,13 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
 }
 .stay-identify-position{
     position: absolute;
-    min-width: 10px;
-    min-height: 10px;
+    min-width: 15px;
+    min-height: 15px;
     max-width: 10px;
     max-height: 10px;
     border-radius: 50%;
-    right: 4px;
-    top: 6px;
+    right: 2px;
+    top: 4px;
 }
 
 @-moz-document url-prefix() {
@@ -832,6 +832,10 @@ span.p-button-icon.pi.pi-ellipsis-v{
 /* END Set btn round part */
 .wrap-master-list-folio .reservatin_folio_list_box .p-accordion-tab.p-accordion-tab-active{
     border: 1px solid transparent !important;
+}
+.wrap-master-list-folio .reservatin_folio_list_box .p-accordion .p-accordion-header .p-accordion-header-link .p-accordion-toggle-icon {
+    margin-right: 1rem !important;
+    margin-left: -5px !important;
 }
 .wrap-master-list-folio .p-accordion .p-accordion-header:not(.p-disabled) .p-accordion-header-link:focus{
     box-shadow: none !important;
@@ -1396,3 +1400,14 @@ background-color: #6365f125 !important;
 .room-avaiable-dailog .fc .fc-scrollgrid-section-footer.fc-scrollgrid-section-sticky>* {
     bottom:-13px !important;
 }
+.cityledger_btn .p-button-label , .cityledger_btn .p-button-icon {
+color: white !important;
+} 
+.group_color_reservation{
+    height: 25px !important;
+    width: 25px !important;
+    margin-top: -2px;
+    margin-left: -7px;
+    border: 1px solid #9f9f9f;
+}
+/*=================*/

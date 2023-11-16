@@ -45,7 +45,7 @@
                 </div>
             </div>
             <table>
-                
+                {{ data }}
                 <ComStayInfoNoBox label="Res Stay No">
                     <Button @click="onViewReservationStayDetail(data?.reservation_stay)" class="-ml-2 link_line_action1"
                         text>{{ data?.reservation_stay }}</Button>

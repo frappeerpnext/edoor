@@ -186,6 +186,8 @@ function onOK() {
         window.socket.emit("GuestList", window.property_name)
         window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)
+        window.socket.emit("FolioTransactionList", window.property_name)
+
         if (window.reservation_stay) {
             window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
         }

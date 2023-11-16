@@ -7,7 +7,7 @@
                     <div class="text-2xl">Desk Folio </div>
                 </template>`
                 <template #end>
-                <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddNewGuestType" />      
+                <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />      
             </template>`
             </ComHeader>
         </div>
@@ -151,8 +151,7 @@ import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getAp
 import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import { Timeago } from 'vue2-timeago'
-
+import ComAddDeskFolio from '@/views/desk_folio/components/ComAddDeskFolio.vue';
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
@@ -163,7 +162,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const columns = ref([
     { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
     { fieldname: 'room_number', label: 'Room', default: true },
-    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-",post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-",post_message_action: "view_desk_folio_detail", default: true },
     { fieldname: 'room_type', label: 'Room Type', header_class: "text-center", default: true },
     { fieldname: 'posting_date', label: 'Desk Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
@@ -216,6 +215,7 @@ const dialog = useDialog();
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
+    console.log(column.post_message_action)
 }
 
 
@@ -329,7 +329,7 @@ getApi('frontdesk.get_working_day', {
 })
 
 onMounted(() => {
-    window.socket.on("ReservationList", (arg) => {
+    window.socket.on("DeskFolio", (arg) => {
         if (arg.property == window.property_name) {
             setTimeout(function(){
                 loadData(false)
@@ -396,9 +396,34 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("ReservationList");
+    window.socket.off("DeskFolio");
 })
 
+function onAddDeskFolio(data){
+    dialog.open(ComAddDeskFolio, {
+        data:{data},
+        props: {
+            header: `Add New Desk folio`,
+            style: {
+                width: '50vw',
+            },
+            breakpoints: {
+                '960px': '75vw',
+                '640px': '90vw'
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        onClose: (options) => {
+            const result = options.data;
+            if (result) {
+                loadData()
+                window.postMessage("view_desk_folio_detail|" + result.name, "*")
+            }
+        }
+    });  
+}
 </script>
 
  

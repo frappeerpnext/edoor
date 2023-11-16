@@ -16,13 +16,17 @@
             </div>
             <div v-if="data.reservation_type != 'FIT'" class="col-12">
                 <div class="grid">
-                    <div class="col-6">
+                    <div class="col-5">
                         <label>Group Name</label><br/>
                         <InputText v-model="data.group_name" class="w-full"/>
                     </div>
-                    <div class="col-6">
+                    <div class="col-5">
                         <label>Group Code</label><br/>
                         <InputText v-model="data.group_code" class="w-full"/>
+                    </div>
+                    <div class="col-2">
+                        <label>Group Color</label>
+                        <div @click="toggleColor" class="w-full border-blue-100 h-3rem border-round-xl border-1" :style="{background:data.group_color}"></div>
                     </div>
                 </div>
             </div>
@@ -41,6 +45,9 @@
             </div>
         </div>
     </ComOverlayPanelContent>
+    <OverlayPanel ref="opColor">
+                                    <ComColorPicker v-model="data.group_color" />
+                                </OverlayPanel>
 </template>     
 <script setup>
 
@@ -52,6 +59,10 @@ const emit = defineEmits(['onClose'])
 const props = defineProps({
     doctype: String
 })
+const opColor = ref();
+const toggleColor = (event) => {
+    opColor.value.toggle(event);
+}
 const isLoading = ref(false)
 const rs = inject('$reservation_stay');
 const r = inject('$reservation');
@@ -74,6 +85,7 @@ const onSave = () => {
     doc.internal_reference_number = doc.internal_reference_number || ""
     doc.group_code = doc.group_code || ""
     doc.group_name = doc.group_name || ""
+    doc.group_color = doc.group_color || ""
     doc.doctype = props.doctype
     if (doc.reservation_date) doc.reservation_date = moment(doc.reservation_date).format("yyyy-MM-DD")
 

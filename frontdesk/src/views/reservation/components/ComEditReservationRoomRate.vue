@@ -15,7 +15,9 @@
             <div class="col-12 xl:col-6 overflow-auto">
                 <table>
                     <tbody>
-                        <ComStayInfoNoBox label="Res Stay. No" :value="stay?.name" />
+                        <ComStayInfoNoBox label="Res Stay. No" isSlot :fill="false">
+                            <button @click="onOpenLink(stay?.name)" class="p-0 link_line_action1">{{ stay?.name }}</button>
+                        </ComStayInfoNoBox>
                         <ComStayInfoNoBox label="Business Source" :value="stay?.business_source" />
                         <!-- <ComStayInfoNoBox  label="Room x" :value="stay?.room_type_alias + '/' + stay?.rooms" /> -->
                         <tr>
@@ -416,7 +418,8 @@ const total_amount = computed(() => {
 });
 
 
-function onSelectRateType(selected) { 
+function onSelectRateType(selected) {
+
     if (doc.value.is_manual_rate == 0 && selected.value) {
         postApi('reservation.get_room_rate', {
             property: doc.value.property,
@@ -449,7 +452,8 @@ function onSelectRateType(selected) {
 
             })
     } else {
-        getApi("utils.get_rate_type_info", { name: selected.value })
+       
+        getApi("utils.get_rate_type_info", { name: selected })
             .then(result => {
                 const tax_rule_data = result.message.tax_rule
                 doc.value.tax_1_rate = tax_rule_data?.tax_1_rate || 0
@@ -562,6 +566,10 @@ onMounted(() => {
             })
 
 });
+
+function onOpenLink(data) {
+    window.postMessage("view_reservation_stay_detail" + "|" + data, '*')
+}
 
 </script>
 <style scoped>.h-edoor-35 {

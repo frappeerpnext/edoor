@@ -1,7 +1,8 @@
 <template>
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
         <div v-if="doc">
-            <ComFolioAction :folio="doc" />
+            
+            <ComFolioAction :folio="doc" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
             <table class="mb-4">
                 <tr>
                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
@@ -87,9 +88,10 @@ import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
-const gv = inject('$gv');
+ 
 const name = ref()
 const doc = ref()
+const accountGroups = ref(window.setting.account_group)
 
 const dialogRef = inject("dialogRef");
 

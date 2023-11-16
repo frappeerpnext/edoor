@@ -90,15 +90,6 @@
   "sort_order": 0
  },
  {
-  "account_category": "Deposit",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:43:44.960236",
-  "name": "Deposit",
-  "note": null,
-  "sort_order": 700
- },
- {
   "account_category": "POS Transfer",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -106,6 +97,15 @@
   "name": "POS Transfer",
   "note": null,
   "sort_order": 500
+ },
+ {
+  "account_category": "Deposit",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:43:44.960236",
+  "name": "Deposit",
+  "note": null,
+  "sort_order": 700
  },
  {
   "account_category": "Folio Transfer",

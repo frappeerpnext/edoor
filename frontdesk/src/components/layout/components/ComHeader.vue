@@ -9,7 +9,7 @@
         <div class="flex gap-2">
             <slot name="end"></slot>
             <div class="border-left-1 border-primary-100"></div>
-            <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b"></Button>
+            <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
         </div>
     </div>
 </template>
@@ -18,7 +18,8 @@ const props = defineProps({
     isRefresh: {
         type: Boolean,
         default: false
-    }
+    },
+    fillClass: String
 })
 const emit = defineEmits(['onRefresh'])
 function onRefresh(){

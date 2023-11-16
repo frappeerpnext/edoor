@@ -54,7 +54,7 @@
                                                 <ComReservationStayDetailGuestInfo />
                                             </div>
                                             <div class="col-12">
-                                                <ComReservationBusinessSourceAndRate />
+                                                <ComReservationBusinessSourceAndRate /> 
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +201,6 @@ const router = useRouter()
 const moment = inject("$moment")
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
-const gv = inject('$gv');
 const activeTab = ref(0)
 const name = ref("")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -357,6 +356,8 @@ const onCheckIn = () => {
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
+        	        window.socket.emit("FolioTransactionList", window.property_name)
+
                     onRefresh(false)
                 })
                     .catch((err) => {
@@ -396,6 +397,8 @@ const onCheckOut = () => {
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
+        	        window.socket.emit("FolioTransactionList", window.property_name)
+
                 })
                 .catch((err) => {
                     rs.loading = false

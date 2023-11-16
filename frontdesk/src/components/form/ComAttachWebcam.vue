@@ -107,15 +107,12 @@ const onUpload = () => {
     }).then(() => {
         loading.value = false
         stopWebcam(); // Stop the webcam stream
-        window.postMessage({ "action": "refresh_document_count" }, "*")
-        window.postMessage({ "action": "refresh_document" }, "*")
+        window.postMessage({ "action": "refresh_document_count", docname:data.value.docname}, "*")
+        window.postMessage({ "action": "refresh_document", docname:data.value.docname}, "*")
         dialogRef.value.close();
-        
     }).catch(error => {
         loading.value = false
-    })
-
-    
+    }) 
 }
 
 const onClose = () => {

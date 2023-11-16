@@ -33,7 +33,7 @@ frappe.query_reports["Audit Trail Report"] = {
 				return [
 					{"value":"Reservation","description":"Reservation",fieldtype:"Data"},
 					{"value":"Reservation Stay","description":"Reservation Stay",fieldtype:"Data"},
-					{"value":"Room Rate","description":"Room Rate",fieldtype:"Data"},
+					{"value":"Reservation Room Rate","description":"Room Rate",fieldtype:"Data"},
 					{"value":"Guest","description":"Guest",fieldtype:"Data"},
 					{"value":"Reservation Folio","description":"Reservation Folio",fieldtype:"Data"},
 					{"value":"Folio Transaction","description":"Folio Transaction",fieldtype:"Dat"},
@@ -48,7 +48,7 @@ frappe.query_reports["Audit Trail Report"] = {
 			
 		},
 		{
-			"fieldname": "order_by",
+			"fieldname": "order_by_audit",
 			"label": __("Order By"),
 			"fieldtype": "Select",
 			"options": "Last Update On\nCreated On\nAudit Date\nReference Document\nReference Name\nSubject\nDescription\nCreated By",

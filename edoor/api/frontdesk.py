@@ -121,7 +121,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT 
-                    SUM(if(reservation_status = 'No Show' and (arrival_date='{1}' or is_reserved_room=1),1,0)) AS `total_no_show`, 
+                    SUM(if(reservation_status = 'No Show' and (arrival_date!='{1}' and is_reserved_room=1),1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
@@ -523,6 +523,7 @@ def get_edoor_setting(property = None):
         "calculate_room_occupancy_include_room_block": edoor_setting_doc.calculate_room_occupancy_include_room_block,
         "search_table": [{"doctype":d.table_name,"title":d.title,"template":d.template} for d in edoor_setting_doc.search_table],
         "room_block_color":edoor_setting_doc.room_block_color,
+        "show_additional_guest_name_in_room_chart_calendar":edoor_setting_doc.show_additional_guest_name_in_room_chart_calendar,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -577,7 +578,7 @@ def get_edoor_setting(property = None):
     }
     pos_config = frappe.get_doc("POS Config", pos_profile.pos_config)
     edoor_setting["payment_type"] = pos_config.payment_type
-    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","show_in_folio_tab","show_in_deposit_tab","show_in_city_ledger","icon","is_city_ledger_account"], order_by="sort_order")
+    edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon","is_city_ledger_account","is_guest_folio_account","is_guest_desk_folio_account","is_deposit_ledger_account","show_in_guest_folio","show_in_desk_folio","show_in_city_ledger","show_in_deposit_ledger","show_in_payable_ledger"], order_by="sort_order")
 
 
     return {
@@ -826,8 +827,9 @@ def get_room_inventory_resource(property = ''):
 
 @frappe.whitelist()
 def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
+  
     events = []   
-     
+    
     sql = """
         select 
             name as id, 
@@ -840,6 +842,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             concat(start_date,'T','12:00:00') as start ,
             concat(end_date,'T','12:00:00') as end,
             guest_name as title,
+            additional_guest_name,
             if(reservation_status in('Reserved','In-house'),if(ifnull(reservation_color,'')='',status_color,reservation_color),status_color) as color,
             adult,
             reservation_stay_adr,

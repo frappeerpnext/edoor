@@ -3,7 +3,7 @@
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #end>
                 <Button class="conten-btn" @click="AddTransaction(d)"
-                    v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
+                    v-for="(d, index) in setting.account_group.filter(r => r.is_city_ledger_account == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
                 <SplitButton @click="viewCityLedgerReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print" />
             </template>
@@ -117,6 +117,7 @@
         <div style="min-height:42rem;">
             <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="data.length > 0">
                 <DataTable 
+                :rowClass="rowClass"
                 resizableColumns 
                 columnResizeMode="fit" 
                 showGridlines 
@@ -141,13 +142,7 @@
                             </span>
                             
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
-                            <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
-                                v-if="slotProps?.data && slotProps?.data?.rooms">
-                                <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                    <span>{{ item }}</span>
-                                    <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                                </template>
-                            </div>
+                
                             <template v-else-if="c.fieldtype == 'Owner'">
                                     <div v-if="slotProps?.data && slotProps?.data?.owner">
                                         <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
@@ -155,7 +150,8 @@
                                         </template>
                                     </div>
                                 </template>
-                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                                
+                            <CurrencyFormat v-else-if="c.fieldtype == 'currency'" :value="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>-</span>
@@ -179,7 +175,7 @@
                     </Column>
                     <Column columWidths="min-width:50px">
                         <template #body="slotProps">
-                            <div class="flex gap-2 justify-end" v-if="!slotProps.data.parent_reference">
+                            <div class="flex gap-2 justify-end cityledger_btn" v-if="!slotProps.data.parent_reference">
                                 <Button @click="onEditFolioTransaction(slotProps.data.name)" icon="pi pi-pencil text-sm"
                                     iconPos="right" class="h-2rem border-none" label="Edit" rounded />
                                 <Button @click="onDeleteCityLedgerTransaction(slotProps.data.name)" severity="danger"
@@ -246,7 +242,10 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const dialogRef = inject("dialogRef")
+const rowClass = (data) => {
+    return [{ 'auto-post': data.is_auto_post }];
 
+};
 const viewCityLedgerReport = () => {
     dialog.open(ComPrintReservationStay, {
         data: {
@@ -277,13 +276,14 @@ const columns = ref([
     { fieldname: 'room_number', label: 'Room Number',fieldtype: "Rooms" ,  header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
-    { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit", default: true, header_class: "text-right" },
+    { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit" , default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
     { fieldname: 'owner', label: 'User', default: true,fieldtype:"Owner" },
     { fieldname: 'note', label: 'Note', default: true },
     { fieldname: 'type', default: true },
+    { fieldname: 'is_auto_post' },
     { fieldname: 'parent_reference' },
-    { fieldname: 'modified_by', label: 'Modified By'},
+    { fieldname: 'modified_by', label: 'Modified By' , fieldtype: "Owner"},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
 ])
 
@@ -322,6 +322,9 @@ function AddTransaction(account_code) {
                 transaction_number: props.name,
                 property: property.name,
                 account_group: account_code.name
+            },
+            account_code_filter:{
+                is_city_ledger_account:1
             }
         },
         props: {

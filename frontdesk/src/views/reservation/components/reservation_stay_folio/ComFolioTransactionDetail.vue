@@ -144,10 +144,14 @@
               </ComStayInfoNoBox>
               <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
               <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')" />
-              <ComStayInfoNoBox label="Created Date" :value="gv.datetimeFormat(doc?.creation)" />
-              <ComStayInfoNoBox label="Made By" :value="doc?.owner" />
-              <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by" />
-              <ComStayInfoNoBox label="Last Modified Date" :value="gv.datetimeFormat(doc?.modified)" />
+              <ComStayInfoNoBox label="Created Date" isSlot :fill="false">
+                <div class="font-semibold"><ComTimeago :date="doc?.creation"/></div>
+              </ComStayInfoNoBox>
+              <ComStayInfoNoBox label="Made By" :value="doc?.owner?.split('@')[0]" />
+              <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by?.split('@')[0]" />
+              <ComStayInfoNoBox label="Last Modified Date" isSlot :fill="false">
+                <div class="font-semibold"><ComTimeago :date="doc?.modified"/></div>
+              </ComStayInfoNoBox>
             </tbody>
           </table>
         </div>
@@ -263,9 +267,11 @@ const onSaveReferenceNumber = () => {
       reference_number: data.reference_number || ""
     }
   }).then((r) => {
+
     doc.value.reference_number = r.message.reference_number
     saving.value = false
     window.socket.emit("FolioTransactionDetail", {property:window.property_name, name:window.folio_transaction_number})
+    window.socket.emit("FolioTransactionList", window.property_name)
     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
 
     onCloseRefNumber()

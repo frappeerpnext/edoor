@@ -1,11 +1,12 @@
 <template>
-    <div class="card mt-1 border-round-lg reservatin_folio_list_box">
+    <div class="card -mt-2 border-round-lg reservatin_folio_list_box">
         <!-- expandIcon="pi" collapseIcon="pi" -->
+        
         <Accordion   :multiple="true" :activeIndex="[0]">
             <template v-for="(s, index) in rs.reservationFolioList" :key="index">
     <AccordionTab :headerClass="s.folios.some(d => d.selected) ? 'header_folio_active' : ''" >
         <template #header>
-            <div  class="flex flex flex-column w-full -mr-3 ps-2 -ml-3 -mt-2 -mb-2 ">
+            <div  class="flex flex flex-column w-full -mr-3 ps-2 -ml-3 -mt-2 -mb-3">
                 <div class="flex">
             <span class="flex align-items-center gap-2 w-full line-height-3">
                 <div class="ml-2 w-full">
@@ -20,7 +21,7 @@
                     </div>
                     <div class="flex gap-2 align-items-center">
                     <div  class="font-light max-width-name-text">{{ s.guest_name }} </div>
-                    <spna class="font-light " >|</spna>
+                    <spna class="font-light ">|</spna>
                     <div class="font-light  max-width-name-text" > Room: {{ s.rooms }}</div>
                     </div>
                     
@@ -65,7 +66,7 @@
 </template>
 </Accordion>
     </div> 
-    <div class="flex flex-column bg-white mt-3 fixed total_foliolist " style="width: 350px; bottom: 0px; z-index: 1;">
+    <div :class="is_page == true ? 'page_total_foliolist' : 'total_foliolist' "  class="flex flex-column bg-white mt-3 fixed  " style="width: 350px; bottom: 0px; z-index: 1;">
         <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2"><div class="pr-3"><label>Total Debit</label></div><div><span><span class="white-space-nowrap font-medium"> <CurrencyFormat :value="rs.reservation.total_debit" /></span></span></div></div>
         <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2"><div class="pr-3"><label>Total Credit</label></div><div><span><span class="white-space-nowrap font-medium"><CurrencyFormat :value="rs.reservation.total_credit" /></span></span></div></div>
         <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2"><div class="pr-3"><label>Balance</label></div><div><span><span class="white-space-nowrap font-medium"><CurrencyFormat :value="rs.reservation.balance" /></span></span></div></div>
@@ -75,15 +76,16 @@
 </div>
 </template>
 <script setup>
-import {  inject, useDialog } from '@/plugin';
+import {  inject, useDialog , onMounted } from '@/plugin';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
 const gv = inject('$gv');
+const dialogRef = inject("dialogRef");
 const dialog = useDialog();
 const rs = inject("$reservation")
 const emit = defineEmits(["onSelectFolio"])
-
+let is_page = false;
  
 
 function onSelectFolio(f) {
@@ -133,4 +135,12 @@ function onViewReservationStayDetail(rs){
     window.postMessage('view_reservation_stay_detail|'+rs, '*')
 
 }
+onMounted(() => {
+    if (!dialogRef) {
+        is_page = true;
+    }else{
+is_page = false;
+    }
+})
+
 </script>

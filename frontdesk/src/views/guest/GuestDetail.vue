@@ -125,6 +125,8 @@ function onDeleteGuest (name){
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("GuestList", window.property_name)
                 window.socket.emit("Reports", window.property_name)
+        	    window.socket.emit("FolioTransactionList", window.property_name)
+
 
                 dialogRef.value.close()
             }).catch((err)=>{

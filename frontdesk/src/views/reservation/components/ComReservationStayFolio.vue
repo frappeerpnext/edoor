@@ -1,9 +1,10 @@
 <template>
     <div>
+       
         <div class="flex min-h-folio-cus" v-if="rs.folios?.length > 0">
             <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
-                <ComFolioAction :folio="selectedFolio" />
+                <ComFolioAction :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
                 <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
             </div>
@@ -37,10 +38,11 @@ const rs = inject("$reservation_stay")
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
 const selectedFolio = ref()
 const loading = ref(false)
-
+const setting  = window.setting
 
 function onSelectFolio(f){
         selectedFolio.value=f
+        selectedFolio.value.allow_post_to_city_ledger = rs.reservationStay.allow_post_to_city_ledger
     }
 
 function setSelectedFolio(selected_name=""){
@@ -60,17 +62,19 @@ function setSelectedFolio(selected_name=""){
         const folio = rs.folios[0]
         folio.selected = true
         selectedFolio.value = folio
+        selectedFolio.value.allow_post_to_city_ledger = rs.reservationStay.allow_post_to_city_ledger
         
     }
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
 
         getDocList('Reservation Folio', {
-            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source"],
+            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype"],
             filters: [['reservation_stay', '=', rs.reservationStay.name]],
             limit: 1000
         })
             .then((doc) => {
+               
                 rs.folios = doc
                 setSelectedFolio(selected_name)
                 loading.value = false
@@ -89,6 +93,7 @@ function onAddCreatNewFolio() {
 
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
         data: {
+            guest: rs.reservationStay.guest,
             reservation_stay: rs.reservationStay.name,
             property: window.property_name
         },
@@ -132,7 +137,17 @@ onMounted(() => {
     window.addEventListener('message', windowActionHandler, false);
 })
 onUnmounted(()=>{
+   
     window.removeEventListener('message', windowActionHandler, false);
+    if(selectedFolio.value){
+        let state = sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name)
+    if (state) {
+        state = JSON.parse(state);
+        state.selection = [];
+        sessionStorage.setItem("folo_transaction_table_state_" + selectedFolio.value.name, JSON.stringify(state))
+    }
+    }
+    
 })
  
 

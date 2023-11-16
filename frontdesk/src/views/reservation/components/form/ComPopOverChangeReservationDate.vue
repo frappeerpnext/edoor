@@ -1,5 +1,6 @@
 <template>
    <ComOverlayPanelContent style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
+    <div :class="loading ? 'pointer-events-none opacity-90' : ''">
     <h1>Group Change Stay</h1>
     <Message>Group change stay is affect only active reservation. </Message>
     <div class="grid py-2 wp-number-cus">
@@ -8,26 +9,16 @@
                 <Calendar :selectOtherMonths="true" showIcon v-model="data.arrival_date"  :min-date="new Date(moment(data.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
-                <label>Arrival Time</label>
-                <Calendar selectOtherMonths class="w-full" v-model="data.arrival_time" timeOnly />
-            </div>
-            <div class="col-6">
                 <label>Departure Date</label>
                 <Calendar selectOtherMonths showIcon v-model="data.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(data.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
-            <div class="col-6">
-                <label>Departure Time</label>
-                <Calendar selectOtherMonths class="w-full" v-model="data.departure_time" timeOnly /> 
-            </div>
-        </div>
+        
         <div class="col-6">
                 <label>Nights</label>
                 <InputNumber v-model="data.room_nights" @update:modelValue="onNight($event)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
         </div>
-
         <div class="col-12">
-          
-        <div class="flex flex-wrap gap-3 mt-3 ">
+        <div class="flex flex-wrap gap-3 mt-2 ">
             <div class="flex align-items-center ">
                 <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"  v-model="data.generate_new_stay_rate_by"/>
                 <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay Rate</label>
@@ -36,17 +27,14 @@
                 <RadioButton inputId="rate_plan" name="generate_new_stay_rate_by" value="rate_plan"  v-model="data.generate_new_stay_rate_by"/>
                 <label for="rate_plan" class="ml-2">Generate New Stay Rate from Rate Type</label>
             </div>
-            
         </div>
- 
     </div>
-
+</div>
     <div>
         <label>Note</label><br />
         <Textarea rows="2" autoResize placeholder="Note" cols="30" class="w-full border-round-xl"  v-model="data.note"/>
-        
     </div>
-    
+    </div>
    </ComOverlayPanelContent>
 </template>
 <script setup>
@@ -90,7 +78,6 @@ function onStartDate(newValue){
 }
 function onSave(){
     loading.value = true
-    console.log(rs.roomList);
     const active_reservations = rs.roomList.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1)
  
     if (active_reservations.length==0){
@@ -98,7 +85,6 @@ function onSave(){
         loading.value =false
         return
     }
- 
     postApi("group_operation.group_change_stay", { 
         data:{ 
             stays:active_reservations.map(r=>r.name),
@@ -114,17 +100,15 @@ function onSave(){
             toast.add({ severity: 'warn', summary:"Reservation Stay #" +  x.reservation_stay, detail: x.message, life: 7000 }) 
         });
         loading.value = false
-        rs.LoadReservation(rs.reservation.name,true)
-
-        emit("onClose")
-        
+        rs.LoadReservation(rs.reservation.name)
+        emit("onClose" ) 
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
-       
-
-
-
+        window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+        window.socket.emit("Dashboard",window.property_name)
+        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("Frontdesk", window.property_name) 
     }).catch((err) => {
         loading.value = false
     })

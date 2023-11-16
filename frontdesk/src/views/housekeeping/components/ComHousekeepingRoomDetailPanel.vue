@@ -14,7 +14,7 @@
             </table>
         </div>
         <div class="grid mt-2">
-            <div class="col-6">
+            <div class="col-6" v-if="!hk.room_block">
                 <SplitButton :disabled="hk.selectedRow.housekeeping_status == 'Room Block'" class="w-full"
                     :buttonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
                     :label="hk.selectedRow?.housekeeping_status" :model="items" :color="hk.selectedRow?.status_color"
@@ -134,23 +134,19 @@
         </div>
 
         <div v-if="hk.room_block">
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room Block</div>
             <table>
-
-                <ComStayInfoNoBox label="Block Date">
+                <ComStayInfoNoBox label="Block Name">
                     <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{
-                        hk?.room_block?.block_date }}</Button>
+                        hk?.room_block?.name }}</Button>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Start Date">
-                    <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{
-                        hk?.room_block?.start_date }}</Button>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="End Date">
-                    <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{
-                        hk?.room_block?.end_date }}</Button>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Night(s)" :value="hk?.room_block?.total_night_count" />
                 <ComStayInfoNoBox label="Room Type" :value="hk?.room_block?.room_type" />
+                <ComStayInfoNoBox label="Block Date" :value="gv.dateFormat(hk?.room_block?.block_date)"/>
+                <ComStayInfoNoBox label="Start Date" :value="gv.dateFormat(hk?.room_block?.start_date)"/>
+                <ComStayInfoNoBox label="End Date" :value="gv.dateFormat(hk?.room_block?.end_date)"/>
+                <ComStayInfoNoBox label="Total Night(s)" :value="hk?.room_block?.total_night_count" />
+                <ComStayInfoNoBox label="Reason" :value="hk?.room_block?.reason" />
+                <ComStayInfoNoBox label="Block by" :value="hk?.room_block?.modified_by?.split('@')[0]" />
             </table>
         </div>
 

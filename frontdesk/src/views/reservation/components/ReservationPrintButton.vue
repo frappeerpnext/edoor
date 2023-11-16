@@ -43,6 +43,33 @@ items.value.push({
         });
     }
 })
+// eDoor GIT Confirmation Voucher
+items.value.push({
+    label: "Confirmation Voucher",
+    icon: 'pi pi-check-circle',
+    acceptClass: 'border-none crfm-dialog',
+    rejectClass: 'hidden',
+    acceptIcon: 'pi pi-check-circle',
+    acceptLabel: 'Ok',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation",
+                name: props.reservation ?? "",
+                report_name:  gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
+            },
+            props: {
+                header: "Confirmation Voucher",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
 onMounted(() => {
 db.getDocList('Print Format', {
     fields: [

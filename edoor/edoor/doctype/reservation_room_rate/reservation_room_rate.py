@@ -11,7 +11,9 @@ import json
 from frappe.utils.data import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
-		 
+		
+		if self.is_new():
+			self.allow_discount = frappe.db.get_value("Rate Type", self.rate_type,"allow_discount") or 0
 		
 		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:

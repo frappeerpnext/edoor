@@ -54,18 +54,18 @@
             <ComStayInfoNoBox label="Block Number" v-if="doc?.name" :value="doc?.name" />
             <ComStayInfoNoBox label="Room Name" v-if="doc?.room_number" :value="doc?.room_number" />
             <ComStayInfoNoBox label="Room Type" v-if="doc?.room_type" :value="doc?.room_type" />
+            <ComStayInfoNoBox label="Block Date" v-if="doc?.modified" :value="gv.dateFormat(doc?.block_date)" />
             <ComStayInfoNoBox label="Start Date" v-if="doc?.start_date" :value="gv.dateFormat(doc?.start_date)" />
             <ComStayInfoNoBox label="Release Date" v-if="doc?.end_date" :value="gv.dateFormat(doc?.end_date)" />
             <ComStayInfoNoBox label="Total Night(s)" v-if="doc?.total_night_count" :value="doc?.total_night_count" />
-            <ComStayInfoNoBox label="Blocked by" v-if="doc?.modified_by" :value="doc?.modified_by" />
-            <ComStayInfoNoBox label="Block Date" v-if="doc?.modified" :value="gv.datetimeFormat(doc?.modified)" />
+            <ComStayInfoNoBox label="Blocked by" v-if="doc?.modified_by" :value="doc?.modified_by?.split('@')[0]" />
         </table>
         <div class="w-full h-10rem mb-4 mt-2">
             <label>Reason</label>
             <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc?.reason">
             </div>
         </div>
-        <div class="col-12">
+        <div class="col-12 p-0 pt-2">
             <ComCommentAndNotice v-if="doc?.name" doctype="Room Block" :docname="doc?.name"
                 :reference_doctypes="['Room Block']" :docnames="[doc?.name]" />
         </div>

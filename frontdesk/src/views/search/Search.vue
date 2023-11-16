@@ -56,7 +56,7 @@
                                 <div v-html="getTemplate(slotProps.data)"></div>
                                <span>
                                 <div class="text-500 text-md absolute bottom-5 right-10">
-{{ slotProps.data.modified_by }} -  <ComTimeago :date="slotProps.data.modified"></ComTimeago>
+                                    {{ slotProps.data && slotProps.data.modified_by && typeof slotProps.data.modified_by === 'string' ? slotProps.data.modified_by.split('@')[0] : '' }}  -  <ComTimeago :date="slotProps.data.modified"></ComTimeago>
 </div>
                                
                                </span>

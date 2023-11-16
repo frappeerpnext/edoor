@@ -183,6 +183,8 @@ function onSave() {
         data.value.map(r=>r.reservation_stay).forEach(r => {
             window.socket.emit("ReservationStayDetail", {reservation_stay:r})
         });
+        window.socket.emit("FolioTransactionList", window.property_name)
+
     }).catch((err) => {
         loading.value = false
     })

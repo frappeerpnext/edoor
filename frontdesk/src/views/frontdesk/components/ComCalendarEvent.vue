@@ -1,8 +1,8 @@
 <template>
 
     <div class="group relative h-full p-1" :class="event.extendedProps.type + ' ' + (event.extendedProps.reservation_stay || '')" style="height: 36px ">
-        <div :class="(event.extendedProps.type=='room_type_event' || event.extendedProps.type=='property_summary') ? 'flex justify-content-center' : 'flex'">
-            <span class="ml-1 display-block stay-identify-position" :style="{backgroundColor:event.extendedProps.reservation_color}" v-if="event.extendedProps.reservation_color">
+        <div :style="event.extendedProps.group_color ? 'padding-right:16px' : ''" :class="(event.extendedProps.type=='room_type_event' || event.extendedProps.type=='property_summary') ? 'flex justify-content-center' : 'flex'">
+            <span class="ml-1 display-block stay-identify-position border-1" :style="{backgroundColor:event.extendedProps.group_color}" v-if="event.extendedProps.group_color">
                 <!-- GIT/FIT Color -->
             </span>
             <span class="wrp-statu-icon">
@@ -29,7 +29,11 @@
                     <span class="text-white">{{event.extendedProps.unassign_room}}</span>
                 </template>
                 <template v-else>
-                    {{event.title}}
+                    {{event.title}} 
+                    
+                    <span v-if="show_additional_guest_name_in_room_chart_calendar==1 && event.extendedProps.additional_guest_name">
+                        / {{ event.extendedProps.additional_guest_name }}
+                    </span>
                 </template>
             </div>
         </div>
@@ -43,4 +47,6 @@ import iconSplitRoom from '@/assets/svg/icon-split-blue.svg'
 const props = defineProps({
     event:Object
 })
+
+const show_additional_guest_name_in_room_chart_calendar = window.setting.show_additional_guest_name_in_room_chart_calendar
 </script>

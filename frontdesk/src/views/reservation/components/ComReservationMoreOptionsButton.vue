@@ -49,7 +49,7 @@
                 </button>
                 <button @click=" onGroupCheckOut(true)"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                    <ComIcon icon="checkoutBlack" style="height: 12px;" />
+                    <ComIcon icon="checkoutBlack" style="height: 14px;" />
                     <span class="ml-2">Group Check Out</span>
                 </button>
                 <button @click="onGroupCheckOut(false)"
@@ -83,7 +83,7 @@
                     <ComIcon icon="IconBillToCompany" style="height:15px;"></ComIcon>
                     <span class="ml-2">Disallow Post to City Ledger</span>
                 </button>
-                <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" @click="onTransferStay">
                     <ComIcon icon="iconGeneralList" style="height: 14px;" />
                     <span class="ml-2">Stay to Other Reservation</span>
                 </button>
@@ -128,6 +128,7 @@ import ComGroupChangeStayDate from "@/views/reservation/components/form/ComGroup
 import ComFormSetupArrivalAndDeparture from '@/views/reservation/components/ComFormSetupArrivalAndDeparture.vue';
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
+import ComConfirmTransferStay from '@/views/reservation/components/ComConfirmTransferStay.vue'
 
 const dialog = useDialog();
 
@@ -146,32 +147,7 @@ const reservation = ref({})
 const toggle = (event) => {
     menu.value.toggle(event);
 }
-// function onMarkAsReservationType() {
-//     confirm.require({
-//         message: `Are you sure you want to mark as ${rs.reservation.reservation_type == 'FIT' ? 'GIT' : 'FIT'} reservation?`,
-//         header: 'Confirmation',
-//         icon: 'pi pi-exclamation-triangle',
-//         acceptClass: 'border-none crfm-dialog',
-//         rejectClass: 'hidden',
-//         acceptIcon: 'pi pi-check-circle',
-//         acceptLabel: 'Ok',
-//         accept: () => {
-//             db.updateDoc('Reservation', rs.reservation?.name, {
-//                 reservation_type: rs.reservation.reservation_type == 'GIT' ? 'FIT' : 'GIT',
-//             })
-//                 .then((doc) => {
-//                     rs.reservation.reservation_type = doc.reservation_type
-//                     window.socket.emit("ReservationDetail", reservation.value.name);
-
-//                     toast.add({
-//                         severity: 'success', summary: `Mark as ${rs.reservation.reservation_type} reservation`,
-//                         detail: `Mark as ${rs.reservation.reservation_type} Reservation Successfully`, life: 3000
-//                     });
-//                 })
-//         },
-
-//     });
-// }
+ 
 function onChangeStatus(reservation_status) {
 
     if (validateSelectReservation()) {
@@ -185,6 +161,12 @@ function onChangeStatus(reservation_status) {
                     If you have a No Show charge, please update the folio transaction first.
                     If you want to sell this room, please untick on check box Reserved Room`
         }
+        const stays = rs.selecteds.filter(r=>r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
+
+        if (stays.length==0){
+            toast.add({ severity: 'warn', detail: "Please select active reservation stay to " + reservation_status, life: 3000 })
+            return
+        }
 
         onUpdateReservationStatus(
             "Confirm " + reservation_status + " Note",
@@ -197,7 +179,7 @@ function onChangeStatus(reservation_status) {
                     reserved_room: false,
                     status: reservation_status,
                     show_reserved_room: reservation_status == "No Show" ? true : false,
-                    stays: rs.selecteds
+                    stays: rs.selecteds.filter(r=>r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
                 },
 
             }
@@ -281,6 +263,8 @@ function onGroupCheckIn() {
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("ComGuestLedger", { property:window.property_name})
                     window.socket.emit("Reports", window.property_name)
+                    window.socket.emit("FolioTransactionList", window.property_name)
+
                     rs.selecteds.forEach(r => {
                         window.socket.emit("ReservationStayDetail", {reservation_stay:r.name})
                     });
@@ -329,6 +313,8 @@ function onGroupUndoCheckIn() {
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", window.reservation)
                         window.socket.emit("Frontdesk", window.property_name)
+                        window.socket.emit("FolioTransactionList", window.property_name)
+
                     }
                 }).catch(err=>{
                     rs.loading = false
@@ -346,19 +332,27 @@ function onGroupUndoCheckIn() {
 function onGroupCheckOut(is_not_undo = false) {
     const isSelect = validateSelectReservation()
     if (isSelect) {
+
+        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).map((r) => r.name)
+        console.log(rs.selecteds)
+        if (stays.length==0){
+            toast.add({ severity: 'warn', detail: "Please select active reservation stay to check out", life: 3000 })
+            return
+        }
+
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,
-            header: 'Check Out',
+            header: 'Group Check Out',
             icon: 'pi pi-info-circle',
             acceptClass: 'border-none crfm-dialog',
             rejectClass: 'hidden',
             acceptIcon: 'pi pi-check-circle',
             acceptLabel: 'Ok',
             accept: () => {
-                const checkList = rs.selecteds.map((r) => r.name).join(',')
+                
                 postApi("reservation.check_out", {
                     reservation: rs.reservation.name,
-                    reservation_stays: [checkList],
+                    reservation_stays:stays,
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {
@@ -369,6 +363,8 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.socket.emit("FolioTransactionList", window.property_name)
+
                         rs.LoadReservation()
                     }
                 }).catch((error) => {
@@ -472,6 +468,12 @@ function onUnMarkAsPaidbyMasterroom() {
 }
 
 function onAllowPostToCityLedger() {
+    if (rs.selecteds.length==0) {
+            toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
+            return
+    } 
+
+
     confirm.require({
         message: 'Are you sure you want to allow post to city ledger?',
         header: 'Confirmation',
@@ -484,7 +486,7 @@ function onAllowPostToCityLedger() {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 1
-            }).then((result) => {
+            },"").then((result) => {
                 rs.LoadReservation()
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
@@ -497,6 +499,11 @@ function onAllowPostToCityLedger() {
 }
 
 function onUnAllowPostToCityLedger() {
+    if (rs.selecteds.length==0) {
+            toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
+            return
+    } 
+
     confirm.require({
         message: 'Are you sure you want to un allow post to city ledger?',
         header: 'Confirmation',
@@ -509,7 +516,7 @@ function onUnAllowPostToCityLedger() {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 0
-            }).then((result) => {
+            },"" ).then((result) => {
                 rs.LoadReservation()
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             })
@@ -561,7 +568,7 @@ function onAuditTrail() {
 function onGroupChangeRate() {
     if (rs.selecteds.filter((r) => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).length > 0) {
         const dialogRef = dialog.open(ComGroupChangeRate, {
-            data: rs.selecteds,
+            data: {stays:rs.selecteds,reservation:rs.reservation.name},
             props: {
                 header: 'Group Change Rate',
                 style: {
@@ -577,7 +584,10 @@ function onGroupChangeRate() {
                 position: "top"
             },
             onClose: (options) => {
-                //
+                if (options.data){
+                    rs.LoadReservation(rs.reservation.name,true)
+
+                }
             }
         });
     } else {
@@ -721,6 +731,42 @@ function onPickDrop() {
         gv.toast('warn', 'Please select reservation stay for Pickup and Drop Off.')
         return false
     }
+}
+
+function onTransferStay(){
+    const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1)
+
+    if (stays.length==0) {
+            toast.add({ severity: 'warn', summary: "", detail: "Please select active reservation stay to transfer to other reservation.", life: 3000 })
+            return
+    } 
+
+    const dialogRef = dialog.open(ComConfirmTransferStay, {
+        data: {
+            source_reservation:rs.reservation.name,
+            stays:stays.map(r=>r.name),
+            keep_rate:1
+        },
+        props: {
+            header: "Transfer Stay",
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: true,
+            position: "top"
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data){
+                rs.LoadReservation();
+            }
+        }
+
+    });
+
+    
 }
 
 </script>

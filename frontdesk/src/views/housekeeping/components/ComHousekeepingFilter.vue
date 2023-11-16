@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="w-auto max-w-25rem">
-            <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
+            <ComSelect :maxSelectedLabels="3" :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex" :isMultipleSelect="true" 
                 isFilter
                 groupFilterField="room_type_group"
                 :groupFilterValue="hk.filter.selected_room_type_group"  

@@ -6,7 +6,7 @@
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
-                                <ComSelect placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
+                                <ComSelect :maxSelectedLabels="3" placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                 <div class="grid mt-3">
                     <div class="col-12 pl-2 py-0">
                         <div class="flex flex-column justify-between h-full">
-                            <ComReservationStayListStatusBadge v-if="!(Object.entries(rs.reservation).length === 0)"/>
+                            <ComReservationStayListStatusBadge v-if="rs.reservation && Object.keys(rs.reservation).length !== 0"/>
                         </div>
                     </div>
                 </div>

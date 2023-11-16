@@ -21,6 +21,7 @@
   "default_check_in_time",
   "default_check_out_time",
   "calculate_room_occupancy_include_room_block",
+  "show_additional_guest_name_in_room_chart_calendar",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -348,12 +349,18 @@
    "fieldname": "search_table",
    "fieldtype": "Table",
    "options": "eDoor Global Search Doctype"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_additional_guest_name_in_room_chart_calendar",
+   "fieldtype": "Check",
+   "label": "Show additional guest name in room chart calendar"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-12 18:40:11.489336",
+ "modified": "2023-11-12 16:00:54.807202",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

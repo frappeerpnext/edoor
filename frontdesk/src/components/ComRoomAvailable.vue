@@ -171,9 +171,7 @@ const calendarOptions = reactive({
               info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
           }
       }
-      info.el.addEventListener('click', function () {
-          window.postMessage({ "action": "view_property_data_sumary_by_date", date: moment(info.date).format("YYYY-MM-DD") })
-      })
+
       info.el.style.cursor="pointer"
 
   },

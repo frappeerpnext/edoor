@@ -72,7 +72,8 @@
                     </span>
                     <span class="italic ms-2"> Last Modified: </span>
                     <span class="text-500 font-italic">
-                        {{ data?.modified_by }} {{ gv.datetimeFormat(data?.modified) }}
+                        {{ data?.modified_by.split("@")[0] }}
+                        <ComTimeago :date="data?.modified"/> 
                     </span>
                 </div>
             </TabPanel>

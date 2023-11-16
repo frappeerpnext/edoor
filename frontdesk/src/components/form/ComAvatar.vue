@@ -2,10 +2,10 @@
     <div class="w-full flex align-items-center text-color border-noround" :class="align">
         <div :class="{'cursor-pointer':isDisplayImage}" @click="onShowImage" v-if="!fileName">
             <Avatar v-if="image" :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300 border-circle" shape="circle" :style="{borderColor:colorStatus}" />
+            <Avatar v-else-if="label" :label="getAbbreviation()"/>
             <div v-else class="mr-3 bg-gray-300 border-circle p-1 border-2" :style="{borderColor:colorStatus}">
                 <ComIcon  icon="userProfile" ></ComIcon>
             </div>
-            <!-- <Avatar :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300" shape="circle" :style="{borderColor:colorStatus}" /> -->
         </div>
         <template v-else>
             <Avatar v-if="icon" :size="size" :icon="icon" class="mr-2 !bg-transparent" shape="circle" :style="{borderColor:colorStatus}" />
@@ -24,12 +24,13 @@
     </Galleria>
 </template>
 <script setup>
-import {computed,ref,onMounted} from 'vue'
+import {ref,onMounted} from 'vue'
 import Galleria from 'primevue/galleria';
 const emit = defineEmits('onClick')
 const props = defineProps({
     colorStatus: String,
     image: String,
+    label:String,
     size: {
         type: String,
         default: 'large'
@@ -57,6 +58,19 @@ function onShowImage(){
         display.value = true
     }
 }
+
+function getAbbreviation(){
+    if (props.label){
+        const words = props.label.split(" ")
+        let label = words[0][0]
+        if (words.length>1){
+            label = label + words[1][0]
+        }
+        return label
+    }
+    return ""
+}
+
 onMounted(() => {
     if(props.fileName){
         extension.value = props.fileName.substring(props.fileName.lastIndexOf(".") + 1);

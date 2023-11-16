@@ -90,6 +90,9 @@ function onLoadSocket(){
     window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
     window.socket.emit("Reports", window.property_name)
     window.socket.emit("ReservationDetail", window.reservation)
+    window.socket.emit("FolioTransactionList", window.property_name)
+
+ 
 
     if(data.value.data.stays && data.value.data.stays.length > 0){
         data.value.data.stays.forEach(r => {

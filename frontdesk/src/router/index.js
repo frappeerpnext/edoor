@@ -27,6 +27,9 @@ import Reports from "@/views/report/Reports.vue";
 import BusinessSource from "@/views/business_source/BusinessSource.vue";
 import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import NotFound from "@/components/NotFound.vue";
+import Activity from "@/views/activities/Activity.vue";
+import DepositLedger from "@/views/deposit_ledger/DepositLedger.vue";
+
 import authRoutes from './auth';
 
  
@@ -64,6 +67,8 @@ let routes = [
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   { path: "/frontdesk/test-page", name: "TestPage", component: TestPage, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/activity", name: "Activity", component: Activity, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/deposit-ledger", name: "DepositLedger", component: DepositLedger, meta: { layout: 'main_layout' } },
  
   ...authRoutes,
 

@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_reservation_folio, get_base_rate
+from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 
@@ -14,8 +14,11 @@ class FolioTransaction(Document):
 				if self.is_auto_post ==1:
 					if not hasattr(self,"ignore_validate_auto_post"):
 						frappe.throw("You cannot edit auto post transaction")
+		
 		if self.require_city_ledger_account==0:
 			self.city_ledger = None
+	
+			
 			
 		#validate folio status
 		if self.transaction_type =='Reservation Folio':
@@ -34,8 +37,14 @@ class FolioTransaction(Document):
 			if self.is_new():
 				if not self.city_ledger:
 					frappe.throw("Please select city ledger account")
+				if not self.target_account_code:
+					frappe.throw("This account code does not have target account code. Please config target account in account code setting.")
 			else:
 				frappe.throw("You cannot edit {} transaction.".format(self.account_name))
+		
+
+
+		
 		#check reservation status if allow to edit
 		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
 			frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
@@ -44,6 +53,10 @@ class FolioTransaction(Document):
 			if not self.folio_number:
 				frappe.throw("Please select a folio number")
 			if self.is_new():
+				#validation if user select target account
+				if not self.target_account_code:
+					frappe.throw("This account code does not have target account code. Please config target account in account code setting.")
+
 				target_folio_doc = frappe.get_doc("Reservation Folio",self.folio_number)
 				if target_folio_doc.status =='Closed':
 					frappe.throw("Target Folio Number {} is already closed".format(target_folio_doc.name))
@@ -252,6 +265,8 @@ class FolioTransaction(Document):
 	def on_update(self):
 		if not hasattr(self,"ignore_update_folio_transaction"):
 			update_folio_transaction(self)
+
+		
 		
 
 	def on_trash(self):
@@ -400,6 +415,9 @@ def update_folio_transaction(self):
 		
 	if self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
+	
+	if self.transaction_type =="Desk Folio":
+		update_deposit_ledger(self.transaction_number, None, False)
 
 	#check if it is is folio transfer then queue add record to folio transaction
 	if self.require_select_a_folio==1: 
@@ -493,7 +511,8 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						'amount': amount,
 						"note":note,
 						"parent_reference":self.name,
-						"is_auto_post":self.is_auto_post
+						"is_auto_post":self.is_auto_post,
+						"reservation_room_rate": self.reservation_room_rate
 					}).insert()
 					
 
@@ -514,8 +533,8 @@ def transfer_folio_balance(self):
 		'working_day': self.working_day,
 		'cashier_shift': self.cashier_shift,
 		'working_date': self.working_date,
-		'account_code': self.account_code,
-		'type': "Credit" if self.type =='Debit' else 'Debit', 
+		'account_code': self.target_account_code,
+		'type': self.target_account_type,
 		"quantity":1,
 		'input_amount': self.input_amount,
 		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.transaction_number, self.room_number),
@@ -539,12 +558,19 @@ def post_to_city_ledger(self):
 		'working_day': self.working_day,
 		'cashier_shift': self.cashier_shift,
 		'working_date': self.working_date,
-		'account_code': self.account_code,
-		'type': "Credit" if self.type =='Debit' else 'Debit', 
+		'account_code': self.target_account_code,
+		'type': self.target_account_type,
 		"quantity":1,
 		'input_amount': self.input_amount,
 		"note":"City Ledger transfer from folio #: {}, room: {}".format(self.transaction_number, self.room_number),
 		"is_auto_post":1,
+		"guest":self.guest,
+		"guest_name":self.guest_name,
+		"room_number":self.room_number,
+		"room_type":self.room_type,
+		"room_id":self.room_id,
+		"room_type_id":self.room_type_id,
+		"reservation_stay":self.reservation_stay,
 		"require_city_ledger_account": 0,
 		"reference_folio_transaction":self.name
 	}).insert()

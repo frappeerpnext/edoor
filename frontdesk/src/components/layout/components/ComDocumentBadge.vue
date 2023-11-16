@@ -33,7 +33,6 @@ const actionHandler = async function (e) {
  
 
        if (e.isTrusted ) {
-        // if(e.data.action=='refresh_document_count' && e.data.docname == props.docname){
         if(e.data.action=='refresh_document_count'){
             getTotalDocument()
         }

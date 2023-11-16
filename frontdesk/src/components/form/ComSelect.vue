@@ -1,9 +1,9 @@
 <template>
     <div :class="class">
         <tippy :content="tooltip || doctype">
-        <MultiSelect class="w-full md:w-15rem" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+        <MultiSelect :class="mClass" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
-            @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectLabel"/>
+            @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectedLabels"/>
         <Dropdown 
             class="w-full" v-else 
             :showClear="clear" 
@@ -70,14 +70,14 @@ const props = defineProps({
     default: {
         type: Boolean,
         default: false
-    },
-    maxSelectLabel: Number,
+    }, 
     class: String,
     tooltip:String,
     maxSelectedLabels: {
         type: Number,
-        default: null
-    }
+        default: 3
+    },
+    mClass: String
 })
 const toast = useToast();
 const frappe = inject('$frappe')
@@ -95,6 +95,7 @@ let selected = computed({
 })
 
 onMounted(() => {
+    
     watch(() => props.groupFilterValue, (newValue, oldValue) => {
         if (newValue != null) {
             if (props.isMultipleSelect && Array.isArray(newValue)) {
@@ -211,4 +212,4 @@ function onUpdate(r) {
     
 }
 
-</script>
+</script> 
