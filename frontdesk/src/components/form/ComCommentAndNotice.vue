@@ -25,8 +25,9 @@
             </div>
         </div>
         <div>
+     
             <Button class="dialog_btn_transform conten-btn " :loading="saving" @click="onCreate">
-                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{create.comment_type}}
+                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{commentType}}
             </Button>
         </div>
         <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
@@ -39,15 +40,15 @@
         <div class="flex items-center">
             <!-- <i :class="(i.comment_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i> -->
             <span class="">
-            <i :class="i.custom_icon" class="text-md me-2"></i>
+            <i :class="i.custom_icon" style="font-size:14px" class="me-2"></i>
             </span>
             <div class="ms-1 text-sm ">
                 
-                <span class="font-italic" v-if="i.comment_type!='Info'">{{i.comment_type}}</span> <span class="text-500 font-italic"> by: {{i.comment_by}}    
+                <span class="font-italic">{{i.subject}}</span> <span class="text-500 font-italic"> by: {{(currentUser.name==i.owner?"You ": i.comment_by).split("@")[0]}}    
                     <ComTimeago  :date="i.creation"/> 
                                  </span>
                                  <div class="inline" v-if="i.custom_is_note == 1">
-                <span class="font-italic" >, Last Modified : </span> <span class="text-500 font-italic" v-if="i.modified">{{i.modified_by}}  <ComTimeago  :date="i.modified"/> </span>
+                <span class="font-italic" > | Last Modified : </span> <span class="text-500 font-italic" v-if="i.modified_by">{{(currentUser.name==i.modified_by?"You ": i.modified_by).split("@")[0]}}  <ComTimeago  :date="i.modified"/> </span>
                                  </div>
             </div> 
            
@@ -61,7 +62,7 @@
     <div class="content-note-comment" v-if="doctype!=i.reference_doctype">
     {{i.reference_doctype}} | <a @click="onViewDetail(i)"> {{i.reference_name}}</a>
     </div>
-        <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} {{i.subject}}</div>
+        <!-- <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} </div> -->
         <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date">
         Note Date: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
@@ -70,7 +71,6 @@
     </ComPlaceholder>
     <OverlayPanel ref="op">
     <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
-        {{edit}}
     <div>
     <span class="font-semibold text-lg mb-3" for="textnote">{{edit.custom_is_note==0?'Comment':"Note"}}</span>
     <div class="mb-2" v-if="edit.custom_is_note==1">
@@ -87,7 +87,7 @@
 </template>
 <script setup>
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
-import { ref, inject, getDocList, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted } from '@/plugin'
+import { ref, inject, getDocList, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted,computed } from '@/plugin'
 import Enumerable from 'linq'
 const moment = inject("$moment");
 const gv = inject("$gv");
@@ -100,6 +100,11 @@ const props = defineProps({
 const onRefresh = debouncer(() => {
     onLoad();
 }, 500);
+
+const commentType = computed(()=>{
+    return (create.value.custom_is_note || 0) ==0? "Comment":"Note"
+})
+
 function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {
@@ -122,7 +127,7 @@ const currentUser = window.user
 const create = ref({
     comment_type: 'Comment',
     content: '',
-    custom_note_date: moment().toDate(),
+    custom_note_date: moment(window.current_working_date).toDate(),
     custom_is_note: 0
 })
 const edit = ref({
@@ -160,7 +165,7 @@ function onLoad(show_loading = true) {
 	filters.push(["reference_doctype", 'in', props.reference_doctypes])
 	filters.push(["reference_name", 'in', props.docnames])
     getDocList('Comment', {
-		fields: ["name","creation", "custom_keyword" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_keyword" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {
 			field: "creation",
 			order:"DESC",
@@ -216,7 +221,6 @@ function onCreate() {
     note_data.custom_audit_trail_type = note_data.custom_is_note==1?"Note":"Comment"
     note_data.custom_note_date = moment(note_data.custom_note_date).format("YYYY-MM-DD")
     
-   
     onSaveNote('Comment', note_data)
 }
 

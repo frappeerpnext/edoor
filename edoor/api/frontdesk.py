@@ -120,13 +120,14 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     # get reservation stay
     #filter base on arrival date
     stay = []
-    stay_sql = """SELECT 
+    stay_sql = """SELECT
                     SUM(if(reservation_status = 'No Show' and (arrival_date!='{1}' and is_reserved_room=1),1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}' AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='FIT'  AND is_active_reservation = 1, 1, 0)) AS `total_fit_stay_arrival`,
                     SUM(if(require_pickup = 1 AND  is_active_reservation = 1 and  arrival_date='{1}', 1, 0)) AS `pick_up`
                 FROM `tabReservation Stay` 
                 WHERE  
@@ -212,6 +213,25 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                             arrival_date = '{0}' and
                             property = '{1}'
                     """.format(date, property)
+    fit_reservation_sql = """
+                        select 
+                            count(distinct reservation)   as total
+                        from `tabReservation Stay`
+                        where 
+                            is_active_reservation=1 and 
+                            reservation_status   in ('Reserved','Confirmed','In-house') and
+                            reservation_type = 'FIT' and 
+                            arrival_date = '{0}' and
+                            property = '{1}'
+                    """.format(date, property)
+    daily_reservation_sql = """
+                        select 
+                            count(distinct reservation)   as total
+                        from `tabReservation Stay`
+                        where 
+                            reservation_date = '{0}' and
+                            property = '{1}'
+                    """.format(date, property)    
     
     
     #count upcommintg note
@@ -253,11 +273,14 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "total_void":stay[0]["total_void"] or 0,
         "stay_over":stay[0]["total_stay_over"] or 0,
         "git_reservation_arrival": frappe.db.sql(git_reservation_sql,as_dict=1)[0]["total"] or 0,
+        "fit_reservation_arrival": frappe.db.sql(fit_reservation_sql,as_dict=1)[0]["total"] or 0,
         "git_stay_arrival":stay[0]["total_git_stay_arrival"] or 0,
         "upcoming_note":upcoming_note[0]["total"] or 0,
         "total_unassign_room":total_unassign_room,
         "total_room_block": total_room_block,
-        "occupancy":occupancy
+        "occupancy":occupancy,
+        "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
+        "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 
     }
 
 
@@ -1217,15 +1240,15 @@ def validate_run_night_audit(property,step):
         data = frappe.db.sql(sql, as_dict=1)
         if data:
             frappe.throw("Please check out all reservation")
-    elif step==4:
+    elif step==5:
         sql="select name from `tabReservation Room Rate` where date = date_add('{}', interval 1 day) and property='{}' limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
         return True if data else False
-    elif step == 5:
+    elif step == 6:
         sql="select name from `tabFolio Transaction` where posting_date = '{}'  and property='{}' and ifnull(parent_reference,'') = '' and is_auto_post = 0 limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
         return True if data else False
-    elif step == 6:
+    elif step == 7:
         sql="select name from `tabCashier Shift` where posting_date = '{}'  and business_branch='{}' and is_closed = 0 limit 1".format(working_day["date_working_day"], property)
         data = frappe.db.sql(sql, as_dict=1)
         if  data:

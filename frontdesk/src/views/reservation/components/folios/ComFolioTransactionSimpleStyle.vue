@@ -28,6 +28,8 @@
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
                     </span>
                     <span>{{ slotProps.data.account_name }}</span>
+                    
+                    
                 </template>
             </Column>
             <Column header="Qty" class="text-center">
@@ -46,12 +48,12 @@
                     <CurrencyFormat :value="slotProps.data.discount_amount" class="white-space-nowrap" />
                 </template>
             </Column>
-            <Column field="total_tax" header="Tax" class="text-right">
+            <Column field="total_tax" header="Tax" class="text-right" v-if="getTotal('total_tax')!=0">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.total_tax" class="white-space-nowrap" />
                 </template>
             </Column>
-            <Column field="bank_fee_amount" header="Bank Fee" class="text-right">
+            <Column field="bank_fee_amount" header="Bank Fee" class="text-right" v-if="getTotal('bank_fee_amount')!=0">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.bank_fee_amount" class="white-space-nowrap" />
                 </template>
@@ -116,14 +118,14 @@
                         </template>
                     </Column>
 
-                    <Column footerStyle="text-align:right">
+                    <Column footerStyle="text-align:right" v-if="getTotal('total_tax')!=0">
                         <template #footer>
                             <CurrencyFormat :value="getTotal('total_tax')" />
 
                         </template>
                     </Column>
 
-                    <Column footerStyle="text-align:right">
+                    <Column footerStyle="text-align:right" v-if="getTotal('bank_fee_amount')!=0">
                         <template #footer>
                             <CurrencyFormat :value="getTotal('bank_fee_amount')" />
 
@@ -246,7 +248,9 @@ function LoadFolioTransaction(){
 						"show_print_preview",
 						"print_format",
 						"is_auto_post",
-						"allow_enter_quantity"
+						"allow_enter_quantity",
+                        "target_transaction_number",
+                        "city_ledger_name"
 					],
 					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", props.doctype]],
 					limit: 1000

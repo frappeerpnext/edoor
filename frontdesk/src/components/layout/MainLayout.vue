@@ -200,7 +200,7 @@ function onRunNightAudit() {
         props: {
             header: 'Run Night Audit [' + moment(working_day.date_working_day).format('DD-MM-YYYY') + ']',
             style: {
-                width: '80vw',
+                width: '100vw',
             },
             position: "top",
             modal: true,

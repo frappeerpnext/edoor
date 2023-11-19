@@ -304,7 +304,6 @@ onMounted(() => {
 })
 
 function onAddNote(name) {
-
     const dialogRef = dialog.open(ComAddNote, {
         data: {
             name: name

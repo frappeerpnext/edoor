@@ -9,32 +9,15 @@
                 <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
             </div>
         </div>
-        <div class="w-auto max-w-25rem">
-            <ComSelect :maxSelectedLabels="3" mClass="w-20rem text-overflow-ellipsis" :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex max-w-25rem" :isMultipleSelect="true" 
-                isFilter
-                groupFilterField="room_type_group"
-                :groupFilterValue="hk.filter.selected_room_type_group"  
-                v-model="hk.filter.selected_room_type" 
-                optionLabel="room_type"
-                optionValue="name" 
-                @onSelected="onSearch" 
-                placeholder="Room Type" 
-                doctype="Room Type"
-                :maxSelectLabel="3">
-            </ComSelect>
-            <div class="card flex justify-content-center">
-        <MultiSelect v-model="hk.filter.selected_room_type" display="chip" :options="cities" optionLabel="name" placeholder="Select Cities"
-            :maxSelectedLabels="3" class="w-full md:w-20rem" />
-    </div>
-            
-        </div>
-        <div class="w-15rem">
-            <ComSelect :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
+        <div class="w-30rem">
+            <ComSelect maxWidth="30rem" width="30rem" :filters="[['property', '=', hk.property.name]]" class="linelight-edor w-auto flex height-of-filter" :isMultipleSelect="true" 
                 isFilter 
                 v-model="hk.filter.selected_housekeeping_status"
                 placeholder="Housekeeping Status" 
                 doctype="Housekeeping Status" 
-                @onSelected="onSearch" />
+                @onSelected="onSearch"
+                :maxSelectLabel="10"
+                />
         </div>
         <div class="">
             <div class="flex gap-2">
@@ -45,7 +28,7 @@
             </div>
         </div>
     </div>
-    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:50rem">
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
             <div class="col-4">
@@ -61,6 +44,22 @@
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
                     @onSelected="onSearch" />
             </div> 
+            <div class="w-auto min-w-30rem col-8">
+            <ComSelect :maxSelectedLabels="10"  maxWidth="31.2rem" width="31.6rem" mClass="
+             text-overflow-ellipsis" :filters="[['property', '=', hk.property.name]]" class="linelight-edor height-of-filter flex max-w-25rem" :isMultipleSelect="true" 
+                isFilter
+                groupFilterField="room_type_group"
+                :groupFilterValue="hk.filter.selected_room_type_group"  
+                v-model="hk.filter.selected_room_type" 
+                optionLabel="room_type"
+                optionValue="name" 
+                @onSelected="onSearch" 
+                placeholder="Room Type" 
+                doctype="Room Type"
+                :maxSelectLabel="10">
+            </ComSelect>
+            
+        </div>
         </div>        
     </ComOverlayPanelContent>
     </OverlayPanel>
@@ -72,13 +71,6 @@ const hk = inject("$housekeeping")
 const gv = inject("$gv")
 const moment = inject("$moment")
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
-const cities = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);

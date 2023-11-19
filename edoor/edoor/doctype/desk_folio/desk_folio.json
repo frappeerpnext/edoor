@@ -176,7 +176,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-13 12:19:53.624306",
+ "modified": "2023-11-18 21:46:15.147841",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Desk Folio",
@@ -196,7 +196,9 @@
    "write": 1
   }
  ],
+ "search_fields": "guest,guest_name,room_number",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

@@ -1,10 +1,11 @@
 <template>
     <div :class="class">
         <tippy :content="tooltip || doctype">
-        <MultiSelect :class="mClass" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width }" v-model="selected"
+        <MultiSelect :class="mClass" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width , 'max-width':maxWidth }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
             @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectedLabels"/>
-        <Dropdown 
+
+            <Dropdown 
             class="w-full" v-else 
             :showClear="clear" 
             :style="{ 'min-width': width , 'max-width':maxWidth }"

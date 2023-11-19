@@ -42,11 +42,11 @@
             <div class="col-12 p-0">
                 <div
                     class="line-height-1 -mt-2 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                    <div >
+                    <div>
                         <span class="italic">Created by: </span>
                         <span class="text-500 font-italic"> 
                             {{ doc?.owner?.split("@")[0] }}
-                            <ComTimeago :date="doc?.owner?.creation" />
+                            <ComTimeago :date="doc?.creation" />
 
                         </span>
                     </div>
@@ -54,7 +54,7 @@
                         <span class="italic ms-2"> Last Modified: </span>
                         <span class="text-500 font-italic"> 
                             {{ doc?.modified_by?.split("@")[0] }}
-                            <ComTimeago :date="doc?.modified_by?.modified" />
+                            <ComTimeago :date="doc?.modified" />
 
                         </span>
                     </div>
@@ -73,6 +73,13 @@
             </div>
             <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" />
             <ComFolioTransactionSimpleStyle v-else :folio="doc" />
+
+            <div class="col-12">
+                <ComCommentAndNotice doctype="Reservation Folio"
+                    :docname="name"
+                    :reference_doctypes="['Reservation Folio','Folio Transaction']"
+                    :docnames="relatedIds" />
+            </div>
         </div>
         <template #footer-left>
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
@@ -81,11 +88,13 @@
 </template>
 <script setup>
 
-import { ref, onMounted, inject, getDoc, useDialog } from '@/plugin'
+import { ref, onMounted, inject, getApi, useDialog } from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
 import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
+
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
  
@@ -97,7 +106,7 @@ const dialogRef = inject("dialogRef");
 
 
 const loading = ref(false)
-
+const relatedIds = ref()
 
 
 function onOk() {
@@ -112,7 +121,7 @@ function onAuditTrail() {
             referenceTypes: [{ doctype: 'Reservation Folio', label: 'Reservation Folio' },
             { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: [doc?.value.name],
+            docnames: relatedIds.value,
         },
 
         props: {
@@ -136,8 +145,11 @@ function onAuditTrail() {
 }
 function getData() {
     loading.value = true
-    getDoc("Reservation Folio", name.value).then(r => {
-        doc.value = r
+    getApi("utils.get_reservation_folio_detail", {
+        name:name.value
+    }).then(r => {
+        doc.value = r.message.reservation_folio
+        relatedIds.value = r.message.related_ids
         loading.value = false
     }).catch(err => {
         loading.value = false

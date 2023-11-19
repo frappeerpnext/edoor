@@ -134,6 +134,7 @@ import ComLetterHead from "@/components/form/ComLetterHead.vue"
 import ComPrintButton from "@/components/form/ComPrintButton.vue"
 import DeskFolio from './providers/desk_folio';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
+import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 
 
 // use components //
@@ -213,6 +214,8 @@ app.component('ComLetterHead', ComLetterHead)
 app.component('ComPrintButton', ComPrintButton)
 app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
+app.component('ComOpenStatus', ComOpenStatus)
+
 // Plugins
 app.use(frappe)
 

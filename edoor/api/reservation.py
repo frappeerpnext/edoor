@@ -1592,8 +1592,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
                             {"reservation_stay":stay.name})
 
         #close all folio
-        
-        if status in ["Cancelled","No Show","Voided"]:
+        if status in ["Cancelled","No Show","Void"]:
             color = frappe.db.get_value("Reservation Status",status,"color")
             
             frappe.db.sql("update `tabReservation Folio` set status = 'Closed', reservation_status_color='{1}' where reservation_stay='{0}'".format(stay.name,color))
@@ -1923,24 +1922,28 @@ def get_folio_transaction(transaction_type, transaction_number):
     return folio_transactions
 
 @frappe.whitelist()
-def get_folio_transaction_summary(folio_number):
+def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order'):
+ 
     data = frappe.db.sql("""
                     select 
+                        account_code,
                         room_number,
                         account_name,
                         type,
-                        account_category_sort_order, 
+                        {0}, 
                         sum(amount) as amount
                     from `tabFolio Transaction` 
                     where 
-                        transaction_number = '{}' 
-                        group by 
-                            account_name ,
-                            room_number,
-                            type
-                        order by 
-                            account_category_sort_order
-                """.format(folio_number),as_dict=1)
+                        transaction_number = '{2}' and 
+                        transaction_type = '{1}'
+                    group by 
+                        account_code,
+                        account_name ,
+                        room_number,
+                        type
+                    order by 
+                        {0}
+                """.format(sort_by_field, transaction_type, transaction_number ),as_dict=1)
     summary_data = []
     balance = 0
     for d in data:
@@ -1952,8 +1955,6 @@ def get_folio_transaction_summary(folio_number):
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance
         })
-
-    
     return summary_data
 
 

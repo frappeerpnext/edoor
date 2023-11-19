@@ -88,21 +88,23 @@
         </div>
     </div>
 
-    <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:55rem">
         <ComOverlayPanelContent style="min-width:50rem" title="Advance Filter" @onSave="onClearFilter"
             titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
             @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-6">
+                    <label> Start Date </label>
                     <Calendar class="w-full" :showButtonBar="true" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="loadData(false, $event)" showIcon />
                 </div>
                 <div class="col-6">
+                    <label> End Date </label>
                     <Calendar class="w-full" :selectOtherMonths="true" :minDate="filter.start_date" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="loadData(false, $event)"  />
                 </div>
                 <ComSelect class="col-6 " v-model="filter.type" :options="reference_doctypes" isMultipleSelect
-                    optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
+                    optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="10"
                     @onSelected="loadData(false, $event)" />
                 <ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
                     placeholder="Please Select User" doctype="User" @onSelected="loadData(false, $event)" />
@@ -120,7 +122,7 @@ import ComActivityTable from "@/views/activities/components/ComActivityTable.vue
 const edoor_activity_show_summary = localStorage.getItem("edoor_activity_show_summary")
 const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const filter = ref({ start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword:"" })
+const filter = ref({ start_date: moment(working_day.date_working_day).add(-7,'days').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword:"" })
 
 const data = ref()
 const showSummary = ref(true)
@@ -137,6 +139,8 @@ const reference_doctypes = ref([
     { doctype: 'Customer', label: 'Guest' },
     { doctype: 'Reservation Folio', label: 'Reservation Folio' },
     { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+    { doctype: 'Desk Folio', label: 'Desk Folio' },
+    { doctype: 'Deposit Ledger', label: 'Deposit Ledger' },
 
 ])
 const actions = ref([
@@ -233,7 +237,7 @@ function onOrderBy(data) {
     loadData()
 }
 const onClearFilter = () => {
-	filter.value = { start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate() }
+	filter.value = { start_date: moment(working_day.date_working_day).add(-7,'days').toDate(), end_date: moment(working_day.date_working_day).toDate() }
 	loadData()
 	showAdvanceSearch.value.hide()
 }
@@ -278,7 +282,7 @@ onUnmounted(() => {
     window.socket.off("Activity")
 })
 const isFilter = computed(() => {
-    if (moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
+    if (moment(working_day.date_working_day).add(-7,'days').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
         return true
     }
     else {

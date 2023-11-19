@@ -20,8 +20,13 @@
             </div>
             <div class="col" v-if="hasFilter('select_filter')">
                 <label>Select Filter</label><br>
-                <ComSelect class="w-full" :selectOtherMonths="true" v-model="filter.select_filter" placeholder="Select Filter"
+                <ComSelect class="w-full"  v-model="filter.select_filter" placeholder="Select Filter"
                 :options="['Reservation','Reservation Stay','Reservation Room Rate','Guest','Reservation Folio','Folio Transaction']" />
+            </div>
+            <div class="col" v-if="hasFilter('reservation_type')">
+                <label>Reservation Type</label><br>
+                <ComSelect class="w-full"   v-model="filter.reservation_type" placeholder="Select Reservation Type" :showClear="true"
+                :options="['FIT','GIT']" />
             </div>
             <div class="col"  v-if="hasFilter('business_source')">
                 <label>Business Source</label><br>
@@ -31,7 +36,7 @@
             <div class="col"  v-if="hasFilter('reservation_status')">
                 <label>Reservation Status</label><br>
                 <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status" doctype="Reservation Status"
-                class="auto__Com_Cus w-full" :isMultipleSelect="true" />
+                class="auto__Com_Cus w-full" :isMultipleSelect="true" maxWidth="30rem" :maxSelectLabel="10" />
             </div>
             <div class="col"  v-if="hasFilter('room_type')">
                 <label>Room Type</label><br>
@@ -49,7 +54,7 @@
                 optionLabel="room_type" optionValue="name"
                 extraFields="room_type"
                     v-model="filter.room_type_name"   placeholder="Room Type" doctype="Room Type"
-                    :filters="{ property: property.name }" :isMultipleSelect="true"></ComSelect>
+                    :filters="{ property: property.name }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>

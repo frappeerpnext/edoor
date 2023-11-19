@@ -6,7 +6,8 @@
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
-                                <ComSelect :maxSelectedLabels="3" placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus"></ComSelect>
+                                <ComSelect :maxSelectedLabels="10" mClass="max-w-35rem" maxWidth="35rem" placeholder="Filter by Status" v-model="rs.filterStatusRooms" isMultipleSelect optionLabel="reservation_status" optionValue="name" :options="status" @onSelected="onFilterSelectStatus">
+                                </ComSelect>
                             </div>
                         </div>
                     </div>
@@ -37,9 +38,7 @@
                                     {{ slotProps.data.room_nights || 0 }}
                                 </span>
                             </div>
-                        </template>
-</Column>
-
+                        </template></Column>
                         <Column header="Room">
                             <template #body="slotProps">
                                 <div> 
@@ -172,6 +171,7 @@ status.value.push(
         "name": "require_drop_off",
         "sort_order": 0,
     }
+    
 )
 const rowClass = (data) => {
 
@@ -196,6 +196,7 @@ function getTooltip(p) {
 function onFilterSelectStatus(r) {
     rs.getRoomList(r)
 }
+
 function showReservationStayDetail(selected) {
     let stayName = selected
     if (selected.data && selected.data.name) {

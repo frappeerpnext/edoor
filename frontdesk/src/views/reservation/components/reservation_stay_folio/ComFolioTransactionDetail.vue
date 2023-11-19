@@ -1,10 +1,9 @@
 <template>
-  {{ doc }}}
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
     <div class="border-round-xl h-full">
       <div class="grid">
         <div class="col-6">
-          <h2 data-v-c02f7a3a="" class="h-title mb-2">Transaction Detail</h2>
+          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Transaction Detail</h2>
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
@@ -12,23 +11,26 @@
               <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number" />
               <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type" />
               <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
-              <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number"
-                :value="doc?.credit_card_number" />
+              <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number" :value="doc?.credit_card_number" />
               <ComStayInfoNoBox label="Account Code" v-if="doc?.account_code" :value="doc?.account_code" />
               <ComStayInfoNoBox label="Account Name" v-if="doc?.account_name" :value="doc?.account_name" />
-              <ComStayInfoNoBox label="City Ledger Account" isSlot :fill="false" v-if="doc.require_city_ledger_account == 1 && doc?.account_code">
+              <ComStayInfoNoBox label="Payment By" v-if="doc?.payment_by" :value="doc?.payment_by" />
+              <ComStayInfoNoBox label="Phone Number" v-if="doc?.payment_by_phone_number" :value="doc?.payment_by_phone_number" />
+
+
+              <ComStayInfoNoBox :label="doc.target_transaction_type" isSlot :fill="false" v-if="doc.target_transaction_type">
 
                 <Button class="p-0 link_line_action1"
-                  @click="onCityLedgerDetail()" link>
-                  <span v-if="doc?.city_ledger_name">{{ doc?.city_ledger_name }}</span>
-                  <span v-else>xx</span>
+                  @click="onOpenLink()" link>
+                  <span>{{ doc?.target_transaction_number }}</span>
+                  
                 </Button>
               </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Post Amount" v-if="doc?.input_amount" :value="doc?.input_amount" isCurrency />
-              <ComStayInfoNoBox label="Amount/Rate" v-if="doc?.amount" :value="doc?.amount" isCurrency />
               <ComStayInfoNoBox label="Qty"
                 v-if="account_code?.allow_enter_quantity == 1 || doc?.allow_enter_quantity == 1 && doc?.account_code"
                 :value="doc?.quantity" />
+              <ComStayInfoNoBox label="Amount/Rate" v-if="doc?.amount" :value="doc?.amount" isCurrency />
               <ComStayInfoNoBox label="Card Holder Name" v-if="doc?.card_holder_name" :value="doc?.card_holder_name" />
               <ComStayInfoNoBox label="Credit Expired Date" v-if="doc?.credit_expired_date"
                 :value="gv.datetimeFormat(doc?.credit_expired_date)" />
@@ -74,16 +76,26 @@
                   </div>
                 </OverlayPanel>
               </ComStayInfoNoBox>
-              <ComStayInfoNoBox label="Discount Type"
+
+              <ComStayInfoNoBox label="Discount Amount"
                 v-if="doc?.discount > 0 && doc?.account_code"
-                :value="doc?.discount_type +  '  ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '') "  />
-              <!-- <ComStayInfoNoBox label="Discount"
-                v-if="account_code?.allow_discount && doc?.discount > 0 && doc?.account_code && doc?.discount_type=='Percent'"
-                :value="doc?.discount + '%'"  /> -->
-              <!-- <ComStayInfoNoBox :label="`Room Discount - ${doc?.discount}%`" v-if="account_code?.allow_discount && doc?.account_code" :value="`${doc?.discount}%`" /> -->
-              <ComStayInfoNoBox label="Amount Discount"
-                v-if="doc?.discount > 0 && doc?.account_code"
-                :value="doc?.discount_amount" isCurrency />
+                :value="doc?.discount_amount" isCurrency>
+                <Button v-if="doc?.discount" @click="togglePostDiscountAmount"
+                  icon="pi pi-question text-xs" class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary"
+                  rounded outlined aria-label="Total Tax" />
+                <OverlayPanel ref="opPostDiscountAmount">
+                  <div class="table-order-tax">
+                    <table class="inner-tip-tab">
+                      <tr>
+                        <td class='p-2'>Discount Type : </td>
+                        <td class='p-2 text-end'>
+                          {{doc?.discount_type +  '  ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '')}}
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </OverlayPanel>
+              </ComStayInfoNoBox>
 
               <ComStayInfoNoBox label="Total Amount" v-if="doc?.total_amount" :value="doc?.total_amount" isCurrency
                 isSlot>
@@ -132,7 +144,7 @@
           </table>
         </div>
         <div class="col-6">
-          <h2 data-v-c02f7a3a="" class="h-title mb-2">Creation</h2>
+          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Creation</h2>
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
@@ -185,8 +197,10 @@
       </div>
     </div>
     <div class="mt-3">
-      <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" :showAttach="false"
-        :reservation="doc.reservation" :reservationStay="doc?.reservation_stay" />
+      <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" 
+      :reference_doctypes="['Folio Transaction']" :docnames="doc?.name"
+        
+      />
     </div>
 
     <template #footer-left>
@@ -284,6 +298,7 @@ const onSaveReferenceNumber = () => {
 
 const opTax = ref();
 const opPostAmount = ref();
+const opPostDiscountAmount = ref();
 const toggleTAX = (event) => {
   opTax.value.toggle(event);
 }
@@ -291,7 +306,9 @@ const toggleTAX = (event) => {
 const togglePostAmount = (event) => {
   opPostAmount.value.toggle(event);
 }
-
+const togglePostDiscountAmount = (event) => {
+  opPostDiscountAmount.value.toggle(event);
+}
 const onOpenNote = ($event) => {
   const data = JSON.parse(JSON.stringify(doc.value))
   note.value = data.note
@@ -398,8 +415,8 @@ function onPrintFolioTransaction() {
   })
 }
 
-function onCityLedgerDetail(){
-  window.postMessage("view_city_ledger_detail|" + doc.value.city_ledger)
+function onOpenLink(){
+  window.postMessage("view_" + doc.value.target_transaction_type.toLowerCase().replaceAll(" ","_") + "_detail|" + doc.value.target_transaction_number)
 }
 
 

@@ -16,7 +16,10 @@
         </template>
     </div>
     <Button @click="refreshReport" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
-    <div class="wrp-night-audit-content w-full view-table-iframe">
+    <div v-if="currentStep == 9" style="height: 100vh;">
+        <ComNightAuditReport/>
+    </div>
+    <div v-else class="wrp-night-audit-content w-full view-table-iframe">
         <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="min-height:20rem; width: 100%; overflow-x: auto;" :src="url" ></iframe>
     </div>
 
@@ -24,19 +27,19 @@
         <hr class="mb-2" />
         <div class="flex items-center flex-row-reverse flex-wrap">
             <div class="">
-                <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left"  :loading="loading" :disabled="currentStep == 1" v-if="currentStep < 8" @click="onBack" />
-                <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading" iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 7" @click="onNext" />
-                <Button class="border-none" :loading="loading" v-if="currentStep == 7" @click="onFinish">Finish</Button>
-                <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onClose">Close</Button>
+                <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left"  :loading="loading" :disabled="currentStep == 1" v-if="currentStep < 9" @click="onBack" />
+                <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading" iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 8" @click="onNext" />
+                <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onFinish">Finish</Button>
+                <Button class="border-none" :loading="loading" v-if="currentStep == 9" @click="onClose">Close</Button>
             </div>
             <div class="">
                 <template v-if="currentStep == 5">
                     <Checkbox inputId="verify-night-audit-data01" v-model="isConfirmRoomRate" :binary="true" />
-                    <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">I am verify that all room rate above is correct.</label>
+                    <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">I am verifying that all room rates above are correct.</label>
                 </template>
                 <template v-if="currentStep == 6">
                     <Checkbox inputId="verify-night-audit-data02" v-model="isConfirmFolioPosting" :binary="true" />
-                    <label for="verify-night-audit-data02" class="mr-3 cursor-pointer">I am verify that all other charges and payments has been posted to guest folio.</label>
+                    <label for="verify-night-audit-data02" class="mr-3 cursor-pointer">I am verifying that all other charges and payments have been accurately posted to the guest folio.</label>
                 </template>
             </div>
         </div>
@@ -44,6 +47,7 @@
 </template>
 <script setup>
 import { ref, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } from '@/plugin';
+import ComNightAuditReport from './components/ComNightAuditReport.vue'
 
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -95,7 +99,7 @@ function onNext() {
                     //confrim folio posting
                     if (result.message) {
                         if (isConfirmFolioPosting.value == false) {
-                            toast.add({ severity: 'warn', summary: "Please tick on confirm folio posting check box", detail: '', life: 3000 })
+                            toast.add({ severity: 'warn', summary: "Please tick on confirm folio posting transaction check box", detail: '', life: 3000 })
                             loading.value = false
                             return
                         }
@@ -130,7 +134,7 @@ function onFinish() {
                 property: setting?.property?.name,
                 working_day:working_day.name
             }, "", false).then((result) => {
-                currentStep.value = 8
+                currentStep.value = 9
                 refreshReport()
                 loading.value = false;
                 window.socket.emit("RunNightAudit",{property:window.property_name, action:"reload_page",session_id:window.session_id})
@@ -146,9 +150,7 @@ function onFinish() {
         onHide: () => {
             loading.value = false; 
         },
-    });
-
-    
+    }); 
 }
 
 

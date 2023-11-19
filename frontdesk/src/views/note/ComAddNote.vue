@@ -73,16 +73,17 @@ function onSave(){
   .then((r)=>{
     loading.value = false
     dialogRef.value.close(r)
+    window.socket.emit("RoomBlockList",window.property_name)
   }).catch((err)=>{
     loading.value = false 
   })
 }
 
 onMounted(() => {
-  console.log(property.property_name)
   if(dialogRef.value.data.name){
     getDoc("Comment", dialogRef.value.data.name).then((r)=>{
       data.value = r
+      window.socket.emit("RoomBlockList",window.property_name)
     })
   }else{
     data.value.custom_note_date = new Date()

@@ -1,6 +1,8 @@
 <template>
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
-        <div v-if="doc">
+        <TabView>
+            <TabPanel header="Deposit Ledger Information">
+                <div v-if="doc" class="mt-2">
             <ComDepositLedgerAction :folio="doc"  :newDoc="newDoc" @onClose="onClose" />
                 <table class="mb-4">
                 <tr>
@@ -59,8 +61,8 @@
             </div>
             <div class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3 w-full">
                 <div class="flex gap-2 align-items-center">
-                    Deposit Ledger Detail - {{ doc.name }} <span class="ms-2 px-2 rounded-lg  text-white p-1px"
-                        :class="doc.status == 'Open' ? 'bg-green-500' : 'surface-500'">{{ doc.status }}</span>
+                    Deposit Ledger Detail - {{ doc.name }} 
+                        <ComOpenStatus :status="doc.status" />
                     <div v-tippy="'Master Folio'" v-if="doc.is_master"
                         class="flex justify-center items-center p-2  rounded-lg text-white p-1px bg-purple-100 ">
                         <ComIcon style="height: 12px;" icon="iconCrown" />
@@ -70,7 +72,26 @@
             <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" doctype="Deposit Ledger" :showCheckbox="false"/>
             <ComFolioTransactionSimpleStyle v-else :folio="doc"  doctype="Deposit Ledger" :showCheckbox="false"/>
 
+
+
         </div>
+
+            </TabPanel>
+            <TabPanel > 
+                    <template #header>
+                        <span class="me-2">Document</span>
+                        <Badge :value="totalDocument"></Badge>
+                    </template> 
+                    <ComDocument v-if="doc" @updateCount="onUpdateFileCount" doctype="Deposit Ledger"   :doctypes="['Deposit Ledger','Folio Transaction']" :attacheds="relatedIds" :docname="doc?.name"/>
+                </TabPanel>
+        </TabView>
+       
+        <div class="col-12" >
+                <ComCommentAndNotice v-if="doc" doctype="Deposit Ledger"
+                    :docname="name"
+                    :reference_doctypes="['Deposit Ledger','Folio Transaction']"
+                    :docnames="relatedIds" />
+            </div>
         <template #footer-left>
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
@@ -78,17 +99,23 @@
 </template>
 <script setup>
 
-import { ref, onMounted, inject, getDoc, useDialog,computed , onUnmounted} from '@/plugin'
+import { ref, onMounted, inject, getApi, useDialog,computed , onUnmounted} from '@/plugin'
 import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
 import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
 import ComDepositLedgerAction from "@/views/deposit_ledger/components/ComDepositLedgerAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
+import ComDocumentBadge from '@/components/layout/components/ComDocumentBadge.vue';
+
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
 const moment = inject("$moment")
 const name = ref()
 const doc = ref()
+const relatedIds = ref()
 
+
+const totalDocument = ref(0)
 
 
 
@@ -96,14 +123,17 @@ const dialogRef = inject("dialogRef");
 
 const newDoc = computed(()=>{
     return {
-                        transaction_type: "Deposit Ledger",
-                        transaction_number: doc.value?.name,
-                        property: window.property_name
-                    }
+        transaction_type: "Deposit Ledger",
+        transaction_number: doc.value?.name,
+        property: window.property_name
+    }
 })
 
 const loading = ref(false)
- 
+
+function onUpdateFileCount(n){
+    totalDocument.value = n
+}
 
 function onOk() {
     dialogRef.value.close(dov.value)
@@ -121,7 +151,7 @@ function onAuditTrail() {
             referenceTypes: [{ doctype: 'Deposit Ledger', label: 'Deposit Ledger' },
             { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: [doc?.value.name],
+            docnames: relatedIds.value,
         },
 
         props: {
@@ -145,11 +175,17 @@ function onAuditTrail() {
 }
 function getData() {
     loading.value = true
-    getDoc("Deposit Ledger", name.value).then(r => {
-        doc.value = r
+    getApi("utils.get_deposit_ledger_detail", {
+        name:name.value
+    }).then(r => {
+        doc.value = r.message.deposit_ledger
+        relatedIds.value = r.message.related_ids
         loading.value = false
     }).catch(err => {
-        loading.value = false
+        if(err.httpStatus == 404){
+            dialogRef.value.close()
+        }
+        loading.value = false 
     })
 }
 const onClose = () => {

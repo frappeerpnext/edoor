@@ -60,7 +60,14 @@ function onClose(param = false) {
 }
 onMounted(()=> {
     // data.value.naming_series='FN.YYYY.-.####'; 
-    data.value.posting_date = moment(window.current_working_date).toDate()
-    data.value.working_day = moment(window.current_working_date).toDate()
+    if(dialogRef.value.data.name){
+        getDoc("Desk Folio", dialogRef.value.data.name).then(d=>{
+            data.value = d
+            data.value.posting_date = moment(d.posting_date).toDate()
+        })
+
+    }else {
+        data.value.posting_date = moment(window.current_working_date).toDate()
+    }
 })
 </script>

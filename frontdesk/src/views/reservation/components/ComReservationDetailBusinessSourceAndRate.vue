@@ -18,7 +18,7 @@
                         </div>
                     </div> 
                     <Message v-if="isMultipleStayRate > 1" severity="info" :closable="false">
-                        <p>This reservation has deference reservation stay's rate types.</p>
+                        <p>This reservation has different reservation stay's rate types.</p>
                         <p><b>Note:</b> if you change this. It will override all reservation stays.</p>
                     </Message>
                 </div>

@@ -1,5 +1,4 @@
 <template>
-
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="font-bold text-3xl text-overflow-ellipsis">{{ property.name }}</div>
@@ -79,27 +78,29 @@
                 <ComPanel title="Summary">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
 
-                        <ComKPI @onClick="viewSummary('Arrival')" :value="data.arrival" title="Arrival"
+                        <ComKPI v-tippy=" ' Total Arrival ' + (data?.arrival|| 0)+ ' & ' +(data?.arrival_remaining || 0) + ' Remaining Check-in '" @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  data.arrival + '/' + data?.arrival_remaining ||0)) :''" title="Arrival"
                             class="primary-btn-edoor cursor-pointer border-round-lg"> </ComKPI>
-                        <ComKPI @onClick="viewSummary('Check-In Remaining')" :value="data.arrival_remaining"
-                            title="Check-in Remaining" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI @onClick="viewSummary('Departure')" :value="data.departure" title="Departure"
+                        <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over"
+                            class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI v-tippy="'Total Departure ' +  (data?.departure ||0) + ' & '+ (data?.departure_remaining ||0) +' Remaining Checked-out'" @onClick="viewSummary('Departure')" :value="!gv.loading ? ( data.departure  +'/'+  data?.departure_remaining ||0) : ''" title="Departure"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
-                        <ComKPI @onClick="viewSummary('Check-out remaining')" :value="data.departure_remaining"
-                            title="Check-out Remaining" class="primary-btn-edoor border-round-lg cursor-pointer">
-                        </ComKPI>
+                        <ComKPI @onClick="viewSummary('Daily Reservation')" :value="!gv.loading ? data.daily_reservation : ''"
+                            title="Daily Reservation" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        
+                            <ComKPI
+                            v-tippy="'FIT (free independent traveler) Total ' + data.fit_reservation_arrival + ' & Total Stay ' + data.fit_stay_arrival"
+                            @onClick="viewSummary('FIT Arrival')"
+                            :value="!gv.loading ? (data.fit_reservation_arrival + '/' + data.fit_stay_arrival) : ''"
+                            title="FIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
 
                         <ComKPI
                             v-tippy="' GIT (Group Inclusive Tour) Total ' + data.git_reservation_arrival + ' & Total Stay ' + data.git_stay_arrival"
                             @onClick="viewSummary('GIT Arrival')"
                             :value="!gv.loading ? (data.git_reservation_arrival + '/' + data.git_stay_arrival) : ''"
                             title="GIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-
-                        <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over"
-                            class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-
-                        <ComKPI @onClick="viewSummary('Unassign Room')" :value="data.unassign_room" title="Unassign Room"
+                        <ComKPI v-tippy="'Today ' + (data?.unassign_room || 0) + ' unassign room & Total unassign ' + (data?.total_unassign_room || 0)"
+ @onClick="viewSummary('Unassign Room')" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" title="Unassign Room"
                             class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI @onClick="viewSummary('Pickup and Drop Off')"
                             :value="!gv.loading ? (data.pick_up + '/' + data.drop_off) : ''" title="Pickup/Drop Off"
@@ -564,6 +565,16 @@ const viewSummary = (name) => {
             ['keyword', 'room_type', 'reservation_status', 'business_source']
         )
     }
+    else if (name == "FIT Arrival") {
+        onViewData(
+            'Business%20Branch',
+            // "eDoor%20GIT%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor FIT Arrival Guest"),
+            'FIT Arrival',
+            [{ key: "date", value: selected_date.value }],
+            ['keyword', 'room_type', 'reservation_status', 'business_source']
+        )
+    }
     else if (name == "Stay Over") {
         onViewData(
             'Business%20Branch',
@@ -572,6 +583,15 @@ const viewSummary = (name) => {
             'Stay Over',
             [{ key: "date", value: selected_date.value }],
             ['keyword', 'room_type', 'reservation_status', 'business_source']
+        )
+    }
+    else if (name == "Daily Reservation") {
+        onViewData(
+            'Business%20Branch',
+            // "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard Daily Reservation"),
+            'Daily Reservation For '+ moment(selected_date.value).format("DD-MM-YYYY"),
+            [{ key: "date", value: selected_date.value }]
         )
     }
 }

@@ -3,7 +3,7 @@
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #end>
                 <Button class="conten-btn" @click="AddTransaction(d)"
-                    v-for="(d, index) in setting.account_group.filter(r => r.is_city_ledger_account == 1)" :key="index">Post
+                    v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
                 <Button @click="viewCityLedgerReport" class="conten-btn">
                     <i class="pi pi-print mr-2"></i> Print 

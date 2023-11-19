@@ -85,9 +85,7 @@
                         </div>
                     </div>
                 </TabPanel>
-                <TabPanel v-if="can_view_rate" header="Deposit">
-                    <ComReservationDeposit />
-                </TabPanel>
+              
                 <TabPanel v-if="can_view_rate"  header="Room Rate">
                     <ComReservationRoomRate />
                 </TabPanel>
@@ -145,7 +143,7 @@ import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirm
 import ComReservationFolio from '@/views/reservation/components/reservation_folio/ComReservationFolio.vue'
 import ReservationPrintButton from '@/views/reservation/components/ReservationPrintButton.vue'
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
-import ComReservationDeposit from '@/views/reservation/components/deposit/ComReservationDeposit.vue'
+
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
 const moment = inject('$moment');
 const can_view_rate = window.can_view_rate
@@ -178,13 +176,13 @@ const onRefresh = debouncer((showLoading = true) => {
     if(activeTab.value==0){
         rs.getChargeSummary(name.value)
 
-    } else if(activeTab.value==3) { 
+    } else if(activeTab.value==2) { 
         window.postMessage({action:"load_reservation_folio_list",reservation:name.value},"*")
         window.postMessage({action:"load_folio_transaction"},"*")
-    } else if(activeTab.value==2){
+    } else if(activeTab.value==1){
         rs.getRoomRate(name.value, showLoading);
     }
-    else if(activeTab.value==4){
+    else if(activeTab.value==3){
         window.postMessage({action:"refresh_document",docname:name.value})
         window.postMessage({action:"refresh_document_count",docname:name.value})
     }

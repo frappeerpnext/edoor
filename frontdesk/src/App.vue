@@ -558,7 +558,7 @@ function showDeskFolioDetail(name) {
         props: {
             header:"Desk Folio Detail - " + name,
             style: {
-                width: '60vw',
+                width: '80vw',
             },
             position:"top",
             modal: true,

@@ -1,22 +1,25 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
-# For license information, please see license.txt
+# For license information, please see license.txt\
 
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_reservation_folio, get_base_rate
+from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
+from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
+		if not self.account_code:
+			frappe.throw("Please select an account code")
+
 		if not self.is_new():
 				if self.is_auto_post ==1:
 					if not hasattr(self,"ignore_validate_auto_post"):
 						frappe.throw("You cannot edit auto post transaction")
 		
-		if self.require_city_ledger_account==0:
-			self.city_ledger = None
+ 
 	
 			
 			
@@ -32,37 +35,52 @@ class FolioTransaction(Document):
 		if not self.input_amount:
 			if not hasattr(self,"valiate_input_amount"):
 				frappe.throw("Please enter amount")
- 
-		if self.require_city_ledger_account==1:
+		
+		#pheakdey
+		if self.target_transaction_type:
 			if self.is_new():
-				if not self.city_ledger:
-					frappe.throw("Please select city ledger account")
+				if not self.target_transaction_number:
+					frappe.throw("Please select " + self.target_transaction_type)
+				target_doc = frappe.get_doc(self.target_transaction_type,self.target_transaction_number)
 				if not self.target_account_code:
 					frappe.throw("This account code does not have target account code. Please config target account in account code setting.")
+					
+				#check target document status
+				
+				if target_doc.status =='Closed':
+					frappe.throw(f"Target {self.target_transaction_type} Number {self.target_transaction_number} is already closed")
+
+				if self.target_transaction_type=="Reservation Folio":
+					self.note =   "{} Folio balance transfer to folio # {}, room:{} ".format(self.note or "", target_doc.name, target_doc.rooms),
+	
 			else:
 				frappe.throw("You cannot edit {} transaction.".format(self.account_name))
-		
 
+			#chekc if target transaction type is city ledger then get city ledger name and city ledger type and update to table
+			if self.target_transaction_type=="City Ledger":
+				city_ledger_doc = frappe.get_doc("City Ledger", self.target_transaction_number)
 
-		
-		#check reservation status if allow to edit
-		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
-			frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
-		
-		if self.require_select_a_folio==1:
-			if not self.folio_number:
-				frappe.throw("Please select a folio number")
-			if self.is_new():
-				#validation if user select target account
-				if not self.target_account_code:
-					frappe.throw("This account code does not have target account code. Please config target account in account code setting.")
-
-				target_folio_doc = frappe.get_doc("Reservation Folio",self.folio_number)
-				if target_folio_doc.status =='Closed':
-					frappe.throw("Target Folio Number {} is already closed".format(target_folio_doc.name))
-				self.note =   "{} Folio balance transfer to folio # {}, room:{} ".format(self.note or "", target_folio_doc.name, target_folio_doc.rooms),
+				self.city_ledger_name = city_ledger_doc.city_ledger_name
+				self.city_ledger_type= city_ledger_doc.city_ledger_type
 			else:
-				frappe.throw("You cannot edit {} transaction".format(self.account_name))
+				self.city_ledger_name =""
+				self.city_ledger_type= ""
+		else:
+			self.city_ledger_name = ""
+			self.city_ledger_type= ""
+
+		#check if doc have source transaction then then mean that this transaction is transfer from 
+		if self.source_transaction_type:
+				self.note = f"{_(self.transaction_type)} transfer from {_(self.source_transaction_type)} #: {self.source_transaction_number}, Reference Source Transaction Number: {self.reference_folio_transaction}"
+
+		#check reservation status if allow to edit
+		if self.reservation_status:
+			if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+				frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
+
+		
+		
+		
 	
 				
 		#validate working day  
@@ -246,31 +264,52 @@ class FolioTransaction(Document):
 		if not self.parent_reference:
 			update_sub_account_description(self)
 
-		
+		#auto set room_type_alias
+		if self.room_type_id:
+			
+			if not self.room_type_alias:
+				
+				self.room_type_alias = frappe.db.get_value("Room Type",self.room_type_id,"alias")
 
+		else:
+			self.room_type=""
+			self.room_type_alias=""
 
 
 	def after_insert(self):
-		if self.require_city_ledger_account==1 and  self.city_ledger :
-			post_to_city_ledger(self)
+		if self.target_transaction_type and  self.target_transaction_number:
+			note = ""
+			# if self.target_transaction_type:
+			# 	note = f"{_(self.transaction_type)} transfer to {_(self.target_transaction_type)} #: {self.target_transaction_number}, room: {self.room_number}"	
+	 
 
-		if not self.parent_reference:
+			post_transaction_to_target_transaction_type(self)
 			
+
+		#add audit trail
+		if not self.parent_reference:
+			content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}"
 			if self.transaction_type=="Reservation Folio":
-				content = f"Post {self.account_group_name} to guest folio. Folio #: {self.transaction_number}, {'To folio: ' + self.folio_number + ',' if self.folio_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+				if self.target_transaction_type:
+					content = content +  f", {'To folio: ' + self.target_transaction_number + ',' if self.target_transaction_number else '' } Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-				if hasattr(self, "is_folio_transfer_from"):
-					content = f"Post {self.account_group_name} from guest folio. Folio #: {self.transaction_number}, From Folio: {self.folio_number} , Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+				if self.source_transaction_type:
+					content = content +  f", From Folio: {self.source_transaction_number} , Reservation Stay: {self.reservation_stay}, Reservation: {self.reservation}, Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+			
+			elif self.transaction_type=="Deposit Ledger":
+				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
+			else:
+				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-				frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
-					"comment_type":"Created",
-					"custom_audit_trail_type":"Created",
-					"custom_icon":"pi pi-dollar",
-					"subject":"Post " + self.account_group_name,
-					"reference_doctype":"Folio Transaction",
-					"reference_name":self.name,
-					"content":content
-				}])
+			frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+				"comment_type":"Created",
+				"custom_audit_trail_type":"Created",
+				"custom_icon":"pi pi-dollar",
+				"subject":"Post " + self.account_group_name,
+				"reference_doctype":"Folio Transaction",
+				"reference_name":self.name,
+				"content":content
+			}])
 
 
 
@@ -280,7 +319,7 @@ class FolioTransaction(Document):
 
 		
 		
-
+		 
 	def on_trash(self):
 		#if this transaction is auto post 
 
@@ -289,9 +328,10 @@ class FolioTransaction(Document):
 				frappe.throw("Auto post transaction is not allow to delete.")
 		
 		#check reservation status if allow to edit
-		if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
-			frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
-		
+		if self.reservation_status:
+			if frappe.db.get_value("Reservation Status",self.reservation_status, "allow_user_to_edit_information")==0:
+				frappe.throw("{} reservation is not allow to delete this transaction".format(self.reservation_status) )
+			
 		#validate record for back date trasaction
 		working_day = get_working_day(self.property)
 		if getdate(working_day["date_working_day"])> getdate(self.posting_date):
@@ -299,6 +339,7 @@ class FolioTransaction(Document):
 
 
 		#validate delete folio transaction that have reference to folio transaction like folio transfer or city ledget
+		
 		account_doc = frappe.get_doc("Account Code",self.account_code)
 		if account_doc.require_select_a_folio:
 			sql = "select name, transaction_number from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
@@ -327,6 +368,8 @@ class FolioTransaction(Document):
 			update_reservation_folio(self.transaction_number, None, False)
 		elif self.transaction_type=='Deposit Ledger':
 			update_deposit_ledger(self.transaction_number, None, False)
+		elif self.transaction_type=='Desk Folio':
+			update_desk_folio(self.transaction_number, None, False)
 		
 		
 		reservation_names.append(self.reservation)
@@ -370,7 +413,16 @@ class FolioTransaction(Document):
 		if self.transaction_type =="Reservation Folio":
 			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Folio #:<a data-action='view_folio_detail' data-name='{self.transaction_number}'>{self.transaction_number}</a>, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
 		else:
-			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>,  Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+			comment["content"] = f"Folio Transaction #: {self.name} has been deleted, "
+			if self.reservation_stay:
+				comment["content"] = comment["content"] +  f"Reservation Stay #: <a  data-action='view_reservation_stay_detail' data-name='{self.reservation_stay}'>{self.reservation_stay}</a>, "
+			if self.reservation:
+				comment["content"] = comment["content"] +  f"Reservation # <a data-action='view_reservation_detail' data-name='{self.reservation}'>{self.reservation}'</a>, " 
+				
+			if self.guest:
+				comment["content"] = comment["content"] +  f"Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+				
+			
 		if (self.deleted_note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
 
@@ -432,15 +484,12 @@ def update_folio_transaction(self):
 	if self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
 	elif self.transaction_type =="Deposit Ledger":
-		
 		update_deposit_ledger(self.transaction_number, None, False)
+	elif self.transaction_type=='Desk Folio':
+		
+		update_desk_folio(self.transaction_number, None, False)
 
-	#check if it is is folio transfer then queue add record to folio transaction
-	if self.require_select_a_folio==1: 
-			if self.folio_number and  self.is_auto_post==0:
-				frappe.enqueue("edoor.edoor.doctype.folio_transaction.folio_transaction.transfer_folio_balance", queue='short', self=self)
-
-
+	
 
 def update_sub_account_description(self):
 	
@@ -509,7 +558,6 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						'transaction_number':self.transaction_number,
 						'reference_number': self.reference_number,
 						'naming_series':self.name + '.-.##',
-						'folio_number':self.folio_number,
 						'property': self.property,
 						'room_type_id':self.room_type_id,
 						'room_type':self.room_type,
@@ -533,41 +581,44 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 					
 
 
+
 @frappe.whitelist()
-def transfer_folio_balance(self):
-	folio_doc = frappe.get_doc("Reservation Folio", self.folio_number)
+def post_transaction_to_target_transaction_type(self,):
 	doc = frappe.get_doc({
 		'doctype': 'Folio Transaction',
-		'transaction_type':self.transaction_type,
-		'transaction_number':self.folio_number,
-		'folio_number':self.transaction_number,
+		'transaction_type': self.target_transaction_type,
+		'transaction_number':self.target_transaction_number,
 		'reference_number': self.name,
-		'property': folio_doc.property,
-		'reservation': folio_doc.reservation,
-		'reservation_stay': folio_doc.reservation_stay,
+		'property': self.property,
 		'posting_date': self.posting_date,
 		'working_day': self.working_day,
 		'cashier_shift': self.cashier_shift,
 		'working_date': self.working_date,
 		'account_code': self.target_account_code,
 		'type': self.target_account_type,
-		"quantity":1,
+		"quantity":self.quantity,
 		'input_amount': self.input_amount,
-		"note":"Folio balance transfer from folio # {}, room:{} ".format(self.transaction_number, self.room_number),
 		"is_auto_post":1,
-		"require_select_a_folio": 0,
+		"guest":self.guest,
+		"guest_name":self.guest_name,
+		"room_number":self.room_number,
+		"room_type":self.room_type,
+		"room_id":self.room_id,
+		"room_type_id":self.room_type_id,
+		"reservation_stay":self.reservation_stay,
+		"reservation":self.reservation,
 		"reference_folio_transaction":self.name,
-		"is_folio_transfer_from":1 #we use this to change message of folio transfer to and from
+		"source_transaction_number": self.transaction_number,
+		"source_transaction_type": self.transaction_type
 	}).insert()
 
-	
 @frappe.whitelist()
 def post_to_city_ledger(self):
 	doc = frappe.get_doc({
 		'doctype': 'Folio Transaction',
 		'transaction_type':"City Ledger",
 		'transaction_number':self.city_ledger,
-		'folio_number':self.transaction_number,
+		
 		'reference_number': self.name,
 		'property': self.property,
 		'posting_date': self.posting_date,
@@ -587,8 +638,9 @@ def post_to_city_ledger(self):
 		"room_id":self.room_id,
 		"room_type_id":self.room_type_id,
 		"reservation_stay":self.reservation_stay,
-		"require_city_ledger_account": 0,
-		"reference_folio_transaction":self.name
+		"reference_folio_transaction":self.name,
+		"target_transaction_number":"",
+		"target_transaction_type":""
 	}).insert()
 
 

@@ -1,20 +1,38 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+from edoor.api.frontdesk import get_working_day
 import frappe
 from frappe.model.document import Document
 from frappe.utils.data import getdate
 
+from decimal import Decimal, ROUND_HALF_UP
 
 class DepositLedger(Document):
 	def validate(self):
+		if self.is_new():
+			working_day = get_working_day(self.property)
+			if not working_day["name"]:
+				frappe.throw("Please start working day to add deposit leadger")
+			else:
+				self.working_day = working_day["name"]
+				self.working_date =working_day["date_working_day"]
+				
+			if not working_day["cashier_shift"]:
+				frappe.throw("Please start cashier shift to add deposit leadger")
+			else:
+				self.cashier_shift = working_day["cashier_shift"]["name"]
+
+		
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0)
 
 		if not self.is_new():
 			folio_data = frappe.db.sql("select min(posting_date) as min_date from `tabFolio Transaction` where transaction_type='Deposit Ledger' and transaction_number='{}'".format(self.name))
+			
 			if len(folio_data)>0:
-				if getdate(self.posting_date)>getdate(folio_data[0][0]):
-					frappe.throw("Posting date of deposit ledger must less than or equal to min date of deposit transaction")				
+				if folio_data[0][0]:
+					if getdate(self.posting_date)>getdate(folio_data[0][0]):
+						frappe.throw("Posting date of deposit ledger must less than or equal to min date of deposit transaction")				
 		
 
 
@@ -36,14 +54,22 @@ class DepositLedger(Document):
 					  "room_type_id":self.room_type_id,
 					  "room_type":self.room_type
 				  })
-			
-			  
 				
-
 	def on_trash(self):
 		if frappe.db.exists("Folio Transaction", {"transaction_type": "Deposit Ledger","transaction_number":self.name }):
 			frappe.throw("You cannot delete deposit ledger that have transaction")
 		
 		#TOTO pos delete to audit trail record
 
-		
+
+	def after_insert(self):
+		content = f"New deposit ledger added. Deposit Ledger #:<a data-action='view_deposit_ledger_detail' data-name='{self.name}'>{self.name}</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+				"comment_type":"Created",
+				"custom_audit_trail_type":"Created",
+				"custom_icon":"pi pi-dollar",
+				"subject":"Add New Deposit Ledger",
+				"reference_doctype":"Deposit Ledger",
+				"reference_name":self.name,
+				"content":content
+			}])

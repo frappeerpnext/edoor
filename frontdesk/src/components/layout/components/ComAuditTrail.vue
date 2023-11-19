@@ -17,6 +17,7 @@
 					</div>
 				</div>
 				<div class="flex gap-2">
+				
 					<div>
 						<Dropdown v-model="pageState.order_by" :options="actions" optionValue="fieldname" optionLabel="label"
 							placeholder="Sort By" @change="loadData" />
@@ -28,7 +29,7 @@
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<!-- <Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" /> -->
+					<Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
 
 					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
 						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
@@ -38,6 +39,17 @@
 				</div>
 			</div>
 		</div>
+		<div class="flex h-3rem justify-end items-end overflow-hidden rounded-lg mb-3">
+			
+                        <button type="button" @click="onToggleView"
+                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+                        </button>
+                        <button @click="onToggleView"
+                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+                        </button>
+                    </div>
 		<div class="overflow-auto h-full">
 			<ComPlaceholder text="No Data" height="70vh" :loading="loading.value" :is-not-empty="data.length > 0">
 				<DataTable 
@@ -49,6 +61,7 @@
 					stateKey="table_audit_trail_list_state" 
 					:reorderableColumns="true" 
 					:value="data"
+					v-if="!toggleView "
 					tableStyle="min-width: 50rem" 
 					@row-dblclick="onViewReservationStayDetail">
 						<Column field="custom_posting_date" header="Audit date">
@@ -79,6 +92,8 @@
 							</template>
 						</Column>
 				</DataTable>
+			
+				<ComActivityTimeLine v-else :data="data"/>
 			</ComPlaceholder>
 		</div>
 		<div>
@@ -131,7 +146,10 @@
 <script setup>
 import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, useDialog, getApi, computed, onUnmounted } from '@/plugin'
 import Paginator from 'primevue/paginator';
+
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
+
 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
@@ -142,8 +160,10 @@ const loading = ref(false)
 const dialogRef = inject("dialogRef");
 
 const ref_data = ref()
-
-
+const toggleView = ref(true)
+function onToggleView(){
+    toggleView.value  = !toggleView.value 
+}
 const actions = ref([
 	{ label: 'Creation', fieldname: 'creation' },
 	{ label: 'Last Update On', fieldname: 'modified' },
@@ -177,13 +197,13 @@ const Refresh = debouncer(() => {
 }, 500);
 
 
-function onDateSelect() {
-	if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
-		dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
-		dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
-		loadData()
-	}
-}
+// function onDateSelect() {
+// 	if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
+// 		dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
+// 		dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
+// 		loadData()
+// 	}
+// }
 
 function pageChange(page) {
 	pageState.value.page = page.page
@@ -211,10 +231,9 @@ function loadData(show_loading = true) {
 		filters.push(["comment_email", '=', filter.value.selected_comment_by])
 	}
 	if (filter.value?.custom_posting_date) {
-		alert()
-		
-    filters.push(["custom_posting_date", '=', filter.value.custom_posting_date]);
-	} 
+        const formattedDate = moment(filter.value.custom_posting_date, 'DD-MM-YYYY').format('YYYY-MM-DD');
+        filters.push(['custom_posting_date', '=', formattedDate]);
+    }
 
 	getDocList('Comment', {
 		fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified","comment_email"],

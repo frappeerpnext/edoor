@@ -10,7 +10,8 @@
  "field_order": [
   "property",
   "print_format",
-  "custom_print_format"
+  "custom_print_format",
+  "attach_to_doctype"
  ],
  "fields": [
   {
@@ -34,11 +35,18 @@
    "label": "Custom Print Format",
    "options": "Print Format",
    "unique": 1
+  },
+  {
+   "description": "We use this field to display custom report in detail page like, Reservation detail, Stay Detail and Folio Detail...",
+   "fieldname": "attach_to_doctype",
+   "fieldtype": "Link",
+   "label": "Attach To Doctype",
+   "options": "DocType"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-23 14:38:42.381834",
+ "modified": "2023-11-19 10:21:15.173490",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Custom Print Format",

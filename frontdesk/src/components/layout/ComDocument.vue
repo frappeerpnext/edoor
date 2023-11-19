@@ -9,6 +9,9 @@
                 <div>
                     <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
                 </div>
+                <div>
+                    <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b ml-2"></Button>
+                </div>
             </div>
         </div>
         <div>
@@ -36,11 +39,14 @@
                                 </div>
                             </template>
                         </Column>
+                        <Column field="modified_by" header="By">
+                            <template #body="slotProps">
+                                   {{ slotProps.data.modified_by?.split("@")[0] }}
+                            </template>
+                        </Column>
                         <Column field="modified" header="Last Modified">
                             <template #body="slotProps">
                                    <ComTimeago :date='slotProps.data.modified' />
-                                   
-                                
                             </template>
                         </Column>
                         <Column field="" header="">
@@ -90,6 +96,7 @@ import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 
 const toast = useToast()
+const emit = defineEmits(["updateCount"])
 
 const props = defineProps({
     doctype:{
@@ -171,6 +178,24 @@ function onModalWebcam(open){
     }
 }
 
+ 
+
+const onRefresh = debouncer(() => {
+    onLoad()
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
+
+
 
 function onSuccess(){
     visible.value = false
@@ -193,7 +218,10 @@ function getTotalDocument(){
     dataFilter.push(["custom_show_in_edoor","=",1])
     
     getCount('File', dataFilter, true)
-  .then((count) => pageState.value.totalRecords = count)
+  .then((count) => {
+    pageState.value.totalRecords = count
+    emit("updateCount", count)
+  })
 
    
 }
@@ -212,7 +240,7 @@ function onLoad(showLoading=true){
 
     getTotalDocument()
     getDocList('File', {
-        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation","modified"],
+        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation","modified","modified_by"],
         filters: dataFilter,
         limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
         limit: pageState.value?.rows || 20,
@@ -252,6 +280,7 @@ function onRemove(selected){
                     deleting.value = false
                     onLoad()
                     window.postMessage({"action":"refresh_document_count", docname:props.docname},"*")
+                   
                 }
             }).catch((err)=>{
                 deleting.value = false

@@ -43,19 +43,6 @@
   "doctype": "System Report",
   "filter_option": null,
   "is_group": 1,
-  "modified": "2023-08-16 14:31:30.660150",
-  "name": "055aad56a3",
-  "old_parent": null,
-  "parent_system_report": "All Reports",
-  "report_name": null,
-  "report_title": "Front Office",
-  "sort_order": 0
- },
- {
-  "docstatus": 0,
-  "doctype": "System Report",
-  "filter_option": null,
-  "is_group": 1,
   "modified": "2023-08-16 14:32:09.697123",
   "name": "29acfa8c76",
   "old_parent": null,
@@ -69,26 +56,13 @@
   "doctype": "System Report",
   "filter_option": "start_date,end_date, business_source,room_type",
   "is_group": 0,
-  "modified": "2023-08-29 15:18:53.878227",
+  "modified": "2023-11-16 14:59:47.380791",
   "name": "f0e6972ed1",
   "old_parent": null,
   "parent_system_report": "055aad56a3",
   "report_name": "Front Desk Arrival Guest Report",
   "report_title": "Arrival Guest",
   "sort_order": 1
- },
- {
-  "docstatus": 0,
-  "doctype": "System Report",
-  "filter_option": "start_date, end_date, business_source,room_type",
-  "is_group": 0,
-  "modified": "2023-08-30 11:03:29.684910",
-  "name": "8f49c966f6",
-  "old_parent": null,
-  "parent_system_report": "055aad56a3",
-  "report_name": "Front Desk Departure Guest Report",
-  "report_title": "Departure Guest",
-  "sort_order": 2
  },
  {
   "docstatus": 0,
@@ -108,13 +82,13 @@
   "doctype": "System Report",
   "filter_option": "start_date,end_date, business_source,room_type",
   "is_group": 0,
-  "modified": "2023-08-30 09:52:41.053747",
+  "modified": "2023-11-16 15:00:20.078482",
   "name": "992d0b683b",
   "old_parent": null,
   "parent_system_report": "055aad56a3",
   "report_name": "Front Desk Stay Over Guest Report",
   "report_title": "Stay Over Guest",
-  "sort_order": 1
+  "sort_order": 3
  },
  {
   "docstatus": 0,
@@ -134,26 +108,26 @@
   "doctype": "System Report",
   "filter_option": "start_date,end_date, business_source,arrival_modes,departure_mode",
   "is_group": 0,
-  "modified": "2023-08-31 10:25:42.209436",
+  "modified": "2023-11-16 15:01:20.499702",
   "name": "e167b94e19",
   "old_parent": null,
   "parent_system_report": "055aad56a3",
   "report_name": "Front Desk Pickup - Drop Off Guest Report",
   "report_title": "Pickup - Drop Off Guest",
-  "sort_order": 1
+  "sort_order": 5
  },
  {
   "docstatus": 0,
   "doctype": "System Report",
   "filter_option": "start_date, end_date, business_source,room_type",
   "is_group": 0,
-  "modified": "2023-08-30 16:47:26.952833",
+  "modified": "2023-11-16 15:01:07.096120",
   "name": "1e62845faa",
   "old_parent": null,
   "parent_system_report": "055aad56a3",
   "report_name": "Front Desk Arrival Stay Over Departure Guest",
   "report_title": "Arrival Stay Over Departure Guest",
-  "sort_order": 2
+  "sort_order": 4
  },
  {
   "docstatus": 0,
@@ -244,6 +218,32 @@
   "parent_system_report": "Night Audit",
   "report_name": "Reservation Audit Trail",
   "report_title": "Reservation Audit Trail",
+  "sort_order": 0
+ },
+ {
+  "docstatus": 0,
+  "doctype": "System Report",
+  "filter_option": "start_date, end_date, business_source, room_type",
+  "is_group": 0,
+  "modified": "2023-11-16 15:03:28.675909",
+  "name": "813c22f74e",
+  "old_parent": null,
+  "parent_system_report": "055aad56a3",
+  "report_name": "Front Desk Departure Guest Report",
+  "report_title": "Departure Guest",
+  "sort_order": 3
+ },
+ {
+  "docstatus": 0,
+  "doctype": "System Report",
+  "filter_option": null,
+  "is_group": 1,
+  "modified": "2023-08-16 14:31:30.660150",
+  "name": "055aad56a3",
+  "old_parent": null,
+  "parent_system_report": "All Reports",
+  "report_name": null,
+  "report_title": "Front Office",
   "sort_order": 0
  },
  {

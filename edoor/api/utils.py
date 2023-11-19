@@ -432,6 +432,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
         
     return doc
 
+
 @frappe.whitelist()
 def update_deposit_ledger(name=None, doc=None,run_commit=True):
 
@@ -444,6 +445,35 @@ def update_deposit_ledger(name=None, doc=None,run_commit=True):
             from `tabFolio Transaction` 
             where
                 transaction_type = 'Deposit Ledger' and 
+                transaction_number = '{}'
+        """.format(
+                doc.name
+            )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+
+    doc.total_debit =  folio_data[0]["debit"]
+    doc.total_credit=folio_data[0]["credit"]
+    doc.save(ignore_permissions=True)
+    if run_commit:
+        frappe.db.commit()
+        
+    return doc
+
+
+@frappe.whitelist()
+def update_desk_folio(name=None, doc=None,run_commit=True):
+
+    if name:
+        doc = frappe.get_doc("Desk Folio",name)
+    sql_folio = """
+        select 
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                transaction_type = 'Desk Folio' and 
                 transaction_number = '{}'
         """.format(
                 doc.name
@@ -953,5 +983,52 @@ def add_audit_trail(data):
 
 
 def can_change_stay_date(stay_name, arrival,departure):
+    #TODO#
     pass
 
+
+
+@frappe.whitelist()
+def get_deposit_ledger_detail(name):
+	doc =frappe.get_doc("Deposit Ledger", name)
+	related_ids = [name]
+	folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Deposit Ledger","transaction_number":name} ,page_length=10000,  pluck='name')
+	related_ids = related_ids + folio_transaction_ids
+
+	
+	return {
+		"deposit_ledger":doc,
+		"related_ids":related_ids
+	}
+
+
+
+
+#i'm piseth add under code
+
+@frappe.whitelist()
+def get_desk_folio_detail(name):
+	doc =frappe.get_doc("Desk Folio", name)
+	related_ids = [name]
+	folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Desk Folio","transaction_number":name} ,page_length=10000,  pluck='name')
+	related_ids = related_ids + folio_transaction_ids
+
+	
+	return {
+		"desk_folio":doc,
+		"related_ids":related_ids
+	}  
+
+
+@frappe.whitelist()
+def get_reservation_folio_detail(name):
+	doc =frappe.get_doc("Reservation Folio", name)
+	related_ids = [name]
+	folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Reservation Folio","transaction_number":name} ,page_length=10000,  pluck='name')
+	related_ids = related_ids + folio_transaction_ids
+
+	
+	return {
+		"reservation_folio":doc,
+		"related_ids":related_ids
+	}  

@@ -24,26 +24,29 @@
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
                         <div>
-                            <ComSelect :options="['Open', 'Closed']" placeholder="All Status" v-model="filter.status" :clear="false" @onSelected="onSearch" />
+                            <ComSelect :options="['Open', 'Closed']" placeholder="All Status" v-model="filter.status"
+                                :clear="false" @onSelected="onSearch" />
                         </div>
                         <div class="w-20rem">
-                            <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status" doctype="Reservation Status" @onSelected="onSearch" />
+                            <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
+                                doctype="Reservation Status" @onSelected="onSearch" />
                         </div>
                         <div>
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
-                                <div v-if="isFilter" >
-                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                                <div v-if="isFilter">
+                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter"
+                                        icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
                         </div>
-                        
+
                     </div>
-                </div> 
+                </div>
                 <div class="flex">
                     <div class="px-2">
-                            <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
-                            <!-- <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"
+                        <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
+                        <!-- <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"
                                 placeholder="Sort By" @change="onSelectOrderBy" />
                             <Button @click="onOrderTypeClick">{{ filter.order_type }}</Button> -->
                     </div>
@@ -55,7 +58,8 @@
             <div>
                 <div class="flex w-full gap-3 mb-3 mt-3">
                     <div :class="(index === summary.length - 1) ? 'bg-green-50 border-green-edoor' : 'bg-white'"
-                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border" v-for="(s, index) in summary" :key="index">
+                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border"
+                        v-for="(s, index) in summary" :key="index">
                         <span class="text-500 uppercase text-sm text-end">{{ s.label }}</span>
                         <span class="text-xl line-height-2 font-semibold text-end">
                             <span>{{ s.value }}</span>
@@ -66,39 +70,32 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-              
-                <DataTable 
-                class="tb-cs-datatable"
-                @page="onPage"
-                :resizableColumns="true"
-                columnResizeMode="fit" 
-                showGridlines 
-                stateStorage="local"
-                stateKey="table_guest_ledger_state" 
-                :reorderableColumns="true" 
-                scrollable
-                :value="data"
-                paginator
-                :rows="20"
-                :rowsPerPageOptions="[20, 30, 40, 50]"
-                tableStyle="min-width: 50rem">
-                <div class="absolute bottom-6 left-4">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-                </div>
-                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname"
-                        :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
+
+                <DataTable class="tb-cs-datatable" @page="onPage" :resizableColumns="true" columnResizeMode="fit"
+                    showGridlines stateStorage="local" stateKey="table_guest_ledger_state" :reorderableColumns="true"
+                    scrollable :value="data" paginator :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]"
+                    tableStyle="min-width: 50rem">
+                    <div class="absolute bottom-6 left-4">
+                        <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    </div>
+                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))"
+                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
-                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
+                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                @click="onOpenLink(c, slotProps.data)" link>
                                 {{ slotProps.data[c.fieldname] }}
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
                             </Button>
                             <span v-else-if="c.fieldtype == 'Date' && slotProps.data[c.fieldname]">{{
                                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                            <span v-else-if="c.fieldtype == 'Datetime'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
+                            <span v-else-if="c.fieldtype == 'Datetime'">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a")
                             }} </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
-                            <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                            <div v-else-if="c.fieldtype == 'Room'"
+                                class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                                 v-if="slotProps?.data && slotProps?.data?.rooms">
                                 <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
                                     <span>{{ item }}</span>
@@ -108,24 +105,30 @@
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'ReservationStatus'"
                                 class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]}}</span>
-                            <span v-else-if="c.fieldtype == 'Check'" >
+                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{
+                                    slotProps.data[c.fieldname] }}</span>
+                            <span v-else-if="c.fieldtype == 'Check'">
                                 <span v-if="slotProps.data[c.fieldname]">
-                                    <ComIcon v-if="c.label =='Master Folio'" v-tippy="'Is Master Folio'" style="height: 14px;margin: auto;" icon="iconCrown" />
+                                    <ComIcon v-if="c.label == 'Master Folio'" v-tippy="'Is Master Folio'"
+                                        style="height: 14px;margin: auto;" icon="iconCrown" />
                                     <span v-else>YES</span>
                                 </span>
                                 <span v-else>
                                 </span>
                             </span>
+                            <template v-else-if="c.fieldtype == 'status'">
+                            
+                                <ComOpenStatus :status="slotProps.data[c.fieldname]" />
+                            </template>
                             <span v-else>
-                                <span>{{ slotProps.data[c.fieldname] }}</span>
+                                <span>{{ slotProps.data[c.fieldname] }} </span>
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
                             </span>
-                           
+
                         </template>
                     </Column>
-                </DataTable> 
+                </DataTable>
             </ComPlaceholder>
         </div>
         <div>
@@ -217,10 +220,10 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "",keyword: "" })
+const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "", keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
-const order = ref({order_by: "modified", order_type: "desc"})
-const loading = ref(false) 
+const order = ref({ order_by: "modified", order_type: "desc" })
+const loading = ref(false)
 const selectedColumns = ref([])
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
@@ -238,14 +241,14 @@ const getColumns = computed(() => {
     }
 })
 
-const isFilter = computed(()=>{  
-    if(moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')){
+const isFilter = computed(() => {
+    if (moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
         return true
-        
+
     }
-    else{
-        return gv.isNotEmpty(filter.value,'start_date,end_date,order_by,order_type',{ status: 'All Status'})
-        
+    else {
+        return gv.isNotEmpty(filter.value, 'start_date,end_date,order_by,order_type', { status: 'All Status' })
+
     }
 })
 
@@ -253,9 +256,9 @@ function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 function pageChange(page) {
-  pageState.value.page = page.page
-  pageState.value.rows = page.rows
-  loadData()
+    pageState.value.page = page.page
+    pageState.value.rows = page.rows
+    loadData()
 }
 
 
@@ -332,14 +335,14 @@ const Refresh = debouncer(() => {
 }, 500);
 
 
-function loadData(show_loading=true) {
+function loadData(show_loading = true) {
     gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
     filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
     filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
     filters.property = property.name
     filters.order_by = order.value.order_by
-    filters.order_type = order.value.order_type 
+    filters.order_type = order.value.order_type
     filters.keyword = gv.keyword(filter.value.keyword)
     call.get("frappe.desk.query_report.run", {
         report_name: edoor_setting.guest_ledger_report_name,
@@ -369,15 +372,15 @@ function loadData(show_loading=true) {
         }
     })
 }
- 
+
 onMounted(() => {
     window.socket.on("ComGuestLedger", (arg) => {
-    if (arg.property == window.property_name) {
-        setTimeout(function () {
-            loadData(false)
-        }, 3000)
-    }
-})
+        if (arg.property == window.property_name) {
+            setTimeout(function () {
+                loadData(false)
+            }, 3000)
+        }
+    })
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
     if (state) {
         if (state.selectedColumns) {

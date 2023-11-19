@@ -12,6 +12,7 @@
   "posting_date",
   "working_day",
   "cashier_shift",
+  "working_date",
   "column_break_ioxz",
   "property",
   "room_id",
@@ -173,11 +174,16 @@
   {
    "fieldname": "column_break_teoc",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "working_date",
+   "fieldtype": "Date",
+   "label": "Working Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-16 09:10:24.791102",
+ "modified": "2023-11-17 20:29:28.059855",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Deposit Ledger",
@@ -199,5 +205,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

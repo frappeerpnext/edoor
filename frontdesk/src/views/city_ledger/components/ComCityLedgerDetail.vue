@@ -68,7 +68,8 @@
                 <div class="w-full flex justify-end text-sm -mb-2">
                     <span class="italic">Created by: </span>
                     <span class="text-500 font-italic">
-                        {{ data?.owner }} {{ gv.datetimeFormat(data?.creation) }}
+                        {{ data?.owner.split("@")[0] }} 
+                        <ComTimeago :date="data?.creation"/>
                     </span>
                     <span class="italic ms-2"> Last Modified: </span>
                     <span class="text-500 font-italic">
@@ -82,7 +83,10 @@
             </TabPanel>
             <TabPanel header="Document">
                 <div>
-                    <ComDocument doctype="City Ledger" :docname="data?.name" v-if="!loading" />
+                    
+                    <ComDocument v-if="data?.name" doctype="City Ledger"
+                            :doctypes="['City Ledger']" :docname="data?.name"
+                            :fill="false" :attacheds="[data?.name]" />
                 </div>
             </TabPanel>
         </TabView>

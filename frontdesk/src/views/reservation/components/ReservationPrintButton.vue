@@ -71,16 +71,13 @@ items.value.push({
     }
 })
 onMounted(() => {
-db.getDocList('Print Format', {
+db.getDocList('Custom Print Format', {
     fields: [
-        'name',
-        'title'
+        'print_format'
     ],
-    filters: [["show_in_reservation_stay_detail", "=", "1"]]
-
+    filters: [["property","=",window.property], [ "attach_to_doctype", "=", "Reservation"]]
 })
-    .then((doc) => {
-
+.then((doc) => {
         doc.forEach(d => {
             items.value.push({
                 label: d.title,
@@ -88,17 +85,15 @@ db.getDocList('Print Format', {
                 icon: 'pi pi-refresh',
                 command: (r) => {
                
-                    toast.add({ severity: 'success', summary: 'Updated', detail: 'Data Updated', life: 3000 });
+                   alert(JSON.stringify(r))
                 }
             })
         });
     })
-    .catch((error) => console.error(error));
+    
 
 })
 
 
-const save = () => {
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
-};
+ 
 </script>

@@ -69,14 +69,7 @@
                             </div>
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <template v-else-if="c.fieldtype == 'Status'">
-                                <span v-if="slotProps.data[c.fieldname] == 'Open'"
-                                    class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                    :style="{ backgroundColor: 'green' }">{{ slotProps.data[c.fieldname]
-                                    }}</span>
-                                <span v-else class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                    :style="{ backgroundColor: 'red' }">{{ slotProps.data[c.fieldname]
-                                    }}</span>
-
+                                <ComOpenStatus :status="slotProps.data[c.fieldname]" />
                             </template>
                             <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
                                 <span>{{  slotProps.data[c.fieldname].split("@")[0] }}</span>
@@ -124,7 +117,19 @@
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+
+            
             <div class="grid">
+                <div>
+                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true"/>
+                    <lable for="filter_date">Filter Date</lable>
+                </div>
+
+                <Calendar v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
+                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" />
+                
+
+
                 <ComAutoComplete class="col-3" width="100%" optionLabel="customer_name_en" optionValue="name"
                     v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
                 <ComSelect class="col-3" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
@@ -160,7 +165,7 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
+ 
 const columns = ref([
     { fieldname: 'name', label: 'Deposit #', fieldtype: "Link", post_message_action: "view_deposit_ledger_detail", default: true },
     { fieldname: 'posting_date', label: 'Posting Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
@@ -206,7 +211,7 @@ const onCloseColumn = () => {
 
 const data = ref([])
 
-const filter = ref({})
+const filter = ref({selected_status:"Open",filter_date:false})
 let dateRange = reactive({
     start: '',
     end: ''
@@ -242,10 +247,31 @@ function pageChange(page) {
 }
 
 function loadData(show_loading = true) {
-    gv.loading = show_loading
+    
     let filters = [
         ["Deposit Ledger", "property", '=', property.name]
     ]
+    if(filter.value.filter_date){
+        
+        if(filter.value.selected_dates){
+            
+            if(filter.value.selected_dates.length>1){
+                
+                if (filter.value.selected_dates[0] && filter.value.selected_dates[1]){
+                    
+                    filters.push(["posting_date", 'between', [moment(filter.value.selected_dates[0]).format("YYYY-MM-DD"),moment(filter.value.selected_dates[1]).format("YYYY-MM-DD")]])            
+                     
+                }else {
+                    return
+                }
+            }else {
+                return
+            }
+        }else {
+            return
+        }
+
+    }
     if (filter.value?.keyword) {
         filters.push(["name", 'like', '%' + filter.value.keyword + '%'])
     }
@@ -262,9 +288,12 @@ function loadData(show_loading = true) {
         filters.push(["room_id", '=', filter.value.selected_room_number])
     }
 
+    
+
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
     fields = [...new Set(fields.filter(x => x))]
+    gv.loading = show_loading
     getDocList('Deposit Ledger', {
         fields: fields,
         orderBy: {

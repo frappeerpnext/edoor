@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
                 <div class="flex gap-2">
@@ -98,59 +97,49 @@
                         </div>
                     </div>
                     <!-- /Discount -->
-                    <!-- City Ledger -->
-                    <div v-if="doc.require_city_ledger_account == 1 && doc?.account_code" class="col-12">
+
+                   
+                    <div v-if="doc.target_transaction_type" class="col-12">
                         <div class="grid">
                             <div class="col-12">
-                                <label>City Ledger Name</label>
-                                <ComAutoComplete :disabled="!canEdit" v-model="doc.city_ledger"
-                                    placeholder="Select City Ledger Name" doctype="City Ledger" class="auto__Com_Cus w-full"
-                                    @onSelected="onSelectCityLedger" :filters="{ property: doc.property }" :suggestions="doc.selected_city_ledger_account"/>
+
+                                {{ targetTransactionNumberFilter }}
+                                <label>Transfer to {{ doc.target_transaction_type }}</label>
+                                <ComAutoComplete :disabled="!canEdit" v-model="doc.target_transaction_number"
+                                    :placeholder="'Select ' + doc.target_transaction_type" :doctype="doc.target_transaction_type" class="auto__Com_Cus w-full"
+                                    @onSelected="onSelectTargetTransactionNumber" :filters="targetTransactionNumberFilter" :suggestions="doc.selected_target_transaction_number"/>
+
 
                             </div>
  
-                            <div v-if="doc.city_ledger_name" class="col-12 -mt-2">
+                            <div v-if="doc.target_transaction_number" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                                    <span class="text-500 font-italic">You Selected</span> {{ doc.city_ledger_name }}
+                                    <span class="text-500 font-italic">You Selected</span> {{ doc.target_transaction_number }}  
+                                    <span v-if="doc.selected_target_transaction_data?.description">
+                                        {{ doc.selected_target_transaction_data?.description }}
+                                     
+                                    </span>
+ 
+
                                 </div>
                             </div>
+                            
+                            <div class="flex gap-3 p-2"  v-if="filterTargetTransactionNumberType.length>0">
+                                <label>Filter {{ doc.target_transaction_type }} by</label>
+                                 
+                                    <Dropdown   class="auto__Com_Cus w-full" :placeholder="'Select Filter Option'" :options="filterTargetTransactionNumberType" optionValue="fieldname" optionLabel="label" v-model="doc.filter_target_transaction_number_by" :showClear="true" />
+                
+                                
+                            </div>
+                           
+
+
                         </div>
                     </div>
-                    <!-- /City Ledger -->
-                    <!-- Folio Transfer -->
-                    <div v-if="account_code.require_select_a_folio == 1 && doc?.account_code" class="col-12">
-                        <div class="grid">
-                            <div class="col-12">
-                                <label>Folio Number</label>
-                                <ComAutoComplete :disabled="!canEdit" @onSelected="onSelectFolioNumber"
-                                    v-model="doc.folio_number" placeholder="Select Folio" doctype="Reservation Folio"
-                                    class="auto__Com_Cus w-full" :filters="folioNumberFilter" />
-                            </div>
-                            <div class="flex gap-3 p-2">
-                                <div>
-                                    <Checkbox inputId="on-filter-folio-res-stay" @input="onFilterFolioNumber" :disabled="disFirstbox"
-                                        v-model="doc.select_folio_in_reservation_stay" :binary="true" :trueValue="1"
-                                        :falseValue="0" />
-                                    <label for="on-filter-folio-res-stay">by stay</label>
-                                </div>
-                                <div>
-                                    <Checkbox inputId="on-filter-folio-res" @input="onFilterFolioNumberRes" :disabled="disSecondbox"
-                                        v-model="doc.select_folio_in_reservation" :binary="true" :trueValue="1"
-                                        :falseValue="0" />
-                                    <label for="on-filter-folio-res">by reservation</label>
-                                </div>
-                            </div>
+                    <!-- / System Transfer  -->
 
-                            <div v-if="doc.folio_number" class="col-12 -mt-2">
-                                <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-
-                                    <span class="text-500 font-italic">You Selected</span> {{ doc.folio_number }}, {{
-                                        doc.selected_folio_number_description }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /Folio Transfer -->
+                   
+          
                 </div>
             </div>
             <!-- end input -->
@@ -359,8 +348,6 @@ const current_user = JSON.parse(localStorage.getItem("edoor_user"))
 const use_tax = ref({})
 const extra_account_code_filter = ref({}) 
 const doc = ref({}) 
-const disFirstbox = ref()
-const disSecondbox = ref()
 const dialog_data =ref()
 
 const accountCodeFilter = computed(()=>{
@@ -370,6 +357,44 @@ const accountCodeFilter = computed(()=>{
         return { 'account_group': doc.value.account_group }
     } 
 })
+const filterTargetTransactionNumberType = computed(()=>{
+    let options = []
+    if(doc.value.reservation_stay){
+        options.push({fieldname:"reservation_stay",label:"Reservation Stay"})
+    }
+    if(doc.value.reservation){
+        options.push({fieldname:"reservation",label:"Reservation"})
+    }
+    if(doc.value.guest){
+
+        options.push({fieldname:"guest",label:"Guest"})
+    }
+    
+    if(doc.value.business_source){
+        options.push({fieldname:"business_source",label:"Business Source"})
+    }
+
+
+    return options
+
+})
+
+const targetTransactionNumberFilter = computed(()=>{
+    let filter = {status:"Open"}
+    filter.property = window.property_name
+    if (doc.value.target_transaction_type == doc.value.transaction_type){
+        filter.name = ["!=", doc.value.transaction_number]
+    }
+
+    if (doc.value.filter_target_transaction_number_by){
+        filter[doc.value.filter_target_transaction_number_by] = doc.value[doc.value.filter_target_transaction_number_by]
+    }
+ 
+
+    return filter
+
+})
+
 const folioNumberFilter = ref()
 function onUseTax1Change(value) {
     doc.value.tax_1_rate = value ? tax_rule.value.tax_1_rate : 0
@@ -505,8 +530,6 @@ function onSelectAccountCode(data) {
                 account_code.value = d
                 doc.value.rate_include_tax = d.rate_include_tax
                 doc.value.bank_fee = (d.bank_fee || 0)
-                doc.value.require_city_ledger_account = d.require_city_ledger_account
-                doc.value.require_select_a_folio = d.require_select_a_folio
                 doc.value.account_name = d.account_name
                 doc.value.type = d.type
                 doc.value.account_code = d.name
@@ -516,6 +539,8 @@ function onSelectAccountCode(data) {
                 doc.value.discount = 0
                 doc.value.target_account_type = d.target_account_type
                 doc.value.target_account_code= d.target_account_code
+                doc.value.target_transaction_type = d.target_document
+
                 
                 doc.value.quantity = 1
                 if (d.tax_rule) {
@@ -553,8 +578,18 @@ function onSelectAccountCode(data) {
         doc.value.city_ledger = ''
         doc.value.city_ledger_name = ''
         doc.value.folio_number = ''
+        doc.value.target_transaction_number = ""
+        doc.value.target_transaction_type = ""
     }
 }
+
+function onSelectTargetTransactionNumber(data){
+     
+        doc.value.selected_target_transaction_data=data
+  
+  
+}
+
 function onSelectCityLedger(data) {
     if (data.value) {
         getDoc('City Ledger', data.value)
@@ -573,28 +608,12 @@ function onSelectFolioNumber(data) {
     doc.value.selected_folio_number_description = data.description
 }
 
-
-
-function onFilterFolioNumber(r) {
-    if (doc.value.select_folio_in_reservation_stay == 1) {
-        folioNumberFilter.value.reservation_stay = doc.value.reservation_stay
-        disSecondbox.value = r
-    } else {
-        delete folioNumberFilter.value.reservation_stay
-        disSecondbox.value = r
-    } 
+function onFolioFilterTypeChange(d){
+    doc.value.target_transaction_number = ""
+    doc.value.target_transaction_number = ""
 }
+ 
 
-
-function onFilterFolioNumberRes(r) {
-    if (doc.value.select_folio_in_reservation == 1) {
-        folioNumberFilter.value.reservation = doc.value.reservation
-        disFirstbox.value = r
-    } else {
-        delete folioNumberFilter.value.reservation
-        disFirstbox.value = r
-    } 
-}
 
 function onSave() {
     isSaving.value = true
@@ -661,18 +680,18 @@ onMounted(() => {
         folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }
         
         if(dialogRef.value.data.business_source){
-            getDocList("City Ledger", { filters: [["property", "=", window.property.name], ["business_source", "=", dialogRef.value.data.business_source]], fields: ['name', 'city_ledger_name','keyword'] }).then(result => {
+            call.get('frappe.desk.search.search_link', {doctype:"City Ledger",txt:dialogRef.value.data.business_source, filters: [["property", "=", window.property.name]]}).then(r=>{
  
-                if (result.length > 0) {
-                    doc.value.city_ledger = result[0].name
-                    doc.value.city_ledger_name = result[0].city_ledger_name
-                    doc.value.selected_city_ledger_account = [
-                        { 'value':  result[0].name, 'description':  result[0].keyword , 'label':  result[0].name }
-                    ]
+                if (r.results.length > 0) {
+                    doc.value.target_transaction_number = r.results[0].value
+                    doc.value.selected_target_transaction_data= r.results[0]
+                    doc.value.selected_target_transaction_number = r.results
+                    
                 }else {
-                    doc.value.selected_city_ledger_account = null
+                    doc.value.selected_target_transaction_number = null
                 }
-})
+            })
+ 
         }
     }
     //get guest by reservation

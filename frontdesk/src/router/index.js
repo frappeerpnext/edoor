@@ -68,7 +68,7 @@ let routes = [
   { path: "/frontdesk/test2", name: "Test2", component: TestPage2, meta: { layout: 'main_layout' } },
   { path: "/frontdesk/test-page", name: "TestPage", component: TestPage, meta: { layout: 'main_layout' } },
   { path: "/frontdesk/activity", name: "Activity", component: Activity, meta: { layout: 'main_layout' } },
-  { path: "/frontdesk/deposit-ledger", name: "DepositLedger", component: DepositLedger, meta: { layout: 'main_layout' } },
+  { path: "/frontdesk/deposit-ledger", name: "DepositLedger", component: DepositLedger, meta: { layout: 'main_layout',title:"Deposit Ledger" } },
  
   ...authRoutes,
 

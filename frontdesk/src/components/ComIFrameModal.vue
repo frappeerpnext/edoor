@@ -23,6 +23,12 @@
                             @date-select="reloadIframe" showButtonBar @clear-click="reloadIframe" dateFormat="dd-mm-yy"
                             showIcon />
                     </div>
+                    <!-- invoice style for print invoice document credsit debit styoe or simple style -->
+                    <div v-if="hasFilter('invoice_style')">
+                        <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false" placeholder="Invoice Style"
+                            :options="['Simple Style','Debit/Credit Style']">
+                        </ComSelect>
+                    </div>
                     <div v-if="hasFilter('business_source')" class="w-12rem">
                         <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
                             @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
@@ -61,6 +67,10 @@
                         <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
                             @onSelected="reloadIframe" doctype="Transportation Company" />
                     </div>
+                    <div v-if="hasFilter('show_summary')">
+                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        <label for="show_summary" >Show/Hide Summary</label>
+                    </div>
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view || '') != 'ui'">
@@ -87,7 +97,9 @@ const show_letter_head = ref(false)
 const letter_head = ref("");
 const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
-const filters = ref({})
+const filters = ref({
+    invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style"
+})
 const show_toolbar = ref(0)
 const view = ref("")
 const extra_params = ref([])
@@ -190,6 +202,7 @@ onMounted(() => {
     view.value = dialogRef.value.data.view
     extra_params.value = dialogRef.value.data.extra_params 
     filter_options.value = dialogRef.value.data.filter_options
+    
     loadIframe()
 });
 

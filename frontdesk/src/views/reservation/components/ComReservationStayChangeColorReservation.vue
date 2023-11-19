@@ -64,7 +64,7 @@ function onSave() {
         })
         .catch(() => {
             loading.value = false;
-            gv.toast('error', 'Failed to update reservation color.');
+            
         });
 }
 

@@ -191,6 +191,7 @@ print_menus.value.push({
 
 })
 
+
 function onAddFolioTransaction(account_code) {
     if(props.newDoc){
         props.newDoc.account_group =account_code.name
@@ -201,9 +202,7 @@ function onAddFolioTransaction(account_code) {
             return
         }
     }
-   
- 
-     
+
     if (selectedFolio.value.status == "Open") {
         const dialogRef = dialog.open(ComAddFolioTransaction, {
             data: {
@@ -213,7 +212,9 @@ function onAddFolioTransaction(account_code) {
                         reservation: selectedFolio.value.reservation,
                         reservation_stay: selectedFolio.value.reservation_stay,
                         property: window.property_name,
-                        account_group: account_code.name
+                        account_group: account_code.name,
+                        guest:selectedFolio.value.guest,
+                        business_source:selectedFolio.value.business_source,
                     },
                     balance: selectedFolio.value.balance,
                     business_source: selectedFolio.value.business_source,

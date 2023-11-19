@@ -12,7 +12,6 @@
   "transaction_type",
   "transaction_number",
   "reference_number",
-  "folio_number",
   "property",
   "reservation",
   "reservation_stay",
@@ -35,6 +34,7 @@
   "stay_information_section",
   "room_type_id",
   "room_type",
+  "room_type_alias",
   "column_break_23",
   "room_id",
   "room_number",
@@ -73,34 +73,39 @@
   "note",
   "note_by",
   "note_modified",
-  "payment_information_section",
-  "credit_card_number",
-  "card_holder_name",
-  "column_break_58",
-  "bank_name",
-  "credit_expired_date",
   "city_ledger_tab",
-  "require_city_ledger_account",
+  "target_transaction_type",
+  "target_transaction_number",
+  "target_account_code",
+  "target_account_type",
+  "source_transaction_type",
+  "source_transaction_number",
+  "reference_folio_transaction",
   "column_break_57",
-  "city_ledger",
   "city_ledger_name",
   "city_ledger_type",
+  "payment_information_section",
+  "payment_by",
+  "payment_by_phone_number",
+  "column_break_58",
+  "credit_card_number",
+  "card_holder_name",
+  "column_break_njmp",
+  "bank_name",
+  "credit_expired_date",
   "other_tab",
   "parent_account_code",
   "parent_account_name",
   "account_group",
   "account_group_name",
   "deleted_note",
-  "target_account_code",
-  "target_account_type",
   "column_break_73",
   "account_category",
   "account_category_sort_order",
+  "account_code_sort_order",
   "allow_enter_quantity",
   "show_print_preview",
   "print_format",
-  "payment_by",
-  "payment_by_phone_number",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -124,8 +129,6 @@
   "bank_fee_description",
   "is_auto_post",
   "payment_type_group",
-  "require_select_a_folio",
-  "reference_folio_transaction",
   "is_master_folio",
   "business_source",
   "keyword",
@@ -138,13 +141,6 @@
    "hidden": 1,
    "label": "Folio Transaction  Number",
    "options": "FT.YYYY.-.####"
-  },
-  {
-   "fieldname": "folio_number",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Folio Number",
-   "options": "Reservation Folio"
   },
   {
    "fetch_if_empty": 1,
@@ -449,14 +445,7 @@
   {
    "fieldname": "city_ledger_tab",
    "fieldtype": "Tab Break",
-   "label": "City Ledger"
-  },
-  {
-   "default": "0",
-   "fetch_if_empty": 1,
-   "fieldname": "require_city_ledger_account",
-   "fieldtype": "Check",
-   "label": "Require City Ledger Account"
+   "label": "System Transfer"
   },
   {
    "fieldname": "column_break_57",
@@ -732,17 +721,6 @@
   },
   {
    "default": "0",
-   "fieldname": "require_select_a_folio",
-   "fieldtype": "Check",
-   "label": "Require Select a Folio"
-  },
-  {
-   "fieldname": "reference_folio_transaction",
-   "fieldtype": "Data",
-   "label": "Reference Folio Transaction"
-  },
-  {
-   "default": "0",
    "fieldname": "is_master_folio",
    "fieldtype": "Check",
    "label": "Is Master Folio"
@@ -753,13 +731,6 @@
    "fieldtype": "Link",
    "label": "Business Source",
    "options": "Business Source"
-  },
-  {
-   "fieldname": "city_ledger",
-   "fieldtype": "Link",
-   "label": "City Leger",
-   "mandatory_depends_on": "eval:doc.require_city_ledger_account ==1",
-   "options": "City Ledger"
   },
   {
    "fetch_from": "city_ledger.city_ledger_type",
@@ -811,11 +782,52 @@
    "fieldname": "target_account_type",
    "fieldtype": "Data",
    "label": "Target Account Type"
+  },
+  {
+   "fetch_from": "account_code.sort_order",
+   "fieldname": "account_code_sort_order",
+   "fieldtype": "Int",
+   "label": "Account Code Sort Order"
+  },
+  {
+   "fetch_from": "room_type_id.alias",
+   "fieldname": "room_type_alias",
+   "fieldtype": "Data",
+   "label": "Room Type Alias"
+  },
+  {
+   "fieldname": "target_transaction_type",
+   "fieldtype": "Data",
+   "label": "Target Transaction Type"
+  },
+  {
+   "fieldname": "target_transaction_number",
+   "fieldtype": "Data",
+   "label": "Target Transaction Number"
+  },
+  {
+   "fieldname": "source_transaction_number",
+   "fieldtype": "Data",
+   "label": "Source Transaction Number"
+  },
+  {
+   "fieldname": "column_break_njmp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source_transaction_type",
+   "fieldtype": "Data",
+   "label": "Source Transaction Type"
+  },
+  {
+   "fieldname": "reference_folio_transaction",
+   "fieldtype": "Data",
+   "label": "Reference Folio Transaction"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-15 22:34:20.637556",
+ "modified": "2023-11-18 09:33:43.407975",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",
@@ -918,7 +930,7 @@
    "write": 1
   }
  ],
- "search_fields": "folio_number, transaction_number,guest_name, room_number,account_code,account_name",
+ "search_fields": "transaction_number,guest_name, room_number,account_code,account_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

@@ -7,8 +7,8 @@
                     <div class="text-2xl">Desk Folio </div>
                 </template>`
                 <template #end>
-                <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />      
-            </template>`
+                    <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />
+                </template>`
             </ComHeader>
         </div>
         <div class="mb-3 flex justify-between">
@@ -26,7 +26,7 @@
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
-                    
+
                 </div>
             </div>
             <div class="flex gap-2">
@@ -39,71 +39,59 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-           
-           <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
-               <DataTable 
-               class="res_list_scroll" 
-               :resizableColumns="true" 
-               columnResizeMode="fit" 
-               showGridlines
-               stateStorage="local" 
-               stateKey="table_desk_folio_state" 
-               :reorderableColumns="true" 
-               :value="data"
-               tableStyle="min-width: 50rem" 
-               @row-dblclick="onViewReservationStayDetail">
-                   <Column  v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"
-                       :field="c.fieldname" :header="c.label"
-                       :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
-                       :bodyClass="c.header_class || ''" :frozen="c.frozen"
-                       
-                       >
-                       <template #body="slotProps">
-                           <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
-                               @click="onOpenLink(c, slotProps.data)" link>
-                               {{ slotProps.data[c.fieldname] }}
-                               <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                               <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                           </Button>
-                           <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
-                           </span>
-                           <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
-                           <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
-                               <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
-                                   <span>{{ item }}</span>
-                                   <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
-                                   </span>
-                               </template>
-                           </div>
-                           <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-                           <template v-else-if="c.fieldtype == 'Status'">
-                                <span v-if="slotProps.data[c.fieldname] == 'Open'"
-                                    class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                    :style="{ backgroundColor: 'green' }">{{ slotProps.data[c.fieldname]
-                                    }}</span>
-                                <span v-else class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                    :style="{ backgroundColor: 'red' }">{{ slotProps.data[c.fieldname]
-                                    }}</span>
 
+            <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
+                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+                    stateStorage="local" stateKey="table_desk_folio_state" :reorderableColumns="true" :value="data"
+                    tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+                    <Column
+                        v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
+                        :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                        :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
+                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                        <template #body="slotProps">
+                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                @click="onOpenLink(c, slotProps.data)" link>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </Button>
+                            <span v-else-if="c.fieldtype == 'Date'">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
+                            </span>
+                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
+                            <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                                <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
+                                    <span>{{ item }}</span>
+                                    <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
+                                    </span>
+                                </template>
+                            </div>
+                            <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
+                                <span>{{  slotProps.data[c.fieldname].split("@")[0] }}</span>
                             </template>
-                           <span v-else>
-                               {{ slotProps.data[c.fieldname] }}
-                               <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                               <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                           </span>
-                       </template>
-                   </Column>
-               </DataTable>
-           </ComPlaceholder>
-       </div>
-       <div>
-           <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
-               :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
-               <template #start="slotProps">
-                   <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
-               </template>
-           </Paginator>
-       </div>
+                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                            <template v-else-if="c.fieldtype == 'Status'">
+                                <ComOpenStatus :status="slotProps.data[c.fieldname]" />
+                            </template>
+                            <span v-else>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </span>
+                        </template>
+                    </Column>
+                </DataTable>
+            </ComPlaceholder>
+        </div>
+        <div>
+            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
+                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                <template #start="slotProps">
+                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                </template>
+            </Paginator>
+        </div>
     </div>
     <OverlayPanel ref="opShowColumn" id="res_list_hideshow">
         <ComOverlayPanelContent title="Show / Hide Columns" @onSave="OnSaveColumn" ttl_header="mb-2" titleButtonSave="Save"
@@ -113,7 +101,7 @@
                     <i class="pi pi-search" />
                     <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
                 </span>
-            </template> 
+            </template>
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
@@ -125,16 +113,21 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-        <ComOverlayPanelContent  title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
+        <ComOverlayPanelContent style="min-width:60rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-            <div class="grid"> 
+            <div class="grid">
+                <div>
+                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true" selectionMode="range"/>
+                    <lable for="filter_date">Filter Date</lable>
+                </div>
+                <Calendar v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
+                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
                 <ComAutoComplete class="col-3" width="100%" optionLabel="customer_name_en" optionValue="name"
-                    v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest"
-                    doctype="Customer" />
+                    v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
                 <ComSelect class="col-3" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
-                    placeholder="Status" :options="['Open', 'Closed']" />
- 
+                placeholder="Status" :options="['Open', 'Closed']" />
+
                 <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
                     v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
@@ -144,17 +137,15 @@
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <div class="col-6" v-if="filter.search_date_type">
-                    <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
-                        v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-                        placeholder="Select Date Range" showIcon />
+                    <div class="col-6" v-if="filter.search_date_type">
+                    
                 </div>
             </div>
         </ComOverlayPanelContent>
-    </OverlayPanel>
+    </OverlayPanel> 
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed,onUnmounted } from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, onUnmounted } from '@/plugin'
 import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
@@ -169,15 +160,15 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const columns = ref([
     { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
     { fieldname: 'room_number', label: 'Room', default: true },
-    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-",post_message_action: "view_desk_folio_detail", default: true },
+    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'room_type', label: 'Room Type', header_class: "text-center", default: true },
     { fieldname: 'posting_date', label: 'Desk Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
-    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'owner', label: 'Created By', default: true  },
+    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'owner', label: 'Created By', default: true},
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
-    { fieldname: 'modified_by', label: 'Modified By' },
+    { fieldname: 'modified_by', label: 'Modified By'},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
 ])
@@ -186,7 +177,7 @@ const getColumns = computed(() => {
     if (filter.value.search_field) {
         return columns.value.filter(r => (r.label || "").toLowerCase().includes(filter.value.search_field.toLowerCase())).sort((a, b) => a.label.localeCompare(b.label));
     } else {
-   
+
         return columns.value.filter(r => r.label).sort((a, b) => a.label.localeCompare(b.label));
     }
 })
@@ -207,10 +198,10 @@ const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
 
- 
+
 const data = ref([])
 
-const filter = ref({})
+const filter = ref({selected_status:"Open",filter_date:false})
 let dateRange = reactive({
     start: '',
     end: ''
@@ -246,29 +237,51 @@ function pageChange(page) {
 }
 
 function loadData(show_loading = true) {
-    gv.loading = show_loading
+    
     let filters = [
         ["Desk Folio", "property", '=', property.name]
     ]
+    if(filter.value.filter_date){
+        
+        if(filter.value.selected_dates){
+            
+            if(filter.value.selected_dates.length>1){
+                
+                if (filter.value.selected_dates[0] && filter.value.selected_dates[1]){
+                    
+                    filters.push(["posting_date", 'between', [moment(filter.value.selected_dates[0]).format("YYYY-MM-DD"),moment(filter.value.selected_dates[1]).format("YYYY-MM-DD")]])            
+                     
+                }else {
+                    return
+                }
+            }else {
+                return
+            }
+        }else {
+            return
+        }
+
+    }
     if (filter.value?.keyword) {
         filters.push(["name", 'like', '%' + filter.value.keyword + '%'])
     }
-    if (filter.value?.selected_status){
-        filters.push(["status", "=" , filter.value.selected_status])
+    if (filter.value?.selected_status) {
+        filters.push(["status", "=", filter.value.selected_status])
     }
-    if (filter.value?.selected_guest){
-        filters.push(["guest", "=" , filter.value.selected_guest])
+    if (filter.value?.selected_guest) {
+        filters.push(["guest", "=", filter.value.selected_guest])
     }
     if (filter.value?.selected_room_type) {
-        filters.push(["room_type_id", "=" , filter.value.selected_room_type])
+        filters.push(["room_type_id", "=", filter.value.selected_room_type])
     }
     if (filter.value?.selected_room_number) {
-        filters.push(["room_id", '=',filter.value.selected_room_number])
+        filters.push(["room_id", '=', filter.value.selected_room_number])
     }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
     fields = [...new Set(fields.filter(x => x))]
+    gv.loading = show_loading
     getDocList('Desk Folio', {
         fields: fields,
         orderBy: {
@@ -338,9 +351,9 @@ getApi('frontdesk.get_working_day', {
 onMounted(() => {
     window.socket.on("DeskFolio", (arg) => {
         if (arg.property == window.property_name) {
-            setTimeout(function(){
+            setTimeout(function () {
                 loadData(false)
-            },3000) 
+            }, 3000)
         }
     })
 
@@ -406,18 +419,15 @@ onUnmounted(() => {
     window.socket.off("DeskFolio");
 })
 
-function onAddDeskFolio(data){
+function onAddDeskFolio(data) {
     dialog.open(ComAddDeskFolio, {
-        data:{data},
+        data: { data },
         props: {
             header: `Add New Desk folio`,
             style: {
                 width: '50vw',
             },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
+           
             modal: true,
             closeOnEscape: false,
             position: 'top'
@@ -429,7 +439,7 @@ function onAddDeskFolio(data){
                 window.postMessage("view_desk_folio_detail|" + result.name, "*")
             }
         }
-    });  
+    });
 }
 </script>
 
