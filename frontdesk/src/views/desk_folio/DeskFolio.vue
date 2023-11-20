@@ -5,10 +5,10 @@
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-2xl">Desk Folio </div>
-                </template>`
+                </template>
                 <template #end>
                     <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />
-                </template>`
+                </template>
             </ComHeader>
         </div>
         <div class="mb-3 flex justify-between">
@@ -114,29 +114,34 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
     <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
-        <ComOverlayPanelContent style="min-width:60rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+        <ComOverlayPanelContent style="width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <div>
-                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true" selectionMode="range"/>
-                    <lable for="filter_date">Filter Date</lable>
-                </div>
-                <Calendar v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
-                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
-                <ComAutoComplete class="col-3" width="100%" optionLabel="customer_name_en" optionValue="name"
+                <div class="col-6" >
+                <ComAutoComplete class="w-full"   width="100%" optionLabel="customer_name_en" optionValue="name"
                     v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
+                </div>
+                <ComSelect class="col-6" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
                 placeholder="Status" :options="['Open', 'Closed']" />
 
-                <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
+                <ComSelect class="col-6" width="100%" isFilter optionLabel="room_type" optionValue="name"
                     v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
+                <ComSelect class="col-6" width="100%" isFilter groupFilterField="room_type_id"
                     :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
-
+                                <div class="col-6" >
+                    <div class="flex relative">
+                    <!-- <lable for="filter_date">Filter Date</lable> -->
+                    <Calendar class="w-full" inputClass="pl-6" :disabled="!filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
+                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
+                <div v-tippy="'Filter By Date'" class="check-box-filter">
+                    <Checkbox class="absolute" inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true" selectionMode="range"/>
+                    </div>
+                    </div>
+                </div>
                     <div class="col-6" v-if="filter.search_date_type">
                     
                 </div>

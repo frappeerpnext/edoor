@@ -462,7 +462,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Folio Transaction",
-  "modified": "2023-11-01 10:02:28.917271",
+  "modified": "2023-11-17 20:33:47.785483",
   "name": "Folio Transaction",
   "tracking_field": [
    {
@@ -569,6 +569,24 @@
     "field_type": "Data",
     "hide_old_value": 0,
     "label": "Note",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "payment_by",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Paid By",
+    "parent": "Folio Transaction",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "payment_by_phone_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Paid by Phone Number",
     "parent": "Folio Transaction",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"
@@ -786,6 +804,69 @@
     "hide_old_value": 1,
     "label": "Change Block Date Reason",
     "parent": "Room Block",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Deposit Ledger",
+  "modified": "2023-11-17 20:14:40.072506",
+  "name": "Deposit Ledger",
+  "tracking_field": [
+   {
+    "field_name": "guest",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Guest",
+    "parent": "Deposit Ledger",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "guest_name",
+    "field_type": "Autocomplete",
+    "hide_old_value": 0,
+    "label": "Guest Name",
+    "parent": "Deposit Ledger",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "posting_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Posting Date",
+    "parent": "Deposit Ledger",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "status",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Status",
+    "parent": "Deposit Ledger",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "room_number",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Room Number",
+    "parent": "Deposit Ledger",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "note",
+    "parent": "Deposit Ledger",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"
    }

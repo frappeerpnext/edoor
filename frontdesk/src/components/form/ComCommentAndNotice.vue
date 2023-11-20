@@ -64,7 +64,7 @@
     </div>
         <!-- <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} </div> -->
         <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-html="i.content"></div>
-        <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date">
+        <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date && i.custom_is_note">
         Note Date: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
         </div>
     </div>
@@ -165,7 +165,7 @@ function onLoad(show_loading = true) {
 	filters.push(["reference_doctype", 'in', props.reference_doctypes])
 	filters.push(["reference_name", 'in', props.docnames])
     getDocList('Comment', {
-		fields: ["name","creation", "custom_keyword" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_keyword" ,"custom_note_date" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {
 			field: "creation",
 			order:"DESC",

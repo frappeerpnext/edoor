@@ -29,6 +29,7 @@ import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
 import NotFound from "@/components/NotFound.vue";
 import Activity from "@/views/activities/Activity.vue";
 import DepositLedger from "@/views/deposit_ledger/DepositLedger.vue";
+import AccountCodeSortOrder from "@/views/account_code/AccountCodeSortOrder.vue";
 
 import authRoutes from './auth';
 
@@ -69,6 +70,7 @@ let routes = [
   { path: "/frontdesk/test-page", name: "TestPage", component: TestPage, meta: { layout: 'main_layout' } },
   { path: "/frontdesk/activity", name: "Activity", component: Activity, meta: { layout: 'main_layout' } },
   { path: "/frontdesk/deposit-ledger", name: "DepositLedger", component: DepositLedger, meta: { layout: 'main_layout',title:"Deposit Ledger" } },
+  { path: "/frontdesk/account-code-sort-order", name: "AccountCodeSortOrder", component:AccountCodeSortOrder, meta: { layout: 'blank_layout',title:"Sort Order Account Code" } },
  
   ...authRoutes,
 

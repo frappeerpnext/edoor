@@ -1,10 +1,11 @@
 <template>
     <div>
        
+       
         <div class="flex min-h-folio-cus" v-if="rs.folios?.length > 0">
             <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
-                <ComFolioAction :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
+                <ComFolioAction :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
                 <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
             </div>
@@ -65,6 +66,10 @@ function setSelectedFolio(selected_name=""){
         selectedFolio.value.allow_post_to_city_ledger = rs.reservationStay.allow_post_to_city_ledger
         
     }
+
+function onRefresh(){
+    loadReservationStayFolioList()
+}
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
 
@@ -88,6 +93,7 @@ function loadReservationStayFolioList(selected_name=""){
     provide('reservation_stay', {
         loadReservationStayFolioList
     })
+
 
 function onAddCreatNewFolio() {
 

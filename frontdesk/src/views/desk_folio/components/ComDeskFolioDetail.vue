@@ -14,12 +14,12 @@
                     {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Guest">
-                    <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 text-right link_line_action1">
+                    <span @click="onViewCustomerDetail(doc.guest)" class="text-right link_line_action1 -ml-2">
                         {{ doc.guest }} - {{ doc.guest_name }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Room">
-                    <span class="font-semibold text-right">
+                <ComStayInfoNoBox label="Room(s)">
+                    <span class="font-semibold text-right -ml-2">
                         {{ doc.room_number }}  <span v-if="doc.room_number">({{ doc.room_type }})</span>
                     </span>
                 </ComStayInfoNoBox>
@@ -35,9 +35,9 @@
                         {{ doc.note }}
                     </span>
                 </ComStayInfoNoBox>
-            </table>
+                </table>
 
-            <div class="col-12 p-0">
+                <div class="col-12 p-0">
                 <div
                     class="line-height-1 -mt-2 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                     <div >

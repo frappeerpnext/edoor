@@ -1922,39 +1922,46 @@ def get_folio_transaction(transaction_type, transaction_number):
     return folio_transactions
 
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order'):
- 
-    data = frappe.db.sql("""
+def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order',hide_room_number = 0,show_account_code=None):
+    
+    if show_account_code == None:
+        show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
+    
+
+    data = frappe.db.sql(f"""
                     select 
                         account_code,
-                        room_number,
+                        {'room_number,' if hide_room_number =='0' else '' }
                         account_name,
                         type,
-                        {0}, 
+                        {sort_by_field}, 
                         sum(amount) as amount
                     from `tabFolio Transaction` 
                     where 
-                        transaction_number = '{2}' and 
-                        transaction_type = '{1}'
+                        transaction_number = '{transaction_number}' and 
+                        transaction_type = '{transaction_type}'
                     group by 
                         account_code,
                         account_name ,
-                        room_number,
+                        {'room_number,' if hide_room_number =='0' else '' }
                         type
                     order by 
-                        {0}
-                """.format(sort_by_field, transaction_type, transaction_number ),as_dict=1)
+                        {'room_number,' if hide_room_number =='0' else '' }
+                        {sort_by_field}
+                """,as_dict=1)
     summary_data = []
     balance = 0
     for d in data:
         balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
-        summary_data.append({
-            "room_number":d["room_number"],
-            "description":d["account_name"],
+        record = {
+            "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
             "balance":balance
-        })
+        }
+        if hide_room_number=='0':
+            record["room_number"] = d["room_number"]
+        summary_data.append(record)
     return summary_data
 
 

@@ -292,7 +292,8 @@ def update_reservation(name=None,doc=None, run_commit = True):
                 sum(if(type='Credit',amount,0)) as credit
             from `tabFolio Transaction` 
             where
-                reservation = '{}'
+                reservation = '{}' and 
+                transaction_type = 'Reservation Folio'
         """.format(
             doc.name
         )
@@ -764,6 +765,8 @@ def clear_reservation():
     frappe.db.sql("delete from `tabCashier Shift`")
     frappe.db.sql("delete from `tabFrontdesk Note`")
     frappe.db.sql("delete from `tabRoom Block`")
+    frappe.db.sql("delete from `tabDeposit Ledger`")
+    frappe.db.sql("delete from `tabDesk Folio`")
 
     frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
     frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
@@ -1032,3 +1035,25 @@ def get_reservation_folio_detail(name):
 		"reservation_folio":doc,
 		"related_ids":related_ids
 	}  
+
+@frappe.whitelist(methods="POST")
+def sort_parent_account_code(parent_account_code, account_codes):
+    for d in account_codes:
+        sort_order = (account_codes.index(d) + 1) * 100
+        sort_order = frappe.db.get_value("Account Code",parent_account_code,"sort_order") + sort_order
+        
+        frappe.db.sql("update `tabAccount Code` set sort_order={} where name='{}'".format(sort_order, d))
+    frappe.db.commit()
+    frappe.msgprint("Update parent account code sort order successfully")
+    
+@frappe.whitelist(methods="POST")
+def sort_child_account_code(account_codes):
+    for d in account_codes:
+        sort_order = account_codes.index(d) + 1
+
+        sort_order = frappe.db.get_value("Account Code",d["parent"],"sort_order") + sort_order
+        frappe.db.sql("update `tabAccount Code` set sort_order={} where name='{}'".format(sort_order, d["account_code"]))
+        frappe.db.sql("update `tabFolio Transaction` set account_code_sort_order={} where account_code='{}'".format(sort_order, d["account_code"]))
+
+    frappe.db.commit()
+    frappe.msgprint("Update child account code sort order successfully")

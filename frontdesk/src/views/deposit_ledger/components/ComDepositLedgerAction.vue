@@ -52,7 +52,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc, watch } from '@/plugin';
+import { inject, ref, useToast, updateDoc, watch,onMounted,getDocList } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -375,59 +375,49 @@ function onDeleteFolio() {
 
 }
 
-function onTransferFolioItem() {
-    if (selectedFolio.value.status == "Open") {
-        const selectedFolioTransactions = JSON.parse(sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name)).selection
-
-        if (selectedFolioTransactions.length == 0) {
-            toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
-            return
-        }
-
-        const dialogRef = dialog.open(ComFolioTransfer, {
-            data: {
-                reservation: selectedFolio.value.reservation,
-                reservation_stay: selectedFolio.value.reservation_stay,
-                folio_number: selectedFolio.value.name,
-                folio_transaction: selectedFolioTransactions,
-
-            },
-            props: {
-                header: 'Folio Transfer',
-                style: {
-                    width: '75vw',
-                },
-
-                modal: true,
-                position: "top"
-            },
-            onClose: (options) => {
-                const data = options.data;
-
-                if (data) {
-                    selectedFolioTransactions.value = []
-
-                    reloadData()
-
-                    setTimeout(() => {
-                        window.socket.emit("ReservationDetail", selectedFolio.value.reservation)
-                        window.socket.emit("Frontdesk", selectedFolio.value.reservation)
-                    }, 3000);
+ 
 
 
-                }
-            }
+onMounted(()=>{
+    getDocList('Custom Print Format', {
+        fields: [
+            'print_format',
+            'icon',
+            'title',
+            'attach_to_doctype'
+        ],
+        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", 'Deposit Ledger']]
+    })
+        .then((doc) => {
+            doc.forEach(d => {
+                print_menus.value.push({
+                    label: d.title,
+                    name: d.print_format,
+                    icon: d.icon ? d.icon : "pi pi-print",
+                    command: (r) => {
+                      
+                        dialog.open(ComIFrameModal, {
+                            data: {
+                                doctype: d.attach_to_doctype,
+                                name: props.folio.name,
+                                report_name: d.print_format,
+                                show_letter_head: true,
+                            },
+                            props: {
+                                header: d.title,
+                                style: {
+                                    width: '80vw',
+                                },
+                                position: "top",
+                                modal: true,
+                                maximizable: true,
+                            },
+                        });
+                    }
+                })
+            });
         })
-    } else {
-        toast.add({ severity: 'warn', summary: "", detail: "Folio is already closed.", life: 3000 })
-    }
-}
-
-
-
-
-
-
+})
 
 </script>
  

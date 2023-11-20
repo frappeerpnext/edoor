@@ -45,10 +45,12 @@
                 {{ d.name }}
             </div>
             <div class="flex" >
-                <div v-tippy="d.guest_name.length > 25 ? d.guest_name :''" class="text-overflow-ellipsis white-space-nowrap overflow-hidden me-2" style="max-width: 150px;">
-                {{ d.guest_name }}
+                <div v-tippy="d.guest_name.length > 25 ? d.guest_name :''" class="white-space-nowrap text-gray-600 line-height-2 
+                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis" style="max-width: 125px;">
+                    <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
+                    <spa class="ms-1">{{ d.guest_name }}</spa>
                 </div>
-                <span class="line-height-2 font-italic text-sm folio-remark me-1" :class="d.status == 'Open' ? 'text-green-700' : 'text-orange-700'" >{{ d.status }}</span>
+                <span class="line-height-2 text-sm folio-remark me-1" :class="d.status == 'Open' ? '' : 'closed'" >{{ d.status }}</span>
                 
             </div>
         </div>
@@ -76,6 +78,7 @@
 </div>
 </template>
 <script setup>
+import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
 import {  inject, useDialog , onMounted } from '@/plugin';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';

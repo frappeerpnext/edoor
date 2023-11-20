@@ -142,7 +142,7 @@ export default class Gv {
 		const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
 		if(setting?.custom_print_format){
 			const custom = setting?.custom_print_format?.filter(r=>r.name==name)
- 
+		 
 			if(custom && custom.length>0){
 				return  encodeURIComponent( custom[0].print_format)
 			}

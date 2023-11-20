@@ -127,7 +127,6 @@
                     <span class="text-500 font-italic">
                         {{ rs.reservationStay?.modified_by?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.modified"/>  
-
                     </span>
                 </div>
                 <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
@@ -136,7 +135,6 @@
                         <span class="text-500 font-italic">
                             {{ rs.reservationStay.checked_in_by?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.checked_in_date"/>  
-
                         </span>
                     </div>
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">

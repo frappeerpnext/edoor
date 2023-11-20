@@ -78,11 +78,11 @@
                 <ComPanel title="Summary">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
 
-                        <ComKPI v-tippy=" ' Total Arrival ' + (data?.arrival|| 0)+ ' & ' +(data?.arrival_remaining || 0) + ' Remaining Check-in '" @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  data.arrival + '/' + data?.arrival_remaining ||0)) :''" title="Arrival"
+                        <ComKPI v-tippy="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in ' + ' & ' +  ' Total Arrival ' + (data?.arrival|| 0) " @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  ((data.arrival || 0) -(data.arrival_remaining || 0)) + '/' + data?.arrival ||0)) :''" title="Arrival"
                             class="primary-btn-edoor cursor-pointer border-round-lg"> </ComKPI>
                         <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over"
                             class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI v-tippy="'Total Departure ' +  (data?.departure ||0) + ' & '+ (data?.departure_remaining ||0) +' Remaining Checked-out'" @onClick="viewSummary('Departure')" :value="!gv.loading ? ( data.departure  +'/'+  data?.departure_remaining ||0) : ''" title="Departure"
+                        <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out' + ' & '+ 'Total Departure ' +  (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" title="Departure"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
                         <ComKPI @onClick="viewSummary('Daily Reservation')" :value="!gv.loading ? data.daily_reservation : ''"

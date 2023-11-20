@@ -155,7 +155,7 @@ const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows:
 const property = window.property
 
 const columns = ref([
-  { fieldname: 'name', label: 'Folio Transaction Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
+  { fieldname: 'name', label: 'Folio Transaction', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
   { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
   { fieldname: 'reservation_stay', label: 'Stay #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_stay_detail", default: true },
   { fieldname: 'transaction_number', label: 'Folio #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_detail", default: true },
@@ -169,7 +169,7 @@ const columns = ref([
   { fieldname: 'total_amount', label: 'Total Amount', header_class: "text-right",fieldtype:"Currency", default: true },
   { fieldname: 'modified_by', label: 'Modifield By', header_class: "text-left", default: true,fieldtype:"username" },
   { fieldname: 'modified', label: 'Last Modifield', fieldtype: "Timeago", header_class: "text-left", default: true },
-  { fieldname: 'reservation_status', label: 'Res. Status', header_class: "text-center", fieldtype:"reservation_status" },
+  { fieldname: 'reservation_status', label: 'Status', header_class: "text-center", fieldtype:"reservation_status" },
   { fieldname: 'posting_date', label: 'Date', header_class: "text-center", fieldtype: "Date" },
   { fieldname: 'payment_by', label: 'Pay by'},
   { fieldname: 'payment_by_phone_number', label: 'Phone Number'},

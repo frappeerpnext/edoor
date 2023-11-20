@@ -140,9 +140,7 @@ def get_filters(filters):
 
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-
-	# if filters.get("room_types"):
-	# 	sql = sql + " and rst.room_types in %(room_types)s"
+		frappe.throw(str(filters.reservation_status))
 		
 
 	
@@ -188,8 +186,7 @@ def get_reservation_stays(filters):
 		sql = sql + " and rst.guest = %(guest)s"
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-	# if filters.get("room_types"):
-	# 	sql = sql + " and rst.room_types in %(room_types)s"
+
 
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation_stay"] for d in data]
@@ -210,8 +207,8 @@ def get_reservation(filters):
 		sql = sql + " and rst.guest = %(guest)s"
 	if filters.get("reservation_status"):
 		sql = sql + " and rst.reservation_status in %(reservation_status)s"
-	# if filters.get("room_types"):
-	# 	sql = sql + " and rst.room_types in %(room_types)s"
+	
+
 		
 	data =  frappe.db.sql(sql, filters, as_dict=1)
 	return [d["reservation"] for d in data]
@@ -261,43 +258,38 @@ def get_get_reservation_stay(filters):
 	return data
 
 def get_report_data(filters,data):
+	sql = sorted(set([d["reservation"] for d in data]))
+	report_data = []
+	for g in sql:
+		d = g
 
-	if filters.group_by:
-		group_column = get_group_by_column(filters)
-		
-		group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
-		report_data = []
-		for g in group_data:
-			d = g
-			if group_column["fieldtype"]=="Date":
-				d  = frappe.format(g,{"fieldtype":"Date"})
-			id =  str(uuid.uuid4())
-			report_data.append({
+		id =  str(uuid.uuid4())
+		report_data.append({
 				"indent":0,
 				"reservation": d,
 				"is_group":1,
 				"id":id
 			})
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d[group_column["data_field"]]==g]
+		report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["reservation"]==g]
 			
-			report_data.append({
+		report_data.append({
 				"indent":0,
 				"reservation": "Total",
-				"room_nights":sum([d["room_nights"] for d in data if d[group_column["data_field"]]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g]),sum([d["child"] for d in data if d[group_column["data_field"]]==g])),
-				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
-				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
-				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
+				"room_nights":sum([d["room_nights"] for d in data if d["reservation"]==g]),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data]),sum([d["child"] for d in data if d["reservation"]==g])),
+				"total_debit":sum([d["total_debit"] for d in data if d["reservation"]==g]),
+				"total_credit":sum([d["total_credit"] for d in data if d["reservation"]==g]),
+				"balance":sum([d["balance"] for d in data if d["reservation"]==g]),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
 			})
 
-		report_data.append({
+	report_data.append({
 				"indent":0,
 				"reservation": "",
 				"is_separator":1})
-		report_data.append({
+	report_data.append({
 				"indent":0,
 				"reservation": "Grand Total",
 				"room_nights":sum([d["room_nights"] for d in data ]),
@@ -310,44 +302,11 @@ def get_report_data(filters,data):
 				"is_grand_total":1
 			})
 
-		return report_data
-	else:
-		data.append({
-			"indent":0,
-			"reservation": "Total",
-			"total_debit":sum([d["total_debit"] for d in data]),
-			"total_credit":sum([d["total_credit"] for d in data]),
-			"balance":sum([d["balance"] for d in data ]),
-			"room_nights":sum([d["room_nights"] for d in data ]),
-			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-			"is_total_row":1
-		})
-		return data
+	return report_data
 
-def get_group_by_column(filters):
- 
-	return  [d for d in group_by_columns() if d["label"] == filters.group_by][0]
-
-def group_by_columns():
-	
-	return [
-		{"data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
-		{"data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
-		{"data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
-		{"data_field":"name", "label":"Reservation Stay" ,"fieldtype":"Data" },
-		{"data_field":"reservation_date", "label":"Reservation Date" ,"fieldtype":"Date" },
-		{"data_field":"guest", "label":"Guest" ,"fieldtype":"Data" },
-		{"data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
-		{"data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
-		{"data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
-		{"data_field":"business_source_type", "label":"Business Source Type" ,"fieldtype":"Data" },
-		{"data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
-		{"data_field":"rate_type", "label":"Rate Type" ,"fieldtype":"Data" },
-		{"data_field":"reservation_status", "label":"Reservation Status" ,"fieldtype":"Data" },
-	]
 
 def get_field(filters):
- 
+	
 	return  [d for d in get_report_field() if d["label"] == filters.view_chart_by][0]
 
 def get_report_field():

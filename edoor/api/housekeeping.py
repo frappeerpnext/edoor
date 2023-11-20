@@ -3,20 +3,33 @@ import frappe
 import json
 
 @frappe.whitelist(methods="POST")
-def update_housekeeping_status(rooms, status):
-    
+def update_housekeeping_status(property, rooms, status):
+   working_day = get_working_day(property)
    doc = frappe.get_doc("Housekeeping Status", status)
    for r in rooms.split(","):
       room = frappe.get_doc("Room",r)
-      if room.reservation_stay:
-         if (doc.is_room_occupy or 0) == 0:
-            frappe.throw("Room {} is occupy. You can not change   status to {}".format(room.room_number, status))
-      if room.is_block:
-         frappe.throw("Room #{} is block. You can not change status of a block room.".format(room.room_number))
+      temp_occupy_data = frappe.db.sql("select type,reservation_status from `tabTemp Room Occupy` where room_id='{}' and date='{}' and property='{}'".format(r,working_day["date_working_day"],property), as_dict=1)
+      if len(temp_occupy_data)>0:
+         temp_data = temp_occupy_data[0]
+         #validate if room have guest
+         if temp_data["type"] =="Reservation":
+            if temp_data["reservation_status"] == "In-house":
+               # validate status is vacant but room have guest then show error message
+               if (doc.is_room_occupy or 0) == 0:
+                  frappe.throw("Room {} is occupy. You can not change   status to {}".format(room.room_number, status))
+            else:
+                if (doc.is_room_occupy or 0) == 1:
+                  frappe.throw("Room {} is vacant. You can not change status to {}".format(room.room_number, status))
+         else:
+            frappe.throw("Room #{} is block. You can not change status of a block room.".format(room.room_number))
       else:
-         room.housekeeping_status = status
-         room.status_color = doc.status_color
-         room.save()
+         #room is free but set to room occupy
+         if (doc.is_room_occupy or 0) == 1:
+            frappe.throw("Room {} is vacant. You can not change status to {}".format(room.room_number, status))
+
+      room.housekeeping_status = status
+      room.status_color = doc.status_color
+      room.save()
       frappe.db.commit()
 
    return "Ok"

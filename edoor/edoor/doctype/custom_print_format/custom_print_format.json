@@ -8,10 +8,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "title",
   "property",
   "print_format",
   "custom_print_format",
-  "attach_to_doctype"
+  "attach_to_doctype",
+  "icon"
  ],
  "fields": [
   {
@@ -42,11 +44,21 @@
    "fieldtype": "Link",
    "label": "Attach To Doctype",
    "options": "DocType"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-19 10:21:15.173490",
+ "modified": "2023-11-19 10:39:39.416930",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Custom Print Format",

@@ -145,8 +145,6 @@ const dialogRef = dialog.open(ComFolioTransactionDetail, {
 });
 
 }
-
-
 function onLoadData(){
 	loading.value = true
 	let filters = [
@@ -157,10 +155,12 @@ function onLoadData(){
 	]
 	filters.push(["custom_note_date",">=", working_day.date_working_day])
 	if (keyword.value){
-		filters.push(["custom_keyword","like", '%' + keyword.value + '%'])
+		filters.push(["custom_keyword" ,"like", '%' + keyword.value + '%'])
 	}
+
 	db.getDocList('Comment', {
-		fields: ["name","creation", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
+		fields: ["name","creation", "custom_is_pin", "modified_by" , "custom_note_date", "custom_posting_date", "reference_doctype", 
+		 "reference_name", "content", "owner","comment_by", "modified","comment_type","custom_icon",'custom_is_note'],
 		filters:filters,
 		orderBy: {
 			field: 'creation',

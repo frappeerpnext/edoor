@@ -35,12 +35,24 @@
                                 </div>
                                 <div class="flex gap-2">
                                     <div>
-                                        <Dropdown v-model="pageState.order_by" :options="actions" optionValue="fieldname"
-                                            optionLabel="label" placeholder="Sort By" @change="loadData" />
+                                        <div class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
+                        <button type="button" @click="onToggleView"
+                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+                        </button>
+                        <button @click="onToggleView"
+                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+                        </button>
+                    </div>
                                     </div>
                                     <div>
+                                        <Dropdown class="h-btn-cs" v-model="pageState.order_by" :options="actions" optionValue="fieldname"
+                                            optionLabel="label" placeholder="Sort By" @change="loadData" />
+                                    </div>
+                                    <div class="h-btn-cs">
                                         <!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
-                                        <Button class="content_btn_b h-full px-3" @click="onOrderBy()">
+                                        <Button class=" content_btn_b h-full px-3" @click="onOrderBy()">
                                             <i v-if="pageState.order_type == 'desc'" class="pi pi-sort-alpha-down-alt" />
                                             <i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />
                                         </Button>
@@ -51,16 +63,7 @@
                         </div>
 
                         <!-- Show aduti trail list -->
-<div class="flex h-3rem justify-end items-end overflow-hidden rounded-lg mb-3">
-                        <button type="button" @click="onToggleView"
-                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
-                        </button>
-                        <button @click="onToggleView"
-                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
-                        </button>
-                    </div>
+
 
                     <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data && data.length > 0">
                         <ComActivityTimeLine :data="data" v-if="toggleView"/>
@@ -202,7 +205,7 @@ function loadData(show_loading = true) {
     }
 
     getDocList('Comment', {
-        fields: ["custom_posting_date", "creation" , "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified", "comment_email","custom_icon","custom_comment_by_photo"],
+        fields: ["custom_posting_date", "creation" , "custom_is_note" ,"custom_note_date" , "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified", "comment_email","custom_icon","custom_comment_by_photo"],
         orderBy: {
             field: pageState.value.order_by,
             order: pageState.value.order_type,

@@ -63,10 +63,15 @@
                 </template>
             </Menu>
         </div>
-        <div>
-            <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
-                :model="print_menus" />
+        <div class="flex items-center">
+            <span>
+                <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp p-3" label="Print" icon="pi pi-print"
+                    :model="print_menus" />    
+                <!-- <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b ml-2" :loading="loading"></Button> -->
+            </span>
+            <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
         </div>
+        
     </div>
 
 
@@ -76,7 +81,7 @@
 import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTransaction.vue"
 import { useDialog } from 'primevue/usedialog';
 import { useConfirm } from "primevue/useconfirm";
-import { inject, ref, useToast, updateDoc,watch } from '@/plugin';
+import { inject, ref, useToast, updateDoc,watch,onMounted,getDocList } from '@/plugin';
 
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import Menu from 'primevue/menu';
@@ -86,11 +91,15 @@ import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
  
 const props = defineProps({
+    doctype:String,
     folio:Object,
     newDoc:Object,
     accountCodeFilter:Object,
-    accountGroups:Object
+    accountGroups:Object,
+    loading:Boolean
 })
+
+const emit = defineEmits(["onRefresh"])
 
 const selectedFolio = ref(props.folio)
 
@@ -345,9 +354,9 @@ function MarkasMasterFolio() {
 }
 
 function openFolio() {
-    alert("pls fix me remove rs.reservationstay")
+
     if(rs.reservationStay.reservation_status=='No Show'){
-        gv.toast('warn', 'No Show reservation is not allow to opan folio.')
+        gv.toast('warn', 'No Show reservation is not allow to open folio.')
     }
     else{
         confirm.require({
@@ -375,6 +384,21 @@ function openFolio() {
     
 }
 
+
+const onRefresh = debouncer(() => {
+   emit("onRefresh")
+}, 500);
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
 
 function closeFolio() {
     confirm.require({
@@ -487,6 +511,47 @@ function onTransferFolioItem() {
 }
 
 
+onMounted(()=>{
+
+    getDocList('Custom Print Format', {
+        fields: [
+            'print_format',
+            'icon',
+            'title',
+            'attach_to_doctype'
+        ],
+        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", props.doctype]]
+    })
+        .then((doc) => {
+            doc.forEach(d => {
+                print_menus.value.push({
+                    label: d.title,
+                    name: d.print_format,
+                    icon: d.icon ? d.icon : "pi pi-print",
+                    command: (r) => {
+                      
+                        dialog.open(ComIFrameModal, {
+                            data: {
+                                doctype: d.attach_to_doctype,
+                                name: props.folio.name,
+                                report_name: gv.getCustomPrintFormat(d.print_format),
+                                show_letter_head: true,
+                            },
+                            props: {
+                                header: d.title,
+                                style: {
+                                    width: '80vw',
+                                },
+                                position: "top",
+                                modal: true,
+                                maximizable: true,
+                            },
+                        });
+                    }
+                })
+            });
+        })
+})
 
 
 

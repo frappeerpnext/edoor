@@ -135,7 +135,8 @@ import ComPrintButton from "@/components/form/ComPrintButton.vue"
 import DeskFolio from './providers/desk_folio';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
-
+import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import VueSortable from "vue3-sortablejs";
 
 // use components //
 app.component('Button', Button);
@@ -215,6 +216,7 @@ app.component('ComPrintButton', ComPrintButton)
 app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
+app.component('ComIFrameModal', ComIFrameModal)
 
 // Plugins
 app.use(frappe)
@@ -234,6 +236,7 @@ app.use(ToastService);
 app.use(DialogService);
 // app.use(resourceManager);
 app.use(ConfirmationService);
+app.use(VueSortable);
 
 
 
@@ -320,7 +323,7 @@ if (setting) {
 
 
 
-	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage"]
+	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder"]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)

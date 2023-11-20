@@ -9,7 +9,7 @@
                         
                     </div>
                 <div >
-                    <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                    <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b btn-size2"></Button>
                 </div>
             </div>
         </div>

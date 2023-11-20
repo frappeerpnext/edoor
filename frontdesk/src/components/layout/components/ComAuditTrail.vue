@@ -1,5 +1,5 @@
 <template>
-	<ComDialogContent hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
+	<ComDialogContent   hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
 		<div>
 			<div class="mb-3 flex justify-between">
 				<div class="flex gap-2">
@@ -17,40 +17,40 @@
 					</div>
 				</div>
 				<div class="flex gap-2">
+					<div>
+							<div class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
+			
+			<button type="button" @click="onToggleView"
+				:class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+				<i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+			</button>
+			<button @click="onToggleView"
+				:class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+				<i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+			</button>
+		</div>
+					</div>
 				
 					<div>
-						<Dropdown v-model="pageState.order_by" :options="actions" optionValue="fieldname" optionLabel="label"
+						<Dropdown class="h-btn-cs" v-model="pageState.order_by" :options="actions" optionValue="fieldname" optionLabel="label"
 							placeholder="Sort By" @change="loadData" />
 					</div>
-					<div>
+					<div class="">
 						<!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
-						<Button class="content_btn_b h-full px-3" @click="onOrderBy()">
+						<Button class="content_btn_b h-btn-cs px-3" @click="onOrderBy()">
 							<i v-if="pageState.order_type == 'desc'" class="pi pi-sort-alpha-down-alt" /> 
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<Button class="content_btn_b" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
-
-					<button @click="Refresh()" v-tippy="'Refresh'" class="rounded-lg conten-btn flex" :loading="loading">
-						<icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
-						</icon>
-					</button>
+					<div>
+						<Button class="content_btn_b h-btn-cs" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
+						<Button   @click="Refresh()" icon="pi pi-refresh" class="content_btn_b  ml-2"></Button>
+					</div>
 					
 				</div>
 			</div>
 		</div>
-		<div class="flex h-3rem justify-end items-end overflow-hidden rounded-lg mb-3">
-			
-                        <button type="button" @click="onToggleView"
-                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
-                        </button>
-                        <button @click="onToggleView"
-                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
-                        </button>
-                    </div>
-		<div class="overflow-auto h-full">
+		<div class="overflow-auto h-full pb-4">
 			<ComPlaceholder text="No Data" height="70vh" :loading="loading.value" :is-not-empty="data.length > 0">
 				<DataTable 
 					class="res_list_scroll" 
@@ -82,7 +82,7 @@
 						<Column field="subject" header="Subject"></Column>
 						<Column field="content" header="Description">
 							<template #body="slotProps">
-								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
+								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis content-note-comment" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
 						</Column>
 						<Column field="comment_by" header="By"></Column>
@@ -96,8 +96,9 @@
 				<ComActivityTimeLine v-else :data="data"/>
 			</ComPlaceholder>
 		</div>
-		<div>
-			<Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
+		<hr>
+		<div class="">
+			<Paginator class="p__paginator " v-model:first="pageState.activePage" :rows="pageState.rows"
 				:totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" @page="pageChange">
 				<template #start="slotProps">
 					<strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
@@ -129,6 +130,7 @@
 				titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
 				@onCancel="onCloseAdvanceSearch">
 				<div class="grid">
+				
 					<div class="col-6">
 						<Calendar class="w-full" :selectOtherMonths="true" v-model="filter.custom_posting_date"
 							placeholder="Please Select Date" dateFormat="dd-mm-yy"  @update:modelValue="loadData(false, $event)" showIcon />
@@ -236,7 +238,7 @@ function loadData(show_loading = true) {
     }
 
 	getDocList('Comment', {
-		fields: ["custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified","comment_email"],
+		fields: ["custom_posting_date", "custom_icon" , "creation" , "reference_doctype", "reference_name", "subject", "content", "comment_by", "modified","comment_email"],
 		orderBy: {
 			field: pageState.value.order_by,
 			order: pageState.value.order_type,

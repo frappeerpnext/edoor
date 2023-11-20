@@ -6,12 +6,13 @@
                 <div>
                     <Button v-if="onUrl" class="conten-btn" label="Webcam" icon="pi pi-camera" @click="onModalWebcam"></Button>
                 </div>
-                <div>
-                    <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
+                <div class="flex items-center">
+                    <span class="p-3">
+                        <Button class="conten-btn" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
+                    </span>
+                    <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
                 </div>
-                <div>
-                    <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b ml-2"></Button>
-                </div>
+                
             </div>
         </div>
         <div>

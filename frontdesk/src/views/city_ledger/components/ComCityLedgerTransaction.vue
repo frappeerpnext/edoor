@@ -268,22 +268,22 @@ const viewCityLedgerReport = () => {
 }
 
 const columns = ref([
-    { fieldname: 'name', label: 'Folio Transaction Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
+    { fieldname: 'name', label: 'Folio Transaction', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", default: true, header_class: "text-center" },
-    { fieldname: 'room_number', label: 'Room Number',fieldtype: "Rooms" ,  header_class: "text-center" },
+    { fieldname: 'room_number', label: 'Room(s)',fieldtype: "Rooms" ,  header_class: "text-center" },
     { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit" , default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
-    { fieldname: 'owner', label: 'User', default: true,fieldtype:"Owner" },
-    { fieldname: 'note', label: 'Note', default: true },
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },
     { fieldname: 'parent_reference' },
-    { fieldname: 'modified_by', label: 'Modified By' , fieldtype: "Owner"},
-    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'payment_by', label: 'Pay by' },
     { fieldname: 'payment_by_phone_number', label: 'Phone No.' },
+    { fieldname: 'owner', label: 'User', default: true,fieldtype:"Owner" },
+    { fieldname: 'modified_by', label: 'Modified By' , fieldtype: "Owner"},
+    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
+    { fieldname: 'note', label: 'Note', default: true },
 ])
 
 const selectedColumns = ref([]);

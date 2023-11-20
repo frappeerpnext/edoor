@@ -15,10 +15,10 @@ const props = defineProps({
     reservation_stay: String,
     folio_number:String
 })
+
 const frappe = inject("$frappe")
 const db = frappe.db();
 const items = ref([])
-
 //static print button
 items.value.push({
     label: "Guest Registration Card",
@@ -71,7 +71,6 @@ items.value.push({
         });
     }
 })
-
 //Folio Summary Report
 items.value.push({
     label: "Folio Summary Report",
@@ -89,7 +88,7 @@ items.value.push({
                         doctype: "Reservation%20Stay",
                         reservation_stay: props.reservation_stay,
                         folio_number:props.folio_number,
-                       // report_name: "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
+                 
                          report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
 
                         view: "print"
@@ -110,7 +109,6 @@ items.value.push({
 
     }
 })
-
 //folio detail report
 items.value.push({
     label: "Folio Detail Report",
@@ -148,7 +146,6 @@ items.value.push({
 
     }
 })
-
 //reservation stay detail
 items.value.push({
     label: "Reservation Stay Detail",
@@ -178,52 +175,48 @@ items.value.push({
     }
 })
 
-
 onMounted(() => {
 
     if (props.reservation_stay) {
-
-        db.getDocList('Print Format', {
-            fields: [
-                'name',
-                'title'
-            ],
-            filters: [["show_in_reservation_stay_detail", "=", "1"]]
-
-        })
-            .then((doc) => {
-
-                doc.forEach(d => {
-                    items.value.push({
-                        label: d.title,
-                        name: d.name,
-                        icon: 'pi pi-refresh',
-                        command: (r) => {
-           
-                            dialog.open(ComPrintReservationStay, {
-                                data: {
-                                    doctype: "Reservation%20Stay",
-                                    name: props.reservation_stay,
-                                    report_name: r.item.name,
-                                    view: "print"
+        db.getDocList('Custom Print Format', {
+        fields: [
+            'print_format',
+            'icon',
+            'title',
+            'attach_to_doctype'
+        ],
+        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", "Reservation Stay"]]
+    })
+        .then((doc) => {
+            doc.forEach(d => {
+                items.value.push({
+                    label: d.title,
+                    name: d.print_format,
+                    icon: d.icon ? d.icon : "pi pi-print",
+                    command: (r) => {
+                        dialog.open(ComIFrameModal, {
+                            data: {
+                                doctype: d.attach_to_doctype,
+                                name: props.reservation,
+                                report_name: gv.getCustomPrintFormat(d.print_format),
+                                show_letter_head: true,
+                            },
+                            props: {
+                                header: d.title,
+                                style: {
+                                    width: '80vw',
                                 },
-                                props: {
-                                    header: r.item.label,
-                                    style: {
-                                        width: '80vw',
-                                    },
-                                    position:"top",
-                                    modal: true,
-                                    maximizable: true,
-                                },
-                            });
-                        }
-                    })
-                });
-            })
-            .catch((error) => {
-
+                                position: "top",
+                                modal: true,
+                                maximizable: true,
+                            },
+                        });
+                    }
+                })
             });
+        })
+
+
 
 
     }

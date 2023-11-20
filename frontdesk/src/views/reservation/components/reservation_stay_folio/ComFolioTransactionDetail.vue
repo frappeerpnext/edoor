@@ -7,7 +7,11 @@
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
-              <ComStayInfoNoBox label="Guest Name" v-if="doc?.guest_name" :value="doc.guest_name" />
+              <ComStayInfoNoBox label="Guest" v-if="doc?.guest_name">
+                <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 text-right link_line_action1">
+                        {{ doc.guest }} - {{ doc.guest_name }}
+                    </span>
+              </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number" />
               <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type" />
               <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
@@ -158,10 +162,10 @@
               </ComStayInfoNoBox>
               <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
               <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')" />
+              <ComStayInfoNoBox label="Create By" :value="doc?.owner?.split('@')[0]" />
               <ComStayInfoNoBox label="Created Date" isSlot :fill="false">
                 <div class="font-semibold"><ComTimeago :date="doc?.creation"/></div>
               </ComStayInfoNoBox>
-              <ComStayInfoNoBox label="Made By" :value="doc?.owner?.split('@')[0]" />
               <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by?.split('@')[0]" />
               <ComStayInfoNoBox label="Last Modified Date" isSlot :fill="false">
                 <div class="font-semibold"><ComTimeago :date="doc?.modified"/></div>
@@ -415,6 +419,9 @@ function onPrintFolioTransaction() {
   })
 }
 
+function onViewCustomerDetail(name) {
+    window.postMessage('view_guest_detail|' + name, '*')
+}
 function onOpenLink(){
   window.postMessage("view_" + doc.value.target_transaction_type.toLowerCase().replaceAll(" ","_") + "_detail|" + doc.value.target_transaction_number)
 }

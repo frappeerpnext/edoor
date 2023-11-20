@@ -524,7 +524,7 @@ def get_edoor_setting(property = None):
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
      
     epos_setting = frappe.get_doc('ePOS Settings')
-    custom_print_format = frappe.db.sql("select   print_format as name, custom_print_format as print_format from `tabCustom Print Format` where ifnull(property,'')='' or property='{}'".format(property),as_dict=1)
+    custom_print_format = frappe.db.sql("select   print_format as name, custom_print_format as print_format from `tabCustom Print Format` where (ifnull(property,'')='' or property='{}') and ifnull(attach_to_doctype,'')!='' and ifnull(custom_print_format,'')!=''".format(property),as_dict=1)
     
 
 

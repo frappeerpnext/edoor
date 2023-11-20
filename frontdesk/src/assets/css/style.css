@@ -514,18 +514,18 @@ span.p-button-icon.pi.pi-ellipsis-h {
     padding: .6rem;
 }
 .view-table-iframe {
-    max-height: 42rem;
-    min-height: 42rem;
+    /* max-height: 42rem;
+    min-height: 42rem; */
     overflow: auto;
 }
 @media (max-height: 1080px) {
     .view-table-iframe {
-        max-height: 39rem;
-        min-height: 39rem;
+        /* max-height: 39rem;
+        min-height: 39rem; */
     }
 }
 .view-table-iframe-dialog{
-    max-height: 85vh;
+    /* max-height: 85vh; */
     overflow: auto;
 }
 .icon-search>.p-autocomplete-input {
@@ -796,6 +796,16 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .btn-size2{
     padding: 0.45rem .65rem 0.45rem !important;
 }
+.spl__btn_cs_b.sp_b button {
+    line-height: 1.5;
+    background: var(--bg-btn-dialog-inside);
+    border-color:var(--bg-purple-cs);
+    color: var(--bg-purple-cs);
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
+    border: 1px solid;
+}
 .spl__btn_cs.sp button {
     line-height: 1.5;
     background: var(--bg-btn-dialog-inside);
@@ -852,6 +862,7 @@ span.p-button-icon.pi.pi-ellipsis-v{
 .btn-add-folio:enabled:hover,
 .btn-add-folio:enabled:active, 
 .spl__btn_cs.sp button:enabled:hover,
+.spl__btn_cs_b.sp_b button:enabled:hover,
 .conten-btn.tl:enabled:hover
 {
     background: #dfddff;
@@ -952,21 +963,28 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     margin-top: -4px;
 }
 .folio-remark{
-    background: #ebebeb;
-    padding: 0 6px;
+    background: #e7f4ea;
+    padding: 2px 6px 0px;
     border-radius: 10px;
+    color: #0a762a;
+    text-transform: uppercase;
+}
+.folio-remark.closed{
+    background: #e8e8e8;
+    color: #373737;
 }
 .folio-remark.cus{
+    text-transform: capitalize;
     background: #FFF;
     border:1px solid #ebebeb;
     padding-left: 3px;
 }
-.spl__btn_cs.sp button:last-child{
+.spl__btn_cs.sp button:last-child, .spl__btn_cs_b.sp_b button:last-child{
     border-left-color: rgba(67, 56, 202, .3) !important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
-.spl__btn_cs.sp button:first-child{
+.spl__btn_cs.sp button:first-child, .spl__btn_cs_b.sp_b button:first-child{
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
@@ -1414,4 +1432,7 @@ color: white !important;
     color: #696cff;
     border-left: 4px solid #696cff;
     padding: 15px 15px;
+}
+.h-btn-cs{
+    height: 37px;
 }

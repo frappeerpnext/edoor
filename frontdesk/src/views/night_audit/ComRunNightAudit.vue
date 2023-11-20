@@ -60,7 +60,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
-const currentStep = ref(1)
+const currentStep = ref(9)
 const loading = ref(false)
 
 const steps = ref([
@@ -185,7 +185,10 @@ const refreshReport = () => {
     loading.value = true
     url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=" +gv.getCustomPrintFormat("eDoor Run Night Audit Step")+"&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
     url.value = url.value + "&step=" + currentStep.value
-    document.getElementById("iframe_run_night_audit").contentWindow.location.replace(url.value)
+    const el =  document.getElementById("iframe_run_night_audit")
+    if(el){
+        el.contentWindow.location.replace(url.value)
+    } 
 }
 
 onMounted(() => {

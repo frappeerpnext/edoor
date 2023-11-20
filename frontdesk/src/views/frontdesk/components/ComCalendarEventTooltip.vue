@@ -1,14 +1,21 @@
 <template>
  
     <div class="p-2 w-full " v-if="event.extendedProps.type =='stay'">
-        <div class="text-center border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">{{event.title}}</div>
-        <table class="tip_description_stay_table m-1 pt-3">
+        <div  class="text-center mb-3 border-1 p-2 border-round-lg overflow-hidden text-overflow-ellipsis ">
+            <span class="me-2"> {{event.title}}
+            </span>
+        </div>
+        <table class="tip_description_stay_table m-1 pt-4">
               <tbody>
+
             <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation || ''}}</td></tr>
+            <tr class="table-rs-de" v-if="event.extendedProps.reservation_color" ><td>Res Special Color</td><td class="px-2">:</td> <div class="flex mt-1 align-items-center"> <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2" :style="{background:event.extendedProps.reservation_color}"></div> <span> Special </span> </div> </tr>
+            <tr class="table-rs-de"><td>Res Stay Status</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_status || ''}}</td></tr>
             <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_stay || ''}}</td></tr>    
             <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reference_number || ''}} </td></tr>
             <tr class="table-rs-de"><td>Int. No</td><td class="px-2">:</td><td>{{event.extendedProps?.internal_reference_number ?? ''}}</td></tr>
-            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_type || ''}} {{event.extendedProps?.group_code ? '( ' + event.extendedProps?.group_code + ' )' : ''}}</td></tr>    
+            <tr class="table-rs-de"><td>Ref. type</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_type || ''}} </td></tr>
+            <tr class="table-rs-de" v-if="event.extendedProps?.group_name || event.extendedProps?.group_code || event.extendedProps?.group_color"><td>Group</td><td class="px-2">:</td><td> <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2" :style="{background:event.extendedProps.group_color}"></div><span v-if="event.extendedProps?.group_name" >{{event.extendedProps?.group_name || ''}}</span> <span v-if="event.extendedProps?.group_code" > - {{event.extendedProps?.group_code || ''}}</span> </td></tr>    
             <tr class="table-rs-de"><td>Arrival</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td></tr>
             <tr class="table-rs-de"><td>Departure</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY')}} - {{moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A")}}</td></tr>
             <tr class="table-rs-de"><td>Nights</td><td class="px-2">:</td><td>{{ moment(event.extendedProps?.departure_date).diff(event.extendedProps?.arrival_date, 'days')}}</td></tr>

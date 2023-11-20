@@ -54,13 +54,13 @@
   "sort_order": 50
  },
  {
-  "account_category": "Deposit Transfer",
+  "account_category": "Other Discount",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 17:41:55.304911",
-  "name": "Deposit Transfer",
+  "modified": "2023-08-27 16:16:25.159476",
+  "name": "Other Discount",
   "note": null,
-  "sort_order": 900
+  "sort_order": 301
  },
  {
   "account_category": "City Ledger Payment",
@@ -72,20 +72,11 @@
   "sort_order": 1000
  },
  {
-  "account_category": "Other Discount",
+  "account_category": "Desk Folio",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 16:16:25.159476",
-  "name": "Other Discount",
-  "note": null,
-  "sort_order": 301
- },
- {
-  "account_category": "Food and Beverage Revenue",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-09-04 14:14:53.399569",
-  "name": "Food and Beverage Revenue",
+  "modified": "2023-11-18 12:51:08.059593",
+  "name": "Desk Folio",
   "note": null,
   "sort_order": 0
  },
@@ -99,6 +90,15 @@
   "sort_order": 101
  },
  {
+  "account_category": "Deposit Transfer",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:41:55.304911",
+  "name": "Deposit Transfer",
+  "note": null,
+  "sort_order": 900
+ },
+ {
   "account_category": "POS Transfer",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -106,6 +106,15 @@
   "name": "POS Transfer",
   "note": null,
   "sort_order": 500
+ },
+ {
+  "account_category": "Food and Beverage Revenue",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-09-04 14:14:53.399569",
+  "name": "Food and Beverage Revenue",
+  "note": null,
+  "sort_order": 0
  },
  {
   "account_category": "Folio Transfer",

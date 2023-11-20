@@ -629,12 +629,13 @@ function onSave() {
             window.socket.emit("ComGuestLedger", { property: window.property_name })
             window.socket.emit("ReservationStayList", { property: window.property_name })
             window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+            window.socket.emit("ReservationDetail", window.reservation)
             window.socket.emit("FolioTransactionDetail", { property: window.property_name, name: window.folio_transaction_number })
             window.socket.emit("CityLedgerAccount", window.property_name)
             window.socket.emit("ComCityLedgerDetail", window.property_name)
             window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
             window.socket.emit("Reports", window.property_name)
-            window.socket.emit("ReservationDetail", window.reservation)
+
             window.socket.emit("FolioTransactionList", window.property_name)
 
 

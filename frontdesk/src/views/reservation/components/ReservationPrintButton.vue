@@ -5,7 +5,7 @@
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import { useToast } from "primevue/usetoast";
-import { ref, inject,useDialog,onMounted} from "@/plugin";
+import { ref, inject, useDialog, onMounted } from "@/plugin";
 const toast = useToast();
 const dialog = useDialog();
 const props = defineProps({
@@ -29,14 +29,14 @@ items.value.push({
             data: {
                 "doctype": "Reservation",
                 name: props.reservation ?? "",
-                report_name:  gv.getCustomPrintFormat("Reservation Detail"),
+                report_name: gv.getCustomPrintFormat("Reservation Detail"),
             },
             props: {
                 header: "Reservation Detail",
                 style: {
                     width: '80vw',
                 },
-                position:"top",
+                position: "top",
                 modal: true,
                 maximizable: true,
             },
@@ -56,14 +56,14 @@ items.value.push({
             data: {
                 "doctype": "Reservation",
                 name: props.reservation ?? "",
-                report_name:  gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
+                report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
             },
             props: {
                 header: "Confirmation Voucher",
                 style: {
                     width: '80vw',
                 },
-                position:"top",
+                position: "top",
                 modal: true,
                 maximizable: true,
             },
@@ -71,29 +71,47 @@ items.value.push({
     }
 })
 onMounted(() => {
-db.getDocList('Custom Print Format', {
-    fields: [
-        'print_format'
-    ],
-    filters: [["property","=",window.property], [ "attach_to_doctype", "=", "Reservation"]]
-})
-.then((doc) => {
-        doc.forEach(d => {
-            items.value.push({
-                label: d.title,
-                name:"Pheakdey",
-                icon: 'pi pi-refresh',
-                command: (r) => {
-               
-                   alert(JSON.stringify(r))
-                }
-            })
-        });
+    db.getDocList('Custom Print Format', {
+        fields: [
+            'print_format',
+            'icon',
+            'title',
+            'attach_to_doctype'
+        ],
+        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", "Reservation"]]
     })
-    
+        .then((doc) => {
+            doc.forEach(d => {
+                items.value.push({
+                    label: d.title,
+                    name: d.print_format,
+                    icon: d.icon ? d.icon : "pi pi-print",
+                    command: (r) => {
+                        dialog.open(ComIFrameModal, {
+                            data: {
+                                doctype: d.attach_to_doctype,
+                                name: props.reservation,
+                                report_name: gv.getCustomPrintFormat(d.print_format),
+                                show_letter_head: true,
+                            },
+                            props: {
+                                header: d.title,
+                                style: {
+                                    width: '80vw',
+                                },
+                                position: "top",
+                                modal: true,
+                                maximizable: true,
+                            },
+                        });
+                    }
+                })
+            });
+        })
+
 
 })
 
 
- 
+
 </script>

@@ -1,5 +1,9 @@
 <template>
-    <main-layout v-if="hasProperty" />
+    
+    <template v-if="hasProperty">
+        <main-layout v-if="$route.meta.layout!='blank_layout'" />
+        <BlankLayout v-else />
+    </template>
     <Property v-else />
     <DynamicDialog />
     <Toast>
@@ -16,8 +20,9 @@
 
 
 <script setup>
-import { ref, computed, onUnmounted, onMounted, useToast, inject, getApi } from "@/plugin"
+import { ref, computed, onUnmounted, onMounted, useToast, inject, getApi,useRoute, useRouter } from "@/plugin"
 import MainLayout from './components/layout/MainLayout.vue';
+import BlankLayout from './components/layout/BlankLayout.vue';
 import Property from '@/views/user_property/Property.vue';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
@@ -38,10 +43,11 @@ import ComBusinessSourceDetail from '@/views/business_source/components/ComBusin
 import ComRoomDetail from '@/views/housekeeping/components/ComRoomDetail.vue';
 import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail.vue";
 import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
-
+ 
 const gv = inject("$gv")
 const moment= inject("$moment")
 
+ 
 
 window.session_id = gv.generateGuid()
  

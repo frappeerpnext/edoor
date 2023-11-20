@@ -137,16 +137,8 @@
             </ComStayInfoNoBox>   
         </table>  
         </div>
-        <div class="col-12">
-            <div class="line-height-1 text-right mt-3 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
-                <div>
-                    <span class="italic">Created by: </span>
-                    <span class="text-500 font-italic"> {{ doc?.owner }} - {{ gv.datetimeFormat(doc?.creation) }} </span>
-                    <span class="italic ms-2"> Last Modified: </span>
-                    <span  class="text-500 font-italic"> {{ doc?.modified_by }} - {{ gv.datetimeFormat(doc?.modified) }} </span>
-                </div>
-            </div>
-        </div>
+        
+        
     </div> 
         <hr class="my-4" />
         <div class="flex justify-end gap-3 mt-3">
@@ -166,6 +158,23 @@
         </div>
         <label>Note</label><br />
         <Textarea v-model="note" rows="3" placeholder="Note" cols="30" class="w-full border-round-xl" />
+        <hr class="my-4" />
+        <div class="col-12">
+            <div class="line-height-1 text-right mt-3 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                <div>
+                    <span class="italic">Created by: </span>
+                    <span class="text-500 font-italic"> {{ doc?.owner.split("@")[0] }} 
+                        <ComTimeago :date="doc?.creation" /> </span>
+                    
+                </div>
+                <div>
+                    <span class="italic ms-2"> Last Modified: </span> 
+                    <span  class="text-500 font-italic"> {{ doc?.modified_by.split("@")[0] }} 
+                        <ComTimeago :date="doc?.modified" />
+                    </span>
+                </div>
+            </div>
+        </div>
     </ComDialogContent>
 </template>
 <script setup>

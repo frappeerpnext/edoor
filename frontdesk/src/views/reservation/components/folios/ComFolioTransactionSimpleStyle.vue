@@ -12,7 +12,7 @@
            
             :rowClass="onRowClass">
             <Column selectionMode="multiple" headerStyle="width: 3rem"  v-if="showCheckbox"/>
-            <Column field="name" header="No." headerClass="text-center" bodyClass="text-center">
+            <Column field="name" header="Folio Transaction" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1">{{slotProps.data?.name}}</button>
                 </template>
@@ -253,7 +253,11 @@ function LoadFolioTransaction(){
                         "city_ledger_name"
 					],
 					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", props.doctype]],
-					limit: 1000
+					limit: 1000,
+                    orderBy: {
+                    field: 'modified',
+                    order: 'desc',
+                },
 				}).then((result) => {
                    
 					const folio_transaction = Enumerable.from(result).orderBy("$.posting_date").thenBy("name").toArray()

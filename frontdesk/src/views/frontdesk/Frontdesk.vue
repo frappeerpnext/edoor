@@ -332,10 +332,6 @@ const calendarOptions = reactive({
  
         } else {
 
-      
-        
-        
-
         const dialogRef = dialog.open(ComConfirmChangeStay, {
             data: { event: $event.event, show_keep_rate: 0,old_event:{start:start_date, end:end_date} },
             props: {

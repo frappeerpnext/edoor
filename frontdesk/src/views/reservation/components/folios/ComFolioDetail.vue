@@ -1,12 +1,14 @@
 <template>
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
-        <div v-if="doc">
+        <TabView>
+            <TabPanel header="Deposit Ledger Information">
+        <div v-if="doc" class="mt-2">
+            <ComFolioAction @onRefresh="onRefresh" :folio="doc" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
             
-            <ComFolioAction :folio="doc" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
             <table class="mb-4">
                 <tr>
                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
-                        Reservation
+                        Reservation #
                         <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px"
                             :style="{ backgroundColor: doc.reservation_status_color }">{{ doc.reservation_status }}</span>
                     </th>
@@ -16,30 +18,62 @@
                         {{ doc.guest }} - {{ doc.guest_name }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Business Source">
+                <ComStayInfoNoBox label="Source">
                     <span class="font-semibold text-right">
                         {{ doc.business_source }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="reservation">
+                <ComStayInfoNoBox label="Reservation #">
                     <span @click="onViewReservationDetail(doc.reservation)" class="-ml-2 text-right link_line_action1">
                         {{ doc.reservation }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Reservation Stay">
+                <ComStayInfoNoBox label="Res Stay #">
                     <span @click="onViewReservationStayDetail(doc.reservation_stay)"
                         class="-ml-2 text-right link_line_action1">
                         {{ doc.reservation_stay }}
                     </span>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Room">
+                <ComStayInfoNoBox label="Room(s)">
                     <span class="font-semibold text-right">
                         {{ doc.rooms + '/' + doc.room_types_alias }}
                     </span>
                 </ComStayInfoNoBox>
             </table>
 
-            <div class="col-12 p-0">
+            
+            <div class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3 w-full">
+                <div class="flex gap-2 align-items-center">
+                    Folio Detail - {{ doc.name }} <span class="ms-2 px-2 rounded-lg  text-white p-1px"
+                        :class="doc.status == 'Open' ? 'bg-green-500' : 'surface-500'">{{ doc.status }}</span>
+                    <div v-tippy="'Master Folio'" v-if="doc.is_master"
+                        class="flex justify-center items-center p-2  rounded-lg text-white p-1px bg-purple-100 ">
+                        <ComIcon style="height: 12px;" icon="iconCrown" />
+                    </div>
+                </div>
+            </div>
+            <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" />
+            <ComFolioTransactionSimpleStyle v-else :folio="doc" />
+
+            
+        </div>
+</TabPanel>
+<TabPanel > 
+                    <template #header>
+                        <span class="me-2">Document</span>
+                        <Badge :value="totalDocument"></Badge>
+                    </template> 
+                    <ComDocument v-if="doc" @updateCount="onUpdateFileCount" doctype="Reservation Folio"   :doctypes="['Reservation Folio','Folio Transaction']" :attacheds="relatedIds" :docname="doc?.name"/>
+                </TabPanel>
+</TabView>
+
+        <div class="col-12">
+            <ComCommentAndNotice v-if="doc" doctype="Reservation Folio"
+                :docname="name"
+                :reference_doctypes="['Reservation Folio','Folio Transaction']"
+                :docnames="relatedIds" />
+        </div>
+        <div class="col-12 p-0">
                 <div
                     class="line-height-1 -mt-2 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                     <div>
@@ -61,29 +95,10 @@
                 </div>
                 <hr class="mt-3 mb-2">
             </div>
-            <div class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3 w-full">
-                <div class="flex gap-2 align-items-center">
-                    Folio Detail - {{ doc.name }} <span class="ms-2 px-2 rounded-lg  text-white p-1px"
-                        :class="doc.status == 'Open' ? 'bg-green-500' : 'surface-500'">{{ doc.status }}</span>
-                    <div v-tippy="'Master Folio'" v-if="doc.is_master"
-                        class="flex justify-center items-center p-2  rounded-lg text-white p-1px bg-purple-100 ">
-                        <ComIcon style="height: 12px;" icon="iconCrown" />
-                    </div>
-                </div>
-            </div>
-            <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="doc" />
-            <ComFolioTransactionSimpleStyle v-else :folio="doc" />
-
-            <div class="col-12">
-                <ComCommentAndNotice doctype="Reservation Folio"
-                    :docname="name"
-                    :reference_doctypes="['Reservation Folio','Folio Transaction']"
-                    :docnames="relatedIds" />
-            </div>
-        </div>
         <template #footer-left>
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
+
     </ComDialogContent>
 </template>
 <script setup>
@@ -107,7 +122,15 @@ const dialogRef = inject("dialogRef");
 
 const loading = ref(false)
 const relatedIds = ref()
+const totalDocument = ref(0)
 
+function onRefresh(){
+    getData()
+}
+
+function onUpdateFileCount(n){
+    totalDocument.value = n
+}
 
 function onOk() {
     dialogRef.value.close(dov.value)
@@ -138,9 +161,7 @@ function onAuditTrail() {
             closeOnEscape: false,
             position: 'top',
         },
-        onClose: (options) => {
-            // Handle dialog closure here
-        },
+        
     });
 }
 function getData() {
@@ -155,24 +176,28 @@ function getData() {
         loading.value = false
     })
 }
+
 const onClose = () => {
     dialogRef.value.close();
 }
+
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
 }
 
 function onViewReservationStayDetail(rs) {
     window.postMessage('view_reservation_stay_detail|' + rs, '*')
-
 }
 
 function onViewReservationDetail(rs) {
     window.postMessage('view_reservation_detail|' + rs, '*')
 }
+
 onMounted(() => {
     name.value = dialogRef.value.data.name;
+    
     getData()
+
 })
 
 

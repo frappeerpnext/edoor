@@ -26,15 +26,15 @@
                             <span class="flex justify-content-between w-full">
                                 <span class="flex text-left line-height-2">
                                     <span style="display:inline-block;max-width: 95px;" v-tippy="item.guest_name" class="white-space-nowrap text-gray-600 line-height-2 
-                                        font-italic text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
+                                        text-sm folio-remark cus me-1 overflow-hidden text-overflow-ellipsis">
                                         <img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;">
                                         <span class="ms-1">{{ item.guest_name }}</span>
                                     </span>
                                     <span style="display:inline-block;"
-                                        class="text-orange-700 line-height-2 font-italic text-sm folio-remark me-1"
+                                        class="text-sm folio-remark closed me-1"
                                         v-if="item.status == 'Closed'">Closed</span>
                                     <span style="display:inline-block;"
-                                        class="line-height-2 text-green-700 font-italic text-sm folio-remark me-1"
+                                        class="text-sm folio-remark me-1"
                                         v-else>Open</span>
                                 </span>
                                 <span class="flex align-items-end h-full">

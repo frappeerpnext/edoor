@@ -19,7 +19,13 @@
             <template #content="slotProps" >
                 <Card class="mt-3" v-if="!slotProps.item.date">
                     <template #title>
-                       {{slotProps.item.subject}}
+                        <div class="line-height-1">
+                            <span class="text-xl">{{slotProps.item.subject}}</span>
+                       
+                       <div  class="font-italic text-500 text-sm inline" v-if="slotProps.item.custom_note_date && slotProps.item.custom_is_note" style="font-size: 12px;font-weight: 500;">
+ | Note Date: <span class="ms-1 font-italic text-500 text-sm">{{ slotProps.item.custom_note_date }}</span> 
+                       </div>
+                       </div>
                     </template>
                     
                     <template  #content>
@@ -30,7 +36,7 @@
                                 </div>
                                 <div class="border-left-1 ms-1 ps-3 line-height-2">
                                     <div class="flex gap-2 align-items-center">
-                                    <div class="text-xl font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                                    <div class="text-lg font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis">
                                         {{ slotProps.item.comment_by }}  
                                     </div>
                                 </div>
@@ -45,7 +51,7 @@
                             </div>
                             
                             <div class="col p-0">
-                                <div v-html="slotProps.item.content">
+                                <div class="content-note-comment" v-html="slotProps.item.content">
                         </div>
                             </div>
                              

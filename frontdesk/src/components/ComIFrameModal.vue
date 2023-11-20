@@ -78,7 +78,7 @@
                     </div>
                     <div>
                         <Button @click="loadIframe" icon="pi pi-refresh"
-                            class="btn-size2 d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                            :class="BtnClass ? BtnClass:''" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b btn-size2"></Button>
                     </div>
                 </div>
             </div>
@@ -106,6 +106,10 @@ const extra_params = ref([])
 const filter_options = ref([]) // list array string like ["keyword","business_source","room_type"]
 const gv = inject("$gv")
 const property_name = ref(window.property_name)
+const props = defineProps({
+    BtnClass: String
+})
+
 
 
 function onSelectLetterHead(l) {

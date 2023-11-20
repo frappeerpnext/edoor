@@ -100,6 +100,9 @@ const dataUpdate = ref({
     housekeeping_note: '',
 })
 
+function onClose(){
+    op.value.hide();
+}
 function onReseravationNote($event, updating) {
     const selected = JSON.parse(JSON.stringify(rs.reservationStay))
     dataUpdate.value.note = selected.note

@@ -1,8 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Reservation List Report"] = {
-	 
+frappe.query_reports["Group Booking Report"] = {
 	"filters": [
 		{
 			"fieldname": "filter_date_by",
@@ -69,23 +68,7 @@ frappe.query_reports["Reservation List Report"] = {
 			},
 			
 		},
-		// {
-		// 	"fieldname": "room_types",
-		// 	"label": __("Room Type"),
-		// 	"fieldtype": "MultiSelectList",
-		// 	get_data: function(txt) {
-		// 		return frappe.db.get_link_options('Room Type', txt);
-		// 	},
-			
-		// },
-		{
-			"fieldname": "group_by",
-			"label": __("Group By"),
-			"fieldtype": "Select",
-			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
-			hide_in_filter:1
- 
-		},
+
 		{
 			"fieldname": "summary_filter",
 			"label": __("Summary By"),
@@ -191,40 +174,4 @@ frappe.query_reports["Reservation List Report"] = {
 		},
 
 	],
-	"formatter": function(value, row, column, data, default_formatter) {
-		
-		value = default_formatter(value, row, column, data);
-		var parser = new DOMParser(); // create a DOMParser object
-		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
-		var element = doc.querySelector("a"); // get the element by selector
-		if (data && data.indent==0) {
-			
- 
-			if(element){
-
-				value =$(`<span>${element.dataset.value}</span>`);  
-			}else {
-				
-				value = $(`<span>${value}</span>`);
-			}
-			
-			
-
-				var $value = $(value).css("font-weight", "bold");
-				value = $value.wrap("<p></p>").parent().html();
-			 
-		
-		}else {
-			if(column.fieldtype=="Link"){
-				
-				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
-
- 
-			}
-			
-		}
-		
-		return value;
-	},
 };
- 

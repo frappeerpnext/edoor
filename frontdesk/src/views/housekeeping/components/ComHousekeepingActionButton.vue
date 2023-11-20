@@ -72,6 +72,7 @@ function onSaveChangeHousekeepingStatus() {
     const rooms = hk.selectedRooms.map(r => r.name).join(",");
     postApi("housekeeping.update_housekeeping_status", {
         rooms: rooms,
+        property:window.property_name,
         status: selectedStatus.value
     }).then((result) => {
         visibleHousekeepingStatus.value = false

@@ -10,14 +10,14 @@
                 <div class="w-full p-2 border-1 border-round-lg mb-2 flex ">
                     <span v-if="selectedFolio.is_master" class="bg-purple-100 p-2 w-4rem  flex justify-content-center align-items-center border-round-lg"> <ComIcon style="height: 14px;" icon="iconCrown" /> </span>
                     <div class=" ms-2 white-space-nowrap flex justify-content-between flex-column">
-                    <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? 'text-green-700' : 'text-orange-700'" class="line-height-2 font-italic  folio-remark font-light ms-2 " >{{ selectedFolio.status }}</span>  </div>
+                    <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? '' : 'closed'" class="line-height-2 folio-remark ms-2 " >{{ selectedFolio.status }}</span>  </div>
 
                     <div class="font-light mt-auto">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</div>
                  
                     </div>
                 </div>
                      
-                    <ComFolioAction :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
+                    <ComFolioAction :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
                     <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                     <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
             </div>
@@ -50,6 +50,10 @@
         selectedFolio.value=f
     }
     
+    function onRefresh(){
+        loadReservationFolioList()
+    }
+
     function loadReservationFolioList(selected_name=""){
  
 

@@ -38,7 +38,8 @@
     "vue-screen": "^2.2.0",
     "vue-tippy": "v6",
     "vue-web-cam": "^1.9.0",
-    "vue2-timeago": "^3.0.2"
+    "vue2-timeago": "^3.0.2",
+    "vue3-sortablejs": "^1.0.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",
