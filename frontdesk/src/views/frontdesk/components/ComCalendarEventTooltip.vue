@@ -7,9 +7,8 @@
         </div>
         <table class="tip_description_stay_table m-1 pt-4">
               <tbody>
-
             <tr class="table-rs-de" ><td>Res. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation || ''}}</td></tr>
-            <tr class="table-rs-de" v-if="event.extendedProps.reservation_color" ><td>Res Special Color</td><td class="px-2">:</td> <div class="flex mt-1 align-items-center"> <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2" :style="{background:event.extendedProps.reservation_color}"></div> <span> Special </span> </div> </tr>
+            <tr class="table-rs-de" v-if="event.extendedProps.reservation_color" ><td>Res Special Color</td><td class="px-2">:</td> <div class="flex mt-1 align-items-center"> <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2" :style="{background:event.extendedProps.reservation_color}"></div> <span> {{event.extendedProps.reservation_color_code}} </span> </div> </tr>
             <tr class="table-rs-de"><td>Res Stay Status</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_status || ''}}</td></tr>
             <tr class="table-rs-de"><td>Res Stay. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reservation_stay || ''}}</td></tr>    
             <tr class="table-rs-de"><td>Ref. No</td><td class="px-2">:</td><td>{{event.extendedProps?.reference_number || ''}} </td></tr>

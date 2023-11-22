@@ -7,8 +7,8 @@
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
-              <ComStayInfoNoBox label="Guest" v-if="doc?.guest_name">
-                <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 text-right link_line_action1">
+              <ComStayInfoNoBox v-tippy="doc.guest_name.length > 20 ? doc.guest_name : ''" label="Guest" class="w-full" v-if="doc?.guest_name">
+                <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
                         {{ doc.guest }} - {{ doc.guest_name }}
                     </span>
               </ComStayInfoNoBox>

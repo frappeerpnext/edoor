@@ -1808,8 +1808,12 @@ def get_audit_trail(doctype, docname,is_last_modified=False):
 
 
 @frappe.whitelist()
-def get_folio_transaction(transaction_type, transaction_number):
-    show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
+def get_folio_transaction(transaction_type, transaction_number,show_account_code="-1"):
+    if show_account_code =="-1":
+        show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
+    else:
+        show_account_code = int(show_account_code)
+
     sql = "select * from `tabFolio Transaction` where ifnull(parent_reference,'') = '' and  transaction_type='{}' and transaction_number='{}'"
     sql = sql.format(transaction_type, transaction_number)
     
@@ -1828,7 +1832,7 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "name":d["name"],
                 "room_number":d.room_number,
                 "account_name": "{}-{}".format(d.bank_fee_account, d.bank_fee_description)  if show_account_code else d.bank_fee_description,
-                "quantity": d["quantity"],
+                "quantity": d["report_quantity"],
                 "note":d["note"],
                 "posting_date": d["posting_date"],
                 "debit": d.bank_fee_amount,
@@ -1854,12 +1858,14 @@ def get_folio_transaction(transaction_type, transaction_number):
         
         balance = balance + (amount * (1 if d.type=="Debit" else -1))        
 
+
+        
         folio_transactions.append({ 
             "reservation":d["reservation"],
             "name":d["name"],
             "room_number":d.room_number,
-            "account_name": "{}-{}".format(d.account_code, d.account_name)  if show_account_code else d.account_name,
-            "quantity": d["quantity"],
+            "account_name": "{}-{}".format(d.account_code, d.report_description or d.account_name)  if show_account_code else (d.report_description or d.account_name) ,
+            "quantity": d["report_quantity"],
             "note":d["note"],
             "posting_date": d["posting_date"],
             "debit": amount  if d["type"] == 'Debit' else 0,
@@ -1873,7 +1879,7 @@ def get_folio_transaction(transaction_type, transaction_number):
              "is_auto_post":d["is_auto_post"],
              "total_amount":d["total_amount"]
         })
-
+        
         if  d.discount_amount > 0:
             balance = balance - d.discount_amount
             folio_transactions.append({
@@ -1882,7 +1888,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "debit":0,
                 "balance":balance,
                 "total_amount":d.discount_amount,
-                "parent_reference": d["name"]
+                "parent_reference": d["name"],
+                "quantity": 0,
             })
         
         if  d.tax_1_amount > 0:
@@ -1893,7 +1900,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":0,
                 "balance":balance,
                 "total_amount":d.tax_1_amount,
-                "parent_reference": d["name"]
+                "parent_reference": d["name"],
+                "quantity": 0,
             })
 
         if  d.tax_2_amount > 0:
@@ -1904,7 +1912,8 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":0,
                 "balance":balance,
                 "total_amount":d.tax_2_amount,
-                "parent_reference": d["name"]
+                "parent_reference": d["name"],
+                "quantity": 0,
             })
 
         if  d.tax_3_amount > 0:
@@ -1915,24 +1924,25 @@ def get_folio_transaction(transaction_type, transaction_number):
                 "credit":0,
                 "balance":balance,
                 "total_amount":d.tax_3_amount,
-                "parent_reference": d["name"]
+                "parent_reference": d["name"],
+                "quantity": 0,
             })
         
         
     return folio_transactions
 
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order',hide_room_number = 0,show_account_code=None):
+def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
     
     if show_account_code == None:
         show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
     
-
     data = frappe.db.sql(f"""
                     select 
                         account_code,
-                        {'room_number,' if hide_room_number =='0' else '' }
-                        account_name,
+                        {'room_number,' if show_room_number =='1' else '' }
+                        ifnull(report_description,account_name) as account_name,
+                        sum(report_quantity) as quantity,
                         type,
                         {sort_by_field}, 
                         sum(amount) as amount
@@ -1942,11 +1952,11 @@ def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_f
                         transaction_type = '{transaction_type}'
                     group by 
                         account_code,
-                        account_name ,
-                        {'room_number,' if hide_room_number =='0' else '' }
+                        ifnull(report_description,account_name),
+                        {'room_number,' if show_room_number =='1' else '' }
                         type
                     order by 
-                        {'room_number,' if hide_room_number =='0' else '' }
+                        {'room_number,' if show_room_number =='1' else '' }
                         {sort_by_field}
                 """,as_dict=1)
     summary_data = []
@@ -1957,13 +1967,59 @@ def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_f
             "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
             "debit": d["amount"] if d["type"] == "Debit" else 0,
             "credit": d["amount"] if d["type"] == "Credit" else 0,
-            "balance":balance
+            "balance":balance,
+            "quantity":d["quantity"]
         }
-        if hide_room_number=='0':
+        if show_room_number=='1':
             record["room_number"] = d["room_number"]
         summary_data.append(record)
     return summary_data
 
+@frappe.whitelist()
+def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
+    
+    if show_account_code == None:
+        show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
+    
+    data = frappe.db.sql(f"""
+                    select 
+                        account_code,
+                        {'room_number,' if show_room_number =='1' else '' }
+                        ifnull(report_description,account_name) as account_name,
+                        sum(report_quantity) as quantity,
+                        type,
+                        {sort_by_field}, 
+                        sum(amount) as amount
+                    from `tabFolio Transaction` 
+                    where 
+                        transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
+                        transaction_type = '{transaction_type}' and 
+                        reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') 
+                    group by 
+                        account_code,
+                        ifnull(report_description,account_name),
+                        {'room_number,' if show_room_number =='1' else '' }
+                        type
+                    order by 
+                        {'room_number,' if show_room_number =='1' else '' }
+                        {sort_by_field}
+                """,as_dict=1)
+    summary_data = []
+    balance = 0
+    for d in data:
+        balance = balance + d["amount"]  * (1 if d["type"] =="Debit" else -1)
+        record = {
+            "description": (d["account_code"] + " - " if show_account_code=='1' else "")  +  d["account_name"],
+            "debit": d["amount"] if d["type"] == "Debit" else 0,
+            "credit": d["amount"] if d["type"] == "Credit" else 0,
+            "balance":balance,
+            "quantity":d["quantity"]
+        }
+        if show_room_number=='1':
+            record["room_number"] = d["room_number"]
+        summary_data.append(record)
+    return summary_data
+    
 
 @frappe.whitelist()
 def get_reservation_housekeeping_charge_summary(reservation_stay):
@@ -2740,7 +2796,7 @@ def folio_transfer(data):
     #check reservation status in new folio is not allow to edit
     reservation_status_doc = frappe.get_doc("Reservation Status", old_folio_doc.reservation_status)
     if not reservation_status_doc.allow_user_to_edit_information or not reservation_status_doc.is_active_reservation:
-        frappe.throw(_("yyyReservation stay # {} of source folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, old_folio_doc.name)))
+        frappe.throw(_("Reservation stay # {} of source folio number {} is not allow to edit information".format(new_folio_doc.reservation_stay, old_folio_doc.name)))
 
     comment_doc = []
     for d in data["folio_transaction"]:
@@ -2764,8 +2820,10 @@ def folio_transfer(data):
 
 
 
- 
+        
         folio_transaction_doc.save()
+        
+
         comment_doc.append(
             {
                 "reference_doctype":"Folio Transaction",

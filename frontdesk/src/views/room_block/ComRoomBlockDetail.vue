@@ -9,27 +9,27 @@
         <div v-if="doc?.docstatus == 1 && doc?.is_unblock == 0"
             class="surface-200 border-left-3 border-black-alpha-90 p-2 p-1px px-2 flex align-items-center"> <i
                 class="pi pi-lock me-2 text-lg" /> Block </div>
-        <Message :closable="false" v-if="doc?.docstatus == 0">
-            <div class="flex align-items-center justify-content-between flex-wrap">
+                <div class="ms_message_cs_edoor">
+        <Message  class="w-full" :closable="false" v-if="doc?.docstatus == 0">
                 <div class="col-8">
                     The status of this room block is currently in Draft mode. Please click on button
                     <strong>Submit Room Block</strong> to block this room.
                 </div>
-                <Button class="border-none me-3" @click="onSubmitRoomBlock">
+                <Button class="border-none me-3 ml-auto" @click="onSubmitRoomBlock">
                     <i class="pi pi-send me-3" />
                     Submit Room Block</Button>
-            </div>
         </Message>
         <Message class="w-full" :closable="false" v-if="doc?.docstatus == 1 && doc?.is_unblock == 0">
-            <div class="flex align-items-center justify-content-between flex-wrap">
+            
                 <div class="col-8">
                     This room number <strong>{{ doc?.room_number }}</strong> is blocked now. To unblock this room, please on
                     button <strong>Unblock</strong>
                 </div>
-                <Button class="border-none me-3" @click="onUnblock"> <i class="pi pi-lock-open me-3" /> Unblock this
+                <Button class="border-none me-3 ml-auto" @click="onUnblock"> <i class="pi pi-lock-open me-3" /> Unblock this
                     Room</Button>
-            </div>
+            
         </Message>
+    </div>
         <div v-if="doc && doc?.is_unblock != 0">
             <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
                 UnBlock

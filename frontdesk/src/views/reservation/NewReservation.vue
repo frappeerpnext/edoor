@@ -1,10 +1,12 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+        <div class="ms_message_cs_edoor">
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
         
-            <Button class="border-none" @click="onViewFutureReservation">View Reservation</Button>
+            <Button class="border-none ml-auto mr-3" @click="onViewFutureReservation">View Reservation</Button>
         </Message>
+        </div>
         <div class="n__re-custom grid">
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
@@ -120,9 +122,13 @@
                                     <label>New Guest Name<span class="text-red-500">*</span></label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="New Guest Name"
                                         v-model="doc.guest_info.customer_name_en" :maxlength="50" v-debounce="onNewGuestName"/>
-                                    <Message v-if="doc?.guest_info?.customerExist">
+                                        <div class="ms_message_cs_edoor">
+                                    <Message  class="flex w-full justify-content-between" v-if="doc?.guest_info?.customerExist">
+                                        <div class="flex w-full justify-content-between">
                                         <span>This guest is already exist. View guest detail | <a class="p-0 link_line_action1" @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{ doc.guest_info.existingGuest }}</a></span>
-                                    </Message>
+                                        </div>
+                                </Message>
+                            </div>
                                     </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
                                     <label>Guest Type<span class="text-red-500">*</span></label><br />

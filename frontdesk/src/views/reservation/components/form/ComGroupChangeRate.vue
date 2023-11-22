@@ -1,5 +1,4 @@
 <template>
-    
     <ComDialogContent :hideButtonClose="true" :hideButtonOK="true" :loading="loading">
         <Message>Change rate is affect only current and future stay date</Message>
        
@@ -45,37 +44,47 @@
                     </div>
                     <div class="col pt-4">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                            <Checkbox v-model="data.is_override_rate" :binary="true" :trueValue="1" :falseValue="0" />
-                            <label>Overwrite Room Rate with Rate Type</label>
+                            <Checkbox inputId="rate_type_input" v-model="data.is_override_rate" :binary="true" :trueValue="1" :falseValue="0" />
+                            <label class="cursor-pointer" for="rate_type_input" >Overwrite Room Rate with Rate Type</label>
                         </div>
                     </div>
                 </div>
-                <div v-if="rate_type_data?.tax_rule">
-                    <div>
-                        <Checkbox v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
+                
+                <div class="grid" v-if="rate_type_data?.tax_rule"><hr class="my-2">
+                    <div class="col-12">
+                        <div class="py-2 gap-2 flex items-center w-3 p-dropdown-label  ms-2">
+                            
+                            <Checkbox inputId="rate_include_tax" v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
                             :falseValue="0" />
-                        <label> Is rate include tax</label>
+                        <label class="cursor-pointer" for="rate_include_tax" >include Rate Tax</label>
+                        </div>
+                        
                     </div>
-                    <div v-if="rate_type_data.tax_rule.tax_1_rate">
-                        <Checkbox v-model="rate_type_data.tax_1_rate" :binary="true"
+                    
+                    <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_1_rate">
+                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                        <Checkbox inputId="rate_rule_1" v-model="rate_type_data.tax_1_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_1_rate" :falseValue="0" />
-                        <label> {{ rate_type_data.tax_rule.tax_1_name }} {{ rate_type_data.tax_rule.tax_1_rate }}%</label>
-
+                        <label class="cursor-pointer" for="rate_rule_1"> {{ rate_type_data.tax_rule.tax_1_name }} {{ rate_type_data.tax_rule.tax_1_rate }}%</label>
+</div>
                     </div>
-                    <div v-if="rate_type_data.tax_rule.tax_2_rate">
-                        <Checkbox v-model="rate_type_data.tax_2_rate" :binary="true"
+                    <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_2_rate">
+                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                        <Checkbox inputId="rate_role_2" v-model="rate_type_data.tax_2_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_2_rate" :falseValue="0" />
-                        <label> {{ rate_type_data.tax_rule.tax_2_name }} {{ rate_type_data.tax_rule.tax_2_rate }}%</label>
-
+                        <label class="cursor-pointer" for="rate_role_2" > {{ rate_type_data.tax_rule.tax_2_name }} {{ rate_type_data.tax_rule.tax_2_rate }}%</label>
+</div>
                     </div>
-                    <div v-if="rate_type_data.tax_rule.tax_3_rate">
-                        <Checkbox v-model="rate_type_data.tax_3_rate" :binary="true"
+                    <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_3_rate">
+                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                        <Checkbox inputId="rate_role_3" v-model="rate_type_data.tax_3_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_3_rate" :falseValue="0" />
-                        <label> {{ rate_type_data.tax_rule.tax_3_name }} {{ rate_type_data.tax_rule.tax_3_rate }}%</label>
-
+                        <label class="cursor-pointer" for="rate_role_3" > {{ rate_type_data.tax_rule.tax_3_name }} {{ rate_type_data.tax_rule.tax_3_rate }}%</label>
+</div>
                     </div>
                 </div>
-                <div class="mx-2 pt-3">
+                <hr class="my-2">
+                <div class="mx-2 pt-1 flex justify-content-end">
                         <Button class="border-none btn-ok_ss" @click="onChangeRateType">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
@@ -91,25 +100,27 @@
                 <div class="grid items-center">
                     <div class="col-5 pt-0">
                         <label for="input_amount">Rate </label>
-                        
                         <ComInputCurrency classCss="w-full"  v-model="data.new_rate" id="input_amount" />
-                            
                     </div>
-                    <div class="col pt-4">
+                    <div class="col-7 pt-4">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox inputId="rateIncludeTax" v-model="data.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue="0" />
-                            <label for="rateIncludeTax">Rate Include Tax</label>
+                            <label class="cursor-pointer" for="rateIncludeTax">Rate Include Tax</label>
                         </div>
+                    
                     </div>
-                    <div class="mx-2 pt-3">
+                    
+                    
+                </div>
+                <hr class="my-2">
+                <div class="mx-2 pt-2 flex justify-content-end">
                         <Button class="border-none btn-ok_ss" @click="onChangeNewRate">
-                            <span class="flex align-items-center">
+                            <span class="flex align-items-center ">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
                                 Save
                             </span>
                         </Button>
                     </div>
-                </div>
             </template>
         </ComReservationStayPanel>
         
@@ -125,7 +136,7 @@
                                 </div>
                             
                     </div>
-                    <div class="col pt-4">
+                    <div class="col pt-0">
                         <label for="minmaxfraction">Discount</label>
                                 <div class="w-full">
                                     <InputNumber class="w-full" inputClass="w-full" 
@@ -135,7 +146,10 @@
                                 </div>
                     </div>
                  
-                    <div class="mx-2 pt-3">
+                    
+                </div>
+                <hr class="my-2">
+                <div class="mx-2 pt-1 flex justify-content-end">
                         <Button class="border-none btn-ok_ss" @click="onGroupDiscount">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
@@ -143,38 +157,45 @@
                             </span>
                         </Button>
                     </div>
-                </div>
             </template>
         </ComReservationStayPanel>
         <ComReservationStayPanel title="Group Change Tax" class="mt-3" v-if="tax_rules.length>0">
             <template #content>
                 <div class="grid items-center justify-content-between">
-                    <div class="col py-0" v-for="(t, index) in tax_rules" :key="index">
-                        <h1>{{ t.name }}</h1>
-                        <hr/>
-                        <div>
-                            <Checkbox v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
-                            <label>Rate Include Tax</label>
+                    <div class="grid w-full" v-for="(t, index) in tax_rules" :key="index">
+                        <div class="col-12 -mb-2 ms-2">
+                        <span class="text-lg font-medium">{{ t.name }}</span>
+                        </div>
+                        <div class="col-3">
+                            <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                            <Checkbox inputId="rateIncludeTax_change_tax" v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
+                            <label class="cursor-pointer" for="rateIncludeTax_change_tax" >Rate Include Tax</label>
+                            </div>
                         </div>
                         
-                        <div v-if="t.tax_1_rate>0">
-                            <Checkbox v-model="t.use_tax_1_rate" :binary="true" :trueValue="t.tax_1_rate" :falseValue = "0"  />
-                            <label>{{ t.tax_1_name }} ({{ t.tax_1_rate }}%)</label>
+                        <div class="col-3" v-if="t.tax_1_rate>0">
+                            <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                            <Checkbox inputId="rateIncludeTax_change_tax1" v-model="t.use_tax_1_rate" :binary="true" :trueValue="t.tax_1_rate" :falseValue = "0"  />
+                            <label class="cursor-pointer" for="rateIncludeTax_change_tax1" >{{ t.tax_1_name }} ({{ t.tax_1_rate }}%)</label>
                         </div>
+                    </div>
                         
-                        <div v-if="t.tax_2_rate>0">
-                            <Checkbox v-model="t.use_tax_2_rate" :binary="true" :trueValue="t.tax_2_rate" :falseValue = "0"  />
-                            <label>{{ t.tax_2_name }} ({{ t.tax_2_rate }}%)</label>
+                        <div class="col-3" v-if="t.tax_2_rate>0">
+                            <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                            <Checkbox inputId="rateIncludeTax_change_tax2" v-model="t.use_tax_2_rate" :binary="true" :trueValue="t.tax_2_rate" :falseValue = "0"  />
+                            <label class="cursor-pointer" for="rateIncludeTax_change_tax2" >{{ t.tax_2_name }} ({{ t.tax_2_rate }}%)</label></div>
                         </div>
-                        <div v-if="t.tax_3_rate>0">
-                            <Checkbox v-model="t.use_tax_3_rate" :binary="true" :trueValue="t.tax_3_rate" :falseValue = "0"  />
-                            <label>{{ t.tax_3_name }} ({{ t.tax_3_rate }}%)</label>
+                        <div class="col-3" v-if="t.tax_3_rate>0">
+                            <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                            <Checkbox inputId="rateIncludeTax_change_tax3" v-model="t.use_tax_3_rate" :binary="true" :trueValue="t.tax_3_rate" :falseValue = "0"  />
+                            <label class="cursor-pointer" for="rateIncludeTax_change_tax3" >{{ t.tax_3_name }} ({{ t.tax_3_rate }}%)</label></div>
                         </div>
                     </div>
                    
                    
                 </div>
-                <div class="mx-2 pt-4">
+                <hr class="my-2"/>
+                <div class="mx-2 pt-1 flex justify-content-end">
                         <Button class="border-none btn-ok_ss" @click="onGroupChangeTax">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />

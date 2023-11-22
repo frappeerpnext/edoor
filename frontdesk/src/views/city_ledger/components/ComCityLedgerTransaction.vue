@@ -220,7 +220,7 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTransactionMoreOption.vue"
-
+import ComPrintReservationStay from '@/views/reservation/components/ComPrintReservationStay.vue'
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 const props = defineProps({
     name: String
@@ -247,7 +247,7 @@ const viewCityLedgerReport = () => {
     dialog.open(ComPrintReservationStay, {
         data: {
             doctype: "Reservation%20Stay",
-            reservation_stay: doc.value.reservation_stay,
+            reservation_stay: data.value.reservation_stay,
             folio_number: name.value,
             report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
             // "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",

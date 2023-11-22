@@ -100,15 +100,17 @@ function onSave(){
             toast.add({ severity: 'warn', summary:"Reservation Stay #" +  x.reservation_stay, detail: x.message, life: 7000 }) 
         });
         loading.value = false
-        rs.LoadReservation(rs.reservation.name)
+        alert( window.reservation)
         emit("onClose" ) 
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
-        window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
         window.socket.emit("Dashboard",window.property_name)
         window.socket.emit("ReservationStayList", { property:window.property_name})
         window.socket.emit("Frontdesk", window.property_name) 
+        window.socket.emit("ReservationStayDetail", { reservation_stay:active_reservations.map(r=>r.name)})
+        window.socket.emit("ReservationDetail", rs.reservation.name);
+        
     }).catch((err) => {
         loading.value = false
     })

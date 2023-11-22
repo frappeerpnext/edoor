@@ -47,10 +47,6 @@ items.value.push({
 items.value.push({
     label: "Confirmation Voucher",
     icon: 'pi pi-check-circle',
-    acceptClass: 'border-none crfm-dialog',
-    rejectClass: 'hidden',
-    acceptIcon: 'pi pi-check-circle',
-    acceptLabel: 'Ok',
     command: () => {
         dialog.open(ComIFrameModal, {
             data: {
@@ -146,6 +142,33 @@ items.value.push({
 
     }
 })
+
+
+//Folio transaction summary by reservation
+items.value.push({
+    label: "Folio Summary by Reservation Stay",
+    icon: 'pi pi-print',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation%20Stay",
+                name: props.reservation_stay,
+                report_name:  "eDoor Folio Transaction Summary by Reservation Stay",
+                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"]
+            },
+            props: {
+                header: "Folio Summary by Reservation Stay",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
+
 //reservation stay detail
 items.value.push({
     label: "Reservation Stay Detail",
@@ -174,6 +197,8 @@ items.value.push({
         });
     }
 })
+
+
 
 onMounted(() => {
 

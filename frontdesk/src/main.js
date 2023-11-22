@@ -323,7 +323,7 @@ if (setting) {
 
 
 
-	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder"]
+	let whitelist_route = ["NoPermission", "ReservationStayDetail", "ReservationDetail", "Login", "NotFound","TestPage","AccountCodeSortOrder","AccountCategorySortOrder"]
 	whitelist_route = [...whitelist_route, ...setting.edoor_setting.edoor_menu.map(x => x.menu_name)]
 
 	const router = getRoutes(whitelist_route, setting.edoor_setting.edoor_menu)

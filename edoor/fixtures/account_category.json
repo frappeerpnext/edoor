@@ -6,7 +6,7 @@
   "modified": "2023-08-27 16:57:17.681300",
   "name": "Food and Beverage",
   "note": null,
-  "sort_order": 200
+  "sort_order": 900
  },
  {
   "account_category": "Food and Beverage Tax",
@@ -15,7 +15,7 @@
   "modified": "2023-08-27 17:16:05.210190",
   "name": "Food and Beverage Tax",
   "note": null,
-  "sort_order": 202
+  "sort_order": 1000
  },
  {
   "account_category": "None Revenue",
@@ -24,7 +24,7 @@
   "modified": "2023-08-27 17:57:26.916030",
   "name": "None Revenue",
   "note": null,
-  "sort_order": 600
+  "sort_order": 1600
  },
  {
   "account_category": "Other Charge Tax",
@@ -33,7 +33,7 @@
   "modified": "2023-08-27 17:15:06.433142",
   "name": "Other Charge Tax",
   "note": null,
-  "sort_order": 302
+  "sort_order": 1300
  },
  {
   "account_category": "Food and Beverage Discount",
@@ -42,7 +42,7 @@
   "modified": "2023-08-27 17:06:39.054288",
   "name": "Food and Beverage Discount",
   "note": null,
-  "sort_order": 201
+  "sort_order": 800
  },
  {
   "account_category": "Housekeeping Tax",
@@ -51,16 +51,7 @@
   "modified": "2023-08-27 16:17:59.537429",
   "name": "Housekeeping Tax",
   "note": null,
-  "sort_order": 50
- },
- {
-  "account_category": "Other Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 16:16:25.159476",
-  "name": "Other Discount",
-  "note": null,
-  "sort_order": 301
+  "sort_order": 500
  },
  {
   "account_category": "City Ledger Payment",
@@ -69,7 +60,25 @@
   "modified": "2023-11-15 17:02:09.396304",
   "name": "City Ledger Payment",
   "note": null,
-  "sort_order": 1000
+  "sort_order": 2100
+ },
+ {
+  "account_category": "Other Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:16:25.159476",
+  "name": "Other Discount",
+  "note": null,
+  "sort_order": 1200
+ },
+ {
+  "account_category": "Service Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-21 12:33:49.875142",
+  "name": "Service Charge",
+  "note": null,
+  "sort_order": 600
  },
  {
   "account_category": "Desk Folio",
@@ -78,7 +87,7 @@
   "modified": "2023-11-18 12:51:08.059593",
   "name": "Desk Folio",
   "note": null,
-  "sort_order": 0
+  "sort_order": 400
  },
  {
   "account_category": "Room Discount",
@@ -87,16 +96,7 @@
   "modified": "2023-08-27 15:35:27.237427",
   "name": "Room Discount",
   "note": null,
-  "sort_order": 101
- },
- {
-  "account_category": "Deposit Transfer",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:41:55.304911",
-  "name": "Deposit Transfer",
-  "note": null,
-  "sort_order": 900
+  "sort_order": 200
  },
  {
   "account_category": "POS Transfer",
@@ -105,7 +105,7 @@
   "modified": "2023-08-27 15:49:05.093149",
   "name": "POS Transfer",
   "note": null,
-  "sort_order": 500
+  "sort_order": 1500
  },
  {
   "account_category": "Food and Beverage Revenue",
@@ -114,7 +114,16 @@
   "modified": "2023-09-04 14:14:53.399569",
   "name": "Food and Beverage Revenue",
   "note": null,
-  "sort_order": 0
+  "sort_order": 300
+ },
+ {
+  "account_category": "Deposit Transfer",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:41:55.304911",
+  "name": "Deposit Transfer",
+  "note": null,
+  "sort_order": 1700
  },
  {
   "account_category": "Folio Transfer",
@@ -123,7 +132,7 @@
   "modified": "2023-08-27 17:42:38.233705",
   "name": "Folio Transfer",
   "note": null,
-  "sort_order": 400
+  "sort_order": 1400
  },
  {
   "account_category": "Deposit",
@@ -132,7 +141,7 @@
   "modified": "2023-08-27 17:43:44.960236",
   "name": "Deposit",
   "note": null,
-  "sort_order": 700
+  "sort_order": 1800
  },
  {
   "account_category": "City Ledger",
@@ -141,7 +150,7 @@
   "modified": "2023-08-27 17:40:32.917540",
   "name": "City Ledger",
   "note": null,
-  "sort_order": 600
+  "sort_order": 2000
  },
  {
   "account_category": "Other Charge",
@@ -150,7 +159,7 @@
   "modified": "2023-08-27 15:49:48.489650",
   "name": "Other Charge",
   "note": null,
-  "sort_order": 300
+  "sort_order": 1100
  },
  {
   "account_category": "Payment",
@@ -159,7 +168,7 @@
   "modified": "2023-08-27 16:59:46.108506",
   "name": "Payment",
   "note": "a",
-  "sort_order": 800
+  "sort_order": 1900
  },
  {
   "account_category": "Room Tax",
@@ -168,7 +177,7 @@
   "modified": "2023-08-27 15:54:51.419235",
   "name": "Room Tax",
   "note": null,
-  "sort_order": 102
+  "sort_order": 700
  },
  {
   "account_category": "Room Charge",

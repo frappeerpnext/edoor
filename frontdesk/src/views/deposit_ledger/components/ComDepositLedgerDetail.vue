@@ -1,8 +1,8 @@
 <template>
-    <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
+    <ComDialogContent :hideButtonOK="true" @onClose="onClose" style="min-height:70vh;" :hideIcon="false" :loading="loading">
         <TabView>
             <TabPanel header="Deposit Ledger Information">
-                <div v-if="doc" class="mt-2">
+                <div v-if="doc"  class="mt-2">
             <ComDepositLedgerAction :folio="doc"  :newDoc="newDoc" @onClose="onClose" />
                 <table class="mb-4">
                 <tr>

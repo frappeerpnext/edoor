@@ -103,8 +103,9 @@
                         <div class="grid">
                             <div class="col-12">
 
-                                {{ targetTransactionNumberFilter }}
+                      
                                 <label>Transfer to {{ doc.target_transaction_type }}</label>
+                               
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.target_transaction_number"
                                     :placeholder="'Select ' + doc.target_transaction_type" :doctype="doc.target_transaction_type" class="auto__Com_Cus w-full"
                                     @onSelected="onSelectTargetTransactionNumber" :filters="targetTransactionNumberFilter" :suggestions="doc.selected_target_transaction_number"/>
@@ -124,7 +125,7 @@
                                 </div>
                             </div>
                             
-                            <div class="flex gap-3 p-2"  v-if="filterTargetTransactionNumberType.length>0">
+                            <div class=" p-2"  v-if="filterTargetTransactionNumberType.length>0">
                                 <label>Filter {{ doc.target_transaction_type }} by</label>
                                  
                                     <Dropdown   class="auto__Com_Cus w-full" :placeholder="'Select Filter Option'" :options="filterTargetTransactionNumberType" optionValue="fieldname" optionLabel="label" v-model="doc.filter_target_transaction_number_by" :showClear="true" />
@@ -357,21 +358,32 @@ const accountCodeFilter = computed(()=>{
         return { 'account_group': doc.value.account_group }
     } 
 })
+
+
 const filterTargetTransactionNumberType = computed(()=>{
     let options = []
-    if(doc.value.reservation_stay){
-        options.push({fieldname:"reservation_stay",label:"Reservation Stay"})
+    if (doc.value.target_transaction_type=='Reservation Folio'){
+        if(doc.value.reservation_stay){
+            options.push({fieldname:"reservation_stay",label:"Reservation Stay"})
+        }
+        if(doc.value.reservation){
+            options.push({fieldname:"reservation",label:"Reservation"})
+        }
+       
     }
-    if(doc.value.reservation){
-        options.push({fieldname:"reservation",label:"Reservation"})
-    }
-    if(doc.value.guest){
 
-        options.push({fieldname:"guest",label:"Guest"})
+
+    
+    if (["Reservation Folio","Deposit Ledger","Desk Folio"].includes(doc.value.target_transaction_type)){
+        if(doc.value.guest){
+            options.push({fieldname:"guest",label:"Guest"})
+        }
     }
     
-    if(doc.value.business_source){
-        options.push({fieldname:"business_source",label:"Business Source"})
+    if (["Reservation Folio","City Ledger"].includes(doc.value.target_transaction_type)){
+        if(doc.value.business_source){
+            options.push({fieldname:"business_source",label:"Business Source"})
+        }
     }
 
 
@@ -541,7 +553,7 @@ function onSelectAccountCode(data) {
                 doc.value.target_account_code= d.target_account_code
                 doc.value.target_transaction_type = d.target_document
 
-                
+
                 doc.value.quantity = 1
                 if (d.tax_rule) {
                     const tax_rule = JSON.parse(account_code.value.tax_rule_data)
@@ -562,6 +574,13 @@ function onSelectAccountCode(data) {
                 if (d.price > 0 && !doc.value.name) {
                     doc.value.input_amount = d.price
                 }
+
+                if (d.target_document && d.target_document=='City Ledger'){
+                    getSuguestCityLedger()
+                }else {
+                    doc.value.target_transaction_number=""
+                }
+
                 const input = document.getElementById("input_amount").querySelector('input')
                 input.focus()
                 input.select()
@@ -643,7 +662,23 @@ function onSave() {
             isSaving.value = false;
         })
 }
+function getSuguestCityLedger(){
+    if(dialogRef.value.data.business_source){
+            call.get('frappe.desk.search.search_link', {doctype:"City Ledger",txt:dialogRef.value.data.business_source, filters: [["property", "=", window.property.name]]}).then(r=>{
+ 
+                if (r.results.length > 0) {
+                    doc.value.target_transaction_number = r.results[0].value
+                    doc.value.selected_target_transaction_data= r.results[0]
+                    doc.value.selected_target_transaction_number = r.results
+                    
+                }else {
+                    doc.value.selected_target_transaction_number = null
+                }
+            })
+ 
+        }
 
+}
 onMounted(() => { 
     balance.value = dialogRef.value.data.balance
     let reservation = ""
@@ -677,23 +712,10 @@ onMounted(() => {
         reservation = dialogRef.value.data.new_doc.reservation
         doc.value = dialogRef.value.data.new_doc     
         extra_account_code_filter.value = dialogRef.value.data.account_code_filter
+
         doc.value.posting_date = moment(working_day.date_working_day).toDate();
         folioNumberFilter.value = { 'property': window.property_name, status: 'Open', 'name': ['!=', doc.value.transaction_number] }
         
-        if(dialogRef.value.data.business_source){
-            call.get('frappe.desk.search.search_link', {doctype:"City Ledger",txt:dialogRef.value.data.business_source, filters: [["property", "=", window.property.name]]}).then(r=>{
- 
-                if (r.results.length > 0) {
-                    doc.value.target_transaction_number = r.results[0].value
-                    doc.value.selected_target_transaction_data= r.results[0]
-                    doc.value.selected_target_transaction_number = r.results
-                    
-                }else {
-                    doc.value.selected_target_transaction_number = null
-                }
-            })
- 
-        }
     }
     //get guest by reservation
     if (reservation) {

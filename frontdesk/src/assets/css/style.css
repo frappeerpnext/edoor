@@ -1370,24 +1370,33 @@ span.row-disabled > :not(button) {
     width: 100%;
     z-index: 100;
 }
-.active_reservation_folio{
+.active_reservation_folio, .fofio_class_btn_child.active_reservation_folio:hover{
     color: var(--bg-og-color-hover) !important;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+    border: 1px solid var(--bg-og-color-hover) !important;
+    background-color: #FFF !important;
 }
 .header_folio_active{
     color: var(--bg-og-color-hover) !important;
+}
+.p-accordion-content{
+    padding: 0 !important;
+}
+.accort-content-active-bg{
+    background: #dce0f7;
 }
 .box_shadow_for_box{
     box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 .fofio_class_btn_child{
     color: var(--bg-purple-cs);
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
-    border: 1px solid;
+    border: 1px solid #dfdfdf;
+    background-color: #f7f6ff;
 }
 .fofio_class_btn_child:hover{
-    color: var(--bg-og-color-hover) !important;
-    border-color: var(--bg-og-color-hover) !important;
+    color: var(--bg-purple-cs) !important;
+    border-color: var(--bg-purple-cs) !important;
+    background-color: #dfddff !important;
 }
 .reservatin_folio_list_box .p-accordion-tab.p-accordion-tab-active {
     border: 1px solid #e8e9fd;
@@ -1435,4 +1444,13 @@ color: white !important;
 }
 .h-btn-cs{
     height: 37px;
+}
+.ms_message_cs_edoor .p-message .p-message-text{
+width: 100%;
+display: flex;
+align-items: center;
+}
+.input-guest-search-deposit-ledger .p-autocomplete.p-component.p-inputwrapper,
+.input-guest-search-deposit-ledger .p-autocomplete.p-component.p-inputwrapper .p-autocomplete-input.p-inputtext.p-component{
+    width:100%
 }

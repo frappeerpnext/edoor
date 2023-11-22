@@ -875,6 +875,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             internal_reference_number,
             reservation,
             reservation_color,
+            reservation_color_code,
             is_master,
             parent as reservation_stay,
             'stay' as type,

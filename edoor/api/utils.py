@@ -156,7 +156,7 @@ def update_comment_keyword(doc, method=None, *args, **kwargs):
         frappe.db.commit()
 
 def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
-    
+
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         submit_update_audit_trail_from_version(doc)
         # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
@@ -1045,6 +1045,7 @@ def sort_parent_account_code(parent_account_code, account_codes):
         frappe.db.sql("update `tabAccount Code` set sort_order={} where name='{}'".format(sort_order, d))
     frappe.db.commit()
     frappe.msgprint("Update parent account code sort order successfully")
+
     
 @frappe.whitelist(methods="POST")
 def sort_child_account_code(account_codes):
@@ -1057,3 +1058,14 @@ def sort_child_account_code(account_codes):
 
     frappe.db.commit()
     frappe.msgprint("Update child account code sort order successfully")
+
+@frappe.whitelist(methods="POST")
+def sort_account_categories(account_categories):
+    for d in account_categories:
+        sort_order = (account_categories.index(d) + 1) * 100
+        frappe.db.sql("update `tabAccount Category` set sort_order={} where name='{}'".format(sort_order, d))
+
+        frappe.db.sql("update `tabFolio Transaction` set account_category_sort_order={} where account_category='{}'".format(sort_order, d))
+
+    frappe.db.commit()
+    frappe.msgprint("Update parent account code sort order successfully")

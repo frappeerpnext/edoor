@@ -27,6 +27,11 @@
             </Column>
 
             <Column field="account_name" header="Account Name " style="min-width: 160px;" />
+            <Column field="quantity" header="QTY"  headerClass="text-center" bodyClass="text-center">
+                <template #body="slotProps">
+                     <span v-if="slotProps.data.quantity>0">{{ slotProps.data.quantity }}</span>
+                </template>
+            </Column>
 
             <Column field="debit" header="Debit(Charges)" class="text-right">
                 <template #body="slotProps">
@@ -66,6 +71,40 @@
                     </div>
                 </template>
             </Column>
+            <ColumnGroup type="footer">
+                <Row>
+                    <Column footer="Total:" :colspan="showCheckbox?5:4" footerStyle="text-align:right" />
+                    <Column footerStyle="text-align:center">
+                        <template #footer>
+                           {{ totalQuantity }}
+                        </template>
+                    </Column>
+                   
+                    <Column footerStyle="text-align:right">
+                        <template #footer>
+                            <CurrencyFormat :value="totalDebit" />
+                        </template>
+                    </Column>
+
+                    <Column footerStyle="text-align:right">
+                        <template #footer>
+                            <CurrencyFormat :value="totalCredit" />
+
+                        </template>
+                    </Column>
+                    
+                    <Column footerStyle="text-align:right">
+                        <template #footer>
+                            <CurrencyFormat :value="totalDebit - totalCredit" />
+                        </template>
+                    </Column>
+ 
+                    <Column />
+                    <Column />
+                    <Column />
+                </Row>
+            </ColumnGroup>
+
         </DataTable>
 
         <div v-if="can_view_rate" class="w-full flex justify-content-end my-2" id="detl_foloi">
@@ -76,22 +115,7 @@
                         titleClass="col font-semibold">
                     </ComBoxStayInformation>
                 </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total Debit" :value="totalDebit"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
-                    </ComBoxStayInformation>
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Total Credit" :value="totalCredit"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
-                    </ComBoxStayInformation>
-
-                </div>
-                <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation isCurrency title="Balance" :value="(totalDebit - totalCredit)"
-                        valueClass="col-6 text-right bg-gray-edoor-10 font-semibold" titleClass="col font-semibold">
-                    </ComBoxStayInformation>
-                </div>
+          
             </div>
         </div>
     </ComPlaceholder>
@@ -234,6 +258,14 @@ const totalCredit = computed(() => {
     if (folioTransactions.value) {
 
         return folioTransactions.value.reduce((n, d) => n + (d.credit || 0), 0)
+
+    }
+    return 0
+
+})
+const totalQuantity = computed(() => {
+    if (folioTransactions.value) {
+        return folioTransactions.value.reduce((n, d) => n + (d.quantity || 0), 0)
 
     }
     return 0

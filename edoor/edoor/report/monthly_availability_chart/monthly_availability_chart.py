@@ -31,8 +31,8 @@ def get_columns(filters):
 
 def get_filters(filters):
 	sql = " and property=%(property)s "
-	if filters.get("room_type"):
-		sql = sql + " and r.room_type_id in %(room_type)s "
+	if filters.get("room_name_types"):
+		sql = sql + " and r.room_type_id in %(room_name_types)s "
 
 	return sql
 

@@ -14,6 +14,7 @@
   "allow_user_to_add_back_date_transaction",
   "show_account_code_in_folio_transaction",
   "allow_user_to_delete_auto_post_transaction",
+  "maximum_number_of_folio_in_reservation_stay",
   "cb_177",
   "show_summary_under_room_chart_calendar",
   "enable_over_booking",
@@ -355,12 +356,18 @@
    "fieldname": "show_additional_guest_name_in_room_chart_calendar",
    "fieldtype": "Check",
    "label": "Show additional guest name in room chart calendar"
+  },
+  {
+   "default": "5",
+   "fieldname": "maximum_number_of_folio_in_reservation_stay",
+   "fieldtype": "Int",
+   "label": "Maximum Number of Folio in Reservation Stay"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-12 16:00:54.807202",
+ "modified": "2023-11-21 14:15:16.355239",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

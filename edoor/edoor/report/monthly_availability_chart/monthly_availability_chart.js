@@ -40,7 +40,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 		} ,
 
 		{
-			"fieldname": "room_type",
+			"fieldname": "room_name_types",
 			"label": __("Room Type"),
 			"fieldtype": "MultiSelectList",
 			get_data: function(txt) {

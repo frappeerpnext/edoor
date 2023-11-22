@@ -1,11 +1,9 @@
 <template>
     <div>
-       
-       
         <div class="flex min-h-folio-cus" v-if="rs.folios?.length > 0">
             <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
-                <ComFolioAction :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
+                <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
                 <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
             </div>

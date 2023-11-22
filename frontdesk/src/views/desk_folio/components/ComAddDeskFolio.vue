@@ -29,7 +29,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc } from '@/plugin'
+import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc,useToast } from '@/plugin'
 
 const dialogRef = inject('dialogRef')
 const loading=ref(false)
@@ -37,8 +37,13 @@ const data =ref({})
 const working_day = moment(window.current_working_date).toDate()
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject('$gv');
-
+const toast = useToast();
 function onOK() {
+    if(!data.value.guest){
+        toast.add({ severity: 'warn', summary: "Add Desk Folio", detail: "Please select guest for add desk folio.", life: 5000 })
+        return
+    }
+    
     loading.value = true
     var savedData = {
         name: data.value.name,

@@ -8,15 +8,19 @@
         </div>
     </div>
     <div>
-        <slot name="content"></slot>
+        <BlockUI :blocked="blockUI">
+            <slot name="content"></slot>
+        </BlockUI>
+        
     </div>
 </div>
 </template>
 <script setup>
-
+import BlockUI from 'primevue/blockui';
 const props = defineProps({
   titleClass: String,
   title: String,
+  blockUI: Boolean,
   value: [String,Number]
 })
  

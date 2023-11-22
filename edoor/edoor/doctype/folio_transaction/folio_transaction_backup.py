@@ -201,9 +201,6 @@ class FolioTransaction(Document):
 		self.discount_account = account_doc.discount_account
 		self.bank_fee_account = account_doc.bank_fee_account
 
-		if account_doc.show_quantity_in_report:
-			self.report_quantity = self.quantity
-
 		if self.tax_rule:
 			tax_rule = frappe.get_doc("Tax Rule",self.tax_rule)
 			self.tax_1_account = tax_rule.tax_1_account
@@ -278,10 +275,6 @@ class FolioTransaction(Document):
 			self.room_type=""
 			self.room_type_alias=""
 
-		
-
-		#validate update report descript
-		update_report_description_field(self)
 
 	def after_insert(self):
 		if self.target_transaction_type and  self.target_transaction_number:
@@ -619,14 +612,3 @@ def post_transaction_to_target_transaction_type(self,):
 		"source_transaction_type": self.transaction_type
 	}).insert()
 
-def update_report_description_field(self):
-	self.report_description = self.account_name
-	if self.target_transaction_type:
-		if self.target_transaction_type=='City Ledger':
-			self.report_description = "{} (to {})".format(self.report_description, self.city_ledger_name)
-		else:
-			self.report_description = "{} (to {})".format(self.report_description, self.target_transaction_number)
-	elif self.source_transaction_type:
-		if self.source_transaction_number:
-			self.report_description = "{} (from {})".format(self.report_description, self.source_transaction_number)
-		

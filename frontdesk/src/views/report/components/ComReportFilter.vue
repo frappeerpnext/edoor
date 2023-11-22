@@ -10,12 +10,12 @@
 
             <div class="col" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
-                <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
+                <Calendar @date-select="onSelectStartDate" class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
             <div class="col" v-if="hasFilter('end_date')">
                 <label>End date</label><br>
-                <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
+                <Calendar class="w-full" :min-date="filter.start_date" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
             <div class="col" v-if="hasFilter('select_filter')">
@@ -47,14 +47,32 @@
                     v-model="filter.room_type"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }" ></ComSelect>
             </div>
-            <div class="col"  v-if="hasFilter('room_type_name')">
-                <label>Room Type</label><br>
+            <div class="col"  v-if="hasFilter('room_name_types')">
+                <label>Room Types</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
                 optionLabel="room_type" optionValue="name"
                 extraFields="room_type"
-                    v-model="filter.room_type_name"   placeholder="Room Type" doctype="Room Type"
+                    v-model="filter.room_name_types"   placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('rooms')">
+                <label>Room</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="room_number" optionValue="room_number"
+                extraFields="room_number"
+                    v-model="filter.rooms"   placeholder="Room" doctype="Room"
+                    :filters="{ property: property.name }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('account_name')">
+                <label>Account Name</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                optionLabel="account_name" optionValue="account_name"
+                extraFields="account_name"
+                    v-model="filter.account_name"   placeholder="Account Name" doctype="Account Code"
+                    :filters="{ parent_account_code: ['=','1200'] }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>
@@ -217,6 +235,12 @@ const hasFilter = ref((f) => {
     return false
 
 });
+
+const onSelectStartDate = (date) => {
+    if (moment(date).isSame(moment(filter.value.end_date).format("yyyy-MM-DD")) || moment(date).isAfter(filter.value.end_date)) {
+        filter.value.end_date = moment(date).add(0, 'days').toDate();
+    }
+}
 
 function onSearch() {
     let f = {}

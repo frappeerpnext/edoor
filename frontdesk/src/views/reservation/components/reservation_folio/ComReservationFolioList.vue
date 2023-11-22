@@ -4,7 +4,7 @@
         
         <Accordion   :multiple="true" :activeIndex="[0]">
             <template v-for="(s, index) in rs.reservationFolioList" :key="index">
-    <AccordionTab :headerClass="s.folios.some(d => d.selected) ? 'header_folio_active' : ''" >
+    <AccordionTab :headerClass="s.folios.some(d => d.selected) ? 'header_folio_active' : ''">
         <template #header>
             <div  class="flex flex flex-column w-full -mr-3 ps-2 -ml-3 -mt-2 -mb-3">
                 <div class="flex">
@@ -20,7 +20,7 @@
                         <span v-tippy="'Balance'" class="ms-auto me-2 px-2 bg-white rounded-lg  white-space-nowrap"> <CurrencyFormat :value="s.balance" /> </span>
                     </div>
                     <div class="flex gap-2 align-items-center">
-                    <div  class="font-light max-width-name-text">{{ s.guest_name }} </div>
+                    <div  class="font-light max-width-name-text"><img :src="guest_svg" style="display:inline-block; width: 10px; margin:-2px -2px 0 0;"> {{ s.guest_name }} </div>
                     <spna class="font-light ">|</spna>
                     <div class="font-light  max-width-name-text" > Room: {{ s.rooms }}</div>
                     </div>
@@ -35,9 +35,9 @@
             </div>
             </div>
         </template>
-        <div class="m-0 p-2">
+        <div :class="s.folios.some(d => d.selected) ? 'accort-content-active-bg' : ''" class="m-0 p-2">
            <div  v-for="(d, index) in s.folios" :key="index">
-            <Button class="fofio_class_btn_child w-full flex gap-2 py-1 justify-content-between align-items-center px-3 bg-white" @click="onSelectFolio(d)" :class="[d.selected ? 'active_reservation_folio' : '', index > 0 ? 'mt-2' : '']" >
+            <Button class="fofio_class_btn_child w-full flex gap-2 py-1 justify-content-between align-items-center px-3" @click="onSelectFolio(d)" :class="[d.selected ? 'active_reservation_folio' : '', index > 0 ? 'mt-2' : '']" >
     <div class="flex align-items-center gap-3 line-height-2">
         <ComIcon v-if="d.is_master" style="height: 14px;" icon="iconCrown" />
         <div class="text-start">

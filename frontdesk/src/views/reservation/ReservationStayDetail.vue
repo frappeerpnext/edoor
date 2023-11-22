@@ -308,6 +308,8 @@ onMounted(() => {
         }
     })
 });
+
+
 function onNavigateStay(isNext) {
     const stay_name = rs.getStayName(name.value, isNext)
     if (stay_name) {

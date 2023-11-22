@@ -67,6 +67,18 @@
                         <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
                             @onSelected="reloadIframe" doctype="Transportation Company" />
                     </div>
+                    <div v-if="hasFilter('show_room_number')">
+                        <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_room_number" />
+                        <label for="show_room_number" >Show/Hide Room Number</label>
+                    </div>
+                    
+                    <div v-if="hasFilter('show_account_code')">
+                        <div>
+                        <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_account_code" />
+                        <label for="show_account_code" >Show/Hide Account Code</label>
+                    </div>
+                    </div>
+
                     <div v-if="hasFilter('show_summary')">
                         <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
                         <label for="show_summary" >Show/Hide Summary</label>
@@ -98,7 +110,9 @@ const letter_head = ref("");
 const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
 const filters = ref({
-    invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style"
+    invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
+    show_room_number:1,
+    show_account_code:window.setting.show_account_code_in_folio_transaction,
 })
 const show_toolbar = ref(0)
 const view = ref("")

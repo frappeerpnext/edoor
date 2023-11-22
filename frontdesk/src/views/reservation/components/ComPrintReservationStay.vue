@@ -34,7 +34,7 @@
                     </div>
 
                     <div>
-                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_summary" />
                         <label for="show_summary" >Show/Hide Summary</label>
                     </div>
                 </div>
@@ -85,6 +85,7 @@ function onSelectLetterHead(l){
 const refreshReport = () => {
     url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + filters.value.letterHead + "&show_toolbar=0&show_room_number=" + filters.value.show_room_number + "&show_account_code=" + filters.value.show_account_code
     url.value = url.value + "&invoice_style=" + filters.value.invoice_style
+    url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     if (filters.value.selected_folio) {
         url.value = url.value + "&folio=" + filters.value.selected_folio
     }

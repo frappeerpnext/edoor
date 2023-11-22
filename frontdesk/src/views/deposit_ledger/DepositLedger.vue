@@ -3,12 +3,12 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Deposit Ledger </div>
-                </template>`
+                    <div class="text-2xl">Deposit Ledger</div>
+                </template>
                 <template #end>
                     <Button class="border-none" label="Add New Deposit Ledger" icon="pi pi-plus"
                         @click="onAddDepositLedger()" />
-                </template>`
+                </template>
             </ComHeader>
         </div>
         <div class="mb-3 flex justify-between">
@@ -114,42 +114,44 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="-ml-2 -mr-2">
+                <div class="flex">
+                    <ComAutoComplete class="col-6 input-guest-search-deposit-ledger" width="100%" optionLabel="customer_name_en" optionValue="name"
+                        v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
 
-            
-            <div class="grid">
-                <div>
-                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true"/>
-                    <lable for="filter_date">Filter Date</lable>
+                    <ComSelect class="col-6" v-model="filter.selected_status" @onSelected="onSearch"
+                        placeholder="Status" :options="['Open', 'Closed']" />
                 </div>
-
-                <Calendar v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
-                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" />
                 
+                <div class="flex">
+                    <ComSelect class="col-6" isFilter optionLabel="room_type" optionValue="name"
+                        v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
+                        :filters="{ property: property.name }"></ComSelect>
 
-
-                <ComAutoComplete class="col-3" width="100%" optionLabel="customer_name_en" optionValue="name"
-                    v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
-                    placeholder="Status" :options="['Open', 'Closed']" />
-
-                <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
-                    v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
-                    :filters="{ property: property.name }"></ComSelect>
-
-                <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
-                    :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
-                    v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
-                    :filters="{ property: property.name }"></ComSelect>
+                    <ComSelect class="col-6" isFilter groupFilterField="room_type_id"
+                        :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
+                        v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
+                        :filters="{ property: property.name }"></ComSelect>
+                </div>
+                
+                <div class="col-6">
+                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true"/>
+                    <lable class="ml-1" for="filter_date">Filter Date</lable>
+                </div>
+                <div class="col-6">
+                    <Calendar class="w-full" v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true" panelClass="no-btn-clear"
+                    @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Date Range" />
+                </div>
+            </div>
 
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type"
                         dateFormat="dd-MM-yy" v-model="filter.date_range" selectionMode="range" :manualInput="false"
                         @date-select="onDateSelect" placeholder="Select Date Range" showIcon />
                 </div>
-            </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
 </template>
@@ -367,7 +369,7 @@ onMounted(() => {
         }
     })
 
-    let state = localStorage.getItem("page_state_city_ledger")
+    let state = localStorage.getItem("page_state_deposit_ledger")
     if (state) {
         state = JSON.parse(state)
         state.page = 0
@@ -407,7 +409,7 @@ onMounted(() => {
 
 function onResetTable() {
     localStorage.removeItem("page_state_deposit_ledger")
-    localStorage.removeItem("table_city_ledger_state")
+    localStorage.removeItem("table_deposit_ledger_state")
     window.location.reload()
 }
 

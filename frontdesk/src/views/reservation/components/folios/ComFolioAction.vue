@@ -1,4 +1,5 @@
 <template>
+    {{ selectedFolio }}
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-2">
         <div>
             <template
@@ -59,6 +60,11 @@
                         <i class="pi pi-times-circle" />
                         <span class="ml-2">Delete Folio</span>
                     </button>
+                    <button @click="onAuditTrail"
+                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                        <i class="pi pi-history" />
+                        <span class="ml-2">Audit Trail</span>
+                    </button>
 
                 </template>
             </Menu>
@@ -89,7 +95,7 @@ import ComNewReservationStayFolio from '@/views/reservation/components/reservati
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
- 
+import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 const props = defineProps({
     doctype:String,
     folio:Object,
@@ -99,10 +105,9 @@ const props = defineProps({
     loading:Boolean
 })
 
-const emit = defineEmits(["onRefresh"])
-
+const emit = defineEmits([ "onRefresh"])
 const selectedFolio = ref(props.folio)
-
+const tr = ref()
 
 const dialog = useDialog();
 const confirm = useConfirm();
@@ -184,7 +189,7 @@ print_menus.value.push({
                 view: "print"
             },
             props: {
-                header: "Folio Summary Report",
+                header: "Folio Detail Report",
                 style: {
                     width: '80vw',
                 },
@@ -465,7 +470,7 @@ function deleteFilio() {
 function onTransferFolioItem() {
     if (selectedFolio.value.status == "Open") {
     const selectedFolioTransactions = JSON.parse( sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name) ).selection
-
+    
     if (selectedFolioTransactions.length == 0) {
         toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
         return
@@ -513,7 +518,7 @@ function onTransferFolioItem() {
 
 onMounted(()=>{
 
-    getDocList('Custom Print Format', {
+   getDocList ('Custom Print Format', {
         fields: [
             'print_format',
             'icon',
@@ -521,7 +526,7 @@ onMounted(()=>{
             'attach_to_doctype'
         ],
         filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", props.doctype]]
-    })
+        })
         .then((doc) => {
             doc.forEach(d => {
                 print_menus.value.push({
@@ -551,10 +556,45 @@ onMounted(()=>{
                 })
             });
         })
+
+
+    getDocList('Folio Transaction', {
+		fields: ["name","transaction_number","transaction_type"],
+        filters: [
+            ["transaction_type", "=", "Reservation Folio"],
+            ["transaction_number", "=", selectedFolio.value.name],
+            
+        ]
+	}).then((r) => {
+            tr.value = r
+       
+    }).catch((err) => {
+    })
 })
 
-
-
+function onAuditTrail() {
+    const dialogRef = dialog.open(ComAuditTrail, {
+        data: {
+            doctype: 'Reservation Folio',
+            docname: selectedFolio.value?.name,
+            referenceTypes: [
+                { doctype: 'Reservation Folio', label: 'Reservation Folio' },
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+            ],
+            docnames: [selectedFolio.value?.name + tr.value]
+        },
+        props: {
+            header: 'Audit Trail',
+            style: {
+                width: '80vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+    });
+}
  
  
 </script>

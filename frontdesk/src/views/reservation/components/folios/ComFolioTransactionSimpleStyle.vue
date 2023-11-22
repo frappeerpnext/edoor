@@ -1,4 +1,5 @@
 <template>
+    {{ selectedfolioTransactions }}
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
  
         <DataTable v-model:selection="selectedfolioTransactions"
@@ -27,8 +28,7 @@
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
                     </span>
-                    <span>{{ slotProps.data.account_name }}</span>
-                    
+                    <span>{{ slotProps.data.report_description }} </span>
                     
                 </template>
             </Column>
@@ -65,13 +65,7 @@
                 </template>
             </Column>
 
-            <Column field="note" header="Note" style="min-width: 160px;">
-                <template #body="slotProps">
-                    <div v-if="slotProps.data.note"  v-tippy="slotProps.data.note">
-                        {{ slotProps.data.note.slice(0, 20) + (slotProps.data.note.length > 20 ? '...' : '') }}
-                    </div>
-                </template>
-            </Column>
+            
             <Column header="Owner">
                 <template #body="slotProps">
                     <div v-if="slotProps?.data && slotProps?.data?.owner">
@@ -86,6 +80,13 @@
                     <span v-if="slotProps.data.creation">
                         <ComTimeago :date="slotProps.data.creation" />
                     </span>
+                </template>
+            </Column>
+            <Column field="note" header="Note" style="min-width: 160px;">
+                <template #body="slotProps">
+                    <div v-if="slotProps.data.note"  v-tippy="slotProps.data.note">
+                        {{ slotProps.data.note.slice(0, 20) + (slotProps.data.note.length > 20 ? '...' : '') }}
+                    </div>
                 </template>
             </Column>
             <Column>
@@ -250,7 +251,9 @@ function LoadFolioTransaction(){
 						"is_auto_post",
 						"allow_enter_quantity",
                         "target_transaction_number",
-                        "city_ledger_name"
+                        "city_ledger_name",
+                        "source_transaction_number",
+                        "report_description"
 					],
 					filters: [["transaction_number", "=", selectedFolio.value.name],["transaction_type", "=", props.doctype]],
 					limit: 1000,

@@ -104,6 +104,7 @@ class ReservationStay(Document):
 			d.group_name = self.group_name
 			d.group_color = self.group_color
 			d.reservation_color = self.reservation_color
+			d.reservation_color_code = self.reservation_color_code
 			d.guest = self.guest
 			d.guest_name = self.guest_name
 			d.email = self.guest_email
