@@ -1450,7 +1450,7 @@ width: 100%;
 display: flex;
 align-items: center;
 }
-.input-guest-search-deposit-ledger .p-autocomplete.p-component.p-inputwrapper,
-.input-guest-search-deposit-ledger .p-autocomplete.p-component.p-inputwrapper .p-autocomplete-input.p-inputtext.p-component{
+.input-wrp-search-autocomplete .p-autocomplete.p-component.p-inputwrapper,
+.input-wrp-search-autocomplete .p-autocomplete.p-component.p-inputwrapper .p-autocomplete-input.p-inputtext.p-component{
     width:100%
 }

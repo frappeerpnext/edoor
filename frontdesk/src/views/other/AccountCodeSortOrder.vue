@@ -1,13 +1,12 @@
 <template>
     <div class="w-5 m-auto mt-3">
         <div class="flex gap-2 mb-2">
+            <BlockUI class="w-full" :blocked="loading">
     <ComSelect  class="w-full" doctype="Account Code" v-model="parent_account_code" optionLabel="account_name" optionValue="name" :filters="[['parent_account_code','=','All Account Code']]" />
-    <Button  :loading="loading"   @click="getSortOrderList">Save</Button>
-    <Button type="button" label="Save" icon="pi pi-save" :loading="loading"  />
+    </BlockUI>
+    <Button :class="!parent_account_code ? 'pointer-events-none opacity-60':''" :loading="loading" label="Save" icon="pi pi-save" class="w-6rem" @click="getSortOrderList" />
 </div>
-<Button type="button" label="Save" icon="pi pi-save" :loading="loading"  />
 <div></div>
-<ComPlaceholder :text="'Please Select Account Code'"   :is-not-empty="true">
 <div class="flex justify-center mt-4" v-if="!parent_account_code">
    
             <span class="text-md ms-4">
@@ -44,13 +43,12 @@
  </template>
 </template>
 </ComReservationStayPanel>
- 
-</ComPlaceholder>
 </div>
   </template>
   <script setup>
   import {getDocList,ref,onMounted,postApi} from "@/plugin"
   import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+  import BlockUI from 'primevue/blockui';
   const loading = ref(false)
   const parent_account_code = ref("")
  

@@ -90,7 +90,7 @@
                     </div>
                     <div>
                         <Button @click="loadIframe" icon="pi pi-refresh"
-                            :class="BtnClass ? BtnClass:''" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b btn-size2"></Button>
+                            :class="BtnClass ? BtnClass:''" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
             </div>
@@ -123,8 +123,6 @@ const property_name = ref(window.property_name)
 const props = defineProps({
     BtnClass: String
 })
-
-
 
 function onSelectLetterHead(l) {
     letter_head.value = l

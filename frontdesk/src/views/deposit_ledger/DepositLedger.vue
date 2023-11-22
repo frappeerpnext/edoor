@@ -119,7 +119,7 @@
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="-ml-2 -mr-2">
                 <div class="flex">
-                    <ComAutoComplete class="col-6 input-guest-search-deposit-ledger" width="100%" optionLabel="customer_name_en" optionValue="name"
+                    <ComAutoComplete class="col-6 input-wrp-search-autocomplete" width="100%" optionLabel="customer_name_en" optionValue="name"
                         v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
 
                     <ComSelect class="col-6" v-model="filter.selected_status" @onSelected="onSearch"

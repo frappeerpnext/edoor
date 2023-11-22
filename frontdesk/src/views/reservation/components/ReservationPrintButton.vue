@@ -1,12 +1,12 @@
 <template>
-    <SplitButton label="Print" icon="pi pi-print" @click="save" :model="items" />
+    <SplitButton label="Print" icon="pi pi-print" :model="items" />
 </template>
 <script setup>
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
-import { useToast } from "primevue/usetoast";
+
 import { ref, inject, useDialog, onMounted } from "@/plugin";
-const toast = useToast();
+
 const dialog = useDialog();
 const props = defineProps({
     reservation: String,
@@ -14,62 +14,70 @@ const props = defineProps({
 const gv = inject("$gv")
 const frappe = inject("$frappe")
 const db = frappe.db();
-const items = ref([])
+const items = ref([
+{
+        label: "Confirmation Voucher",
+        icon: 'pi pi-check-circle',
 
-//reservation detail
-items.value.push({
-    label: "Reservation Detail",
-    icon: 'pi pi-check-circle',
-    acceptClass: 'border-none crfm-dialog',
-    rejectClass: 'hidden',
-    acceptIcon: 'pi pi-check-circle',
-    acceptLabel: 'Ok',
-    command: () => {
-        dialog.open(ComIFrameModal, {
-            data: {
+        command: () => {
+
+            openReport("Confirmmation Voucher",
+                {
+                    "doctype": "Reservation",
+                    name: props.reservation ?? "",
+                    report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
+                }
+            )
+        },
+    },
+    {
+        label: "Folio Summary by Reservation",
+        icon: 'pi pi-print',
+        command: () => {
+
+            openReport("Folio Summary by Reservation",
+                {
+                    doctype: "Reservation",
+                    name: props.reservation,
+                    report_name: gv.getCustomPrintFormat("eDoor Folio Transaction Summary by Reservation"),
+                    show_letter_head: true,
+                    filter_options: ["invoice_style", "show_room_number", "show_summary", "show_account_code"],
+                })
+        },
+    },
+    {
+
+        label: "Reservation Detail",
+        icon: 'pi pi-check-circle',
+        command: () => {
+
+            openReport("Reservation Detail", {
                 "doctype": "Reservation",
                 name: props.reservation ?? "",
                 report_name: gv.getCustomPrintFormat("Reservation Detail"),
+            },)
+        },
+    },
+    
+
+])
+
+function openReport(title, data) {
+    dialog.open(ComIFrameModal, {
+        data: data,
+        props: {
+            header: title,
+            style: {
+                width: '80vw',
             },
-            props: {
-                header: "Reservation Detail",
-                style: {
-                    width: '80vw',
-                },
-                position: "top",
-                modal: true,
-                maximizable: true,
-            },
-        });
-    }
-})
-// eDoor GIT Confirmation Voucher
-items.value.push({
-    label: "Confirmation Voucher",
-    icon: 'pi pi-check-circle',
-    acceptClass: 'border-none crfm-dialog',
-    rejectClass: 'hidden',
-    acceptIcon: 'pi pi-check-circle',
-    acceptLabel: 'Ok',
-    command: () => {
-        dialog.open(ComIFrameModal, {
-            data: {
-                "doctype": "Reservation",
-                name: props.reservation ?? "",
-                report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
-            },
-            props: {
-                header: "Confirmation Voucher",
-                style: {
-                    width: '80vw',
-                },
-                position: "top",
-                modal: true,
-                maximizable: true,
-            },
-        });
-    }
-})
+            position: "top",
+            modal: true,
+            maximizable: true,
+        },
+    });
+}
+
+
 onMounted(() => {
     db.getDocList('Custom Print Format', {
         fields: [

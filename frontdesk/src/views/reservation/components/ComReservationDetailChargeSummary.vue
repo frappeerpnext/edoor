@@ -14,6 +14,8 @@
                     </div>
                     <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                         <div class="text-500 uppercase text-sm">Balance</div>
+
+                        
                         <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
                     </div>
                 </div>

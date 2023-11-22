@@ -198,15 +198,6 @@ const Refresh = debouncer(() => {
 	pageState.value.page = 0
 }, 500);
 
-
-// function onDateSelect() {
-// 	if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
-// 		dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
-// 		dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
-// 		loadData()
-// 	}
-// }
-
 function pageChange(page) {
 	pageState.value.page = page.page
 	pageState.value.rows = page.rows

@@ -1,5 +1,4 @@
 <template>
-    {{ selectedfolioTransactions }}
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
  
         <DataTable v-model:selection="selectedfolioTransactions"

@@ -347,6 +347,7 @@ function onAssignRoom(reservation_stay_name, name) {
 }
 
 function showReservationStayDetail(name) {
+    
     if (!window.reservation_stay){
     const dialogRef = dialog.open(ReservationStayDetail, {
         data: {

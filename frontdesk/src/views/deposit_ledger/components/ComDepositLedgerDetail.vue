@@ -64,7 +64,7 @@
                     Deposit Ledger Detail - {{ doc.name }} 
                         <ComOpenStatus :status="doc.status" />
                     <div v-tippy="'Master Folio'" v-if="doc.is_master"
-                        class="flex justify-center items-center p-2  rounded-lg text-white p-1px bg-purple-100 ">
+                        class="flex justify-center items-center p-2 rounded-lg text-white p-1px bg-purple-100 ">
                         <ComIcon style="height: 12px;" icon="iconCrown" />
                     </div>
                 </div>

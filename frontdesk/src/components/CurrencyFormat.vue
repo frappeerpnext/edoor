@@ -4,7 +4,7 @@
 </template>
 <script setup>
 
-import { inject, defineProps, ref, computed } from '@/plugin';
+import {   defineProps, ref, computed } from '@/plugin';
 import NumberFormat from 'number-format.js'
  
 const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
@@ -36,12 +36,13 @@ format.value = currency.value.pos_currency_format
 const amount = computed(() => {
     let n = (props.value);
     if ((typeof n) == 'number') {
-        return   Number(n.toFixed(currency.value.precision));
+        return    Number(Math.round(n + 'e' + currency.value.precision) + 'e-' + currency.value.precision).toFixed(currency.value.precision);
+
     } else {
         return  0
     }
 })
- 
+
 
 
 </script>

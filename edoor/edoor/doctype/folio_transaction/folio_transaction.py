@@ -20,7 +20,8 @@ class FolioTransaction(Document):
 						frappe.throw("You cannot edit auto post transaction")
 		
  
-	
+		if self.required_select_product and not self.product:
+			frappe.throw("Please select product code.")
 			
 			
 		#validate folio status

@@ -79,10 +79,6 @@ function onFilter(f) {
 
 function onIframeLoaded() {
     const iframe = document.getElementById("iframe");
-    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
-    var windowWidth = window.innerWidth;
-
-
     if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
         iframe.style.overflowX = 'hidden';
     } else {

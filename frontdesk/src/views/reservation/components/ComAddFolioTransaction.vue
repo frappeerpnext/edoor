@@ -67,6 +67,15 @@
                         <InputNumber class="w-full" v-model="doc.quantity" :minFractionDigits="0" :maxFractionDigits="2" />
                     </div>
                     <!-- /Quantity -->
+
+                    <!-- Select Product -->
+                    {{ doc.required_select_product }}
+                    <div v-if="doc.required_select_product==1">
+                        
+                        <ComAutoComplete doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
+                        {{ doc.product_description }}
+                    </div>
+                    <!-- /select prosduct -->
                     <!-- Discount -->
                     <div v-if="account_code.allow_discount && doc?.account_code" class="col-12">
                         <div class="grid gap-0">
@@ -552,6 +561,9 @@ function onSelectAccountCode(data) {
                 doc.value.target_account_type = d.target_account_type
                 doc.value.target_account_code= d.target_account_code
                 doc.value.target_transaction_type = d.target_document
+                doc.value.required_select_product= d.required_select_product
+            
+               
 
 
                 doc.value.quantity = 1
@@ -599,9 +611,19 @@ function onSelectAccountCode(data) {
         doc.value.folio_number = ''
         doc.value.target_transaction_number = ""
         doc.value.target_transaction_type = ""
+        doc.value.required_select_product= 0
+        doc.value.product=  ""
+
+
     }
 }
+ 
 
+
+function onSelectProduct(data){
+    doc.value.product_description = data.description || ''
+    
+}
 function onSelectTargetTransactionNumber(data){
      
         doc.value.selected_target_transaction_data=data

@@ -112,7 +112,6 @@ import ComDialogNote from "@/components/form/ComDialogNote.vue";
 
 
 const dialog = useDialog();
-
 const moment = inject("$moment")
 const confirm = useConfirm()
 const toast = useToast();

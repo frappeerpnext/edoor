@@ -202,22 +202,10 @@ function showReservationStayDetail(selected) {
     if (selected.data && selected.data.name) {
         stayName = selected.data.name
     }
-    const dialogRef = dialog.open(ReservationStayDetail, {
-        data: {
-            name: stayName
-        },
-        props: {
-            header: 'Reservation Stay Detail',
-            contentClass: 'ex-pedd',
-            style: {
-                width: '80vw',
-            },
-            maximizable: true,
-            modal: true,
-            closeOnEscape: false,
-            position: "top"
-        },
-    });
+    if  (stayName){
+        window.postMessage("view_reservation_stay_detail|" + stayName,"*")
+    }
+    
 }
 function onAssignRoom(room_name, reservation_stay) {
     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*')

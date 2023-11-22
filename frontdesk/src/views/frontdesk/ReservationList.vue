@@ -125,10 +125,10 @@
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <ComAutoComplete class="col-3" width="100%" optionLabel="business_source_type" optionValue="name"
+                <ComAutoComplete class="col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                     doctype="Business Source Type" />
-                <ComAutoComplete class="col-3" width="100%" optionLabel="business_source" optionValue="name"
+                <ComAutoComplete class="col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
                     v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source "
                     doctype="Business Source" />
                 <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"

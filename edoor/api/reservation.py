@@ -1976,7 +1976,7 @@ def get_folio_transaction_summary( transaction_type,transaction_number,sort_by_f
     return summary_data
 
 @frappe.whitelist()
-def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
+def get_folio_transaction_summary( transaction_type="Reservation Folio",transaction_number='', reservation="", reservation_stay='',sort_by_field='account_category_sort_order',show_room_number = 1,show_account_code=None):
     
     if show_account_code == None:
         show_account_code =str(frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction"))
@@ -1994,7 +1994,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                     where 
                         transaction_number =if('{transaction_number}'='',transaction_number,'{transaction_number}')   and 
                         transaction_type = '{transaction_type}' and 
-                        reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') 
+                        reservation_stay = if('{reservation_stay}'='',reservation_stay,'{reservation_stay}') and 
+                        reservation = if('{reservation}'='',reservation,'{reservation}') 
                     group by 
                         account_code,
                         ifnull(report_description,account_name),
@@ -2002,7 +2003,8 @@ def get_folio_transaction_summary( transaction_type="Reservation Folio",transact
                         type
                     order by 
                         {'room_number,' if show_room_number =='1' else '' }
-                        {sort_by_field}
+                        {sort_by_field},
+                        account_code_sort_order
                 """,as_dict=1)
     summary_data = []
     balance = 0

@@ -1,5 +1,6 @@
 <template>
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
+        {{ rs.attacheds }}
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
                 <div class="flex mb-3 justify-between">
@@ -407,14 +408,19 @@ const onCheckOut = () => {
     });
 }
 const OnViewReservation = () => {
+
     if (window.has_reservation_detail_opened == true) {
+       
         if (window.reservation = rs.reservationStay.reservation) {
             dialogRef.value.close();
         } else {
             window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
         }
     } else {
-        dialogRef.value.close();
+        if (dialogRef?.value){
+            dialogRef.value.close();
+        }
+        
         window.postMessage('view_reservation_detail|' + rs.reservationStay.reservation, '*')
     }
 }
