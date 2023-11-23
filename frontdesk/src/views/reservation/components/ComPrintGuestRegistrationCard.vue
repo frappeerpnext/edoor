@@ -1,33 +1,26 @@
 
-
 <template>
-
- 
-
-<div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
-        <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid mb-3">
+    <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
+        <div class="p-3 pt-2 view-table-iframe-dialog" style="height: 85vh;">
+            <div class="grid">
                 <div class="col flex align-items-center gap-2">
                     <div class="col">
-                        <label>Select Guest</label>
                         <Dropdown v-model="selected_guest" :options="guests" optionLabel="guest_name" optionValue="name"
                 placeholder="Select Guest" class="w-full " @change="refreshReport" />
                     </div>
-                    <div class="col">
-                        <label>Letter Head</label>
-                        
+                    <div class="col">                      
                         <ComLetterHead v-model="letter_head" class="w-full"  @onSelect="onSelectLetterHead"/>
                         <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
                     </div>
                 </div>
-                <div class="col flex justify-content-end align-items-center gap-2 pt-4">
+                <div class="col flex justify-content-end align-items-center gap-2">
                     <div v-if="(view||'')!='ui'">
                         
                         <ComPrintButton :url="url"  @click="onPrint"/>
                         
                     </div>
                     <div>
-                        <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b btn-size2"></Button>
+                        <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
             </div> 
@@ -40,12 +33,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from "@/plugin"
+import { ref, onMounted, inject,getApi } from "@/plugin"
 import { callWithAsyncErrorHandling } from "vue";
 
 const dialogRef = inject("dialogRef");
-const frappe = inject("$frappe")
-const call = frappe.call()
+
 const gv = inject("$gv")
 
 
@@ -87,13 +79,11 @@ function onPrint(){
 }
 
 onMounted(() => {
-    if (!dialogRef) {
-        alert("no dialog")
-    } else {
+    if (dialogRef) {
         const params = dialogRef.value.data
         reservationStay.value = params.reservation_stay
 
-        call.get('edoor.api.reservation.get_reservation_guest', {
+    getApi('reservation.get_reservation_guest', {
             reservation: params.reservation,
             reservation_stay: params.reservation_stay
         })

@@ -15,9 +15,6 @@
 import { ref, getApi, watch, inject, onMounted, onUnmounted } from "@/plugin"
 import ComHousekeepingStatus from '@/views/dashboard/components/ComHousekeepingStatus.vue';
 import ComHousekeepingTodaySummary from './ComHousekeepingTodaySummary.vue';
-
-
-
 const data = ref({})
 const chartData = ref([])
 const props = defineProps({ date: "", offSocket: true })

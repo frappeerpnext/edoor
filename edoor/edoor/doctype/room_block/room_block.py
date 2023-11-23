@@ -10,15 +10,15 @@ from edoor.api.frontdesk import get_working_day
 
 class RoomBlock(Document):
 	def validate(self):
-		
+		working_day = get_working_day(self.property)
 
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
 		
-		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() < datetime.now().date():
+		if getdate(self.end_date) < getdate(working_day["date_working_day"]):
 			frappe.throw("End date cannot be less than current date")
 		
-		if datetime.strptime(str(self.end_date), "%Y-%m-%d").date() <= datetime.strptime(str(self.start_date), "%Y-%m-%d").date():
+		if getdate(self.end_date)<= getdate(self.start_date):
 			self.end_date = add_to_date(getdate(self.start_date),days=1)
 		self.total_night_count = date_diff(self.end_date,self.start_date)
 		

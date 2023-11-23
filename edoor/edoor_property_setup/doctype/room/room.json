@@ -214,7 +214,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-22 09:09:57.512162",
+ "modified": "2023-11-23 20:48:10.257704",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",
@@ -264,7 +264,7 @@
    "share": 1
   }
  ],
- "search_fields": "room_number,property,room_type,housekeeping_status,guest_name,reservation_stay",
+ "search_fields": "room_number,property,room_type,housekeeping_status",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

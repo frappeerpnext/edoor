@@ -30,7 +30,7 @@
                         <div class="px-2 flex items-center">
                             <div>
                                 <Button icon="pi pi-search btn-search-top" text rounded severity="secondary"
-                                    aria-label="Search" class="p-link text-white" @click="onSearch" />
+                                v-shortkey="['ctrl', 'k']" @shortkey="onSearch()"   aria-label="Search" class="p-link text-white" @click="onSearch" />
                             </div>
                             <div>
                                 <Button icon="pi pi-cog btn-setting-top" text rounded severity="secondary"
@@ -97,7 +97,7 @@
         </div>
 
     </div>
-   
+
 </template>
 
 <script setup>
@@ -147,6 +147,7 @@ const eDoorMenu = computed(()=>{
     }
 })
 
+ 
 function hasChildren(name){
     
     return eDoorMenu.value.filter(r=>r.parent_edoor_menu==name).length>0
@@ -213,9 +214,6 @@ function onRunNightAudit() {
 function onRoute(route) {
     router.push({ name: route })
 }
-
-
-
 
 function onBlankGuestRegistration() {
     const dialogRef = dialog.open(ComIFrameModal, {

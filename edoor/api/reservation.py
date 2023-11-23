@@ -1808,16 +1808,25 @@ def get_audit_trail(doctype, docname,is_last_modified=False):
 
 
 @frappe.whitelist()
-def get_folio_transaction(transaction_type, transaction_number,show_account_code="-1"):
+def get_folio_transaction(transaction_type="", transaction_number="",reservation="",reservation_stay="",show_account_code="-1"):
     if show_account_code =="-1":
         show_account_code = frappe.db.get_single_value("eDoor Setting","show_account_code_in_folio_transaction")==1
     else:
         show_account_code = int(show_account_code)
 
-    sql = "select * from `tabFolio Transaction` where ifnull(parent_reference,'') = '' and  transaction_type='{}' and transaction_number='{}'"
-    sql = sql.format(transaction_type, transaction_number)
+    sql = """select * 
+            from `tabFolio Transaction` 
+            where 
+                ifnull(parent_reference,'') = '' and  
+                transaction_type=if('{0}'='',transaction_type,'{0}') and 
+                transaction_number=if('{1}'='',transaction_number,'{1}') and 
+                reservation=if('{2}'='',reservation,'{2}') and 
+                reservation_stay=if('{3}'='',reservation_stay,'{3}') 
+            """
     
-       
+    sql = sql.format(transaction_type, transaction_number,reservation,reservation_stay)
+    
+
   
     data = frappe.db.sql(sql,as_dict=1)
 

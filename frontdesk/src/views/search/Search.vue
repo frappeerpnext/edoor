@@ -163,10 +163,13 @@ function renderTemplate(templateText, data) {
 }
 
 function getTemplate(d) {
+    if(d){
+        let table = window.setting.search_table.find(r => r.doctype == d.doctype)
 
-    let table = window.setting.search_table.find(r => r.doctype == d.doctype)
-
-    return renderTemplate(table.template, d);
+        return renderTemplate(table.template, d);
+    }
+    return ""
+    
 }
 const scrollToTop = () => {
     const contentContainer = document.querySelector('.search_style_section');

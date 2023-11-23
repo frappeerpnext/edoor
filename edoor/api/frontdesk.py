@@ -86,7 +86,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
 
     sql = """
         SELECT 
-            sum(if(reservation_status='No Show',0,1)) AS `total_room_occupy`, 
+            count(name) AS `total_room_occupy`, 
             SUM(if(ifnull(room_id,'')='' and reservation_status in('Reserved', 'Confirmed'), 1, 0)) AS `unassign_room` 
         FROM `tabRoom Occupy` 
         WHERE 
@@ -247,6 +247,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         vacant_room = 0
 
     occupancy = 0
+ 
     if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
         occupancy = round( (total_room_occupy or 0)  / (total_room or 1) * 100,2)
     else:

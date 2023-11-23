@@ -1,24 +1,25 @@
 <template>
+    
     <div class="wrap-dialog iframe-modal" :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 view-table-iframe-dialog" >
             <div class="grid mb-3 ">
-                <div class="col flex gap-2 ">
+                <div class="col flex gap-2">
                  
                     <div v-if="show_letter_head">
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
-                    <div>
-                        <InputText v-if="hasFilter('keyword')" type="text" class="p-inputtext-sm w-full w-12rem"
+                    <div v-if="hasFilter('keyword')">
+                        <InputText type="text" class="p-inputtext-sm w-full w-12rem"
                             @input="reloadIframe" placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
                     </div>
-                    <div>
-                        <Calendar v-if="hasFilter('start_date')" :selectOtherMonths="true"
+                    <div v-if="hasFilter('start_date')">
+                        <Calendar :selectOtherMonths="true"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
                             @date-select="reloadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon
                             @clear-click="reloadIframe" />
                     </div>
-                    <div>
-                        <Calendar v-if="hasFilter('end_date')" :selectOtherMonths="true"
+                    <div v-if="hasFilter('end_date')">
+                        <Calendar :selectOtherMonths="true"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.end_date" placeholder="End Date"
                             @date-select="reloadIframe" showButtonBar @clear-click="reloadIframe" dateFormat="dd-mm-yy"
                             showIcon />
@@ -67,26 +68,36 @@
                         <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
                             @onSelected="reloadIframe" doctype="Transportation Company" />
                     </div>
-                    <div v-if="hasFilter('show_room_number')">
-                        <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_room_number" />
-                        <label for="show_room_number" >Show/Hide Room Number</label>
+                    <div v-if="hasFilter('show_room_number')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_room_number" />
+                        </div>
+                        <div>
+                            <label for="show_room_number" >Show/Hide Room Number</label>
+                        </div>
                     </div>
                     
-                    <div v-if="hasFilter('show_account_code')">
+                    <div v-if="hasFilter('show_account_code')" class="flex ml-2">
                         <div>
                         <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_account_code" />
+                        </div>
+                        <div>
                         <label for="show_account_code" >Show/Hide Account Code</label>
-                    </div>
+                        </div>
                     </div>
 
-                    <div v-if="hasFilter('show_summary')">
-                        <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
-                        <label for="show_summary" >Show/Hide Summary</label>
+                    <div v-if="hasFilter('show_summary')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        </div>
+                        <div>
+                            <label for="show_summary" >Show/Hide Summary</label>
+                        </div>
                     </div>
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view || '') != 'ui'">
-                        <ComPrintButton :url="url" @click="onPrint" />
+                        <ComPrintButton :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''" :url="url" @click="onPrint" />
                     </div>
                     <div>
                         <Button @click="loadIframe" icon="pi pi-refresh"
@@ -121,6 +132,7 @@ const filter_options = ref([]) // list array string like ["keyword","business_so
 const gv = inject("$gv")
 const property_name = ref(window.property_name)
 const props = defineProps({
+    BtnClassPrinter: String,
     BtnClass: String
 })
 
@@ -216,6 +228,9 @@ onMounted(() => {
   
     show_letter_head.value = dialogRef.value.data.show_letter_head ==undefined?true:dialogRef.value.data.show_letter_head 
     view.value = dialogRef.value.data.view
+    if (dialogRef.value.data.view=="ui"){
+        show_letter_head.value = false
+    }
     extra_params.value = dialogRef.value.data.extra_params 
     filter_options.value = dialogRef.value.data.filter_options
     

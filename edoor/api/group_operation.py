@@ -488,10 +488,35 @@ def group_change_arrival_time(data):
 
 @frappe.whitelist(methods="POST")
 def get_group_tax_rules(stays):
-    sql = "select distinct tax_rule  from `tabReservation Room Rate` where reservation_stay in %(stays)s"
-    tax_rule_names = frappe.db.sql(sql, {"stays":stays}, as_dict = 1)
-    sql="select name, is_rate_include_tax, tax_1_rate, tax_2_rate, tax_3_rate,tax_1_rate as use_tax_1_rate, tax_2_rate as use_tax_2_rate, tax_3_rate as use_tax_3_rate, tax_1_name, tax_2_name, tax_3_name from `tabTax Rule` where name in %(tax_rule_names)s"
-    tax_rules = frappe.db.sql(sql,{"tax_rule_names":[d["tax_rule"] for d in tax_rule_names]}, as_dict=1)
+     
+    sql = """
+        with a as(
+            select distinct rate_type from `tabReservation Room Rate`  where reservation_stay in %(stays)s
+        ),
+        b as (
+            select distinct account_code from `tabRate Type` where name in (select rate_type  from a)
+        ),
+        c as (
+            select tax_rule, allow_user_to_change_tax,rate_include_tax from `tabAccount Code` where name in (select account_code from b) and allow_tax =1
+        )
+        select 
+            t.name, 
+            if(c.rate_include_tax='Yes',1,0) as is_rate_include_tax, 
+            t.tax_1_rate, 
+            t.tax_2_rate, 
+            t.tax_3_rate,
+            t.tax_1_rate as use_tax_1_rate, 
+            t.tax_2_rate as use_tax_2_rate, 
+            t.tax_3_rate as use_tax_3_rate, 
+            t.tax_1_name, 
+            t.tax_2_name, 
+            t.tax_3_name,
+            c.allow_user_to_change_tax
+        from `tabTax Rule` t 
+        inner join c on c.tax_rule = t.name
+    """
+ 
+    tax_rules = frappe.db.sql(sql, {"stays":stays}, as_dict = 1)
     return tax_rules
 
 

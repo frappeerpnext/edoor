@@ -3,7 +3,6 @@
         <div class="ms_message_cs_edoor">
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
-        
             <Button class="border-none ml-auto mr-3" @click="onViewFutureReservation">View Reservation</Button>
         </Message>
         </div>

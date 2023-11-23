@@ -15,6 +15,7 @@
     "@fullcalendar/resource": "^6.1.8",
     "@fullcalendar/resource-timeline": "^5.11.5",
     "@fullcalendar/vue3": "^5.11.5",
+    "@vueuse/core": "^10.6.1",
     "chart.js": "^4.3.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "express": "^4.18.2",
@@ -33,12 +34,14 @@
     "vue": "^3.2.47",
     "vue-color-kit": "^1.0.5",
     "vue-debounce": "^4.0.0",
+    "vue-hotkeys-rt": "^0.2.3",
     "vue-promise-dialogs": "^2.0.0",
     "vue-router": "^4.1.6",
     "vue-screen": "^2.2.0",
     "vue-tippy": "v6",
     "vue-web-cam": "^1.9.0",
     "vue2-timeago": "^3.0.2",
+    "vue3-shortkey": "^4.0.0",
     "vue3-sortablejs": "^1.0.7"
   },
   "devDependencies": {

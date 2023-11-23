@@ -1,6 +1,6 @@
 <template>
  
-    <span>{{ NumberFormat(format, amount) }}</span>
+    <span>{{ NumberFormat(format,   isNaN(amount)?0:amount) }}</span>
 </template>
 <script setup>
 

@@ -4,18 +4,16 @@
 <script setup>
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
-
-import { ref, inject, useDialog, onMounted } from "@/plugin";
+import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
+import { ref, inject, useDialog, onMounted,getDocList } from "@/plugin";
 
 const dialog = useDialog();
 const props = defineProps({
     reservation: String,
 })
 const gv = inject("$gv")
-const frappe = inject("$frappe")
-const db = frappe.db();
 const items = ref([
-{
+    {
         label: "Confirmation Voucher",
         icon: 'pi pi-check-circle',
 
@@ -25,23 +23,127 @@ const items = ref([
                 {
                     "doctype": "Reservation",
                     name: props.reservation ?? "",
-                    report_name: gv.getCustomPrintFormat("eDoor Reservation Confirmation Voucher"),
+                    report_name: ("eDoor Reservation Confirmation Voucher"),
                 }
             )
         },
     },
     {
+    label: "Folio Summary Report",
+    icon: 'pi pi-print',
+    command: () => {
+        getDocList("Reservation Folio", {
+            filters: [["reservation", "=", props.reservation]],
+            limit:100,
+            fields:["name","reservation_stay"]
+        }).then((docs) => {
+
+            if (docs.length == 0) {
+                toast.add({ severity: 'warn', summary: 'Folio Summary Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
+            } else {
+                dialog.open(ComPrintReservationStay, {
+                    data: {
+                        doctype: "Reservation%20Stay",
+                        reservation_stay:docs[0].reservation_stay,
+                        folio: docs[0],
+                        folios: docs,
+                        report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
+                        view: "print"
+                    },
+                    props: {
+                        header: "Folio Summary Report",
+                        style: {
+                            width: '80vw',
+                        },
+                        position:"top",
+                        modal: true,
+                        maximizable: true,
+                        closeOnEscape: false
+                    },
+                });
+            }
+        })
+
+    }
+},
+    {
+    label: "Folio Detail Report",
+    icon: 'pi pi-print',
+    command: () => {
+        getDocList("Reservation Folio", {
+            filters: [["reservation", "=", props.reservation]],
+            limit:100,
+            fields:["name","reservation_stay"]
+        }).then((docs) => {
+
+            if (docs.length == 0) {
+                toast.add({ severity: 'warn', summary: 'Folio Detail Report', detail: 'There is no folio available in this reservation stay', life: 3000 });
+            } else {
+                dialog.open(ComPrintReservationStay, {
+                    data: {
+                        doctype: "Reservation%20Stay",
+                        reservation_stay:docs[0].reservation_stay,
+                        folio: docs[0],
+                        folios: docs,
+                        report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
+                        view: "print"
+                    },
+                    props: {
+                        header: "Folio Detail Report",
+                        style: {
+                            width: '80vw',
+                        },
+                        position:"top",
+                        modal: true,
+                        maximizable: true,
+                        closeOnEscape: false
+                    },
+                });
+            }
+        })
+
+    }
+},
+    {
         label: "Folio Summary by Reservation",
         icon: 'pi pi-print',
         command: () => {
-
             openReport("Folio Summary by Reservation",
                 {
                     doctype: "Reservation",
                     name: props.reservation,
-                    report_name: gv.getCustomPrintFormat("eDoor Folio Transaction Summary by Reservation"),
+                    report_name: ("eDoor Folio Transaction Summary by Reservation"),
                     show_letter_head: true,
                     filter_options: ["invoice_style", "show_room_number", "show_summary", "show_account_code"],
+                })
+        },
+    },
+    {
+        label: "Folio Detail by Reservation",
+        icon: 'pi pi-print',
+        command: () => {
+
+            openReport("Folio Detail by Reservation",
+                {
+                    doctype: "Reservation",
+                    name: props.reservation,
+                    report_name: "eDoor Folio Transaction Detail by Reservation",
+                    show_letter_head: true,
+                    filter_options: ["invoice_style", "show_room_number", "show_summary", "show_account_code"],
+                })
+        },
+    },
+    {
+        label: "Folio List by Reservation",
+        icon: 'pi pi-print',
+        command: () => {
+
+            openReport("Folio List by Reservation",
+                {
+                    doctype: "Reservation",
+                    name: props.reservation,
+                    report_name: "eDoor Folio List by Reservation",
+                    show_letter_head: true
                 })
         },
     },
@@ -54,12 +156,10 @@ const items = ref([
             openReport("Reservation Detail", {
                 "doctype": "Reservation",
                 name: props.reservation ?? "",
-                report_name: gv.getCustomPrintFormat("Reservation Detail"),
+                report_name: ("Reservation Detail"),
             },)
         },
     },
-    
-
 ])
 
 function openReport(title, data) {
@@ -79,7 +179,7 @@ function openReport(title, data) {
 
 
 onMounted(() => {
-    db.getDocList('Custom Print Format', {
+    getDocList('Custom Print Format', {
         fields: [
             'print_format',
             'icon',

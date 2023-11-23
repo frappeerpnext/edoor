@@ -132,6 +132,11 @@ class ReservationStay(Document):
 					"room_type": d.room_type
 				})
 			
+		
+		for d in self.additional_guests:
+			d.reservation = self.reservation
+
+
 		self.rooms_data = json.dumps(rooms_data)
 
 		#update stay summary
@@ -149,7 +154,9 @@ class ReservationStay(Document):
 		self.arrival_date = Enumerable(self.stays).min(lambda x:getdate(x.start_date))
 		self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
 
-		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)  
+		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
+
+
 
 		#update note & housekeeping note
 		if self.is_new():

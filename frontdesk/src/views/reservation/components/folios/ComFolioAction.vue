@@ -1,6 +1,5 @@
 <template>
-    {{ transaction }}
-    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-2">
+    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2">
         <div>
             <template
                 v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
@@ -108,7 +107,7 @@ const props = defineProps({
 // const emit = defineEmits([ "onRefresh"])
 const emit = defineEmits(['onAuditTrail', "onRefresh"])
 const selectedFolio = ref(props.folio)
-const transaction = ref()
+const transaction = ref([])
 
 const dialog = useDialog();
 const confirm = useConfirm();
@@ -560,12 +559,11 @@ onMounted(()=>{
 function getTransaction(){
     gv.loading=true
     getDocList('Folio Transaction', {
-		fields: ["name"],
+		fields: ["name","transaction_number"],
         filters: [
             ["transaction_type", "=", "Reservation Folio"],
-            ["transaction_number", "=", selectedFolio.value.name], 
-        ],
-        limit: 1000
+            ["transaction_number", "=", selectedFolio.value?.name], 
+        ]
 	}).then((r) => {
         gv.loading=false
         transaction.value = r
@@ -574,52 +572,19 @@ function getTransaction(){
         gv.loading=false
     })
 }
-// function onAuditTrail() {
-//     const dialogRef = dialog.open(ComAuditTrail, {
-//         data: {
-//             doctype: 'Reservation Folio',
-//             docname: selectedFolio.value?.name,
-//             referenceTypes: [
-//                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
-//                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
-//             ],
-//             docnames: [selectedFolio.value?.name + transaction.value]
-//         },
-//         props: {
-//             header: 'Audit Trail',
-//             style: {
-//                 width: '75vw',
-//             },
-//             breakpoints: {
-//                 '960px': '100vw',
-//                 '640px': '100vw'
-//             },
-//             modal: true,
-//             maximizable: true,
-//             closeOnEscape: false,
-//             position: "top"
-//         },
-//         onClose: (options) => {
-//             //
-//         }
-//     });
-// }
- 
 function onAuditTrail() {
+    getTransaction()
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
-            doctype: 'Reservation Stay',
-            docname: rs.reservation.name,
-            referenceTypes:[
-                { doctype: 'Reservation', label: 'Reservation' },
-                { doctype: 'Reservation Stay', label: 'Reservation stay' },
-                { doctype: 'Reservation Room Rate', label: 'Room Rate' },
-                { doctype: 'Customer', label: 'Guest' },
+            doctype: 'Reservation Folio',
+            docname: selectedFolio.value?.name,
+            referenceTypes: [
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
-                { doctype: 'Folio Transaction', label: 'Folio Transaction' },  
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: rs.attacheds
+            docnames: [transaction.value]
         },
+        
         props: {
             header: 'Audit Trail',
             style: {
@@ -639,5 +604,7 @@ function onAuditTrail() {
         }
     });
 }
+ 
+
 </script>
  

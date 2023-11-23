@@ -70,14 +70,12 @@ function onRefresh(){
 }
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
-
         getDocList('Reservation Folio', {
             fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype"],
             filters: [['reservation_stay', '=', rs.reservationStay.name]],
             limit: 1000
         })
             .then((doc) => {
-               
                 rs.folios = doc
                 setSelectedFolio(selected_name)
                 loading.value = false

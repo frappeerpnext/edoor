@@ -427,6 +427,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+ 
     doc.save()
     if run_commit:
         frappe.db.commit()
@@ -802,10 +803,13 @@ def get_rate_type_info(name):
     if account_doc.tax_rule:
         tax_rule = frappe.get_doc("Tax Rule",account_doc.tax_rule)
     
+
+
     return {
         "name": name,
         "tax_rule":tax_rule,
-        "allow_discount": account_doc.allow_discount
+        "allow_discount": account_doc.allow_discount,
+        "allow_user_to_change_tax": account_doc.allow_user_to_change_tax
     }
 
 @frappe.whitelist("POST")

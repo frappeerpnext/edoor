@@ -1,12 +1,12 @@
 <template>
-    <SplitButton :class="BtnClass ? BtnClass : 'spl__btn_cs sp'" @click="onPrint" id="btnprint" label="Print" icon="pi pi-print" :model="items" />
+    <SplitButton :class="BtnClassPrinter ? BtnClassPrinter : 'spl__btn_cs_b sp_b'" @click="onPrint" id="btnprint" label="Print" icon="pi pi-print" :model="items" />
  
 </template>
 <script setup>
 const emit = defineEmits(["click"])
 const props = defineProps({
     url:String,
-    BtnClass:String
+    BtnClassPrinter:String
 })
 
 const items = [

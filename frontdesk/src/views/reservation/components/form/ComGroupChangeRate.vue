@@ -54,7 +54,7 @@
                     <div class="col-12">
                         <div class="py-2 gap-2 flex items-center w-3 p-dropdown-label  ms-2">
                             
-                            <Checkbox inputId="rate_include_tax" v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
+                            <Checkbox :disabled="!rate_type_data.allow_user_to_change_tax" inputId="rate_include_tax" v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
                             :falseValue="0" />
                         <label class="cursor-pointer" for="rate_include_tax" >include Rate Tax</label>
                         </div>
@@ -63,21 +63,21 @@
                     
                     <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_1_rate">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                        <Checkbox inputId="rate_rule_1" v-model="rate_type_data.tax_1_rate" :binary="true"
+                        <Checkbox :disabled="!rate_type_data.allow_user_to_change_tax" inputId="rate_rule_1" v-model="rate_type_data.tax_1_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_1_rate" :falseValue="0" />
                         <label class="cursor-pointer" for="rate_rule_1"> {{ rate_type_data.tax_rule.tax_1_name }} {{ rate_type_data.tax_rule.tax_1_rate }}%</label>
 </div>
                     </div>
                     <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_2_rate">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                        <Checkbox inputId="rate_role_2" v-model="rate_type_data.tax_2_rate" :binary="true"
+                        <Checkbox :disabled="!rate_type_data.allow_user_to_change_tax" inputId="rate_role_2" v-model="rate_type_data.tax_2_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_2_rate" :falseValue="0" />
                         <label class="cursor-pointer" for="rate_role_2" > {{ rate_type_data.tax_rule.tax_2_name }} {{ rate_type_data.tax_rule.tax_2_rate }}%</label>
 </div>
                     </div>
                     <div class="col-4 pt-0" v-if="rate_type_data.tax_rule.tax_3_rate">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                        <Checkbox inputId="rate_role_3" v-model="rate_type_data.tax_3_rate" :binary="true"
+                        <Checkbox :disabled="!rate_type_data.allow_user_to_change_tax" inputId="rate_role_3" v-model="rate_type_data.tax_3_rate" :binary="true"
                             :trueValue="rate_type_data.tax_rule.tax_3_rate" :falseValue="0" />
                         <label class="cursor-pointer" for="rate_role_3" > {{ rate_type_data.tax_rule.tax_3_name }} {{ rate_type_data.tax_rule.tax_3_rate }}%</label>
 </div>
@@ -161,6 +161,7 @@
         </ComReservationStayPanel>
         <ComReservationStayPanel title="Group Change Tax" class="mt-3" v-if="tax_rules.length>0">
             <template #content>
+ 
                 <div class="grid items-center justify-content-between">
                     <div class="grid w-full" v-for="(t, index) in tax_rules" :key="index">
                         <div class="col-12 -mb-2 ms-2">
@@ -168,26 +169,26 @@
                         </div>
                         <div class="col-3">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                            <Checkbox inputId="rateIncludeTax_change_tax" v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
+                            <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax" v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax" >Rate Include Tax</label>
                             </div>
                         </div>
                         
                         <div class="col-3" v-if="t.tax_1_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                            <Checkbox inputId="rateIncludeTax_change_tax1" v-model="t.use_tax_1_rate" :binary="true" :trueValue="t.tax_1_rate" :falseValue = "0"  />
+                            <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax1" v-model="t.use_tax_1_rate" :binary="true" :trueValue="t.tax_1_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax1" >{{ t.tax_1_name }} ({{ t.tax_1_rate }}%)</label>
                         </div>
                     </div>
                         
                         <div class="col-3" v-if="t.tax_2_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                            <Checkbox inputId="rateIncludeTax_change_tax2" v-model="t.use_tax_2_rate" :binary="true" :trueValue="t.tax_2_rate" :falseValue = "0"  />
+                            <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax2" v-model="t.use_tax_2_rate" :binary="true" :trueValue="t.tax_2_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax2" >{{ t.tax_2_name }} ({{ t.tax_2_rate }}%)</label></div>
                         </div>
                         <div class="col-3" v-if="t.tax_3_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-                            <Checkbox inputId="rateIncludeTax_change_tax3" v-model="t.use_tax_3_rate" :binary="true" :trueValue="t.tax_3_rate" :falseValue = "0"  />
+                            <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax3" v-model="t.use_tax_3_rate" :binary="true" :trueValue="t.tax_3_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax3" >{{ t.tax_3_name }} ({{ t.tax_3_rate }}%)</label></div>
                         </div>
                     </div>
@@ -224,6 +225,7 @@ const stays = ref([])
 const reservation = ref()
 const confirm = useConfirm();
 const tax_rules = ref([])
+ 
 
 const onRateTypeChange = (rate_type) => {
     if (rate_type) {
@@ -236,6 +238,8 @@ const onRateTypeChange = (rate_type) => {
                     rate_type_data.value.tax_1_rate = result.message.tax_rule.tax_1_rate
                     rate_type_data.value.tax_2_rate = result.message.tax_rule.tax_2_rate
                     rate_type_data.value.tax_3_rate = result.message.tax_rule.tax_3_rate
+                    rate_type_data.value.allow_user_to_change_tax = result.message.allow_user_to_change_tax
+
                 } else {
                     clearRateTypeTax()
                 }

@@ -138,7 +138,7 @@
                 </div>
                 
                 <div class="col-6">
-                    <Checkbox inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true"/>
+                    <Checkbox inputId="filter_date" @change="onFilterDate" v-model="filter.filter_date" :binary="true"/>
                     <lable class="ml-1" for="filter_date">Filter Date</lable>
                 </div>
                 <div class="col-6">
@@ -269,10 +269,7 @@ function loadData(show_loading = true) {
             }else {
                 return
             }
-        }else {
-            return
         }
-
     }
     if (filter.value?.keyword) {
         filters.push(["name", 'like', '%' + filter.value.keyword + '%'])
@@ -340,6 +337,12 @@ function onSelectFilterDate(event) {
 const onSearch = debouncer(() => {
     loadData();
 }, 500);
+
+function onFilterDate(){
+    if (!filter.value.filter_date){
+        onSearch()
+    }
+}
 
 function debouncer(fn, delay) {
     var timeoutID = null;

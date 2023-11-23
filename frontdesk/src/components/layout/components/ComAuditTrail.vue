@@ -306,8 +306,6 @@ const onCloseAdvanceSearch = () => {
 }
 
 function onPrint() {
-	 
-
 	dialog.open(ComIFrameModal, {
 		data: {
 			doctype: "Business Branch",

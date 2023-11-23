@@ -8,7 +8,7 @@
     <template #content>
         <BlockUI class="w-full" :blocked="loading">
    <div v-if="data.length>0"  v-sortable> 
-    <div  :data-name="a.name"  v-for="(a, index) in data" :key="index" class=" flex align-items-center w-full border-1 border-dark border-700 py-2 px-3 bg-gray-100 mt-2 border-round-lg cursor-move">
+    <div  :data-name="a.name"  v-for="(a, index) in data" :key="index" class="account_category flex align-items-center w-full border-1 border-dark border-700 py-2 px-3 bg-gray-100 mt-2 border-round-lg cursor-move">
         <span class="flex"> <i class="pi pi-arrows-alt me-3"></i> </span>
         <span class="flex align-items-center">{{ a.name }} </span>
         

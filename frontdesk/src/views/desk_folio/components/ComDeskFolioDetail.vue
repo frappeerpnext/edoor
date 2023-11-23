@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent :hideButtonOK="true" @onClose="onClose" :hideIcon="false" :loading="loading">
-        {{ doc?.name }}
         <TabView>
             <TabPanel header="Deposit Ledger Information">
                 <div v-if="doc" class="mt-2">

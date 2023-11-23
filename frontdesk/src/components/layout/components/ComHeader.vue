@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center justify-content-between py-3">
+    <div :class="wrClass ? wrClass : 'py-3'" class="flex items-center justify-content-between">
         <div >
             <slot name="start"></slot>
         </div>
@@ -19,7 +19,8 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    fillClass: String
+    fillClass: String,
+    wrClass: String
 })
 const emit = defineEmits(['onRefresh'])
 function onRefresh(){

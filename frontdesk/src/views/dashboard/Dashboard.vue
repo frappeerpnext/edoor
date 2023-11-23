@@ -19,6 +19,7 @@
             <div class="flex gap-2 justify-content-end">
                 <NewFITReservationButton />
                 <NewGITReservationButton />
+ 
             </div>
         </template>
     </ComHeader>
@@ -194,7 +195,7 @@ import OccupancyChart from './components/OccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
-
+ 
  
 const toast = useToast();
 const moment = inject("$moment")

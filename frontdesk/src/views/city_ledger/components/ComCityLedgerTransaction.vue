@@ -322,6 +322,7 @@ function AddTransaction(account_code) {
                 property: property.name,
                 account_group: account_code.name
             },
+            balance:cityLedgerAmountSummary.value?.balance || 0,
             account_code_filter:{
                 is_city_ledger_account:1
             }

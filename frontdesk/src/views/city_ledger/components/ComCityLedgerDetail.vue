@@ -94,7 +94,14 @@
             <TabPanel header="City Ledger Transaction">
                 <ComCityLedgerTransaction v-if="data" :name="data?.name" />
             </TabPanel>
-            <TabPanel header="Document">
+            <TabPanel>
+                <template #header>
+                            <span class="me-2">Document</span>
+                            <ComDocumentBadge doctype="City Ledger"
+                                :doctypes="['City Ledger']" :docname="data?.name"
+                                :attacheds="[data?.name]" v-if="data?.name" />
+                        </template>
+               
                 <div>
 
                     <ComDocument v-if="data?.name" doctype="City Ledger" :doctypes="['City Ledger']" :docname="data?.name"

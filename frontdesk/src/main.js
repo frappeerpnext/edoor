@@ -16,7 +16,7 @@ import { createApp, reactive } from "vue";
 import App from "./App.vue";
 
 import Error from "./components/Error.vue";
-
+ 
 
 
 import Auth from "./utils/auth";
@@ -29,10 +29,11 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import NumberFormat from 'number-format.js'
 import { vue3Debounce } from 'vue-debounce'
-
+import shortkey from 'vue3-shortkey'
 import {getRoutes} from './router';
  
 const app = createApp(App);
+
 
 
 const auth = reactive(new Auth());
@@ -138,6 +139,7 @@ import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
 
+
 // use components //
 app.component('Button', Button);
 app.component('Menu', Menu);
@@ -217,6 +219,7 @@ app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
+// app.component('Hotkeys', Hotkeys )
 
 // Plugins
 app.use(frappe)
@@ -237,8 +240,8 @@ app.use(DialogService);
 // app.use(resourceManager);
 app.use(ConfirmationService);
 app.use(VueSortable);
-
-
+app.use(shortkey)
+ 
 
 app.use(
 	VueTippy,

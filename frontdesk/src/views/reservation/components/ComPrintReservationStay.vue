@@ -5,8 +5,8 @@
             <div class="grid mb-3 ">
                 <div class="col flex gap-2">
                     <div>
-                        <Dropdown v-model="filters.selected_folio" :options="folios" optionLabel="folio" optionValue="name"
-                placeholder="Select Folio" class="w-full md:w-14rem" @change="refreshReport" />
+                        <Dropdown v-model="filters.selected_folio"  :options="dialogRef.data.folios" optionLabel="name" 
+                placeholder="Select Folio" class="w-full md:w-14rem" @change="onSelectFolio" />
                     </div>
                     <div>
                         
@@ -40,7 +40,7 @@
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view||'')!='ui'">
-                        <ComPrintButton BtnClass="spl__btn_cs_b sp_b" :url="url"  @click="onPrint"/>
+                        <ComPrintButton :url="url"  @click="onPrint"/>
                     </div>
                     <div >
                         <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
@@ -62,20 +62,21 @@ const dialogRef = inject("dialogRef");
 
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const url = ref("")
-const folios = ref([]);
+ 
 
 const reservation_stay = ref("")
 const report_name = ref("")
 
 const filters = ref({
-    selected_folio:"all",
     invoice_style:window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
     letterHead:window.setting.property.default_letter_head ,
     show_account_code:window.setting.show_account_code_in_folio_transaction,
     show_room_number:1
 })
 
- 
+function onSelectFolio(f){
+    refreshReport()
+}
 
 function onSelectLetterHead(l){
     filters.value.letterHead = l
@@ -83,15 +84,18 @@ function onSelectLetterHead(l){
 
 }
 const refreshReport = () => {
-    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + reservation_stay.value + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + filters.value.letterHead + "&show_toolbar=0&show_room_number=" + filters.value.show_room_number + "&show_account_code=" + filters.value.show_account_code
+    if(filters.value.selected_folio){
+
+    
+    url.value = serverUrl + "/printview?doctype=Reservation Stay&name=" + filters.value.selected_folio.reservation_stay + "&format=" + report_name.value + "&&settings=%7B%7D&_lang=en&letterhead=" + filters.value.letterHead + "&show_toolbar=0&show_room_number=" + filters.value.show_room_number + "&show_account_code=" + filters.value.show_account_code
     url.value = url.value + "&invoice_style=" + filters.value.invoice_style
     url.value = url.value + "&show_summary=" + filters.value.show_summary || 0
     if (filters.value.selected_folio) {
-        url.value = url.value + "&folio=" + filters.value.selected_folio
+        url.value = url.value + "&folio=" + filters.value.selected_folio.name
     }
 
     document.getElementById("report-view").contentWindow.location.replace(url.value)
-
+    }
 }
 function onIframeLoaded() {
     const iframe = document.getElementById("report-view");
@@ -113,22 +117,12 @@ onMounted(() => {
         reservation_stay.value = params.reservation_stay
         report_name.value = params.report_name
 
-        getApi('reservation.get_reservation_folio', {
-            reservation: params.reservation,
-            reservation_stay: params.reservation_stay
-        })
-            .then((result) => {
-                folios.value = result.message
-                if (!params.folio_number) {
-
-                    filters.value.selected_folio= folios.value[0].name
-                } else {
-
-                    filters.value.selected_folio= params.folio_number
-
-                }
-                refreshReport()
-            })
+        if (!params.folio) {
+            filters.value.selected_folio= params.folios[0]
+        } else {
+            filters.value.selected_folio= params.folio
+        }
+        refreshReport()
 
     }
 

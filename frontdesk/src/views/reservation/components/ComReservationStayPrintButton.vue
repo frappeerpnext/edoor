@@ -28,7 +28,6 @@ items.value.push({
             data: {
                 reservation: props.reservation ?? "",
                 reservation_stay: props.reservation_stay ?? "",
-               
             },
             props: {
                 header: "Guest Registration Card",
@@ -42,6 +41,7 @@ items.value.push({
         });
     }
 })
+
 
 //Confirmattion Voucher
 items.value.push({
@@ -72,7 +72,9 @@ items.value.push({
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
-            filters: [["reservation_stay", "=", props.reservation_stay]]
+            filters: [["reservation_stay", "=", props.reservation_stay]],
+            limit:100,
+            fields:["name","reservation_stay"]
         }).then((docs) => {
 
             if (docs.length == 0) {
@@ -81,9 +83,9 @@ items.value.push({
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        reservation_stay: props.reservation_stay,
-                        folio_number:props.folio_number,
-                 
+                        reservation_stay:docs[0].reservation_stay,
+                        folio: docs[0],
+                        folios: docs,
                          report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
 
                         view: "print"
@@ -110,7 +112,9 @@ items.value.push({
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
-            filters: [ ["reservation_stay", "=", props.reservation_stay]]
+            filters: [ ["reservation_stay", "=", props.reservation_stay]],
+            limit:100,
+            fields:["name","reservation_stay"]
         }).then((docs) => {
 
             if (docs.length == 0) {
@@ -119,8 +123,9 @@ items.value.push({
                 dialog.open(ComPrintReservationStay, {
                     data: {
                         doctype: "Reservation%20Stay",
-                        reservation_stay: props.reservation_stay,
-                        folio_number:props.folio_number,
+                        reservation_stay:docs[0].reservation_stay,
+                        folio: docs[0],
+                        folios: docs,
                         report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"), //"eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
                     
                         view: "print"
@@ -143,7 +148,7 @@ items.value.push({
 })
 
 
-//Folio transaction summary by reservation
+//Folio transaction summary by reservation stay
 items.value.push({
     label: "Folio Summary by Reservation Stay",
     icon: 'pi pi-print',
@@ -153,7 +158,7 @@ items.value.push({
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
                 report_name:  "eDoor Folio Transaction Summary by Reservation Stay",
-                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"]
+                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
             },
             props: {
                 header: "Folio Summary by Reservation Stay",
@@ -168,6 +173,59 @@ items.value.push({
     }
 })
 
+//Folio transaction Detaiil by reservation Stay
+items.value.push({
+    label: "Folio Detail by Reservation Stay",
+    icon: 'pi pi-print',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation Stay",
+                name: props.reservation_stay,
+                report_name:  "eDoor Folio Transaction Detail by Reservation Stay",
+                filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
+            },
+            props: {
+                header: "Folio Detail by Reservation Stay",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
+
+
+//Folio List by reservation stay
+
+items.value.push({
+    label: "Folio List by Reservation Stay",
+    icon: 'pi pi-print',
+    command: () => {
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Reservation Stay",
+                name: props.reservation_stay,
+                report_name:  "eDoor Folio List by Reservation Stay",
+            },
+            props: {
+                header: "Folio List by Reservation Stay",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
+    }
+})
+
+
+
 //reservation stay detail
 items.value.push({
     label: "Reservation Stay Detail",
@@ -181,7 +239,6 @@ items.value.push({
             data: {
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
-                // report_name:  "eDoor%20Reservation%20Stay%20Confirmation%20Voucher",
                 report_name:  gv.getCustomPrintFormat("Reservation Stay Detail"),
             },
             props: {
