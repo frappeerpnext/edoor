@@ -1,4 +1,5 @@
 <template lang="">
+    {{status}}
     <ComReservationStayPanel title="Reservation Room List">
         <template #content>
             <ComPlaceholder :isNotEmpty="true">
@@ -163,12 +164,12 @@ const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation
 status.value.push(
     {
         "reservation_status": "Pickup",
-        "name": "require_pickup",
+        "name": "Pickup",
         "sort_order": 0
     },
     {
         "reservation_status": "Drop Off",
-        "name": "require_drop_off",
+        "name": "Drop Off",
         "sort_order": 0,
     }
     

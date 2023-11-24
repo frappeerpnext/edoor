@@ -98,14 +98,12 @@
    "label": "Housekeeping Status"
   },
   {
-   "default": "Occupy Cleaned",
    "fieldname": "housekeeping_status_after_check_in",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Check In",
    "options": "Housekeeping Status"
   },
   {
-   "default": "Occupy Dirty",
    "fieldname": "housekeeping_status_after_run_night_audit",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Run Night Audit",
@@ -139,7 +137,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "Vacant Clean",
    "fieldname": "housekeeping_status_after_undo_check_in",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check In",
@@ -168,14 +165,12 @@
    "fieldtype": "Section Break"
   },
   {
-   "default": "Vacant Dirty",
    "fieldname": "housekeeping_status_after_cancel_room_block",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Cancel Room Block",
    "options": "Housekeeping Status"
   },
   {
-   "default": "Vacant Dirty",
    "fieldname": "housekeeping_status_after_check_out",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Check Out",
@@ -186,7 +181,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "Occupy Dirty",
    "fieldname": "housekeeping_status_after_undo_check_out",
    "fieldtype": "Link",
    "label": "Housekeeping Status after Undo Check Out",
@@ -223,7 +217,6 @@
    "options": "Report"
   },
   {
-   "default": "Vacant Dirty",
    "fieldname": "hk_status_rb_release_after_audit",
    "fieldtype": "Link",
    "label": "Housekeeping Status of Release Room Block After Run Night Audit",
@@ -367,7 +360,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-21 14:15:16.355239",
+ "modified": "2023-11-24 15:27:14.330120",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",
