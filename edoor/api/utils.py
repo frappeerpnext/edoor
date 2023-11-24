@@ -6,8 +6,6 @@ from dateutil.rrule import rrule, MONTHLY
 from py_linq import Enumerable
 from frappe import local
 from frappe.utils.data import getdate
-import matplotlib.pyplot as plt
-from PIL import Image
 from frappe import _
 import calendar
 import urllib.parse

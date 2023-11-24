@@ -16,25 +16,24 @@
 					</Button>
 				</div>
 			</div>
-			<ComAutoComplete
-      inputId="reference_documnent_autocomplete"
-      v-model="referenceDocument"
-      placeholder="Reference Document"
-      :doctype="'DocType'"
-      :filters="{'name':['in',['Reservation','Reservation Stay','Folio Transaction','Customer','Room Block','Business Source','City Ledger Account','Room']]}"
-      @onSelected="onSearch"
-    />
+			<ComAutoComplete inputId="reference_documnent_autocomplete" v-model="referenceDocument"
+				placeholder="Reference Document" :doctype="'DocType'"
+				:filters="{ 'name': ['in', ['Reservation', 'Reservation Stay', 'Folio Transaction', 'Customer', 'Room Block', 'Business Source', 'City Ledger Account', 'Room']] }"
+				@onSelected="onSearch" />
 			<ComPlaceholder text="No Data" :loading="loading" :is-not-empty="notes.length > 0">
-				<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
+				<div v-for="i in notes" :key="index"
+					class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 					<div class="flex justify-between items-center " style="min-height: 26px;">
 						<div class="line-height-2 mt-2">
 							<div class="font-medium">
-								<div class="text-overflow-ellipsis white-space-nowrap overflow-hidden" v-if="i.reference_doctype">
+								<div class="text-overflow-ellipsis white-space-nowrap overflow-hidden"
+									v-if="i.reference_doctype">
 									<span class="text-lg">
 										{{ i.reference_doctype }}
 									</span>
 									-
-									<div @click="onViewDetail(i)" class="text-lg inline link_line_action  border-none p-0 w-auto">
+									<div @click="onViewDetail(i)"
+										class="text-lg inline link_line_action  border-none p-0 w-auto">
 										{{ i.reference_name }}
 									</div>
 								</div>
@@ -55,9 +54,10 @@
 							<span class="btn-in-note">
 								<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData" />
 							</span>
-							<Button :class="i.custom_is_pin ? '' : 'hidden'" class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text
-								rounded @click="onPin(i)">
-								<ComIcon v-tippy="'Unpin Note'" v-if="i.custom_is_pin" icon="pushPined" style="height:20px;"></ComIcon>
+							<Button :class="i.custom_is_pin ? '' : 'hidden'"
+								class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
+								<ComIcon v-tippy="'Unpin Note'" v-if="i.custom_is_pin" icon="pushPined"
+									style="height:20px;"></ComIcon>
 								<ComIcon v-tippy="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
 							</Button>
 						</div>
@@ -174,7 +174,7 @@ function onLoadData() {
 		filters.push(["custom_keyword", "like", '%' + keyword.value + '%'])
 	}
 	if (referenceDocument?.value) {
-		filters.push(["reference_name", "like", '%' + referenceDocument.value + '%']);
+		filters.push(["reference_doctype", "like", '%' + referenceDocument.value + '%']);
 	}
 
 	db.getDocList('Comment', {
