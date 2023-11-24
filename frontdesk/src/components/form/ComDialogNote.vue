@@ -85,7 +85,13 @@ function onLoadSocket(){
     window.socket.emit("Dashboard", window.property_name)
     window.socket.emit("ReservationList", { property:window.property_name})
     window.socket.emit("ReservationStayList", { property:window.property_name})
-    window.socket.emit("Frontdesk", window.property_name)
+
+    if (!dialogRef.value.data.disable_reload_frontdesk){
+        window.socket.emit("Frontdesk", window.property_name)
+    }
+    
+    
+
     window.socket.emit("TodaySummary", window.property_name)
     window.socket.emit("ComGuestLedger", { property:window.property_name})
     window.socket.emit("GuestLedgerTransaction", { property:window.property_name})

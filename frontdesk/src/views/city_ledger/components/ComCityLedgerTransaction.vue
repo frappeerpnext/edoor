@@ -220,10 +220,12 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTransactionMoreOption.vue"
-import ComPrintReservationStay from '@/views/reservation/components/ComPrintReservationStay.vue'
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 const props = defineProps({
-    name: String
+    name: String,
+    reservation_stay: String,
+    folio_number:String
 })
 const confirm = useConfirm()
 const moment = inject("$moment")
@@ -243,28 +245,23 @@ const rowClass = (data) => {
     return [{ 'auto-post': data.is_auto_post }];
 
 };
-const viewCityLedgerReport = () => {
-    dialog.open(ComPrintReservationStay, {
-        data: {
-            doctype: "Reservation%20Stay",
-            reservation_stay: data.value.reservation_stay,
-            folio_number: name.value,
-            report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
-            // "eDoor%20Reservation%20Stay%20Folio%20Summary%20Report",
-            view: "print"
-        },
-        props: {
-            header: "Folio Summary Report",
-            style: {
-                width: '80vw',
+function viewCityLedgerReport(){
+    dialog.open(ComIFrameModal, {
+            data: {
+                doctype: "Folio%20Transaction",
+                name: props.name,
+                report_name:  gv.getCustomPrintFormat("Folio Payment Receipt"),
             },
-            position:"top",
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false
-
-        },
-    });
+            props: {
+                header: "City Ledger Account",
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
 }
 
 const columns = ref([

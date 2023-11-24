@@ -1,6 +1,5 @@
 <template>
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
-        {{ rs.attacheds }} || {{ name }}
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
                 <div class="flex mb-3 justify-between">

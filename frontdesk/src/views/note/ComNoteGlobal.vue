@@ -15,6 +15,14 @@
 					</Button>
 				</div>
 			</div>
+			<ComAutoComplete
+      inputId="reference_documnent_autocomplete"
+      v-model="referenceDocument"
+      placeholder="Reference Document"
+      :doctype="'DocType'"
+      :filters="{'name':['in',['Reservation','Reservation Stay','Folio Transaction','Customer','Room Block','Business Source','City Ledger Account','Room']]}"
+      @onSelected="onReferenceDoctype"
+    />
 			<ComPlaceholder text="No Data" :loading="loading" :is-not-empty="notes.length > 0">
 				<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
 					<div class="flex justify-between items-center " style="min-height: 26px;">
@@ -78,7 +86,6 @@
 <script setup>
 import { ref, inject, useDialog, onMounted, updateDoc, useConfirm } from '@/plugin';
 import ComAddNote from './ComAddNote.vue';
-import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ComNoteGlobalButtonMore from "@/views/note/ComNoteGlobalButtonMore.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
@@ -94,6 +101,11 @@ const loading = ref(false);
 const keyword = ref()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const referenceDocument = ref('');
+
+function onReferenceDoctype(selectedItem) {
+alert("hello")
+}
 
 function onEdit(name) {
 	const dialogRef = dialog.open(ComAddNote, {
@@ -149,7 +161,6 @@ function onViewFolioDetail(selected) {
 			closeOnEscape: false
 		},
 	});
-
 }
 function onLoadData() {
 	loading.value = true

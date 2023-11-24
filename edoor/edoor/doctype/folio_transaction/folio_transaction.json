@@ -142,8 +142,9 @@
   "is_housekeeping_account",
   "inventory_tab",
   "product",
+  "unit",
   "required_select_product",
-  "column_break_jgpr",
+  "column_break_wshx",
   "product_name"
  ],
  "fields": [
@@ -876,10 +877,20 @@
    "label": "Inventory"
   },
   {
+   "default": "0",
+   "fieldname": "required_select_product",
+   "fieldtype": "Check",
+   "label": "Required Select Product"
+  },
+  {
    "fieldname": "product",
    "fieldtype": "Link",
    "label": "Product",
    "options": "Product"
+  },
+  {
+   "fieldname": "column_break_wshx",
+   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "product.product_name_en",
@@ -888,19 +899,15 @@
    "label": "Product Name"
   },
   {
-   "fieldname": "column_break_jgpr",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "required_select_product",
-   "fieldtype": "Check",
-   "label": "Required Select Product"
+   "fetch_from": "product.unit",
+   "fieldname": "unit",
+   "fieldtype": "Data",
+   "label": "Unit"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-22 09:24:51.197834",
+ "modified": "2023-11-24 14:22:46.242520",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

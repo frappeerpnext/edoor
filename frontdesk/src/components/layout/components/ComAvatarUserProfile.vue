@@ -76,7 +76,7 @@ function onShortCutMenu() {
             view: "ui"
         },
         props: {
-            header: "it's loat buddy!!!!",
+            header: "Shortcut Menu",
             style: {
                 width: '80vw',
             },

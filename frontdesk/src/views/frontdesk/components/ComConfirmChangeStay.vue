@@ -225,9 +225,12 @@ function onSave(){
     ).then((result)=>{
         isSaving.value = false
         //we delay wait data to update complete
-        setTimeout(function(){
+        if (!dialogRef.value.data.disable_reload_frontdesk){
+            setTimeout(function(){
             window.socket.emit("Frontdesk", window.property_name);
         }, 1000)
+        
+        }
         
         dialogRef.value.close(result);
     }).catch((err)=>{

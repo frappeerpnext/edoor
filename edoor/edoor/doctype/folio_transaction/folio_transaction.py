@@ -7,6 +7,7 @@ from edoor.api.frontdesk import get_working_day
 from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
+from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
 from frappe import _
 
 class FolioTransaction(Document):
@@ -284,6 +285,8 @@ class FolioTransaction(Document):
 		#validate update report descript
 		update_report_description_field(self)
 
+		
+
 	def after_insert(self):
 		if self.target_transaction_type and  self.target_transaction_number:
 			note = ""
@@ -319,6 +322,10 @@ class FolioTransaction(Document):
 				"content":content
 			}])
 	
+
+		#update to inventory
+		if self.product:
+			update_inventory(self)
 
 
 
@@ -630,4 +637,28 @@ def update_report_description_field(self):
 	elif self.source_transaction_type:
 		if self.source_transaction_number:
 			self.report_description = "{} (from {})".format(self.report_description, self.source_transaction_number)
-		
+	elif self.product:
+		self.report_description = "{} ({})".format(self.report_description, self.product_name)
+
+
+def update_inventory(self):
+	product_doc = frappe.get_doc("Product",self.product)
+	working_day = get_working_day(self.property)
+	cost = get_product_cost(working_day["stock_location"], self.product)
+	add_to_inventory_transaction({
+		'doctype': 'Inventory Transaction',
+		'transaction_type':"Folio Transaction",
+		'transaction_date':self.posting_date,
+		'transaction_number':self.name,
+		'product_code': self.product,
+		'portion':"",
+		'unit':self.unit,
+		'stock_location':working_day["stock_location"],
+		'out_quantity': self.quantity if self.type=='Debit' else self.quantity * -1,
+		"uom_conversion":1,
+		'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
+		'action': 'Submit'
+	})
+
+			
+ 

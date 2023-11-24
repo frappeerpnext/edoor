@@ -304,6 +304,7 @@ const calendarOptions = reactive({
                         end_date:moment($event.event.end).format("YYYY-MM-DD")
 
                 },
+                disable_reload_frontdesk:true
 
             },
             props: {
@@ -333,7 +334,7 @@ const calendarOptions = reactive({
         } else {
 
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: { event: $event.event, show_keep_rate: 0,old_event:{start:start_date, end:end_date} },
+            data: { event: $event.event, show_keep_rate: 0,old_event:{start:start_date, end:end_date}, disable_reload_frontdesk:true },
             props: {
                 header: 'Change Stay',
                 style: {
@@ -890,6 +891,7 @@ function debouncer(fn, delay) {
 }
 
 function getEvent() {
+ 
     gv.loading = true
     filter.value.date = moment.utc(calendarOptions.visibleRange.start).toDate()
     getApi('frontdesk.get_room_chart_calendar_event', {
@@ -929,6 +931,8 @@ function getEvent() {
 
 function getResourceAndEvent(showLoading = true) {
     gv.loading = showLoading
+    // events.value=[]
+    
     getApi("frontdesk.get_room_chart_resource_and_event",
         {
             start: moment.utc(calendarOptions.visibleRange.start).format("YYYY-MM-DD"),

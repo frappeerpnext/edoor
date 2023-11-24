@@ -141,13 +141,18 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
-
+    getDocList("Reservation Folio", {
+            filters: [ ["reservation_stay", "=", props.reservation_stay]],
+            limit:100,
+            fields:["name","reservation_stay"]
+        }).then((docs) => {
     dialog.open(ComPrintReservationStay, {
         data: {
             doctype: "Reservation%20Stay",
             reservation_stay: selectedFolio.value.reservation_stay,
-            folio_number: selectedFolio.value.name,
-            report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Summary Report"),
+            folio: selectedFolio.value,
+            folios: docs,
+            report_name: "eDoor Reservation Stay Folio Summary Report",
             view: "print"
         },
         props: {
@@ -162,6 +167,7 @@ function viewFolioSummaryReport() {
 
         },
     });
+})
 }
 
 //Folio Summary Report
@@ -176,15 +182,22 @@ print_menus.value.push({
 
 
 //folio detail report
+
 print_menus.value.push({
     label: "Folio Detail Report",
     icon: 'pi pi-print',
-    command: () => {
+    command: () => { getDocList("Reservation Folio", {
+            filters: [ ["reservation_stay", "=", props.reservation_stay]],
+            limit:100,
+            fields:["name","reservation_stay"]
+        }).then((docs) => {
+
         dialog.open(ComPrintReservationStay, {
             data: {
                 doctype: "Reservation%20Stay",
                 reservation_stay: selectedFolio.value.reservation_stay,
-                folio_number: selectedFolio.value.name,
+               folio: selectedFolio.value,
+            folios: docs,
                 report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
                 view: "print"
             },
@@ -200,6 +213,7 @@ print_menus.value.push({
 
             },
         });
+    })
     }
 
 
@@ -515,66 +529,22 @@ function onTransferFolioItem() {
 }
 
 
-onMounted(()=>{
 
-   getDocList ('Custom Print Format', {
-        fields: [
-            'print_format',
-            'icon',
-            'title',
-            'attach_to_doctype'
-        ],
-        filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", props.doctype]]
-        })
-        .then((doc) => {
-            doc.forEach(d => {
-                print_menus.value.push({
-                    label: d.title,
-                    name: d.print_format,
-                    icon: d.icon ? d.icon : "pi pi-print",
-                    command: (r) => {
-                      
-                        dialog.open(ComIFrameModal, {
-                            data: {
-                                doctype: d.attach_to_doctype,
-                                name: props.folio.name,
-                                report_name: gv.getCustomPrintFormat(d.print_format),
-                                show_letter_head: true,
-                            },
-                            props: {
-                                header: d.title,
-                                style: {
-                                    width: '80vw',
-                                },
-                                position: "top",
-                                modal: true,
-                                maximizable: true,
-                            },
-                        });
-                    }
-                })
-            });
-        })      
-})
-function getTransaction(){
-    gv.loading=true
+const arr = ref()
+
+function onAuditTrail() {
     getDocList('Folio Transaction', {
-		fields: ["name","transaction_number"],
+		fields: ["name","transaction_number","transaction_type","transaction_number"],
         filters: [
             ["transaction_type", "=", "Reservation Folio"],
             ["transaction_number", "=", selectedFolio.value?.name], 
         ]
 	}).then((r) => {
-        gv.loading=false
-        transaction.value = r
-       
-    }).catch((err) => {
-        gv.loading=false
-    })
-}
-function onAuditTrail() {
-    getTransaction()
-    const dialogRef = dialog.open(ComAuditTrail, {
+        //convert array to string
+        transaction.value = r.map(x=>x.name)
+        //sum array 2 in 1
+        arr.value = transaction.value.concat([selectedFolio.value?.name]).reverse()
+        const dialogRef = dialog.open(ComAuditTrail, {
         data: {
             doctype: 'Reservation Folio',
             docname: selectedFolio.value?.name,
@@ -582,7 +552,7 @@ function onAuditTrail() {
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: [transaction.value]
+            docnames: arr.value
         },
         
         props: {
@@ -599,12 +569,54 @@ function onAuditTrail() {
             closeOnEscape: false,
             position: "top"
         },
-        onClose: (options) => {
-            //
-        }
+       
     });
+    
+    })  
+    
+    
 }
  
+onMounted(()=>{
 
+getDocList ('Custom Print Format', {
+     fields: [
+         'print_format',
+         'icon',
+         'title',
+         'attach_to_doctype'
+     ],
+     filters: [["property", "=", window.property_name], ["attach_to_doctype", "=", props.doctype]]
+     })
+     .then((doc) => {
+         doc.forEach(d => {
+             print_menus.value.push({
+                 label: d.title,
+                 name: d.print_format,
+                 icon: d.icon ? d.icon : "pi pi-print",
+                 command: (r) => {
+                   
+                     dialog.open(ComIFrameModal, {
+                         data: {
+                             doctype: d.attach_to_doctype,
+                             name: props.folio.name,
+                             report_name: gv.getCustomPrintFormat(d.print_format),
+                             show_letter_head: true,
+                         },
+                         props: {
+                             header: d.title,
+                             style: {
+                                 width: '80vw',
+                             },
+                             position: "top",
+                             modal: true,
+                             maximizable: true,
+                         },
+                     });
+                 }
+             })
+         });
+     }) 
+})
 </script>
  
