@@ -54,7 +54,7 @@ export default class Reservation {
 			filter.forEach(f => {
 				const data = ref([])
 				if(f.name == 'require_pickup' || f.name == 'require_drop_off'){
-					data.value = this.reservationStays.filter(r => r.name == true)
+					data.value = this.reservationStays.filter(r => r[f.name] == f)
 				}else{
 					data.value = this.reservationStays.filter(r => r.reservation_status == f)
 				}
