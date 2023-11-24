@@ -112,7 +112,7 @@
                                     <div v-tippy="'Allow Post To City Ledger'" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <ComIcon class="inline" icon="IconBillToCompanywhite" style="height:12px;" ></ComIcon>
                                     </div>
-                                    <div v-tippy="( slotProps.data.require_drop_off ? 'Require Drop Off' : '' ) + (slotProps.data.require_pickup ? 'Require Pickup ' : '' )" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                    <div v-tippy="( slotProps.data.require_drop_off ? 'Require Drop Off' : '' ) + (slotProps.data.require_pickup ? ' Require Pickup ' : '' )" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <i class="pi pi-car text-white" style="font-size: 10px;" />
                                     </div>
                                 </ComReservationStatus>
