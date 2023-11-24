@@ -1,4 +1,5 @@
 <template>
+	{{ referenceDocument }}
 	<div>
 		<div>
 			<div class="flex justify-end items-center gap-2">
@@ -21,7 +22,7 @@
       placeholder="Reference Document"
       :doctype="'DocType'"
       :filters="{'name':['in',['Reservation','Reservation Stay','Folio Transaction','Customer','Room Block','Business Source','City Ledger Account','Room']]}"
-      @onSelected="onReferenceDoctype"
+      @onSelected="onSearch"
     />
 			<ComPlaceholder text="No Data" :loading="loading" :is-not-empty="notes.length > 0">
 				<div v-for="i in notes" :key="index" class=" border-1 rounded-lg pt-2 px-3 mt-3 content-global-note relative">
@@ -103,9 +104,7 @@ const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const referenceDocument = ref('');
 
-function onReferenceDoctype(selectedItem) {
-alert("hello")
-}
+
 
 function onEdit(name) {
 	const dialogRef = dialog.open(ComAddNote, {
@@ -173,6 +172,9 @@ function onLoadData() {
 	filters.push(["custom_note_date", ">=", working_day.date_working_day])
 	if (keyword?.value) {
 		filters.push(["custom_keyword", "like", '%' + keyword.value + '%'])
+	}
+	if (referenceDocument?.value) {
+		filters.push(["reference_name", "like", '%' + referenceDocument.value + '%']);
 	}
 
 	db.getDocList('Comment', {
