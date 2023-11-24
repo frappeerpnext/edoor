@@ -642,6 +642,7 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 
 @frappe.whitelist()
 def get_working_day(property = ''):
+    frappe.msgprint(property)
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
     cashier_shift = None
     if len(working_day)>0:
