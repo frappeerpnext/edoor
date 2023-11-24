@@ -154,7 +154,6 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const moment = inject('$moment')
 const can_view_rate = ref(window.can_view_rate)
-// const name = ref("")
 
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
