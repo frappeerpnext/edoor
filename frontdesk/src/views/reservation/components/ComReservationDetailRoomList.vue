@@ -164,12 +164,12 @@ const status = ref(JSON.parse(localStorage.getItem('edoor_setting')).reservation
 status.value.push(
     {
         "reservation_status": "Pickup",
-        "name": "Pickup",
+        "name": "require_pickup",
         "sort_order": 0
     },
     {
         "reservation_status": "Drop Off",
-        "name": "Drop Off",
+        "name": "require_drop_off",
         "sort_order": 0,
     }
     

@@ -224,8 +224,6 @@ fixtures = [
     {"dt": "eDoor Menu"},
     {"dt": "System Report"},
     {"dt": "Audit Trail Document"},
-    {"dt": "Website Theme","filters": [["name", "=", "estc theme"]]},
-    {"dt": "Color"},
     {"dt": "Account Category"},
     {"dt": "App Icons"},
 ]
