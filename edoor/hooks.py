@@ -221,6 +221,7 @@ on_login = "edoor.api.utils.successful_login"
 fixtures = [
     {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
     {"dt": "Reservation Status"},
+    {"dt": "Housekeeping Status"},
     # {"dt": "eDoor Menu"},
     # {"dt": "System Report"},
     {"dt": "Audit Trail Document"},
