@@ -222,6 +222,7 @@ fixtures = [
     {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
     {"dt": "Reservation Status"},
     {"dt": "Housekeeping Status"},
+    {"dt": "Global Search Template"},
     # {"dt": "eDoor Menu"},
     # {"dt": "System Report"},
     {"dt": "Audit Trail Document"},

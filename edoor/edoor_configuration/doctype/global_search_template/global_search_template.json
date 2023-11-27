@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:title",
+ "creation": "2023-11-27 16:01:31.869637",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "search_doctype",
+  "limit_result",
+  "column_break_bkoi",
+  "search_field",
+  "default_condition",
+  "return_fields",
+  "section_break_dzrd",
+  "template"
+ ],
+ "fields": [
+  {
+   "fieldname": "search_doctype",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Search Doctype",
+   "options": "DocType",
+   "unique": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "unique": 1
+  },
+  {
+   "fieldname": "limit_result",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Limit Result"
+  },
+  {
+   "fieldname": "column_break_bkoi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "search_doctype.search_fields",
+   "fetch_if_empty": 1,
+   "fieldname": "search_field",
+   "fieldtype": "Data",
+   "label": "Search Field",
+   "length": 500
+  },
+  {
+   "fieldname": "default_condition",
+   "fieldtype": "Data",
+   "label": "Default Condition"
+  },
+  {
+   "fieldname": "return_fields",
+   "fieldtype": "Small Text",
+   "label": "Return Fields"
+  },
+  {
+   "fieldname": "section_break_dzrd",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "template",
+   "fieldtype": "Code",
+   "label": "Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-27 16:19:03.936951",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Global Search Template",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

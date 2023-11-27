@@ -871,5 +871,68 @@
     "parenttype": "Audit Trail Document"
    }
   ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Cashier Shift",
+  "modified": "2023-11-26 18:29:21.131591",
+  "name": "Cashier Shift",
+  "tracking_field": [
+   {
+    "field_name": "shift_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Shift Name",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "posting_date",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Shift date",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "opened_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Opened Note",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_closed",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Is Closed",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "total_opening_amount",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Opening Cash Float",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "opened_note",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Closed Note",
+    "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
  }
 ]

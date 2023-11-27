@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "search_template",
   "title",
   "table_name",
   "limit_result",
@@ -20,6 +21,8 @@
  ],
  "fields": [
   {
+   "fetch_from": "search_template.search_doctype",
+   "fetch_if_empty": 1,
    "fieldname": "table_name",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -27,13 +30,15 @@
    "options": "DocType"
   },
   {
+   "fetch_from": "search_template.title",
+   "fetch_if_empty": 1,
    "fieldname": "title",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Title"
   },
   {
-   "fetch_from": "table_name.search_fields",
+   "fetch_from": "search_template.search_field",
    "fetch_if_empty": 1,
    "fieldname": "search_field",
    "fieldtype": "Data",
@@ -42,18 +47,23 @@
    "length": 250
   },
   {
+   "fetch_from": "search_template.return_fields",
+   "fetch_if_empty": 1,
    "fieldname": "return_fields",
    "fieldtype": "Small Text",
    "label": "Return Fields"
   },
   {
+   "fetch_from": "search_template.template",
+   "fetch_if_empty": 1,
    "fieldname": "template",
    "fieldtype": "Code",
    "label": "Template"
   },
   {
    "default": "20",
-   "fetch_from": ".search_fields",
+   "fetch_from": "search_template.limit_result",
+   "fetch_if_empty": 1,
    "fieldname": "limit_result",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -68,16 +78,24 @@
    "fieldtype": "Section Break"
   },
   {
+   "fetch_from": "search_template.default_condition",
+   "fetch_if_empty": 1,
    "fieldname": "default_condition",
    "fieldtype": "Data",
    "label": "Default Condition",
    "length": 250
+  },
+  {
+   "fieldname": "search_template",
+   "fieldtype": "Link",
+   "label": "Search Template",
+   "options": "Global Search Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-11-02 08:34:36.244844",
+ "modified": "2023-11-27 16:18:28.349864",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Global Search Doctype",
