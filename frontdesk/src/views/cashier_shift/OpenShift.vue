@@ -1,7 +1,6 @@
 <template>
     <ComDialogContent :titleButtonOK="shift.name?'Save':'Open'" titleButtonClose="Cancel" @onClose="dialogRef.close()" @onOK="onOpen" :loading="loading">
  
-
         <ComSelect v-model="shift.shift_name" :clear="false" @onSelected="onSelectShift" doctype="Shift Type"
             placeholder="Shift Name" optionLabel="shift_name" optionValue="name" extraFields="start_time,end_time" />
         <div class="bg-card-info border-round-xl p-3 h-full mt-3">
@@ -72,14 +71,12 @@ const gv = inject("$gv")
 const toast = useToast();
 const selectedShift = ref({})
 const setting = window.setting
-const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+
 const payment_types = setting?.payment_type.filter(r => r.allow_cash_float == 1)
 const loading = ref(false)
-
-
-
+ 
 const shift = ref({
-    working_day: working_day.name,
+    working_day: window.working_day.name,
     pos_profile: setting.pos_profile.name,
     cash_float: []
 })
@@ -96,8 +93,6 @@ payment_types.forEach(p => {
 const onSelectShift = (d) => {
     selectedShift.value = d
 }
-
-
 
 const onOpen = () => {
     if (!shift.value.shift_name) {
@@ -132,7 +127,6 @@ function saveData(){
  
     createUpdateDoc("Cashier Shift", shift.value,shift.value.name?"Save data successfully":"Open cashier shift successuflly")
                 .then((doc) => {
-                 
                     gv.cashier_shift = doc
 
                     window.working_day.cashier_shift = {
@@ -153,7 +147,7 @@ function saveData(){
 }
 
 onMounted(() => {
-    if ( dialogRef.value.data.name){
+    if ( dialogRef.value.data?.name){
         getDoc("Cashier Shift", dialogRef.value.data.name).then((result) => {
             shift.value = result
     })

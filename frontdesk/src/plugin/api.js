@@ -103,7 +103,7 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
         }
         else{ 
           
-            db.createDoc(doctype, data.data)
+            db.createDoc(doctype, data)
             .then((doc) => {
                 resolve(doc)
                 window.postMessage('show_success|' + `${message ? message : 'Update successful'}`, '*')
