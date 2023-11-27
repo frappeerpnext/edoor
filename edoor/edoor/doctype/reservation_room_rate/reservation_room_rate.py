@@ -5,15 +5,21 @@
 from edoor.api.reservation import get_room_rate
 import frappe
 from frappe.model.document import Document
-from edoor.api.utils import get_base_rate
+from edoor.api.utils import get_base_rate, get_working_day
 import json
 
 from frappe.utils.data import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
+		# working_day = get_working_day(self.property)
 		
+		
+		rate_type_doc = frappe.get_doc("Rate Type",self.rate_type)
 		if self.is_new():
-			self.allow_discount = frappe.db.get_value("Rate Type", self.rate_type,"allow_discount") or 0
+			self.allow_discount = rate_type_doc.allow_discount or 0
+		
+		self.is_complimentary = rate_type_doc.is_complimentary
+		self.is_house_use = rate_type_doc.is_house_use
 		
 		self.input_rate =float(self.input_rate or 0)
 		if not self.is_manual_rate:

@@ -105,7 +105,7 @@ import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folio
 import ComDepositLedgerAction from "@/views/deposit_ledger/components/ComDepositLedgerAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
-import ComDocumentBadge from '@/components/layout/components/ComDocumentBadge.vue';
+
 
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)

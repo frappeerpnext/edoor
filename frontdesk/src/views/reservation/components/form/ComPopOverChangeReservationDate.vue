@@ -100,7 +100,7 @@ function onSave(){
             toast.add({ severity: 'warn', summary:"Reservation Stay #" +  x.reservation_stay, detail: x.message, life: 7000 }) 
         });
         loading.value = false
-        alert( window.reservation)
+
         emit("onClose" ) 
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("Reports", window.property_name)

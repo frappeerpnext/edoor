@@ -49,6 +49,8 @@
   "status_color",
   "reservation_status_note",
   "is_active_reservation",
+  "is_complimentary",
+  "is_house_use",
   "allow_user_to_edit_information",
   "business_source_tab",
   "business_source_type",
@@ -826,6 +828,20 @@
    "fieldtype": "Link",
    "label": "Reservation Color Code",
    "options": "Reservation Color Code"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_status.is_active_reservation",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_status.is_active_reservation",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
   }
  ],
  "image_field": "guest_photo",
@@ -837,7 +853,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-11-09 14:27:37.451752",
+ "modified": "2023-11-26 11:41:14.742691",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

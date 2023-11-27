@@ -14,7 +14,7 @@ from edoor.api.utils import update_reservation
 class ReservationStay(Document):
 	def  validate(self):
 		
-		
+	
 		working_day = get_working_day(self.property)
 		
 		if not self.reservation:
@@ -77,7 +77,7 @@ class ReservationStay(Document):
 			self.room_types = ','.join(set([d.room_type for d in self.stays]))
 			self.room_type_alias = ','.join(set([d.room_type_alias for d in self.stays]))
 		
-
+		
 				
 		for d in self.stays:
 			
@@ -147,7 +147,11 @@ class ReservationStay(Document):
 		self.room_rate_tax_1_amount= Enumerable(self.stays).sum(lambda x: x.tax_1_amount or 0)
 		self.room_rate_tax_2_amount= Enumerable(self.stays).sum(lambda x: x.tax_2_amount or 0)
 		self.room_rate_tax_3_amount= Enumerable(self.stays).sum(lambda x: x.tax_3_amount or 0)
+		
+	
+
 		self.total_room_rate_tax= Enumerable(self.stays).sum(lambda x: x.total_tax or 0)
+
 		self.total_room_rate= Enumerable(self.stays).sum(lambda x: x.total_rate or 0)
 		self.adr = Enumerable(self.stays).avg(lambda x: (x.adr or 0)) 
  

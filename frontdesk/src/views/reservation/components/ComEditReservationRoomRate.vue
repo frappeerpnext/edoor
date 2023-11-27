@@ -114,7 +114,8 @@
                             <ComInputCurrency classCss="w-full" v-model="doc.input_rate"
                                 :disabled="doc.is_manual_rate == 0" />
                             <div v-tippy="'Use Manually Update Rate'" class="absolute right-2 top-2/4 mb-2">
-                                <Checkbox input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1"
+                                
+                                <Checkbox :disabled="!doc.allow_user_to_edit_rate"  input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1"
                                     :falseValue="0" :binary="true" @input="onUseManualRate" />
                             </div>
                         </div>
@@ -420,10 +421,10 @@ const total_amount = computed(() => {
 
 function onSelectRateType(selected) {
 
-    if (doc.value.is_manual_rate == 0 && selected.value) {
+    if (doc.value.is_manual_rate == 0 && selected) {
         postApi('reservation.get_room_rate', {
             property: doc.value.property,
-            rate_type: selected.value,
+            rate_type: selected,
             room_type: doc.value.room_type_id,
             business_source: doc.value.business_source,
             date: doc.value.date,
@@ -465,6 +466,7 @@ function onSelectRateType(selected) {
                 if(doc.value.allow_discount==0){
                     doc.value.discount = 0
                 }
+                doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
 
             })
     }
@@ -562,6 +564,7 @@ onMounted(() => {
     getApi("utils.get_rate_type_info", { name: doc.value.rate_type })
             .then(result => {
                 doc.value.allow_discount = result.message.allow_discount || 0
+                doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate || 0
  
             })
 

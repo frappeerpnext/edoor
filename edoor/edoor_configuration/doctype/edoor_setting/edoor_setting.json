@@ -57,7 +57,9 @@
   "cancel_reservation_role",
   "void_reservation_role",
   "global_search_tables_tab",
-  "search_table"
+  "search_table",
+  "cash_count_setting_tab",
+  "cash_count_setting"
  ],
  "fields": [
   {
@@ -355,12 +357,23 @@
    "fieldname": "maximum_number_of_folio_in_reservation_stay",
    "fieldtype": "Int",
    "label": "Maximum Number of Folio in Reservation Stay"
+  },
+  {
+   "fieldname": "cash_count_setting_tab",
+   "fieldtype": "Tab Break",
+   "label": "Cash Count Setting"
+  },
+  {
+   "fieldname": "cash_count_setting",
+   "fieldtype": "Table",
+   "label": "Cash Count Setting",
+   "options": "Cash Count Setting"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-24 15:27:14.330120",
+ "modified": "2023-11-26 19:44:16.922484",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

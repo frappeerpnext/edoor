@@ -1,5 +1,5 @@
 <template>
-    <Button  v-shortkey="['ctrl', 'x']" @shortkey="onClick()"  v-tippy="'New Reservataion'" @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon border-none">
+    <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="'New Reservataion'" @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon border-none">
         <img class="mr-2" :src="iconEdoorNewReservation">New Reservation
     </Button>
 </template>

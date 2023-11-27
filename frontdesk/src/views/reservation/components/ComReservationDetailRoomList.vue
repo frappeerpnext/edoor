@@ -1,5 +1,4 @@
 <template lang="">
-    {{status}}
     <ComReservationStayPanel title="Reservation Room List">
         <template #content>
             <ComPlaceholder :isNotEmpty="true">

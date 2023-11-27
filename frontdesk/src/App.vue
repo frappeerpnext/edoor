@@ -27,7 +27,7 @@ import Property from '@/views/user_property/Property.vue';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
-import OpenShift from "@/views/shift/OpenShift.vue"
+import OpenShift from "@/views/cashier_shift/OpenShift.vue"
 import ComReservationStayAssignRoom from "./views/reservation/components/ComReservationStayAssignRoom.vue";
 import { useDialog } from 'primevue/usedialog';
 import ComEditReservationRoomRate from '@/views/reservation/components/ComEditReservationRoomRate.vue';
@@ -35,8 +35,8 @@ import ComFolioTransactionDetail from '@/views/reservation/components/reservatio
 import ComFolioDetail from '@/views/reservation/components/folios/ComFolioDetail.vue';
 
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
-import ComCashierShiftDetail from "./views/shift/ComCashierShiftDetail.vue";
-import ComCloseShift from "./views/shift/ComCloseShift.vue";
+import ComCashierShiftDetail from "./views/cashier_shift/ComCashierShiftDetail.vue";
+import ComCloseShift from "./views/cashier_shift/ComCloseShift.vue";
 import ComRoomBlockDetail from "./views/room_block/ComRoomBlockDetail.vue";
 import ComCityLedgerDetail from "@/views/city_ledger/components/ComCityLedgerDetail.vue";
 import ComBusinessSourceDetail from '@/views/business_source/components/ComBusinessSourceDetail.vue';
@@ -170,8 +170,24 @@ onUnmounted(() => {
 })
 onMounted(() => {
     window.socket.on("UpdateCashierShift", (arg) => {
-        if (JSON.parse(localStorage.getItem("edoor_property")).name == arg.business_branch) {
-            gv.cashier_shift = arg
+        if (window.product_name == arg.business_branch) {
+            if(window.session_id==arg.session_id){
+                if (arg.is_closed ==1){
+                gv.cashier_shift = null
+            }else {
+                gv.cashier_shift = arg
+            }
+            }else {
+                if(arg.is_closed==1){
+                    toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'This cashier shift is closed. Your browser will be reload.', life: 10000 })
+                    setTimeout(function(){
+                        window.reload()
+                    }, 5000)
+                }
+                
+            }
+            
+            
         }
     })
 
@@ -185,7 +201,7 @@ onMounted(() => {
 
     const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
     if (!working_day.cashier_shift?.name) {
-        const dialogRef = dialog.open(OpenShift, {
+        dialog.open(OpenShift, {
             props: {
                 header: 'Open Shift',
                 style: {
@@ -461,7 +477,7 @@ function showCashierShiftDetail(name) {
             name: name,
         },
         props: {
-            header:"Shift Detail- " + name,
+            header:"Cashier Shift Detail - " + name,
             style: {
                 width: '80vw',
             },
@@ -522,7 +538,10 @@ function onViewDailySummary(date,room_type_id, title="") {
 
 
 function openCloseShift() {
-    const dialogRef = dialog.open(ComCloseShift, {
+    dialog.open(ComCloseShift, {
+        data:{
+            name: window.working_day.cashier_shift.name
+        },
         props: {
             header:"Close Shift",
             style: {

@@ -110,7 +110,7 @@ import Search from '@/views/search/Search.vue'
 import Property from '@/views/user_property/Property.vue'
 import { useDialog } from 'primevue/usedialog'
 import ComFooter from '../../components/layout/components/ComFooter.vue'
-import OpenShift from "@/views/shift/OpenShift.vue"
+import OpenShift from "@/views/cashier_shift/OpenShift.vue"
 import runNightAuditSvgIcon from '@/assets/svg/icon-run-night-audit.svg'
 import iconCloseCashierShift from '@/assets/svg/icon-close-cashier-shift.svg'
 import iconOpenCashierShift from '@/assets/svg/icon-open-cashier-shift.svg'
@@ -237,7 +237,9 @@ function onBlankGuestRegistration() {
 }
 
 function onSearch() {
-    dialog.open(Search, {
+    if(!window.open_search){
+        window.open_search = true
+        dialog.open(Search, {
         props: {
             header: 'Search',
             style: {
@@ -248,6 +250,8 @@ function onSearch() {
             closeOnEscape: true
         },
     });
+    }
+  
 }
 
 function onOpenCashierShift() {

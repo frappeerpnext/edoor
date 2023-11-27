@@ -15,7 +15,8 @@
   "room_name",
   "date",
   "rate",
-  "rate_type"
+  "rate_type",
+  "is_complementary"
  ],
  "fields": [
   {
@@ -52,19 +53,27 @@
   },
   {
    "fieldname": "rate_type",
-   "fieldtype": "Data",
-   "label": "Rate Type"
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type"
   },
   {
    "fieldname": "room_type_id",
    "fieldtype": "Link",
    "label": "Room Type ID",
    "options": "Room Type"
+  },
+  {
+   "default": "0",
+   "fetch_from": "rate_type.is_complementary",
+   "fieldname": "is_complementary",
+   "fieldtype": "Check",
+   "label": "Is Complementary"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-05-18 15:29:27.875922",
+ "modified": "2023-11-25 09:06:39.059114",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Date",

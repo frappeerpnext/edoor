@@ -236,13 +236,14 @@ function onSave() {
 
 }
 function onSaveNote(doctype, data) {
+   
     if (!data.content) {
         gv.toast('warn', 'Please input text.')
         return
     }
     saving.value = true
     if (!data.name) {
-        data.property = window.property_name
+        data.custom_property = window.property_name
     }
     // for folio trancation
     if (props.doctype == 'Folio Transaction') {
@@ -253,6 +254,9 @@ function onSaveNote(doctype, data) {
     data.reference_name = props.docname
     data.comment_type = 'Comment'
     data.name = op.value.data?.name || ''
+    data.custom_is_audit_trail =1
+    data.custom_posting_date = window.current_working_date
+    
     createUpdateDoc(doctype, { data: data }).then((r) => {
         saving.value = false
         create.value = {

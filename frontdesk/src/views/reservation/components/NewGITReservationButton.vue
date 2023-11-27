@@ -1,5 +1,5 @@
 <template>
-    <Button @click="onClick" v-tippy="'New Group Booking'" label="New Group Booking" class="btn-date__tt btn-inner-set-icon border-none">
+    <Button v-shortkey="['ctrl', 'g']"  @click="onClick" v-tippy="'New Group Booking'" label="New Group Booking" class="btn-date__tt btn-inner-set-icon border-none">
         <img class="mr-2" :src="iconEdoorAddGroupBooking">New Group Booking
     </Button>
 </template>

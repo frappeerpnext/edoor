@@ -287,8 +287,8 @@
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-15rem text-right">
-                                <div class="box-input-detail">
-                                    <div @click="onOpenChangeRate($event, d)"
+                                <div v-tippy="!doc.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' " class="box-input-detail">
+                                    <div :class="!doc.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic inline ">
                                         <div v-tippy="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
                                             class="link_line_action flex justify-between">
@@ -916,7 +916,7 @@ const onRateTypeChange = (rate_type) => {
             }
             room_tax.value = tax_rule
             doc.value.reservation.rate_type = rate_type
-
+            doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
                 //check if stay have not manully rate update
             if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
                 getRoomType()

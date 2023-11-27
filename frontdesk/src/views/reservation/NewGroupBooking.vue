@@ -64,7 +64,7 @@
                                 <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar
-                                    :selectOtherMonths="true" :minDate="minDate" />
+                                    :selectOtherMonths="true" :minDate="minDate" panelClass="no-btn-clear" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
@@ -77,7 +77,7 @@
                                 <label>Departure<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
                                     placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
-                                    :minDate="departureMinDate" showButtonBar showIcon :selectOtherMonths="true"   />
+                                    :minDate="departureMinDate" showButtonBar showIcon :selectOtherMonths="true" panelClass="no-btn-clear"/>
                             </div>
                         </div>
                     </div>
@@ -340,9 +340,9 @@
                                 </div>
                             </td>
                             <td v-if=" can_view_rate" class="padding-list-booking-group w-12rem text-center">
-                                <div
+                                <div v-tippy="!doc.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' "
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
-                                    <span @click="onOpenChangeRate($event, d)"
+                                    <span :class="!doc.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic ">
                                         <div  v-tippy.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
                                             class="link_line_action flex justify-between">
@@ -968,7 +968,7 @@ const onRateTypeChange = (rate_type) => {
                 tax_3_rate: tax_rule?.tax_3_rate || 0,
             }
             room_tax.value = tax_rule
-
+            doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
             useTax.value= {use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
                         use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,
                         use_tax_3: (room_tax.value?.tax_3_rate || 0) > 0}

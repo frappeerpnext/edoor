@@ -47,22 +47,21 @@
                     </template>
                 </Listbox>
                 </div>
-                        <div class="col-10 p-0 search_style_section">      
+                        <div class="col-10 p-0 search_style_section">     
                 <DataView @page="pagechange()" :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
                 
                     <template #list="slotProps">
-                        <div class="col-12 search-hover relative" id="contentContainer">
+                        
+                        <div v-for="(data, index) in slotProps.items" :key="index" class="col-12 search-hover relative" id="contentContainer">
                             <div class="">
-                                <div v-html="getTemplate(slotProps.data)"></div>
+                                <div v-html="getTemplate(data)"></div>
                                <span>
                                 <div class="text-500 text-md absolute bottom-5 right-10">
-                                    {{ slotProps.data && slotProps.data.modified_by && typeof slotProps.data.modified_by === 'string' ? slotProps.data.modified_by.split('@')[0] : '' }}  -  <ComTimeago :date="slotProps.data.modified"></ComTimeago>
-</div>
-                               
+                                    {{ data && data.modified_by && typeof data?.modified_by === 'string' ? data.modified_by.split('@')[0] : '' }}  -  <ComTimeago :date="data?.modified"></ComTimeago>
+</div>                    
                                </span>
                             </div>
                         </div>
-
                     </template>
                 </DataView>
                         </div>
@@ -78,8 +77,9 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { getApi, ref, postApi, computed , onMounted , } from "@/plugin"
+import { getApi, ref, postApi, computed , onMounted , onUnmounted } from "@/plugin"
 import Mustache from 'mustache';
+
 import ComDialogContent from '@/components/form/ComDialogContent.vue';
 import DataView from 'primevue/dataview';
 const ShowFilterSearch = ref(true)
@@ -186,6 +186,10 @@ const scrollToTop = () => {
 function pagechange(){
     scrollToTop();
 }
+
+onUnmounted(()=>{
+    window.open_search = false
+})
 </script>
 <style scoped>
 ::v-deep .p-listbox .p-listbox-list .p-listbox-item {

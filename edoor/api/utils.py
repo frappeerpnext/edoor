@@ -274,7 +274,9 @@ def update_reservation(name=None,doc=None, run_commit = True):
                     sum(if(is_active_reservation=1,room_rate_tax_1_amount,0)) as room_rate_tax_1_amount,
                     sum(if(is_active_reservation=1,room_rate_tax_2_amount,0)) as room_rate_tax_2_amount,
                     sum(if(is_active_reservation=1,room_rate_tax_3_amount,0)) as room_rate_tax_3_amount,
-                    sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax
+                    sum(if(is_active_reservation=1,total_room_rate_tax,0)) as total_room_rate_tax,
+                    max(is_complimentary) as is_complimentary, 
+                    max(is_house_use) as is_house_use
 
                 from `tabReservation Stay`
                 where 
@@ -349,6 +351,8 @@ def update_reservation(name=None,doc=None, run_commit = True):
         doc.total_cancelled= data[0]["total_cancelled"] or 0
         doc.total_void= data[0]["total_void"] or 0
         doc.total_no_show= data[0]["total_no_show"] or 0
+        doc.is_complimentary= data[0]["is_complimentary"] or 0
+        doc.is_house_use= data[0]["is_house_use"] or 0
 
 
         #update room info
@@ -493,7 +497,7 @@ def update_desk_folio(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
- 
+    
     if name or doc:
         if name:
             doc = frappe.get_doc("Reservation Stay",name)
@@ -538,15 +542,26 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                     sum(tax_2_amount) as tax_2_amount,
                     sum(tax_3_amount) as tax_3_amount,
                     sum(total_tax) as total_tax,
-                    sum(total_rate) as total_amount
-
+                    sum(total_rate) as total_amount,
+                    max(is_complimentary) as is_complimentary,
+                    max(is_house_use) as is_house_use
                 from `tabReservation Room Rate`
                 where
                 stay_room_id = '{}'
             """.format(stay.name)
-        
+
             data = frappe.db.sql(sql,as_dict=1)
-            
+    
+            #update is_complimentary
+            sql = "select max(is_complimentary) as total, max(is_house_use) as is_house_use from `tabReservation Room Rate` where reservation_stay='{}'".format(doc.name)
+            complimentary_data = frappe.db.sql(sql, as_dict = 1)
+            if len(complimentary_data)>0:
+                doc.is_complimentary = complimentary_data[0]["total"]
+                doc.is_house_use = complimentary_data[0]["is_house_use"]
+            else:
+                doc.is_complimentary = 0
+                doc.is_house_use = 0
+    
 
             
             if data:
@@ -559,7 +574,9 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 stay.tax_1_amount =d["tax_1_amount"] or  0
                 stay.tax_2_amount =d["tax_2_amount"] or  0
                 stay.tax_3_amount =d["tax_3_amount"] or  0
-                stay.total_tax =d["total_tax"] or  0
+                stay.total_tax =  d["total_tax"] or  0
+                
+               
     
         if is_save:
             doc.save()
@@ -807,8 +824,11 @@ def get_rate_type_info(name):
         "name": name,
         "tax_rule":tax_rule,
         "allow_discount": account_doc.allow_discount,
-        "allow_user_to_change_tax": account_doc.allow_user_to_change_tax
+        "allow_user_to_change_tax": account_doc.allow_user_to_change_tax,
+        "allow_user_to_edit_rate": doc.allow_user_to_edit_rate
     }
+
+
 
 @frappe.whitelist("POST")
 def rename_doc(data):
@@ -976,6 +996,10 @@ def add_audit_trail(data):
                 working_day = get_working_day(doc.property)
                 d["custom_posting_date"]= working_day["date_working_day"]
                 d["custom_property"]= doc.property
+            elif hasattr(doc,"business_branch"):
+                working_day = get_working_day(doc.business_branch)
+                d["custom_posting_date"]= working_day["date_working_day"]
+                d["custom_property"]= doc.business_branch
 
         d["doctype"]="Comment"
         if not hasattr(d,"comment_type"):
@@ -1071,3 +1095,89 @@ def sort_account_categories(account_categories):
 
     frappe.db.commit()
     frappe.msgprint("Update parent account code sort order successfully")
+
+
+@frappe.whitelist()
+def get_cashier_shift_summary(name,property):
+    doc = frappe.get_doc("Cashier Shift",name)
+    #Get cash payment
+    sql = """
+        select 
+            sum(amount * if(type='Debit',1,0)) as cash_debit, 
+            sum(amount * if(type='Debit',0,1)) as cash_credit
+        from   `tabFolio Transaction`
+        where
+            cashier_shift = '{}' and 
+            payment_type_group ='Cash' and 
+            property='{}'
+        """.format(name,property)
+    data = frappe.db.sql(sql,as_dict=1)
+
+    sql = """
+        select 
+            payment_type_group,
+            payment_type,
+            sum(amount * if(type='Debit',1,0)) as total_debit,
+            sum(amount * if(type='Debit',0,1)) as total_credit,
+            sum(amount * if(type='Debit',-1,1)) as total,
+            0 as actual_close_amount
+        from   `tabFolio Transaction`
+        where
+            cashier_shift = '{}' and 
+            payment_type <> '' and  
+            property='{}'
+        group by 
+            payment_type_group,
+            payment_type
+    """.format(name,property)
+    summary_by_payment_type = frappe.db.sql(sql, as_dict=1) 
+    return {
+        "opening_cash_float": doc.total_opening_amount,
+        "cash_debit": data[0]["cash_debit"],
+        "cash_credit": data[0]["cash_credit"],
+        "cash_in_hand":( (doc.total_opening_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0),
+        "summary_by_payment_type":summary_by_payment_type
+    }
+
+@frappe.whitelist()
+def get_cash_count_setting():
+    base_currency = frappe.db.get_single_value("ePOS Settings", "currency")
+    base_currency_doc = frappe.get_doc("Currency", base_currency)
+    data =  frappe.get_doc("eDoor Setting").cash_count_setting
+    return_date = []
+    exchange_rate_data = []
+    currencies = set([d.currency for d in data if d.currency != base_currency])
+    for c in currencies:
+        to_currency_doc =  frappe.get_doc("Currency", c)
+        exchange_rate_data.append({
+            "base_currency": base_currency,
+            "to_currency": c,
+            "exchange_rate":  get_exchange_rate(base_currency, c),
+            "precision":to_currency_doc.custom_currency_precision,
+            "locale": to_currency_doc.custom_locale,
+            "pos_currency_format": to_currency_doc.custom_pos_currency_format
+        })
+
+    for d in data:
+     
+        return_date.append({
+            "currency": d.currency,
+            "precision":base_currency_doc.custom_currency_precision if   d.currency == base_currency else [c for c in exchange_rate_data if c["to_currency"] == d.currency][0]["precision"],
+            "pos_currency_format": base_currency_doc.custom_pos_currency_format if   d.currency == base_currency else  [c for c in exchange_rate_data if c["to_currency"] == d.currency][0]["pos_currency_format"],
+            "label": d.label,
+            "value": d.value,
+            "exchange_rate":  1 if d.currency == base_currency else [c for c in exchange_rate_data if c["to_currency"] == d.currency][0]["exchange_rate"]
+        })
+      
+    return {
+        "cash_count_setting":return_date,
+        "exchange_rate_data": exchange_rate_data
+    }
+
+def get_exchange_rate(base_currency, second_currency):
+    sql = "select exchange_rate from `tabCurrency Exchange` where from_currency='{}' and to_currency = '{}' and docstatus=1 order by posting_date desc, modified desc limit 1"
+    data = frappe.db.sql(sql.format(base_currency, second_currency),as_dict=1)
+    if len(data)> 0:
+        return data[0]["exchange_rate"]
+    else:
+        return 1

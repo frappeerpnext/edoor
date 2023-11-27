@@ -57,7 +57,7 @@
     function loadReservationFolioList(selected_name=""){
  
 
-        loading.value = false
+        loading.value = true
         getApi('reservation.get_reservation_folio_list', {
 			reservation:rs.reservation.name
 		}).then((result) => {

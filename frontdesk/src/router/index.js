@@ -31,6 +31,7 @@ import Activity from "@/views/activities/Activity.vue";
 import DepositLedger from "@/views/deposit_ledger/DepositLedger.vue";
 import AccountCodeSortOrder from "@/views/other/AccountCodeSortOrder.vue";
 import AccountCategorySortOrder from "@/views/other/AccountCategorySortOrder.vue";
+import CashierShift from "@/views/cashier_shift/CashierShift.vue";
 
 import authRoutes from './auth';
 
@@ -73,6 +74,7 @@ let routes = [
   { path: "/frontdesk/deposit-ledger", name: "DepositLedger", component: DepositLedger, meta: { layout: 'main_layout',title:"Deposit Ledger" } },
   { path: "/frontdesk/account-code-sort-order", name: "AccountCodeSortOrder", component:AccountCodeSortOrder, meta: { layout: 'blank_layout',title:"Sort Order Account Code" } },
   { path: "/frontdesk/account-category-sort-order", name: "AccountCategorySortOrder", component:AccountCategorySortOrder, meta: { layout: 'blank_layout',title:"Sort Order Account Category" } },
+  { path: "/frontdesk/cashier-shift", name: "CashierShift", component:CashierShift, meta: { layout: 'main_layout',title:"Cashier Shift" } },
  
   ...authRoutes,
 

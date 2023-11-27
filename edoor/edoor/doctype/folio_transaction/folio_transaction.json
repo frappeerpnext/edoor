@@ -93,6 +93,8 @@
   "payment_information_section",
   "payment_by",
   "payment_by_phone_number",
+  "payment_type",
+  "payment_type_group",
   "column_break_58",
   "credit_card_number",
   "card_holder_name",
@@ -135,7 +137,6 @@
   "column_break_91",
   "bank_fee_description",
   "is_auto_post",
-  "payment_type_group",
   "is_master_folio",
   "business_source",
   "keyword",
@@ -717,9 +718,8 @@
   {
    "fetch_from": "account_code.payment_type_group",
    "fieldname": "payment_type_group",
-   "fieldtype": "Link",
-   "label": "Payment Type Group",
-   "options": "Payment Type Group"
+   "fieldtype": "Data",
+   "label": "Payment Type Group"
   },
   {
    "fieldname": "transaction_type",
@@ -903,11 +903,17 @@
    "fieldname": "unit",
    "fieldtype": "Data",
    "label": "Unit"
+  },
+  {
+   "fetch_from": "account_code.payment_type",
+   "fieldname": "payment_type",
+   "fieldtype": "Data",
+   "label": "Payment Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-24 14:22:46.242520",
+ "modified": "2023-11-26 20:22:14.414454",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

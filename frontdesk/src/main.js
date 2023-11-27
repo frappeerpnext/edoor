@@ -219,7 +219,7 @@ app.component('ComTimeago', ComTimeago)
 app.component('ComAttachWebcam', ComAttachWebcam)
 app.component('ComOpenStatus', ComOpenStatus)
 app.component('ComIFrameModal', ComIFrameModal)
-// app.component('Hotkeys', Hotkeys )
+ 
 
 // Plugins
 app.use(frappe)

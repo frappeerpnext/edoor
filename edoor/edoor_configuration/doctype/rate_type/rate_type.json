@@ -12,6 +12,9 @@
   "account_code",
   "allow_discount",
   "disable_get_rate_room_room_type",
+  "is_complimentary",
+  "is_house_use",
+  "allow_user_to_edit_rate",
   "note"
  ],
  "fields": [
@@ -48,11 +51,32 @@
    "fieldname": "allow_discount",
    "fieldtype": "Check",
    "label": "Allow Discount"
+  },
+  {
+   "default": "1",
+   "fetch_from": ".allow_discount",
+   "fieldname": "allow_user_to_edit_rate",
+   "fieldtype": "Check",
+   "label": "Allow user to edit rate"
+  },
+  {
+   "default": "0",
+   "fetch_from": ".allow_discount",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
+  },
+  {
+   "default": "0",
+   "fetch_from": ".allow_discount",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-10 16:24:46.326591",
+ "modified": "2023-11-26 11:40:43.282706",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

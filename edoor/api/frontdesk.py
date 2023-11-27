@@ -516,7 +516,8 @@ def get_edoor_setting(property = None):
 
     edoor_menus = frappe.db.get_list("eDoor Menu", fields=["name","parent_edoor_menu", "is_group", "menu_name","menu_text","icon",'move_to_more','sub_menu_icon'],filters={"name":["!=","All Menus"]},order_by="sort_order asc")
     
-    currency = frappe.get_doc("Currency",frappe.db.get_default("currency"))
+    currency = frappe.get_doc("Currency",frappe.db.get_single_value("ePOS Settings","currency"))
+    second_currency = frappe.get_doc("Currency",frappe.db.get_single_value("ePOS Settings","second_currency"))
  
     
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
@@ -554,6 +555,13 @@ def get_edoor_setting(property = None):
             "precision":  currency.custom_currency_precision,
             "symbol": currency.symbol,
             "pos_currency_format": currency.custom_pos_currency_format
+        },
+        "second_currency":{
+            "name":second_currency.name,
+            "locale":second_currency.custom_locale,
+            "precision":  second_currency.custom_currency_precision,
+            "symbol": second_currency.symbol,
+            "pos_currency_format": second_currency.custom_pos_currency_format
         },
         "housekeeping_status":housekeeping_status,
         'reservation_status':reservation_status,
@@ -642,11 +650,11 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 
 @frappe.whitelist()
 def get_working_day(property = ''):
-    frappe.msgprint(property)
+ 
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
     cashier_shift = None
     if len(working_day)>0:
-        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
+        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
         
         if len(data)>0:
             cashier_shift = data[0]

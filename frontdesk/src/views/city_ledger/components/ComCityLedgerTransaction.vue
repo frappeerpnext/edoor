@@ -145,13 +145,9 @@
                             
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
                 
-                            <template v-else-if="c.fieldtype == 'Owner'">
-                                    <div v-if="slotProps?.data && slotProps?.data?.owner">
-                                        <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
-                                            <span>{{ item }}</span>
-                                        </template>
-                                    </div>
-                                </template>
+                            <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
+                                <span>{{  slotProps.data[c.fieldname].split("@")[0] }}</span>
+                            </template>
                                 
                             <CurrencyFormat v-else-if="c.fieldtype == 'currency'" :value="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Debit'">
@@ -162,8 +158,6 @@
                                 <CurrencyFormat v-if="slotProps.data.type == 'Credit'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>-</span>
                             </div>
-
-
                             <span v-else>
                                 <div v-if="slotProps.data[c.fieldname]">
                                     {{ slotProps.data[c.fieldname] }}
@@ -173,7 +167,6 @@
                             </span>
 
                         </template>
-
                     </Column>
                     <Column>
                         <template #body="slotProps">
@@ -248,9 +241,10 @@ const rowClass = (data) => {
 function viewCityLedgerReport(){
     dialog.open(ComIFrameModal, {
             data: {
-                doctype: "Folio%20Transaction",
-                name: props.name,
-                report_name:  gv.getCustomPrintFormat("Folio Payment Receipt"),
+                doctype: "Business Branch",
+                name:  window.property_name,
+                report_name:  gv.getCustomPrintFormat("eDoor City Ledger Transaction"),
+                view: "ui"
             },
             props: {
                 header: "City Ledger Account",
@@ -272,15 +266,15 @@ const columns = ref([
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit" , default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
-    { fieldname: 'type', default: true },
-    { fieldname: 'is_auto_post' },
-    { fieldname: 'parent_reference' },
     { fieldname: 'payment_by', label: 'Pay by' },
     { fieldname: 'payment_by_phone_number', label: 'Phone No.' },
-    { fieldname: 'owner', label: 'User', default: true,fieldtype:"Owner" },
-    { fieldname: 'modified_by', label: 'Modified By' , fieldtype: "Owner"},
+    { fieldname: 'owner', label: 'User', default: true },
+    { fieldname: 'modified_by', label: 'Modified By', default: true},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'note', label: 'Note', default: true },
+    { fieldname: 'type', default: true },
+    { fieldname: 'is_auto_post' },
+    // { fieldname: 'parent_reference' },
 ])
 
 const selectedColumns = ref([]);
@@ -294,6 +288,7 @@ function OnSaveColumn(event) {
     pageState.value.selectedColumns = selectedColumns.value
     localStorage.setItem("page_state_folio_transaction", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
+    loadData()
 }
 
 

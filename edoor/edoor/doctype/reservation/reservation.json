@@ -36,6 +36,8 @@
   "business_source_type",
   "column_break_23",
   "rate_type",
+  "is_complimentary",
+  "is_house_use",
   "guest_information_section",
   "guest",
   "guest_name",
@@ -647,6 +649,20 @@
    "fieldname": "rooms_data",
    "fieldtype": "JSON",
    "label": "Rooms Data"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use",
+   "read_only": 1
   }
  ],
  "image_field": "guest_photo",
@@ -658,7 +674,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-11-01 14:16:26.980755",
+ "modified": "2023-11-26 11:41:38.408115",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",
