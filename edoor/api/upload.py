@@ -186,8 +186,8 @@ def upload_file():
 	method = frappe.form_dict.method
 	filename = frappe.form_dict.file_name
 	optimize = frappe.form_dict.optimize
-	title = frappe.form_dict.title or ""
-	description = frappe.form_dict.description or ""
+	title = frappe.form_dict.custom_title or ""
+	description = frappe.form_dict.custom_description or ""
 	content = None
 
 
@@ -230,8 +230,8 @@ def upload_file():
 				"file_name": filename,
 				"file_url": file_url,
 				"is_private": cint(is_private),
-				"title":title,
-				"description":description,
+				"custom_title":title,
+				"custom_description":description,
 				"content": content,
 				"custom_show_in_edoor":1
 			}

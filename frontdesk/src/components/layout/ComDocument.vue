@@ -36,7 +36,7 @@
                         <Column field="description" header="Description" headerStyle="max-width: 80%">
                             <template #body="slotProps">
                                 <div class="break-words whitespace-break-spaces">
-                                    {{ slotProps.data.description }}
+                                    {{ slotProps.data.custom_description }}
                                 </div>
                             </template>
                         </Column>
@@ -72,11 +72,11 @@
             <ComOverlayPanelContent :loading="saving"  @onCancel="onEdit($event,{})" @onSave="onSave">
                 <div class="mb-2">
                     <label>Title</label><br />
-                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Title" v-model="selected.title" />
+                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Title" v-model="selected.custom_title" />
                 </div>
                 <div>
                     <label>Description</label>
-                    <Textarea v-model="selected.description" rows="5" placeholder="Descrpition" cols="30" class="w-full border-round-xl" />
+                    <Textarea v-model="selected.custom_description" rows="5" placeholder="Descrpition" cols="30" class="w-full border-round-xl" />
                 </div>
             </ComOverlayPanelContent>
         </OverlayPanel>
@@ -241,7 +241,7 @@ function onLoad(showLoading=true){
 
     getTotalDocument()
     getDocList('File', {
-        fields: ['name', 'title','description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation","modified","modified_by"],
+        fields: ['name', 'custom_title','custom_description','file_size','file_url','file_name','attached_to_name','attached_to_doctype','owner',"creation","modified","modified_by"],
         filters: dataFilter,
         limit_start: ((pageState.value?.page || 0) * (pageState.value?.rows || 20)),
         limit: pageState.value?.rows || 20,
@@ -296,8 +296,8 @@ function onEdit($event,r){
 function onSave(){
     saving.value = true
     updateDoc('File',selected.value.name,{
-        title: selected.value.title,
-        description: selected.value.description
+        custom_title: selected.value.custom_title,
+        custom_description: selected.value.custom_description
     }).then((r)=>{
         saving.value = false
         opEdit.value.hide()

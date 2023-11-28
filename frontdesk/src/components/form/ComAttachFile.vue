@@ -24,8 +24,8 @@
                                 <Button text size="small" icon="pi pi-trash" @click="onRemoveTemplatingFile(file, removeFileCallback, index)" severity="danger" />
                             </div>
                             <div>
-                                <InputText type="text" class="p-inputtext-sm w-full mb-2" placeholder="title"  v-model="file.title" :maxlength="50" />
-                                <Textarea v-model="file.description" rows="3"  placeholder="Description" class="w-full"/>
+                                <InputText type="text" class="p-inputtext-sm w-full mb-2" placeholder="title"  v-model="file.custom_title" :maxlength="50" />
+                                <Textarea v-model="file.custom_description" rows="3"  placeholder="Description" class="w-full"/>
                             </div>
                         </div>
                     </div> 
@@ -99,7 +99,7 @@ const onSelectedFiles = (event) => {
 
     files.value = event.files;
     files.value.forEach((file) => {
-        file.title=file.name.split(".")[0]
+        file.custom_title=file.name.split(".")[0]
         totalSize.value += parseInt(formatSize(file.size));
     });
 }; 

@@ -228,7 +228,7 @@ export function uploadFiles(files, fileArgs = Object){
     return new Promise((resolve, reject)=>{
         let countFile = 0
         files.forEach((r)=>{
-            fileArgs.otherData={title: r.title || "",description:r.description || ""}
+            fileArgs.otherData={custom_title: r.custom_title || "",custom_description:r.custom_description || ""}
             file.uploadFile(
                 r,
                 fileArgs,
