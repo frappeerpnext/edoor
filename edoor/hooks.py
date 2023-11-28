@@ -229,6 +229,7 @@ fixtures = [
     {"dt": "Audit Trail Document"},
     {"dt": "Account Category"},
     {"dt": "App Icons"},
+    {"dt": "File"},
 ]
 
 # website_route_rules = [{'from_route': '/frontdesk/<path:app_path>', 'to_route': '/edoor/frontdesk'},]
