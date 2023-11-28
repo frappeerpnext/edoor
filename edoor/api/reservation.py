@@ -410,9 +410,9 @@ def add_new_reservation(doc):
 
     #update summary to reservation stay
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation.name, reservation_stay=stay_names)
-    
- 
     frappe.db.commit()
+
+    
     frappe.msgprint("Add new reservation successfully")
     return reservation
 

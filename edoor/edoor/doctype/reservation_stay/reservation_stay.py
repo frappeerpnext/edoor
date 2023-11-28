@@ -186,8 +186,8 @@ class ReservationStay(Document):
 
 	def after_insert(self):
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
-		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
-		# generate_room_occupy(self)
+		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
+		generate_room_occupy(self)
 		generate_room_rate(self)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
