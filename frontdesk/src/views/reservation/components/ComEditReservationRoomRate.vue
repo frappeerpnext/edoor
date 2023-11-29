@@ -19,7 +19,6 @@
                             <button @click="onOpenLink(stay?.name)" class="p-0 link_line_action1">{{ stay?.name }}</button>
                         </ComStayInfoNoBox>
                         <ComStayInfoNoBox label="Business Source" :value="stay?.business_source" />
-                        <!-- <ComStayInfoNoBox  label="Room x" :value="stay?.room_type_alias + '/' + stay?.rooms" /> -->
                         <tr>
                             <th class="w-auto border-1 p-2 text-start" style="background: rgb(243, 243, 243);">
                                 <label class="font-normal white-space-nowrap">Room</label>

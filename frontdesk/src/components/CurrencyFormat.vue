@@ -1,6 +1,6 @@
 <template>
 
-    <span>{{ NumberFormat(currency.pos_currency_format,   isNaN(amount)?0:amount) }}</span>
+    <span :class="currAddClass?currAddClass:''">{{ NumberFormat(currency.pos_currency_format,   isNaN(amount)?0:amount) }}</span>
 </template>
 <script setup>
 
@@ -10,7 +10,8 @@ import NumberFormat from 'number-format.js'
 const setting = JSON.parse(  localStorage.getItem("edoor_setting"))
 const props = defineProps({
     value: Number,
-    currency: Object
+    currency: Object,
+    currAddClass:String
 })
 
  

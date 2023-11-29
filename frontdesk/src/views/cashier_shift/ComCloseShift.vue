@@ -1,30 +1,36 @@
 <template>
     <ComDialogContent @close="onClose" :loading="loading" hideButtonOK :hideButtonClose="true">
-        <h1>Cashier Shift Information</h1>
-        <div>
-            Cashier Shift #: {{ doc.name }}
-        </div>
-        <div>
-            Status:
-            <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
-        </div>
-        <div>
-            Posting Date: {{ moment(doc.posting_date).format("DD/MM/YYYY") }}
-        </div>
-        <div>
-            Shift Name: {{ doc.shift_name }}
-        </div>
-        <hr>
-        <div>Open Cash Float:
-            <CurrencyFormat :value="doc.total_opening_amount" />
+        <ComOpenStatus statusAddiClass="absolute closeShiftStatus" :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+        <h1 class="mb-2 font-semibold">Cashier Shift Information</h1>
+        <div class="grid justify-between">
+            <div class="col-12 xl:col-6 overflow-auto">
+                <table>
+                    <tbody>
+                        <ComStayInfoNoBox label="Cashier Shift #" :value="doc.name" />
+                        <ComStayInfoNoBox label="Posting Date" :value="moment(doc.posting_date).format('DD-MM-YYYY')" />
+                        <ComStayInfoNoBox label="Shift Name" :value="doc.shift_name" />
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 xl:col-6">
+                <table>
+                    <tbody>
+                        <ComStayInfoNoBox label="Open Cash Float">
+                            <CurrencyFormat currAddClass="font-semibold" :value="doc.total_opening_amount" />
+                        </ComStayInfoNoBox>
+                        <ComStayInfoNoBox label="Cash Credit">
+                            <CurrencyFormat currAddClass="font-semibold" :value="summary?.cash_credit" />
+                        </ComStayInfoNoBox>
+                        <ComStayInfoNoBox label="Cash Debit">
+                            <CurrencyFormat currAddClass="font-semibold" :value="summary?.cash_debit" />
+                        </ComStayInfoNoBox>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div>Cash Credit:
-            <CurrencyFormat :value="summary?.cash_credit" />
-        </div>
-        <div>Cash Debit:
-            <CurrencyFormat :value="summary?.cash_debit" />
-        </div>
+        <hr class="my-3">
+
 
         <div>Expected Cash:
             <CurrencyFormat :value="summary?.cash_in_hand" />

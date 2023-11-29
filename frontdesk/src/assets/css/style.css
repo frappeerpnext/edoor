@@ -1460,3 +1460,8 @@ align-items: center;
 .input-wrp-search-autocomplete .p-autocomplete.p-component.p-inputwrapper .p-autocomplete-input.p-inputtext.p-component{
     width:100%
 }
+
+.closeShiftStatus{
+    top:8px;
+    left: 111px;
+}

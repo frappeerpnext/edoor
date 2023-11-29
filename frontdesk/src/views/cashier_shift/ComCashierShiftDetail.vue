@@ -2,6 +2,30 @@
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
         <TabView>
             <TabPanel header="Cashier Shift Information">
+                <div class="grid mt-2">
+                    <div class="col-6">
+                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                            Opening Shift Information <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+            </div>
+                <table>
+                    <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
+                    <ComStayInfoNoBox label="Posting Date" v-if="doc.name" :value="moment(doc.posting_date).format('DD-MM-YYYY')" />
+                    <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name" :value="doc.shift_name" />
+                </table>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                            Payment Summary
+            </div>
+                <table>
+                    <ComStayInfoNoBox isCurrency="true" label="Open Cash Float" :value="doc.total_opening_amount" />
+                    <ComStayInfoNoBox isCurrency="true" label="Cash Credit" :value="summary?.cash_credit" />
+                    <ComStayInfoNoBox isCurrency="true" label="Cash Debit" :value="summary?.cash_debit" />
+                    <ComStayInfoNoBox isCurrency="true" label="Cash In Hand" :value="summary?.cash_in_hand" />
+                </table>
+                    </div>
+                </div>
+
                 <table style="width: 100%;">
                     <tr>
                         <td>
