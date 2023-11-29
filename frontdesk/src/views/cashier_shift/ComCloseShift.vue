@@ -62,15 +62,13 @@
                                         v-if="totalSecondCashCountAmount == 0"
             />
 
-            <CurrencyFormat :value="totalSecondCashCountAmount" :currency="secondCurrency"/>
-            
-            
+            <CurrencyFormat v-if="totalSecondCashCountAmount > 0" :value="totalSecondCashCountAmount" :currency="secondCurrency"/>
             
             <br/>
             Total Actual Cash:
             <CurrencyFormat :value="totalCashCountAmount" />
         </div>
-        
+
         <div>Difference Amount:
             <CurrencyFormat :value="((totalCashCountAmount>0?totalCashCountAmount:doc?.total_close_amount ) - doc?.total_system_close_amount) || 0" />
         </div>
