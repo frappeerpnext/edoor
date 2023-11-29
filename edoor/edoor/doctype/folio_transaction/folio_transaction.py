@@ -643,22 +643,23 @@ def update_report_description_field(self):
 
 def update_inventory(self):
 	product_doc = frappe.get_doc("Product",self.product)
-	working_day = get_working_day(self.property)
-	cost = get_product_cost(working_day["stock_location"], self.product)
-	add_to_inventory_transaction({
-		'doctype': 'Inventory Transaction',
-		'transaction_type':"Folio Transaction",
-		'transaction_date':self.posting_date,
-		'transaction_number':self.name,
-		'product_code': self.product,
-		'portion':"",
-		'unit':self.unit,
-		'stock_location':working_day["stock_location"],
-		'out_quantity': self.quantity if self.type=='Debit' else self.quantity * -1,
-		"uom_conversion":1,
-		'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
-		'action': 'Submit'
-	})
+	if product_doc.is_inventory==1:
+		working_day = get_working_day(self.property)
+		cost = get_product_cost(working_day["stock_location"], self.product)
+		add_to_inventory_transaction({
+			'doctype': 'Inventory Transaction',
+			'transaction_type':"Folio Transaction",
+			'transaction_date':self.posting_date,
+			'transaction_number':self.name,
+			'product_code': self.product,
+			'portion':"",
+			'unit':self.unit,
+			'stock_location':working_day["stock_location"],
+			'out_quantity': self.quantity if self.type=='Debit' else self.quantity * -1,
+			"uom_conversion":1,
+			'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
+			'action': 'Submit'
+		})
 
 			
  

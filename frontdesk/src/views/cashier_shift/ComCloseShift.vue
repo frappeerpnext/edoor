@@ -32,18 +32,31 @@
         <hr class="my-3">
 
 
-        <div>Expected Cash:
-            <CurrencyFormat :value="summary?.cash_in_hand" />
+        <div>
+            <table>
+                    <tbody>
+                    <ComStayInfoNoBox label="Expected Cash">
+                        <CurrencyFormat currAddClass="font-semibold" :value="summary?.cash_in_hand" />
+                    </ComStayInfoNoBox>
+                </tbody>
+            </table>
         </div>
 
+        <div class="flex">
+            <div>
+                Actual Cash ({{ mainCurrency.name }})
+            </div>
+            <div>
+                <ComInputCurrency classCss="w-15rem" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
+                <CurrencyFormat v-if="totalMainCashCountAmount > 0" :value="totalMainCashCountAmount" />
+            </div>
+        </div>
+            <hr />
         <div>
-            Actual Cash ({{ mainCurrency.name }}):
-            <ComInputCurrency classCss="w-full" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
-            <CurrencyFormat :value="totalMainCashCountAmount" />
-            <br />
+            
             Actual Cash ({{ secondCurrency.name }}):
 
-             <InputNumber class="text-end w-full w-15rem" v-model="doc.second_total_close_amount"
+             <InputNumber class="text-end w-15rem" v-model="doc.second_total_close_amount"
                                         :minFractionDigits="0" :maxFractionDigits="secondCurrency.precision" mode="currency"
                                         :currency="secondCurrency.name" :locale="secondCurrency.locale" 
                                         v-if="totalSecondCashCountAmount == 0"
@@ -56,10 +69,8 @@
             <br/>
             Total Actual Cash:
             <CurrencyFormat :value="totalCashCountAmount" />
-
-            
-            
         </div>
+        
         <div>Difference Amount:
             <CurrencyFormat :value="((totalCashCountAmount>0?totalCashCountAmount:doc?.total_close_amount ) - doc?.total_system_close_amount) || 0" />
         </div>

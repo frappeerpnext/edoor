@@ -1,28 +1,43 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
+       
+            <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+       
+        
         <TabView>
             <TabPanel header="Cashier Shift Information">
+                
                 <div class="grid mt-2">
+                    <div class="flex col-12 gap-3">
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Open Cash Float</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="doc.total_opening_amount" /></span></span>
+                            </div>
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Credit</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_credit" /></span></span>
+                            </div>
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Debit</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_debit" /></span></span></div>
+                            <div class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash In Hand</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_in_hand" /></span></span>
+                            </div>
+                        </div>
                     <div class="col-6">
                         <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
-                            Opening Shift Information <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+                            Opening Shift Information 
             </div>
                 <table>
                     <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
                     <ComStayInfoNoBox label="Posting Date" v-if="doc.name" :value="moment(doc.posting_date).format('DD-MM-YYYY')" />
                     <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name" :value="doc.shift_name" />
                 </table>
+                <div class="w-full h-10rem mb-4 mt-2">
+            <label>Note</label>
+            <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc.opened_note">
+            </div>
+        </div>
                     </div>
                     <div class="col-6">
-                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
-                            Payment Summary
-            </div>
-                <table>
-                    <ComStayInfoNoBox isCurrency="true" label="Open Cash Float" :value="doc.total_opening_amount" />
-                    <ComStayInfoNoBox isCurrency="true" label="Cash Credit" :value="summary?.cash_credit" />
-                    <ComStayInfoNoBox isCurrency="true" label="Cash Debit" :value="summary?.cash_debit" />
-                    <ComStayInfoNoBox isCurrency="true" label="Cash In Hand" :value="summary?.cash_in_hand" />
-                </table>
+                        
                     </div>
                 </div>
 
@@ -131,7 +146,7 @@
 import { ref, getApi, onMounted, inject, getDoc, useDialog, useToast } from "@/plugin"
 import OpenShift from "@/views/cashier_shift/OpenShift.vue"
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
-
+import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 const toast = useToast()
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")

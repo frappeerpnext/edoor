@@ -170,16 +170,16 @@ onUnmounted(() => {
 })
 onMounted(() => {
     window.socket.on("UpdateCashierShift", (arg) => {
-        if (window.product_name == arg.business_branch) {
+        if (window.property_name == arg.business_branch) {
             if(window.session_id==arg.session_id){
                 if (arg.is_closed ==1){
-                gv.cashier_shift = null
-            }else {
-                gv.cashier_shift = arg
-            }
+                    gv.cashier_shift = null
+                }else {
+                    gv.cashier_shift = arg
+                }
             }else {
                 if(arg.is_closed==1){
-                    toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'This cashier shift is closed. Your browser will be reload.', life: 10000 })
+                    toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'This cashier shift is closed. Your browser will be reload.', life: 5000 })
                     setTimeout(function(){
                         window.reload()
                     }, 5000)
