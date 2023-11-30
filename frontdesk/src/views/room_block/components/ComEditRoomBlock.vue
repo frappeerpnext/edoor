@@ -85,7 +85,7 @@ function onSave (){
         is_auto_submit: true,
         total_night_count: data.value.total_night
     }
-    createUpdateDoc('Room Block', {data: savedData}).then((r)=>{
+    createUpdateDoc('Room Block',savedData).then((r)=>{
         dialogRef.value.close(r)
         window.socket.emit("RoomBlockList", window.property_name)
         window.socket.emit("Frontdesk", window.property_name)

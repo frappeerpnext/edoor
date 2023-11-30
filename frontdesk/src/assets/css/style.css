@@ -1460,8 +1460,27 @@ align-items: center;
 .input-wrp-search-autocomplete .p-autocomplete.p-component.p-inputwrapper .p-autocomplete-input.p-inputtext.p-component{
     width:100%
 }
-
 .closeShiftStatus{
     top:8px;
     left: 111px;
+}
+.shift_status{
+    position: absolute;
+    top: -30px;
+    left: 132px;
+}
+.stickyReservationStatus{
+    position: sticky;
+    top: -13px;
+    background: #FFF;
+    z-index: 3;
+    padding: .3rem 0;
+    margin-top: -0.3rem;
+    border-bottom: 1px solid #e1e7eb;
+}
+.stickyReservationStatus button.p-button:not(.p-0):not(.btn-choose__pro){
+    padding: 0.5rem 0.65rem;
+}
+.d-bg-edoor a{
+    cursor: pointer;
 }

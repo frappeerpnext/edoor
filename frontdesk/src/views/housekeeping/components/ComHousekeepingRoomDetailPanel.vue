@@ -1,10 +1,6 @@
 <template>
     <div class="pb-20">
         <div class="">
-            <div class="line-height-1 absolute top-4">
-                <div class="text-2xl">Detail OF</div>
-                <div class="text-sm">{{ hk.selectedRow?.room_type }} # {{ hk.selectedRow?.room_number }}</div>
-            </div>
             <hr class="mb-3">
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room</div>
             <table>

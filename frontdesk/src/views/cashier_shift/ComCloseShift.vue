@@ -29,10 +29,22 @@
             </div>
         </div>
 
-        <hr class="my-3">
+   <h1 class="my-3 font-semibold">Cash Count</h1>
 
-
-        <div>
+    <div class="grid justify-between">
+        <div class="col-12 xl:col-6 overflow-auto">
+            <table>
+                <tbody>
+                <ComStayInfoNoBox label="Rate Exchange">
+                    <span v-for="(c, index) in exchangeRates" :key="index">
+                        <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
+                        <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{ c.to_currency }})
+                    </span>
+                </ComStayInfoNoBox>
+            </tbody>
+            </table>                 
+        </div>
+        <div class="col-12 xl:col-6">
             <table>
                     <tbody>
                     <ComStayInfoNoBox label="Expected Cash">
@@ -41,139 +53,133 @@
                 </tbody>
             </table>
         </div>
+    </div>
 
-        <div class="flex">
-            <div>
-                Actual Cash ({{ mainCurrency.name }})
-            </div>
-            <div>
-                <ComInputCurrency classCss="w-15rem" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
-                <CurrencyFormat v-if="totalMainCashCountAmount > 0" :value="totalMainCashCountAmount" />
-            </div>
-        </div>
-            <hr />
-        <div>
-            
-            Actual Cash ({{ secondCurrency.name }}):
+    <div class="grid justify-between -mx-2">
+        <div  class="col-12 xl:col-6 overflow-auto">
+            <div v-if="cashCountSetting">
+                <table class="w-full">
 
-             <InputNumber class="text-end w-15rem" v-model="doc.second_total_close_amount"
-                                        :minFractionDigits="0" :maxFractionDigits="secondCurrency.precision" mode="currency"
-                                        :currency="secondCurrency.name" :locale="secondCurrency.locale" 
-                                        v-if="totalSecondCashCountAmount == 0"
-            />
-
-            <CurrencyFormat v-if="totalSecondCashCountAmount > 0" :value="totalSecondCashCountAmount" :currency="secondCurrency"/>
-            
-            <br/>
-            Total Actual Cash:
-            <CurrencyFormat :value="totalCashCountAmount" />
-        </div>
-
-        <div>Difference Amount:
-            <CurrencyFormat :value="((totalCashCountAmount>0?totalCashCountAmount:doc?.total_close_amount ) - doc?.total_system_close_amount) || 0" />
-        </div>
-
-
-
-        <hr>
-
-        <div v-if="cashCountSetting">
-            The Exchange Rate is:
-            <div v-for="(c, index) in exchangeRates" :key="index">
-                <CurrencyFormat :value="1" />( {{ c.base_currency }}) =
-                <CurrencyFormat :value="c.exchange_rate" :currency="c" /> ({{ c.to_currency }})
-            </div>
-
-            <h1>Cash Count</h1>
-            <table>
-                <tr>
-                    <td>Note Type</td>
-                    <td>Total Note</td>
-                    <td>Total Amount</td>
-                </tr>
-                <template v-for="(c, index) in [...new Set(cashCountSetting.map(r => r.currency))] " :key="index">
                     <tr>
-                        <td colspan="3">
-                            {{ c }}
-                        </td>
+                        <td class="w-auto border-1 p-2 font-semibold">Note Type</td>
+                        <td class="w-auto border-1 p-2 font-semibold">Total Note</td>
+                        <td class="w-auto border-1 p-2 font-semibold text-right">Total Amount</td>
                     </tr>
-                    <tr v-for="(n, index) in cashCountSetting.filter(r => r.currency == c)" :key="index">
-                        <td>
-                            {{ n.label }}
-                        </td>
-                        <td>
-                            <InputNumber v-model="n.total_note" />
-                        </td>
-                        <td>
-                            <CurrencyFormat :value="n.value * n.total_note" :currency="n" />
-                        </td>
+                    <template v-for="(c, index) in [...new Set(cashCountSetting.map(r => r.currency))] " :key="index">
+                        <tr>
+                            <td colspan="3" style='background: rgb(243, 243, 243);' class="w-auto border-1 p-2 font-semibold">
+                                {{ c }}
+                            </td>
+                        </tr>
+                        <tr v-for="(n, index) in cashCountSetting.filter(r => r.currency == c)" :key="index" >
+                            <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>
+                                {{ n.label }}
+                            </td>
+                            <td class="w-auto border-1 p-2">
+                                <InputNumber class="w-full" v-model="n.total_note" />
+                            </td>
+                            <td class="w-auto border-1 p-2 font-semibold text-right">
+                                <CurrencyFormat :value="n.value * n.total_note" :currency="n" />
+                            </td>
 
-                    </tr>
-                    <tr>
-                        <td>Total</td>
-                        <td>{{ cashCountSetting.filter(r => r.currency == c).reduce((n, d) => n + (d.total_note || 0), 0) }}
-                        </td>
-                        <td>
+                        </tr>
+                        <tr>
+                            <td class="w-auto border-1 p-2">Total</td>
+                            <td class="w-auto border-1 p-2 font-semibold">{{ cashCountSetting.filter(r => r.currency == c).reduce((n, d) => n + (d.total_note || 0), 0) }}
+                            </td>
+                            <td class="w-auto border-1 p-2 font-semibold text-right">
+                                <CurrencyFormat :value=" cashCountSetting?.filter(r=>r.currency==c).reduce((n, d) => n + (d.total_note * d.value || 0), 0)"  :currency="cashCountSetting?.filter(r=>r.currency==c)[0]"/>
+                            </td>
+                        </tr>
+                    </template>
 
-                            <CurrencyFormat :value=" cashCountSetting?.filter(r=>r.currency==c).reduce((n, d) => n + (d.total_note * d.value || 0), 0)"  :currency="cashCountSetting?.filter(r=>r.currency==c)[0]"/>
-                             
-                        </td>
-                        
-                       
-                    </tr>
-
-
-                </template>
-
-
-            </table>
- 
+                </table>
+            </div>
         </div>
+
+        <div class="col-12 xl:col-6">
+            <div class="flex">
+                <div class="col-3 flex align-items-center justify-content-end">
+                    Actual Cash ({{ mainCurrency.name }}): 
+                </div>
+                <div class="col">
+                    <ComInputCurrency classCss="w-full" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
+                    <CurrencyFormat currAddClass="block w-full box-input py-2 px-3 border-round-lg whitespace-nowrap border border-white bg-gray-edoor-10 font-semibold"
+                     v-if="totalMainCashCountAmount > 0" :value="totalMainCashCountAmount" />
+                </div>
+            </div>
+
+            <div class="flex">
+                <div class="col-3 flex align-items-center justify-content-end">
+                    Actual Cash ({{ secondCurrency.name }}):
+                </div>
+                
+                <div class="col">
+                    <InputNumber class="text-end w-full" v-model="doc.second_total_close_amount"
+                                                :minFractionDigits="0" :maxFractionDigits="secondCurrency.precision" mode="currency"
+                                                :currency="secondCurrency.name" :locale="secondCurrency.locale" 
+                                                v-if="totalSecondCashCountAmount == 0"/>
+                    <CurrencyFormat currAddClass="block w-full box-input py-2 px-3 border-round-lg whitespace-nowrap border border-white bg-gray-edoor-10 font-semibold" 
+                    v-if="totalSecondCashCountAmount > 0" :value="totalSecondCashCountAmount" :currency="secondCurrency"/>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="col-3"><!--Keep Blank--></div>
+                <div class="col flex w-full gap-3 mb-3 mt-1">
+                    <div class="bg-yellow-100 border-yellow-400 flex flex-column rounded-lg grow p-2 shadow-charge-total border">
+                        <span class="text-600 uppercase text-sm text-end">
+                            Difference Amount
+                        </span>
+                        <CurrencyFormat currAddClass="text-xl line-height-2 font-semibold text-end" :value="((totalCashCountAmount>0?totalCashCountAmount:doc?.total_close_amount) - doc?.total_system_close_amount) || 0" />
+                    </div>
+                    <div class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border">
+                        <span class="text-600 uppercase text-sm text-end">
+                            Total Actual Cash
+                        </span>
+                        <CurrencyFormat currAddClass="text-xl line-height-2 font-semibold text-end" :value="totalCashCountAmount" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="my-3 font-semibold">Other Payment Type</h1>
+        <table class="w-full">
+            <tr style='background: rgb(243, 243, 243);'>
+                <td class="w-auto border-1 p-2 font-semibold">Type</td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">Total Debit</td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">Total Credit</td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">System Close Amount</td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">Actual Close Amount</td>
+                <td class="w-auto border-1 p-2 font-semibold text-right">Difference Amount</td>
+            </tr>
+            <tr v-for="(s, index) in otherPayments" :key="index">
+                <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>{{ s.payment_type }}</td>
+                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total_debit" /></td>
+                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total_credit" /></td>
+                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total" /></td>
+                <td class="w-auto border-1 p-2 text-right"><ComInputCurrency classCss="w-full" v-model="s.actual_close_amount"  /></td>
+                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.actual_close_amount - s.total" /></td>
+            </tr>
+            <tr>
+                <td class="font-semibold text-right">Total</td>
+                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_debit || 0), 0)" /></td>
+                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_credit || 0), 0)" /></td>
+                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total || 0), 0)" /></td>
+                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.actual_close_amount || 0), 0)" /></td>
+                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n +((d.actual_close_amount || 0) - (d.total || 0) ), 0)" /></td>
+            </tr>
+        </table>
         <hr>
-      
-        <h1>Other Payment Type</h1>
-            <table>
-                <tr>
-                    <td>Type</td>
-                    <td>Total Debit</td>
-                    <td>Total Credit</td>
-                    <td>System Close Amount</td>
-                    <td>Actual Close Amount</td>
-                    <td>Difference Amount</td>
-                </tr>
-                <tr v-for="(s, index) in otherPayments" :key="index">
-                    <td>{{ s.payment_type }}</td>
-                    <td><CurrencyFormat :value="s.total_debit" /></td>
-                    <td><CurrencyFormat :value="s.total_credit" /></td>
-                    <td><CurrencyFormat :value="s.total" /></td>
-                    <td><ComInputCurrency classCss="w-full" v-model="s.actual_close_amount"  /></td>
-                    <td><CurrencyFormat :value="s.actual_close_amount - s.total" /></td>
-                </tr>
-                <tr>
-                    <td>Total</td>
-                    <td><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_debit || 0), 0)" /></td>
-                    <td><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_credit || 0), 0)" /></td>
-                    <td><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total || 0), 0)" /></td>
-                    <td><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.actual_close_amount || 0), 0)" /></td>
-                    <td><CurrencyFormat :value="otherPayments?.reduce((n, d) => n +((d.actual_close_amount || 0) - (d.total || 0) ), 0)" /></td>
-                </tr>
-            </table>
-        
-
-            <hr>
-            <div class="w-full mt-3">
-            <label>Note:</label> <br />
-            <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
+        <div class="w-full mt-3">
+        <label>Note:</label> <br />
+        <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
         </div>
-        
-        
-
-        <template #footer-right>
-            <div class="relative">
-            <span class="absolute w-full"><Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" /></span>
-            <span class="pl-5">I have verified that my information about is correct</span>
-        </div>
-
+        <template #footer-right  v-if="doc.is_closed !== 1" >
+            <div class="relative mt-2">
+                <span class="absolute w-full"><Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" /></span>
+                <span class="pl-5">I have verified that my information about is correct</span>
+            </div>
             <Button class="border-none" v-if="doc.is_closed == 0" :disabled= "!doc.is_confirm" @click="onCloseShift">Close Shift</Button>
         </template>
     </ComDialogContent>

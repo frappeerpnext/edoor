@@ -43,6 +43,7 @@ import ComBusinessSourceDetail from '@/views/business_source/components/ComBusin
 import ComRoomDetail from '@/views/housekeeping/components/ComRoomDetail.vue';
 import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail.vue";
 import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
+import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayableLedgerDetail.vue";
  
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -134,6 +135,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_desk_folio_detail") {
                 showDeskFolioDetail(data[1])
+            }
+            else if (data[0] == "view_payable_ledger_detail") {
+                showPayableLedgerDetail(data[1])
             }
             else if (data[0] == "view_room_detail") {
                 showRoomDetail(data[1])
@@ -583,6 +587,24 @@ function showDeskFolioDetail(name) {
         },
         props: {
             header:"Desk Folio Detail - " + name,
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+       
+    });
+}
+function showPayableLedgerDetail(name) {
+    const dialogRef = dialog.open(ComPayableLedgerDetail, {
+        data: {
+            name: name,
+        },
+        props: {
+            header:"Payable Ledger Detail - " + name,
             style: {
                 width: '80vw',
             },

@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_reservation_folio, get_base_rate
+from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
@@ -385,7 +385,10 @@ class FolioTransaction(Document):
 		elif self.transaction_type=='Deposit Ledger':
 			update_deposit_ledger(self.transaction_number, None, False)
 		elif self.transaction_type=='Desk Folio':
-			update_desk_folio(self.transaction_number, None, False)
+			update_desk_folio(self.transaction_number, None, False)	
+		elif self.transaction_type=='Payable Ledger':
+			update_payable_ledger(self.transaction_number, None, False)
+
 		
 		
 		reservation_names.append(self.reservation)
@@ -501,9 +504,10 @@ def update_folio_transaction(self):
 		update_city_ledger(self.transaction_number, None, False)
 	elif self.transaction_type =="Deposit Ledger":
 		update_deposit_ledger(self.transaction_number, None, False)
-	elif self.transaction_type=='Desk Folio':
-		
+	elif self.transaction_type=='Desk Folio':		
 		update_desk_folio(self.transaction_number, None, False)
+	elif self.transaction_type=='Payable Ledger':
+		update_payable_ledger(self.transaction_number, None, False)
 
 	
 

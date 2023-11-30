@@ -4,8 +4,8 @@
             <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
                 <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
-                <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
-                <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
+                <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
+                <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>
             <div v-else>
                 <div class="p-6 text-center text-gray-500">

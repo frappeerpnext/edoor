@@ -2,7 +2,7 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="flex mb-3 justify-between">
+                <div class="flex mb-3 justify-between stickyReservationStatus">
                     <ComReservationStayHeaderStatus />
                     <div class="flex gap-2">
                         <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"

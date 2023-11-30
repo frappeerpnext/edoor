@@ -30,7 +30,7 @@ def get_columns(filters):
 	]
 	return columns
 def get_filters(filters):
-	sql = " and custom_is_audit_trail = 1 and custom_is_note = 0 and custom_property=%(property)s and custom_posting_date between %(start_date)s and %(end_date)s"
+	sql = " and c.custom_is_audit_trail = 1 and c.custom_is_note = 0 and c.custom_property=%(property)s and c.custom_posting_date between %(start_date)s and %(end_date)s"
 
 	if filters.get("select_user"):
 		sql = sql + " and c.comment_email = %(select_user)s"

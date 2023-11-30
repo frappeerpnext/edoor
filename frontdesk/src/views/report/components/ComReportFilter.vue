@@ -65,6 +65,34 @@
                     v-model="filter.rooms"   placeholder="Room" doctype="Room"
                     :filters="{ property: property.name }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
+            <div class="col"  v-if="hasFilter('building')">
+                <label>Building</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                    v-model="filter.building"   placeholder="building" doctype="Building"
+                    :filters="{ property: property.name }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('floor')">
+                <label>Floor</label><br>
+                
+                <ComSelect class="auto__Com_Cus w-full" 
+                    v-model="filter.floor" placeholder="floor" doctype="Floor"
+                    :filters="{ property: property.name, building: ['=', filter.building]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('housekeeper')">
+                <label>Housekeeper</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                    v-model="filter.housekeeper"   placeholder="housekeeper" doctype="Housekeeper"
+                      :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('housekeeping_status')">
+                <label>Housekeeping Status</label><br>
+                
+                <ComSelect        class="auto__Com_Cus w-full" 
+                    v-model="filter.housekeeping_status"   placeholder="status" doctype="Housekeeping Status"
+                      :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+            </div>
             <div class="col"  v-if="hasFilter('account_name')">
                 <label>Account Name</label><br>
                 

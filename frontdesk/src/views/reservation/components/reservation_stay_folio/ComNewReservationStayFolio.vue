@@ -24,7 +24,7 @@ const guests = ref([])
 function onSave() {
     isSaving.value = true;
 
-    createUpdateDoc('Reservation Folio', {data: doc.value })
+    createUpdateDoc('Reservation Folio', doc.value)
     .then((doc) => {
         dialogRef.value.close(doc)
         isSaving.value = false

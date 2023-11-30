@@ -58,7 +58,6 @@ function onSelectReferenceDocument(d){
   } 
 }
 function onSave(){
-
   if(!data.value.content){
     gv.toast('warn','Please input note.')
     return
@@ -69,7 +68,7 @@ function onSave(){
   loading.value = true
   let dataSave = JSON.parse(JSON.stringify(data.value))
   dataSave.custom_note_date = gv.dateApiFormat(dataSave.custom_note_date)
-  createUpdateDoc("Comment", {data: dataSave})
+  createUpdateDoc("Comment", dataSave)
   .then((r)=>{
     loading.value = false
     dialogRef.value.close(r)

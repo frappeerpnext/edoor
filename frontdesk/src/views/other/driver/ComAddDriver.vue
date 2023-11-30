@@ -89,7 +89,7 @@ function onOK() {
     else
         data.expired_date = ''
     
-    createUpdateDoc('Drivers', { data: data }).then((r) => {
+    createUpdateDoc('Drivers',  data).then((r) => {
         loading.value = false
         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
         window.socket.emit("ReservationDetail", window.reservation)

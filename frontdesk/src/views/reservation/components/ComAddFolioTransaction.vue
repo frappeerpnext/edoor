@@ -43,7 +43,8 @@
 
                     <div v-if="doc.account_name" class="col-12 ">
                         <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                            <span class="text-500 font-italic">You Selected Account Code</span> {{ doc.account_name }}
+                            <span class="text-500 font-italic">You Selected Account Code </span>
+                            {{ doc.account_name }}
                         </div>
                     </div>
                     <div class="col-12" v-if="account_code.show_payment_by==1">
@@ -69,11 +70,17 @@
                     <!-- /Quantity -->
 
                     <!-- Select Product -->
-                    {{ doc.required_select_product }}
-                    <div v-if="doc.required_select_product==1">
+                    <div class="col-6" v-if="doc.required_select_product==1">
+                        <label >Product</label>
+                        <ComAutoComplete class="auto__Com_Cus w-full" doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
                         
-                        <ComAutoComplete doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
-                        {{ doc.product_description }}
+                    </div>
+                    <div class="col-12">
+                        <div v-if="doc.product" class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
+                            <span class="text-500 font-italic">You Selected Product Code </span>
+                            {{ doc.product_description }} x {{ doc.quantity }}
+                        </div>
+                    
                     </div>
                     <!-- /select prosduct -->
                     <!-- Discount -->
@@ -545,6 +552,7 @@ const total_amount = computed(() => {
 });
 
 function onSelectAccountCode(data) {
+
     if (data.value) {
         getDoc('Account Code', data.value)
             .then((d) => {
@@ -662,7 +670,7 @@ function onSave() {
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
 
-    createUpdateDoc("Folio Transaction", { data })
+    createUpdateDoc("Folio Transaction", data)
         .then((doc) => {
             isSaving.value = false
             dialogRef.value.close(doc)
@@ -688,10 +696,10 @@ function getSuguestCityLedger(){
     if(dialogRef.value.data.business_source){
             call.get('frappe.desk.search.search_link', {doctype:"City Ledger",txt:dialogRef.value.data.business_source, filters: [["property", "=", window.property.name]]}).then(r=>{
  
-                if (r.results.length > 0) {
-                    doc.value.target_transaction_number = r.results[0].value
-                    doc.value.selected_target_transaction_data= r.results[0]
-                    doc.value.selected_target_transaction_number = r.results
+                if (r.message.length > 0) {
+                    doc.value.target_transaction_number = r.message[0].value
+                    doc.value.selected_target_transaction_data= r.message[0]
+                    doc.value.selected_target_transaction_number = r.message
                     
                 }else {
                     doc.value.selected_target_transaction_number = null

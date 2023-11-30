@@ -67,9 +67,9 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
     const db = frappe.db() 
  
     return new Promise((resolve, reject)=>{
-    
+        console.log(data)
         if(data.name){
-        
+      
             db.updateDoc(doctype, data.name, data)
             .then((doc) => {
                
@@ -102,7 +102,7 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
             });
         }
         else{ 
-          
+            alert("add")
             db.createDoc(doctype, data)
             .then((doc) => {
                 resolve(doc)

@@ -18,8 +18,8 @@
                 </div>
                      
                     <ComFolioAction :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
-                    <ComFolioTransactionCreditDebitStyle v-if="showCreditDebitStyle" :folio="selectedFolio" />
-                    <ComFolioTransactionSimpleStyle v-else :folio="selectedFolio" />
+                    <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
+                    <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>
         </div>
     </div>
@@ -118,7 +118,7 @@
                     guest: rs.reservation.guest,
                     reservation_stay: rs.reservationStays.find(r=>r.is_master==1).name
                 }
-                createUpdateDoc('Reservation Folio', {data: doc})
+                createUpdateDoc('Reservation Folio', doc)
                 .then((doc) => {
                     loadReservationFolioList(doc.name)
                     loading.value = false

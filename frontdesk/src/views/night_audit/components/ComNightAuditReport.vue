@@ -3,7 +3,7 @@
         <div class="primary_message">
             <h2 class="text-4xl">Congratulation!</h2>
             <p>Night audit process executed successfully.</p>
-            <p>The system date has been updated to July 20, 2023. Kindly provide the printed report to your supervisor.</p>
+            <p>The system date has been updated to {{date}}. Kindly provide the printed report to your supervisor.</p>
         </div>
         <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
             <SplitterPanel :size="25" class="pa-4">
@@ -36,11 +36,13 @@ import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
 const report_list = ref([])
 const selectedReport = ref()
+const date = ref()
 const gv = inject("$gv")
 const moment= inject("$moment")
 const url = ref()
 const activeButton = ref(0)
 const letter_head = ref(window.setting.property.default_letter_head )
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 function onViewReport(rpt, activeButton){ 
     selectedReport.value = rpt
     showReport() 
@@ -82,6 +84,7 @@ function onSelectLetterHead(d){
 }
 
 onMounted(()=>{
+    date.value = moment(working_day.date_working_day).format("MMMM DD, YYYY")
     getDocList("System Report", {
         fields:["*"],
         filters:[["parent_system_report","=",'Night Audit']],

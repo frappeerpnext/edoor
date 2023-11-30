@@ -1,29 +1,21 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
        
-            <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+          
        
         
         <TabView>
             <TabPanel header="Cashier Shift Information">
                 
                 <div class="grid mt-2">
-                    <div class="flex col-12 gap-3">
-                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Open Cash Float</span><span class="text-xl line-height-2 font-semibold text-end">
-                                <span><CurrencyFormat :value="doc.total_opening_amount" /></span></span>
-                            </div>
-                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Credit</span><span class="text-xl line-height-2 font-semibold text-end">
-                                <span><CurrencyFormat :value="summary?.cash_credit" /></span></span>
-                            </div>
-                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Debit</span><span class="text-xl line-height-2 font-semibold text-end">
-                                <span><CurrencyFormat :value="summary?.cash_debit" /></span></span></div>
-                            <div class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash In Hand</span><span class="text-xl line-height-2 font-semibold text-end">
-                                <span><CurrencyFormat :value="summary?.cash_in_hand" /></span></span>
-                            </div>
-                        </div>
                     <div class="col-6">
-                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
-                            Opening Shift Information 
+                        <ComReservationStayPanel title="Shift Information">
+                            <template #content>
+                                <div class="shift_status">
+                                 <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />    
+                                </div>                   
+                                <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                            Opening Shift
             </div>
                 <table>
                     <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
@@ -31,84 +23,124 @@
                     <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name" :value="doc.shift_name" />
                 </table>
                 <div class="w-full h-10rem mb-4 mt-2">
-            <label>Note</label>
+            <label>Opening Note</label>
             <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc.opened_note">
             </div>
         </div>
+        <hr>
+        <template v-if="doc.is_closed">
+        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                            Closing Shift
+            </div>
+                <table>
+                    <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
+                    <ComStayInfoNoBox label="Closing Date" :value="moment(doc.closed_date).format('DD-MM-YYYY')" />
+                    <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name" :value="doc.shift_name" />
+                </table>
+                <div class="w-full h-10rem mb-4 mt-2">
+            <label>Closing Note</label>
+            <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc.closed_note">
+            </div>
+        </div>
+     </template>
+     
+                            </template>
+                        </ComReservationStayPanel>
+                        <div class="mt-3">
+                            <ComReservationStayPanel class="bg-white">
+                            <template #content>    
+                            <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
+                :reference_doctypes="['Cashier Shift']" :docnames="[doc?.name]" />
+</template>
+</ComReservationStayPanel>
+            </div>
+
+                       
                     </div>
                     <div class="col-6">
-                        
-                    </div>
-                </div>
-
-                <table style="width: 100%;">
-                    <tr>
-                        <td>
-                            <h1>Opening Shift Information</h1>
-                            <div>
-                                Cashier Shift #: {{ doc.name }}
+                        <ComReservationStayPanel title="Payment Information">
+                            <template #content>
+                                <div class="flex w-full gap-3">
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Open Cash Float</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="doc.total_opening_amount" /></span></span>
                             </div>
-                            <div>
-                                Status:
-                                <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Debit</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_debit" /></span></span></div>
+                            <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash Credit</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_credit" /></span></span>
                             </div>
-                            <div>
-                                Posting Date: {{ moment(doc.posting_date).format("DD/MM/YYYY") }}
+                            
+                            <div class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border"><span class="text-500 uppercase text-sm text-end">Cash In Hand</span><span class="text-xl line-height-2 font-semibold text-end">
+                                <span><CurrencyFormat :value="summary?.cash_in_hand" /></span></span>
                             </div>
-                            <div>
-                                Shift Name: {{ doc.shift_name }}
-                            </div>
-
-
-                            <div>
-                                Opened Note: {{ doc.opened_note }}
-                            </div>
-
-                            <div>
-                                Opened By: {{ doc?.owner?.split("@")[0] }},
-                                <ComTimeago :date="doc.creation" />
-
-                            </div>
-
-                            <hr>
-
-                            <div>
-                                <!-- put v-if doc.is_closed==1 -->
-                                <h1>Close Shift Information</h1>
-                                <div>Close Note: {{ doc.closed_note }} </div>
-                                <div> Closed By: {{ doc?.modified_by?.split("@")[0] }},
-                                    <ComTimeago :date="doc.closed_date" />
-                                </div>
-                            </div>
-
+                        </div>
+                            <div class="bg-slate-200 p-2 mt-3 font-medium text-center border-left-2">
+                            Payment Summary
+            </div>
+            <table class="w-full" >
+                <tr style="background: rgb(243, 243, 243);">
+                        <td class="w-auto border-1 p-2"  > Type </td>
+                        <td class="w-auto border-1 p-2" > Debit </td>
+                        <td class="w-auto border-1 p-2" > Credit </td>
+                        <td class="w-auto border-1 p-2" > Total </td>
+                </tr>
+                <tr v-for="(p, index) in summary?.summary_by_payment_type" :key="index" >
+                        <td class="border-1 p-2"  > {{ p.payment_type }} </td>
+                        <td class="border-1 p-2" > <CurrencyFormat :value="p.total_debit"/> </td>
+                        <td class="border-1 p-2" > <CurrencyFormat :value="p.total_credit"/> </td>
+                        <td class="border-1 p-2" > <CurrencyFormat :value="p.total"/> </td>
+                </tr>
+            
+            </table>
+                            </template>
+                        </ComReservationStayPanel >
+            <div class="mt-3"></div>            
+                        <ComReservationStayPanel v-if="doc?.cash_count?.length > 0" title="Cash Count">
+                            <template #content>
+                            
+   
+                <table class="w-full">
+               
+                    <template v-for="(c, index) in [...new Set(doc?.cash_count?.map(r => r.currency))]" :key="index" >
+                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                           Cash {{ c }}
+            </div>
+            <tr style="background: rgb(243, 243, 243);">
+                        <td class="w-auto border-1 p-2"  > Type </td>
+                        <td class="w-auto border-1 p-2" > Total Note </td>
+                        <td class="w-auto border-1 p-2" > Total </td>
+                    </tr>
+                        <tr v-for="(p, index) in doc?.cash_count?.filter(r => r.currency == c)" iscu :key="index" >
+                        <td class="border-1 p-2" >
+{{ p.label }}
                         </td>
-                        <td>
-
-                            <div>Open Cash Float:
-                                <CurrencyFormat :value="doc.total_opening_amount" />
-                            </div>
-
-                            <div>Cash Credit:
-                                <CurrencyFormat :value="summary?.cash_credit" />
-                            </div>
-                            <div>Cash Debit:
-                                <CurrencyFormat :value="summary?.cash_debit" />
-                            </div>
-
-                            <div>Cash In Hand:
-                                <CurrencyFormat :value="summary?.cash_in_hand" />
-                            </div>
-                            <hr>
-                            <div style="background-color: aquamarine;">
-                                <h1>Payment Summary</h1>
-                                <div v-for="(p, index) in summary?.summary_by_payment_type" :key="index">
-                                    {{ p.payment_type }} :
-                                    <CurrencyFormat :value="p.total" />
-                                </div>
-                            </div>
+                        <td class="border-1 p-2">
+{{ p.total_note }}
+                        </td>
+                        <td class="border-1 p-2">
+                            <CurrencyFormat :value="p.total_amount" :currency="p" />
                         </td>
                     </tr>
-                </table>
+                    <tr class="bg-white">
+                        <td class="w-auto border-1 p-2"  > Total </td>
+                        <td class="w-auto border-1 p-2" > {{ doc?.cash_count?.filter(r => r.currency == c).reduce((n, d) => n + (d.total_note || 0), 0) }}  </td>
+                        <td class="w-auto border-1 p-2" > <CurrencyFormat :value=" doc?.cash_count?.filter(r=>r.currency==c).reduce((n, d) => n + (d.total_amount || 0), 0)"  :currency="doc?.cash_count?.filter(r=>r.currency==c)[0]"/>
+ </td>
+                    </tr>
+                
+                   </template>
+                   <tr>
+                     <td colspan="2" class="w-auto  p-2 font-medium text-end">Grand Total</td>
+                     <td class="w-auto bg-white p-2 bg-slate-200"><CurrencyFormat :value="doc.total_close_amount"/></td>
+                   </tr>
+                </table> 
+            </template>
+           
+                        </ComReservationStayPanel>  
+                        </div>
+                                              
+                    </div>
+
             </TabPanel>
             <TabPanel>
                 <template #header>
@@ -117,14 +149,15 @@
                 </template>
                 <ComDocument v-if="doc" @updateCount="onUpdateFileCount" doctype="Cashier Shift"
                     :doctypes="['Cashier Shift']" :attacheds="[doc?.name]" :docname="doc?.name" />
+                    <div class="col-12">
+            <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
+                :reference_doctypes="['Cashier Shift']" :docnames="[doc?.name]" />
+        </div>
             </TabPanel>
         </TabView>
 
 
-        <div class="col-12">
-            <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
-                :reference_doctypes="['Cashier Shift']" :docnames="[doc?.name]" />
-        </div>
+
 
         <template #footer-left>
 
@@ -143,7 +176,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, getApi, onMounted, inject, getDoc, useDialog, useToast } from "@/plugin"
+import { ref, getApi, onMounted, inject, getDoc, useDialog, useToast ,computed } from "@/plugin"
 import OpenShift from "@/views/cashier_shift/OpenShift.vue"
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
@@ -164,9 +197,6 @@ const summary = ref()
 function onUpdateFileCount(n) {
     totalDocument.value = n
 }
-
-
-
 
 //Folio Summary Report
 print_menus.value.push({

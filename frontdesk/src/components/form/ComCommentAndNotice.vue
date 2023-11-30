@@ -13,7 +13,7 @@
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
             </div>
-            <div class="flex gap-5 justify-end items-center mt-1"> 
+            <div class="flex gap-3 justify-end items-center mt-1"> 
             <div class="flex gap-5 align-items-center">
                 <div>
                     <RadioButton v-model="create.custom_is_note"  inputId="comment" name="noteType" :value="0" />
@@ -257,7 +257,7 @@ function onSaveNote(doctype, data) {
     data.custom_is_audit_trail =1
     data.custom_posting_date = window.current_working_date
     
-    createUpdateDoc(doctype, { data: data }).then((r) => {
+    createUpdateDoc(doctype,  data ).then((r) => {
         saving.value = false
         create.value = {
             content: '',

@@ -1820,12 +1820,12 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
                 ifnull(parent_reference,'') = '' and  
                 transaction_type=if('{0}'='',transaction_type,'{0}') and 
                 transaction_number=if('{1}'='',transaction_number,'{1}') and 
-                reservation=if('{2}'='',reservation,'{2}') and 
-                reservation_stay=if('{3}'='',reservation_stay,'{3}') 
+                ifnull(reservation,'')=if('{2}'='',ifnull(reservation,''),'{2}') and 
+                ifnull(reservation_stay,'')=if('{3}'='',ifnull(reservation_stay,''),'{3}') 
             """
     
     sql = sql.format(transaction_type, transaction_number,reservation,reservation_stay)
-    
+  
 
   
     data = frappe.db.sql(sql,as_dict=1)

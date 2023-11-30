@@ -29,7 +29,7 @@ function onSave(){
       new_name: businesssourceType.value.business_source_type
     } 
   }
-  createUpdateDoc('Business Source Type', {data:businesssourceType.value},null,rename.value).then((r)=>{
+  createUpdateDoc('Business Source Type', businesssourceType.value,null,rename.value).then((r)=>{
     dialogRef.value.close(r)
     loading.value = false
   }).catch((er)=>{

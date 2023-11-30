@@ -87,6 +87,12 @@
     <div class="hkpanel">
         <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-3" v-model:visible="visibleRight" position="right"
             @hide="SidebarClose">
+            <template #header>
+                <div class="line-height-1">
+                <div class="text-2xl">Detail OF</div>
+                <div class="text-sm">{{ hk.selectedRow?.room_type }} # {{ hk.selectedRow?.room_number }}</div>
+            </div>
+            </template>
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
         </Sidebar>
     </div>

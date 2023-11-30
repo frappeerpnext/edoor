@@ -1,6 +1,7 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
     <div class="grid">
+
         <div class="col-6">
             <label>Posting Date</label>
             <div>
@@ -29,7 +30,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getApi, getDoc, createUpdateDoc,useToast } from '@/plugin'
+import { ref, inject, onMounted, getDoc, createUpdateDoc,useToast } from '@/plugin'
 
 const dialogRef = inject('dialogRef')
 const loading=ref(false)
@@ -53,7 +54,7 @@ function onOK() {
         property: property.name,
         guest:data.value.guest
     }
-    createUpdateDoc('Desk Folio', {data: savedData}).then((r)=>{
+    createUpdateDoc('Desk Folio',  savedData).then((r)=>{
         dialogRef.value.close(r)
         loading.value = false
     }).catch((err)=>{

@@ -20,8 +20,6 @@
                     <label>Company Name</label><br />
                     <InputText class="w-full" v-model="data.company_name" type="text"  placeholder="Company Name" :maxlength="50" />
                 </div>  
-              
-                
                 <div class="col-6">
                     <label>Phone Number</label><br />
                     <InputText class="w-full" v-model="data.phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
@@ -71,7 +69,7 @@
                     <InputText class="w-full"  v-model="data.contact_phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
                 </div>                
             
-                </div>
+            </div>
         </template>
     </ComReservationStayPanel>  
     <ComReservationStayPanel title="Note">
@@ -83,7 +81,7 @@
             </div>
         </template>
     </ComReservationStayPanel>
-</div>
+    </div>
     </ComDialogContent>
 </template>
 <script setup>
@@ -99,7 +97,6 @@ function onClose(){
 }
 
 function onSave(){
-    
     if(!data.value.city_ledger_name){
         gv.toast('warn','City ledger name is required.')
         return
@@ -109,7 +106,8 @@ function onSave(){
         return
     }
     loading.value = true
-    createUpdateDoc("City Ledger", {data: data.value}).then((r)=>{
+    createUpdateDoc("City Ledger", data.value)
+    .then((r)=>{
         window.socket.emit("Dashboard",property.name)
         window.socket.emit("CityLedgerAccount",window.property_name)
         window.socket.emit("ComCityLedgerDetail",window.property_name)

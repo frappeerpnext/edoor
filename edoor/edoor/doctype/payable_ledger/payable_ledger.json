@@ -1,0 +1,187 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-11-29 14:50:31.397510",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "posting_date",
+  "working_day",
+  "cashier_shift",
+  "column_break_oubl",
+  "property",
+  "room_id",
+  "room_number",
+  "room_type_id",
+  "room_type",
+  "column_break_lupt",
+  "total_debit",
+  "total_credit",
+  "balance",
+  "status",
+  "vendor_information_section",
+  "vendor",
+  "vendor_name",
+  "column_break_opue",
+  "phone_number",
+  "note_section",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "column_break_oubl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "property",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property",
+   "options": "Business Branch",
+   "reqd": 1
+  },
+  {
+   "fieldname": "room_id",
+   "fieldtype": "Link",
+   "label": "Room ID",
+   "options": "Room"
+  },
+  {
+   "fetch_from": "room_id.room_number",
+   "fieldname": "room_number",
+   "fieldtype": "Data",
+   "label": "Room Number"
+  },
+  {
+   "fieldname": "column_break_lupt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_debit",
+   "fieldtype": "Currency",
+   "label": "Total Debit"
+  },
+  {
+   "fieldname": "total_credit",
+   "fieldtype": "Currency",
+   "label": "Total Credit"
+  },
+  {
+   "fieldname": "balance",
+   "fieldtype": "Currency",
+   "label": "Balance"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nClosed"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Folio Number",
+   "options": "PL.YYYY.-.####"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "working_day",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Working Day",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cashier_shift",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Cashier Shift",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "room_id.room_type_id",
+   "fieldname": "room_type_id",
+   "fieldtype": "Link",
+   "label": "Room Type ID",
+   "options": "Room Type"
+  },
+  {
+   "fetch_from": "room_type_id.room_type",
+   "fieldname": "room_type",
+   "fieldtype": "Data",
+   "label": "Room Type"
+  },
+  {
+   "fieldname": "vendor_information_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Information"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "vendor.vendor_name",
+   "fieldname": "vendor_name",
+   "fieldtype": "Data",
+   "label": "Vendor Name"
+  },
+  {
+   "fieldname": "column_break_opue",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "vendor.phone_number",
+   "fieldname": "phone_number",
+   "fieldtype": "Data",
+   "label": "Phone Number"
+  },
+  {
+   "fieldname": "note_section",
+   "fieldtype": "Section Break",
+   "label": "Note"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "label": "Note"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-29 15:04:49.480639",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Payable Ledger",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

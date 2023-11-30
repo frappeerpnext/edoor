@@ -173,7 +173,7 @@ function onOK() {
     data.date_of_birth = data.date_of_birth ? moment(data.date_of_birth).format("YYYY-MM-DD") : ''
     data.expired_date = data.expired_date ? moment(data.expired_date).format("YYYY-MM-DD") : ''
     data.photo = data.attach
-    createUpdateDoc('Customer', { data: data }, '', false)
+    createUpdateDoc('Customer', data, '', false)
     .then((r) => {
         window.socket.emit("ReservationList", { property: window.property_name })
         window.socket.emit("ReservationStayList", { property: window.property_name })

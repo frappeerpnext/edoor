@@ -4,10 +4,10 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Desk Folio</div>
+                    <div class="text-2xl">Payable Ledger</div>
                 </template>
                 <template #end>
-                    <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />
+                    <Button class="border-none" label="Add New Payable Ledger" icon="pi pi-plus" @click="onAddPayableLedger()" />
                 </template>
             </ComHeader>
         </div>
@@ -31,7 +31,7 @@
             </div>
             <div class="flex gap-2">
                 <div>
-                    <ComOrderBy doctype="Desk Folio" @onOrderBy="onOrderBy" />
+                    <ComOrderBy doctype="Payable Ledger" @onOrderBy="onOrderBy" />
                 </div>
                 <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                     <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
@@ -42,7 +42,7 @@
 
             <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
-                    stateStorage="local" stateKey="table_desk_folio_state" :reorderableColumns="true" :value="data"
+                    stateStorage="local" stateKey="table_payable_ledger_state" :reorderableColumns="true" :value="data"
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
@@ -119,7 +119,7 @@
             <div class="grid">
                 <div class="col-6" >
                 <ComAutoComplete class="w-full"   width="100%" optionLabel="customer_name_en" optionValue="name"
-                    v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
+                    v-model="filter.selected_vendor" @onSelected="onSearch" placeholder="Vendor" doctype="Vendor" />
                 </div>
                 <ComSelect class="col-6" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
                 placeholder="Status" :options="['Open', 'Closed']" />
@@ -134,7 +134,7 @@
                     :filters="{ property: property.name }"></ComSelect>
                                 <div class="col-6" >
                     <div class="flex relative">
-                    <!-- <lable for="filter_date">Filter Date</lable> -->
+                     <!-- <lable for="filter_date">Filter Date</lable> -->
                     <Calendar class="w-full" inputClass="pl-6" :disabled="!filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
                 @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
                 <div v-tippy="'Filter By Date'" class="check-box-filter">
@@ -154,7 +154,7 @@ import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getAp
 import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import ComAddDeskFolio from '@/views/desk_folio/components/ComAddDeskFolio.vue';
+import ComAddPayableLedger from '@/views/payable_ledger/components/ComAddPayableLedger.vue';
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
@@ -163,11 +163,12 @@ const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const columns = ref([
-    { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
+
+    { fieldname: 'name', label: 'Payable Ledger #', fieldtype: "Link", post_message_action: "view_payable_ledger_detail", default: true },
+    { fieldname: 'posting_date', label: 'Payable Ledger. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
+    { fieldname: 'vendor', label: 'Vendor', fieldtype: "Link", extra_field: "vendor_name", extra_field_separator: "-", post_message_action: "", default: true },
     { fieldname: 'room_number', label: 'Room', default: true ,header_class: "text-center"},
-    { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'room_type', label: 'Room Type', header_class: "text-left", default: true },
-    { fieldname: 'posting_date', label: 'Desk Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
@@ -195,7 +196,7 @@ const toggleShowColumn = (event) => {
 function OnSaveColumn(event) {
     selectedColumns.value = columns.value.filter(r => r.selected).map(x => x.fieldname)
     pageState.value.selectedColumns = selectedColumns.value
-    localStorage.setItem("page_state_desk_folio", JSON.stringify(pageState.value))
+    localStorage.setItem("page_state_payable_ledger", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
     loadData()
 }
@@ -244,7 +245,7 @@ function pageChange(page) {
 function loadData(show_loading = true) {
     
     let filters = [
-        ["Desk Folio", "property", '=', property.name]
+        ["Payable Ledger", "property", '=', property.name]
     ]
     if(filter.value.filter_date){
         
@@ -273,8 +274,8 @@ function loadData(show_loading = true) {
     if (filter.value?.selected_status) {
         filters.push(["status", "=", filter.value.selected_status])
     }
-    if (filter.value?.selected_guest) {
-        filters.push(["guest", "=", filter.value.selected_guest])
+    if (filter.value?.selected_vendor) {
+        filters.push(["vendor", "=", filter.value.selected_vendor])
     }
     if (filter.value?.selected_room_type) {
         filters.push(["room_type_id", "=", filter.value.selected_room_type])
@@ -287,10 +288,10 @@ function loadData(show_loading = true) {
     fields = [...fields, ...selectedColumns.value]
     fields = [...new Set(fields.filter(x => x))]
     gv.loading = show_loading
-    getDocList('Desk Folio', {
+    getDocList('Payable Ledger', {
         fields: fields,
         orderBy: {
-            field: '`tabDesk Folio`.' + pageState.value.order_by,
+            field: '`tabPayable Ledger`.' + pageState.value.order_by,
             order: pageState.value.order_type,
         },
         filters: filters,
@@ -306,11 +307,11 @@ function loadData(show_loading = true) {
             toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 });
         });
     getTotalRecord(filters)
-    localStorage.setItem("page_state_desk_folio", JSON.stringify(pageState.value))
+    localStorage.setItem("page_state_payable_ledger", JSON.stringify(pageState.value))
 }
 
 function getTotalRecord(filters) {
-    getCount('Desk Folio', filters)
+    getCount('Payable Ledger', filters)
         .then((count) => pageState.value.totalRecords = count || 0)
 }
 
@@ -354,7 +355,7 @@ getApi('frontdesk.get_working_day', {
 })
 
 onMounted(() => {
-    window.socket.on("DeskFolio", (arg) => {
+    window.socket.on("PayableLedger", (arg) => {
         if (arg.property == window.property_name) {
             setTimeout(function () {
                 loadData(false)
@@ -362,7 +363,7 @@ onMounted(() => {
         }
     })
 
-    let state = localStorage.getItem("page_state_desk_folio")
+    let state = localStorage.getItem("page_state_payable_ledger")
     if (state) {
         state = JSON.parse(state)
         state.page = 0
@@ -380,7 +381,7 @@ onMounted(() => {
         r.selected = selectedColumns.value.includes(r.fieldname)
     });
     loadData()
-    getApi("frontdesk.get_meta", { doctype: "Desk Folio" }).then((result) => {
+    getApi("frontdesk.get_meta", { doctype: "Payable Ledger" }).then((result) => {
         result.message.fields.filter(r => r.in_list_view == 1 && !columns.value.map(x => x.fieldname).includes(r.fieldname)).forEach(r => {
             let header_class = ""
 
@@ -401,8 +402,8 @@ onMounted(() => {
 })
 
 function onResetTable() {
-    localStorage.removeItem("page_state_desk_folio")
-    localStorage.removeItem("table_desk_folio_state")
+    localStorage.removeItem("page_state_payable_ledger")
+    localStorage.removeItem("table_payable_ledger_state")
     window.location.reload()
 }
 
@@ -421,14 +422,14 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("DeskFolio");
+    window.socket.off("PayableLedger");
 })
 
-function onAddDeskFolio(data) {
-    dialog.open(ComAddDeskFolio, {
+function onAddPayableLedger(data) {
+    dialog.open(ComAddPayableLedger, {
         data: { data },
         props: {
-            header: `Add New Desk folio`,
+            header: `Add New Payable ledger`,
             style: {
                 width: '50vw',
             },
@@ -441,7 +442,7 @@ function onAddDeskFolio(data) {
             const result = options.data;
             if (result) {
                 loadData()
-                window.postMessage("view_desk_folio_detail|" + result.name, "*")
+                window.postMessage("view_payable_ledger_detail|" + result.name, "*")
             }
         }
     });

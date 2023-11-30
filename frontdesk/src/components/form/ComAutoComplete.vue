@@ -149,7 +149,9 @@ async function getData(keyword) {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
     } 
     await call.get('frappe.desk.search.search_link', apiParams).then((result) => {
-        options.value = result.results
+ 
+        options.value = result.message
+        
         options.value = options.value.map(r => r.label == '' || r.label == null ? { ...r, label: r.value } : r)
         if (props.isAddNew) {
             options.value.push({
@@ -204,13 +206,15 @@ function onBlur() {
     }
 }
 function onFocus() {
-
+ if(options.value){
     if (options.value.length == 0) {
         if(props.valueFilter)
             getDataByFilter('')
         else
             search({query:''}) 
     }
+ }
+    
 
 }
 
@@ -266,15 +270,15 @@ function getDataByFilter(keyword){
         filter.filters.push([props.fieldSearch, 'like', '%'+keyword+'%'])
      
     getDocList(props.doctype,filter).then((r)=>{
-
-        options.value = r.map((x)=>{
-            return {
-                label: x.name,
-                value: x.name,
-                filter: x[props.fieldFilter],
-                description: x.keyword
-            }
-        })
+        console.log(options)
+        // options.value = r.map((x)=>{
+        //     return {
+        //         label: x.name,
+        //         value: x.name,
+        //         filter: x[props.fieldFilter],
+        //         description: x.keyword
+        //     }
+        // })
     })
 }
 

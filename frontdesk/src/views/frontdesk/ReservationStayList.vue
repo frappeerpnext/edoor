@@ -167,17 +167,23 @@
                     </ComSelect>
                 </div>
                 <div class="col-3">
-                <ComSelect isFull v-model="filter.search_date_type" :options="dataTypeOptions"
-                    optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
-                    @onSelectedValue="onSelectFilterDate($event)" :filters="[['property', '=', property.name]]" >
-                </ComSelect>
+                    <ComSelect
+  isFull
+  v-model="filter.search_date_type"
+  :options="dataTypeOptions"
+  optionLabel="label"
+  optionValue="value"
+  placeholder="Search Date Type"
+  :clear="false"
+  @onSelectedValue="onSelectFilterDate" 
+  :filters="[['property', '=', property.name]]"
+></ComSelect>
                 </div>
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-mm-yy" class="w-full" v-model="filter.date_range"
                         selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
-
             </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -336,14 +342,12 @@ function loadData(show_loading=true) {
         filters.push([filter.value.search_date_type.value, '<=', dateRange.end])
     }
  
-
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
 
     fields = [...new Set(fields.filter(x => x))]
 
     getDocList('Reservation Stay', {
-
         fields: fields,
         orderBy: {
             field: '`tabReservation Stay`.' + pageState.value.order_by,
@@ -381,9 +385,10 @@ function onOrderBy(data) {
 }
 
 function onSelectFilterDate(event) {
-    filter.value.search_date_type = event
+    filter.search_date_type = event;
     if (filter.value.search_date_type == '')
         filter.value.date_range = null
+    
     loadData()
 }
 
@@ -477,7 +482,7 @@ function onAssignRoom(data){
         const stay_room = doc.stays.find(r=>!r.room_id) 
         if(stay_room){
             dialog.open(ComReservationStayAssignRoom, {
-        data:{stay_room:stay_room} ,
+        data:{stay_room:stay_room},
         props: {
             header: `Assign Room`,
             style: {

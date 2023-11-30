@@ -35,8 +35,7 @@
                 <div class="mt-3">
                     <table>
                         <tr>
-                            <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">City Ledger
-                                Information</td>
+                            <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">City Ledger Information</td>
                         </tr>
                         <ComStayInfoNoBox label="City Ledger Name" :value="data?.city_ledger_name" />
                         <ComStayInfoNoBox label="City Ledger Type" :value="data?.city_ledger_type" />
@@ -45,7 +44,6 @@
                         <ComStayInfoNoBox label="Phone Number" :value="data?.phone_number" />
                         <ComStayInfoNoBox label="Email" :value="data?.email_address" />
                         <ComStayInfoNoBox label="Address" :value="data?.address" />
-
                     </table>
                     <div class="grid">
                         <div class="col-6">
@@ -101,7 +99,6 @@
                                 :doctypes="['City Ledger']" :docname="data?.name"
                                 :attacheds="[data?.name]" v-if="data?.name" />
                         </template>
-               
                 <div>
 
                     <ComDocument v-if="data?.name" doctype="City Ledger" :doctypes="['City Ledger']" :docname="data?.name"
@@ -109,9 +106,7 @@
                 </div>
             </TabPanel>
         </TabView>
-
         <template #footer-right>
-
             <Button class="border-none" @click="onEditcityLedger">
                 <i class="pi pi-pencil me-2" /> Edit
             </Button>
@@ -130,7 +125,6 @@ const dialog = useDialog()
 const data = ref()
 const loading = ref(false)
 const confirm = useConfirm()
-
 function onEditcityLedger() {
     dialog.open(ComAddCityLedgerAccount, {
         data: {

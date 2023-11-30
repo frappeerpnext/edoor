@@ -154,7 +154,7 @@ function onSearchLink() {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
     }
     call.get('frappe.desk.search.search_link', apiParams).then((result) => {
-        data.value = result.results
+        data.value = result.message
         dataOptions.value = data.value
         if (props.default && data.value && data.value.length > 0) {
 

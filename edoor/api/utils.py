@@ -496,6 +496,35 @@ def update_desk_folio(name=None, doc=None,run_commit=True):
 
 
 @frappe.whitelist()
+def update_payable_ledger(name=None, doc=None,run_commit=True):
+
+    if name:
+        doc = frappe.get_doc("Payable Ledger",name)
+    sql_folio = """
+        select 
+                sum(if(type='Debit',amount,0)) as debit,
+                sum(if(type='Credit',amount,0)) as credit
+            from `tabFolio Transaction` 
+            where
+                transaction_type = 'Payable Ledger' and 
+                transaction_number = '{}'
+        """.format(
+                doc.name
+            )
+
+    folio_data = frappe.db.sql(sql_folio, as_dict=1)
+
+
+    doc.total_debit =  folio_data[0]["debit"]
+    doc.total_credit=folio_data[0]["credit"]
+    doc.save(ignore_permissions=True)
+    if run_commit:
+        frappe.db.commit()
+        
+    return doc
+
+
+@frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
     
     if name or doc:
@@ -1047,6 +1076,22 @@ def get_desk_folio_detail(name):
 		"desk_folio":doc,
 		"related_ids":related_ids
 	}  
+
+
+#i'm piseth add under code
+
+@frappe.whitelist()
+def get_payable_ledger_detail(name):
+	doc =frappe.get_doc("Payable Ledger", name)
+	related_ids = [name]
+	folio_transaction_ids = frappe.db.get_list("Folio Transaction", filters={"transaction_type":"Payable Ledger","transaction_number":name} ,page_length=10000,  pluck='name')
+	related_ids = related_ids + folio_transaction_ids
+
+	
+	return {
+		"payable_ledger":doc,
+		"related_ids":related_ids
+	} 
 
 
 @frappe.whitelist()

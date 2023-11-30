@@ -64,7 +64,7 @@
 
   function getSortOrderList(){
     loading.value = true
-    setTimeout(() => {
+ 
         let elments = document.querySelectorAll(".account_code")
         let parentAccountCode = []
         elments.forEach((el)=>{
@@ -87,7 +87,7 @@
             })
         })
 
-    }, 5000);
+ 
        
 
   }
