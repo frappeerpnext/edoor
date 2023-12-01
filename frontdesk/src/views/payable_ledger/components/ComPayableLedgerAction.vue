@@ -297,7 +297,7 @@ function openFolio() {
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
                     window.socket.emit("ComPayableLedgerDetail",{name:selectedFolio.value.name})
-                    window.socket.emit("DesFkolio",{property:window.property_name})
+                    window.socket.emit("PayableLedger",{property:window.property_name})
                 })
         },
 

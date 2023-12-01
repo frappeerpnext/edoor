@@ -102,7 +102,6 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
             });
         }
         else{ 
-            alert("add")
             db.createDoc(doctype, data)
             .then((doc) => {
                 resolve(doc)

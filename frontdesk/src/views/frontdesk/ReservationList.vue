@@ -255,11 +255,11 @@ const Refresh = debouncer(() => {
 }, 500);
 
 function onDateSelect() {
-    if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
-        dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
-        dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
-        loadData()
-    }
+  if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
+    dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
+    dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
+    loadData()
+  }     
 }
 
 function pageChange(page) {
@@ -338,10 +338,9 @@ function onOrderBy(data) {
 }
 
 function onSelectFilterDate(event) {
-    filter.value.search_date_type = event
-    if (filter.value.search_date_type == '')
-        filter.value.date_range = null
-    loadData()
+  if (filter.value.search_date_type == '')
+    filter.value.date_range = null
+  loadData()
 }
 
 const onSearch = debouncer(() => {

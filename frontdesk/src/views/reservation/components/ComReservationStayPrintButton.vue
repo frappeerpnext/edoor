@@ -52,7 +52,7 @@ items.value.push({
             data: {
                 "doctype": "Reservation%20Stay",
                 name: props.reservation_stay,
-                report_name:  gv.getCustomPrintFormat("eDoor Reservation Stay Confirmation Voucher "),
+                report_name:"eDoor Reservation Stay Confirmation Voucher",
             },
             props: {
                 header: "Confirmation Voucher",

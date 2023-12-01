@@ -122,11 +122,13 @@
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]"
           v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" isFilter
           optionLabel="room_type" optionValue="name" />
+ 
         <ComSelect class="col-6" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
           optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
           @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
+         
         <div class="col-6" v-if="filter.search_date_type">
-          <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-MM-yy"
+          <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-mm-yy"
             v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
             placeholder="Select Date Range" />
         </div>
@@ -227,7 +229,7 @@ function pageChange(page) {
 }
 
 function loadData(show_loading=true) {
-
+   
   gv.loading = show_loading
   let filters = [
     ["property", "=", property.name]
@@ -255,6 +257,7 @@ function loadData(show_loading=true) {
     filters.push(["room_type_id", '=', filter.value.selected_room_type])
   }
   if (filter.value?.search_date_type && filter.value.date_range != null) {
+
     filters.push([filter.value.search_date_type, '>=', dateRange.start])
     filters.push([filter.value.search_date_type, '<=', dateRange.end])
   }
@@ -304,7 +307,7 @@ function onOrderBy(data) {
 }
 
 function onSelectFilterDate(event) {
-  filter.value.search_date_type = event
+  
   if (filter.value.search_date_type == '')
     filter.value.date_range = null
   loadData()

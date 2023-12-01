@@ -1011,7 +1011,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 }
 .p-tieredmenu.p-component.p-tieredmenu-overlay.p-input-filled,
 .p-menu.p-component.p-menu-overlay.p-input-filled{
-    min-width: 216px !important;  
+    min-width: unset !important;  
 }
 .p-tieredmenu .p-menuitem>.p-menuitem-content .p-menuitem-link{
     padding: 0.75rem 0.75rem;

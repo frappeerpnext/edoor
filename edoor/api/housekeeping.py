@@ -115,12 +115,6 @@ def get_room_list(filter={}):
    if len(filter["room_type_group"])>0:
       sql = sql + " and room_type_group = %(room_type_group)s "
    
-   if len(filter["housekeeper"])>0:
-      sql = sql + " and housekeeper = %(housekeeper)s "
-
-   if len(filter["housekeeping_status"])>0:
-      sql = sql + " and housekeeping_status in %(housekeeping_status)s "
-
    #filter from room occpuy in have room in room list 
    if len(data)>0:
       filter["room_ids"]=[d["name"] for d in data]

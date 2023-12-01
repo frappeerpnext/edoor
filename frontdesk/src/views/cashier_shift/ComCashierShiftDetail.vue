@@ -156,9 +156,6 @@
             </TabPanel>
         </TabView>
 
-
-
-
         <template #footer-left>
 
             <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
@@ -180,6 +177,7 @@ import { ref, getApi, onMounted, inject, getDoc, useDialog, useToast ,computed }
 import OpenShift from "@/views/cashier_shift/OpenShift.vue"
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import ComIFrameModal from "@/components/ComIFrameModal.vue";
 const toast = useToast()
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
@@ -197,43 +195,29 @@ const summary = ref()
 function onUpdateFileCount(n) {
     totalDocument.value = n
 }
+ 
 
-//Folio Summary Report
+//Cashier Summary Transaction
 print_menus.value.push({
-    label: "Folio Summary Report",
+    label: "Cashier Shift Transaction Summary",
     icon: 'pi pi-print',
     command: () => {
-
-
-    }
-})
-
-//folio detail report
-print_menus.value.push({
-    label: "Folio Detail Report",
-    icon: 'pi pi-print',
-    command: () => {
-        // dialog.open(ComPrintReservationStay, {
-        //     data: {
-        //         doctype: "Reservation%20Stay",
-        //         reservation_stay: doc.value.reservation_stay,
-        //         folio_number: name.value,
-        //         //report_name: "eDoor%20Reservation%20Stay%20Folio%20Detail%20Report",
-        //         report_name: gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
-
-        //         view: "print"
-        //     },
-        //     props: {
-        //         header: "Folio Summary Report",
-        //         style: {
-        //             width: '80vw',
-        //         },
-        //         position:"top",
-        //         modal: true,
-        //         maximizable: true,
-        //         closeOnEscape: false
-        //     },
-        // });
+        dialog.open(ComIFrameModal, {
+            data: {
+                "doctype": "Cashier%20Shift",
+                name: doc.value.name,
+                report_name: "eDoor Cashier Shift Transaction Summary Report"
+            },
+            props: {
+                header: "Cashier Shift Transaction Summary - " + doc.value.name ,
+                style: {
+                    width: '80vw',
+                },
+                position:"top",
+                modal: true,
+                maximizable: true,
+            },
+        });
     }
 })
 

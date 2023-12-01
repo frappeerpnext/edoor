@@ -1,5 +1,4 @@
 <template>
-
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
@@ -34,70 +33,64 @@
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
-                </div> 
+                </div>
             </div>
         </div>
-            <div class="overflow-auto h-full">
-                <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-                    <DataTable 
-                    class="res_list_scroll" 
-                    :resizableColumns="true" 
-                    columnResizeMode="fit" 
-                    showGridlines
-                    stateStorage="local" 
-                    stateKey="table_reservation_stay_list_state" 
-                    scrollable 
-                    :reorderableColumns="true"
-                    :value="data" 
-                    tableStyle="min-width: 50rem" 
-                    @row-dblclick="onViewReservationStayDetail">
-                        <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')"
-                            :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
-                            :bodyClass="c.header_class || ''" :frozen="c.frozen">
-                            <template #body="slotProps">
-                                <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
-                                    @click="onOpenLink(c, slotProps.data)" link>
-                                    {{ slotProps.data[c.fieldname] }}
-                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                                </Button>
-                                <span v-else-if="c.fieldtype == 'Date'">{{
-                                    moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
-                                <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
-                                <template v-else-if="c.fieldtype == 'Room'">
-                                    <div v-if="slotProps?.data && slotProps?.data?.rooms">
-                                        <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
-                                            <span>{{ item }}</span>
-                                            <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">, </span>
-                                        </template>
-                                    </div>
-                                    <div @click="onAssignRoom(slotProps.data)" class="link_line_action w-auto" v-else>
-                                        <i class="pi pi-pencil"></i>
-                                        Assign Room
-                                    </div>
-                                </template>
-                                <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
-                                <span>{{  slotProps.data[c.fieldname].split("@")[0] }}</span>
+        <div class="overflow-auto h-full">
+            <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
+                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+                    stateStorage="local" stateKey="table_reservation_stay_list_state" scrollable :reorderableColumns="true"
+                    :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+                    <Column
+                        v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
+                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :bodyClass="c.header_class || ''" :frozen="c.frozen">
+                        <template #body="slotProps">
+                            <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
+                                @click="onOpenLink(c, slotProps.data)" link>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </Button>
+                            <span v-else-if="c.fieldtype == 'Date'">{{
+                                moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }} </span>
+                            <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
+                            <template v-else-if="c.fieldtype == 'Room'">
+                                <div v-if="slotProps?.data && slotProps?.data?.rooms">
+                                    <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
+                                        <span>{{ item }}</span>
+                                        <span v-if="index != Object.keys(slotProps.data.rooms.split(',')).length - 1">,
+                                        </span>
+                                    </template>
+                                </div>
+                                <div @click="onAssignRoom(slotProps.data)" class="link_line_action w-auto" v-else>
+                                    <i class="pi pi-pencil"></i>
+                                    Assign Room
+                                </div>
                             </template>
-                                <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
-                                <span v-else-if="c.fieldtype == 'Status'"
-                                    class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                    :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                                    }}
-                                </span>
-                                <span v-else-if="c.fieldname == 'reservation_type'" v-tippy="slotProps.data[c.fieldname]=='FIT'?'Free Independent Traveler':'Group Inclusive Tour'">
-                                    {{ slotProps.data[c.fieldname] }}
-                                </span>
-                                <span v-else>
-                                    {{ slotProps.data[c.fieldname] }}
-                                    <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
-                                    <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
-                                </span>
+                            <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
+                                <span>{{ slotProps.data[c.fieldname].split("@")[0] }}</span>
                             </template>
-                        </Column>
-                    </DataTable>
-                </ComPlaceholder>
-            </div>
+                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                            <span v-else-if="c.fieldtype == 'Status'"
+                                class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                                }}
+                            </span>
+                            <span v-else-if="c.fieldname == 'reservation_type'"
+                                v-tippy="slotProps.data[c.fieldname] == 'FIT' ? 'Free Independent Traveler' : 'Group Inclusive Tour'">
+                                {{ slotProps.data[c.fieldname] }}
+                            </span>
+                            <span v-else>
+                                {{ slotProps.data[c.fieldname] }}
+                                <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
+                                <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
+                            </span>
+                        </template>
+                    </Column>
+                </DataTable>
+            </ComPlaceholder>
+        </div>
         <div>
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
@@ -107,7 +100,7 @@
             </Paginator>
         </div>
     </div>
-    
+
     <OverlayPanel ref="opShowColumn" style="width:30rem;">
         <ComOverlayPanelContent ttl_header="mb-2" title="Show / Hide Columns" @onSave="OnSaveColumn" titleButtonSave="Save"
             @onCancel="onCloseColumn">
@@ -134,54 +127,51 @@
             <div class="grid">
                 <div class="col-3">
                     <ComAutoComplete isFull optionLabel="business_source_type" optionValue="name"
-                        v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
-                        doctype="Business Source Type"/>
+                        v-model="filter.selected_business_source_type" @onSelected="onSearch"
+                        placeholder="Business Source Type" doctype="Business Source Type" />
                 </div>
                 <div class="col-3">
-                <ComAutoComplete isFull groupFilterField="business_source_type"
-                    :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
-                    optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
-                    placeholder="Business Source" doctype="Business Source" :filters="[['property', '=', property.name]]" />
+                    <ComAutoComplete isFull groupFilterField="business_source_type"
+                        :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
+                        optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
+                        placeholder="Business Source" doctype="Business Source"
+                        :filters="[['property', '=', property.name]]" />
                 </div>
                 <div class="col-3">
-                    <ComSelect isFull v-model="filter.selected_reservation_type" @onSelected="onSearch" placeholder="Reservation Type" :options="['GIT', 'FIT']" />
+                    <ComSelect isFull v-model="filter.selected_reservation_type" @onSelected="onSearch"
+                        placeholder="Reservation Type" :options="['GIT', 'FIT']" />
                 </div>
                 <div class="col-3">
                     <ComSelect isFull optionLabel="reservation_status" optionValue="name"
                         v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
-                        doctype="Reservation Status"  />
+                        doctype="Reservation Status" />
                 </div>
                 <div class="col-3">
-                <ComSelect isFull optionLabel="building" optionValue="name"
-                    v-model="filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" :filters="[['property', '=', property.name]]"  />
+                    <ComSelect isFull optionLabel="building" optionValue="name" v-model="filter.selected_building"
+                        @onSelected="onSearch" placeholder="Building" doctype="Building"
+                        :filters="[['property', '=', property.name]]" />
                 </div>
                 <div class="col-3">
-                    <ComSelect isFull optionLabel="room_type" optionValue="name"
-                        v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" :filters="[['property', '=', property.name]]" >
+                    <ComSelect isFull optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
+                        @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
+                        :filters="[['property', '=', property.name]]">
                     </ComSelect>
                 </div>
                 <div class="col-3">
-                    <ComSelect isFull groupFilterField="room_type_id"
-                        :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
-                        v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room" :filters="[['property', '=', property.name]]" >
+                    <ComSelect isFull groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
+                        optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
+                        @onSelected="onSearch" placeholder="Room Name" doctype="Room"
+                        :filters="[['property', '=', property.name]]">
                     </ComSelect>
                 </div>
                 <div class="col-3">
-                    <ComSelect
-  isFull
-  v-model="filter.search_date_type"
-  :options="dataTypeOptions"
-  optionLabel="label"
-  optionValue="value"
-  placeholder="Search Date Type"
-  :clear="false"
-  @onSelectedValue="onSelectFilterDate" 
-  :filters="[['property', '=', property.name]]"
-></ComSelect>
+                    <ComSelect isFull v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
+                        optionValue="value" placeholder="Search Date Type" :clear="false"
+                        @onSelectedValue="onSelectFilterDate" :filters="[['property', '=', property.name]]"></ComSelect>
                 </div>
                 <div class="col-6" v-if="filter.search_date_type">
-                    <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-mm-yy" class="w-full" v-model="filter.date_range"
-                        selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                    <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-mm-yy" class="w-full"
+                        v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
                 </div>
             </div>
@@ -189,7 +179,7 @@
     </OverlayPanel>
 </template>
 <script setup>
-import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed,getDoc ,onUnmounted} from '@/plugin'
+import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getApi, computed, getDoc, onUnmounted } from '@/plugin'
 
 import { useDialog } from 'primevue/usedialog';
 import NewFITReservationButton from '@/views/reservation/components/NewFITReservationButton.vue';
@@ -215,17 +205,17 @@ const columns = ref([
     { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'room_nights', label: 'Room Night(s)', header_class: "text-center", default: true },
     { fieldname: 'rooms', label: 'Rooms', fieldtype: "Room", header_class: "text-center", default: true },
-    { fieldname: 'rate_type', label: 'Rate Type', default:false },
-    { fieldname: 'room_types', label: 'Room Type', default:false },
-    { fieldname: 'room_rate', label: 'Room Rate', default:false },
+    { fieldname: 'rate_type', label: 'Rate Type', default: false },
+    { fieldname: 'room_types', label: 'Room Type', default: false },
+    { fieldname: 'room_rate', label: 'Room Rate', default: false },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'business_source', label: 'Business Source', default: true },
-    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No' },
-    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No' },
-    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
-    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true,can_view_rate:window.can_view_rate?'Yes':'No'  },
+    { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
+    { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'owner', label: 'Created By' },
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
@@ -270,7 +260,7 @@ const dataTypeOptions = reactive([
     { label: 'Arrival Date', value: 'arrival_date' },
     { label: 'Departure Date', value: 'departure_date' },
     { label: 'Reservation Date', value: 'reservation_date' },
-    {label: 'Cancel/No Show/Voided Date', value: 'cancelled_date' }
+    { label: 'Cancel/No Show/Voided Date', value: 'cancelled_date' }
 ])
 const data = ref([])
 
@@ -291,16 +281,16 @@ function onOpenLink(column, data) {
 
 
 const Refresh = debouncer(() => {
-	loadData();
-	pageState.value.page = 0
+    loadData();
+    pageState.value.page = 0
 }, 500);
 
 function onDateSelect() {
-    if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
-        dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
-        dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
-        loadData()
-    }
+  if (filter.value.date_range && filter.value.date_range[0] && filter.value.date_range[1]) {
+    dateRange.start = moment(filter.value.date_range[0]).format("YYYY-MM-DD")
+    dateRange.end = moment(filter.value.date_range[1]).format("YYYY-MM-DD")
+    loadData()
+  }
 }
 function pageChange(page) {
     pageState.value.page = page.page
@@ -309,7 +299,7 @@ function pageChange(page) {
     loadData()
 }
 
-function loadData(show_loading=true) {
+function loadData(show_loading = true) {
     gv.loading = show_loading
     let filters = [
         ["Reservation Stay", "property", '=', property.name]
@@ -341,7 +331,7 @@ function loadData(show_loading=true) {
         filters.push([filter.value.search_date_type.value, '>=', dateRange.start])
         filters.push([filter.value.search_date_type.value, '<=', dateRange.end])
     }
- 
+
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
 
@@ -385,10 +375,8 @@ function onOrderBy(data) {
 }
 
 function onSelectFilterDate(event) {
-    filter.search_date_type = event;
     if (filter.value.search_date_type == '')
         filter.value.date_range = null
-    
     loadData()
 }
 
@@ -420,9 +408,9 @@ getApi('frontdesk.get_working_day', {
 onMounted(() => {
     window.socket.on("ReservationStayList", (arg) => {
         if (arg.property == window.property_name) {
-            setTimeout(function(){
+            setTimeout(function () {
                 loadData(false)
-            },3000) 
+            }, 3000)
         }
     })
     let state = localStorage.getItem("page_state_reservation_stay")
@@ -477,39 +465,39 @@ const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
 
-function onAssignRoom(data){
-    getDoc("Reservation Stay",data.name).then(doc=>{
-        const stay_room = doc.stays.find(r=>!r.room_id) 
-        if(stay_room){
+function onAssignRoom(data) {
+    getDoc("Reservation Stay", data.name).then(doc => {
+        const stay_room = doc.stays.find(r => !r.room_id)
+        if (stay_room) {
             dialog.open(ComReservationStayAssignRoom, {
-        data:{stay_room:stay_room},
-        props: {
-            header: `Assign Room`,
-            style: {
-                width: '70vw',
-            },
-            
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
-            modal: true,
-            closeOnEscape: false,
-            position: 'top'
-        },
-        onClose: (options) => {
-            if(options.data && options.data.message){
-                setTimeout(() => {
-                    rs.getReservationDetail(options.data.message.name) 
-                }, 1500);
-            } 
+                data: { stay_room: stay_room },
+                props: {
+                    header: `Assign Room`,
+                    style: {
+                        width: '70vw',
+                    },
+
+                    breakpoints: {
+                        '960px': '75vw',
+                        '640px': '90vw'
+                    },
+                    modal: true,
+                    closeOnEscape: false,
+                    position: 'top'
+                },
+                onClose: (options) => {
+                    if (options.data && options.data.message) {
+                        setTimeout(() => {
+                            rs.getReservationDetail(options.data.message.name)
+                        }, 1500);
+                    }
+                }
+            })
         }
     })
-        }
-    })
-  
- 
-   
+
+
+
 }
 
 onUnmounted(() => {
