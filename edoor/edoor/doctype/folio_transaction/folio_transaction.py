@@ -647,7 +647,7 @@ def update_report_description_field(self):
 
 def update_inventory(self):
 	product_doc = frappe.get_doc("Product",self.product)
-	if product_doc.is_inventory==1:
+	if product_doc.is_inventory_product==1:
 		working_day = get_working_day(self.property)
 		cost = get_product_cost(working_day["stock_location"], self.product)
 		add_to_inventory_transaction({
