@@ -178,7 +178,7 @@
         <template #footer-right  v-if="doc.is_closed !== 1" >
             <div class="relative mt-2">
                 <span class="absolute w-full"><Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" /></span>
-                <span class="pl-5">I have verified that my information about is correct</span>
+                <span class="pl-5">I have verified that my information above is correct</span>
             </div>
             <Button class="border-none" v-if="doc.is_closed == 0" :disabled= "!doc.is_confirm" @click="onCloseShift">Close Shift</Button>
         </template>
