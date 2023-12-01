@@ -332,13 +332,16 @@ function onGroupUndoCheckIn() {
 function onGroupCheckOut(is_not_undo = false) {
     const isSelect = validateSelectReservation()
     if (isSelect) {
-
-        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1).map((r) => r.name)
-        console.log(rs.selecteds)
+        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
         if (stays.length==0){
+            
             toast.add({ severity: 'warn', detail: "Please select active reservation stay to check out", life: 3000 })
             return
         }
+        else if (rs.selecteds.some(r => r.reservation_status !== 'In-house')) {
+    toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
+    return;
+}
 
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,

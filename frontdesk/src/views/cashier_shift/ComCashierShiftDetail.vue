@@ -95,7 +95,7 @@
                             </template>
                         </ComReservationStayPanel >
             <div class="mt-3"></div>            
-                        <ComReservationStayPanel v-if="doc?.cash_count?.length > 0" title="Cash Count">
+                        <ComReservationStayPanel v-if="(doc?.cash_count?.length > 0 ) && doc.is_closed" title="Cash Count">
                             <template #content>
                             
    
@@ -166,8 +166,8 @@
 
 
 
-            <Button @click="onEditCashierShift">Edit</Button>
-            <Button v-if="doc.is_closed == 0" @click="onOpenCloseShift">Close Shift</Button>
+            <Button class="border-none" @click="onEditCashierShift">Edit</Button>
+            <Button class="border-none" v-if="doc.is_closed == 0" @click="onOpenCloseShift">Close Shift</Button>
 
         </template>
     </ComDialogContent>
@@ -206,7 +206,8 @@ print_menus.value.push({
             data: {
                 "doctype": "Cashier%20Shift",
                 name: doc.value.name,
-                report_name: "eDoor Cashier Shift Transaction Summary Report"
+                report_name: "eDoor Cashier Shift Transaction Summary Report",
+                filter_options:["show_account_code","group_by_ledger_type","show_cash_count","show_cash_float"],
             },
             props: {
                 header: "Cashier Shift Transaction Summary - " + doc.value.name ,

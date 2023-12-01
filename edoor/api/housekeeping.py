@@ -129,6 +129,7 @@ def get_room_list(filter={}):
       room = None
       if data_room:
          room = data_room[0]
+         
       
       if room:
          if d["type"] =="Reservation":
@@ -156,6 +157,5 @@ def get_room_list(filter={}):
             room["room_block"] = d["stay_room_id"]
             room["housekeeping_status"] = frappe.db.get_single_value("eDoor Setting","room_block_status")
             room["status_color"] = frappe.db.get_single_value("eDoor Setting","room_block_color")
-
 
    return data

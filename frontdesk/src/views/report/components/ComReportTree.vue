@@ -1,4 +1,5 @@
 <template>
+    {{ reports?.filter(r => r.is_group == 1 && r.parent_system_report && r.has_child) }}
     <div class="p-2">
         <div class="mb-3">
             <InputText class="w-full" v-model="keyword" placeholder="Search Report" />
@@ -34,7 +35,6 @@ const reports = computed(() => {
         });
         return data.value
     }
-
 })
 
 function onSelect(p) {

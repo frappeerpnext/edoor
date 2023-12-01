@@ -344,7 +344,8 @@ function openPrint(){
             data: {
                 "doctype": "Cashier Shift",
                 name: doc.value.name,
-                report_name:  "eDoor Cashier Shift Report",
+                report_name:  "eDoor Cashier Shift Transaction Summary Report",
+                filter_options:["show_account_code","group_by_ledger_type","show_cash_count","show_cash_float"],
             },
             props: {
                 header: "Cashier Shift Report " + doc.value.name,

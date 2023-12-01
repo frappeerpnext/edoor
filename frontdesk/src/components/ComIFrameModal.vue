@@ -1,10 +1,10 @@
 <template>
     
     <div class="wrap-dialog iframe-modal" :class="{ 'full-height': dialogRef.data.fullheight }">
-        <div class="p-3 view-table-iframe-dialog" >
+        <div class="p-3 " >
             <div class="grid mb-3 ">
                 <div class="col flex gap-2">
-                 
+                  
                     <div v-if="show_letter_head">
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
@@ -94,6 +94,34 @@
                             <label for="show_summary" >Show/Hide Summary</label>
                         </div>
                     </div>
+                    
+                    <div v-if="hasFilter('group_by_ledger_type')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        </div>
+                        <div>
+                            <label for="group_by_ledger_type" >Group by Ledger Type</label>
+                        </div>
+                    </div>
+                    
+                    <div v-if="hasFilter('show_cash_float')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        </div>
+                        <div>
+                            <label for="show_cash_float" >Show/Hide Cash Float</label>
+                        </div>
+                    </div>
+                   
+                    <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                        </div>
+                        <div>
+                            <label for="show_cash_count" >Show/Hide Cash Count</label>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view || '') != 'ui'">
@@ -105,9 +133,15 @@
                     </div>
                 </div>
             </div>
-            <div class="widht-ifame">
-                <iframe @load="onIframeLoaded()" style="min-height:100vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+            <div class="widht-ifame" style="min-height:90vh;">
+                <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
+      
+           </ComPlaceholder>
+                <iframe :class="loading ? 'hidden' : ''" @load="onIframeLoaded()" style="min-height:90vh;padding-bottom:120px;" :id="iframe_id" width="100%" :src="url"></iframe>
+                
             </div>
+           
+
         </div>
     </div>
 </template>
@@ -124,6 +158,9 @@ const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
     show_room_number:1,
     show_account_code:window.setting.show_account_code_in_folio_transaction,
+    show_cash_count:1,
+    show_cash_float:1
+    
 })
 const show_toolbar = ref(0)
 const view = ref("")
@@ -135,7 +172,7 @@ const props = defineProps({
     BtnClassPrinter: String,
     BtnClass: String
 })
-
+const loading = ref(false)
 function onSelectLetterHead(l) {
     letter_head.value = l
     loadIframe()
@@ -148,6 +185,7 @@ const hasFilter = ref((f) => {
 
 });
 function onIframeLoaded() {
+    loading.value = true;
     const iframe = document.getElementById(iframe_id);
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
@@ -159,11 +197,16 @@ function onIframeLoaded() {
     iframe.style.minWidth = "0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
 
-    iframe.style.height = '0px';
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    // iframe.style.height = '0px';
+    // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    iframe.onload = function() {
+        loading.value = false;
+    }
+
+
 }
 function loadIframe() {
-   
+    loading.value = true;
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 
@@ -238,6 +281,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    loading.value = false;
     window.socket.off("ComIframeModal")
 })
 

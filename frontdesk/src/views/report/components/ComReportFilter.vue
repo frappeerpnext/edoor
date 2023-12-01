@@ -77,14 +77,14 @@
                 
                 <ComSelect class="auto__Com_Cus w-full" 
                     v-model="filter.floor" placeholder="floor" doctype="Floor"
-                    :filters="{ property: property.name, building: ['=', filter.building]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+                    :filters="[['property', '=', property.name]]" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('housekeeper')">
                 <label>Housekeeper</label><br>
                 
                 <ComSelect        class="auto__Com_Cus w-full" 
                     v-model="filter.housekeeper"   placeholder="housekeeper" doctype="Housekeeper"
-                      :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+                    maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('housekeeping_status')">
                 <label>Housekeeping Status</label><br>

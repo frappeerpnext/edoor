@@ -8,13 +8,17 @@
                         <div class="text-2xl ml-4">Housekeeping</div>
                     </div>
                 </template>
+                <template #end>
+<ComHousekeepingActionButton />
+                </template>
+                
             </ComHeader>
             <div class="flex justify-between mb-4 overflow-auto ">
                 <div>
                     <div class="flex gap-2 me-2">
                         <div class="flex w-full gap-2">
                             <ComHousekeepingFilter />
-                            <ComHousekeepingActionButton />
+                            
                         </div>
                     </div>
                 </div>

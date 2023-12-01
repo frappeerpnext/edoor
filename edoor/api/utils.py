@@ -1117,7 +1117,36 @@ def sort_parent_account_code(parent_account_code, account_codes):
     frappe.db.commit()
     frappe.msgprint("Update parent account code sort order successfully")
 
+
+@frappe.whitelist()
+def update_account_code_to_folio_transaction():
+    sql="""
+        update `tabFolio Transaction` set parent_account_code = (select parent_account_code from `tabAccount Code` t where t.name = account_code )
+    """
+    frappe.db.sql(sql)
+    #update parent account name
+    sql="""
+        update `tabFolio Transaction` f set parent_account_name = (select account_name from `tabAccount Code` t where t.name = f.parent_account_code )
+    """
+    frappe.db.sql(sql)
+
+    #update account grouup code
+    sql="""
+        update `tabFolio Transaction` f set account_group = (select parent_account_code from `tabAccount Code` t where t.name = f.parent_account_code )
+    """
+    frappe.db.sql(sql)
+
+    #update account grouup name
+    sql="""
+        update `tabFolio Transaction` f set account_group_name = (select account_name from `tabAccount Code` t where t.name = f.account_group )
+    """
+    frappe.db.sql(sql)
+
+
+    frappe.db.commit()
+    return "Done"
     
+
 @frappe.whitelist(methods="POST")
 def sort_child_account_code(account_codes):
     for d in account_codes:

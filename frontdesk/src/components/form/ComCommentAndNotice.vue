@@ -284,10 +284,10 @@ function onRemove(selected) {
         accept: () => {
             deleting.value = true
             deleteDoc('Comment', selected.name).then((doc) => {
-                if (doc) {
                     deleting.value = false
                     onLoad()
-                }
+                    
+               
             }).catch((err) => {
                 deleting.value = false
             })
