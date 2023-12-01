@@ -466,6 +466,10 @@ function onSelectRateType(selected) {
                     doc.value.discount = 0
                 }
                 doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
+                if (result.message.is_complimentary==1 || result.message.is_house_use==1){
+                    doc.value.input_rate = 0
+                    doc.value.is_manual_rate = 0
+                }
 
             })
     }

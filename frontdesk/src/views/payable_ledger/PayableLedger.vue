@@ -399,6 +399,7 @@ onMounted(() => {
             })
         })
     })
+    onClearFilter()
 })
 
 function onResetTable() {

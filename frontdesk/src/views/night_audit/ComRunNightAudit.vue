@@ -60,7 +60,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
-const currentStep = ref(9)
+const currentStep = ref(1)
 const loading = ref(false)
 
 const steps = ref([
@@ -195,4 +195,11 @@ onMounted(() => {
     refreshReport()
 });
 
+
 </script>
+
+<style scoped>
+.p-dialog .p-dialog-content{
+    overflow: scroll!important;
+    min-height: 750px;
+}</style>

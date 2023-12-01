@@ -902,6 +902,7 @@ function getEvent() {
         business_source: advanceFilter.value.business_source,
         room_type: advanceFilter.value.room_type,
         view_type: filter.value.view_type,
+        building: advanceFilter.value.building,
         room_number: gv.keyword(keyword.value.room_number),
         room_type_group: advanceFilter.value.room_type_group,
         floor: advanceFilter.value.floor
@@ -942,6 +943,7 @@ function getResourceAndEvent(showLoading = true) {
             business_source: advanceFilter.value.business_source,
             room_type: advanceFilter.value.room_type,
             view_type: filter.value.view_type,
+            building: advanceFilter.value.building,
             room_number: gv.keyword(keyword.value.room_number),
             room_type_group: advanceFilter.value.room_type_group,
             floor: advanceFilter.value.floor

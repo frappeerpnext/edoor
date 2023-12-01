@@ -848,13 +848,17 @@ def get_rate_type_info(name):
         tax_rule = frappe.get_doc("Tax Rule",account_doc.tax_rule)
     
 
-
+    if doc.is_house_use==1 or doc.is_complimentary==1:
+        tax_rule = None
+        
     return {
         "name": name,
         "tax_rule":tax_rule,
         "allow_discount": account_doc.allow_discount,
         "allow_user_to_change_tax": account_doc.allow_user_to_change_tax,
-        "allow_user_to_edit_rate": doc.allow_user_to_edit_rate
+        "allow_user_to_edit_rate": doc.allow_user_to_edit_rate,
+        "is_house_use":doc.is_house_use,
+        "is_complimentary":doc.is_complimentary
     }
 
 
@@ -1024,11 +1028,15 @@ def add_audit_trail(data):
             if hasattr(doc,"property"):
                 working_day = get_working_day(doc.property)
                 d["custom_posting_date"]= working_day["date_working_day"]
+                if working_day["cashier_shift"]:
+                    d["custom_cashier_shift"]= working_day["cashier_shift"]["name"]
                 d["custom_property"]= doc.property
             elif hasattr(doc,"business_branch"):
                 working_day = get_working_day(doc.business_branch)
                 d["custom_posting_date"]= working_day["date_working_day"]
                 d["custom_property"]= doc.business_branch
+                if working_day["cashier_shift"]:
+                    d["custom_cashier_shift"]= working_day["cashier_shift"]["name"]
 
         d["doctype"]="Comment"
         if not hasattr(d,"comment_type"):
@@ -1186,7 +1194,6 @@ def get_cashier_shift_summary(name,property):
             property='{}'
         """.format(name,property)
     data = frappe.db.sql(sql,as_dict=1)
-
     sql = """
         select 
             payment_type_group,
@@ -1205,13 +1212,38 @@ def get_cashier_shift_summary(name,property):
             payment_type
     """.format(name,property)
     summary_by_payment_type = frappe.db.sql(sql, as_dict=1) 
+
+    #payment transaction summary
+    sql = """
+        select 
+            account_code,
+            account_name,
+            sum(amount * if(type='Debit',1,0)) as total_debit,
+            sum(amount * if(type='Debit',0,1)) as total_credit
+        from   `tabFolio Transaction`
+        where
+            cashier_shift = '{}' and 
+            ifnull(payment_type,'') <> '' and  
+            property='{}'
+        group by 
+            account_code,
+            account_name,
+            type
+    """.format(name,property)
+    payment_transaction_summary = frappe.db.sql(sql, as_dict=1) 
+
     return {
         "opening_cash_float": doc.total_opening_amount,
         "cash_debit": data[0]["cash_debit"],
         "cash_credit": data[0]["cash_credit"],
         "cash_in_hand":( (doc.total_opening_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0),
-        "summary_by_payment_type":summary_by_payment_type
+        "summary_by_payment_type":summary_by_payment_type,
+        "payment_transaction_summary":payment_transaction_summary 
     }
+
+
+
+
 
 @frappe.whitelist()
 def get_cash_count_setting():

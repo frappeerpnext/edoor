@@ -3,11 +3,9 @@
         <Message v-if="data?.confirm_message">
             <div v-html="data?.confirm_message" />
         </Message>
-        
+
         <label for="reason-text" class="mb-1 font-medium block">Reason</label>
         <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
-
-
         <div v-if="data?.data.show_reserved_room" class="py-2">
             <Checkbox inputId="no_show_sell_room" v-model="data.data.reserved_room" :binary="true" />
             <label for="no_show_sell_room" class="ml-1 cursor-pointer">Reserved room for this reservation.</label>
@@ -21,18 +19,12 @@ import { ref, onMounted, inject, postApi, deleteApi,updateDoc } from '@/plugin'
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
-
 const dialogRef = inject("dialogRef");
-
 const rs = inject("$reservation_stay")
-
 const emit = defineEmits(['onOk', 'onClose'])
-
 const data = ref()
 const note = ref("")
 const loading = ref(false)
-
-
 
 function onOk() {
     if (!note.value) {
@@ -89,8 +81,6 @@ function onLoadSocket(){
     if (!dialogRef.value.data.disable_reload_frontdesk){
         window.socket.emit("Frontdesk", window.property_name)
     }
-    
-    
 
     window.socket.emit("TodaySummary", window.property_name)
     window.socket.emit("ComGuestLedger", { property:window.property_name})
@@ -111,9 +101,6 @@ function onLoadSocket(){
 onMounted(() => {
     data.value = dialogRef.value.data;
 })
-
-
-
 
 </script>
 <style lang="">

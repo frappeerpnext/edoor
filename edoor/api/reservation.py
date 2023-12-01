@@ -1160,10 +1160,16 @@ def get_room_rate(property, rate_type, room_type, business_source, date,include_
      
     #if have rate type check if rate is allow to discount or note
     allow_discount = 0
+
     if rate_type:
-        account_code = frappe.db.get_value("Rate Type",rate_type,"account_code")
+        account_code, is_house_use,is_complimentary = frappe.db.get_value("Rate Type",rate_type,["account_code","is_complimentary","is_house_use"])
         if account_code:
             allow_discount = frappe.db.get_value("Account Code",account_code, "allow_discount")
+
+        if is_house_use == 1 or is_complimentary ==1:
+            rate = 0
+            tax_rule = None
+            allow_discount = 0
 
     return {"rate":rate,"tax_rule":tax_rule,"allow_discount":allow_discount}
 

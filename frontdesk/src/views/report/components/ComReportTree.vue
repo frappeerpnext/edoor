@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ reports }} -->
     <div class="p-2">
         <div class="mb-3">
             <InputText class="w-full" v-model="keyword" placeholder="Search Report" />
@@ -47,8 +48,10 @@ onMounted(() => {
     getDocList("System Report", {
         fields: ["name", "is_group", "report_title", "report_name", "filter_option", "parent_system_report"],
         orderBy: {
-            field: "sort_order"
+            field: "sort_order",
+            order: "asc"
         },
+        limit: 1000,
     }).then((result) => {
         data.value = result
         loading.value = false;

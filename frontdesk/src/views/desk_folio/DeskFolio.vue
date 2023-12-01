@@ -26,6 +26,7 @@
                     <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
+
                 </div>
             </div>
             <div class="flex gap-2">
@@ -223,6 +224,7 @@ function onOpenLink(column, data) {
 
 const Refresh = debouncer(() => {
     loadData();
+    
     pageState.value.page = 0
 }, 500);
 
@@ -357,6 +359,7 @@ onMounted(() => {
         if (arg.property == window.property_name) {
             setTimeout(function () {
                 loadData(false)
+                
             }, 3000)
         }
     })
@@ -397,6 +400,7 @@ onMounted(() => {
             })
         })
     })
+    onClearFilter()
 })
 
 function onResetTable() {
@@ -407,12 +411,7 @@ function onResetTable() {
 
 const advanceSearch = (event) => {
     showAdvanceSearch.value.toggle(event);
-    showAdvanceSearch.value.$on('hide', () => {
-        if (hasFiltersSelected()) {
-            filter.value.search_date_type = ''; 
-        }
-    });
-};
+}
 
 const onClearFilter = () => {
     filter.value = {}
@@ -422,16 +421,6 @@ const onClearFilter = () => {
 
 const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
-}
-function hasFiltersSelected() {
-    return (
-        filter.value.selected_status ||
-        filter.value.selected_guest ||
-        filter.value.selected_room_type ||
-        filter.value.selected_room_number ||
-        filter.value.selected_dates
-        // Add more conditions if there are other filters
-    );
 }
 
 onUnmounted(() => {
