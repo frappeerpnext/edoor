@@ -1,21 +1,48 @@
 [
  {
-  "account_category": "Other Charge Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:25.072913",
-  "name": "Other Charge Discount",
-  "note": null,
-  "sort_order": 600
- },
- {
-  "account_category": "Other Charge Server Charge",
+  "account_category": "Other Charge Service Charge",
   "docstatus": 0,
   "doctype": "Account Category",
   "modified": "2023-11-23 14:41:12.345132",
-  "name": "Other Charge Server Charge",
+  "name": "Other Charge Service Charge",
   "note": null,
   "sort_order": 700
+ },
+ {
+  "account_category": "Deposit",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:43:44.960236",
+  "name": "Deposit",
+  "note": null,
+  "sort_order": 1100
+ },
+ {
+  "account_category": "Folio Transfer",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:42:38.233705",
+  "name": "Folio Transfer",
+  "note": null,
+  "sort_order": 1000
+ },
+ {
+  "account_category": "Other Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:48.489650",
+  "name": "Other Charge",
+  "note": null,
+  "sort_order": 500
+ },
+ {
+  "account_category": "City Ledger",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:40:32.917540",
+  "name": "City Ledger",
+  "note": null,
+  "sort_order": 1300
  },
  {
   "account_category": "Other Charge Tax",
@@ -25,15 +52,6 @@
   "name": "Other Charge Tax",
   "note": null,
   "sort_order": 800
- },
- {
-  "account_category": "Room Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:12:28.091900",
-  "name": "Room Discount",
-  "note": null,
-  "sort_order": 200
  },
  {
   "account_category": "POS Bill to Room",
@@ -54,49 +72,13 @@
   "sort_order": 300
  },
  {
-  "account_category": "Folio Transfer",
+  "account_category": "Room Discount",
   "docstatus": 0,
   "doctype": "Account Category",
-  "modified": "2023-08-27 17:42:38.233705",
-  "name": "Folio Transfer",
+  "modified": "2023-11-23 09:12:28.091900",
+  "name": "Room Discount",
   "note": null,
-  "sort_order": 1000
- },
- {
-  "account_category": "Deposit",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:43:44.960236",
-  "name": "Deposit",
-  "note": null,
-  "sort_order": 1100
- },
- {
-  "account_category": "City Ledger",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:40:32.917540",
-  "name": "City Ledger",
-  "note": null,
-  "sort_order": 1300
- },
- {
-  "account_category": "Other Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:48.489650",
-  "name": "Other Charge",
-  "note": null,
-  "sort_order": 500
- },
- {
-  "account_category": "Payment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 16:59:46.108506",
-  "name": "Payment",
-  "note": "a",
-  "sort_order": 1200
+  "sort_order": 200
  },
  {
   "account_category": "Room Tax",
@@ -106,6 +88,24 @@
   "name": "Room Tax",
   "note": null,
   "sort_order": 400
+ },
+ {
+  "account_category": "Other Charge Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:25.072913",
+  "name": "Other Charge Discount",
+  "note": null,
+  "sort_order": 600
+ },
+ {
+  "account_category": "Payment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:59:46.108506",
+  "name": "Payment",
+  "note": "a",
+  "sort_order": 1200
  },
  {
   "account_category": "Room Charge",
