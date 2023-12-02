@@ -85,8 +85,6 @@
                 <ComAttachFile :docname="docname" :doctype="doctype" @onSuccess="onSuccess" @onClose="onModal(false)"/>
             </ComDialogContent>
         </Dialog>
-        
-         
         </div>
     </div>
 </template>
@@ -178,9 +176,6 @@ function onModalWebcam(open){
         return
     }
 }
-
- 
-
 const onRefresh = debouncer(() => {
     onLoad()
 }, 500);
@@ -266,7 +261,9 @@ function onDownload(data){
     downloadURI(data.file_url, data.file_name)
 }
 function onRemove(selected){
+
     dialogConfirm.require({
+        
         message: 'Do you want to delete this record?',
         header: 'Delete Confirmation',
         icon: 'pi pi-info-circle',
@@ -276,13 +273,11 @@ function onRemove(selected){
         acceptLabel: 'Ok',
         accept: () => {
             deleting.value = true
-            deleteDoc('File', selected.name).then((doc) => {
-                if(doc){
-                    deleting.value = false
+            deleteDoc('File', selected.name).then((doc) => {    
                     onLoad()
                     window.postMessage({"action":"refresh_document_count", docname:props.docname},"*")
+                    deleting.value = false
                    
-                }
             }).catch((err)=>{
                 deleting.value = false
             })

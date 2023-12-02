@@ -488,10 +488,6 @@ function onMarkasPaidbyMasterRoom() {
                     .then((doc) => {
                         rs.loading = false
                         rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
-                        toast.add({
-                            severity: 'success', summary: 'Mark as Piad by Master Room',
-                            detail: 'Mark as Piad by Master Room Successfully', life: 3000
-                        });
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
@@ -526,10 +522,6 @@ function onUnmarkasPaidbyMasterRoom() {
                 .then((doc) => {
                     loading.value = false;
                     rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
-                    toast.add({
-                        severity: 'success', summary: 'Unmark as Paid by Master Room ',
-                        detail: 'Unmark as Paid by Master Room Successfully', life: 3000
-                    });
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     window.socket.emit("ReservationStayList", { property:window.property_name})
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})

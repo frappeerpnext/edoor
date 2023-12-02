@@ -72,15 +72,6 @@
   "sort_order": 400
  },
  {
-  "account_category": "City Ledger",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:40:32.917540",
-  "name": "City Ledger",
-  "note": null,
-  "sort_order": 1300
- },
- {
   "account_category": "Other Charge Discount",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -88,6 +79,15 @@
   "name": "Other Charge Discount",
   "note": null,
   "sort_order": 600
+ },
+ {
+  "account_category": "City Ledger",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:40:32.917540",
+  "name": "City Ledger",
+  "note": null,
+  "sort_order": 1300
  },
  {
   "account_category": "Folio Transfer",

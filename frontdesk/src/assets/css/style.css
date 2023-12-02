@@ -1485,3 +1485,7 @@ align-items: center;
 .d-bg-edoor a{
     cursor: pointer;
 }
+.total-cash-count{
+    border-top: 1.9px solid #000;
+    font-weight: 700;
+}

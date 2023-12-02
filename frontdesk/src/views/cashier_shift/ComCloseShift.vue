@@ -68,7 +68,7 @@
                     <template v-for="(c, index) in [...new Set(cashCountSetting.map(r => r.currency))] " :key="index">
                         <tr>
                             <td colspan="3" style='background: rgb(243, 243, 243);' class="w-auto border-1 p-2 font-semibold">
-                                {{ c }}
+                                CASH {{ c }}
                             </td>
                         </tr>
                         <tr v-for="(n, index) in cashCountSetting.filter(r => r.currency == c)" :key="index" >
@@ -100,7 +100,7 @@
         <div class="col-12 xl:col-6">
             <div class="flex">
                 <div class="col-3 flex align-items-center justify-content-end">
-                    Actual Cash ({{ mainCurrency.name }}): 
+                    Actual Cash ({{ mainCurrency.name }})
                 </div>
                 <div class="col">
                     <ComInputCurrency classCss="w-full" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
@@ -111,7 +111,7 @@
 
             <div class="flex">
                 <div class="col-3 flex align-items-center justify-content-end">
-                    Actual Cash ({{ secondCurrency.name }}):
+                    Actual Cash ({{ secondCurrency.name }})
                 </div>
                 
                 <div class="col">

@@ -149,7 +149,7 @@
                                 <span>{{  slotProps.data[c.fieldname].split("@")[0] }}</span>
                             </template>
                                 
-                            <CurrencyFormat v-else-if="c.fieldtype == 'currency'" :value="slotProps.data[c.fieldname]" />
+                            <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>-</span>
@@ -261,13 +261,14 @@ function viewCityLedgerReport(){
 const columns = ref([
     { fieldname: 'name', label: 'Folio Transaction', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
     { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", default: true, header_class: "text-center" },
-    { fieldname: 'room_number', label: 'Room(s)',fieldtype: "Rooms" ,  header_class: "text-center" },
-    { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account Code', default: true },
+    { fieldname: 'room_number', label: 'Rooms',fieldtype: "Rooms" ,  header_class: "text-center" },
+    { fieldname: 'account_code', extra_field: "account_name", extra_field_separator: "-", label: 'Account', default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'total_amount', label: 'Debit', fieldtype: "Debit" , default: true, header_class: "text-right" },
     { fieldname: 'total_amount', label: 'Credit', fieldtype: "Credit", default: true, header_class: "text-right" },
+    { fieldname: 'amount', label: 'Amount', default: true, header_class: "text-right" ,fieldtype: "Currency"},
     { fieldname: 'payment_by', label: 'Pay by' },
-    { fieldname: 'payment_by_phone_number', label: 'Phone No.' },
+    { fieldname: 'payment_by_phone_number', label: 'Phone No' },
     { fieldname: 'owner', label: 'User', default: true },
     { fieldname: 'modified_by', label: 'Modified By', default: true},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },

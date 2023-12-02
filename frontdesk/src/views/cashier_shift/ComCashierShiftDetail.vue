@@ -8,8 +8,8 @@
             <TabPanel header="Cashier Shift Information">
 
                 <div class="grid mt-2">
-                    <div class="col-6">
-                        <ComReservationStayPanel title="Shift Information">
+                    <div class="col">
+                        <ComReservationStayPanel  title="Shift Information">
                             <template #content>
                                 <div class="shift_status">
                                     <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
@@ -22,6 +22,13 @@
                                     <ComStayInfoNoBox label="Posting Date" v-if="doc.name"
                                         :value="moment(doc.posting_date).format('DD-MM-YYYY')" />
                                     <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name" :value="doc.shift_name" />
+                                    <ComStayInfoNoBox label="Opened By"  >
+                                        <div class="white-space-nowrap font-semibold text-right -ml-2">
+                                             {{ doc?.owner?.split("@")[0] }} - 
+                                <ComTimeago :date="doc.creation" />  
+                                        </div>
+                                      
+                                    </ComStayInfoNoBox>
                                 </table>
                                 <div class="w-full h-10rem mb-4 mt-2">
                                     <label>Opening Note</label>
@@ -29,24 +36,29 @@
                                         v-html="doc.opened_note">
                                     </div>
                                 </div>
-                                <hr>
                                 <template v-if="doc.is_closed">
-                                    <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
+                                    <div class="pt-2">
+                                    <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
                                         Closing Shift
                                     </div>
                                     <table>
-                                        <ComStayInfoNoBox label="Cashier Shift #" v-if="doc.name" :value="doc.name" />
                                         <ComStayInfoNoBox label="Closing Date"
                                             :value="moment(doc.closed_date).format('DD-MM-YYYY')" />
-                                        <ComStayInfoNoBox label="Shift Name" v-if="doc.shift_name"
-                                            :value="doc.shift_name" />
-                                    </table>
+                                            <ComStayInfoNoBox label="Closed By"  >
+                                        <div class="white-space-nowrap font-semibold text-right -ml-2">
+                                            {{ doc?.modified_by?.split("@")[0] }} - 
+                                    <ComTimeago :date="doc.closed_date" /> 
+                                        </div>
+                                      
+                                    </ComStayInfoNoBox>
+                                        </table>
                                     <div class="w-full h-10rem mb-4 mt-2">
                                         <label>Closing Note</label>
                                         <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200"
                                             v-html="doc.closed_note">
                                         </div>
                                     </div>
+                                </div>
                                 </template>
 
                             </template>
@@ -63,7 +75,7 @@
 
                     </div>
                     <div class="col-6">
-                        <ComReservationStayPanel title="Payment Information">
+                        <ComReservationStayPanel v-if="doc.is_edoor_shift" title="Payment Information">
                             <template #content>
                                 <div class="flex w-full gap-3">
                                     <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
@@ -197,44 +209,48 @@
 
 
                                 <table class="w-full">
-
+ <tr class="border-1 p-1" style="background: rgb(243, 243, 243);">
+                                            <td class="w-auto  p-2"> Note Type </td>
+                                            <td class="w-auto  p-2 text-center"> Total Note </td>
+                                            <td class="w-auto p-2 text-right">Total Amount</td>
+                                        </tr>
                                     <template v-for="(c, index) in [...new Set(doc?.cash_count?.map(r => r.currency))]"
                                         :key="index">
-                                        <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
-                                            Cash {{ c }}
-                                        </div>
-                                        <tr style="background: rgb(243, 243, 243);">
-                                            <td class="w-auto border-1 p-2"> Type </td>
-                                            <td class="w-auto border-1 p-2"> Total Note </td>
-                                            <td class="w-auto border-1 p-2"> Total </td>
+                                        <tr>
+                                            <td colspan="3" class="p-2 font-bold" >{{c}}</td>
                                         </tr>
-                                        <tr v-for="(p, index) in doc?.cash_count?.filter(r => r.currency == c)" iscu
+                                            
+                                       
+                                        <tr v-for="(p, index) in doc?.cash_count?.filter(r => r.currency == c)" 
                                             :key="index">
-                                            <td class="border-1 p-2">
+                                            <td class="border-y-1 py-2 pl-6">
                                                 {{ p.label }}
                                             </td>
-                                            <td class="border-1 p-2">
+                                            <td class="border-y-1 text-center p-2">
                                                 {{ p.total_note }}
                                             </td>
-                                            <td class="border-1 p-2">
-                                                <CurrencyFormat :value="p.total_amount" :currency="p" />
+                                            <td class="border-y-1 text-right p-2">
+                                                <CurrencyFormat :value="p.total_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}" />
                                             </td>
                                         </tr>
-                                        <tr class="bg-white">
-                                            <td class="w-auto border-1 p-2"> Total </td>
-                                            <td class="w-auto border-1 p-2"> {{ doc?.cash_count?.filter(r => r.currency ==
+                                        <tr class="total-cash-count" >
+                                            <td class="p-2"> {{ c }} Total </td>
+                                            <td class="text-center p-2"> {{ doc?.cash_count?.filter(r => r.currency ==
                                                 c).reduce((n, d) => n + (d.total_note || 0), 0) }} </td>
-                                            <td class="w-auto border-1 p-2">
+                                            <td class="text-end p-2 ">
                                                 <CurrencyFormat
                                                     :value="doc?.cash_count?.filter(r => r.currency == c).reduce((n, d) => n + (d.total_amount || 0), 0)"
-                                                    :currency="doc?.cash_count?.filter(r => r.currency == c)[0]" />
+                                                    :currency="{precision:doc?.cash_count?.filter(r => r.currency == c)[0].currency_precision, pos_currency_format:doc?.cash_count?.filter(r => r.currency == c)[0].pos_currency_format}  " />
                                             </td>
                                         </tr>
 
                                     </template>
-                                    <tr>
-                                        <td colspan="2" class="w-auto  p-2 font-medium text-end">Grand Total</td>
-                                        <td class="w-auto bg-white p-2 bg-slate-200">
+                                    <tr class=" total-cash-count">
+                                        <td  class="w-auto  p-2 ">Grand Total</td>
+                                        <td class="p-2 w-auto text-center">
+                                            {{ doc?.cash_count?.reduce((n, d) => n + (d.total_note || 0), 0) }}
+                                        </td>
+                                        <td class="p-2 w-auto text-end">
                                             <CurrencyFormat :value="doc.total_close_amount" />
                                         </td>
                                     </tr>
@@ -267,7 +283,7 @@
                 class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
-        <template #footer-right>
+        <template v-if="doc.is_edoor_shift" #footer-right>
 
 
 

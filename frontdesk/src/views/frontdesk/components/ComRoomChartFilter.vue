@@ -39,6 +39,10 @@
         <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
         <Button @click="onToday('today')"  v-tippy ="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
         <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+
+        <div class="border-left-1 border-primary-100 m-2"></div>
+        <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
+
     </div>
 </template> 
 <script setup>
@@ -51,7 +55,7 @@ const route = useRoute()
 
 const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))
 const active = ref(reservation_chart.value?.period || "15_days")
-const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday','onChangePeriod'])
+const emit = defineEmits(['onFilter', 'onPrevNext', 'onToday','onChangePeriod','onRefresh'])
 const menu = ref();
 
 const props = defineProps({
@@ -123,5 +127,15 @@ const toggle = (event) => {
 function onView() {
     emit('onView')
 }
- 
+
+function onRefresh(){
+    emit('onRefresh')
+}
 </script>
+
+<style scoped>
+    .adjBtnRefresh{
+        padding-top: 0.4rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+</style>

@@ -1,6 +1,6 @@
 <template lang=""> 
     <div>
-        <ComHeader isRefresh @onRefresh="onRefresh()">
+        <ComHeader>
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div>
-                <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
+                <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)" @onRefresh="onRefresh()"/>
             </div>
         </div>
         <div style="max-width: 100%;">
@@ -1160,7 +1160,7 @@ const removeDOM = () => {
     });
 }
 </script>
-<style>
+<style scoped>
 .fc-content td:hover{
         background: #DBDBDB; 
         opacity: 0.4;

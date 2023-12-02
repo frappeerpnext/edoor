@@ -198,8 +198,4 @@ onMounted(() => {
 
 </script>
 
-<style scoped>
-.p-dialog .p-dialog-content{
-    overflow: scroll!important;
-    min-height: 750px;
-}</style>
+ 
