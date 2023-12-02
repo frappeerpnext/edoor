@@ -131,7 +131,7 @@
                                         </td>
                                     </tr>
 
-                                    <tr>
+                                    <tr class="total-cash-count">
                                         <td class="border-1 p-2">Total</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="summary?.payment_transaction_summary?.reduce((n, d) => n + (d.total_debit || 0), 0)"/>
@@ -181,7 +181,7 @@
                                         </td>
 
                                     </tr>
-                                    <tr>
+                                    <tr class="total-cash-count">
                                         <td class="border-1 p-2">Total</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="doc.cash_float?.reduce((n, d) => n + (d.opening_amount || 0), 0)"/>
@@ -251,7 +251,6 @@
                                             {{ doc?.cash_count?.reduce((n, d) => n + (d.total_note || 0), 0) }}
                                         </td>
                                         <td class="p-2 w-auto text-end">
-                                            
                                             <CurrencyFormat :value="doc.total_close_amount" />
                                         </td>
                                     </tr>
@@ -314,30 +313,6 @@ const gv = inject("$gv")
 const totalDocument = ref(0)
 const summary = ref()
 
-const totalCashCountAmount = computed(() => {
-    let totalCashCount = 0
-     
-    if(doc?.cash_count?.value?.filter(r=>r.total_note>0 & r.currency == mainCurrency.value.name).length>0){
-       
-        totalCashCount = totalMainCashCountAmount.value  
-    }else {
-        totalCashCount = doc.value.main_total_close_amount || 0
-    }
-   
-
-    if(cashCountSetting.value?.filter(r=>r.total_note>0 & r.currency == secondCurrency.value.name).length>0){
-        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
-       totalCashCount =totalCashCount +  totalSecondCashCountAmount.value   / exchange_rate
-    }else {
-        
-
-        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
-        
-        totalCashCount = totalCashCount + ((doc.value.second_total_close_amount || 0) / exchange_rate)
-    }
-    return totalCashCount
-    
-})
 
 function onUpdateFileCount(n) {
     totalDocument.value = n

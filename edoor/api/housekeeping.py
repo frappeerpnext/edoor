@@ -83,10 +83,6 @@ def get_room_list(filter={}):
    if len(filter["housekeeper"])>0:
       sql = sql + " and housekeeper = %(housekeeper)s "
    
-   # if len(filter["date"])>0:
-   #    sql = sql + " and date = %(date)s "
- 
-   
    data = frappe.db.sql(sql,filter,as_dict=1)
    sql ="""
       select 
