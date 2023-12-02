@@ -20,7 +20,7 @@
         <ComNightAuditReport/>
     </div>
     <div v-else class="wrp-night-audit-content w-full view-table-iframe">
-        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="min-height:20rem; width: 100%; overflow-x: auto;" :src="url" ></iframe>
+        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit" style="min-height:71vh; width: 100%; overflow-x: hidden;" :src="url" ></iframe>
     </div>
 
     <div class="wrp-action-btn-in-night-audit pb-2">
@@ -60,7 +60,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
-const currentStep = ref(1)
+const currentStep = ref(9)
 const loading = ref(false)
 
 const steps = ref([
@@ -177,8 +177,8 @@ function onIframeLoaded() {
     }
     iframe.style.minWidth ="0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-    iframe.style.height = '0px';
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    // iframe.style.height = '0px';
+    // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
 }
 
 const refreshReport = () => {

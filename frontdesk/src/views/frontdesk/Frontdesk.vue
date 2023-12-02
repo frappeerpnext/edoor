@@ -4,8 +4,7 @@
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
-                        <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Frontdesk</div> 
+                        <div @click="onRefresh()" class="text-2xl">Frontdesk</div> 
                         <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                         <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
@@ -27,6 +26,7 @@
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
+                <Button @click="onShowSummary" icon="pi pi-bars" class="text-3xl content_btn_b"></Button>
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>

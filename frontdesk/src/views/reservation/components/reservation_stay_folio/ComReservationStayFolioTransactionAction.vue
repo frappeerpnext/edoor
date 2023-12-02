@@ -155,7 +155,8 @@ function onOpenDelete() {
                 window.postMessage({action:"load_folio_transaction"},"*")
              
                 
-                window.socket.emit("ComDepositLedgerDetail",{name:props.data.transaction_number})
+                window.socket.emit("ComDeskFolioDetail",{name:props.data.transaction_number})
+                window.socket.emit("ComDeskFolioDetail",{name:props.data.transaction_number})
             }
             
             loading.value = false;

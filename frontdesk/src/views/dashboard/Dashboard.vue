@@ -1,7 +1,7 @@
 <template>
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
-            <div class="font-bold text-3xl text-overflow-ellipsis">{{ property.name }}</div>
+            <div class="text-2xl text-overflow-ellipsis">{{ property.name }}</div>
             <div class="txt-st__det" v-if="property.property_code">ID: {{ property.property_code }}, {{ property.province }}
             </div>
         </template>

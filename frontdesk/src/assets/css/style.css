@@ -693,6 +693,7 @@ td[data-resource-id="pax"] .fc-event.fc-event-draggable
 }
 .fc-timeline-event .guest-title{
     text-wrap: nowrap !important;
+    white-space: nowrap;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
 }

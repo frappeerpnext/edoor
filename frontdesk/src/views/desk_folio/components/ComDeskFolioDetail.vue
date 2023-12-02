@@ -185,7 +185,7 @@ onMounted(() => {
     getData()
     window.socket.on("ComDeskFolioDetail", (arg) => {
         if (arg.name == name.value) {
-            getData()
+                getData()
         }
     })
 })

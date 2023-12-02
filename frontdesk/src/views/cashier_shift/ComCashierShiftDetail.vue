@@ -74,8 +74,8 @@
 
 
                     </div>
-                    <div class="col-6">
-                        <ComReservationStayPanel v-if="doc.is_edoor_shift" title="Payment Information">
+                    <div v-if="doc.is_edoor_shift" class="col-6">
+                        <ComReservationStayPanel  title="Payment Information">
                             <template #content>
                                 <div class="flex w-full gap-3">
                                     <div class="bg-white flex flex-column rounded-lg grow p-2 shadow-charge-total border">
@@ -164,7 +164,7 @@
                                         <td class="w-auto border-1 p-2 text-right">Actual </td>
                                         <td class="w-auto border-1 p-2 text-right">Difference</td>
                                     </tr>
-                                    <tr v-for="(p, index) in doc.cash_float" :key="index">
+                                    <tr class="bg-white" v-for="(p, index) in doc.cash_float" :key="index">
                                         <td class="border-1 p-2"> {{ p.payment_method }}</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="p.input_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}" />
@@ -221,12 +221,12 @@
                                         </tr>
                                             
                                        
-                                        <tr v-for="(p, index) in doc?.cash_count?.filter(r => r.currency == c)" 
+                                        <tr  v-for="(p, index) in doc?.cash_count?.filter(r => r.currency == c)" 
                                             :key="index">
                                             <td class="border-y-1 py-2 pl-6">
                                                 {{ p.label }}
                                             </td>
-                                            <td class="border-y-1 text-center p-2">
+                                            <td class="border-y-1 text-center p-2 ">
                                                 {{ p.total_note }}
                                             </td>
                                             <td class="border-y-1 text-right p-2">
@@ -251,6 +251,7 @@
                                             {{ doc?.cash_count?.reduce((n, d) => n + (d.total_note || 0), 0) }}
                                         </td>
                                         <td class="p-2 w-auto text-end">
+                                            
                                             <CurrencyFormat :value="doc.total_close_amount" />
                                         </td>
                                     </tr>
@@ -277,13 +278,13 @@
             </TabPanel>
         </TabView>
 
-        <template #footer-left>
+        <template v-if="doc.is_edoor_shift" #footer-left>
 
             <SplitButton @click="onPrintFolioTransactionSummary('eDoor Cashier Shift Transaction Summary Report')"
                 class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
-        <template v-if="doc.is_edoor_shift" #footer-right>
+        <template  #footer-right>
 
 
 
@@ -313,6 +314,30 @@ const gv = inject("$gv")
 const totalDocument = ref(0)
 const summary = ref()
 
+const totalCashCountAmount = computed(() => {
+    let totalCashCount = 0
+     
+    if(doc?.cash_count?.value?.filter(r=>r.total_note>0 & r.currency == mainCurrency.value.name).length>0){
+       
+        totalCashCount = totalMainCashCountAmount.value  
+    }else {
+        totalCashCount = doc.value.main_total_close_amount || 0
+    }
+   
+
+    if(cashCountSetting.value?.filter(r=>r.total_note>0 & r.currency == secondCurrency.value.name).length>0){
+        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
+       totalCashCount =totalCashCount +  totalSecondCashCountAmount.value   / exchange_rate
+    }else {
+        
+
+        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
+        
+        totalCashCount = totalCashCount + ((doc.value.second_total_close_amount || 0) / exchange_rate)
+    }
+    return totalCashCount
+    
+})
 
 function onUpdateFileCount(n) {
     totalDocument.value = n
