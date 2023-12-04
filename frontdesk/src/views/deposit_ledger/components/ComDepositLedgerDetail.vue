@@ -197,9 +197,11 @@ onMounted(() => {
     getData()
     window.socket.on("ComDepositLedgerDetail", (arg) => {
       
-        if (arg.name == name.value) {
-         
+        if (arg.property == window.property_name) {
+            setTimeout(function () {
                 getData()
+            }, 3000)
+                
           
         }
     })

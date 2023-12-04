@@ -137,8 +137,7 @@
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>
-                <iframe :class="loading ? 'hidden' : ''" @load="onIframeLoaded()" style="min-height:90vh;padding-bottom:120px;" :id="iframe_id" width="100%" :src="url"></iframe>
-                
+                <iframe :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:90vh;padding-bottom:120px;" :id="iframe_id" width="100%" :src="url"></iframe>
             </div>
            
 
@@ -185,7 +184,7 @@ const hasFilter = ref((f) => {
 
 });
 function onIframeLoaded() {
-    loading.value = true;
+    
     const iframe = document.getElementById(iframe_id);
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
@@ -196,7 +195,7 @@ function onIframeLoaded() {
     }
     iframe.style.minWidth = "0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-
+loading.value = true;
     // iframe.style.height = '0px';
     // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     iframe.onload = function() {
@@ -243,7 +242,7 @@ function loadIframe() {
     document.getElementById(iframe_id).contentWindow.location.replace(url.value)
 }
 function onPrint() {
-    document.getElementById(iframe_id).contentWindow.print()
+     document.getElementById(iframe_id).contentWindow.print()
 }
 const reloadIframe = debouncer(() => {
     loadIframe()

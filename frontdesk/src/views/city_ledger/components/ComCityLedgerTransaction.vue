@@ -150,6 +150,10 @@
                             </template>
                                 
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
+                            <span v-else-if="c.fieldtype == 'Status'" class="px-2 rounded-lg text-white p-1px border-round-3xl"
+                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                                }}
+                            </span>
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />
                                 <span v-else>-</span>
@@ -272,6 +276,8 @@ const columns = ref([
     { fieldname: 'owner', label: 'User', default: true },
     { fieldname: 'modified_by', label: 'Modified By', default: true},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
+    { fieldname: 'reservation_status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
+
     { fieldname: 'note', label: 'Note', default: true },
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },

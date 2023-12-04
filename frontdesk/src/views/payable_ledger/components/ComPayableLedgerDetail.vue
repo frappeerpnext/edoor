@@ -164,8 +164,8 @@ function onAuditTrail() {
         },
     });
 }
-function getData() {
-    loading.value = true
+function getData(showLoading=true) {
+    loading.value = showLoading
     getApi("utils.get_payable_ledger_detail", {
         name: name.value
     }).then(r => {
@@ -184,7 +184,7 @@ onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
     window.socket.on("ComPayableLedgerDetail", (arg) => {
-        if (arg.name == name.value) {
+        if (arg.property == window.property_name) {
             getData()
         }
     })

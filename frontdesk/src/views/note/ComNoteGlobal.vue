@@ -1,5 +1,4 @@
 <template>
-	{{ referenceDocument }}
 	<div>
 		<div>
 			<div class="flex justify-end items-center gap-2">
@@ -16,7 +15,7 @@
 					</Button>
 				</div>
 			</div>
-			<ComAutoComplete inputId="reference_documnent_autocomplete" v-model="referenceDocument"
+			<ComAutoComplete class="search-note-cs w-full" inputId="reference_documnent_autocomplete" v-model="referenceDocument"
 				placeholder="Reference Document" :doctype="'DocType'"
 				:filters="{ 'name': ['in', ['Reservation', 'Reservation Stay', 'Folio Transaction', 'Customer', 'Room Block', 'Business Source', 'City Ledger Account', 'Room']] }"
 				@onSelected="onSearch" />

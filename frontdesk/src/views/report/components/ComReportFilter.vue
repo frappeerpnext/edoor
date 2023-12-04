@@ -1,5 +1,7 @@
 <template>
     <div v-if="showFilter" class="p-3">
+ 
+      
     <div  class="grid justify-between">
         <div class="grid w-full">
             <div class="col" v-if="hasFilter('filter_date_by')">
@@ -115,6 +117,37 @@
                 <ComSelect        class="auto__Com_Cus w-full" 
                     v-model="filter.departure_mode"   placeholder="Departure Mode" doctype="Transportation Mode"
                     ></ComSelect>
+            </div>
+            <div class="col"  v-if="hasFilter('working_day')">
+                <label>Working Day</label><br>
+                <ComAutoComplete v-model="filter.working_day" placeholder="working day" doctype="Working Day"
+                class="auto__Com_Cus w-full" />
+            </div>
+            <div class="col mt-4"  v-if="hasFilter('group_by_ledger_type')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Group by Leger Name</label>
+                    </div>
+                    <div>
+                        <Checkbox class="mx-3" v-model="filter.group_by_ledger_type" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
+            </div>
+            <div class="col mt-4"  v-if="hasFilter('show_account_code')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Show Account Code</label>
+                    </div>
+                    <div>
+                        <Checkbox class="mx-3" v-model="filter.show_account_code" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
             </div>
         </div>
         <div class="grid w-full">
@@ -251,14 +284,20 @@ const filter = ref({
     sort_order: "ASC",
     filter_date_by:"Arrival Date",
     summary_filter:"Business Source",
+    group_by_ledger_type:"0"
 
 })
 function onSelectLetterHead(l){
     filter.value.letterhead = l
 }
 const hasFilter = ref((f) => {
+
     if (props.selectedReport) {
-        return props.selectedReport.filter_option?.includes(f)
+        if(props.selectedReport.filter_option){
+            
+            return props.selectedReport.filter_option.split(",").filter(x=>x==f).length > 0
+        }
+        
     }
     return false
 

@@ -684,9 +684,13 @@ function onSave() {
             window.socket.emit("ComCityLedgerDetail", window.property_name)
             window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
             window.socket.emit("Reports", window.property_name)
-
             window.socket.emit("FolioTransactionList", window.property_name)
-
+            window.socket.emit("ComPayableLedgerDetail", { property: window.property_name })
+            window.socket.emit("PayableLedger", { property: window.property_name })
+            window.socket.emit("DeskFolio", { property: window.property_name })
+            window.socket.emit("ComDeskFolioDetail", { property: window.property_name })
+            window.socket.emit("DepositLedger", { property: window.property_name })
+            window.socket.emit("ComDepositLedgerDetail", { property: window.property_name })
 
         }).catch((err) => {
             isSaving.value = false;

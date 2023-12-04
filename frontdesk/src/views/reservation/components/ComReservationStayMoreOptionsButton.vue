@@ -619,10 +619,6 @@ function onMarkasGITReservation() {
             })
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
-                        toast.add({
-                            severity: 'success', summary: 'Mark as GIT Reservation',
-                            detail: 'Mark as GIT Reservation Successfully', life: 3000
-                        });
                         window.socket.emit("ReservationList", { property:window.property_name})
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("Dashboard",window.property_name)
@@ -653,10 +649,6 @@ function onMarkasFITReservation() {
             })
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
-                        toast.add({
-                            severity: 'success', summary: 'Mark as FIT Reservation',
-                            detail: 'Mark as FIT Reservation Successfully', life: 3000
-                        });
                         window.socket.emit("Dashboard", rs.reservationStay.property);
                         window.socket.emit("ReservationList", { property:window.property_name})
                         window.socket.emit("ReservationStayList", { property:window.property_name})

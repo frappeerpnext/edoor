@@ -26,7 +26,7 @@
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
-                <Button @click="onShowSummary" icon="pi pi-bars" class="text-3xl content_btn_b"></Button>
+                <Button @click="onShowSummary" :icon="showSummary? 'pi pi-ellipsis-v':'pi pi-ellipsis-h'" class="text-3xl content_btn_b border-none"></Button>
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
@@ -185,11 +185,6 @@ const isFilter = computed(() => {
 provide('get_count_note', {
     getTotalNote
 })
-
-function HelloWorld(){
-    events.value = events.value.filter(r=>r.type=="stay")
-
-}
 
 if (edoorShowFrontdeskSummary) {
     showSummary.value = edoorShowFrontdeskSummary == "1";
@@ -679,7 +674,6 @@ function onShowSummary() {
     showSummary.value = !showSummary.value
     localStorage.setItem("edoor_show_frontdesk_summary", showSummary.value ? "1" : "0")
     onRefresh()
- 
 }
 
 function onView() {

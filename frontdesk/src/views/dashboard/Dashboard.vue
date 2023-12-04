@@ -592,7 +592,8 @@ const viewSummary = (name) => {
             // "eDoor%20Dashboard%20Stay%20Over%20Guest",
             gv.getCustomPrintFormat("eDoor Dashboard Daily Reservation"),
             'Daily Reservation For '+ moment(selected_date.value).format("DD-MM-YYYY"),
-            [{ key: "date", value: selected_date.value }]
+            [{ key: "date", value: selected_date.value }],
+            ['keyword', 'room_type', 'reservation_status', 'business_source']
         )
     }
 }

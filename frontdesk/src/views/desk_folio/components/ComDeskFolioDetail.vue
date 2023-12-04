@@ -184,7 +184,7 @@ onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
     window.socket.on("ComDeskFolioDetail", (arg) => {
-        if (arg.name == name.value) {
+        if (arg.property == window.property_name) {
                 getData()
         }
     })

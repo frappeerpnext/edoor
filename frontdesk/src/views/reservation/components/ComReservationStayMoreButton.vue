@@ -271,6 +271,10 @@ function onUnmarkasPaidbyMasterRoom() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
+                    toast.add({
+                        severity: 'success',
+                        detail: 'Update Successful', life: 3000
+                    });
                 })
 
         },
@@ -294,6 +298,10 @@ function onMarkasPaidbyMasterRoom() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
+                    toast.add({
+                        severity: 'success',
+                        detail: 'Update Successful', life: 3000
+                    });
                    
                 })
 
@@ -319,8 +327,8 @@ function onAllowPosttoCityLedger() {
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
-                        severity: 'success', summary: 'Allow Post to City Ledger',
-                        detail: 'Allow Post to City Ledger Successfully', life: 3000
+                        severity: 'success',
+                        detail: 'Update Successful', life: 3000
                     });
                 })
         },
@@ -344,7 +352,10 @@ function onUnallowPosttoCityLedger() {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
-                 
+                    toast.add({
+                        severity: 'success',
+                        detail: 'Update Successful', life: 3000
+                    });
                 })
         },
 
@@ -370,7 +381,10 @@ function onMarkAsMasterRoom() {
                 window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
-
+                toast.add({
+                        severity: 'success',
+                        detail: 'Update Successful', life: 3000
+                    });
             })
         },
     });

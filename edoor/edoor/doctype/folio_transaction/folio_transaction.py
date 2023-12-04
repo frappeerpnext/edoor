@@ -24,7 +24,7 @@ class FolioTransaction(Document):
 		if self.required_select_product and not self.product:
 			frappe.throw("Please select product code.")
 			
-			
+		 
 		#validate folio status
 		if self.transaction_type =='Reservation Folio':
 			if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
@@ -288,6 +288,7 @@ class FolioTransaction(Document):
 		
 
 	def after_insert(self):
+		 
 		if self.target_transaction_type and  self.target_transaction_number:
 			note = ""
 			# if self.target_transaction_type:
@@ -296,8 +297,9 @@ class FolioTransaction(Document):
 
 			post_transaction_to_target_transaction_type(self)
 			
-
+ 
 		#add audit trail
+		 
 		if not self.parent_reference:
 			content =f"Post {self.account_group_name} to {self.transaction_type}. {self.transaction_type} #: {self.transaction_number}"
 			if self.transaction_type=="Reservation Folio":
@@ -614,6 +616,8 @@ def post_transaction_to_target_transaction_type(self,):
 		'cashier_shift': self.cashier_shift,
 		'working_date': self.working_date,
 		'account_code': self.target_account_code,
+		'account_group_name': self.account_group_name,
+		'account_group': self.account_group,
 		'type': self.target_account_type,
 		"quantity":self.quantity,
 		'input_amount': self.input_amount,

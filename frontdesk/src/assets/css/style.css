@@ -1468,7 +1468,7 @@ align-items: center;
 }
 .shift_status{
     position: absolute;
-    top: -30px;
+    top: -25px;
     left: 132px;
 }
 .stickyReservationStatus{
@@ -1489,4 +1489,7 @@ align-items: center;
 .total-cash-count{
     border-top: 1.9px solid #000;
     font-weight: 700;
+}
+.min-h-dialog{
+    min-height:67vh;
 }

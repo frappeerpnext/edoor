@@ -10,7 +10,7 @@
                     </div>
                 </template>
                 <template #end>
-                    <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />
+                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i> Print</Button>
                 </template>
             </ComHeader>
             <div class="flex justify-between">

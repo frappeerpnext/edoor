@@ -1,13 +1,11 @@
 <template>
-    <div class="grid mb-2 mt-5">
-        <div class="col flex gap-2 ">
-            <div class="text-2xl">Report</div>
+    <div class="grid">
+        <div class="col flex gap-2 mt-2">
+            <div class="text-2xl pt-2">eDoor Reports List</div>
             <div class="col flex gap-2 justify-end ">
                 <div v-if="(view||'')!='ui'">
-                        
-                        <ComPrintButton :url="url"  @click="onPrint"/>
-                        
-                    </div>
+                    <ComPrintButton :url="url"  @click="onPrint"/>
+                </div>
                 <div >
                     <Button @click="loadIframe" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                 </div>
@@ -38,7 +36,7 @@
                 <iframe @load="onIframeLoaded()" style="height:700px" id="iframe" width="100%" :src="url"></iframe>
             </div>
             <div v-else class="p-2 flex align-items-center h-100 justify-center">
-                <p class="text-center text-2xl">Please select report</p>
+                <p class="text-center text-2xl pt-3">Please select a report on the left bar.</p>
             </div>
         </SplitterPanel>
     </Splitter>

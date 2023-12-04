@@ -12,10 +12,11 @@
   "account_code",
   "allow_discount",
   "disable_get_rate_room_room_type",
-  "is_complimentary",
-  "is_house_use",
   "allow_user_to_edit_rate",
-  "note"
+  "note",
+  "column_break_npno",
+  "is_complimentary",
+  "is_house_use"
  ],
  "fields": [
   {
@@ -72,11 +73,15 @@
    "fieldname": "is_house_use",
    "fieldtype": "Check",
    "label": "Is House Use"
+  },
+  {
+   "fieldname": "column_break_npno",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-26 11:40:43.282706",
+ "modified": "2023-12-04 17:55:32.516678",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Rate Type",

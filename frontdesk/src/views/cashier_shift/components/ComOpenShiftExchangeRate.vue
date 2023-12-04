@@ -4,7 +4,8 @@
         <OverlayPanel ref="opExchangeRate">
             <ComOverlayPanelContent hideButtonOK style="min-width:15rem;" title="Exchange Rate" :hideFooter="true">
                 <div>
-                    <Message :closable="false">Excahnge Rate: {{ item.exchange_rate }} Riel</Message>
+                    
+                    <Message :closable="false">Excahnge Rate: {{ item.exchange_rate }} {{item.currency}}</Message>
                 </div>
             </ComOverlayPanelContent>
         </OverlayPanel>

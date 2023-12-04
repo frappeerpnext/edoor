@@ -215,14 +215,14 @@ function onAddFolioTransaction(account_code) {
 
 function reloadData() {
     window.socket.emit("DepositLedger", { property: window.property_name })
-    window.socket.emit("ComDepositLedgerDetail", { name: selectedFolio.value.name })
+    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name})
 
 
 
 }
 
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComDepositLedgerDetail", { name: selectedFolio.value.name })
+    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name})
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;

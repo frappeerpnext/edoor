@@ -1,9 +1,5 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
-
-
-
-
         <TabView>
             <TabPanel header="Cashier Shift Information">
 
@@ -12,8 +8,16 @@
                         <ComReservationStayPanel  title="Shift Information">
                             <template #content>
                                 <div class="shift_status">
+                                    <div class="flex align-items-center">
                                     <ComOpenStatus :status="doc.is_closed == 1 ? 'Closed' : 'Open'" />
+                                   
+                                    <span  v-if="doc.is_edoor_shift" class="ms-2 border-round-lg py-1 line-height-2 px-3 text-white font-medium bg-blue-700 me-1"> eDoor</span>
+                                   <span v-else class="ms-3 border-round-lg line-height-2 py-1 px-3 text-white font-medium bg-red-400 me-1"> ePOS</span>
+                                    
+                                    </div>
                                 </div>
+                                <div class="grid">
+                                <div :class="!doc.is_edoor_shift ? 'col-6' : 'col-12' ">
                                 <div class="bg-slate-200 p-2 font-medium text-center border-left-2">
                                     Opening Shift
                                 </div>
@@ -36,9 +40,11 @@
                                         v-html="doc.opened_note">
                                     </div>
                                 </div>
+                            </div>
+                            <div :class="!doc.is_edoor_shift ? 'col-6' : 'col-12' ">
                                 <template v-if="doc.is_closed">
-                                    <div class="pt-2">
-                                    <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
+                                    <div :class="!doc.is_edoor_shift ? '' : 'mt-2' ">
+                                    <div :class="!doc.is_edoor_shift ? '' : 'mt-4' " class="bg-slate-200 p-2 font-medium text-center border-left-2">
                                         Closing Shift
                                     </div>
                                     <table>
@@ -60,7 +66,8 @@
                                     </div>
                                 </div>
                                 </template>
-
+</div>
+</div>
                             </template>
                         </ComReservationStayPanel>
                         <div class="mt-3">
@@ -111,14 +118,16 @@
                                 <div class="bg-slate-200 p-2 mt-3 font-medium text-center border-left-2">
                                     Payment  Transaction Summary
                                 </div>
-                                <table class="w-full">
-                                    <tr style="background: rgb(243, 243, 243);">
+                                <table class="w-full border-1 bg-white">
+                                    <ComPlaceholder text="No Payment Transaction"  :is-not-empty="summary?.payment_transaction_summary.length > 0">
+                                    <tr class="bg-white">
                                         <td class="w-auto border-1 p-2"> Account Code </td>
                                         <td class="w-auto border-1 p-2 text-right"> Debit</td>
                                         <td class="w-auto border-1 p-2 text-right" > Credit </td>
                                         <td class="w-auto border-1 p-2 text-right"> Total </td>
                                     </tr>
-                                    <tr v-for="(p, index) in summary?.payment_transaction_summary" :key="index">
+                                   
+                                    <tr class="bg-white" v-for="(p, index) in summary?.payment_transaction_summary" :key="index">
                                         <td class="border-1 p-2"> {{ p.account_code }}  - {{ p.account_name }} </td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="p.total_debit" />
@@ -130,8 +139,9 @@
                                             <CurrencyFormat :value="p.total_credit - p.total_debit" />
                                         </td>
                                     </tr>
+                                    
 
-                                    <tr class="total-cash-count">
+                                    <tr class="total-cash-count bg-white">
                                         <td class="border-1 p-2">Total</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="summary?.payment_transaction_summary?.reduce((n, d) => n + (d.total_debit || 0), 0)"/>
@@ -148,7 +158,7 @@
 
 
                                     </tr>
-
+                                </ComPlaceholder>
                                 </table>
 
                                 <div v-if="doc.is_closed">
@@ -157,7 +167,7 @@
                                     Closing Summary
                                 </div>
                                 <table class="w-full">
-                                    <tr style="background: rgb(243, 243, 243);">
+                                    <tr class="bg-white">
                                         <td class="w-auto border-1 p-2"> Payment Type </td>
                                         <td class="w-auto border-1 p-2 text-right">Opening</td>
                                         <td class="w-auto border-1 p-2 text-right">Expected</td>
@@ -181,7 +191,7 @@
                                         </td>
 
                                     </tr>
-                                    <tr class="total-cash-count">
+                                    <tr  class="total-cash-count bg-white">
                                         <td class="border-1 p-2">Total</td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="doc.cash_float?.reduce((n, d) => n + (d.opening_amount || 0), 0)"/>
@@ -209,7 +219,7 @@
 
 
                                 <table class="w-full">
- <tr class="border-1 p-1" style="background: rgb(243, 243, 243);">
+ <tr class="border-1 p-1 bg-white" >
                                             <td class="w-auto  p-2"> Note Type </td>
                                             <td class="w-auto  p-2 text-center"> Total Note </td>
                                             <td class="w-auto p-2 text-right">Total Amount</td>
@@ -251,7 +261,7 @@
                                             {{ doc?.cash_count?.reduce((n, d) => n + (d.total_note || 0), 0) }}
                                         </td>
                                         <td class="p-2 w-auto text-end">
-                                            <CurrencyFormat :value="doc.total_close_amount" />
+                                            <CurrencyFormat :value="doc?.cash_count?.reduce((n, d) => n + (d.total_base_currency_amount || 0), 0)" />
                                         </td>
                                     </tr>
                                 </table>
@@ -268,11 +278,9 @@
                     <span class="me-2">Document</span>
                     <Badge :value="totalDocument"></Badge>
                 </template>
+                <div class="min-h-dialog">
                 <ComDocument v-if="doc" @updateCount="onUpdateFileCount" doctype="Cashier Shift"
                     :doctypes="['Cashier Shift']" :attacheds="[doc?.name]" :docname="doc?.name" />
-                <div class="col-12">
-                    <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
-                        :reference_doctypes="['Cashier Shift']" :docnames="[doc?.name]" />
                 </div>
             </TabPanel>
         </TabView>
@@ -280,7 +288,7 @@
         <template v-if="doc.is_edoor_shift" #footer-left>
 
             <SplitButton @click="onPrintFolioTransactionSummary('eDoor Cashier Shift Transaction Summary Report')"
-                class="spl__btn_cs sp" label="Print" icon="pi pi-print" :model="print_menus" />
+                class="spl__btn_cs_b sp_b" label="Print" icon="pi pi-print" :model="print_menus" />
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
         <template  #footer-right>
@@ -303,7 +311,7 @@ import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 const toast = useToast()
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
-
+const mainCurrency = ref(window.setting.currency) 
 
 const doc = ref({})
 const dialog = useDialog();
@@ -433,7 +441,7 @@ function getSummary() {
 }
 function getData() {
     loading.value = true
-
+    console.log(dialogRef.value.data.name)
     getDoc("Cashier Shift", dialogRef.value.data.name).then((result) => {
         doc.value = result
         getSummary()

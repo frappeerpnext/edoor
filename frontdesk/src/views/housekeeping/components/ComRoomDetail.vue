@@ -20,32 +20,14 @@
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Housekeeper" :value="data?.housekeeper" />
             </table>
-            <div class="my-3 line-height-2 ">
-            <div class="mt-auto text-sm flex justify-content-end">
-                    <span class="italic me-1">Created by : </span>
-                    <span class="text-500 font-italic">
-                        {{ data && data.owner && typeof data.owner === 'string' ? data.owner.split('@')[0] : '' }}
-                        <ComTimeago :date="data?.creation"/>                      
-                    </span>
-                </div>
-                <div class="mt-auto text-sm flex justify-content-end">
-                    <span class="italic me-1"> Last Modified : </span>
-                    <span class="text-500 font-italic">
-                        {{ data && data.modified_by && typeof data.modified_by === 'string' ? data.modified_by.split('@')[0] : '' }}
-               
-                        <ComTimeago :date="data?.modified" />
-                         
-                    </span>
-                </div>
-            </div>
-            <hr class="mb-3">
+          
+            <hr class="my-3">
             <div class="py-2 mt-1 border-1  bg-slate-200 font-medium flex justify-content-center">
                 <div class="flex align-items-center">
                     Reservation
                 </div>
             </div>
             <table>
-                {{ data }}
                 <ComStayInfoNoBox label="Res Stay No">
                     <Button @click="onViewReservationStayDetail(data?.reservation_stay)" class="-ml-2 link_line_action1"
                         text>{{ data?.reservation_stay }}</Button>
@@ -68,6 +50,25 @@
                     </span>
                 </ComStayInfoNoBox>
             </table>
+            <hr class="my-3">
+            <div class="my-3 line-height-2 ">
+            <div class="mt-auto text-sm flex justify-content-end">
+                    <span class="italic me-1">Created by : </span>
+                    <span class="text-500 font-italic">
+                        {{ data && data.owner && typeof data.owner === 'string' ? data.owner.split('@')[0] : '' }}
+                        <ComTimeago :date="data?.creation"/>                      
+                    </span>
+                </div>
+                <div class="mt-auto text-sm flex justify-content-end">
+                    <span class="italic me-1"> Last Modified : </span>
+                    <span class="text-500 font-italic">
+                        {{ data && data.modified_by && typeof data.modified_by === 'string' ? data.modified_by.split('@')[0] : '' }}
+               
+                        <ComTimeago :date="data?.modified" />
+                         
+                    </span>
+                </div>
+            </div>
         </div>
     </ComDialogContent>
 </template>

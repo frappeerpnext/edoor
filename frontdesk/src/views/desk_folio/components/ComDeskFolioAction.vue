@@ -219,7 +219,7 @@ function reloadData(){
 }
  
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComDeskFolioDetail",{name:selectedFolio.value.name})
+    window.socket.emit("ComDeskFolioDetail",{property:window.property_name})
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;

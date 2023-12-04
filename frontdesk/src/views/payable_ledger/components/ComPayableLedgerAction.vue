@@ -211,7 +211,7 @@ function onAddFolioTransaction(account_code) {
 }
 
 function reloadData(){
-    window.socket.emit("ComPayableLedgerDetail",{name:selectedFolio.value.name})
+    window.socket.emit("ComPayableLedgerDetail",{property: window.property_name})
     window.socket.emit("PayableLedger",{property:window.property_name})
     
 
@@ -219,7 +219,7 @@ function reloadData(){
 }
  
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComPayableLedgerDetail",{name:selectedFolio.value.name})
+    window.socket.emit("ComPayableLedgerDetail",{property: window.property_name})
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
