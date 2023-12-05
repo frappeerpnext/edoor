@@ -64,11 +64,17 @@
                             <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
                             </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
-                            <div v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                            <div v-tippy="slotProps.data.room_numbers" class="overflow-hidden text-overflow-ellipsis" style="width:300px" v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
                                 <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
                                     <span>{{ item }}</span>
                                     <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
                                     </span>
+                                </template>
+                            </div>
+                            <div v-tippy="slotProps.data.room_type_alias" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'room_type'" v-if="slotProps?.data && slotProps?.data?.room_type_alias">
+                                <template v-for="(item, index) in slotProps.data.room_type_alias.split(',')" :key="index">
+                                    <span>{{ item }}</span>
+                                    <span v-if="index != Object.keys(slotProps.data.room_type_alias.split(',')).length - 1">, </span>
                                 </template>
                             </div>
                             <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
@@ -183,8 +189,8 @@ const columns = ref([
     { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'room_nights', label: 'Room Nights', header_class: "text-center", default: true },
-    { fieldname: 'room_type_alias', label: 'Room Type', default: true },
-    { fieldname: 'room_numbers', label: 'Rooms', fieldtype: "Room", default: true },
+    { fieldname: 'room_type_alias', fieldtype: "room_type", label: 'Room Type', default: true },
+    { fieldname: 'room_numbers', label: 'Rooms', fieldtype: "Room", header_class:"", default: true },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
     { fieldname: 'guest_type', label: 'Guest Type ', default: true },

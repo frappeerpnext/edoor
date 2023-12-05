@@ -91,8 +91,7 @@ const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const data = ref({})
 const loading = ref(false)
-const property = JSON.parse(localStorage.getItem("edoor_property"))
-const checked = ref(false);
+
 
 function onLoad() {
     loading.value = true
@@ -125,10 +124,10 @@ function onSave() {
         new_name: data.value.business_source
     }
     createUpdateDoc("Business Source", data.value , '', rename).then((r) => {
-        window.socket.emit("ComBusinessSource",window.property_name)
+        
+        window.socket.emit("BusinessSource",window.property_name)
+        window.socket.emit("ComBusinessSourceDetail",window.property_name)
         dialogRef.value.close(rename.new_name)
-        onLoad()
-
     }).catch((err) => {
         loading.value = false
     })
@@ -138,7 +137,7 @@ onMounted(() => {
     if (dialogRef.value.data.name) {
         onLoad()
     } else {
-        data.value.property = property.name
+        data.value.property = window.property_name
     }
 })
 </script>

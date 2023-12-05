@@ -2,7 +2,7 @@
     <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
         
         <div class="iframe-view guest-detail">
-            {{ currentIframe }}
+ 
             <TabView  lazy>
                 <TabPanel header="General Information">
                     <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"

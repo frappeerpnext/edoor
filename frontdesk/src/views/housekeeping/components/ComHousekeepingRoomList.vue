@@ -11,8 +11,9 @@
                 @row-click="onRowSelect" 
                 tableStyle="min-width: 50rem"  
                 showGridlines 
+                paginator 
                 :rows="20"
-                :rowsPerPageOptions="[20, 30, 40, 50]" >
+                :rowsPerPageOptions="[20, 30, 40, 50,100,500]" >
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                 <Column class="text-center" field="room_number" header="Room #"></Column>
                 <Column header="Status" headerClass="text-center" bodyClass="text-center">
@@ -63,14 +64,7 @@
                 </div> -->
             </DataTable>
         </ComPlaceholder>
-        <div>
-			<Paginator class="p__paginator" v-model:first="hk.pageState.activePage" :rows="hk.pageState.rows"
-				:totalRecords="hk.pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" @page="pageChange">
-				<template #start="slotProps">
-					<strong>Total Records: <span class="ttl-column_re">{{ hk.pageState.totalRecords }}</span></strong>
-				</template>
-			</Paginator>
-		</div>
+     
     </div>
     <OverlayPanel ref="opHousekeeper" >
         <ComOverlayPanelContent width="15rem" :loading="loading" @onCancel="onAssignHousekeeper($event, {})"

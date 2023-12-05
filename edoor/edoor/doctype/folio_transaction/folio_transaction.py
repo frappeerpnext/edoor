@@ -359,14 +359,14 @@ class FolioTransaction(Document):
 		#validate delete folio transaction that have reference to folio transaction like folio transfer or city ledget
 		
 		account_doc = frappe.get_doc("Account Code",self.account_code)
-		if account_doc.require_select_a_folio:
+		if self.target_transaction_number:
 			sql = "select name, transaction_number from `tabFolio Transaction` where reference_folio_transaction='{}'".format(self.name)
 			
 			target_folio_transaction = frappe.db.sql(sql,as_dict=1)
 
 			if target_folio_transaction:
 				#validate folio status
-				if frappe.get_value("Reservation Folio", target_folio_transaction[0]["transaction_number"], "status")=="Closed":
+				if frappe.get_value(self.target_transaction_type, target_folio_transaction[0]["transaction_number"], "status")=="Closed":
 					frappe.throw("You cannot delete this record. Because reference to Folio number {} and this folio is already closed".format( target_folio_transaction[0]["transaction_number"]))
 				
 				
@@ -414,9 +414,9 @@ class FolioTransaction(Document):
 
 		
 		#check if folio transaction is city ledger then update city leder summary
-		if self.city_ledger:
+		if self.target_transaction_type == "City Ledger" and  self.target_transaction_number :
 			frappe.db.delete("Folio Transaction", filters={"reference_folio_transaction":self.name})
-			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.city_ledger, doc=None, run_commit=False)
+			frappe.enqueue("edoor.api.utils.update_city_ledger", queue='short', name=self.target_transaction_number, doc=None, run_commit=False)
 		
 
 		#add to audit trail

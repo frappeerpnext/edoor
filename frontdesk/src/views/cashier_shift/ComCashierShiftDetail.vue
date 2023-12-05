@@ -308,6 +308,7 @@ import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import ComCloseShift from '@/views/cashier_shift/ComCloseShift.vue';
 const toast = useToast()
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
@@ -424,7 +425,27 @@ function onOpenCloseShift() {
     if (doc.value.is_edoor_shift == 0) {
         toast.add({ severity: 'warn', summary: "This shift is an ePOS shift. Please ask ePOS user to close their shift.", detail: '', life: 3000 })
     } else {
-        window.postMessage('close_shift', '*')
+        dialog.open(ComCloseShift, {
+        data:{
+            name: doc.value.name
+        },
+        props: {
+            header:"Close Shift",
+            style: {
+                width: '80vw',
+            },
+            position:"top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        },
+        onClose: (options) => {
+            if(options.data){
+                getData()
+            }
+        },
+       
+    });
     }
 }
 function getSummary() {

@@ -104,7 +104,7 @@ const onOpen = () => {
     
     
     confirm.require({
-        message: 'Are you sure you want to open shift with amount ' + total + "?",
+        message: 'Are you sure you want to open shift with amount ' + gv.currencyFormat(total || 0) + "?",
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',

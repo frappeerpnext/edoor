@@ -399,6 +399,7 @@ apiCall.get('edoor.api.frontdesk.get_edoor_setting', {
 	property: localStorage.getItem("edoor_property") ? JSON.parse(localStorage.getItem("edoor_property"))?.name : null
 }).then((r) => {
 
+	
 	const data = r.message
 	if (data.user.name == "Guest") {
 		const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + config.backend_port;

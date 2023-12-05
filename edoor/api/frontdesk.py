@@ -355,19 +355,22 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
     return data
 
 @frappe.whitelist()
-def get_house_keeping_status(property):
+def get_house_keeping_status(property, working_day):
     #get house keeping status
     hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
     housekeeping_status = []
     for d in hk_data:
         total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
+        
+        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and start_date >= '{}'".format(property,working_day),as_dict=1)[0]["total"] or 0
 
         housekeeping_status.append({
             "status":d.name,
             "color":d.status_color,
             "icon":d.icon,
             "total":total,
-            "is_block_room":d.is_block_room
+            "is_block_room":d.is_block_room,
+            "total_block_room":total_room_block
         })
  
 
@@ -570,15 +573,22 @@ def get_edoor_setting(property = None):
     
     
     user = get_logged_user()
+    if not property:
+        if len(user["property"])==1:
+            property = user["property"][0]["name"]
+
+            
     if not frappe.db.exists("Business Branch", property):
         return {"user":user,"property":"Invalid Property", "edoor_setting":edoor_setting}
      
-
+ 
     working_day = None 
+     
     if property:
         working_day = get_working_day(property)
     else:
         if len(user["property"])==1:
+             
              working_day = get_working_day(user["property"][0]["name"])
  
 
@@ -586,7 +596,6 @@ def get_edoor_setting(property = None):
     
     if  not property.default_pos_profile:
         frappe.throw("Please assign default pos profile to your current property")
-
 
     edoor_setting["property"] = {
         "name":property.name,

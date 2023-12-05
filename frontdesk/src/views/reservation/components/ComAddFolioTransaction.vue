@@ -630,6 +630,14 @@ function onSelectAccountCode(data) {
 
 function onSelectProduct(data){
     doc.value.product_description = data.description || ''
+    if (data?.value){
+        getDoc("Product", data.value).then(r=>{
+          
+            if(!doc.value.input_amount){
+                doc.value.input_amount = r.price || 0
+            }
+        })
+    }
     
 }
 function onSelectTargetTransactionNumber(data){

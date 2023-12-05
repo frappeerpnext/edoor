@@ -324,12 +324,14 @@ onMounted(() => {
             })
         })
     })
+    
 
-    window.socket.on("ComBusinessSource", (arg) => {
+    window.socket.on("BusinessSource", (arg) => {
+        
         if (arg == window.property_name) {
-            setTimeout(function () {
+
                 loadData(false)
-            }, 3000)
+             
         }
     })
 })
@@ -381,7 +383,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("ComBusinessSource");
+    window.socket.off("BusinessSource");
 })
 
 </script>

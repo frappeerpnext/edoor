@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent hideButtonOK :hideButtonClose="true" style="max-height: 80vh;">
-        <iframe @load="onIframeLoaded()" id="iframe" style="width: 100%;" :src="url">
+        <iframe @load="onIframeLoaded()" id="iframeBusinessSourceDetail" style="width: 100%;" :src="url">
         </iframe>
         <template #footer-right>
             <Button class="border-none" @click="onEdit"> 
@@ -12,7 +12,7 @@
 
 </template>
  <script setup>
-import { ref, inject, useDialog, onMounted,deleteDoc,useConfirm,computed } from '@/plugin'
+import { ref, inject, useDialog, onMounted,deleteDoc,useConfirm,computed,onUnmounted } from '@/plugin'
 import ComAddBusinessSource from './ComAddBusinessSource.vue';
 const dialogRef = inject("dialogRef")
 const gv = inject('$gv');
@@ -20,15 +20,15 @@ const dialog = useDialog()
 const loading = ref(false)
 const confirm = useConfirm()
 const name = ref()
-const setting =JSON.parse( localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+
+const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const url =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Business%20Source&name="+ name.value +"&format=" + gv.getCustomPrintFormat("eDoor Business Source Detail")  + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
 })
 
 function onIframeLoaded(){ 
-    const iframe = document.getElementById("iframe");
+    const iframe = document.getElementById("iframeBusinessSourceDetail");
     iframe.height = iframe.contentWindow.document.body.scrollHeight;
 
 }
@@ -76,7 +76,7 @@ function onDelete() {
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
                     dialogRef.value.close(r)
-                    window.socket.emit("ComBusinessSource",window.property_name)
+                    window.socket.emit("BusinessSource",window.property_name)
                     
                     
                  } ).catch((err)=>{
@@ -88,6 +88,16 @@ function onDelete() {
 
 onMounted(() => {
     name.value = dialogRef.value.data.name
+    window.socket.on("ComBusinessSourceDetail",  (arg) => {
+        if (arg == window.property_name){
+            document.getElementById("iframeBusinessSourceDetail").contentWindow.location.replace(url.value + "&refresh=" + (Math.random() * 16))
+        }
+    })
+})
+
+onUnmounted(() => {
+      
+      window.socket.off("ComBusinessSourceDetail")
 })
 
 </script>

@@ -34,6 +34,7 @@ import AccountCategorySortOrder from "@/views/other/AccountCategorySortOrder.vue
 import RoomSortOrder from "@/views/other/RoomSortOrder.vue";
 import CashierShift from "@/views/cashier_shift/CashierShift.vue";
 import PayableLedger from "@/views/payable_ledger/PayableLedger.vue";
+import Vendor from "@/views/vendor/Vendor.vue";
 
 import authRoutes from './auth';
 
@@ -79,6 +80,7 @@ let routes = [
   { path: "/frontdesk/account-category-sort-order", name: "AccountCategorySortOrder", component:AccountCategorySortOrder, meta: { layout: 'blank_layout',title:"Sort Order Account Category" } },
   { path: "/frontdesk/cashier-shift", name: "CashierShift", component:CashierShift, meta: { layout: 'main_layout',title:"Cashier Shift" } },
   { path: "/frontdesk/payable-ledger", name: "PayableLedger", component:PayableLedger, meta: { layout: 'payable_ledger',title:"Payable Ledger" } },
+  { path: "/frontdesk/vendor", name: "Vendor", component:Vendor, meta: { layout: 'vendor',title:"Vendor" } },
  
   ...authRoutes,
 

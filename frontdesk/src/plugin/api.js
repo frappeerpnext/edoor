@@ -67,7 +67,6 @@ export function createUpdateDoc(doctype, data, message, rename=null,show_error_m
     const db = frappe.db() 
  
     return new Promise((resolve, reject)=>{
-        console.log(data)
         if(data.name){
       
             db.updateDoc(doctype, data.name, data)
