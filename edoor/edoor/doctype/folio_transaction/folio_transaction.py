@@ -333,6 +333,7 @@ class FolioTransaction(Document):
 
 	def on_update(self):
 		if not hasattr(self,"ignore_update_folio_transaction"):
+			 
 			update_folio_transaction(self)
 
 		
@@ -494,15 +495,9 @@ def update_folio_transaction(self):
 
 	#update folio transaction to reservation folio
 	if self.transaction_type=="Reservation Folio":
+		 
 		update_reservation_folio(self.transaction_number, None, False)
-	
-	#update to reservation stay and reservation
-	if not self.parent_reference:	
-		if self.transaction_type=="Reservation Folio": 
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
-
-
-	if self.transaction_type =="City Ledger":
+	elif self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
 	elif self.transaction_type =="Deposit Ledger":
 		update_deposit_ledger(self.transaction_number, None, False)
@@ -510,6 +505,14 @@ def update_folio_transaction(self):
 		update_desk_folio(self.transaction_number, None, False)
 	elif self.transaction_type=='Payable Ledger':
 		update_payable_ledger(self.transaction_number, None, False)
+	
+	#update to reservation stay and reservation
+	if not self.parent_reference:	
+		if self.transaction_type=="Reservation Folio": 
+			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
+
+
+
 
 	
 

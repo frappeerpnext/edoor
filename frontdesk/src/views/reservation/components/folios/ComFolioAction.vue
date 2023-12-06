@@ -282,10 +282,10 @@ function onAddFolioTransaction(account_code) {
 }
 
 function reloadData(){
-
+ 
     window.postMessage({action:"load_reservation_folio_list",reservation:selectedFolio.value.reservation},"*")
-
-    window.postMessage({action:"load_folio_transaction",name:selectedFolio.value.name},"*")
+    
+    // window.postMessage({action:"load_folio_transaction",name:selectedFolio.value.name},"*")
 
 }
 function showPrintPreview(data) {

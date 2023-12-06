@@ -220,7 +220,7 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction(){
-    
+
 				getDocList("Folio Transaction", {
 					fields: [
 						"name",

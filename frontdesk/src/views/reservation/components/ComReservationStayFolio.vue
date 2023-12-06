@@ -66,12 +66,13 @@ function setSelectedFolio(selected_name=""){
     }
 
 function onRefresh(){
+    // rs.getReservationDetail(rs.reservationStay.name)
     loadReservationStayFolioList()
 }
 function loadReservationStayFolioList(selected_name=""){
         loading.value = true
         getDocList('Reservation Folio', {
-            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype"],
+            fields: ["name", "status", "is_master", "rooms", "note", "room_types", "guest", "guest_name", "phone_number", "email", "photo", "status", "balance", "owner","creation","reservation","reservation_stay","business_source","doctype","total_credit","total_debit"],
             filters: [['reservation_stay', '=', rs.reservationStay.name]],
             limit: 1000
         })
@@ -124,9 +125,9 @@ function onAddCreatNewFolio() {
 const windowActionHandler = async function (e) {
         if (e.isTrusted) {
             if (e.data.action == "load_reservation_stay_folio_list") {
-                setTimeout(function () {
+              
                     loadReservationStayFolioList()
-                }, 2000)
+             
 
             }
 

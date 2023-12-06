@@ -172,7 +172,7 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction() {
-
+ 
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
         transaction_number: selectedFolio.value.name

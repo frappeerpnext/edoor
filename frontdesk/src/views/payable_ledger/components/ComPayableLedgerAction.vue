@@ -93,7 +93,7 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
-
+alert(selectedFolio.value.name)
     dialog.open(ComIFrameModal, {
         data: {
             doctype: "Payable%20Ledger",

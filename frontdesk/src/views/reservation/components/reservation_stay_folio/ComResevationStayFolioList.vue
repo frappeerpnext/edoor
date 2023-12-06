@@ -1,6 +1,6 @@
 <template>
     <div class="col-fixed relative pl-0 pr-0 py-0" style="width: 250px;">
-
+ 
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
             <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
                 <div class="flex justify-content-between align-items-center p-2">
@@ -52,14 +52,14 @@
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
                     <div class="pr-3"><label>Total Debit</label></div>
                     <div><span>
-                            <CurrencyFormat :value="rs.reservationStay.total_debit" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="totalDebit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
                 
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>Total Credit</label></div>
                     <div><span>
-                            <CurrencyFormat :value="rs.reservationStay.total_credit" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="totalCredit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
 
@@ -67,7 +67,7 @@
                 <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>Balance</label></div>
                     <div><span>
-                            <CurrencyFormat :value="rs.reservationStay.balance" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="(totalDebit - totalCredit)" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
 </template>
 <script setup>
 import Enumerable from 'linq';
-import { inject } from '@/plugin';
+import { inject , computed} from '@/plugin';
 import crown_svg from '@/assets/svg/icon-crown.svg'
 import plus_svg from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
@@ -96,6 +96,14 @@ const rs = inject('$reservation_stay');
 const dialog = useDialog();
 const moment = inject('$moment')
 const can_view_rate= window.can_view_rate;
+
+const totalCredit = computed(()=>{
+    return rs.folios.reduce((n, d) => n + (d.total_credit || 0), 0) 
+})
+const totalDebit = computed(()=>{
+    return rs.folios.reduce((n, d) => n + (d.total_debit || 0), 0) 
+})
+
 
 const { loadReservationStayFolioList } = inject("reservation_stay")
 

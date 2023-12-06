@@ -208,22 +208,34 @@ const isPage = computed(() => {
 })
 
 const onRefresh = debouncer(() => {
-    rs.getReservationDetail(name.value)
-    rs.getChargeSummary(name.value)
+ 
+    loadData()
+}, 500);
+
+function loadData(show_loading=true,delay_load_reservation_stay=0){
+    setTimeout(() => {
+        rs.getReservationDetail(name.value,show_loading)
+        rs.getChargeSummary(name.value)
+        
+    }, delay_load_reservation_stay);
+    
     rs.selectedRoomRates = []
     //load comment 
     window.postMessage({ action: "load_comment" }, "*")
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
     } else if (activeTab.value == 2) {
-        //load folio
-        window.postMessage({ action: "load_folio_transaction" }, "*")
+       
+       
         window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
+
     } else if (activeTab.value == 3) {
         window.postMessage({ action: "refresh_document", docname: name.value })
         window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
-}, 500);
+}
+
+
 function onUnreservedRoom() {
     confirm.require({
         message: 'Are you sure you want to unreserve room for this reservation?',
@@ -303,8 +315,10 @@ onMounted(() => {
         window.reservation_stay = dialogRef.value.data.name
     }
     window.socket.on("ReservationStayDetail", (arg) => {
+    
         if (arg.reservation_stay == rs.reservationStay.name) {
-            onRefresh(false)
+            
+            loadData(false,3000)
         }
     })
 });
