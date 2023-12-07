@@ -25,7 +25,7 @@ if (!currency.value){
 const amount = computed(() => {
     let n = (props.value);
     if ((typeof n) == 'number') {
-        return   rounder(n)
+        return   rounder(n,currency.value.precision)
 
     } else {
         return  0
