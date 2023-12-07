@@ -1,6 +1,7 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+from decimal import Decimal
 from edoor.api.frontdesk import get_working_day
 import frappe
 from frappe.model.document import Document
@@ -19,6 +20,10 @@ class ReservationFolio(Document):
 		
 
 		self.balance = (self.total_debit or 0) -( self.total_credit or 0)
+		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+		if self.balance < (Decimal('0.1') ** int(currency_precision)):
+			self.balance = 0
+			
 		#validate working day 
 		if self.is_new():
 			working_day = get_working_day(self.property)

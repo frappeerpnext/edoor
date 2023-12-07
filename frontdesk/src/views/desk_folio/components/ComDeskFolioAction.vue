@@ -141,7 +141,7 @@ print_menus.value.push({
                 filter_options:["show_summary",'invoice_style']
             },
             props: {
-                header: "Desk Folio Invoice Summary",
+                header: "Desk Folio Invoice Detail",
                 style: {
                     width: '80vw',
                 },

@@ -553,6 +553,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
         
         doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
         doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
+        
+
         #REMOVE credit and debit from dict
         for  d in folio_data:
             del d["credit"]
@@ -1231,18 +1233,35 @@ def get_cashier_shift_summary(name,property):
             type
     """.format(name,property)
     payment_transaction_summary = frappe.db.sql(sql, as_dict=1) 
+    
+    expected_cash = []
+    for d in doc.cash_float:
+        if d.payment_type_group =="Cash":
+            expected_amount = d.input_amount
+            if d.currency == frappe.db.get_single_value("ePOS Settings","currency"):
+                expected_amount =  ((d.input_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0)
+
+
+            expected_cash.append({
+                "currency":d.currency,
+                "pos_currency_format":d.pos_currency_format,
+                "payment_type":d.payment_method,
+                "expected_amount":expected_amount,
+                "precision":d.currency_precision
+            })
+
 
     return {
         "opening_cash_float": doc.total_opening_amount,
         "cash_debit": data[0]["cash_debit"],
         "cash_credit": data[0]["cash_credit"],
-        "cash_in_hand":( (doc.total_opening_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0),
+        "cash_in_hand": ((doc.total_opening_amount or 0) + (data[0]["cash_credit"] or 0)) - ( data[0]["cash_debit"] or 0),
         "summary_by_payment_type":summary_by_payment_type,
-        "payment_transaction_summary":payment_transaction_summary 
+        "payment_transaction_summary":payment_transaction_summary,
+        "expected_cash":expected_cash
+
+
     }
-
-
-
 
 
 @frappe.whitelist()

@@ -340,12 +340,42 @@ function AddTransaction(account_code) {
             const data = options.data;
 
             if (data) {
+                console.log(data);
                 loadData()
+                if ((data.show_print_preview || 0) == 1) {
+                        if (data.print_format) {
+                            showPrintPreview(data)
+                        }
+                    }
             }
 
         }
     })
 }
+
+
+function showPrintPreview(data) {
+
+const dialogRef = dialog.open(ComIFrameModal, {
+    data: {
+        doctype: "Folio Transaction",
+        name: data.name,
+        report_name: data.print_format,
+        show_letter_head: true
+    },
+    props: {
+        header: 'Print Preview',
+        style: {
+            width: '75vw',
+        },
+
+        modal: true,
+        position: "top"
+    },
+})
+}
+
+
 function onEditFolioTransaction(name) {
     // if(disabled){
     //     gv.toast("warn","city ledger transaction can't edit")

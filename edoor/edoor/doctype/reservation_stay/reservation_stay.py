@@ -1,5 +1,6 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
+from decimal import Decimal
 import json
 from frappe.utils import get_url_to_form
 from datetime import datetime
@@ -13,8 +14,6 @@ from edoor.api.utils import update_reservation
  
 class ReservationStay(Document):
 	def  validate(self):
-		
-	
 		working_day = get_working_day(self.property)
 		
 		if not self.reservation:
@@ -159,6 +158,12 @@ class ReservationStay(Document):
 		self.departure_date = Enumerable(self.stays).max(lambda x:getdate(x.end_date))
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
+
+		
+		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+		if self.balance < (Decimal('0.1') ** int(currency_precision)):
+			self.balance = 0
+
 
 
 

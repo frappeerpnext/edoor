@@ -45,10 +45,21 @@
             </table>                 
         </div>
         <div class="col-12 xl:col-6">
+
             <table>
+                    <thead>
+                        <th>Payment Type</th>
+                        <th>Expexted</th>
+                        <th>Actual</th>
+                        <th>Difference</th>
+                    </thead>
                     <tbody>
-                    <ComStayInfoNoBox label="Expected Cash">
-                        <CurrencyFormat currAddClass="font-semibold" :value="summary?.cash_in_hand" />
+                        <tr>
+                            <td></td>
+                        </tr>
+                    <ComStayInfoNoBox :label="'Expected Cash (' +  d.payment_type + ')'" v-for="(d, index) in summary?.expected_cash" :key="index">
+                        
+                        <CurrencyFormat :currency="d" currAddClass="font-semibold" :value="d.expected_amount" />
                     </ComStayInfoNoBox>
                 </tbody>
             </table>

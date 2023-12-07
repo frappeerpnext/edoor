@@ -1,5 +1,5 @@
 <template>
-
+ 
     <span :class="currAddClass?currAddClass:''">{{ NumberFormat(currency.pos_currency_format,   isNaN(amount)?0:amount) }}</span>
 </template>
 <script setup>

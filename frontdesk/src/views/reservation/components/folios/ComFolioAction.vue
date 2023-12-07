@@ -288,6 +288,7 @@ function reloadData(){
     // window.postMessage({action:"load_folio_transaction",name:selectedFolio.value.name},"*")
 
 }
+
 function showPrintPreview(data) {
 
     const dialogRef = dialog.open(ComIFrameModal, {
