@@ -33,8 +33,8 @@ const amount = computed(() => {
 })
 
 function rounder(num, decimalPlaces) {
-  const n =   Math.round(num * Math.pow(10, decimalPlaces+1)) / Math.pow(10, decimalPlaces + 1);
-  return Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces );
+  
+  return Math.round(num * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces );
 
 }
 
