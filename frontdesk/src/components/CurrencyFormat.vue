@@ -25,13 +25,18 @@ if (!currency.value){
 const amount = computed(() => {
     let n = (props.value);
     if ((typeof n) == 'number') {
-        return    Number(Math.round(n + 'e' + currency.value.precision) + 'e-' + currency.value.precision).toFixed(currency.value.precision);
+        return   rounder(n)
 
     } else {
         return  0
     }
 })
 
+function rounder(num, decimalPlaces) {
+  const n =   Math.round(num * Math.pow(10, decimalPlaces+1)) / Math.pow(10, decimalPlaces + 1);
+  return Math.round(n * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces );
+
+}
 
 
 </script>
