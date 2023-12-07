@@ -1,17 +1,17 @@
 [
  {
-  "alias": "CL",
+  "alias": "V",
   "allow_user_to_edit_information": 0,
-  "color": "#ED6396",
+  "color": "#ff0000",
   "docstatus": 0,
   "doctype": "Reservation Status",
   "is_active_reservation": 0,
-  "modified": "2023-10-10 16:09:27.451121",
-  "name": "Cancelled",
-  "reservation_status": "Cancelled",
+  "modified": "2023-10-10 16:09:19.062845",
+  "name": "Void",
+  "reservation_status": "Void",
   "show_in_reservation_list": 0,
   "show_in_room_chart": 0,
-  "sort_order": 5
+  "sort_order": 6
  },
  {
   "alias": "NS",
@@ -42,18 +42,18 @@
   "sort_order": 10
  },
  {
-  "alias": "V",
+  "alias": "CL",
   "allow_user_to_edit_information": 0,
-  "color": "#ff0000",
+  "color": "#ED6396",
   "docstatus": 0,
   "doctype": "Reservation Status",
   "is_active_reservation": 0,
-  "modified": "2023-10-10 16:09:19.062845",
-  "name": "Void",
-  "reservation_status": "Void",
+  "modified": "2023-10-10 16:09:27.451121",
+  "name": "Cancelled",
+  "reservation_status": "Cancelled",
   "show_in_reservation_list": 0,
   "show_in_room_chart": 0,
-  "sort_order": 6
+  "sort_order": 5
  },
  {
   "alias": "CO",

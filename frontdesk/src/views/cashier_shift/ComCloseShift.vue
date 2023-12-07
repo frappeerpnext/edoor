@@ -45,7 +45,8 @@
             </table>                 
         </div>
         <div class="col-12 xl:col-6">
-
+             
+            {{ summary }}
             <table>
                     <thead>
                         <th>Payment Type</th>
@@ -54,13 +55,12 @@
                         <th>Difference</th>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td></td>
+                        <tr v-for="(p, index) in summary?.expected_cash" :key="index">
+                            <td>{{ d.payment_type }}</td>
+                            <td><CurrencyFormat :currency="d" currAddClass="font-semibold" :value="d.expected_amount" /></td>
+
                         </tr>
-                    <ComStayInfoNoBox :label="'Expected Cash (' +  d.payment_type + ')'" v-for="(d, index) in summary?.expected_cash" :key="index">
-                        
-                        <CurrencyFormat :currency="d" currAddClass="font-semibold" :value="d.expected_amount" />
-                    </ComStayInfoNoBox>
+                    
                 </tbody>
             </table>
         </div>

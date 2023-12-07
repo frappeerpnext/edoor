@@ -147,7 +147,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Stay",
-  "modified": "2023-11-08 12:29:20.382777",
+  "modified": "2023-12-06 11:13:35.138823",
   "name": "Reservation Stay",
   "tracking_field": [
    {
@@ -437,6 +437,15 @@
     "parent": "Reservation Stay",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "paid_by_master_room",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Paid by Master Room",
+    "parent": "Reservation Stay",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
    }
   ]
  },
@@ -597,7 +606,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Room Rate",
-  "modified": "2023-11-01 12:35:37.809901",
+  "modified": "2023-12-05 09:40:36.356045",
   "name": "Reservation Room Rate",
   "tracking_field": [
    {
@@ -722,6 +731,15 @@
     "field_type": "Data",
     "hide_old_value": 0,
     "label": "tax_3_amount",
+    "parent": "Reservation Room Rate",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "total_rate",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Total Room Rate",
     "parent": "Reservation Room Rate",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"
