@@ -27,6 +27,7 @@
   "is_manual_rate",
   "is_complimentary",
   "is_house_use",
+  "is_arrival",
   "input_rate",
   "rate",
   "allow_discount",
@@ -357,11 +358,17 @@
    "fieldname": "is_house_use",
    "fieldtype": "Check",
    "label": "Is House Use"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_arrival",
+   "fieldtype": "Check",
+   "label": "Is Arrival"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-26 11:44:19.728682",
+ "modified": "2023-12-07 16:59:17.600967",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

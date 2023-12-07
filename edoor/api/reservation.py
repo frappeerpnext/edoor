@@ -5,7 +5,7 @@ from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_oc
 from py_linq import Enumerable
 import re
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword
+from edoor.api.utils import check_user_permission, get_date_range, get_rate_type_info, update_is_arrival_date_in_room_rate, update_reservation_folio, update_reservation_stay,update_reservation,add_room_charge_to_folio,get_master_folio,create_folio, validate_backdate_permission, validate_role,update_keyword
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
@@ -1498,6 +1498,7 @@ def delete_stay_room(parent,name, note):
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = stay.reservation, reservation_stay=stay.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = stay)
         
+    update_is_arrival_date_in_room_rate(stay.name)
     return stay
 
 @frappe.whitelist(methods="POST")
@@ -2189,12 +2190,11 @@ def auto_update_reservation_stay(docname, data, update_doc):
 def upgrade_room(doc,regenerate_rate=False):
     data = frappe.get_doc('Reservation Stay',doc['name'])
     for dc in doc['stays']:
+        
         if 'name' in dc and dc['name']:
             indices = [i for i, d in enumerate(data.stays) if dc['name'] in d.name]
             data.stays[indices[0]].end_date = dc['end_date']
-             #delete un use rate 
-
-            
+           
             
             frappe.db.sql("delete  from `tabReservation Room Rate` where date>='{}' and stay_room_id='{}'".format(dc["end_date"],dc["name"]))
         else:
@@ -2223,7 +2223,8 @@ def upgrade_room(doc,regenerate_rate=False):
             "is_manual_rate":last_stay.is_manual_rate,
             "property":data.property,
             "regenerate_rate":regenerate_rate,
-            "is_active_reservation":1
+            "is_active_reservation":1,
+            "is_arrival": 1 if getdate(d) == getdate(data.arrival_date) else 0
         }).insert()
 
     frappe.db.commit()

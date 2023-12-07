@@ -305,6 +305,9 @@
             return i
         })
         data.reservationStay.stays.push(newData)
+
+        
+        return
         
         postApi('reservation.upgrade_room',{doc: data.reservationStay,regenerate_rate:newRoom.value.is_override_rate }).then((doc) => { 
             loading.value = false;

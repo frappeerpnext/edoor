@@ -613,6 +613,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             doc.save()
             if run_commit:
                 frappe.db.commit()
+
+        
         return doc
 
 
@@ -1307,3 +1309,21 @@ def get_exchange_rate(base_currency, second_currency):
         return data[0]["exchange_rate"]
     else:
         return 1
+
+
+def update_is_arrival_date_in_room_rate(stay_name):
+	sql ="""
+		update `tabReservation Room Rate` 
+		set is_arrival = 0 
+		where reservation_stay = '{0}' and is_arrival=1
+	""".format(stay_name)
+	frappe.db.sql(sql)
+	
+	first_stay_date = frappe.db.sql( "select name from `tabReservation Room Rate` x where x.reservation_stay = '{0}' order by x.date limit 1".format(stay_name),as_dict=1)
+	if len(first_stay_date)>0:
+		sql ="""update `tabReservation Room Rate` 
+				set is_arrival = 1 
+			where 
+			name='{}'
+		""".format(first_stay_date[0]["name"])
+		frappe.db.sql(sql)

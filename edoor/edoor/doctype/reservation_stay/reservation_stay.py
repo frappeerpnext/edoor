@@ -5,7 +5,7 @@ import json
 from frappe.utils import get_url_to_form
 from datetime import datetime
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import get_date_range,get_room_rate, update_reservation_stay
+from edoor.api.utils import get_date_range,get_room_rate, update_is_arrival_date_in_room_rate, update_reservation_stay
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now,getdate
@@ -370,7 +370,8 @@ def generate_room_rate(self, run_commit = True):
 					"is_manual_rate":is_manual_rate,
 					"property":self.property,
 					"regenerate_rate":regenerate_rate,
-					"is_active_reservation":1
+					"is_active_reservation":1,
+					"is_arrival": 1 if getdate(d) == getdate(self.arrival_date) else 0 
 				}).insert()
 			else:
 				# avaliable room rate
@@ -464,9 +465,14 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"is_manual_rate":is_manual_rate,
 				"property":stay_doc.property,
 				"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
-				"is_active_reservation":1
+				"is_active_reservation":1,
+				
 			}).insert()
-	
+		
+
+	#update first date in reservation room is_arrival = 1
+	update_is_arrival_date_in_room_rate(stay_doc.name)
+
  
 
 	 
@@ -475,13 +481,19 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	
 	
 def update_reservation_stay_room_rate_after_move(data,stay_doc):
+
 	date_range = get_date_range( getdate( data["start_date"]),getdate(data["end_date"]))
 	room_rates = frappe.db.get_list("Reservation Room Rate",filters={"stay_room_id":data["name"]},order_by="date",  start=0, page_length=1000  ) 
 	for d in room_rates:
 		rate_doc = frappe.get_doc("Reservation Room Rate",d.name)
 		rate_doc.date = date_range[room_rates.index(d)]
 		rate_doc.room_id=data["room_id"]
-		rate_doc.room_type_id=data["room_type_id"]
+		rate_doc.room_type_id=data["room_type_id"] or frappe.db.get_value("Room", rate_doc.room_id,"room_type_id")
+	
+	
+	
+
+
 		if data["generate_rate_type"] =="rate_plan":
 
 			rate_doc.is_manual_rate = 0
@@ -489,6 +501,12 @@ def update_reservation_stay_room_rate_after_move(data,stay_doc):
 
 
 		rate_doc.save()
+
+	#update first date in reservation room is_arrival = 1
+	update_is_arrival_date_in_room_rate(stay_doc.name)
+	
+	
+
 
 
 def change_room_occupy(self):

@@ -1,6 +1,7 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
         <template #content>
+      
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column class="w-15rem" field="start_date" header="Stay Date" >
@@ -35,6 +36,7 @@
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.adr" /> 
+                                 
                             </span>
                         </template>
                     </Column>
@@ -90,7 +92,7 @@ const dialog = useDialog()
 const can_view_rate = ref(window.can_view_rate)
 
 const rooms = computed(()=>{
-    return Enumerable.from(rs.reservationStay?.stays).orderBy("$.creation").toArray()
+    return Enumerable.from(rs.reservationStay?.stays).orderBy("$.start_date").toArray()
 })
  
 const canNotUpgradeRoom = computed(()=>{
