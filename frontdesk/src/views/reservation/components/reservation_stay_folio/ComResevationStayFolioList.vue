@@ -67,7 +67,7 @@
                 <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
                     <div class="pr-3"><label>Balance</label></div>
                     <div><span>
-                            <CurrencyFormat :value="(totalDebit - totalCredit)" class="white-space-nowrap font-medium" />
+                            <CurrencyFormat :value="balance" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
             </div>
@@ -102,6 +102,10 @@ const totalCredit = computed(()=>{
 })
 const totalDebit = computed(()=>{
     return rs.folios.reduce((n, d) => n + (d.total_debit || 0), 0) 
+})
+
+const balance = computed(()=>{
+    return rs.folios.reduce((n, d) => n + (d.balance || 0), 0) 
 })
 
 
