@@ -95,7 +95,7 @@
                     
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="totalDebit - totalCredit" />
+                            <CurrencyFormat :value="selectedFolio.balance" />
                         </template>
                     </Column>
  

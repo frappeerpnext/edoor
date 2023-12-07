@@ -23,9 +23,9 @@
                 <ComAutoComplete class="w-full" v-model="data.vendor_group" placeholder="Vendor Group"
                   doctype="Vendor Group" />
                 <div class="col-12">
-                <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
-                <label for="ingredient1" class="ml-2">Disabled</label>
-              </div>
+                  <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
+                  <label for="ingredient1" class="ml-2">Disabled</label>
+                </div>
               </div>
             </div>
           </template>
@@ -40,32 +40,39 @@
                 <InputText v-model="data.contact_name" type="text" class="w-full" placeholder="Contact Name" />
               </div>
               <div class="col-6">
-                <label>Credit Card Number</label>
-                <InputText v-model="data.credit_card_number" type="text" class="w-full"
-                  placeholder="Credit Card Number" />
+                <label>Email Address</label>
+                <InputText v-model="data.email_address" type="text" class="w-full" placeholder="Email Address" />
               </div>
               <div class="col-6">
-                <label>Card Holder Name</label>
-                <InputText v-model="data.card_holder_name" type="text" class="w-full" placeholder="Card Holder Name" />
+                <label>Phone Number</label>
+                <InputText v-model="data.phone_number" type="text" class="w-full" placeholder="Phone Number" />
+              </div>
+              <div class="col-6">
+                <label>Website</label>
+                <InputText v-model="data.website" type="text" class="w-full" placeholder="Website" />
               </div>
             </div>
           </template>
         </ComReservationStayPanel>
       </div>
-      <div class="col-12" v-if="dialogRef.data.is_city_ledger">
+      <div class="col-12">
         <ComReservationStayPanel title="Address & Note">
           <template #content>
             <div class="grid">
               <div class="col-12">
-                <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
-                <label for="ingredient1" class="ml-2"> Auto create City Ledger Account</label>
+                <label>Province</label>
+                <InputText v-model="data.province" type="text" class="w-full" placeholder="Province" />
               </div>
 
-              <div class="col-12" v-if="data.auto_create_city_ledger_account">
-                <label>City Ledger Type</label>
-                <ComAutoComplete isIconSearch v-model="data.city_ledger_type" class="w-full"
-                  placeholder="City Ledger Type" doctype="City Ledger Type" @onSelected="onSelectedCustomer" />
+              <div class="col-12 lg:col-6 pt-1">
+                <label class="white-space-nowrap">Address</label><br />
+                <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="data.address" rows="4" />
               </div>
+              <div class="col-12 lg:col-6 pt-1">
+                <label class="white-space-nowrap">Note</label><br />
+                <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="data.note" rows="4" />
+              </div>
+
             </div>
           </template>
         </ComReservationStayPanel>

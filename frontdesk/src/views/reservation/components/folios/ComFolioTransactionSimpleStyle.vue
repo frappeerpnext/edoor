@@ -133,7 +133,7 @@
                     </Column>
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="getTotal('total_amount')" />
+                            <CurrencyFormat :value="selectedFolio.balance" />
 
                         </template>
                     </Column>
