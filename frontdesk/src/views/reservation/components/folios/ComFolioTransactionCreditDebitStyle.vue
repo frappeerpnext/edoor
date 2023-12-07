@@ -82,6 +82,7 @@
                    
                     <Column footerStyle="text-align:right">
                         <template #footer>
+                            {{ totalDebit }}
                             <CurrencyFormat :value="totalDebit" />
                         </template>
                     </Column>
