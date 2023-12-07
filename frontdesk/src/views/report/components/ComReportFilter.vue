@@ -295,7 +295,7 @@ const hasFilter = ref((f) => {
     if (props.selectedReport) {
         if(props.selectedReport.filter_option){
             
-            return props.selectedReport.filter_option.split(",").filter(x=>x==f).length > 0
+            return props.selectedReport.filter_option.split(",").filter(x=>x.trim()==f.trim()).length > 0
         }
         
     }

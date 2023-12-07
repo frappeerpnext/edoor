@@ -178,7 +178,7 @@ function onSelectLetterHead(l) {
 }
 const hasFilter = ref((f) => {
     if (filter_options.value) {
-        return filter_options.value.includes(f)
+        return filter_options.value.includes(f.trim())
     }
     return false
 
