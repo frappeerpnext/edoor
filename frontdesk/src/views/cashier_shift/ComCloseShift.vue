@@ -56,9 +56,9 @@
                     </thead>
                     <tbody>
                         <tr v-for="(p, index) in summary?.expected_cash" :key="index">
-                            <td>{{ d.payment_type }}</td>
-                            <td><CurrencyFormat :currency="d" currAddClass="font-semibold" :value="d.expected_amount" /></td>
-
+                            <td>{{ p.payment_type }}</td>
+                            <td><CurrencyFormat :currency="p" currAddClass="font-semibold" :value="p.expected_amount" /></td>
+                            <td> <ComInputCurrency classCss="w-full" v-model="p.close_amount"  /></td>
                         </tr>
                     
                 </tbody>

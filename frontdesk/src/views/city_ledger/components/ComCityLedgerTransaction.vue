@@ -121,7 +121,7 @@
                 <DataTable 
                 :rowClass="rowClass"
                 resizableColumns 
-                columnResizeMode="fit" 
+                columnResizeMode="expand" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_folio_transaction_list_state" 
