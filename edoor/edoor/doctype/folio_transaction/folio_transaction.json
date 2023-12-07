@@ -114,6 +114,7 @@
   "allow_enter_quantity",
   "show_print_preview",
   "print_format",
+  "is_night_audit_posting",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -909,11 +910,17 @@
    "fieldname": "payment_type",
    "fieldtype": "Data",
    "label": "Payment Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_night_audit_posting",
+   "fieldtype": "Check",
+   "label": "Is Night Audit Posting"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-26 20:22:14.414454",
+ "modified": "2023-12-07 15:45:47.972592",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

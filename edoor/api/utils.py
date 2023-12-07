@@ -743,7 +743,7 @@ def remove_temp_room_occupy(reservation):
                   """.format(reservation))
     frappe.db.commit()
 
-def add_room_charge_to_folio(folio,rate):
+def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
     rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
  
     frappe.get_doc({
@@ -765,7 +765,8 @@ def add_room_charge_to_folio(folio,rate):
         "rate_include_tax":rate.rate_include_tax,
         "is_auto_post":1,
         "valiate_input_amount": False,
-        "reservation_room_rate": rate.name
+        "reservation_room_rate": rate.name,
+        "is_night_audit_posing":is_night_audit_posing
     }).insert()
 
 

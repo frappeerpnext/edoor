@@ -1421,7 +1421,7 @@ def post_room_change_to_folio(working_day):
                 folio = get_master_folio(r.reservation)
             
             if folio:
-                add_room_charge_to_folio(folio, r)
+                add_room_charge_to_folio(folio, r,1)
 
     
     #verify if reservation stay and and reservation is update balance

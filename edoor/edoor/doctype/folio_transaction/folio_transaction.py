@@ -600,6 +600,7 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"note":note,
 						"parent_reference":self.name,
 						"is_auto_post":self.is_auto_post,
+						"add_room_charge_to_folio":self.add_room_charge_to_folio,
 						"reservation_room_rate": self.reservation_room_rate
 					}).insert()
 					
