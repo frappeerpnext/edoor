@@ -181,28 +181,6 @@ const getColumns = computed(() => {
     }
 })
 
-// function onOpenLink(column, data){
-//     const dialogRef = dialog.open(ComBusinessSourceDetail, {
-//         data: {
-//             name: data.name,
-//         },
-//         props: {
-//             header: 'Business Source - ' + data.name,
-//             style: {
-//                 width: '80vw',
-//             },
-//             modal: true,
-//             position:"top",
-//             closeOnEscape: false
-//         },
-//         onClose: (options) => {
-//             const data = options.data;
-//             if (data) {
-//                 loadData()
-//             }
-//         }
-//     });
-// }
 
 
 const Refresh = debouncer(() => {
@@ -362,6 +340,9 @@ function onAddNewVendor() {
             }
         }
     });
+}
+function onOpenLink(column, data) {
+    window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 
 const onCloseColumn = () => {

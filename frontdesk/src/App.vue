@@ -272,7 +272,7 @@ const dialogRef = dialog.open(ComVendorDetail, {
         name: name
     },
     props: {
-        header: 'Room Detail',
+        header: 'Vendor Detail',
         style: {
             width: '60vw',
         },

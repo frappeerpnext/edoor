@@ -14,11 +14,11 @@
                 <label>Company</label>
                 <InputText v-model="data.company" type="text" class="w-full" placeholder="Company" />
               </div>
-              <!-- <div class="col-6">
+              <div class="col-6">
                 <label>Vendor Type</label>
-                <ComAutoComplete class="w-full" v-model="data.vendor_type" placeholder="Vendor Type"
-                   />
-              </div> -->
+                <ComSelect width="100%" v-model="data.vendor_type" @onSelected="onSearch"
+                    placeholder="Vendor Type" :options="[ 'Indovidual','General','Company']" />
+              </div>
               <div class="col-6">
                 <label>Vendor Group</label>
                 <ComAutoComplete class="w-full" v-model="data.vendor_group" placeholder="Vendor Group"
