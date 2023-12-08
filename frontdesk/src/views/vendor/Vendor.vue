@@ -138,14 +138,13 @@ const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows:
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const columns = ref([
-    { fieldname: 'name', label: 'Vendor', default: true , fieldtype: "Link", post_message_action: "s",}, //fieldtype:"Link", 
+    { fieldname: 'name', label: 'Vendor', default: true , fieldtype: "Link", post_message_action: "view_vendor_detail",}, //fieldtype:"Link", 
     { fieldname: 'vendor_name', label: 'Vendor Name', default: true },
     { fieldname: 'vendor_type', label: 'Vendor Type', default: true },
     { fieldname: 'company', label: 'Company', default: true },
     { fieldname: 'phone_number', label: 'Phone Number', default: true },
     { fieldname: 'email_address', label: 'Email Address', default: true },
     { fieldname: 'website', label: 'Website', default: true },
-    { fieldname: 'docstatus', label: 'Status', default: true },
 
     { fieldname: 'owner', label: 'Created By'},
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
@@ -166,6 +165,7 @@ function OnSaveColumn(event) {
     pageState.value.selectedColumns = selectedColumns.value
     localStorage.setItem("page_state_vendor", JSON.stringify(pageState.value))
     opShowColumn.value.toggle(event);
+    loadData()
 }
 
 function onResetTable() {
@@ -341,7 +341,6 @@ function onAddNewVendor() {
     dialog.open(ComAddVendor, {
         data: {
             // name: name.value,
-            is_city_ledger: true
         },
         props: {
             header: `Add New Vendor`,

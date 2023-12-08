@@ -1,4 +1,5 @@
 <template>
+  {{ data }}
   <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="grid">
       <div class="col-12">
@@ -7,23 +8,23 @@
             <div class="grid">
               <div class="col-6">
                 <label>Vendor Name</label>
-                <InputText v-model="data.name" type="text" class="w-full" placeholder="Vendor Name" />
+                <InputText v-model="data.vendor_name" type="text" class="w-full" placeholder="Vendor Name" />
               </div>
               <div class="col-6">
                 <label>Company</label>
                 <InputText v-model="data.company" type="text" class="w-full" placeholder="Company" />
               </div>
-              <div class="col-6">
+              <!-- <div class="col-6">
                 <label>Vendor Type</label>
                 <ComAutoComplete class="w-full" v-model="data.vendor_type" placeholder="Vendor Type"
-                  doctype="Customer Group" />
-              </div>
+                   />
+              </div> -->
               <div class="col-6">
                 <label>Vendor Group</label>
                 <ComAutoComplete class="w-full" v-model="data.vendor_group" placeholder="Vendor Group"
                   doctype="Vendor Group" />
                 <div class="col-12">
-                  <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
+                  <Checkbox inputId="ingredient1" v-model="data.disabled" :binary="true" />
                   <label for="ingredient1" class="ml-2">Disabled</label>
                 </div>
               </div>
@@ -91,7 +92,7 @@ const loading = ref(false)
 
 function onLoad() {
   loading.value = true
-  getDoc('Business Source', dialogRef.value.data.name)
+  getDoc('Vendor', dialogRef.value.data.name)
     .then((r) => {
       data.value = r
       loading.value = false
@@ -106,23 +107,16 @@ function onClose() {
 }
 
 function onSave() {
-  if (!data.value.business_source) {
-    gv.toast('warn', 'Bussiness source is required.')
-    return
-  }
-  else if (!data.value.business_source_type) {
-    gv.toast('warn', 'Bussiness source type is required.')
-    return
-  }
+  if (!data.value.vendor_name) {
+        gv.toast('warn', 'Guest name is required.')
+        return
+    }
   loading.value = true
-  const rename = {
-    old_name: dialogRef.value.data.name,
-    new_name: data.value.business_source
-  }
-  createUpdateDoc("Business Source", data.value, '', rename).then((r) => {
+  createUpdateDoc("Vendor", data.value).then((r) => {
 
     window.socket.emit("Vendor", window.property_name)
-    dialogRef.value.close(rename.new_name)
+    onLoad()
+    dialogRef.value.close()
   }).catch((err) => {
     loading.value = false
   })
@@ -131,8 +125,9 @@ function onSave() {
 onMounted(() => {
   if (dialogRef.value.data.name) {
     onLoad()
-  } else {
-    data.value.property = window.property_name
   }
+  //  else {
+  //   data.value.property = window.property_name
+  // }
 })
 </script>

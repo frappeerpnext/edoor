@@ -44,6 +44,7 @@ import ComRoomDetail from '@/views/housekeeping/components/ComRoomDetail.vue';
 import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail.vue";
 import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
 import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayableLedgerDetail.vue";
+import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
  
 const gv = inject("$gv")
 const moment= inject("$moment")
@@ -141,6 +142,9 @@ const actionClickHandler = async function (e) {
             }
             else if (data[0] == "view_room_detail") {
                 showRoomDetail(data[1])
+            }
+            else if (data[0] == "view_vendor_detail") {
+                showVendorDetail(data[1])
             }
         }
 
@@ -261,6 +265,25 @@ function showGuestDetail(name) {
 
     });
 }
+function showVendorDetail(name) {
+
+const dialogRef = dialog.open(ComVendorDetail, {
+    data: {
+        name: name
+    },
+    props: {
+        header: 'Room Detail',
+        style: {
+            width: '60vw',
+        },
+        maximizable: true,
+        modal: true,
+        closeOnEscape: false,
+        position: "top"
+    },
+
+});
+}
 function showRoomDetail(name) {
 
 const dialogRef = dialog.open(ComRoomDetail, {
@@ -280,7 +303,6 @@ const dialogRef = dialog.open(ComRoomDetail, {
 
 });
 }
-
 
 
 function showReservationDetail(name) {
