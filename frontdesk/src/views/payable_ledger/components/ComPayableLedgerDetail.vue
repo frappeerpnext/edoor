@@ -14,7 +14,7 @@
                             {{ moment(doc.posting_date).format("DD-MM-YYYY") }}
                         </ComStayInfoNoBox>
                         <ComStayInfoNoBox label="Vendor">
-                            <span @click="onViewVendor(doc.vendor)" class="text-right link_line_action1 -ml-2">
+                            <span @click="onViewVendorDetail(doc.vendor)" class="text-right link_line_action1 -ml-2">
                                 {{ doc.vendor }} - {{ doc.vendor_name }}
                             </span>
                         </ComStayInfoNoBox>
@@ -131,9 +131,7 @@ const loading = ref(false)
 function onUpdateFileCount(n) {
     totalDocument.value = n
 }
-function onViewVendor(g) {
-    alert('Vendor Detail ')
-}
+
 function onAuditTrail() {
     const dialogRef = dialog.open(ComAuditTrail, {
         data: {
@@ -189,7 +187,9 @@ onMounted(() => {
         }
     })
 })
-
+function onViewVendorDetail(g) {
+    window.postMessage("view_vendor_detail|" + g)
+}
 onUnmounted(() => {
     window.socket.off("ComPayableLedgerDetail")
 })

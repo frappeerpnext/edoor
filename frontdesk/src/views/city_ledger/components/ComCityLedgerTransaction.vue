@@ -340,7 +340,6 @@ function AddTransaction(account_code) {
             const data = options.data;
 
             if (data) {
-                console.log(data);
                 loadData()
                 if ((data.show_print_preview || 0) == 1) {
                         if (data.print_format) {

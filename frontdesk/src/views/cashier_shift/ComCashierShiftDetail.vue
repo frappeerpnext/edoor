@@ -462,7 +462,6 @@ function getSummary() {
 }
 function getData() {
     loading.value = true
-    console.log(dialogRef.value.data.name)
     getDoc("Cashier Shift", dialogRef.value.data.name).then((result) => {
         doc.value = result
         getSummary()

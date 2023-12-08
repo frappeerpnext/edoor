@@ -454,8 +454,6 @@ function onStartDate(newValue) {
 
 
 const getRoomType = () => {
-console.log(data.value.arrival_date)
-console.log(data.value.departure_date)
     getApi("reservation.check_room_type_availability", {
         property: property.name,
         start_date: moment(data.value.arrival_date).format("yyyy-MM-DD"),
@@ -470,7 +468,6 @@ console.log(data.value.departure_date)
 }
 
 const getRooms = () => {
-    console.log(data.value.arrival_date)
     getApi("reservation.check_room_availability", {
         property: property.name,
         start_date: moment(data.value.arrival_date).format("yyyy-MM-DD"),

@@ -166,7 +166,7 @@ const columns = ref([
 
     { fieldname: 'name', label: 'Payable Ledger #', fieldtype: "Link", post_message_action: "view_payable_ledger_detail", default: true },
     { fieldname: 'posting_date', label: 'Payable Ledger. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
-    { fieldname: 'vendor', label: 'Vendor', fieldtype: "Link", extra_field: "vendor_name", extra_field_separator: "-", post_message_action: "", default: true },
+    { fieldname: 'vendor', label: 'Vendor', fieldtype: "Link", extra_field: "vendor_name", extra_field_separator: "-", post_message_action: "view_vendor_detail", default: true },
     { fieldname: 'room_number', label: 'Room', default: true ,header_class: "text-center"},
     { fieldname: 'room_type', label: 'Room Type', header_class: "text-left", default: true },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
@@ -219,7 +219,7 @@ const dialog = useDialog();
 
 function onOpenLink(column, data) {
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
-    console.log(column.post_message_action)
+  
 }
 
 

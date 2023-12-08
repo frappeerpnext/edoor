@@ -1,5 +1,4 @@
 <template>
-  {{ data }}
   <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="grid">
       <div class="col-12">
@@ -95,6 +94,10 @@ function onLoad() {
   getDoc('Vendor', dialogRef.value.data.name)
     .then((r) => {
       data.value = r
+      window.socket.emit("Vendor", window.property_name)
+      window.socket.emit("ComVendorDetail", window.property_name)
+      window.socket.emit("PayableLedger", {property:window.property_name})
+      window.socket.emit("ComPayableLedgerDetail", {property:window.property_name})
       loading.value = false
     })
     .catch((error) => {
@@ -108,13 +111,16 @@ function onClose() {
 
 function onSave() {
   if (!data.value.vendor_name) {
-        gv.toast('warn', 'Guest name is required.')
-        return
-    }
+      gv.toast('warn', 'vendor name is required.')
+      return
+  }
+  if (!data.value.vendor_type) {
+      gv.toast('warn', 'vendor type is required.')
+      return
+  }
+
   loading.value = true
   createUpdateDoc("Vendor", data.value).then((r) => {
-
-    window.socket.emit("Vendor", window.property_name)
     onLoad()
     dialogRef.value.close()
   }).catch((err) => {

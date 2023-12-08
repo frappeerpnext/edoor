@@ -141,7 +141,6 @@ function saveData(){
                     loading.value = false
                     dialogRef.value.close(doc);
                 }).catch((e)=>{
-                   console.log(e)
                     loading.value = false
                 })
 }
