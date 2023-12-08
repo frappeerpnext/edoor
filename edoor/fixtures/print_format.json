@@ -266,7 +266,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-07 15:47:41.264260",
+  "modified": "2023-12-08 11:34:54.811880",
   "module": "eDoor",
   "name": "Room Charge Posting",
   "page_number": "Hide",
@@ -276,7 +276,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -514,7 +514,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-07 18:29:41.507047",
+  "modified": "2023-12-08 11:33:51.092407",
   "module": "eDoor",
   "name": "eDoor Run Night Audit Step",
   "page_number": "Hide",
@@ -524,7 +524,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1661,7 +1661,7 @@
   "margin_left": 0.0,
   "margin_right": 0.0,
   "margin_top": 0.0,
-  "modified": "2023-12-06 09:26:45.679068",
+  "modified": "2023-12-08 11:35:18.927288",
   "module": "eDoor",
   "name": "Front Desk Arrival Guest Report",
   "page_number": "Bottom Right",
@@ -1671,7 +1671,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1692,7 +1692,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-10-11 16:40:44.485469",
+  "modified": "2023-12-08 11:35:22.485698",
   "module": "eDoor",
   "name": "eDoor Config Room Assignment and Over Booking Reservation",
   "page_number": "Hide",
@@ -1702,7 +1702,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1723,7 +1723,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-11-23 08:39:35.441910",
+  "modified": "2023-12-08 11:35:21.328808",
   "module": "eDoor",
   "name": "eDoor Folio  Transaction Detail  by Reservation",
   "page_number": "Hide",
@@ -1733,7 +1733,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1754,7 +1754,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-23 15:49:38.267548",
+  "modified": "2023-12-08 11:35:20.842792",
   "module": "eDoor",
   "name": "eDoor Reservation Folio List",
   "page_number": "Hide",
@@ -1764,7 +1764,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1785,7 +1785,7 @@
   "margin_left": 10.0,
   "margin_right": 10.0,
   "margin_top": 10.0,
-  "modified": "2023-08-28 08:46:52.340117",
+  "modified": "2023-12-08 11:35:22.691255",
   "module": "eDoor",
   "name": "Front Desk Arrival Guest Report Test",
   "page_number": "Hide",
@@ -1795,7 +1795,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1816,7 +1816,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-21 23:28:52.614433",
+  "modified": "2023-12-08 11:35:21.995401",
   "module": "eDoor",
   "name": "eDoor Reservation Stay Folio Summary Report",
   "page_number": "Hide",
@@ -1826,7 +1826,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1847,7 +1847,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-11-22 17:02:45.968999",
+  "modified": "2023-12-08 11:35:21.692381",
   "module": "eDoor",
   "name": "eDoor Reservation Stay Folio Detail Report",
   "page_number": "Hide",
@@ -1857,7 +1857,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1878,7 +1878,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-10-25 22:31:40.110472",
+  "modified": "2023-12-08 11:35:22.301195",
   "module": "eDoor",
   "name": "eDoor Conflict Room Assignment and Over Booking Reservation",
   "page_number": "Hide",
@@ -1888,7 +1888,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1909,7 +1909,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-06 09:32:38.163206",
+  "modified": "2023-12-08 11:35:18.116199",
   "module": "eDoor",
   "name": "eDoor Deposit Ledger Invoice Summary",
   "page_number": "Hide",
@@ -1919,7 +1919,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1940,7 +1940,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-11-21 10:27:37.774789",
+  "modified": "2023-12-08 11:35:22.154592",
   "module": "eDoor",
   "name": "eDoor Deposit Ledger Invoice Detail",
   "page_number": "Hide",
@@ -1950,7 +1950,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -1971,7 +1971,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-06 09:03:00.632798",
+  "modified": "2023-12-08 11:35:19.091917",
   "module": "eDoor",
   "name": "eDoor No Show Cancel Void Report",
   "page_number": "Hide",
@@ -1981,7 +1981,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2002,7 +2002,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-12-06 14:35:39.111847",
+  "modified": "2023-12-08 11:34:57.627022",
   "module": "eDoor",
   "name": "eDoor Desk Folio Invoice Detail",
   "page_number": "Hide",
@@ -2012,7 +2012,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2033,7 +2033,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-06 14:35:41.932312",
+  "modified": "2023-12-08 11:34:56.270250",
   "module": "eDoor",
   "name": "eDoor Desk Folio Invoice Summary",
   "page_number": "Hide",
@@ -2043,7 +2043,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2064,7 +2064,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-22 00:13:28.863331",
+  "modified": "2023-12-08 11:35:21.837680",
   "module": "eDoor",
   "name": "eDoor Folio Transaction Summary by Reservation Stay",
   "page_number": "Hide",
@@ -2074,7 +2074,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2095,7 +2095,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-22 17:13:31.812824",
+  "modified": "2023-12-08 11:35:21.542603",
   "module": "eDoor",
   "name": "eDoor Folio Transaction Summary by Reservation",
   "page_number": "Hide",
@@ -2105,7 +2105,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2126,7 +2126,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-11-23 09:04:29.803200",
+  "modified": "2023-12-08 11:35:21.179850",
   "module": "eDoor",
   "name": "eDoor Folio Transaction Detail by Reservation",
   "page_number": "Hide",
@@ -2136,7 +2136,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2157,7 +2157,7 @@
   "margin_left": 5.0,
   "margin_right": 5.0,
   "margin_top": 5.0,
-  "modified": "2023-11-23 10:28:39.469863",
+  "modified": "2023-12-08 11:35:21.019728",
   "module": "eDoor",
   "name": "eDoor Folio Transaction Detail by Reservation Stay",
   "page_number": "Hide",
@@ -2167,7 +2167,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2188,7 +2188,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-23 16:33:07.273231",
+  "modified": "2023-12-08 11:35:20.653518",
   "module": "eDoor",
   "name": "eDoor Folio List by Reservation Stay",
   "page_number": "Hide",
@@ -2198,7 +2198,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2219,7 +2219,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-23 16:38:37.025743",
+  "modified": "2023-12-08 11:35:20.495845",
   "module": "eDoor",
   "name": "eDoor Folio List by Reservation",
   "page_number": "Hide",
@@ -2229,7 +2229,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2250,7 +2250,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-11-24 09:39:08.276636",
+  "modified": "2023-12-08 11:35:20.301391",
   "module": "eDoor",
   "name": "eDoor Housekeeping Status",
   "page_number": "Hide",
@@ -2260,7 +2260,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2281,7 +2281,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-02 16:39:24.835089",
+  "modified": "2023-12-08 11:35:19.602778",
   "module": "eDoor",
   "name": "Audit Trail",
   "page_number": "Hide",
@@ -2291,7 +2291,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2312,7 +2312,7 @@
   "margin_left": 0.0,
   "margin_right": 0.0,
   "margin_top": 0.0,
-  "modified": "2023-12-04 10:41:48.727841",
+  "modified": "2023-12-08 11:35:19.251921",
   "module": "eDoor",
   "name": "eDoor Cashier Shift Transaction Summary Report",
   "page_number": "Hide",
@@ -2322,7 +2322,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2405,7 +2405,7 @@
   "margin_left": 0.0,
   "margin_right": 0.0,
   "margin_top": 0.0,
-  "modified": "2023-12-04 09:42:03.000902",
+  "modified": "2023-12-08 11:35:19.415862",
   "module": "eDoor",
   "name": "eDoor Cashier Shift Transaction Detail Report",
   "page_number": "Hide",
@@ -2415,7 +2415,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
@@ -2436,7 +2436,7 @@
   "margin_left": 15.0,
   "margin_right": 15.0,
   "margin_top": 15.0,
-  "modified": "2023-12-01 17:56:23.739470",
+  "modified": "2023-12-08 11:35:19.795255",
   "module": "eDoor",
   "name": "eDoor Cashier Shift Audit Trail",
   "page_number": "Hide",
@@ -2446,7 +2446,7 @@
   "raw_commands": null,
   "raw_printing": 0,
   "show_section_headings": 0,
-  "standard": "Yes"
+  "standard": "No"
  },
  {
   "absolute_value": 0,
