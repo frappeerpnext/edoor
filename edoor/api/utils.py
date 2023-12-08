@@ -1237,6 +1237,7 @@ def get_cashier_shift_summary(name,property):
     """.format(name,property)
     payment_transaction_summary = frappe.db.sql(sql, as_dict=1) 
     
+
     expected_cash = []
     for d in doc.cash_float:
         if d.payment_type_group =="Cash":
@@ -1250,7 +1251,9 @@ def get_cashier_shift_summary(name,property):
                 "pos_currency_format":d.pos_currency_format,
                 "payment_type":d.payment_method,
                 "expected_amount":expected_amount,
-                "precision":d.currency_precision
+                "precision":d.currency_precision,
+                "local":d.locale,
+                "exchange_rate": d.exchange_rate
             })
 
 

@@ -105,19 +105,19 @@
     </OverlayPanel>
 
     <OverlayPanel ref="showAdvanceSearch" style="width:40rem">
-        <!-- <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-6">
-                    <ComAutoComplete isFull v-model="filter.selected_business_source_type" @onSelected="onSearch"
-                        placeholder="Business Source Type" doctype="Business Source Type" />
+                    <ComAutoComplete isFull v-model="filter.selected_vendor_name" @onSelected="onSearch"
+                        placeholder="Vendor Type" doctype="Vendor" />
                 </div>
                 <div class="col-6">
                     <ComSelect isFull v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
                         doctype="Country" isFilter />
                 </div>
             </div>
-        </ComOverlayPanelContent> -->
+        </ComOverlayPanelContent>
     </OverlayPanel>
 </template>
 <script setup>

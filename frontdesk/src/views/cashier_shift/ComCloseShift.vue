@@ -29,132 +29,65 @@
             </div>
         </div>
 
-   <h1 class="my-3 font-semibold">Cash Count</h1>
+        <h1 class="my-3 font-semibold">Cash Count</h1>
 
-    <div class="grid justify-between">
-        <div class="col-12 xl:col-6 overflow-auto">
-            <table>
-                <tbody>
-                <ComStayInfoNoBox label="Rate Exchange">
-                    <span v-for="(c, index) in exchangeRates" :key="index">
-                        <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
-                        <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{ c.to_currency }})
-                    </span>
-                </ComStayInfoNoBox>
-            </tbody>
-            </table>                 
-        </div>
-        <div class="col-12 xl:col-6">
-             
-            {{ summary }}
-            <table>
+        <div class="grid justify-between">
+            <div class="col-12 xl:col-6 overflow-auto">
+                <table>
+                    <tbody>
+                        <ComStayInfoNoBox label="Rate Exchange">
+                            <span v-for="(c, index) in exchangeRates" :key="index">
+                                <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
+                                <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{
+                                    c.to_currency }})
+                            </span>
+                        </ComStayInfoNoBox>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 xl:col-6">
+                <table class="w-full mb-4">
                     <thead>
-                        <th>Payment Type</th>
-                        <th>Expexted</th>
-                        <th>Actual</th>
-                        <th>Difference</th>
+                        <tr style='background: rgb(243, 243, 243);'>
+                            <th class="w-auto border-1 p-2 font-semibold">Payment Type</th>
+                            <th class="w-auto border-1 p-2 font-semibold">Expexted</th>
+                            <th class="w-auto border-1 p-2 font-semibold">Actual</th>
+                            <th class="w-auto border-1 p-2 font-semibold">Difference</th>
+                        </tr>
+                        
                     </thead>
                     <tbody>
                         <tr v-for="(p, index) in summary?.expected_cash" :key="index">
-                            <td>{{ p.payment_type }}</td>
-                            <td><CurrencyFormat :currency="p" currAddClass="font-semibold" :value="p.expected_amount" /></td>
-                            <td> <ComInputCurrency classCss="w-full" v-model="p.close_amount"  /></td>
-                        </tr>
-                    
-                </tbody>
-            </table>
-        </div>
-    </div>
+                            <td class="w-auto border-1 p-2">{{ p.payment_type }}</td>
+                            <td class="w-auto border-1 p-2 text-right">
 
-    <div class="grid justify-between -mx-2">
-        <div  class="col-12 xl:col-6 overflow-auto">
-            <div v-if="cashCountSetting">
-                <table class="w-full">
+                                <CurrencyFormat :currency="p" currAddClass="font-semibold" :value="p.expected_amount" />
+                            </td>
+                            <td class="w-auto border-1 p-2 text-center">
+ 
+                                <InputNumber class="text-end w-full w-15rem" v-model="p.input_close_amount"
+                                    :minFractionDigits="0" :maxFractionDigits="p.precision" mode="currency"
+                                    :currency="p.currency" :locale="p.locale" :disabled="p.total_cash_count>0" />
 
-                    <tr>
-                        <td class="w-auto border-1 p-2 font-semibold">Note Type</td>
-                        <td class="w-auto border-1 p-2 font-semibold">Total Note</td>
-                        <td class="w-auto border-1 p-2 font-semibold text-right">Total Amount</td>
-                    </tr>
-                    <template v-for="(c, index) in [...new Set(cashCountSetting.map(r => r.currency))] " :key="index">
-                        <tr>
-                            <td colspan="3" style='background: rgb(243, 243, 243);' class="w-auto border-1 p-2 font-semibold">
-                                CASH {{ c }}
+                            </td>
+                            <td class="w-auto border-1 p-2 text-right">
+                                <CurrencyFormat :currency="p" currAddClass="font-semibold"
+                                    :value="  (p.input_close_amount || 0) - p.expected_amount " />
                             </td>
                         </tr>
-                        <tr v-for="(n, index) in cashCountSetting.filter(r => r.currency == c)" :key="index" >
-                            <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>
-                                {{ n.label }}
-                            </td>
-                            <td class="w-auto border-1 p-2">
-                                <InputNumber class="w-full" v-model="n.total_note" />
-                            </td>
-                            <td class="w-auto border-1 p-2 font-semibold text-right">
-                                <CurrencyFormat :value="n.value * n.total_note" :currency="n" />
-                            </td>
 
-                        </tr>
-                        <tr>
-                            <td class="w-auto border-1 p-2">Total</td>
-                            <td class="w-auto border-1 p-2 font-semibold">{{ cashCountSetting.filter(r => r.currency == c).reduce((n, d) => n + (d.total_note || 0), 0) }}
-                            </td>
-                            <td class="w-auto border-1 p-2 font-semibold text-right">
-                                <CurrencyFormat :value=" cashCountSetting?.filter(r=>r.currency==c).reduce((n, d) => n + (d.total_note * d.value || 0), 0)"  :currency="cashCountSetting?.filter(r=>r.currency==c)[0]"/>
-                            </td>
-                        </tr>
-                    </template>
-
+                    </tbody>
                 </table>
+
+                <Button @click="onOpenCashCount" class="mr-2">Cash Count</Button>
+                <Button @click="onClearCashCount">Clear Cash Count</Button>
+
             </div>
         </div>
 
-        <div class="col-12 xl:col-6">
-            <div class="flex">
-                <div class="col-3 flex align-items-center justify-content-end">
-                    Actual Cash ({{ mainCurrency.name }})
-                </div>
-                <div class="col">
-                    <ComInputCurrency classCss="w-full" v-model="doc.main_total_close_amount" v-if="totalMainCashCountAmount == 0" />
-                    <CurrencyFormat currAddClass="block w-full box-input py-2 px-3 border-round-lg whitespace-nowrap border border-white bg-gray-edoor-10 font-semibold"
-                     v-if="totalMainCashCountAmount > 0" :value="totalMainCashCountAmount" />
-                </div>
-            </div>
 
-            <div class="flex">
-                <div class="col-3 flex align-items-center justify-content-end">
-                    Actual Cash ({{ secondCurrency.name }})
-                </div>
-                
-                <div class="col">
-                    <InputNumber class="text-end w-full" v-model="doc.second_total_close_amount"
-                                                :minFractionDigits="0" :maxFractionDigits="secondCurrency.precision" mode="currency"
-                                                :currency="secondCurrency.name" :locale="secondCurrency.locale" 
-                                                v-if="totalSecondCashCountAmount == 0"/>
-                    <CurrencyFormat currAddClass="block w-full box-input py-2 px-3 border-round-lg whitespace-nowrap border border-white bg-gray-edoor-10 font-semibold" 
-                    v-if="totalSecondCashCountAmount > 0" :value="totalSecondCashCountAmount" :currency="secondCurrency"/>
-                </div>
-            </div>
-            <div class="flex">
-                <div class="col-3"><!--Keep Blank--></div>
-                <div class="col flex w-full gap-3 mb-3 mt-1">
-                    <div class="bg-yellow-100 border-yellow-400 flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                        <span class="text-600 uppercase text-sm text-end">
-                            Difference Amount
-                        </span>
-                        <CurrencyFormat currAddClass="text-xl line-height-2 font-semibold text-end" :value="((totalCashCountAmount>0?totalCashCountAmount:doc?.total_close_amount) - doc?.total_system_close_amount) || 0" />
-                    </div>
-                    <div class="bg-green-50 border-green-edoor flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                        <span class="text-600 uppercase text-sm text-end">
-                            Total Actual Cash
-                        </span>
-                        <CurrencyFormat currAddClass="text-xl line-height-2 font-semibold text-end" :value="totalCashCountAmount" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <h1 class="my-3 font-semibold">Other Payment Type</h1>
+        <h1 class="my-3 font-semibold">Other Payment Type</h1>
         <table class="w-full">
             <tr style='background: rgb(243, 243, 243);'>
                 <td class="w-auto border-1 p-2 font-semibold">Type</td>
@@ -166,38 +99,71 @@
             </tr>
             <tr v-for="(s, index) in otherPayments" :key="index">
                 <td class="w-auto border-1 p-2" style='background: rgb(243, 243, 243);'>{{ s.payment_type }}</td>
-                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total_debit" /></td>
-                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total_credit" /></td>
-                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.total" /></td>
-                <td class="w-auto border-1 p-2 text-right"><ComInputCurrency classCss="w-full" v-model="s.actual_close_amount"  /></td>
-                <td class="w-auto border-1 p-2 text-right"><CurrencyFormat :value="s.actual_close_amount - s.total" /></td>
+                <td class="w-auto border-1 p-2 text-right">
+                    <CurrencyFormat :value="s.total_debit" />
+                </td>
+                <td class="w-auto border-1 p-2 text-right">
+                    <CurrencyFormat :value="s.total_credit" />
+                </td>
+                <td class="w-auto border-1 p-2 text-right">
+                    <CurrencyFormat :value="s.total" />
+                </td>
+                <td class="w-auto border-1 p-2 text-right">
+                    <ComInputCurrency classCss="w-full" v-model="s.actual_close_amount" />
+                </td>
+                <td class="w-auto border-1 p-2 text-right">
+                    <CurrencyFormat :value="s.actual_close_amount - s.total" />
+                </td>
             </tr>
             <tr>
                 <td class="font-semibold text-right">Total</td>
-                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_debit || 0), 0)" /></td>
-                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_credit || 0), 0)" /></td>
-                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total || 0), 0)" /></td>
-                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.actual_close_amount || 0), 0)" /></td>
-                <td class="w-auto p-2 font-semibold text-right"><CurrencyFormat :value="otherPayments?.reduce((n, d) => n +((d.actual_close_amount || 0) - (d.total || 0) ), 0)" /></td>
+                <td class="w-auto p-2 font-semibold text-right">
+                    <CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_debit || 0), 0)" />
+                </td>
+                <td class="w-auto p-2 font-semibold text-right">
+                    <CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total_credit || 0), 0)" />
+                </td>
+                <td class="w-auto p-2 font-semibold text-right">
+                    <CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.total || 0), 0)" />
+                </td>
+                <td class="w-auto p-2 font-semibold text-right">
+                    <CurrencyFormat :value="otherPayments?.reduce((n, d) => n + (d.actual_close_amount || 0), 0)" />
+                </td>
+                <td class="w-auto p-2 font-semibold text-right">
+                    <CurrencyFormat
+                        :value="otherPayments?.reduce((n, d) => n + ((d.actual_close_amount || 0) - (d.total || 0)), 0)" />
+                </td>
             </tr>
         </table>
         <hr>
         <div class="w-full mt-3">
-        <label>Note:</label> <br />
-        <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
+            <label>Note:</label> <br />
+            <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
         </div>
-        <template #footer-right  v-if="doc.is_closed !== 1" >
+
+
+       
+
+
+
+        <template #footer-right v-if="doc.is_closed !== 1">
             <div class="relative mt-2">
-                <span class="absolute w-full"><Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" /></span>
+                <span class="absolute w-full">
+                    <Checkbox class="w-full" v-model="doc.is_confirm" :binary="true" />
+                </span>
                 <span class="pl-5">I have verified that my information above is correct</span>
             </div>
-            <Button class="border-none" v-if="doc.is_closed == 0" :disabled= "!doc.is_confirm" @click="onCloseShift">Close Shift</Button>
+            <Button class="border-none" v-if="doc.is_closed == 0" :disabled="!doc.is_confirm" @click="onCloseShift">Close
+                Shift</Button>
         </template>
+
+
     </ComDialogContent>
 </template>
 <script setup>
-import { useToast, ref, inject, getDoc, onMounted, getApi, computed,useConfirm,createUpdateDoc ,useDialog } from "@/plugin"
+import { useToast, ref, inject, getDoc, onMounted, getApi, computed, useConfirm, createUpdateDoc, useDialog, watch } from "@/plugin"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComCashCount from "@/views/cashier_shift/components/ComCashCount.vue";
 const doc = ref({})
 
 const moment = inject("$moment")
@@ -209,165 +175,199 @@ const exchangeRates = ref()
 const confirm = useConfirm();
 const gv = inject(("$gv"))
 const toast = useToast()
-const mainCurrency = ref(window.setting.currency) 
+const mainCurrency = ref(window.setting.currency)
 const secondCurrency = ref(window.setting.second_currency)
 const dialog = useDialog()
+
 const totalCashCountAmount = computed(() => {
+
     let totalCashCount = 0
-     
-    if(cashCountSetting.value?.filter(r=>r.total_note>0 & r.currency == mainCurrency.value.name).length>0){
-       
-        totalCashCount = totalMainCashCountAmount.value  
-    }else {
-        totalCashCount = doc.value.main_total_close_amount || 0
-    }
-   
+    summary?.value?.expected_cash.forEach(c=>{
+        totalCashCount =(totalCashCount || 0) +  ((c.input_close_amount || 0)  / (c.exchange_rate || 1))
+    })
 
-    if(cashCountSetting.value?.filter(r=>r.total_note>0 & r.currency == secondCurrency.value.name).length>0){
-        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
-       totalCashCount =totalCashCount +  totalSecondCashCountAmount.value   / exchange_rate
-    }else {
-        
-
-        const exchange_rate = exchangeRates.value?.find(r=>r.to_currency == secondCurrency.value.name).exchange_rate
-        
-        totalCashCount = totalCashCount + ((doc.value.second_total_close_amount || 0) / exchange_rate)
-    }
     return totalCashCount
-    
+
+
 })
 const totalMainCashCountAmount = computed(() => {
-    return cashCountSetting.value?.filter(r=>r.currency==mainCurrency.value.name).reduce((n, d) => n + (d.total_note * d.value || 0) / d.exchange_rate, 0)
+    return cashCountSetting.value?.filter(r => r.currency == mainCurrency.value.name).reduce((n, d) => n + (d.total_note * d.value || 0) / d.exchange_rate, 0)
 })
 const totalSecondCashCountAmount = computed(() => {
-    return cashCountSetting.value?.filter(r=>r.currency==secondCurrency.value.name).reduce((n, d) => n + (d.total_note * d.value || 0), 0)
+    return cashCountSetting.value?.filter(r => r.currency == secondCurrency.value.name).reduce((n, d) => n + (d.total_note * d.value || 0), 0)
 })
 
 const otherPayments = computed(() => {
-    return summary.value?.summary_by_payment_type.filter(r=>r.payment_type_group!='Cash')
+    return summary.value?.summary_by_payment_type.filter(r => r.payment_type_group != 'Cash')
 })
 
-function onCloseShift(){
-     
-    doc.value.cash_float.forEach(c=>{
-        if(c.currency == mainCurrency.value.name){
-            c.input_system_close_amount = summary.value?.cash_in_hand
-            c.input_close_amount = totalMainCashCountAmount.value>0?totalMainCashCountAmount.value:doc.value.main_total_close_amount
-            c.input_different_amount = c.input_close_amount -  c.input_system_close_amount 
-        }else if(c.currency==secondCurrency.value.name){
-            c.input_system_close_amount = c.input_amount || 0
-            c.input_close_amount = totalSecondCashCountAmount.value>0?totalSecondCashCountAmount.value:doc.value.second_total_close_amount
-            c.input_close_amount = c.input_close_amount || 0
-            c.input_different_amount = c.input_close_amount -  c.input_system_close_amount 
 
+function onOpenCashCount(){
+    dialog.open(ComCashCount, {
+        data: {
+            cash_count_setting:JSON.parse(JSON.stringify( cashCountSetting.value)),
+            summary: JSON.parse(JSON.stringify(summary.value)),
+            doc : doc.value,
+            exchange_rates:exchangeRates.value
+        },
+        props: {
+            header: "Cash Count",
+            style: {
+                width: '50vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+        },
+        onClose: (options) => {
+             
+             const data = options.data;
+             if (data != undefined) {
+                 summary.value = data.summary
+                 cashCountSetting.value = data.cash_count_setting
+             }
+         }
+    });
+}
+
+function onClearCashCount(){
+    confirm.require({
+        message: 'Are you sure you want clear  cash count?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+
+            summary.value.expected_cash.forEach(c => {
+                c.total_cash_count = 0
+            });
+            cashCountSetting.value.forEach(x=>{
+                x.total_note = 0
+            })
+
+            toast.add({ severity: 'info', summary: 'Clear Cash Count', detail: 'Clear cash count successfully', life: 3000 });
+        },
+        
+    });
+    
+
+}
+
+function onCloseShift() {
+
+    doc.value.cash_float.forEach(c => {
+        const expected_cash = summary?.value.expected_cash.find(r=>r.currency==c.currency)
+        if (expected_cash){
+            c.input_system_close_amount  = expected_cash.expected_amount
+            c.input_close_amount = expected_cash.input_close_amount
+            c.input_different_amount = c.input_close_amount - c.input_system_close_amount
         }
     })
 
-    
-    
     //client validateion
 
-    const saveData = JSON.parse(JSON.stringify( doc.value))
-    
+    const saveData = JSON.parse(JSON.stringify(doc.value))
+
     saveData.total_system_close_amount = summary.value.cash_in_hand
+
     
-    if(totalCashCountAmount.value>0){
         saveData.total_close_amount = totalCashCountAmount.value
-    }
+
     saveData.total_different_amount = saveData.total_close_amount - saveData.total_system_close_amount
 
-    if (saveData.total_system_close_amount != 0 && saveData.total_close_amount==0){
+    if (saveData.total_system_close_amount != 0 && saveData.total_close_amount == 0) {
         toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'Please enter actual cash amount', life: 3000 })
         return
 
     }
     //validate other paymnent
-    const otherPaymentData = otherPayments.value.filter(r=>r.total!=0 && r.actual_close_amount==0)
-    if (otherPaymentData.length>0){
+    const otherPaymentData = otherPayments.value.filter(r => r.total != 0 && r.actual_close_amount == 0)
+    if (otherPaymentData.length > 0) {
         toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'Please enter actual close amount for payment type ' + otherPaymentData[0].payment_type, life: 3000 })
         return
     }
 
-    otherPayments.value.forEach(r=>{
-        
-        if(doc.value.cash_float.find(x=>x.payment_method==r.payment_type)){
-            doc.value.cash_float.find(x=>x.payment_method==r.payment_type).input_system_close_amount=r.total,
-            doc.value.cash_float.find(x=>x.payment_method==r.payment_type).input_close_amount=r.actual_close_amount,
-            doc.value.cash_float.find(x=>x.payment_method==r.payment_type).input_different_amount=r.actual_close_amount - r.total
-        }else {
+    otherPayments.value.forEach(r => {
+
+        if (doc.value.cash_float.find(x => x.payment_method == r.payment_type)) {
+            doc.value.cash_float.find(x => x.payment_method == r.payment_type).input_system_close_amount = r.total,
+                doc.value.cash_float.find(x => x.payment_method == r.payment_type).input_close_amount = r.actual_close_amount,
+                doc.value.cash_float.find(x => x.payment_method == r.payment_type).input_different_amount = r.actual_close_amount - r.total
+        } else {
             saveData.cash_float.push({
                 payment_method: r.payment_type,
                 currency: mainCurrency.name,
-                input_amount:0,
+                input_amount: 0,
                 exchange_rate: 1,
                 input_system_close_amount: r.total,
-                input_close_amount:r.actual_close_amount,
-                input_different_amount:r.actual_close_amount - r.total
+                input_close_amount: r.actual_close_amount,
+                input_different_amount: r.actual_close_amount - r.total
             })
         }
-        
+
     })
 
     saveData.cash_count = cashCountSetting.value
-    saveData.cash_count.forEach(r=>{
+    saveData.cash_count.forEach(r => {
         r.total_amount = r.total_note * r.value
     })
 
+ 
+ 
     confirm.require({
         message: 'Are you sure you can to close this shift?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
             loading.value = true
-            
+
             saveData.is_closed = 1
 
-            createUpdateDoc("Cashier Shift", saveData, "Close cashier shift successfully").then(doc=>{
+            createUpdateDoc("Cashier Shift", saveData, "Close cashier shift successfully").then(doc => {
                 gv.cashier_shift = null
 
-                    window.working_day.cashier_shift = null
-                    localStorage.setItem("edoor_working_day",JSON.stringify(window.working_day))
-                    doc.session_id = window.session_id
+                window.working_day.cashier_shift = null
+                localStorage.setItem("edoor_working_day", JSON.stringify(window.working_day))
+                doc.session_id = window.session_id
 
-                    window.socket.emit("UpdateCashierShift", doc);
-                    loading.value = false
-                    openPrint()
-                    dialogRef.value.close(doc);
-                  
-            }).catch(ex=>{
+                window.socket.emit("UpdateCashierShift", doc);
                 loading.value = false
-                
+                openPrint()
+                dialogRef.value.close(doc);
+
+            }).catch(ex => {
+                loading.value = false
+
             })
 
 
 
-            
+
         },
-        
+
     });
-   
+
 }
 
 
-function openPrint(){
- 
+function openPrint() {
+
     dialog.open(ComIFrameModal, {
-            data: {
-                "doctype": "Cashier Shift",
-                name: doc.value.name,
-                report_name:  "eDoor Cashier Shift Transaction Summary Report",
-                filter_options:["show_account_code","group_by_ledger_type","show_cash_count","show_cash_float"],
+        data: {
+            "doctype": "Cashier Shift",
+            name: doc.value.name,
+            report_name: "eDoor Cashier Shift Transaction Summary Report",
+            filter_options: ["show_account_code", "group_by_ledger_type", "show_cash_count", "show_cash_float"],
+        },
+        props: {
+            header: "Cashier Shift Report " + doc.value.name,
+            style: {
+                width: '80vw',
             },
-            props: {
-                header: "Cashier Shift Report " + doc.value.name,
-                style: {
-                    width: '80vw',
-                },
-                position:"top",
-                modal: true,
-                maximizable: true,
-            },
-        });
+            position: "top",
+            modal: true,
+            maximizable: true,
+        },
+    });
 }
 
 function getSummary() {
