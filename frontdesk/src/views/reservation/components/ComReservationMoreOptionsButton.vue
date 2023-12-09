@@ -545,17 +545,13 @@ function onAuditTrail() {
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
                 
             ],
-            docnames: rs.attacheds
+            filter_key:"custom_reservation"
 
         },
         props: {
             header: 'Audit Trail',
             style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
+                width: '80vw',
             },
             modal: true,
             maximizable: true,
@@ -714,10 +710,6 @@ function onPickDrop() {
                 header: 'Setup Arrival & Departure Mode',
                 style: {
                     width: '60vw',
-                },
-                breakpoints: {
-                    '960px': '75vw',
-                    '640px': '90vw'
                 },
                 modal: true,
                 closeOnEscape: false,

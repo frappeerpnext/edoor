@@ -207,7 +207,8 @@ function loadData(show_loading = true) {
 
 	loading.value = show_loading
 	let filters = ([
-		["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1]
+		["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1],
+		[ref_data.value.filter_key,"=", ref_data.value.docname]
 	])
 	if (filter.value?.keyword) {
 		filters.push(["custom_keyword", 'like', '%' + filter.value.keyword + '%'])
@@ -218,11 +219,7 @@ function loadData(show_loading = true) {
 	} else {
 		filters.push(["reference_doctype", 'in', ref_data.value.referenceTypes.map((r) => r.doctype)])
 	}
-	filters.push(["reference_name", 'in', ref_data.value.docnames.filter(r=>r)])
-
-	if (filter.value?.selected_comment_by) {
-		filters.push(["comment_email", '=', filter.value.selected_comment_by])
-	}
+ 
 	if (filter.value?.custom_posting_date) {
         const formattedDate = moment(filter.value.custom_posting_date, 'DD-MM-YYYY').format('YYYY-MM-DD');
         filters.push(['custom_posting_date', '=', formattedDate]);
@@ -315,8 +312,7 @@ function onPrint() {
 			extra_params:[
 				{key:'ref_doctype', value:ref_data.value.doctype},
 				{key:'ref_docname', value:ref_data.value.docname},
-				{key:'ref_doctypes', value:ref_data.value.referenceTypes.map(r=>r.doctype).join(",")},
-				{key:'ref_docnames', value:ref_data.value.docnames.filter(r=>r).join(",")},
+				{key:'filter_key', value:ref_data.value.filter_key},
 				{key:'order_by', value:pageState.value.order_by + ' ' + pageState.value.order_type},
 			],
 		},

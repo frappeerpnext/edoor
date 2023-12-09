@@ -71,10 +71,11 @@
                                         <hr>
                                     </div>
                                     <div class="col-12">
-                                        <ComCommentAndNotice v-if="name && rs.attacheds.length > 0" doctype="Reservation Stay"
+                                        <ComCommentAndNotice v-if="name" doctype="Reservation Stay"
                                             :docname="name"
-                                            :reference_doctypes="['Reservation Stay', 'Reservation Room Rate', 'Reservation Folio', 'Folio Transaction']"
-                                            :docnames="rs.attacheds" />
+                                            :filters="['custom_reservation_stay','=', name]"
+                                                
+                                            />
                                     </div>
                                 </div>
                             </div>
@@ -454,7 +455,7 @@ function onAuditTrail() {
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: rs.attacheds
+            filter_key: "custom_reservation_stay"
         },
         props: {
             header: 'Audit Trail',

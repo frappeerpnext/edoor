@@ -202,16 +202,18 @@
     </div>
     <div class="mt-3">
       <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" 
-      :reference_doctypes="['Folio Transaction']" :docnames="doc?.name"
+      :filters="['custom_folio_transaction', '=', doc.name]" 
         
       />
     </div>
 
     <template #footer-left>
-      <Button class="border-none" @click="onAuditTrail" v-if="setting.folio_transaction_style_credit_debit != 1"
-        label="Audit Trail" icon="pi pi-history" />
+
+
       <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print"
         v-if="doc.print_format" />
+              <Button class="border-none" @click="onAuditTrail" 
+        label="Audit Trail" icon="pi pi-history" />
     </template>
     <OverlayPanel ref="openNote">
       <ComOverlayPanelContent width="350px" :loading="saving" @onSave="onSaveNote" @onCancel="onCloseNote">
@@ -348,16 +350,12 @@ function onAuditTrail() {
       referenceTypes:[
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-      docnames: [doc?.value.name]
+      filter_key: "custom_folio_transaction"
     },
     props: {
       header: 'Audit Trail for Folio Transaction',
       style: {
-        width: '75vw',
-      },
-      breakpoints: {
-        '960px': '100vw',
-        '640px': '100vw'
+        width: '80vw',
       },
       modal: true,
       maximizable: true,
@@ -411,7 +409,7 @@ function onPrintFolioTransaction() {
     props: {
       header: 'Print Preview',
       style: {
-        width: '75vw',
+        width: '80vw',
       },
       position: "top",
       modal: true,

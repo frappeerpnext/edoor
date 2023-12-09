@@ -301,7 +301,7 @@ function showPrintPreview(data) {
         props: {
             header: 'Print Preview',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
 
             modal: true,
@@ -501,7 +501,7 @@ function onTransferFolioItem() {
         props: {
             header: 'Folio Transfer',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
 
             modal: true,
@@ -559,11 +559,7 @@ function onAuditTrail() {
         props: {
             header: 'Audit Trail',
             style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
+                width: '85vw',
             },
             modal: true,
             maximizable: true,

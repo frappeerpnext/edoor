@@ -121,7 +121,7 @@ function onPrintFolioTransaction() {
         props: {
             header: 'Print Preview',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
             position: "top",
             modal: true,

@@ -80,8 +80,12 @@
                     <hr class="my-3" />
                     <div>
                         <div class="border-round-xl">
-                            <ComCommentAndNotice v-if="!rs.loading && rs.attacheds" :docnames="rs.attacheds" :reference_doctypes="['Reservation','Reservation Stay','Reservation Room Rate','Folio Transaction','Reservation Folio']" doctype="Reservation"
-                                :docname="rs?.reservation?.name" />   
+                            
+                            <ComCommentAndNotice v-if="!rs.loading && name" 
+                                  doctype="Reservation"
+                                :docname="rs?.reservation?.name"
+                                :filters="['custom_reservation','=', name]"    
+                            />   
                         </div>
                     </div>
                 </TabPanel>

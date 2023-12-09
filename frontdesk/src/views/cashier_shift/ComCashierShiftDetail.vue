@@ -74,7 +74,7 @@
                             <ComReservationStayPanel class="bg-white">
                                 <template #content>
                                     <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
-                                        :reference_doctypes="['Cashier Shift']" :docnames="[doc?.name]" />
+                                        :filters="['custom_cashier_shift','=', doc?.name]" />
                                 </template>
                             </ComReservationStayPanel>
                         </div>
@@ -485,9 +485,20 @@ function onAuditTrail() {
         data: {
             doctype: 'Cashier Shift',
             docname: doc?.value.name,
-            referenceTypes: [{ doctype: 'Cashier Shift', label: 'Cashier Shift' },
+            referenceTypes:[
+            { doctype: 'Cashier Shift', label: 'Cashier Shift' },
+                { doctype: 'Reservation', label: 'Reservation' },
+                { doctype: 'Reservation Stay', label: 'Reservation stay' },
+                { doctype: 'Reservation Room Rate', label: 'Room Rate' },
+                { doctype: 'Customer', label: 'Guest' },
+                { doctype: 'Reservation Folio', label: 'Reservation Folio' },
+                { doctype: 'Desk Folio', label: 'Desk Folio' },
+                { doctype: 'City Ledger', label: 'City Ledger' },
+                { doctype: 'Deposit Ledger', label: 'Deposit Ledger' },
+                { doctype: 'Payable Ledger', label: 'Payable Ledger' },
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' }
             ],
-            docnames: [doc.value.name],
+            filter_key:'custom_cashier_shift'
         },
 
         props: {

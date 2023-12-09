@@ -474,12 +474,7 @@ function onAssignRoom(data) {
                 props: {
                     header: `Assign Room`,
                     style: {
-                        width: '70vw',
-                    },
-
-                    breakpoints: {
-                        '960px': '75vw',
-                        '640px': '90vw'
+                        width: '80vw',
                     },
                     modal: true,
                     closeOnEscape: false,

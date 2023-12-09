@@ -204,11 +204,7 @@ function onViewCustomerDetail(name) {
         props: {
             header: 'Guest Detail',
             style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
+                width: '80vw',
             },
             modal: true,
             closeOnEscape: false,

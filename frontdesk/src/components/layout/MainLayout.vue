@@ -51,16 +51,17 @@
                                         <img :src="iconBlankGuestRegisteration" style="height: 15px;" />
                                         <span class="ml-2">Blank Guest Registration</span>
                                     </button>
-                                    <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
-                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
-                                        <img :src="iconOpenCashierShift" style="height: 15px;" />
-                                        <span class="ml-2">Open Cashier Shift</span>
-                                    </button>
-                                    
+
                                     <button @click="onViewShiftDetail" v-if="gv.cashier_shift?.name"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
                                         <img :src="iconViewShiftDetail" style="height: 15px;" />
                                         <span class="ml-2">View Shift Detail</span>
+                                    </button>
+
+                                    <button @click="onOpenCashierShift" v-if="!gv.cashier_shift?.name"
+                                        class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">
+                                        <img :src="iconOpenCashierShift" style="height: 15px;" />
+                                        <span class="ml-2">Open Cashier Shift</span>
                                     </button>
 
                                     <button @click="onCloseCashierShift" v-if="gv.cashier_shift?.name"
@@ -178,10 +179,6 @@ function changeProperty() {
             style: {
                 width: '50vw',
             },
-            breakpoints: {
-                '960px': '75vw',
-                '640px': '90vw'
-            },
             modal: true,
             closeOnEscape: false,
             position: 'top'
@@ -243,7 +240,7 @@ function onSearch() {
         props: {
             header: 'Search',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
             modal: true,
             position: 'top',

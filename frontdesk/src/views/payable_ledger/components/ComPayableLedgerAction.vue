@@ -244,7 +244,7 @@ function showPrintPreview(data) {
         props: {
             header: 'Print Preview',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
 
             modal: true,
@@ -391,7 +391,7 @@ function onDeleteFolio() {
 //         props: {
 //             header: 'Folio Transfer',
 //             style: {
-//                 width: '75vw',
+//                 width: '80vw',
 //             },
 
 //             modal: true,

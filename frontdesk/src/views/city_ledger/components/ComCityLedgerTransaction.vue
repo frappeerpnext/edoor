@@ -365,7 +365,7 @@ const dialogRef = dialog.open(ComIFrameModal, {
     props: {
         header: 'Print Preview',
         style: {
-            width: '75vw',
+            width: '80vw',
         },
 
         modal: true,

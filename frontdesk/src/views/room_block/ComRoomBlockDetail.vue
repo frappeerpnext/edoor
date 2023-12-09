@@ -67,7 +67,7 @@
         </div>
         <div class="col-12 p-0 pt-2">
             <ComCommentAndNotice v-if="doc?.name" doctype="Room Block" :docname="doc?.name"
-                :reference_doctypes="['Room Block']" :docnames="[doc?.name]" />
+            :filters="['custom_room_block', '=', doc.name]"  />
         </div>
         <template #footer-right>
             <Button v-if="doc?.docstatus == 0" @click="onSubmitRoomBlock" class="border-0"> <i class="pi pi-send me-3" />
@@ -191,17 +191,13 @@ function onAuditTrail() {
             doctype: 'Room Block',
             docname: doc?.value.name,
             referenceTypes: [{ doctype: 'Room Block', label: 'Room Block' }],
-            docnames: [doc?.value.name],
+            filter_key:"custom_room_block",
         },
 
         props: {
             header: 'Audit Trail for Room Block',
             style: {
-                width: '75vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw',
+                width: '80vw',
             },
             modal: true,
             maximizable: true,

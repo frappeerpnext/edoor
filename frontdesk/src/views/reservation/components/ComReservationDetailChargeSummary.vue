@@ -6,7 +6,8 @@
                 <div class="flex mb-2 mt-2 gap-2 text-right">
                     <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
                         <div class="text-500 uppercase text-sm">Total Debit</div>
-                        <div class="text-xl line-height-2 font-semibold" ><CurrencyFormat :value="rs?.reservation?.total_debit"></CurrencyFormat></div>
+                        <div class="text-xl line-height-2 font-semibold" >
+                            <CurrencyFormat :value="rs?.reservation?.total_debit"></CurrencyFormat></div>
                     </div>
                     <div class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100 h-full">
                         <div class="text-500 uppercase text-sm">Total Credit</div>

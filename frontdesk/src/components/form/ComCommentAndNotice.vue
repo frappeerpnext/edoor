@@ -95,9 +95,7 @@ const gv = inject("$gv");
 const props = defineProps({
     doctype: String,
     docname: String,
-    reference_doctypes: Object,
-    docnames: Object,
-    extra_filters:Object
+    filters:Object
 })
 const onRefresh = debouncer(() => {
     onLoad();
@@ -161,11 +159,11 @@ onUnmounted(() => {
 function onLoad(show_loading = true) {
     loading.value = show_loading
     loading.value = show_loading
-	let filters = ([
-		["custom_property", '=', window.property_name], ["custom_is_audit_trail", '=', 1]
-	])
-	filters.push(["reference_doctype", 'in', props.reference_doctypes])
-	filters.push(["reference_name", 'in', props.docnames])
+	
+    let filters = [props.filters]
+    filters.push (["custom_property", '=', window.property_name])
+    filters.push (["custom_is_audit_trail", '=', 1])
+    
     getDocList('Comment', {
 		fields: ["name","creation", "custom_keyword" ,"custom_note_date" ,"custom_audit_trail_type" , "custom_posting_date", "reference_doctype", "reference_name", "subject", "content", "owner","comment_by", "modified_by" ,"modified","comment_type","custom_icon",'custom_is_note'],
 		orderBy: {
@@ -247,11 +245,7 @@ function onSaveNote(doctype, data) {
     if (!data.name) {
         data.custom_property = window.property_name
     }
-    // for folio trancation
-    if (props.doctype == 'Folio Transaction') {
-        data.reservation = props.reservation || ''
-        data.reservation_stay = props.reservationStay || ''
-    }
+
     data.reference_doctype = props.doctype
     data.reference_name = props.docname
     data.comment_type = 'Comment'

@@ -126,8 +126,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
                     sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}' AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house') and  arrival_date='{1}'  and reservation_type='FIT'  AND is_active_reservation = 1, 1, 0)) AS `total_fit_stay_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
+                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}'  and reservation_type='FIT'  AND is_active_reservation = 1, 1, 0)) AS `total_fit_stay_arrival`,
                     SUM(if(require_pickup = 1 AND  is_active_reservation = 1 and  arrival_date='{1}', 1, 0)) AS `pick_up`
                 FROM `tabReservation Stay` 
                 WHERE  
@@ -208,7 +208,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                         from `tabReservation Stay`
                         where 
                             is_active_reservation=1 and 
-                            reservation_status   in ('Reserved','Confirmed','In-house') and
+                            reservation_status   in ('Reserved','Confirmed','In-house','Checked Out') and
                             reservation_type = 'GIT' and 
                             arrival_date = '{0}' and
                             property = '{1}'
@@ -219,7 +219,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                         from `tabReservation Stay`
                         where 
                             is_active_reservation=1 and 
-                            reservation_status   in ('Reserved','Confirmed','In-house') and
+                            reservation_status   in ('Reserved','Confirmed','In-house','Checked Out') and
                             reservation_type = 'FIT' and 
                             arrival_date = '{0}' and
                             property = '{1}'

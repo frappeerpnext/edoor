@@ -70,7 +70,8 @@
 
         <div class="col-12">
             <ComCommentAndNotice v-if="doc" doctype="Reservation Folio" :docname="name"
-                :reference_doctypes="['Reservation Folio', 'Folio Transaction']" :docnames="relatedIds" />
+            :filters="['custom_folio_number', '=', doc.name]" 
+            />
         </div>
         <div class="col-12 p-0">
             <div
@@ -138,16 +139,17 @@ function onAuditTrail() {
         data: {
             doctype: 'Reservation Folio',
             docname: doc?.value.name,
-            referenceTypes: [{ doctype: 'Reservation Folio', label: 'Reservation Folio' },
-            { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+            referenceTypes: [
+                { doctype: 'Reservation Folio', label: 'Reservation Folio' },
+                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
             ],
-            docnames: relatedIds.value,
+            filter_key: "custom_folio_number"
         },
 
         props: {
             header: 'Audit Trail for Folio Detail',
             style: {
-                width: '75vw',
+                width: '80vw',
             },
             breakpoints: {
                 '960px': '100vw',

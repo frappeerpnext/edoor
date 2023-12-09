@@ -60,7 +60,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
-const currentStep = ref(1)
+const currentStep = ref(7)
 const loading = ref(false)
 
 const steps = ref([
@@ -68,8 +68,8 @@ const steps = ref([
     { step: 2, label: "Today<br>Arrival", is_selected: false },
     { step: 3, label: "Today<br>Departure", is_selected: false },
     { step: 4, label: "Today<br>Reservation", is_selected: false },
-    { step: 5, label: "Today<br>Posting Transaction", is_selected: false },
-    { step: 6, label: "Posting<br>Room Charge", is_selected: false },
+    { step: 5, label: "Posting<br>Room Charge", is_selected: false },
+    { step: 6, label: "Today<br>Posting Transaction", is_selected: false },
     { step: 7, label: "Today<br>Shift", is_selected: false },
     { step: 8, label: "Finish<br>Create New Day", is_selected: false },
     { step: 9, label: "Thank You!", is_selected: false },

@@ -146,10 +146,6 @@ function OnSetupForm() {
       style: {
         width: '60vw',
       },
-      breakpoints: {
-        '960px': '75vw',
-        '640px': '90vw'
-      },
       modal: true,
       closeOnEscape: false,
       position: 'top'
@@ -172,10 +168,6 @@ function onEditDriver(name) {
       header: `Edit Driver`,
       style: {
         width: '50vw',
-      },
-      breakpoints: {
-        '960px': '75vw',
-        '640px': '90vw'
       },
       modal: true,
       closeOnEscape: false

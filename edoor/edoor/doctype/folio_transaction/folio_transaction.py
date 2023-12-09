@@ -4,7 +4,7 @@
 import frappe
 from frappe.model.document import Document
 from edoor.api.frontdesk import get_working_day
-from edoor.api.utils import check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate
+from edoor.api.utils import add_audit_trail, check_user_permission, update_city_ledger, update_deposit_ledger, update_desk_folio, update_payable_ledger, update_reservation_folio, get_base_rate
 from frappe.utils import fmt_money
 from frappe.utils.data import add_to_date, getdate,now
 from epos_restaurant_2023.inventory.inventory import add_to_inventory_transaction, check_uom_conversion, get_product_cost, get_stock_location_product, get_uom_conversion, update_product_quantity
@@ -320,7 +320,16 @@ class FolioTransaction(Document):
 			else:
 				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-			frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+			# frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+			# 	"comment_type":"Created",
+			# 	"custom_audit_trail_type":"Created",
+			# 	"custom_icon":"pi pi-dollar",
+			# 	"subject":"Post " + self.account_group_name,
+			# 	"reference_doctype":"Folio Transaction",
+			# 	"reference_name":self.name,
+			# 	"content":content
+			# }])
+			add_audit_trail([{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",
 				"custom_icon":"pi pi-dollar",
