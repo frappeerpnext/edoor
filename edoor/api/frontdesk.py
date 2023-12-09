@@ -15,29 +15,56 @@ from frappe.desk.search import search_link
 def search(doctypes=None, txt="" ,filters=None):
     search_tables = frappe.get_doc("eDoor Setting").search_table
     results = []
-    for t in search_tables:
-        if t.table_name in doctypes:
-            search_fields = ["name"]
-            for k in t.search_field.split(","):
-                search_fields.append("ifnull({}, ' ')".format(k))
-            if len(search_fields)>0:
-                search_fields = ", ' ',".join(search_fields)
-            
-            return_fields = "name,modified"
-            if t.return_fields:
-                return_fields = return_fields + "," + t.return_fields
-            
-            # default condition
-            default_condition = ""
-            if t.default_condition:
-                default_condition = " and " + t.default_condition
-
-            sql = "select '{0}' as doctype, {1} from `tab{0}` where concat({2}) like %(txt)s {4} order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result,default_condition)
     
-            
-            data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
-            results = results + data
-            results.sort(key=lambda x: x.modified, reverse=True)
+    if txt:
+        
+        for t in search_tables:
+            if t.table_name in doctypes:
+                search_fields = ["name"]
+                for k in t.search_field.split(","):
+                    search_fields.append("ifnull({}, ' ')".format(k))
+                if len(search_fields)>0:
+                    search_fields = ", ' ',".join(search_fields)
+                
+                return_fields = "name,modified"
+                if t.return_fields:
+                    return_fields = return_fields + "," + t.return_fields
+                
+                # default condition
+                default_condition = ""
+                if t.default_condition:
+                    default_condition = " and " + t.default_condition
+
+                sql = "select '{0}' as doctype, {1} from `tab{0}` where concat({2}) like %(txt)s {4} order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result,default_condition)
+        
+                
+                data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
+                results = results + data
+                results.sort(key=lambda x: x.modified, reverse=True)
+    else:
+ 
+        for t in search_tables:
+            if t.table_name in doctypes:
+                search_fields = ["name"]
+                for k in t.search_field.split(","):
+                    search_fields.append("ifnull({}, ' ')".format(k))
+                if len(search_fields)>0:
+                    search_fields = ", ' ',".join(search_fields)
+                
+                return_fields = "name,modified"
+                if t.return_fields:
+                    return_fields = return_fields + "," + t.return_fields
+                
+                # default condition
+                default_condition = ""
+                if t.default_condition:
+                    default_condition = " and " + t.default_condition
+
+                sql = "select '{0}' as doctype, {1} from `tab{0}` where modified>=(NOW() - INTERVAL 1 HOUR)  {3} order by modified desc limit {2}".format(t.table_name,return_fields,t.limit_result,default_condition)
+ 
+                data = frappe.db.sql(sql,as_dict=1)
+                results = results + data
+                results.sort(key=lambda x: x.modified, reverse=True)
     return results
 
 

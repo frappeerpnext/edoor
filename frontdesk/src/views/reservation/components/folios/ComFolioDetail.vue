@@ -6,44 +6,83 @@
                     <ComFolioAction @onRefresh="onRefresh" :folio="doc"
                         :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio == 1)"
                         :accountCodeFilter="{ is_guest_folio_account: 1 }" />
+                    <div class="grid">
+                        <div class="col">
+                            <table class="mb-4">
+                                <tr>
+                                    <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
+                                        Reservation #
+                                        <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px"
+                                            :style="{ backgroundColor: doc.reservation_status_color }">{{
+                                                doc.reservation_status
+                                            }}</span>
+                                    </th>
+                                </tr>
+                                <ComStayInfoNoBox label="Guest">
+                                    <span @click="onViewCustomerDetail(doc.guest)"
+                                        class="-ml-2 text-right link_line_action1">
+                                        {{ doc.guest }} - {{ doc.guest_name }}
+                                    </span>
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Source">
+                                    <span class="font-semibold text-right">
+                                        {{ doc.business_source }}
+                                    </span>
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Reservation #">
+                                    <span @click="onViewReservationDetail(doc.reservation)"
+                                        class="-ml-2 text-right link_line_action1">
+                                        {{ doc.reservation }}
+                                    </span>
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Res Stay #">
+                                    <span @click="onViewReservationStayDetail(doc.reservation_stay)"
+                                        class="-ml-2 text-right link_line_action1">
+                                        {{ doc.reservation_stay }}
+                                    </span>
+                                </ComStayInfoNoBox>
+                                <ComStayInfoNoBox label="Room(s)">
+                                    <span class="font-semibold text-right">
+                                        {{ doc.rooms + '/' + doc.room_types_alias }}
+                                    </span>
+                                </ComStayInfoNoBox>
 
-                    <table class="mb-4">
-                        <tr>
-                            <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
-                                Reservation #
-                                <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px"
-                                    :style="{ backgroundColor: doc.reservation_status_color }">{{ doc.reservation_status
-                                    }}</span>
-                            </th>
-                        </tr>
-                        <ComStayInfoNoBox label="Guest">
-                            <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 text-right link_line_action1">
-                                {{ doc.guest }} - {{ doc.guest_name }}
-                            </span>
-                        </ComStayInfoNoBox>
-                        <ComStayInfoNoBox label="Source">
-                            <span class="font-semibold text-right">
-                                {{ doc.business_source }}
-                            </span>
-                        </ComStayInfoNoBox>
-                        <ComStayInfoNoBox label="Reservation #">
-                            <span @click="onViewReservationDetail(doc.reservation)"
-                                class="-ml-2 text-right link_line_action1">
-                                {{ doc.reservation }}
-                            </span>
-                        </ComStayInfoNoBox>
-                        <ComStayInfoNoBox label="Res Stay #">
-                            <span @click="onViewReservationStayDetail(doc.reservation_stay)"
-                                class="-ml-2 text-right link_line_action1">
-                                {{ doc.reservation_stay }}
-                            </span>
-                        </ComStayInfoNoBox>
-                        <ComStayInfoNoBox label="Room(s)">
-                            <span class="font-semibold text-right">
-                                {{ doc.rooms + '/' + doc.room_types_alias }}
-                            </span>
-                        </ComStayInfoNoBox>
-                    </table>
+                            </table>
+                        </div>
+                        <div class="col">
+                            <div class="col">
+                                <div class="flex mb-2 mt-2 gap-2 text-right">
+
+                                    <div
+                                        class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
+                                        <div class="text-500 uppercase text-sm">Total Debit</div>
+                                        <div class="text-xl line-height-2 font-semibold">
+                                            <CurrencyFormat :value="doc?.total_debit" isCurrency></CurrencyFormat>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100 h-full">
+                                        <div class="text-500 uppercase text-sm">Total Credit</div>
+                                        <div class="text-xl line-height-2 font-semibold">
+                                            <CurrencyFormat :value="doc?.total_credit" isCurrency></CurrencyFormat>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
+                                        <div class="text-500 uppercase text-sm">Balance</div>
+
+
+                                        <div class="text-xl line-height-2 font-semibold">
+                                            <CurrencyFormat :value="doc?.balance" isCurrency></CurrencyFormat>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3 w-full">
                         <div class="flex gap-2 align-items-center">
                             Folio Detail - {{ doc.name }} <span class="ms-2 px-2 rounded-lg  text-white p-1px"
@@ -70,8 +109,7 @@
 
         <div class="col-12">
             <ComCommentAndNotice v-if="doc" doctype="Reservation Folio" :docname="name"
-            :filters="['custom_folio_number', '=', doc.name]" 
-            />
+                :filters="['custom_folio_number', '=', doc.name]" />
         </div>
         <div class="col-12 p-0">
             <div

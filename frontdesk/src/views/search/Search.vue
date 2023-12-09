@@ -24,7 +24,7 @@
 <div class="col-12">
 <hr class="drop-shadow-md">
 
-        <div class="flex justify-center mt-4" v-if="!keyword">
+        <div class="flex justify-center mt-4" v-if="!keyword && results.length==0">
             "
             <i class="pi pi-search text-yellow-200 text-2xl mx-2" />
             "
@@ -118,7 +118,7 @@ const onSearch = debouncer(() => {
 
 function loadData() {
 
-    if (keyword.value) {
+ 
         loading.value = true
         postApi("frontdesk.search", { doctypes: getSearchTable(), txt: keyword.value }, '', false)
             .then(result => {
@@ -133,9 +133,7 @@ function loadData() {
             }).catch(err => {
                 loading.value = false
             })
-    } else {
-        results.value = []
-    }
+   
 }
 
 function onSelectTable(d) {
@@ -189,13 +187,19 @@ function pagechange(){
 
 onUnmounted(()=>{
     window.open_search = false
+    
+})
+onMounted(()=>{
+    window.open_search = true
+    loadData()
+    
 })
 </script>
 <style scoped>
 ::v-deep .p-listbox .p-listbox-list .p-listbox-item {
     background-color: white;
     margin: 6px 5px;
-    border: 1px solid #eeeeee;
+    border: 1px solid #7e6e6e;
     border-radius: 20px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
 }
