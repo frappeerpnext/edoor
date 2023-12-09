@@ -258,7 +258,7 @@ function onCloseShift() {
         const expected_cash = summary?.value.expected_cash.find(r=>r.currency==c.currency)
         if (expected_cash){
             c.input_system_close_amount  = expected_cash.expected_amount
-            c.input_close_amount = expected_cash.input_close_amount
+            c.input_close_amount = expected_cash.input_close_amount || 0
             c.input_different_amount = c.input_close_amount - c.input_system_close_amount
         }
     })

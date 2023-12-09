@@ -1,4 +1,5 @@
 <template lang="">
+    {{reference_doctypes}}
     <div> 
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.custom_is_note==0?'Comment':'Note'}}</label><br/>
@@ -96,6 +97,7 @@ const props = defineProps({
     docname: String,
     reference_doctypes: Object,
     docnames: Object,
+    extra_filters:Object
 })
 const onRefresh = debouncer(() => {
     onLoad();

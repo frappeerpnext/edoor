@@ -270,6 +270,12 @@ class FolioTransaction(Document):
 			update_sub_account_description(self)
 
 		#auto set room_type_alias
+		if self.room_id and not self.room_type_id:
+			room_type_id, room_type,room_type_alias = frappe.db.get_value("Room", self.room_id, ["room_type_id","room_type","room_type_alias"])
+			self.room_type_id = room_type_id
+			self.room_type = room_type
+			self.room_type_alias = room_type_alias
+
 		if self.room_type_id:
 			
 			if not self.room_type_alias:

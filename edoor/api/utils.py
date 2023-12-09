@@ -113,9 +113,9 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
             icon = icon_data[0]["icon"]
 
         update_files.append("custom_icon='{}'".format(icon))
-
+    ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
     if doc.reference_name and not doc.custom_property:
-        ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
+        
         if hasattr(ref_doc, "property"):
             working_day = get_working_day(ref_doc.property)
             update_files.append("custom_property='{}'".format(ref_doc.property))
@@ -135,7 +135,19 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                     file_doc = frappe.get_doc("File", file_data[0]["name"])
                     if file_doc.custom_show_in_edoor==0:
                         update_files.append("custom_is_audit_trail=0")
+
+    # get field for relate document for easy get data in report
     
+    if hasattr(ref_doc,"reservation"):
+        update_files.append("custom_reservation='{}'".format(ref_doc.reservation))
+    if hasattr(ref_doc,"reservation_stay"):
+        update_files.append("custom_reservation_stay='{}'".format(ref_doc.reservation_stay))
+    
+    if hasattr(ref_doc,"transaction_type"):
+        update_files.append("custom_fotransaction_type='{}'".format(ref_doc.transaction_type))
+        update_files.append("custom_folio_transaction_number='{}'".format(ref_doc.transaction_number))
+
+
     if not doc.subject:
         if doc.comment_type=="Attachment Removed":
             update_files.append("subject='Removed Attachment'".format(doc.comment_type))

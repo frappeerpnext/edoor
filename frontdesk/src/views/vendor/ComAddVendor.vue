@@ -16,7 +16,7 @@
               <div class="col-6">
                 <label>Vendor Type</label>
                 <ComSelect width="100%" v-model="data.vendor_type" @onSelected="onSearch"
-                    placeholder="Vendor Type" :options="[ 'Indovidual','General','Company']" />
+                    placeholder="Vendor Type" :options="[ 'Individual','General','Company']" />
               </div>
               <div class="col-6">
                 <label>Vendor Group</label>

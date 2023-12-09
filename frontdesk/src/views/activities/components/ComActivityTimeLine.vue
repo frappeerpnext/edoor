@@ -51,7 +51,7 @@
                             </div>
                             
                             <div class="col p-0">
-                                <div class="content-note-comment" v-html="slotProps.item.content">
+                                <div class="content-note-comment"  v-html="slotProps.item.content">
                         </div>
                             </div>
                              
@@ -67,7 +67,7 @@
    
 </template>
 <script setup>
-import {ref, computed,inject} from "@/plugin"
+import {ref, computed,inject,onMounted} from "@/plugin"
 import Timeline from 'primevue/timeline';
 import ComAvatar from '@/components/form/ComAvatar.vue';
 const working_date = ref(window.current_working_date)
@@ -107,6 +107,7 @@ const events = computed (()=>{
 function onViewDetail(d){
     window.postMessage("view_" + d.reference_doctype.toLowerCase().replaceAll(" ","_") + "_detail|" + d.reference_name ,"*")
 }
+
  
 
 

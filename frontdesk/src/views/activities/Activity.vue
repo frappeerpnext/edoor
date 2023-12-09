@@ -260,7 +260,7 @@ const onSearch = debouncer(() => {
 
 
 const onRefresh = debouncer(() => {
-
+  loadData();
 }, 500);
 
 function debouncer(fn, delay) {
@@ -276,6 +276,7 @@ function debouncer(fn, delay) {
 }
 onMounted(() => {
     loadData()
+    
 })
 
 

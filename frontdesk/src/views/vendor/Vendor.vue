@@ -56,7 +56,8 @@
                             <span v-else-if="c.fieldtype == 'Datetime'">{{
                                 moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY h:mm a") }} </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date="slotProps.data[c.fieldname]" />
-                            <div v-else-if="c.fieldtype == 'Room'" class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
+                            <div v-else-if="c.fieldtype == 'Room'"
+                                class="rounded-xl px-2 me-1 bg-gray-edoor inline room-num"
                                 v-if="slotProps?.data && slotProps?.data?.rooms">
                                 <template v-for="(item, index) in slotProps.data.rooms.split(',')" :key="index">
                                     <span>{{ item }}</span>
@@ -109,12 +110,12 @@
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-6">
-                    <ComAutoComplete isFull v-model="filter.selected_vendor_name" @onSelected="onSearch"
-                        placeholder="Vendor Type" doctype="Vendor" />
+                    <ComSelect width="100%" v-model="filter.selected_vendor_type" @onSelected="onSearch" placeholder="Vendor Type"
+                        :options="['Individual', 'General', 'Company']" />
                 </div>
                 <div class="col-6">
-                    <ComSelect isFull v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
-                        doctype="Country" isFilter />
+                    <ComSelect isFull v-model="filter.selected_vendor_group" @onSelected="onSearch" placeholder="Vendor Group"
+                        doctype="Vendor Group" isFilter />
                 </div>
             </div>
         </ComOverlayPanelContent>
@@ -138,15 +139,17 @@ const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows:
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const columns = ref([
-    { fieldname: 'name', label: 'Vendor', default: true , fieldtype: "Link", post_message_action: "view_vendor_detail",}, //fieldtype:"Link", 
+    { fieldname: 'name', label: 'Vendor', default: true, fieldtype: "Link", post_message_action: "view_vendor_detail", }, //fieldtype:"Link", 
     { fieldname: 'vendor_name', label: 'Vendor Name', default: true },
     { fieldname: 'vendor_type', label: 'Vendor Type', default: true },
+    { fieldname: 'vendor_group', label: 'Vendor Group', default: true },
     { fieldname: 'company', label: 'Company', default: true },
+    { fieldname: 'province', label: 'Province', default: true },
     { fieldname: 'phone_number', label: 'Phone Number', default: true },
     { fieldname: 'email_address', label: 'Email Address', default: true },
     { fieldname: 'website', label: 'Website', default: true },
 
-    { fieldname: 'owner', label: 'Created By'},
+    { fieldname: 'owner', label: 'Created By' },
     { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
@@ -202,12 +205,12 @@ function loadData(show_loading = true) {
     if (filter.value?.keyword) {
         filters.push(["keyword", 'like', '%' + filter.value.keyword + '%'])
     }
-    // if (filter.value?.selected_business_source_type) {
-    //     filters.push(["business_source_type", '=', filter.value.selected_business_source_type])
-    // }
-    // if (filter.value?.selected_country) {
-    //     filters.push(["country", '=', filter.value.selected_country])
-    // }
+    if (filter.value?.selected_vendor_type) {
+        filters.push(["vendor_type", '=', filter.value.selected_vendor_type])
+    }
+    if (filter.value?.selected_vendor_group) {
+        filters.push(["vendor_group", '=', filter.value.selected_vendor_group])
+    }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
