@@ -115,6 +115,7 @@
   "show_print_preview",
   "print_format",
   "is_night_audit_posting",
+  "sale",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -916,11 +917,16 @@
    "fieldname": "is_night_audit_posting",
    "fieldtype": "Check",
    "label": "Is Night Audit Posting"
+  },
+  {
+   "fieldname": "sale",
+   "fieldtype": "Data",
+   "label": "Sale"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-07 15:45:47.972592",
+ "modified": "2023-12-09 18:11:37.137925",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

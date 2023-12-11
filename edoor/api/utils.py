@@ -102,6 +102,8 @@ def update_keyword(doc, method=None, *args, **kwargs):
 
 
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
+    if doc.comment_type=="Deleted":
+        return
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
     update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
@@ -113,8 +115,8 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
             icon = icon_data[0]["icon"]
 
         update_files.append("custom_icon='{}'".format(icon))
+    
     ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
-     
     if doc.reference_name and not doc.custom_property:
         
         if hasattr(ref_doc, "property"):
@@ -207,7 +209,7 @@ def update_comment_keyword(doc, method=None, *args, **kwargs):
         frappe.db.commit()
 
 def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
-
+    
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         submit_update_audit_trail_from_version(doc)
         # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)

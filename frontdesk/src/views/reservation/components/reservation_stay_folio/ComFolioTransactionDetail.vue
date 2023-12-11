@@ -12,6 +12,13 @@
                         {{ doc.guest }} - {{ doc.guest_name }}
                     </span>
               </ComStayInfoNoBox>
+              
+              <ComStayInfoNoBox  label="Sale Number" class="w-full" v-if="doc?.sale">
+                <span @click="onViewSaleDetail()" class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
+                        {{ doc.sale }}
+                    </span>
+              </ComStayInfoNoBox>
+
               <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number" />
               <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type" />
               <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
@@ -419,6 +426,23 @@ function onPrintFolioTransaction() {
 
 function onViewCustomerDetail(name) {
     window.postMessage('view_guest_detail|' + name, '*')
+}
+function onViewSaleDetail() {
+  const dialogRef = dialog.open(ComIFrameModal, {
+    data: {
+      doctype: "Sale",
+      name: doc.value.sale,
+      report_name: "Sale Receipt",
+    },
+    props: {
+      header: 'Print Preview',
+      style: {
+        width: '80vw',
+      },
+      position: "top",
+      modal: true,
+    },
+  })
 }
 function onOpenLink(){
   window.postMessage("view_" + doc.value.target_transaction_type.toLowerCase().replaceAll(" ","_") + "_detail|" + doc.value.target_transaction_number)
