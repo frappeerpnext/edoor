@@ -117,7 +117,7 @@
             </ComPanel>
         </div>
     </div>
-    <div class="mt-3">
+    <div class="my-3">
         <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') + ')'">
             <OccupancyChart />
         </ComPanel>
