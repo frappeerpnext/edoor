@@ -17,6 +17,7 @@ class FolioTransaction(Document):
 
 		if not self.is_new():
 				if self.is_auto_post ==1:
+					self.is_night_audit_posting = 1
 					if not hasattr(self,"ignore_validate_auto_post"):
 						frappe.throw("You cannot edit auto post transaction")
 		
@@ -229,16 +230,22 @@ class FolioTransaction(Document):
 		 
 			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
 			#tax 2
-			self.taxable_amount_2 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
+			self.taxable_amount_2 = self.amount or 0 * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
 			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
+			
+
 			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
 			#tax 3
-			self.taxable_amount_3 = self.amount * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+			self.taxable_amount_3 = self.amount or 0
+			
 			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0  and self.rate_include_tax =='No'  else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
 			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
+			
+			self.taxable_amount_3 = self.taxable_amount_3 * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		else:
 			 
@@ -329,6 +336,7 @@ class FolioTransaction(Document):
 			# 	"reference_name":self.name,
 			# 	"content":content
 			# }])
+
 			add_audit_trail([{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",

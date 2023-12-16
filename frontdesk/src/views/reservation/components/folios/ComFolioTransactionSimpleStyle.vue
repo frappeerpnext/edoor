@@ -133,7 +133,7 @@
                     </Column>
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="selectedFolio.balance" />
+                            <CurrencyFormat :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
 
                         </template>
                     </Column>

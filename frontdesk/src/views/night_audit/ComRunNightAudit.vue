@@ -193,9 +193,18 @@ const refreshReport = () => {
 
 onMounted(() => {
     refreshReport()
+    window.socket.on("ComRunNightAudit", (arg) => {
+        if (arg.property == window.property_name) {
+            setTimeout(function(){
+                refreshReport()
+            },3000) 
+        }
+    })
 });
 
-
+onUnmounted(()=>{
+    window.socket.off("ComRunNightAudit");
+})
 </script>
 
  

@@ -73,7 +73,7 @@
 
 
                                         <div class="text-xl line-height-2 font-semibold">
-                                            <CurrencyFormat :value="doc?.balance" isCurrency></CurrencyFormat>
+                                            <CurrencyFormat :value="(doc?.total_debit - doc?.total_credit)" isCurrency></CurrencyFormat>
                                         </div>
                                     </div>
                                 </div>

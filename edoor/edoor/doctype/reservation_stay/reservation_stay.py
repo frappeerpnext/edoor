@@ -11,7 +11,8 @@ from frappe.model.document import Document
 from frappe.utils import add_to_date,today,now,getdate
 from py_linq import Enumerable
 from edoor.api.utils import update_reservation
- 
+
+
 class ReservationStay(Document):
 	def  validate(self):
 		working_day = get_working_day(self.property)
@@ -188,7 +189,6 @@ class ReservationStay(Document):
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
 
-
 	def after_insert(self):
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
 		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
@@ -270,6 +270,22 @@ def update_room_occupy(self):
 	if self.require_drop_off==1:
 		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
 		frappe.db.sql("update `tabTemp Room Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
+
+
+	# update is complimentary and house use
+	sql = """
+		update `tabRoom Occupy` x 
+		set 
+			is_complimentary =ifnull((
+				select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+			),0) ,
+			is_house_use =ifnull((
+				select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+			) ,0)
+		where x.reservation_stay = '{0}' and x.is_active=1  
+	""".format(self.name)
+	frappe.db.sql(sql)
+
 
 
 

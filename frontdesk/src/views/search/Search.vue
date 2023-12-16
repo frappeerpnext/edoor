@@ -191,6 +191,7 @@ onUnmounted(()=>{
 })
 onMounted(()=>{
     window.open_search = true
+    loading.value = true
     loadData()
     
 })

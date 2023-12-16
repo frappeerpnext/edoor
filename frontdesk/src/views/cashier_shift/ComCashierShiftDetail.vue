@@ -288,7 +288,7 @@
         <template v-if="doc.is_edoor_shift" #footer-left>
 
             <SplitButton @click="onPrintFolioTransactionSummary('eDoor Cashier Shift Transaction Summary Report')"
-                class="spl__btn_cs_b sp_b" label="Print" icon="pi pi-print" :model="print_menus" />
+                 label="Print" icon="pi pi-print" :model="print_menus" />
             <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
         </template>
         <template  #footer-right>

@@ -104,9 +104,12 @@ const totalDebit = computed(()=>{
     return rs.folios.reduce((n, d) => n + (d.total_debit || 0), 0) 
 })
 
-const balance = computed(()=>{
-    return rs.folios.reduce((n, d) => n + (d.balance || 0), 0) 
-})
+// const balance = computed(()=>{
+//     return rs.folios.reduce((n, d) => n + (d.balance || 0), 0) 
+// })
+const balance = computed(() => {
+    return totalDebit.value - totalCredit.value;
+});
 
 
 const { loadReservationStayFolioList } = inject("reservation_stay")

@@ -15,10 +15,9 @@
                     </div>
                     <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                         <div class="text-500 uppercase text-sm">Balance</div>
-
-                        
-                        <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
-                    </div>
+                        <div class="text-xl line-height-2 font-semibold">
+                            <CurrencyFormat :value="rs?.reservation?.balance"></CurrencyFormat></div>
+                        </div>
                 </div>
                
                 <div v-for="d in rs.reservationSummary" :key="items" class="flex gap-2 mt-2">
@@ -69,24 +68,24 @@
     </div>
 </template>
 <script setup>
-import { inject,onMounted,getApi,ref } from '@/plugin';
+import { inject, onMounted, getApi, ref } from '@/plugin';
 import ComReservationStayPanel from './ComReservationStayPanel.vue'
 import ComBoxStayInformation from './ComBoxStayInformation.vue'
 const emit = defineEmits('onViewReservation')
 const rs = inject('$reservation');
- 
+
 const taxData = ref()
 const opTax = ref();
 const toggleTAX = (event) => {
     opTax.value.toggle(event);
 }
- 
+
 onMounted(() => {
     setTimeout(() => {
-      getApi("reservation.get_room_tax_summary", {reservation:rs.reservation.name})
-      .then(result=>{
-          taxData.value = result.message
-      })
+        getApi("reservation.get_room_tax_summary", { reservation: rs.reservation.name })
+            .then(result => {
+                taxData.value = result.message
+            })
     }, 3000);
 })
 </script>

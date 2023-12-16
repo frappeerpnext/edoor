@@ -246,18 +246,19 @@ function onResetTable() {
     window.location.reload()
 }
 
-function onPrint() {
+function onPrint() {  
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
-            "doctype": "Customer",
-            name: property.name,
-            report_name: "xx",
-            fullheight: true
+            "doctype": "Business Branch",
+            name: window.property_name,
+            report_name: "Guest Ledger Transaction Report",
+            fullheight: true,
+            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","reservation_status","is_master"]
         },
         props: {
-            header: "U print me",
+            header: "Guest Ledger Transaction",
             style: {
-                width: '90vw',
+                width: '80vw',
             },
             position: "top",
             modal: true,

@@ -347,7 +347,7 @@ const onCheckIn = () => {
         props: {
             header: 'Confirm Check In',
             style: {
-                width: '450px',
+                width: '650px',
             },
             modal: true,
             closeOnEscape: false
@@ -413,6 +413,7 @@ const onCheckOut = () => {
                     window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
         	        window.socket.emit("FolioTransactionList", window.property_name)
+                    window.socket.emit("ComRunNightAudit", { property: window.property_name })
 
                 })
                 .catch((err) => {

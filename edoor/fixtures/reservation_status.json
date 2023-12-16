@@ -1,19 +1,5 @@
 [
  {
-  "alias": "V",
-  "allow_user_to_edit_information": 0,
-  "color": "#ff0000",
-  "docstatus": 0,
-  "doctype": "Reservation Status",
-  "is_active_reservation": 0,
-  "modified": "2023-10-10 16:09:19.062845",
-  "name": "Void",
-  "reservation_status": "Void",
-  "show_in_reservation_list": 0,
-  "show_in_room_chart": 0,
-  "sort_order": 6
- },
- {
   "alias": "NS",
   "allow_user_to_edit_information": 1,
   "color": "#828205",
@@ -26,6 +12,20 @@
   "show_in_reservation_list": 0,
   "show_in_room_chart": 0,
   "sort_order": 4
+ },
+ {
+  "alias": "V",
+  "allow_user_to_edit_information": 0,
+  "color": "#ff0000",
+  "docstatus": 0,
+  "doctype": "Reservation Status",
+  "is_active_reservation": 0,
+  "modified": "2023-10-10 16:09:19.062845",
+  "name": "Void",
+  "reservation_status": "Void",
+  "show_in_reservation_list": 0,
+  "show_in_room_chart": 0,
+  "sort_order": 6
  },
  {
   "alias": "CL",

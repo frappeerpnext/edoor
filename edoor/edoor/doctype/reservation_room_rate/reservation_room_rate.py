@@ -55,22 +55,30 @@ class ReservationRoomRate(Document):
 				self.rate = self.rate
 			
 			#tax 1
-			self.taxable_amount_1 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
+			self.taxable_amount_1 = (self.rate or 0) * ((tax_rule.percentage_of_price_to_calculate_tax_1 or 100)/100)
 			
 			self.taxable_amount_1 = self.taxable_amount_1 if tax_rule.calculate_tax_1_after_discount == 0 and self.rate_include_tax== "No"   else self.taxable_amount_1 - self.discount_amount
 
 			self.tax_1_amount = self.taxable_amount_1 * self.tax_1_rate / 100
 			#tax 2
+			self.taxable_amount_2 = (self.rate or 0) * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
 			self.taxable_amount_2 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_2 or 100)/100)
 			self.taxable_amount_2 = self.taxable_amount_2 if tax_rule.calculate_tax_2_after_discount == 0  and self.rate_include_tax== "No"  else self.taxable_amount_2 - self.discount_amount
 			self.taxable_amount_2 = self.taxable_amount_2  if tax_rule.calculate_tax_2_after_adding_tax_1 == 0 else self.taxable_amount_2 + self.tax_1_amount
+			
 			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
+			
 			#tax 3
-			self.taxable_amount_3 = self.rate * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+			
+			self.taxable_amount_3 = (self.rate or 0) * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
+
 			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0 and  self.rate_include_tax== "No"  else self.taxable_amount_3 - self.discount_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_1 == 0 else self.taxable_amount_3 + self.tax_1_amount
 			self.taxable_amount_3 = self.taxable_amount_3  if tax_rule.calculate_tax_3_after_adding_tax_2 == 0 else self.taxable_amount_3 + self.tax_2_amount
 			self.tax_3_amount = self.taxable_amount_3 * self.tax_3_rate / 100
+			
+			
+
 			self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		else:
 			self.tax_1_rate = 0
@@ -87,6 +95,23 @@ class ReservationRoomRate(Document):
 		self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		self.total_rate = (self.rate or 0) - (self.discount_amount or 0) + self.total_tax
 
+	def on_update(self):
+		# update is complimentary and house use
+		sql = """
+			update `tabRoom Occupy` 
+			set 
+				is_complimentary={0}, 
+				is_house_use={1}
+			where 
+				reservation_stay = '{2}'  and 
+				room_type_id='{3}' and 
+				date = '{4}' and 
+				type='Reservation'
+			""".format(self.is_complimentary, self.is_house_use, self.reservation_stay, self.room_type_id,self.date)
+ 
+		frappe.db.sql(sql)
+		frappe.db.commit()
+		
 
 	 
 

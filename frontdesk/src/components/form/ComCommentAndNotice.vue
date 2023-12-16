@@ -135,7 +135,7 @@ const edit = ref({
 })
 const list = ref([])
 const onLoadComment = async function (e) {
-
+  
     if (e.data.action == "load_comment") {
         setTimeout(function () {
             onLoad(false)

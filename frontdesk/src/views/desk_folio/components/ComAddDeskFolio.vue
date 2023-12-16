@@ -17,7 +17,7 @@
         
         <div class="col-12">
             <label for="room">Guest<span class="text-red-500">*</span></label>
-            <ComAutoComplete v-model="data.guest" placeholder="Select Guest" doctype="Customer"
+            <ComAutoComplete v-model="data.guest" placeholder="Select Guest" doctype="Customer" :isAddNew="true" @onAddNew="onAddNewGuest"
                 class="auto__Com_Cus w-full"/>
         </div>
         <div class="col-12">
@@ -30,8 +30,8 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, onMounted, getDoc, createUpdateDoc,useToast } from '@/plugin'
-
+import { ref, inject, onMounted, getDoc, createUpdateDoc,useToast,useDialog } from '@/plugin'
+import ComAddGuest from "@/views/guest/components/ComAddGuest.vue"
 const dialogRef = inject('dialogRef')
 const loading=ref(false)
 const data =ref({})
@@ -39,6 +39,7 @@ const working_day = moment(window.current_working_date).toDate()
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject('$gv');
 const toast = useToast();
+const dialog = useDialog()
 function onOK() {
     if(!data.value.guest){
         toast.add({ severity: 'warn', summary: "Add Desk Folio", detail: "Please select guest for add desk folio.", life: 5000 })
@@ -63,6 +64,31 @@ function onOK() {
 }
 function onClose(param = false) {
     dialogRef.value.close(param)
+}
+function onAddNewGuest(name){
+    dialog.open(ComAddGuest, {
+        data:{
+            guest_name: name
+        },
+        props: {
+            header: `Add New Guest`,
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            closeOnEscape: false,
+            position: 'top'
+        },
+        onClose:(options) => {
+            const result = options.data;
+
+            if(result){
+                
+                data.value.selected_customer = [ { "value": result.name, "description": result.name + "-" + result.customer_name_en, "label": result.name } ]
+                data.value.guest = result.name
+			}
+        }
+    });  
 }
 onMounted(()=> {
     // data.value.naming_series='FN.YYYY.-.####'; 

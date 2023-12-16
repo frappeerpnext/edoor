@@ -284,13 +284,14 @@ function onResetTable() {
 function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
         data: {
-            "doctype": "Customer",
+            "doctype": "Business Branch",
             name: property.name,
-            report_name: "xx",
-            fullheight: true
+            report_name: gv.getCustomPrintFormat("Guest Ledger Report"),
+            fullheight: true,
+            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","reservation_status","is_master"]
         },
         props: {
-            header: "U print me",
+            header: "Guest Ledger",
             style: {
                 width: '90vw',
             },

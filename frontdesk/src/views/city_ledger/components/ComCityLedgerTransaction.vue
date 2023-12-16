@@ -247,8 +247,9 @@ function viewCityLedgerReport(){
             data: {
                 doctype: "Business Branch",
                 name:  window.property_name,
-                report_name:  gv.getCustomPrintFormat("eDoor City Ledger Transaction"),
-                view: "ui"
+                report_name:  gv.getCustomPrintFormat("City Ledger Transaction Report"),
+                fullheight: true,
+                filter_options:["start_date","end_date","city_ledger_type","business_source"]
             },
             props: {
                 header: "City Ledger Account",

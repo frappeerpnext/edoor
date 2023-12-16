@@ -67,7 +67,7 @@
    
 </template>
 <script setup>
-import {ref, computed,inject,onMounted} from "@/plugin"
+import {ref, computed,inject,onMounted,onUnmounted} from "@/plugin"
 import Timeline from 'primevue/timeline';
 import ComAvatar from '@/components/form/ComAvatar.vue';
 const working_date = ref(window.current_working_date)
@@ -107,8 +107,19 @@ const events = computed (()=>{
 function onViewDetail(d){
     window.postMessage("view_" + d.reference_doctype.toLowerCase().replaceAll(" ","_") + "_detail|" + d.reference_name ,"*")
 }
+const onLoadComment = async function (e) {
+    console.log(e)
+    if (e.data.action == "load_comment") {
+        setTimeout(function () {
+            loadData(false);
+        }, e.data.timeout || 5000);
+    }
+}
 
- 
-
-
+onMounted(() => {
+    window.addEventListener('message', onLoadComment, false);
+})
+onUnmounted(() => {
+    window.removeEventListener('message', onLoadComment, false);
+})
 </script>

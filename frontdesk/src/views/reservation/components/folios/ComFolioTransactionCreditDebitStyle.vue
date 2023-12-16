@@ -1,6 +1,5 @@
 <template>
     <ComPlaceholder text="There is no Folio transactions" :loading="loading" :isNotEmpty="folioTransactions.length > 0">
-        
         <DataTable v-model:selection="selectedfolioTransactions" @row-dblclick="onViewFolioDetail"
             :value="folioTransactions" tableStyle="min-width: 50rem" :rowClass="rowStyleClass" paginator
             :stateKey="'folo_transaction_table_state_' + selectedFolio.name" :rows="10"
@@ -14,8 +13,8 @@
             </Column>
             <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name"
-                        class="link_line_action1">{{ slotProps.data?.name }}</button>
+                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" class="link_line_action1">{{
+                        slotProps.data?.name }}</button>
                 </template>
             </Column>
             <Column field="room_number" header="Room #" headerClass="text-center" bodyClass="text-center"></Column>
@@ -27,9 +26,9 @@
             </Column>
 
             <Column field="account_name" header="Account Name " style="min-width: 160px;" />
-            <Column field="quantity" header="QTY"  headerClass="text-center" bodyClass="text-center">
+            <Column field="quantity" header="QTY" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                     <span v-if="slotProps.data.quantity>0">{{ slotProps.data.quantity }}</span>
+                    <span v-if="slotProps.data.quantity > 0">{{ slotProps.data.quantity }}</span>
                 </template>
             </Column>
 
@@ -50,10 +49,10 @@
                     <CurrencyFormat :value="slotProps.data.balance" class="white-space-nowrap" />
                 </template>
             </Column>
- 
+
             <Column field="owner" header="Made By">
                 <template #body="slotProps">
-                   {{slotProps.data.owner?.split("@")[0]}} 
+                    {{ slotProps.data.owner?.split("@")[0] }}
                 </template>
             </Column>
             <Column field="creation" header="Created">
@@ -63,6 +62,7 @@
                     </span>
                 </template>
             </Column>
+            
             <Column header="">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.name">
@@ -73,16 +73,16 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Total:" :colspan="showCheckbox?5:4" footerStyle="text-align:right" />
+                    <Column footer="Total:" :colspan="showCheckbox ? 5 : 4" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
-                           {{ totalQuantity }}
+                            {{ totalQuantity }}
                         </template>
                     </Column>
-                   
+
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                           
+
                             <CurrencyFormat :value="selectedFolio.total_debit" />
                         </template>
                     </Column>
@@ -92,13 +92,20 @@
                             <CurrencyFormat :value="selectedFolio.total_credit" />
                         </template>
                     </Column>
-                    
+
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="selectedFolio.balance" />
+                            <CurrencyFormat :value="totalBalance" />
                         </template>
                     </Column>
- 
+
+
+                    <!-- <Column footerStyle="text-align:right">
+                        <template #footer>
+                            <CurrencyFormat :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
+                        </template>
+                    </Column> -->
+
                     <Column />
                     <Column />
                     <Column />
@@ -115,7 +122,7 @@
                         titleClass="col font-semibold">
                     </ComBoxStayInformation>
                 </div>
-          
+
             </div>
         </div>
     </ComPlaceholder>
@@ -134,9 +141,9 @@ const props = defineProps({
         type: String,
         default: "Reservation Folio"
     },
-    showCheckbox:{
-        type:Boolean,
-        default:true
+    showCheckbox: {
+        type: Boolean,
+        default: true
     }
 })
 const selectedFolio = ref(props.folio)
@@ -172,7 +179,7 @@ watch(() => props.folio, (newValue, oldValue) => {
 
 //load data
 function LoadFolioTransaction() {
- 
+
     getApi('reservation.get_folio_transaction', {
         transaction_type: props.doctype,
         transaction_number: selectedFolio.value.name
@@ -283,6 +290,10 @@ const totalDebit = computed(() => {
     return 0
 
 })
+
+const totalBalance = computed(() => {
+    return selectedFolio.value.total_debit - selectedFolio.value.total_credit;
+});
 
 
 const windowActionHandler = async function (e) {

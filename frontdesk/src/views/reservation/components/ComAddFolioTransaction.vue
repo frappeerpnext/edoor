@@ -468,7 +468,9 @@ const min_date = computed(() => {
 const amount = computed(() => {
     if (tax_rule.value) {
         if (doc.value.rate_include_tax == "Yes") {
-            return gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
+            let priceBefore = gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
+            let priceAfter = priceBefore + discount_amount.value
+            return (priceAfter * doc.value.quantity || 1)  
 
         } else {
             return ((doc.value.input_amount || 0) * (doc.value.quantity || 1))

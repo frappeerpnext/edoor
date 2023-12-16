@@ -1,6 +1,5 @@
 <template>
-    
-    <div class="wrap-dialog iframe-modal" :class="{ 'full-height': dialogRef.data.fullheight }">
+    <div class="wrap-dialog iframe-modal" style="overflow: auto;" :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 " >
             <div class="grid mb-3 ">
                 <div class="col flex gap-2">
@@ -9,7 +8,7 @@
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
                     <div v-if="hasFilter('keyword')">
-                        <InputText type="text" class="p-inputtext-sm w-full w-12rem"
+                        <InputText type="text" class="p-inputtext-sm w-full w-16rem"
                             @input="reloadIframe" placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
                     </div>
                     <div v-if="hasFilter('start_date')">
@@ -30,9 +29,13 @@
                             :options="['Simple Style','Debit/Credit Style']">
                         </ComSelect>
                     </div>
-                    <div v-if="hasFilter('business_source')" class="w-12rem">
+                    <div v-if="hasFilter('business_source')" class="w-16rem">
                         <ComAutoComplete v-model="filters.business_source" placeholder="Business Source"
                             @onSelected="reloadIframe" doctype="Business Source" class="auto__Com_Cus w-full" />
+                    </div>
+                    <div v-if="hasFilter('city_ledger_type')" class="w-16rem">
+                        <ComAutoComplete v-model="filters.city_ledger_type" placeholder="City Ledger Type"
+                            @onSelected="reloadIframe" doctype="City Ledger Type" class="auto__Com_Cus w-full" />
                     </div>
                     <div v-if="hasFilter('building')">
                         <ComSelect v-model="filters.building" @onSelected="reloadIframe" placeholder="Building"
@@ -67,6 +70,22 @@
                     <div v-if="hasFilter('transportation_company')">
                         <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
                             @onSelected="reloadIframe" doctype="Transportation Company" />
+                    </div>
+                    <div v-if="hasFilter('customer')"> 
+                        <ComAutoComplete v-model="filters.customer" placeholder="Customer"
+                            @onSelected="reloadIframe" doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                    </div>
+                    <div v-if="hasFilter('guest')"> 
+                        <ComAutoComplete v-model="filters.guest" placeholder="Guest"
+                            @onSelected="reloadIframe" doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                    </div>
+                    <div v-if="hasFilter('reservation')">
+                        <ComAutoComplete v-model="filters.reservation" placeholder="Reservation"
+                            @onSelected="reloadIframe" doctype="Reservation" class="auto__Com_Cus w-full min-w-max" />
+                    </div>
+                    <div v-if="hasFilter('reservation_stay')"> 
+                        <ComAutoComplete v-model="filters.reservation_stay" placeholder="Reservation Stay"
+                            @onSelected="reloadIframe" doctype="Reservation Stay" class="auto__Com_Cus w-full min-w-max" />
                     </div>
                     <div v-if="hasFilter('show_room_number')" class="flex ml-2">
                         <div>
@@ -122,6 +141,15 @@
                         </div>
                     </div>
 
+                    <div v-if="hasFilter('is_master')" class="flex ml-2">
+                        <div>
+                            <Checkbox v-model="filters.is_master" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_master_folio_only" />
+                        </div>
+                        <div>
+                            <label for="show_master_folio_only" >Show Master Folio Only</label>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view || '') != 'ui'">
@@ -133,11 +161,11 @@
                     </div>
                 </div>
             </div>
-            <div class="widht-ifame" style="min-height:90vh;">
+            <div class="widht-ifame">
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>
-                <iframe :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:90vh;padding-bottom:120px;" :id="iframe_id" width="100%" :src="url"></iframe>
+                <iframe :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
             </div>
            
 
@@ -156,9 +184,12 @@ const moment = inject("$moment")
 const filters = ref({
     invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
     show_room_number:1,
+    start_date: moment().toDate(),
+    end_date: moment().toDate(),
     show_account_code:window.setting.show_account_code_in_folio_transaction,
     show_cash_count:1,
-    show_cash_float:1
+    show_cash_float:1,
+    show_master_folio_only:1
     
 })
 const show_toolbar = ref(0)
@@ -167,6 +198,7 @@ const extra_params = ref([])
 const filter_options = ref([]) // list array string like ["keyword","business_source","room_type"]
 const gv = inject("$gv")
 const property_name = ref(window.property_name)
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const props = defineProps({
     BtnClassPrinter: String,
     BtnClass: String
@@ -196,8 +228,8 @@ function onIframeLoaded() {
     iframe.style.minWidth = "0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
 loading.value = true;
-    // iframe.style.height = '0px';
-    // iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+    iframe.style.height = '0px';
+    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     iframe.onload = function() {
         loading.value = false;
     }
@@ -218,10 +250,9 @@ function loadIframe() {
         });
     }
     let start_date = moment().add(-50, "years").format("YYYY-MM-DD")
-    let end_date = moment().add(50, "years").format("YYYY-MM-DD")
-    if (Object.keys(filters.value)) {
+    let end_date = moment().add(50, "years").format("YYYY-MM-DD") 
+    if (Object.keys(filters.value)) { 
         Object.keys(filters.value).forEach(p => {
-
             if (filters.value[p]) {
                 if (p == "start_date") {
                     start_date = moment(filters.value[p]).format("YYYY-MM-DD")
@@ -230,7 +261,7 @@ function loadIframe() {
                 } else {
                     url.value = url.value + "&" + p + "=" + filters.value[p]
                 }
-            }
+            } 
         });
     }
     url.value = url.value + "&start_date=" + start_date + "&end_date=" + end_date
@@ -287,6 +318,6 @@ onUnmounted(() => {
 </script> 
 <style scoped>
 .full-height {
-    height: 90vh;
+    height: 85vh;
 }
 </style>

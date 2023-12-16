@@ -35,13 +35,13 @@ def validate(filters):
 def get_columns(filters):
 	
 	columns = [
-		{'fieldname':'name','label':'City Ledger Code','fieldtype':'Link','options':"City Ledger",'align':'center',"header_class":'text-center','post_message_action':"view_city_ledger_detail","default":True},
-		{'fieldname':'business_source','label':'Source',"default":True},
-		{'fieldname':'city_ledger_name','label':'City Ledger',"default":True},
-		{'fieldname':'opening_balance','label':'Opening Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
+		{'fieldname':'name','label':'City Ledger Code','fieldtype':'Link','options':"City Ledger",'align':'center',"header_class":'text-center','post_message_action':"view_city_ledger_detail","default":True,"show_in_report":1},
+		{'fieldname':'business_source','label':'Source',"default":True,'align':'left',"show_in_report":1},
+		{'fieldname':'city_ledger_name','label':'City Ledger',"default":True,'align':'left',"show_in_report":1},
+		{'fieldname':'opening_balance','label':'Opening Balance', 'fieldtype':'Currency','align':'right',"header_class":'text-right',"default":True,"show_in_report":1},
+		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right','align':'right',"default":True,"show_in_report":1},
+		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right','align':'right',"default":True,"show_in_report":1},
+		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right','align':'right',"default":True,"show_in_report":1},
 	]
 	 
 
@@ -73,7 +73,9 @@ def get_report_data(folio_transaction_amount,filters):
 	city_ledger_codes = set([d["transaction_number"] for d in folio_transaction_amount])
 	filters.city_ledger_codes = city_ledger_codes or []
 	if filters.city_ledger_codes:
-		filters.keyword = "%" + filters.keyword + "%"
+		
+		filters.keyword = "%{}%".format(filters.keyword or "")
+		
 		sql="""select 
 			name,
 			modified,
@@ -84,7 +86,7 @@ def get_report_data(folio_transaction_amount,filters):
 			balance as balance
 		from `tabCity Ledger` t
 		where
-				concat(name,' ', city_ledger_name) like %(keyword)s and 
+				concat(name,' ', business_source) like %(keyword)s and 
 				business_source = if(%(business_source)s='',business_source,%(business_source)s)  and 
 				ifnull(city_ledger_type,'') = if(%(city_ledger_type)s='',ifnull(city_ledger_type,''),%(city_ledger_type)s)  and 
 				name in %(city_ledger_codes)s  and 
@@ -146,7 +148,7 @@ def get_report_summary(filio_transaction_amount,filters):
 	credit = sum([d["credit"] for d in filio_transaction_amount]) or 0
 	debit = sum([d["debit"] for d in filio_transaction_amount]) or 0
 
-	if data:
+	if len(data) > 0:
 		opening_balance= data[0]["amount"] or 0
 	
 	balance = opening_balance + debit

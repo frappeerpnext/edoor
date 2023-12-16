@@ -31,7 +31,9 @@
   "business_source",
   "building",
   "room_type_group",
-  "housekeeper"
+  "housekeeper",
+  "is_complimentary",
+  "is_house_use"
  ],
  "fields": [
   {
@@ -193,11 +195,23 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-07 17:13:57.787304",
+ "modified": "2023-12-13 18:00:12.974540",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

@@ -275,8 +275,8 @@ function debouncer(fn, delay) {
     };
 }
 onMounted(() => {
-    loadData()
     
+loadData()
 })
 
 

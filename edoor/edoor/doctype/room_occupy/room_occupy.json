@@ -31,7 +31,9 @@
   "reservation_status",
   "business_source",
   "floor",
-  "building"
+  "building",
+  "is_house_use",
+  "is_complimentary"
  ],
  "fields": [
   {
@@ -196,11 +198,23 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_house_use",
+   "fieldtype": "Check",
+   "label": "Is House Use"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_complimentary",
+   "fieldtype": "Check",
+   "label": "Is Complimentary"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-07 17:46:42.696118",
+ "modified": "2023-12-13 10:37:39.221101",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

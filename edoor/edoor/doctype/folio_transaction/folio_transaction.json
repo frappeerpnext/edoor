@@ -32,6 +32,7 @@
   "property",
   "column_break_kwtq",
   "reservation",
+  "reservation_type",
   "column_break_zhod",
   "reservation_stay",
   "column_break_fwos",
@@ -922,11 +923,17 @@
    "fieldname": "sale",
    "fieldtype": "Data",
    "label": "Sale"
+  },
+  {
+   "fetch_from": "reservation.reservation_type",
+   "fieldname": "reservation_type",
+   "fieldtype": "Data",
+   "label": "Reservation Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-09 18:11:37.137925",
+ "modified": "2023-12-15 11:35:27.882214",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

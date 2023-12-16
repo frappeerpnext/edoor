@@ -29,24 +29,23 @@
             </div>
         </div>
 
-        <h1 class="my-3 font-semibold">Cash Count</h1>
+        <h1 class="my-2 font-semibold">Cash Count</h1>
 
         <div class="grid justify-between">
             <div class="col-12 xl:col-6 overflow-auto">
-                <table>
-                    <tbody>
-                        <ComStayInfoNoBox label="Rate Exchange">
-                            <span v-for="(c, index) in exchangeRates" :key="index">
-                                <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
-                                <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{
-                                    c.to_currency }})
-                            </span>
-                        </ComStayInfoNoBox>
-                    </tbody>
-                </table>
+                <div class="p-3 border-solid border-1 surface-border border-round-md text-center h-full w-full flex justify-content-center align-content-center flex-wrap">
+                    <div>
+                        <div class="text-lg">Rate Exchange</div>
+                        <span v-for="(c, index) in exchangeRates" :key="index" class="text-4xl">
+                            <CurrencyFormat currAddClass="font-semibold" :value="1" />({{ c.base_currency }}) =
+                            <CurrencyFormat currAddClass="font-semibold" :value="c.exchange_rate" :currency="c" /> ({{
+                                c.to_currency }})
+                        </span>
+                    </div>
+                </div>
             </div>
             <div class="col-12 xl:col-6">
-                <table class="w-full mb-4">
+                <table class="w-full mb-3">
                     <thead>
                         <tr style='background: rgb(243, 243, 243);'>
                             <th class="w-auto border-1 p-2 font-semibold">Payment Type</th>
@@ -60,12 +59,11 @@
                         <tr v-for="(p, index) in summary?.expected_cash" :key="index">
                             <td class="w-auto border-1 p-2">{{ p.payment_type }}</td>
                             <td class="w-auto border-1 p-2 text-right">
-
                                 <CurrencyFormat :currency="p" currAddClass="font-semibold" :value="p.expected_amount" />
                             </td>
-                            <td class="w-auto border-1 p-2 text-center">
+                            <td class="w-auto border-1 p-2">
  
-                                <InputNumber class="text-end w-full w-15rem" v-model="p.input_close_amount"
+                                <InputNumber class="text-end w-full" v-model="p.input_close_amount"
                                     :minFractionDigits="0" :maxFractionDigits="p.precision" mode="currency"
                                     :currency="p.currency" :locale="p.locale" :disabled="p.total_cash_count>0" />
 
@@ -79,15 +77,12 @@
                     </tbody>
                 </table>
 
-                <Button @click="onOpenCashCount" class="mr-2">Cash Count</Button>
-                <Button @click="onClearCashCount">Clear Cash Count</Button>
+                <Button @click="onOpenCashCount" label="Cash Count" icon="pi pi-wallet" class="mr-2 conten-btn"/>
+                <Button @click="onClearCashCount" label="Clear Cash Count" icon="pi pi-eraser" class="conten-btn"/>
 
             </div>
         </div>
-
-
-
-        <h1 class="my-3 font-semibold">Other Payment Type</h1>
+        <h1 class="my-2 font-semibold">Other Payment Type</h1>
         <table class="w-full">
             <tr style='background: rgb(243, 243, 243);'>
                 <td class="w-auto border-1 p-2 font-semibold">Type</td>

@@ -14,7 +14,7 @@
               <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
                   <div class="text-500 uppercase text-sm">Balance</div>
                 
-                  <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="rs?.reservationStay?.balance"></CurrencyFormat></div>
+                  <div class="text-xl line-height-2 font-semibold"><CurrencyFormat :value="( rs?.reservationStay?.total_debit - rs?.reservationStay?.total_credit )"></CurrencyFormat></div>
               </div>
           </div>
           
@@ -54,7 +54,7 @@
                 </OverlayPanel>
           </div>
           <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total Room Rate" :value="rs?.reservationStay?.total_room_rate" valueClass="grow text-right bg-gray-edoor-10 font-semibold" titleClass="col-4 font-semibold" >
+              <ComBoxStayInformation titleTooltip="Total Room Rate" isCurrency title="Total Room Rate" :value="rs?.reservationStay?.total_room_rate" valueClass="grow text-right bg-gray-edoor-10 font-semibold" titleClass="col-4 font-semibold" >
 
               </ComBoxStayInformation>
           </div>

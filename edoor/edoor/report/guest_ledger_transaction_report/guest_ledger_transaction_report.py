@@ -53,7 +53,7 @@ def get_columns():
 		{'fieldname':'parent_account_name','label':'Parent Account Name'},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
-		{'fieldname':'creation','label':'Creation','fieldtype':'Datetime',"default":True},
+		{'fieldname':'creation','label':'Creation','fieldtype':'Timeago',"default":True},
 	]
 
 def get_folio_transaction_amount(filters):

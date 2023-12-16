@@ -873,6 +873,7 @@ def clear_reservation():
     frappe.db.sql("delete from `tabDeposit Ledger`")
     frappe.db.sql("delete from `tabDesk Folio`")
     frappe.db.sql("delete from `tabCashier Shift Cash Count`")
+    frappe.db.sql("delete from `tabDaily Property Data`")
 
     frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
     frappe.db.sql("delete from `tabFile` where attached_to_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")

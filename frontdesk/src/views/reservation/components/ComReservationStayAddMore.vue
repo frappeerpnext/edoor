@@ -141,10 +141,10 @@
                                     inputId="stacked-buttons" showButtons :min="0" :max="100" />
                             </td>
                             <td class="p-2 text-right w-15rem">
-                                <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
-                                    <div  v-tippy ="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
+                                <div v-tippy="!data?.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' " class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
+                                    <div :class="!data.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" v-tippy ="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
 
-                                        <button @click="onOpenChangeRate($event, d)"
+                                        <button  @click="onOpenChangeRate($event, d)"
                                             class="text-right w-full color-purple-edoor text-md font-italic ">
                                             <div class="flex justify-between link_line_action">
                                                 <div>
@@ -523,6 +523,7 @@ function get_rate_type_info(){
             data.value.tax_2_rate =  tax_rule?.tax_2_rate || 0
             data.value.tax_3_rate = tax_rule?.tax_3_rate || 0
             room_tax.value = tax_rule
+            data.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
     })
 }
 

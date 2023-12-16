@@ -16,7 +16,7 @@ def search(doctypes=None, txt="" ,filters=None):
     search_tables = frappe.get_doc("eDoor Setting").search_table
     results = []
     
-    if txt:
+    if txt and 1==2:
         
         for t in search_tables:
             if t.table_name in doctypes:
@@ -42,7 +42,6 @@ def search(doctypes=None, txt="" ,filters=None):
                 results = results + data
                 results.sort(key=lambda x: x.modified, reverse=True)
     else:
- 
         for t in search_tables:
             if t.table_name in doctypes:
                 search_fields = ["name"]
@@ -60,11 +59,15 @@ def search(doctypes=None, txt="" ,filters=None):
                 if t.default_condition:
                     default_condition = " and " + t.default_condition
 
-                sql = "select '{0}' as doctype, {1} from `tab{0}` where modified>=(NOW() - INTERVAL 1 HOUR)  {3} order by modified desc limit {2}".format(t.table_name,return_fields,t.limit_result,default_condition)
- 
-                data = frappe.db.sql(sql,as_dict=1)
+                sql = "select '{0}' as doctype, {1} from `tab{0}` where modified>=(NOW() - INTERVAL 1 HOUR) and concat({2}) like %(txt)s {4} order by modified desc limit {3}".format(t.table_name,return_fields,search_fields,t.limit_result,default_condition)
+        
+                
+                data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
                 results = results + data
                 results.sort(key=lambda x: x.modified, reverse=True)
+
+                # sql = "select '{0}' as doctype, {1} from `tab{0}` where modified>=(NOW() - INTERVAL 1 HOUR)  {3} order by modified desc limit {2}".format(t.table_name,return_fields,t.limit_result,default_condition)
+
     return results
 
 
@@ -389,7 +392,7 @@ def get_house_keeping_status(property, working_day):
     for d in hk_data:
         total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
         
-        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and start_date >= '{}'".format(property,working_day),as_dict=1)[0]["total"] or 0
+        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and end_date >= '{}' and is_unblock = 0".format(property,working_day),as_dict=1)[0]["total"] or 0
 
         housekeeping_status.append({
             "status":d.name,
@@ -1380,9 +1383,13 @@ def run_night_audit(property, working_day):
     frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='short', working_day=new_working_day)
 
     #update room status after runight auit
+
     # update_room_status(new_working_day)
     frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='short', working_day=new_working_day)
-
+    
+    # update daily property data 
+    frappe.enqueue("edoor.api.frontdesk.update_daily_property_data", queue='short', working_date=doc_working_day.posting_date, property = property)
+    
     
     return property
 
@@ -1423,17 +1430,31 @@ def update_room_status(working_day=None):
         room_doc = frappe.get_doc("Room", r["room_id"])
         room_doc.housekeeping_status = room_status
         room_doc.save()
-
-    
-
-    
-   
+ 
     frappe.db.commit()
     
+@frappe.whitelist()
+def update_daily_property_data(property, working_date):
+
+    sql = "delete from `tabDaily Property Data` where date='{}' and property='{}'".format(working_date,property)
+    frappe.db.sql(sql)
+
+    sql = "select room_type_id, count(name) as total_rooms from `tabRoom` where disabled=0 and property='{}' group by room_type".format(property)
+
+    data = frappe.db.sql(sql,as_dict=1)
+    for d in data:
+        frappe.get_doc({
+            "property":property,
+            "doctype":"Daily Property Data",
+            "date":working_date,
+            "room_type_id":d["room_type_id"],
+            "total_room":d["total_rooms"]
+        }).insert()
+    frappe.db.commit()
+
 
 @frappe.whitelist()
-def post_room_change_to_folio(working_day):
-    
+def post_room_change_to_folio(working_day):  
     room_rates = frappe.db.get_all("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date },page_length=1000)
 
     for r in room_rates:
@@ -1454,6 +1475,7 @@ def post_room_change_to_folio(working_day):
     #verify if reservation stay and and reservation is update balance
 
 
+
 @frappe.whitelist()
 def check_room_config_and_over_booking(property):
     working_day = get_working_day(property)
@@ -1462,3 +1484,4 @@ def check_room_config_and_over_booking(property):
     if data:
         return data[0][0]
     return 0
+

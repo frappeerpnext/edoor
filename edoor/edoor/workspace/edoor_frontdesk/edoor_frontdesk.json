@@ -9,10 +9,10 @@
  "hide_custom": 0,
  "icon": "message",
  "idx": 0,
- "is_hidden": 1,
+ "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-09 09:56:38.840764",
+ "modified": "2023-12-13 09:05:54.137049",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -22,7 +22,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 4.0,
  "shortcuts": [
   {
    "color": "Green",
