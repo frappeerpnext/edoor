@@ -56,6 +56,19 @@
   "docstatus": 0,
   "doctype": "Global Search Template",
   "limit_result": 20,
+  "modified": "2023-12-15 10:29:34.491932",
+  "name": "Reservation",
+  "return_fields": "name,guest,guest_name,room_numbers,room_types,DATE_FORMAT(arrival_date, '%%d-%%m-%%Y') as arrival_date,DATE_FORMAT(departure_date, '%%d-%%m-%%Y') AS departure_date,business_source,reservation_type,reservation_status,reference_number,group_code,room_type_alias,status_color,room_nights,modified_by,modified",
+  "search_doctype": "Reservation",
+  "search_field": "reference_number,guest,guest_name,phone_number,email_address,room_numbers, group_code, group_name , business_source ,name,room_numbers,room_types , room_type_alias , reservation_type",
+  "template": "<div class=\"flex p-2\" onclick=\"window.postMessage('view_reservation_detail|{{name}}', '*')\">\n<div class=\"w-4rem me-3\">\n<div class=\"surface-100 h-4rem w-4rem flex align-items-center justify-content-center border-round-lg \"> \n<i class=\"pi pi-folder-open text-2xl\"></i> \n</div>\n</div>\n<div class=\"text-overflow-ellipsis overflow-hidden col ps-5 ms-3 py-0 flex\">\n<div class=\"\">\n<div class=\"text-lg\">\n\n<span class=\"font-medium\"> RS# :</span>  <span onclick=\"event.stopPropagation();window.postMessage('view_reservation_detail|{{name}}', '*')\" class=\"cursor-pointer text-blue-400\"> {{name}}\n</span>\n| <span class=\"font-medium\"> Guest : </span> <span onclick=\"event.stopPropagation();window.parent.postMessage('view_guest_detail|{{guest}}', '*')\" class=\"cursor-pointer text-blue-400\">   {{guest_name}} </span>\n</div>\n<div>\n<span class=\"font-medium\"> Reference #: </span> {{reference_number}}\n</div>\n<div class=\" white-space-nowrap\" > <span> Room : </span> {{room_type_alias}} / {{room_numbers}} </div>\n<div class=\"text-md\"> <span class=\"font-medium\"> Stay Date: </span> {{arrival_date}} &#x2192; {{departure_date}} | <span class=\"font-medium\"> Night : </span> {{room_nights}} </div>\n<span class=\"font-medium\"> Business Source : </span> {{business_source}}\n</div>\n</div>\n<div class=\"col-3 flex flex-row justify-content-end\">\n<div>\n<span class=\" border-round-lg px-2 py-1 surface-100 text-sm me-2 white-space-nowrap\">{{reservation_type}}</span>\n</div>\n<div>\n<span style=\"background:{{status_color}}\" class=\" border-round-lg px-2 py-1 text-sm me-2 text-0 white-space-nowrap\">\n{{reservation_status}}\n</span>\n<span class=\"text-0 border-round-lg px-2 py-1 bg-indigo-200 text-sm me-2 white-space-nowrap\">\nReservation \n</span>\n</div>\n</div>\n</div>\n ",
+  "title": "Reservation"
+ },
+ {
+  "default_condition": null,
+  "docstatus": 0,
+  "doctype": "Global Search Template",
+  "limit_result": 20,
   "modified": "2023-12-12 08:32:14.469567",
   "name": "Guest Folio",
   "return_fields": "name,reservation,reservation_stay,guest,guest_name,room_types_alias,rooms,status,reservation_status_color,reservation_status,guest,DATE_FORMAT(posting_date, '%%d-%%m-%%Y') as posting_date,modified_by",
@@ -63,19 +76,6 @@
   "search_field": "rooms, guest_name ,reservation , guest_name , name , guest , reservation_stay , room_types_alias , rooms",
   "template": "<div  class=\"view-detail-dailog-search\"></div>\n<div onclick=\"window.postMessage('view_folio_detail|{{name}}', '*')\" class=\"flex p-2\">\n<div class=\"w-4rem me-3\">\n<div class=\"surface-100 h-4rem w-4rem flex align-items-center justify-content-center border-round-lg \"> \n<i class=\"pi pi-dollar text-2xl\"></i> \n</div>\n</div>\n<div class=\" text-overflow-ellipsis overflow-hidden col ms-3 ps-5 py-0 flex\">\n<div class=\"\">\n<div class=\"text-lg\">\n\n<span class=\"font-medium\"> Folio :</span>  <span onclick=\"event.stopPropagation();window.postMessage('view_folio_detail|{{name}}', '*')\" class=\"cursor-pointer text-blue-400\"> {{name}} \n</span>\n</div>\n<div> \n<span class=\"font-medium\">Posting Date : </span> {{posting_date}} \n</div>\n<div> \n<span class=\"font-medium\">Guest : </span> {{guest}} - {{guest_name}}\n</div>\n<div> \n<span class=\"font-medium\">Room : </span> {{room_types_alias}} / {{rooms}} \n</div>\n<div>\n<span class=\"font-medium\">Reservation : RS#</span> <span onclick=\"event.stopPropagation();window.postMessage('view_reservation_detail|{{reservation}}', '*')\" class=\"text-blue-400\"> {{reservation}} </span>\n| <span> STAY#: </span> <span onclick=\"event.stopPropagation();window.postMessage('view_reservation_stay_detail|{{reservation_stay}}', '*')\" class=\"text-blue-400\">  {{reservation_stay}} </span> \n</div>\n<div class=\" white-space-nowrap\" > </div>\n</div>\n</div>\n<div class=\"col-3 flex flex-row justify-content-end\">\n<div>\n<span class=\"text-0 border-round-lg px-2 py-1 surface-400 text-sm me-2 white-space-nowrap\">\n{{status}}\n</span>\n<span style=\"background:{{reservation_status_color}}\" class=\" border-round-lg px-2 py-1 text-sm me-2 text-0 white-space-nowrap\">\n{{reservation_status}}\n</span>\n</div>\n<div>\n<span class=\"text-0 border-round-lg px-2 py-1 bg-cyan-200 text-sm me-2 white-space-nowrap\">\nGuest Folio\n</span>\n</div>\n</div>\n</div>",
   "title": "Guest Folio"
- },
- {
-  "default_condition": null,
-  "docstatus": 0,
-  "doctype": "Global Search Template",
-  "limit_result": 20,
-  "modified": "2023-11-27 16:06:18.512482",
-  "name": "Reservation",
-  "return_fields": "name,guest,guest_name,room_numbers,room_types,DATE_FORMAT(arrival_date, '%%d-%%m-%%Y') as arrival_date,DATE_FORMAT(departure_date, '%%d-%%m-%%Y') as departure_date,business_source,reservation_type,reservation_status,reference_number,group_code,room_type_alias,status_color,room_nights,modified_by,modified",
-  "search_doctype": "Reservation",
-  "search_field": "reference_number,guest,guest_name,phone_number,email_address,room_numbers, group_code, group_name , business_source ,name,room_numbers,room_types , room_type_alias , reservation_type",
-  "template": "\n<div class=\"flex p-2\" onclick=\"window.postMessage('view_reservation_detail|{{name}}', '*')\">\n<div class=\"w-4rem me-3\">\n<div class=\"surface-100 h-4rem w-4rem flex align-items-center justify-content-center border-round-lg \"> \n<i class=\"pi pi-folder-open text-2xl\"></i> \n</div>\n</div>\n<div class=\"text-overflow-ellipsis overflow-hidden col ps-5 ms-3 py-0 flex\">\n<div class=\"\">\n<div class=\"text-lg\">\n\n<span class=\"font-medium\"> RS# :</span>  <span onclick=\"event.stopPropagation();window.postMessage('view_reservation_detail|{{name}}', '*')\" class=\"cursor-pointer text-blue-400\"> {{name}}\n</span>\n| <span class=\"font-medium\"> Guest : </span> <span onclick=\"event.stopPropagation();window.parent.postMessage('view_guest_detail|{{guest}}', '*')\" class=\"cursor-pointer text-blue-400\">   {{guest_name}} </span>\n</div>\n<div>\n<span class=\"font-medium\"> Reference #: </span> {{reference_number}}\n</div>\n<div class=\" white-space-nowrap\" > <span> Room : </span> {{room_type_alias}} / {{room_numbers}} </div>\n<div class=\"text-md\"> <span class=\"font-medium\"> Stay Date: </span> {{arrival_date}} &#x2192; {{departure_date}} | <span class=\"font-medium\"> Night : </span> {{room_nights}} </div>\n<span class=\"font-medium\"> Business Source : </span> {{business_source}}\n</div>\n</div>\n<div class=\"col-3 flex flex-row justify-content-end\">\n<div>\n<span class=\" border-round-lg px-2 py-1 surface-100 text-sm me-2 white-space-nowrap\">{{reservation_type}}</span>\n</div>\n<div>\n<span style=\"background:{{status_color}}\" class=\" border-round-lg px-2 py-1 text-sm me-2 text-0 white-space-nowrap\">\n{{reservation_status}}\n</span>\n<span class=\"text-0 border-round-lg px-2 py-1 bg-indigo-200 text-sm me-2 white-space-nowrap\">\nReservation \n</span>\n</div>\n</div>\n</div>\n ",
-  "title": "Reservation"
  },
  {
   "default_condition": null,
