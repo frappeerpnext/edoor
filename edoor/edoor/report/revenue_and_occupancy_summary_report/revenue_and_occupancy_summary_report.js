@@ -85,11 +85,9 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		
 		report.page.add_inner_dropdown ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-
 		
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
@@ -97,17 +95,23 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 		 
 
 		value = default_formatter(value, row, column, data);
-		if ((column.fieldtype || "") == "Currency" ) 
-		{
-			if(origninal_value==0){
-				return "<span style='float:right;'>-</span>"
-			}
-		}else if ((column.fieldtype || "") == "Int" ) 
-		{
-			if(origninal_value==0){
-				return "<span style='float:right;'>-</span>"
-			}
+		
+		console.log(column.align, value);
+		if (value.indexOf("style='text-align: right'")>=0){
+			console.log(column.align, value?.replace("style='text-align: right'","style='text-align: center'"));	
 		}
+		
+
+		if (
+			(column.fieldtype || "") == "Int" || 
+			((column.fieldtype || "") == "Percent") ||
+			((column.fieldtype || "") == "Currency" ) 
+		) 
+		{
+			if(origninal_value==0){
+				return "-"
+			}
+		} 
 
 
 		
@@ -121,7 +125,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			value = $value.wrap("<p></p>").parent().html();
 		} 
 	 
-		
+ 
 		return value;
 	},
 	

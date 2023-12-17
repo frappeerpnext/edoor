@@ -18,12 +18,13 @@ def get_report(filters, report_config):
 def get_report_columns(filters,report_config):
 	columns = [
 		{'key': "Date","fieldname":"row_group","label":"Date","width":125},
-		{"fieldname":"room_available","label":"Room Avai","width":100},
+		
+		{"fieldname":"room_available","label":"Room Avai","width":100,"align":"center"},
 	]
 	for g in report_config.report_fields:
 		if g.show_in_report==1:
-			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"aligh":"right"})
-	
+			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+	 
 	return columns
 
 def get_report_data(filters,report_config):
@@ -41,6 +42,7 @@ def get_report_data(filters,report_config):
 
     
     report_group_data = get_row_group_report_data(filters)
+
 
 
     room_available_datas= get_room_available(filters)
@@ -76,12 +78,15 @@ def get_report_data(filters,report_config):
             room_available_record = [d for d in room_available_datas if str(d["row_group"])==str(row["row_group"]) ]
             if len(room_available_record)>0:
                 row["room_available"] = room_available_record[0]["total_rooms"]
-
-            occupy_records = [d for d in data if d["row_group"] == row["row_group"] and d["parent_row_group"] == parent["parent_row_group"]]
+            
+            occupy_records = [d for d in data if str(d["row_group"]) == str(row["row_group"]) and str(d["parent_row_group"]) == str(parent["parent_row_group"])]
+ 
             
             if len(occupy_records)> 0:
+                    
                     #occupy
                     occupy_record = occupy_records[0]
+                    
                     # set value occupy dynamic field
                     for f in report_config.report_fields :
                         if f.show_in_report==1 and f.reference_doctype=="Room Occupy":
@@ -214,6 +219,7 @@ def get_occupy_data(filters,report_config):
     sql = "{} group by date_format(date,'%%d-%%m-%%Y')".format(sql)
 
     data = frappe.db.sql(sql,filters,as_dict = 1)
+
     return data
 
 def get_report_summary(total_record,report_config):
