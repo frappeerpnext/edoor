@@ -354,8 +354,7 @@ function AddTransaction(account_code) {
 }
 
 
-function showPrintPreview(data) {
-
+function showPrintPreview(data) {  
 const dialogRef = dialog.open(ComIFrameModal, {
     data: {
         doctype: "Folio Transaction",

@@ -37,24 +37,22 @@ def validate(filters):
 def get_columns(filters):
 	
 	columns = [
-		{'fieldname':'name','label':'Folio Number','fieldtype':'Link','options':"Reservation Folio",'align':'center',"header_class":'text-center','post_message_action':"view_folio_detail","default":True,"show_in_report":1},
+		{'fieldname':'name','label':'Folio Number','fieldtype':'Link','options':"Reservation Folio","header_class":'text-center','post_message_action':"view_folio_detail","default":True,"show_in_report":1},
 		{'fieldname':'posting_date','label':'Date','fieldtype':'Date','align':'center',"header_class":'text-center',"default":True,"show_in_report":1},
-		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_detail","default":True,"show_in_report":1},
-		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay",'align':'center',"header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True,"show_in_report":1},
+		{'fieldname':'reservation','label':'Reservation #','fieldtype':'Link','options':"Reservation","header_class":'text-center','post_message_action':"view_reservation_detail","default":True,"show_in_report":1},
+		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay","header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source',"default":True,"show_in_report":1},
-		{'fieldname':'room_types','label':'Room Type',"default":True,"show_in_report":1},
-		{'fieldname':'rooms','label':'Rooms',"align":'center',"header_class":'text-center',"default":True,"show_in_report":1},
-		{'fieldname':'guest','label':'Guest','fieldtype':'Link',"options":"Customer","align":'left','extra_field':'guest_name', 'extra_field_separator':'-','post_message_action':"view_guest_detail","default":True,"show_in_report":1,"default":True},
-		{'fieldname':'guest_name','label':'Guest Name',"show_in_report":1,"default":True},
+		{'fieldname':'room','label':'Room(s)',"default":True,"show_in_report":1,'align':'left'},
+		{'fieldname':'guests','label':'Guest','fieldtype':'Link',"options":"Customer","align":'left','post_message_action':"view_guest_detail","default":True,"show_in_report":1,"default":True},	
 		{'fieldname':'phone_number','label':'Phone #',"default":True},
 		{'fieldname':'email','label':'Email',"default":True},
-		{'fieldname':'opening_balance','label':'Opening Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True},
+		{'fieldname':'opening_balance','label':'Opening Balance', 'fieldtype':'Currency',"header_class":'text-right','align':'right',"default":True,"show_in_report":1},
 		{'fieldname':'debit','label':'Debit', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'credit','label':'Credit', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'balance','label':'Balance', 'fieldtype':'Currency',"header_class":'text-right',"default":True,"show_in_report":1,"align":'right'},
 		{'fieldname':'is_master','label':'Master Folio','fieldtype':'Check',"header_class":'text-center',"default":True},
 		{'fieldname':'status','label':'Status',"fieldtype":"status","default":True},
-		{'fieldname':'reservation_status','label':'Res. Status',"fieldtype":"ReservationStatus","default":True},
+		{'fieldname':'reservation_status','label':'Res. Status',"fieldtype":"ReservationStatus","default":True,"show_in_report":1,'align':'center'},
 		{'fieldname':'reservation_status_color' ,"fieldtype":"ReservationStatusColor"}
 	]
 	 
@@ -100,10 +98,12 @@ def get_report_data(folio_transaction_amount,filters):
 			business_source,
 			rooms,
 			room_types,
+			concat(room_types,'/',rooms) as room,
 			status,
 			is_master,
-			guest,
+			concat(guest,'-',guest_name) as guests,
 			guest_name,
+			guest,
 			phone_number,
 			email,
 			balance as balance

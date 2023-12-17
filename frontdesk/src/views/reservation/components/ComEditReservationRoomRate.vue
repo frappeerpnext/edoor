@@ -473,6 +473,11 @@ function onSelectRateType(selected) {
 
             })
     }
+    getApi("utils.get_rate_type_info", { name: selected })
+            .then(result => {
+                doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
+            })
+            
 }
 
 function onUseManualRate() {

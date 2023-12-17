@@ -9,21 +9,23 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			fieldtype: "Link",
 			options:"Business Branch",
 			default:frappe.defaults.get_user_default("business_branch") ,
-			"reqd": 1
+			"reqd": 1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
 			"fieldtype": "Date",
 			default: new Date( (new Date()).getFullYear(), ( new Date()).getMonth(), 1),
-			"reqd": 1
+			"reqd": 1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname":"end_date",
 			"label": __("End Date"),
 			"fieldtype": "Date",
 			default: new Date((new Date()).getFullYear(), (new Date()).getMonth() + 1, 0),
-		
+			"on_change": function (query_report) {},
 			"reqd": 1
 		},
 		{
@@ -32,21 +34,25 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			"fieldtype": "MultiSelectList",
 			get_data: function(txt) {
 				return frappe.db.get_link_options('Customer Group', txt);
-			}
+			},
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "parent_row_group",
 			"label": __("Parent Group By"),
 			"fieldtype": "Select",
-			"options": "\nCategory\nProduct Group\nRevenue Group\nBusiness Branch\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nDate\n\Month\nYear\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			
+			"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nDate\n\Month\nYear\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
+			"on_change": function (query_report) {},
+			hide_in_filter:1,
 		},
 		{
 			"fieldname": "row_group",
 			"label": __("Row Group By"),
 			"fieldtype": "Select",
-			"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRevenue Group\nBusiness Branch\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			"default":"Date"
+			"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
+			"default":"Date",
+			"on_change": function (query_report) {},
+			hide_in_filter:1,
 		},
 
 		// {
@@ -57,18 +63,39 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 		// 	"default":"None"
 		// },
 		{
+			"fieldname": "show_summary",
+			"label": __("Show Summary"),
+			"fieldtype": "Check",
+			"default":1,
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
 			"options": "None\nbar\nline\npie",
 			"default":"bar",
-			hide_in_filter:1
-		}
-
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		 
 	],
+	onload: function(report) {
+		report.page.add_inner_button ("Preview Report", function () {
+			frappe.query_report.refresh();
+		});
+		
+		report.page.add_inner_dropdown ("Preview Report", function () {
+			frappe.query_report.refresh();
+		});
+
+		
+	},
 	"formatter": function(value, row, column, data, default_formatter) {
 		const origninal_value = value  || 0
 		 
+
 		value = default_formatter(value, row, column, data);
 		if ((column.fieldtype || "") == "Currency" ) 
 		{
@@ -84,7 +111,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 
 
 		
-		if ((data && data.is_group==1)) {
+		if ((data && data.is_group==1) || (data && data.is_total_row==1)) {
 			
 			value = $(`<span>${value}</span>`);
 

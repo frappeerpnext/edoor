@@ -151,6 +151,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT
+                    SUM(if(reservation_date='{1}',1,0)) AS `total_reservation_stay`, 
                     SUM(if(reservation_status = 'No Show' and (arrival_date!='{1}' and is_reserved_room=1),1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
@@ -311,7 +312,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "total_room_block": total_room_block,
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
-        "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 
+        "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
+        "total_reservation_stay":stay[0]["total_reservation_stay"] or 0
     }
 
 
@@ -392,7 +394,7 @@ def get_house_keeping_status(property, working_day):
     for d in hk_data:
         total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
         
-        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and end_date >= '{}' and is_unblock = 0".format(property,working_day),as_dict=1)[0]["total"] or 0
+        total_room_block  = frappe.db.sql("select count(name) as total from `tabRoom Block` where property='{}' and end_date >= '{}' and is_unblock = 0 and docstatus = 1".format(property,working_day),as_dict=1)[0]["total"] or 0
 
         housekeeping_status.append({
             "status":d.name,
@@ -568,6 +570,7 @@ def get_edoor_setting(property = None):
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
         "guest_ledger_report_name":edoor_setting_doc.guest_ledger_report_name,
         "guest_ledger_transaction_report":edoor_setting_doc.guest_ledger_transaction_report,
+        # "city_ledger_transaction_report":edoor_setting_doc.city_ledger_transaction_report,
         "city_ledger_report_name":edoor_setting_doc.city_ledger_report_name,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,

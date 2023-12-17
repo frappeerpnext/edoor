@@ -534,44 +534,32 @@ function onTransferFolioItem() {
 const arr = ref()
 
 function onAuditTrail() {
-    getDocList('Folio Transaction', {
-		fields: ["name","transaction_number","transaction_type","transaction_number"],
-        filters: [
-            ["transaction_type", "=", "Reservation Folio"],
-            ["transaction_number", "=", selectedFolio.value?.name], 
-        ]
-	}).then((r) => {
-        //convert array to string
-        transaction.value = r.map(x=>x.name)
-        //sum array 2 in 1
-        arr.value = transaction.value.concat([selectedFolio.value?.name]).reverse()
-        const dialogRef = dialog.open(ComAuditTrail, {
+    const dialogRef = dialog.open(ComAuditTrail, {
         data: {
-            doctype: 'Reservation Folio',
-            docname: selectedFolio.value?.name,
-            referenceTypes: [
+            doctype: 'Reservation',
+            docname: rs.reservation.name,
+            referenceTypes:[
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+                
             ],
-            docnames: arr.value
+            filter_key:"custom_reservation"
+
         },
-        
         props: {
             header: 'Audit Trail',
             style: {
-                width: '85vw',
+                width: '80vw',
             },
             modal: true,
             maximizable: true,
             closeOnEscape: false,
             position: "top"
         },
-       
+        onClose: (options) => {
+            //
+        }
     });
-    
-    })  
-    
-    
 }
  
 onMounted(()=>{

@@ -343,7 +343,6 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
-
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();
@@ -675,10 +674,13 @@ function onFolioFilterTypeChange(d){
 
 
 function onSave() {
-    isSaving.value = true
-
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+        isSaving.value = false;
+    }
 
     createUpdateDoc("Folio Transaction", data)
         .then((doc) => {
@@ -706,6 +708,7 @@ function onSave() {
             isSaving.value = false;
         })
 }
+
 function getSuguestCityLedger(){
     if(dialogRef.value.data.business_source){
             call.get('frappe.desk.search.search_link', {doctype:"City Ledger",txt:dialogRef.value.data.business_source, filters: [["property", "=", window.property.name]]}).then(r=>{

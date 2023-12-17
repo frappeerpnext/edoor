@@ -4,7 +4,7 @@
         <div>
 
             <label for="target_reservation" class="mb-1 font-medium block">Target Reservation</label>
-            <ComAutoComplete placeholder="Select target reservation" v-model="data.target_reservation" doctype="Reservation" :filters="{ 'property': property_name,reservation_status:['in',['Checked Out','Reserved','Confirmed','In-house']],departure_date:['>',working_date], name:['!=',data.source_reservation]}"/>
+            <ComAutoComplete class="w-full" placeholder="Select target reservation" v-model="data.target_reservation" doctype="Reservation" :filters="{ 'property': property_name,reservation_status:['in',['Checked Out','Reserved','Confirmed','In-house']],departure_date:['>',working_date], name:['!=',data.source_reservation]}"/>
         </div>
                 <label for="reason-text" class="mb-1 font-medium block">Reason</label>
         <Textarea autofocus v-model="data.note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />

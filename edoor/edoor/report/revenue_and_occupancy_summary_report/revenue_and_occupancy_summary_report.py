@@ -1,25 +1,22 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 
+from edoor.edoor.report.revenue_and_occupancy_summary_report import report_by_date
 from edoor.api.frontdesk import get_working_day
 import frappe
 def execute(filters=None):
-	
-	#this report get data from 3 table source
-	# 1 from Daily Property Data. this table is store total room of property for each room type 
-	# 	we read room available data from this table to calculate occpany for specific date
-	#2. Room Occupany, field occupy, occupancy and field ooo, Complimtary and house use is from this table
-	
-	#3 get from folio transaction table,for room charte other charge vat,....
-	
+	if filters.parent_row_group==filters.row_group:
+		frappe.throw("Parent row group and row group can not be the same")
+		
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Revenue and Occupancy Summary Report"} )
 	 
+	report = None
+	if filters.row_group == "Date":
+		report =  report_by_date.get_report(filters, report_config)
 
-	columns = get_report_columns(filters,report_config)
-	data = get_report_data(filters,report_config)
 	message = "This is report is for past date transaction"
 
-	return columns, data,message
+	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"]
 
 	# return get_columns(filters), report_data, message, report_chart, get_report_summary(report_data,filters),skip_total_row
 
@@ -46,6 +43,8 @@ def row_group_columns():
 		{'key':"Year","fieldname":"row_group","label":"Year","width":50},
 		{'key':"Reservation Type","fieldname":"row_group","label":"Reservation Type","width":150},
 		{'key':"Business Source","fieldname":"row_group","label":"Business Source","width":150},
+		{'key':"Room Type","fieldname":"row_group","label":"Room Type","width":200},
+		{'key':"Room","fieldname":"row_group","label":"Room","width":75},
 	]
 
 def get_report_data(filters,report_config):
@@ -57,8 +56,11 @@ def get_report_data(filters,report_config):
 
 	#get row group data 
 	report_data = []
+	
 	if filters.row_group in ["Date","Month","Year"]:
+ 
 		report_data = get_row_group_report_data(filters, report_config)
+		
 	else:
 		#get row group data for reservation type, business source, ...
 		report_data =report_group_row_from_result_data(data, folio_transaction_data)
@@ -67,9 +69,6 @@ def get_report_data(filters,report_config):
 
 	room_available_datas= get_room_available(filters)
 	total_rooms = get_total_rooms(filters)
-
-
-
 	#assign value for data
 	for row in report_data:
 		#set default value 0 for field that dont have value
@@ -77,7 +76,7 @@ def get_report_data(filters,report_config):
 			row[d.fieldname] = 0
 
 		#room available
-		if filters.row_group in ["Date","Month","Year"]:
+		if filters.row_group in ["Date","Month","Year","Room Type"]:
 			room_available_record = [d for d in room_available_datas if str(d["row_group"])==str(row["row_group"]) ]
 			if len(room_available_record)>0:
 				row["room_available"] = room_available_record[0]["total_rooms"]
@@ -130,6 +129,7 @@ def get_report_data(filters,report_config):
 	return report_data
 
 def report_group_row_from_result_data(occupy_data, folio_transaction_data):
+
 	row_group = [d["row_group"] for d in occupy_data]
 	row_group = row_group +  [d["row_group"] for d in folio_transaction_data]
 	row_group = set(row_group)
@@ -148,8 +148,6 @@ def get_row_group_report_data(filters,report_config):
 	 
 	elif filters.row_group =='Year':
 		sql ="select distinct year(date) row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date"
-
-
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	 
 
@@ -171,13 +169,15 @@ def get_occupy_data(filters,report_config):
 
 	# group by
 	sql = '{} group by {}'.format(sql, get_room_occupy_group_by_field(filters))
- 
 	data = frappe.db.sql(sql,filters,as_dict = 1)
+	
 	return data
 
 
 def get_room_occupy_group_by_field(filters):
-	return [d["value"] for d in room_occupy_group_by_fields() if d["key"] == filters.row_group][0]
+	group_by =  ",".join([d["value"] for d in room_occupy_group_by_fields() if d["key"] == filters.row_group])
+ 
+	return group_by
 
 def room_occupy_group_by_fields():
 	# a. is base table alias
@@ -186,14 +186,15 @@ def room_occupy_group_by_fields():
 		{"key":"Month", "value": "date_format(a.date,'%%b-%%Y')"},
 		{"key":"Year", "value": "year(a.date)"},
 		{"key":"Reservation Type", "value": "a.reservation_type"},
-		{"key":"Business Source", "value": "a.business_source"}
+		{"key":"Business Source", "value": "a.business_source"},
+		{"key":"Room Type", "value": "a.room_type_id"}
 	]
 
 
 
 def get_room_available(filters):
 	sql=""
-	if filters.row_group in ["Date"]:
+	if filters.row_group in ["Date","Month","Year"]:
 		if filters.row_group=="Date":
 			sql ="select date as row_group, sum(total_room) as total_rooms from `tabDaily Property Data` where "
 		elif filters.row_group=="Month":
@@ -212,9 +213,10 @@ def get_room_available(filters):
 			sql = sql + "  group by  date_format(date,'%%b-%%Y') "	
 		elif filters.row_group=="Year":
 			sql = sql + "  group by  date_format(date,'%%Y') "
+	elif filters.row_group == "Room Type":
+		sql = "select room_type_id, sum(total_room) as total_rooms from `tabDaily Property Data` where property=%(property)s and date between %(start_date)s and %(end_date)s group by room_type_id"
 	else:
 		sql = "select sum(total_room) as total_rooms from `tabDaily Property Data` where property=%(property)s and date between %(start_date)s and %(end_date)s"
-
 
 	
 
@@ -256,8 +258,10 @@ def folio_transaction_group_by_fields():
 		{"key":"Month", "value": "date_format(a.posting_date,'%%b-%%Y')"},
 		{"key":"Year", "value": "year(a.posting_date)"},
 		{"key":"Reservation Type", "value": "a.reservation_type"},
-		{"key":"Business Source", "value": "a.business_source"}
+		{"key":"Business Source", "value": "a.business_source"},
+		{"key":"Room Type", "value": "a.room_type_id"}
 	]
- 
+
+
 
 	

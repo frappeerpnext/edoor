@@ -33,7 +33,8 @@
 
         <div class="grid justify-between">
             <div class="col-12 xl:col-6 overflow-auto">
-                <div class="p-3 border-solid border-1 surface-border border-round-md text-center h-full w-full flex justify-content-center align-content-center flex-wrap">
+                <div
+                    class="p-3 border-solid border-1 surface-border border-round-md text-center h-full w-full flex justify-content-center align-content-center flex-wrap">
                     <div>
                         <div class="text-lg">Rate Exchange</div>
                         <span v-for="(c, index) in exchangeRates" :key="index" class="text-4xl">
@@ -53,7 +54,7 @@
                             <th class="w-auto border-1 p-2 font-semibold">Actual</th>
                             <th class="w-auto border-1 p-2 font-semibold">Difference</th>
                         </tr>
-                        
+
                     </thead>
                     <tbody>
                         <tr v-for="(p, index) in summary?.expected_cash" :key="index">
@@ -62,23 +63,23 @@
                                 <CurrencyFormat :currency="p" currAddClass="font-semibold" :value="p.expected_amount" />
                             </td>
                             <td class="w-auto border-1 p-2">
- 
-                                <InputNumber class="text-end w-full" v-model="p.input_close_amount"
-                                    :minFractionDigits="0" :maxFractionDigits="p.precision" mode="currency"
-                                    :currency="p.currency" :locale="p.locale" :disabled="p.total_cash_count>0" />
+
+                                <InputNumber class="text-end w-full" v-model="p.input_close_amount" :minFractionDigits="0"
+                                    :maxFractionDigits="p.precision" mode="currency" :currency="p.currency"
+                                    :locale="p.locale" :disabled="p.total_cash_count > 0" />
 
                             </td>
                             <td class="w-auto border-1 p-2 text-right">
                                 <CurrencyFormat :currency="p" currAddClass="font-semibold"
-                                    :value="  (p.input_close_amount || 0) - p.expected_amount " />
+                                    :value="(p.input_close_amount || 0) - p.expected_amount" />
                             </td>
                         </tr>
 
                     </tbody>
                 </table>
 
-                <Button @click="onOpenCashCount" label="Cash Count" icon="pi pi-wallet" class="mr-2 conten-btn"/>
-                <Button @click="onClearCashCount" label="Clear Cash Count" icon="pi pi-eraser" class="conten-btn"/>
+                <Button @click="onOpenCashCount" label="Cash Count" icon="pi pi-wallet" class="mr-2 conten-btn" />
+                <Button @click="onClearCashCount" label="Clear Cash Count" icon="pi pi-eraser" class="conten-btn" />
 
             </div>
         </div>
@@ -135,12 +136,6 @@
             <label>Note:</label> <br />
             <Textarea v-model="doc.closed_note" rows="4" class="w-full" />
         </div>
-
-
-       
-
-
-
         <template #footer-right v-if="doc.is_closed !== 1">
             <div class="relative mt-2">
                 <span class="absolute w-full">
@@ -148,10 +143,8 @@
                 </span>
                 <span class="pl-5">I have verified that my information above is correct</span>
             </div>
-            <Button class="border-none" v-if="doc.is_closed == 0" :disabled="!doc.is_confirm" @click="onCloseShift">Close
-                Shift</Button>
+            <Button class="border-none" v-if="doc.is_closed == 0" :disabled="!doc.is_confirm" @click="onCloseShift">Close </Button>
         </template>
-
 
     </ComDialogContent>
 </template>
@@ -177,8 +170,8 @@ const dialog = useDialog()
 const totalCashCountAmount = computed(() => {
 
     let totalCashCount = 0
-    summary?.value?.expected_cash.forEach(c=>{
-        totalCashCount =(totalCashCount || 0) +  ((c.input_close_amount || 0)  / (c.exchange_rate || 1))
+    summary?.value?.expected_cash.forEach(c => {
+        totalCashCount = (totalCashCount || 0) + ((c.input_close_amount || 0) / (c.exchange_rate || 1))
     })
 
     return totalCashCount
@@ -197,13 +190,13 @@ const otherPayments = computed(() => {
 })
 
 
-function onOpenCashCount(){
+function onOpenCashCount() {
     dialog.open(ComCashCount, {
         data: {
-            cash_count_setting:JSON.parse(JSON.stringify( cashCountSetting.value)),
+            cash_count_setting: JSON.parse(JSON.stringify(cashCountSetting.value)),
             summary: JSON.parse(JSON.stringify(summary.value)),
-            doc : doc.value,
-            exchange_rates:exchangeRates.value
+            doc: doc.value,
+            exchange_rates: exchangeRates.value
         },
         props: {
             header: "Cash Count",
@@ -215,17 +208,17 @@ function onOpenCashCount(){
             maximizable: true,
         },
         onClose: (options) => {
-             
-             const data = options.data;
-             if (data != undefined) {
-                 summary.value = data.summary
-                 cashCountSetting.value = data.cash_count_setting
-             }
-         }
+
+            const data = options.data;
+            if (data != undefined) {
+                summary.value = data.summary
+                cashCountSetting.value = data.cash_count_setting
+            }
+        }
     });
 }
 
-function onClearCashCount(){
+function onClearCashCount() {
     confirm.require({
         message: 'Are you sure you want clear  cash count?',
         header: 'Confirmation',
@@ -235,24 +228,24 @@ function onClearCashCount(){
             summary.value.expected_cash.forEach(c => {
                 c.total_cash_count = 0
             });
-            cashCountSetting.value.forEach(x=>{
+            cashCountSetting.value.forEach(x => {
                 x.total_note = 0
             })
 
             toast.add({ severity: 'info', summary: 'Clear Cash Count', detail: 'Clear cash count successfully', life: 3000 });
         },
-        
+
     });
-    
+
 
 }
 
 function onCloseShift() {
 
     doc.value.cash_float.forEach(c => {
-        const expected_cash = summary?.value.expected_cash.find(r=>r.currency==c.currency)
-        if (expected_cash){
-            c.input_system_close_amount  = expected_cash.expected_amount
+        const expected_cash = summary?.value.expected_cash.find(r => r.currency == c.currency)
+        if (expected_cash) {
+            c.input_system_close_amount = expected_cash.expected_amount
             c.input_close_amount = expected_cash.input_close_amount || 0
             c.input_different_amount = c.input_close_amount - c.input_system_close_amount
         }
@@ -264,8 +257,8 @@ function onCloseShift() {
 
     saveData.total_system_close_amount = summary.value.cash_in_hand
 
-    
-        saveData.total_close_amount = totalCashCountAmount.value
+
+    saveData.total_close_amount = totalCashCountAmount.value
 
     saveData.total_different_amount = saveData.total_close_amount - saveData.total_system_close_amount
 
@@ -306,8 +299,8 @@ function onCloseShift() {
         r.total_amount = r.total_note * r.value
     })
 
- 
- 
+
+
     confirm.require({
         message: 'Are you sure you can to close this shift?',
         header: 'Confirmation',

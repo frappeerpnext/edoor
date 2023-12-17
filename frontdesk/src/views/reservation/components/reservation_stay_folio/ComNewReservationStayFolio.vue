@@ -20,10 +20,13 @@ const dialogRef = inject("dialogRef");
 const isSaving = ref(false)
 const doc = ref({})
 const guests = ref([])
+const gv = inject("$gv")
 
 function onSave() {
-    isSaving.value = true;
-
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     createUpdateDoc('Reservation Folio', doc.value)
     .then((doc) => {
         dialogRef.value.close(doc)

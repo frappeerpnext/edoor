@@ -23,6 +23,7 @@ import RoomBlock from "@/views/room_block/RoomBlockList.vue";
 import CityLedger from "@/views/city_ledger/CityLedger.vue";
 import CityLedgerAccount from "@/views/city_ledger/CityLedgerAccount.vue";
 import CityLedgerType from "@/views/city_ledger/CityLedgerType.vue";
+import CityLedgerTransaction from "@/views/city_ledger/CityLedgerTransaction.vue";
 import Reports from "@/views/report/Reports.vue";
 import BusinessSource from "@/views/business_source/BusinessSource.vue";
 import BusinessSourceType from "@/views/business_source/BusinessSourceType.vue";
@@ -64,6 +65,7 @@ let routes = [
   { path: "/frontdesk/guest-ledger", name: "GuestLedger", component:GuestLedger, meta: { layout: 'main_layout', title:"Guest Ledger" } },
   { path: "/frontdesk/city-ledger", name: "CityLedger", component:CityLedger, meta: { layout: 'main_layout', title:"City Ledger" } },
   { path: "/frontdesk/city-ledger-type", name: "CityLedgerType", component:CityLedgerType, meta: { layout: 'main_layout', title:"City Ledger Account Type" } },
+  { path: "/frontdesk/city-ledger-transaction", name: "CityLedgerTransaction", component:CityLedgerTransaction, meta: { layout: 'main_layout', title:"City Ledger Transaction" } },
   { path: "/frontdesk/city-ledger-account", name: "CityLedgerAccount", component:CityLedgerAccount, meta: { layout: 'main_layout', title:"City Ledger Account" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },
   { path: "/frontdesk/reports", name: "Reports", component:Reports, meta: { layout: 'main_layout', title:"Reports" } },

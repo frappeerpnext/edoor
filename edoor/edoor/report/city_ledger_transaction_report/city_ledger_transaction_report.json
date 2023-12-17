@@ -1,42 +1,36 @@
 {
- "add_total_row": 0,
+ "add_total_row": 1,
  "columns": [],
- "creation": "2023-12-08 12:35:00.111767",
+ "creation": "2023-12-16 10:27:04.512325",
  "disabled": 0,
  "docstatus": 0,
  "doctype": "Report",
  "filters": [],
- "idx": 17,
+ "idx": 0,
  "is_standard": "Yes",
  "letter_head": "Default Letterhead",
  "letterhead": null,
- "modified": "2023-12-16 12:03:24.327861",
+ "modified": "2023-12-16 10:44:14.614943",
  "modified_by": "Administrator",
  "module": "eDoor",
- "name": "Revenue and Occupancy Summary Report",
+ "name": "City Ledger Transaction Report",
  "owner": "Administrator",
  "prepared_report": 0,
- "ref_doctype": "Reservation",
- "report_name": "Revenue and Occupancy Summary Report",
+ "ref_doctype": "Folio Transaction",
+ "report_name": "City Ledger Transaction Report",
  "report_type": "Script Report",
  "roles": [
   {
    "role": "System Manager"
   },
   {
-   "role": "Reservation Manager"
-  },
-  {
-   "role": "Reservation User"
+   "role": "eDoor Admin"
   },
   {
    "role": "Frontdesk Clerk"
   },
   {
    "role": "Frontdesk Manager"
-  },
-  {
-   "role": "Night Auditor"
   }
  ]
 }
