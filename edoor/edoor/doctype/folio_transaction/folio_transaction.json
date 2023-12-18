@@ -49,6 +49,9 @@
   "guest",
   "column_break_31",
   "guest_name",
+  "column_break_vbcw",
+  "guest_type",
+  "nationality",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -929,11 +932,27 @@
    "fieldname": "reservation_type",
    "fieldtype": "Data",
    "label": "Reservation Type"
+  },
+  {
+   "fieldname": "column_break_vbcw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest.customer_group",
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
+  },
+  {
+   "fetch_from": "guest.country",
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-15 11:35:27.882214",
+ "modified": "2023-12-17 13:00:52.628832",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

@@ -1,7 +1,7 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 import copy
-from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data
+from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label
 from edoor.api.frontdesk import get_working_day
 import frappe
 
@@ -56,8 +56,9 @@ def get_report_data(filters,report_config):
                  "indent":0,
                  "is_total_row":0,
                  "is_group":1,
-                 "row_group": parent["parent_row_group"]
+                 "row_group": get_parent_row_group_label(filters,parent["parent_row_group"])
             })
+            
 
         sub_report_data  = []
         if filters.parent_row_group in ["Date","Month","Year"]:
@@ -75,10 +76,15 @@ def get_report_data(filters,report_config):
             for d in  report_config.report_fields:
                 row[d.fieldname] = 0
             #room available
-            room_available_record = [d for d in room_available_datas if str(d["row_group"])==str(row["row_group"]) ]
+            room_available_record = []
+            if filters.parent_row_group == "Room Type":    
+                room_available_record = [d for d in room_available_datas if str(d["row_group"])==str(row["row_group"]) and str(d["parent_row_group"])==str(parent["parent_row_group"]) ]
+            else:
+                room_available_record = [d for d in room_available_datas if str(d["row_group"])==str(row["row_group"]) ]
+
             if len(room_available_record)>0:
                 row["room_available"] = room_available_record[0]["total_rooms"]
-            
+
             occupy_records = [d for d in data if str(d["row_group"]) == str(row["row_group"]) and str(d["parent_row_group"]) == str(parent["parent_row_group"])]
  
             
@@ -86,6 +92,7 @@ def get_report_data(filters,report_config):
                     
                     #occupy
                     occupy_record = occupy_records[0]
+                    
                     
                     # set value occupy dynamic field
                     for f in report_config.report_fields :
@@ -101,18 +108,25 @@ def get_report_data(filters,report_config):
                                 row["occupancy"] = row["occupancy"] * 100
                             else:
                                 row[f.fieldname] =   occupy_record[f.fieldname]
-            
+            # end reed occupy data
+                                
             # get data from folio folio transaction
                                 
             if len(folio_transaction_data)> 0:
-                folio_transaction_records  = [d for d in folio_transaction_data if d["row_group"] == row["row_group"]  and d["parent_row_group"] == parent["parent_row_group"]]
+                folio_transaction_records  = [d for d in folio_transaction_data if str(d["row_group"]) == str(row["row_group"]) and str(d["parent_row_group"]) == str(parent["parent_row_group"])]
+                 
                 if len(folio_transaction_records)> 0:
                     folio_transaction_record  = folio_transaction_records[0]
                     for f in report_config.report_fields :
                         if f.show_in_report==1 and f.reference_doctype=="Folio Transaction":
                             #f.fildname is from report config
                             if f.fieldname=='adr':
-                                row['adr'] = (row["room_charge"] or 0) / (1 if  (row["occupy"] or 0) == 0 else (row["occupy"] or 0) -(row["complimentary"] + row["house_use"] ))
+                                occupy = row["occupy"] or 0
+                                occupy = occupy -  row["complimentary"] or 0 
+                                occupy = occupy -  row["house_use"] or 0 
+                                if occupy<=0:
+                                    occupy =1
+                                row['adr'] = (row["room_charge"] or 0) /  occupy
                             else:
                                 row[f.fieldname] =   folio_transaction_record[f.fieldname]
 
@@ -210,16 +224,30 @@ def get_row_group_report_data(filters):
 def get_occupy_data(filters,report_config):
     sql = "select date_format(date,'%%d-%%m-%%Y') as row_group, "
     sql = "{} {} as parent_row_group,".format(sql,get_room_occupy_group_by_field(filters))
+
     #other aggregate field
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Room Occupy' and d.sql_expression]) )
     #filter
-    sql = sql+ " from `tabRoom Occupy` a where 1=1 "
+    sql = sql+ " from `tabRoom Occupy` a  where 1=1 "
     sql = sql + " and date between %(start_date)s and %(end_date)s and property=%(property)s "
+    if filters.room_type:
+        sql = "{} and room_type_id=%(room_type)s".format(sql)   
+    if filters.business_source:
+        sql = "{} and business_source=%(business_source)s".format(sql)
+
+    if filters.guest_type:
+        sql = "{} and guest_type=%(guest_type)s".format(sql)
+
     # group by
+    
     sql = "{} group by date_format(date,'%%d-%%m-%%Y')".format(sql)
 
-    data = frappe.db.sql(sql,filters,as_dict = 1)
+    #add parent row group
+    if filters.parent_row_group:
+        sql = "{}, {}".format(sql, get_room_occupy_group_by_field(filters)) 
+ 
 
+    data = frappe.db.sql(sql,filters,as_dict = 1)
     return data
 
 def get_report_summary(total_record,report_config):
@@ -236,26 +264,60 @@ def get_report_summary(total_record,report_config):
 
 
 def get_room_available(filters):
-    sql="select date_format(date,'%%d-%%m-%%Y')  as row_group, sum(total_room) as total_rooms from `tabDaily Property Data` where "
+    sql = ""
+    if filters.parent_row_group=="Room Type":
+        sql="""select 
+            date_format(date,'%%d-%%m-%%Y')  as row_group ,
+            room_type_id as parent_row_group,
+            sum(total_room) as total_rooms 
+        from `tabDaily Property Data` where """
+    else:
+        sql="""select 
+            date_format(date,'%%d-%%m-%%Y')  as row_group , 
+            sum(total_room) as total_rooms 
+        from `tabDaily Property Data` where """
+
     sql = sql + " property=%(property)s and date between %(start_date)s and %(end_date)s " 
+    if filters.room_type:
+        sql = "{} and room_type_id=%(room_type)s ".format(sql)
     sql = sql + "group by date_format(date,'%%d-%%m-%%Y') "
+
+    # add group by if parent row group is room type
+    if filters.parent_row_group=="Room Type":
+        sql = "{}, room_type_id".format(sql)
+
     return frappe.db.sql(sql,filters, as_dict=1)
 
 
 def get_folio_transaction_data(filters, report_config ):
-	sql = "select date_format(posting_date,'%%d-%%m-%%Y')  as row_group,"
-	sql = "{} {} as parent_row_group,".format(sql,get_folio_transaction_group_by_field(filters))
-     
-	sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
-	#filter
-	sql = sql+ " from `tabFolio Transaction` a where transaction_type='Reservation Folio' "
+    sql = "select date_format(posting_date,'%%d-%%m-%%Y')  as row_group,"
+    sql = "{} {} as parent_row_group,".format(sql,get_folio_transaction_group_by_field(filters))
+        
+    sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
+    #filter
+    sql = sql+ " from `tabFolio Transaction` a where transaction_type='Reservation Folio' "
+    sql = sql + " and posting_date between %(start_date)s and %(end_date)s and property=%(property)s "
+    if filters.room_type:
+        sql = "{} and room_type_id=%(room_type)s".format(sql)
 
-	sql = sql + " and posting_date between %(start_date)s and %(end_date)s and property=%(property)s "
-	# group by
-	sql = "{} group by date_format(posting_date,'%%d-%%m-%%Y')".format(sql)
-	
-	data = frappe.db.sql(sql,filters,as_dict = 1)
-	return data
+
+    if filters.business_source:
+        sql = "{} and business_source=%(business_source)s".format(sql)
+
+    if filters.guest_type:
+        sql = "{} and guest_type=%(guest_type)s".format(sql)
+
+ 
+    # group by
+    sql = "{} group by date_format(posting_date,'%%d-%%m-%%Y')".format(sql)
+    
+    #add parent row group
+    if filters.parent_row_group:
+        sql = "{}, {}".format(sql, get_folio_transaction_group_by_field(filters)) 
+
+
+    data = frappe.db.sql(sql,filters,as_dict = 1)
+    return data
 
 
 def get_report_chart(filters,report_data,report_config):

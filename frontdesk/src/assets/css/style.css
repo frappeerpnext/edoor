@@ -1493,3 +1493,6 @@ align-items: center;
 .min-h-dialog{
     min-height:67vh;
 }
+.iframe-modal{
+    height: 85vh;
+}

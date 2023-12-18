@@ -24,6 +24,12 @@
   "group_code",
   "group_name",
   "group_color",
+  "is_house_use",
+  "is_complimentary",
+  "allow_user_to_edit_information",
+  "status_color",
+  "reservation_status",
+  "is_active_reservation",
   "column_break_7",
   "arrival_date",
   "arrival_time",
@@ -34,24 +40,21 @@
   "room_types",
   "room_type_alias",
   "rooms",
+  "reservation_status_note",
   "guest_information_section",
   "guest",
-  "guest_name",
   "guest_phone_number",
   "guest_email",
   "guest_photo",
   "column_break_21",
+  "guest_name",
   "nationality",
+  "guest_type",
+  "column_break_pyhs",
   "adult",
-  "child",
   "pax",
-  "reservation_status",
-  "status_color",
-  "reservation_status_note",
-  "is_active_reservation",
-  "is_complimentary",
-  "is_house_use",
-  "allow_user_to_edit_information",
+  "column_break_ohuf",
+  "child",
   "business_source_tab",
   "business_source_type",
   "column_break_36",
@@ -842,6 +845,20 @@
    "fieldname": "is_house_use",
    "fieldtype": "Check",
    "label": "Is House Use"
+  },
+  {
+   "fieldname": "column_break_pyhs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ohuf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest.customer_group",
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
   }
  ],
  "image_field": "guest_photo",
@@ -853,7 +870,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-12-05 09:46:19.159858",
+ "modified": "2023-12-17 12:30:23.452875",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

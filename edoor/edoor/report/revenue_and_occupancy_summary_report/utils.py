@@ -68,3 +68,9 @@ def get_parent_group_row_from_result_data(occupy_data, folio_transaction_data):
 	row_group =  [{"parent_row_group": d} for d in row_group]
 	 
 	return sorted(row_group, key=lambda k: k['parent_row_group'])
+
+def get_parent_row_group_label(filters, name):
+	if filters.parent_row_group=="Room Type":
+		return frappe.db.get_value("Room Type",name,"room_type")
+	else:
+		return name

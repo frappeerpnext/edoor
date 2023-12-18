@@ -294,9 +294,13 @@ class FolioTransaction(Document):
 			self.room_type_alias=""
 
 		
-
+		#udpate fetche from field
+		update_fetch_from_field(self)
 		#validate update report descript
 		update_report_description_field(self)
+
+
+	
 
 		
 
@@ -475,10 +479,18 @@ class FolioTransaction(Document):
 			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
 
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[comment])
-
-			
-
-		 
+	 
+def update_fetch_from_field(self):
+	if self.guest:
+		guest_name, guest_type,nationality = frappe.db.get_value("Customer",self.guest,["customer_name_en","customer_group","country"])
+		self.guest_name = guest_name
+		self.guest_type = guest_type
+		self.nationality = nationality
+	else:
+		self.guest_name = ""
+		self.guest_type = ""
+		self.nationality = ""
+	
 
 def update_folio_transaction(self):
 	#we use this method add folio transaction breakown
@@ -534,10 +546,6 @@ def update_folio_transaction(self):
 		if self.transaction_type=="Reservation Folio": 
 			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
-
-
-
-	
 
 def update_sub_account_description(self):
 	

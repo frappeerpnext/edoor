@@ -30,10 +30,16 @@
   "data_keyword",
   "reservation_status",
   "business_source",
+  "business_source_type",
   "floor",
   "building",
   "is_house_use",
-  "is_complimentary"
+  "is_complimentary",
+  "guest_information_tab",
+  "guest",
+  "guest_name",
+  "guest_type",
+  "nationality"
  ],
  "fields": [
   {
@@ -210,11 +216,47 @@
    "fieldname": "is_complimentary",
    "fieldtype": "Check",
    "label": "Is Complimentary"
+  },
+  {
+   "fieldname": "guest_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "Guest Information"
+  },
+  {
+   "fetch_from": "reservation_stay.guest",
+   "fieldname": "guest",
+   "fieldtype": "Link",
+   "label": "Guest",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "guest.customer_name_en",
+   "fieldname": "guest_name",
+   "fieldtype": "Data",
+   "label": "Guest Name"
+  },
+  {
+   "fetch_from": "guest.customer_group",
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
+  },
+  {
+   "fetch_from": "guest.country",
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
+  },
+  {
+   "fetch_from": "business_source.business_source_type",
+   "fieldname": "business_source_type",
+   "fieldtype": "Data",
+   "label": "Business Source Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-13 10:37:39.221101",
+ "modified": "2023-12-17 15:31:45.942639",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

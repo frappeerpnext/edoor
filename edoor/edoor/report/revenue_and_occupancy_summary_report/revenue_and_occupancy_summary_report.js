@@ -10,7 +10,29 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			options:"Business Branch",
 			default:frappe.defaults.get_user_default("business_branch") ,
 			"reqd": 1,
-			"on_change": function (query_report) {},
+			"on_change": function (query_report) {
+
+				const property = frappe.query_report.get_filter_value("property")
+				const business_source_filter =frappe.query_report.get_filter('business_source');
+				business_source_filter.df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+				//room type
+				const room_type_filter =frappe.query_report.get_filter('room_type');
+				room_type_filter.df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+
+				 
+			},
 		},
 		{
 			"fieldname":"start_date",
@@ -28,20 +50,33 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			"on_change": function (query_report) {},
 			"reqd": 1
 		},
+
 		{
-			"fieldname": "customer_group",
+			"fieldname": "room_type",
+			"label": __("Room Type"),
+			"fieldtype": "Link",
+			"options":"Room Type",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "business_source",
+			"label": __("Business Source"),
+			"fieldtype": "Link",
+			"options":"Business Source",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "guest_type",
 			"label": __("Guest Type"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Customer Group', txt);
-			},
+			"fieldtype": "Link",
+			"options":"Customer Group",
 			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "parent_row_group",
 			"label": __("Parent Group By"),
 			"fieldtype": "Select",
-			"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nDate\n\Month\nYear\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
+			"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nBusiness Source Type",
 			"on_change": function (query_report) {},
 			hide_in_filter:1,
 		},
@@ -92,16 +127,13 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
 		const origninal_value = value  || 0
-		 
-
 		value = default_formatter(value, row, column, data);
 		
-		console.log(column.align, value);
-		if (value.indexOf("style='text-align: right'")>=0){
-			console.log(column.align, value?.replace("style='text-align: right'","style='text-align: center'"));	
-		}
 		
-
+		 
+		value = value.toString().replace("style='text-align: right'","style='text-align: " + column.align + "'");	
+	 
+ 
 		if (
 			(column.fieldtype || "") == "Int" || 
 			((column.fieldtype || "") == "Percent") ||

@@ -1,0 +1,274 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"H23d6Aos7d\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Property Setup</span>\",\"col\":12}},{\"id\":\"gTaOG1wNjw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Property Information\",\"col\":3}},{\"id\":\"MRg_EcyGYz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"eDoor Setting\",\"col\":3}},{\"id\":\"XcU3A4Qw-p\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Account Code\",\"col\":3}},{\"id\":\"aLqIX9k9oQ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"YneE2VS8Jk\",\"type\":\"card\",\"data\":{\"card_name\":\"Property Setup\",\"col\":4}},{\"id\":\"NNlJcfwux3\",\"type\":\"card\",\"data\":{\"card_name\":\"Room Rate Setting\",\"col\":4}},{\"id\":\"us9oHJE_SO\",\"type\":\"card\",\"data\":{\"card_name\":\"Account Code Setup\",\"col\":4}},{\"id\":\"YliVXLUXAk\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Setting\",\"col\":4}},{\"id\":\"knfVjAJVk3\",\"type\":\"card\",\"data\":{\"card_name\":\"eDoor Setting\",\"col\":4}}]",
+ "creation": "2023-12-12 10:46:48.780688",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "organization",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Property Setup",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Property Setup",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Property Information",
+   "link_count": 0,
+   "link_to": "Business Branch",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Room Type Groups",
+   "link_count": 0,
+   "link_to": "Room Type Group",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Room Types",
+   "link_count": 0,
+   "link_to": "Room Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Rooms",
+   "link_count": 0,
+   "link_to": "Room",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Building",
+   "link_count": 0,
+   "link_to": "Building",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Floor",
+   "link_count": 0,
+   "link_to": "Floor",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Room Rate Setting",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Season Setting",
+   "link_count": 0,
+   "link_to": "Season",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Rate Type",
+   "link_count": 0,
+   "link_to": "Rate Type",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Rate Plan",
+   "link_count": 0,
+   "link_to": "Rate Plan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Housekeeping Setting",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Housekeeping Status",
+   "link_count": 0,
+   "link_to": "Housekeeping Status",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Housekeeper",
+   "link_count": 0,
+   "link_to": "Housekeeper",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eDoor Setting",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eDoor Setting",
+   "link_count": 0,
+   "link_to": "eDoor Setting",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reservation Status",
+   "link_count": 0,
+   "link_to": "Reservation Status",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reservation Color Code",
+   "link_count": 0,
+   "link_to": "Reservation Color Code",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Code Setup",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Category",
+   "link_count": 0,
+   "link_to": "Account Category",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Code",
+   "link_count": 0,
+   "link_to": "Account Code",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Tax Rule",
+   "link_count": 0,
+   "link_to": "Tax Rule",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Code Report",
+   "link_count": 0,
+   "link_to": "Account Code Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-12-18 08:53:46.662328",
+ "modified_by": "Administrator",
+ "module": "eDoor Configuration",
+ "name": "Property Setup",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 13.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "eDoor Setting",
+   "link_to": "eDoor Setting",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "Tree",
+   "label": "Account Code",
+   "link_to": "Account Code",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Property Information",
+   "link_to": "Business Branch",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Property Setup"
+}

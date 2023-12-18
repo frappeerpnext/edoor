@@ -848,8 +848,41 @@ def create_folio(stay):
 @frappe.whitelist()
 def five_minute_job():
     #delete void and cancel from temp room occupy
+    sql="""
+        update `tabRoom Occupy` a 
+        inner join `tabCustomer` b on a.guest = b.name
+        set 
+            a.guest_name = b.customer_name_en,
+            a.guest_type = b.customer_group,
+            a.nationality = b.country
+        where 
+            ifnull(a.guest_name,'') != ifnull(b.customer_name_en,'') or 
+            ifnull(a.guest_type,'') != ifnull(b.customer_group,'') or
+            ifnull(a.nationality,'') != ifnull(b.country,'');
+    """
+    frappe.db.sql(sql)
+
+    sql="""
+        update `tabFolio Transaction` a 
+        inner join `tabCustomer` b on a.guest = b.name
+        set 
+            a.guest_name = b.customer_name_en,
+            a.guest_type = b.customer_group,
+            a.nationality = b.country
+        where 
+            ifnull(a.guest_name,'') != ifnull(b.customer_name_en,'') or 
+            ifnull(a.guest_type,'') != ifnull(b.customer_group,'') or
+            ifnull(a.nationality,'') != ifnull(b.country,'');
+    """
+    frappe.db.sql(sql)
+
+
+
     frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status in ('Void','Cancelled')")
     frappe.db.sql("delete from `tabRoom Occupy` where reservation_status in ('Void','Cancelled')")
+
+    frappe.db.commit()
+    return "done"
 
 
 @frappe.whitelist()

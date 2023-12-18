@@ -221,6 +221,9 @@ on_login = "edoor.api.utils.successful_login"
 fixtures = [
     {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
     {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Shortcut Menu Help"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Vendor Detail"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},
     {"dt": "Reservation Status"},
     {"dt": "Housekeeping Status"},
     {"dt": "Global Search Template"},
