@@ -71,6 +71,7 @@ def get_report_data(filters,report_config):
             row["is_group"] = 0 
             row["is_total_row"] = 0 
             row["indent"] = 1 
+            row["room_available"] = 0 
 
             #set default value 0 for field that dont have value
             for d in  report_config.report_fields:
