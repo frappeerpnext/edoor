@@ -560,7 +560,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         comment = {
             "subject":"Checked In",
             "reference_doctype":"Reservation Stay",
-            "reference_name":s,
+            "reference_name":s["name"],
             "custom_audit_trail_type":"Check In",
 			"custom_icon":"pi pi-sign-in",
             "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}

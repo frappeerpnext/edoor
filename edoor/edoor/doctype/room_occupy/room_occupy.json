@@ -35,6 +35,7 @@
   "building",
   "is_house_use",
   "is_complimentary",
+  "rate_type",
   "guest_information_tab",
   "guest",
   "guest_name",
@@ -252,11 +253,17 @@
    "fieldname": "business_source_type",
    "fieldtype": "Data",
    "label": "Business Source Type"
+  },
+  {
+   "fieldname": "rate_type",
+   "fieldtype": "Link",
+   "label": "Rate Type",
+   "options": "Rate Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-17 15:31:45.942639",
+ "modified": "2023-12-19 15:29:01.664751",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

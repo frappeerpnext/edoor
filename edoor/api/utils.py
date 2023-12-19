@@ -847,6 +847,7 @@ def create_folio(stay):
 
 @frappe.whitelist()
 def five_minute_job():
+    
     #delete void and cancel from temp room occupy
     sql="""
         update `tabRoom Occupy` a 
@@ -884,6 +885,7 @@ def five_minute_job():
         where 
             ifnull(a.business_source_type,'') != ifnull(b.business_source_type,'') """
     frappe.db.sql(sql)
+    
     #update account category
     sql="""
         update `tabFolio Transaction` a 
@@ -892,6 +894,18 @@ def five_minute_job():
             a.account_category = b.account_category
         where 
             ifnull(a.account_category,'') != ifnull(b.account_category,'') """
+    frappe.db.sql(sql)
+    
+    #update rate type in room occupy
+    sql="""
+        update `tabRoom Occupy` a 
+        inner join `tabReservation Room Rate` b on a.reservation_stay = b.reservation_stay and a.date = b.date and a.room_type_id = b.room_type_id
+        set 
+            a.rate_type = b.rate_type
+        where 
+            ifnull(a.rate_type,'') != ifnull(b.rate_type,'') 
+        """
+    
     frappe.db.sql(sql)
 
 

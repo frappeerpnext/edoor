@@ -69,7 +69,7 @@ class ReservationRoomRate(Document):
 			self.tax_2_amount = self.taxable_amount_2 * self.tax_2_rate / 100
 			
 			#tax 3
-			
+		
 			self.taxable_amount_3 = (self.rate or 0) * ((tax_rule.percentage_of_price_to_calculate_tax_3 or 100)/100)
 
 			self.taxable_amount_3 = self.taxable_amount_3 if tax_rule.calculate_tax_3_after_discount == 0 and  self.rate_include_tax== "No"  else self.taxable_amount_3 - self.discount_amount
@@ -97,17 +97,19 @@ class ReservationRoomRate(Document):
 
 	def on_update(self):
 		# update is complimentary and house use
+ 
 		sql = """
 			update `tabRoom Occupy` 
 			set 
 				is_complimentary={0}, 
-				is_house_use={1}
+				is_house_use={1},
+				rate_type = '{5}'
 			where 
 				reservation_stay = '{2}'  and 
 				room_type_id='{3}' and 
-				date = '{4}' and 
+				date = '{4}' and  
 				type='Reservation'
-			""".format(self.is_complimentary, self.is_house_use, self.reservation_stay, self.room_type_id,self.date)
+			""".format(self.is_complimentary, self.is_house_use, self.reservation_stay, self.room_type_id,self.date,self.rate_type)
  
 		frappe.db.sql(sql)
 		frappe.db.commit()

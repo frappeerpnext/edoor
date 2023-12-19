@@ -1,6 +1,11 @@
 {
- "charts": [],
- "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"rFwN2170Hs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Sale\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Guest Ledger\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}}]",
+ "charts": [
+  {
+   "chart_name": "Monthly Occupancy Chart",
+   "label": "Monthly Occupancy"
+  }
+ ],
+ "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"QUrQvpFQCd\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"8OCNpBT4l6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Revenue and Occupancy\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Guest Ledger\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}}]",
  "creation": "2023-12-12 11:29:54.491345",
  "custom_blocks": [],
  "docstatus": 0,
@@ -128,7 +133,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-12-19 11:32:55.012432",
+ "modified": "2023-12-19 12:10:18.824561",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",
@@ -147,17 +152,16 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Monthly Availability Chart",
-   "link_to": "Monthly Availability Chart",
+   "label": "Revenue and Occupancy",
+   "link_to": "Revenue and Occupancy Summary Report",
    "type": "Report"
   },
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Sale",
-   "link_to": "Sale",
-   "stats_filter": "[]",
-   "type": "DocType"
+   "label": "Monthly Availability Chart",
+   "link_to": "Monthly Availability Chart",
+   "type": "Report"
   },
   {
    "color": "Grey",

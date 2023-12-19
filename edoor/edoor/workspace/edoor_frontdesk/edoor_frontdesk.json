@@ -5,12 +5,20 @@
    "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":6}},{\"id\":\"cGzOsIqqVM\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link\",\"col\":6}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}}]",
+ "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"7mtYbHQa0v\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"System Date\",\"col\":3}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":6}},{\"id\":\"cGzOsIqqVM\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link\",\"col\":3}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"Oh8e0RXSBP\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Activities\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "custom_blocks": [
   {
    "custom_block_name": "hr",
    "label": "hr"
+  },
+  {
+   "custom_block_name": "Recent Activities",
+   "label": "Recent Activities"
+  },
+  {
+   "custom_block_name": "System Date",
+   "label": "System Date"
   },
   {
    "custom_block_name": "Shortcut Link",
@@ -34,7 +42,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-19 12:05:58.158008",
+ "modified": "2023-12-19 15:57:44.700520",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",

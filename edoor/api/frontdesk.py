@@ -722,16 +722,18 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 
 @frappe.whitelist()
 def get_working_day(property = ''):
- 
+    
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}'  order by creation desc limit 1".format(property),as_dict=1)
+
     cashier_shift = None
+    
     if len(working_day)>0:
         data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
     
         
         if len(data)>0:
             cashier_shift = data[0]
-        
+
     return {
         "date_working_day": working_day[0]["date"] if len(working_day)>0 else '',
         "name":working_day[0]["name"] if len(working_day)>0 else '',
@@ -1520,3 +1522,146 @@ def check_room_config_and_over_booking(property):
         return data[0][0]
     return 0
 
+@frappe.whitelist()
+def get_day_end_summary_report(property, date):
+    # room revneue 
+    sql = """select 
+                sum(amount * if(type='Debit',1,-1)) as room_revenue 
+            from `tabFolio Transaction` 
+            where 
+            property='{}' and posting_date = '{}' and
+            transaction_type='Reservation Folio'  and 
+            account_category in ('Room Charge', 'Room Tax', 'Service Charge', 'Room Discount')
+        """.format(property, date)
+    data = frappe.db.sql(sql,as_dict=1)
+    room_revenue = 0
+    if len(data)>0:
+        room_revenue = data[0]["room_revenue"]
+    #room nitht
+    sql = """select 
+                sum(is_active=1 and type='Reservation') as total_room_sold ,
+                sum(type='Block') as total_block ,
+                sum(is_active=1 and type='Reservation' and is_arrival=1) as arrival,
+                sum(if(is_active=1 and type='Reservation' and is_arrival=1,adult,0)) as arrival_adult,
+                sum(if(is_active=1 and type='Reservation' and is_arrival=1,child,0)) as arrival_child,
+                sum(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0) as stay_over,
+                sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,adult,0)) as stay_over_adult,
+                sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,child,0)) as stay_over_child,
+                sum(is_active=1 and type='Reservation' and is_departure=1) as departure,
+                sum(if(is_active=1 and type='Reservation' and is_departure=1,adult,0)) as departure_adult,
+                sum(if(is_active=1 and type='Reservation' and is_departure=1,child,0)) as departure_child
+            from `tabRoom Occupy` 
+            where 
+            property='{}' and date= '{}'  
+        """.format(property, date)
+    
+    occupy_data = frappe.db.sql(sql,as_dict=1)
+    
+    room_sold = 0
+    room_block = 0
+    if len(occupy_data)>0:
+        room_sold = occupy_data[0]["total_room_sold"] or 0
+        room_block = occupy_data[0]["total_block"] or 0
+    adr = room_revenue / (1 if room_sold==0 else room_sold)
+
+    #occupancy
+    total_rooms =frappe.db.count('Room', {'property': property, "disabled":0})
+    vacant_room = total_rooms - (room_sold + room_block)
+    calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
+
+
+    if calculate_room_occupancy_include_room_block==1:
+        total_rooms = total_rooms - room_block 
+
+    occupancy = room_sold / (1 if total_rooms == 0 else total_rooms)
+
+    ledger_types = [
+        {"label":"Guest Ledger", "value":"Reservation Folio"},
+        {"label":"Deposit Ledger", "value":"Deposit Ledger"},
+        {"label":"Desk Folio", "value":"Desk Folio"},
+        {"label":"City Ledger", "value":"City Ledger"},
+        {"label":"Payable Ledger", "value":"Payable Ledger"},
+    ]
+    #get opening balance
+    sql = """
+        select
+            transaction_type,
+            sum(amount * if(type='Debit',1,-1)) as opening
+        from `tabFolio Transaction`
+        where
+            property = '{}' and 
+            posting_date<'{}'
+        group by
+            transaction_type
+    """.format(property,date)
+
+    opening_data = frappe.db.sql(sql,as_dict=1)
+
+    #get current date transaction
+
+    sql = """
+        select
+            transaction_type,
+            sum(amount * if(type='Debit',1,0)) as debit,
+            sum(amount * if(type='Debit',0,1)) as credit
+        from `tabFolio Transaction`
+        where
+            property = '{}' and 
+            posting_date = '{}'
+        group by
+            transaction_type
+    """.format(property,date)
+
+    current_date_transaction  = frappe.db.sql(sql,as_dict=1)
+
+    for l in ledger_types:
+        opening_record = [d for d in opening_data if d["transaction_type"] == l["value"]]
+        if len(opening_record)>0:
+            l["opening"] =opening_record[0]["opening"]
+        else:
+            l["opening"] = 0
+
+        current_date_data  = [d for d in current_date_transaction if d["transaction_type"] == l["value"]]
+        if len(current_date_data)>0:
+            l["debit"] =current_date_data[0]["debit"]
+            l["credit"] =current_date_data[0]["credit"]
+        else:
+            l["debit"] = 0
+            l["credit"] = 0
+
+    #room sold by room type
+    sql = """
+        select 
+            rate_type,
+            count(name) as total_room
+        from `tabRoom Occupy` 
+        where  
+            property= '{}' and 
+            date = '{}' and
+            is_active = 1 
+        group by
+            rate_type 
+    """.format(property,date)
+    room_sold_by_rate_type = frappe.db.sql(sql,as_dict=1)
+
+    data = {
+        "room_revenue": room_revenue,
+        "room_night": room_sold,
+        "adr":adr,
+        "occupancy":occupancy,
+        "check_in":occupy_data[0]["arrival"] or 0,
+        "check_in_adult":occupy_data[0]["arrival_adult"] or 0,
+        "check_in_child":occupy_data[0]["arrival_child"] or 0,
+        "stay_over":occupy_data[0]["stay_over"] or 0,
+        "stay_over_adult":occupy_data[0]["stay_over_adult"] or 0,
+        "stay_over_child":occupy_data[0]["stay_over_child"] or 0,
+        "departure":occupy_data[0]["departure"] or 0,
+        "departure_adult":occupy_data[0]["departure_adult"] or 0,
+        "departure_child":occupy_data[0]["departure_child"] or 0,
+        "room_block":room_block,
+        "vacant_room":vacant_room,
+        "ledger_summary":ledger_types,
+        "room_sold_by_rate_type":room_sold_by_rate_type
+    }
+
+    return data
