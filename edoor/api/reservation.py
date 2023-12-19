@@ -2081,7 +2081,7 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
         doc.tax_1_rate = data["tax_1_rate"]
         doc.tax_2_rate = data["tax_2_rate"]
         doc.tax_3_rate = data["tax_3_rate"]
-        doc.note = data["note"]
+        doc.note = "" if "note" not in data else  data["note"]
 
         doc.rate_include_tax = data["rate_include_tax"]
 

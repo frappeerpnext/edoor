@@ -316,6 +316,36 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "total_reservation_stay":stay[0]["total_reservation_stay"] or 0
     }
 
+@frappe.whitelist()
+def get_daily_property_summary():
+    property = frappe.defaults.get_user_default("business_branch")
+    
+    if not property:
+        data = frappe.db.get_list("Business Branch")
+        if len(data)>0:
+            property = data[0].name
+    if property:
+        working_day = get_working_day(property)
+        if working_day:
+            date = working_day["date_working_day"] 
+            if not date:
+                date = frappe.utils.today()
+            doc = frappe.get_doc("Business Branch",property)
+            
+            data =  get_dashboard_data(property, date)
+            data["property"] = doc.name
+            data["property_code"] = doc.property_code or ""
+            data["photo"] = doc.photo 
+            data["phone_number"] = doc.phone_number_1 or ""
+            data["province"] = doc.province or ""
+            data["address"] = doc.address_en or ""
+            return data
+
+
+    return {}
+            
+
+
 
 @frappe.whitelist()
 def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None):
@@ -686,8 +716,8 @@ def get_logged_user():
 
 @frappe.whitelist()
 def get_room_chart_data(property,group_by,start_date,end_date):
-
     return []
+
 
 
 @frappe.whitelist()
@@ -1477,6 +1507,7 @@ def post_room_change_to_folio(working_day):
 
     
     #verify if reservation stay and and reservation is update balance
+
 
 
 

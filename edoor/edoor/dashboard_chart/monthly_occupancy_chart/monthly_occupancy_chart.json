@@ -1,0 +1,37 @@
+{
+ "chart_name": "Monthly Occupancy Chart",
+ "chart_type": "Report",
+ "creation": "2023-12-19 12:03:58.023973",
+ "custom_options": "{\"type\": \"line\", \"lineOptions\": {\"regionFill\": 1}, \"valuesOverPoints\": 1, \"axisOptions\": {\"shortenYAxisNumbers\": 1}, \"height\": 280}",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "filters_json": "{\"chart_type\":\"bar\"}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 0,
+ "is_standard": 1,
+ "modified": "2023-12-19 12:08:30.492699",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Monthly Occupancy Chart",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Monthly Occupancy Report",
+ "roles": [
+  {
+   "role": "eDoor Admin"
+  },
+  {
+   "role": "Frontdesk Clerk"
+  },
+  {
+   "role": "Frontdesk Manager"
+  }
+ ],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 1,
+ "y_axis": []
+}

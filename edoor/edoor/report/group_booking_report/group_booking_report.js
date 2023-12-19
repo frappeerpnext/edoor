@@ -4,46 +4,72 @@
 frappe.query_reports["Group Booking Report"] = {
 	"filters": [
 		{
+			fieldname: "property",
+			label: "Property",
+			fieldtype: "Link",
+			options:"Business Branch",
+			default:frappe.defaults.get_user_default("business_branch") ,
+			"reqd": 1,
+			"on_change": function (query_report) {
+				const property = frappe.query_report.get_filter_value("property")
+				const business_source_filter =frappe.query_report.get_filter('business_source');
+				business_source_filter.df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+				//set filter reservation
+				frappe.query_report.get_filter('reservation').df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+				
+
+				 
+			},
+		},
+		{
 			"fieldname": "filter_date_by",
 			"label": __("Filter Date By"),
 			"fieldtype": "Select",
 			"options": "Arrival Date\nDeparture Date\nReservation\nStay Date",
 			default:"Arrival Date",
-			
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
 			"fieldtype": "Date",
 			default:frappe.datetime.get_today(),
-			"reqd": 1
+			"reqd": 1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname":"end_date",
 			"label": __("End Date"),
 			"fieldtype": "Date",
 			default:frappe.datetime.get_today(),
-			"reqd": 1
+			"reqd": 1,
+			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname": "property",
-			"label": __("Property"),
-			"fieldtype": "Link",
-			"options":"Business Branch",
-			"reqd": 1
-			
-		} ,
 		{
 			"fieldname": "reservation",
 			"label": __("Reservation"),
 			"fieldtype": "Link",
 			"options":"Reservation",
+			"on_change": function (query_report) {},
 		} ,
 		{
 			"fieldname": "reservation_type",
 			"label": __("Reservation Type"),
 			"fieldtype": "Select",
 			"options":"\nFIT\nGIT",
+			"on_change": function (query_report) {},
 		} ,
 		 
 		{
@@ -51,13 +77,14 @@ frappe.query_reports["Group Booking Report"] = {
 			"label": __("Business Source"),
 			"fieldtype": "Link",
 			"options":"Business Source",
+			"on_change": function (query_report) {},
 		} ,
 		{
 			"fieldname": "guest",
 			"label": __("Guest"),
 			"fieldtype": "Link",
 			"options":"Customer",
-			
+			"on_change": function (query_report) {},
 		}, 
 		{
 			"fieldname": "reservation_status",
@@ -66,7 +93,7 @@ frappe.query_reports["Group Booking Report"] = {
 			get_data: function(txt) {
 				return frappe.db.get_link_options('Reservation Status', txt);
 			},
-			
+			"on_change": function (query_report) {},
 		},
 
 		{
@@ -90,7 +117,8 @@ frappe.query_reports["Group Booking Report"] = {
 					{"value":"reservation_status","description":"Reservation Status","fieldtype":"Data","width":250},
 				]
 			},
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "summary_fields",
@@ -107,28 +135,32 @@ frappe.query_reports["Group Booking Report"] = {
 					{"value":"balance","description":"Balance",name:"Balance",fieldtype:"Currency", width:100,align:"right"},
 				]
 			},
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "is_active_reservation",
 			"label": __("Is Active Reservation"),
 			"fieldtype": "Check",
 			default:true,
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
 			"options": "None\nbar\nline\npie",
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "view_chart_by",
 			"label": __("View Chart By"),
 			"fieldtype": "Select",
 			"options": "\nArrival Date\nDeparture Date\nReservation Date\nReservation\nGuest\nReservation Type\nRoom Type\nBusiness Source\nBusiness Source Type\nNationality\nRate Type\nReservation Status",
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "chart_series",
@@ -145,7 +177,8 @@ frappe.query_reports["Group Booking Report"] = {
 					{"value":"Room Nights","description":"Room Nights",fieldtype:"Int"},
 				]
 			},
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		
 		
@@ -155,7 +188,8 @@ frappe.query_reports["Group Booking Report"] = {
 			"fieldtype": "Select",
 			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
 			default:"Last Update On",
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "sort_order",
@@ -163,15 +197,23 @@ frappe.query_reports["Group Booking Report"] = {
 			"fieldtype": "Select",
 			"options": "ASC\nDESC",
 			default:"ASC",
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
 			"fieldtype": "Check",
 			default:true,
-			hide_in_filter:1
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
 		},
 
 	],
+	onload: function(report) {
+		report.page.add_inner_button ("Preview Report", function () {
+			frappe.query_report.refresh();
+		});
+		 
+	},
 };

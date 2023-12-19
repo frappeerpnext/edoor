@@ -203,15 +203,15 @@ frappe.query_reports["General Journal Transaction"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname": "chart_type",
-			"label": __("Chart Type"),
-			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie",
-			"default":"bar",
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
+		// {
+		// 	"fieldname": "chart_type",
+		// 	"label": __("Chart Type"),
+		// 	"fieldtype": "Select",
+		// 	"options": "None\nbar\nline\npie",
+		// 	"default":"bar",
+		// 	hide_in_filter:1,
+		// 	"on_change": function (query_report) {},
+		// },
 		 
 	],
 	onload: function(report) {

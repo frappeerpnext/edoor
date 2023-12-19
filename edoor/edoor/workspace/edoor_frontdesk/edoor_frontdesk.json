@@ -1,11 +1,11 @@
 {
  "charts": [
   {
-   "chart_name": "monthly revenue chart",
-   "label": "Monthly Revenue Chart"
+   "chart_name": "Monthly Occupancy Chart",
+   "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"d9-KwlrkLc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>KPI</b></span>\",\"col\":6}},{\"id\":\"-p3OztHk3r\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcut</b></span>\",\"col\":6}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"Pcl8uffhIr\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Revenue Chart\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"y1cYHiaMZa\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"id\":\"p5hRVYMpJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"id\":\"sfPPB5mQgJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"id\":\"o4jUJXGbjW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"l_VQLNAWYG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheme\",\"col\":3}}]",
+ "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":6}},{\"id\":\"cGzOsIqqVM\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link\",\"col\":6}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "custom_blocks": [
   {
@@ -13,7 +13,15 @@
    "label": "hr"
   },
   {
-   "custom_block_name": "eDoor Profile Banner",
+   "custom_block_name": "Shortcut Link",
+   "label": "Shortcut Link"
+  },
+  {
+   "custom_block_name": "Summary KPI",
+   "label": "Summary KPI"
+  },
+  {
+   "custom_block_name": "Profile Banner",
    "label": "eDoor Profile Banner"
   }
  ],
@@ -26,7 +34,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-19 09:20:47.770577",
+ "modified": "2023-12-19 12:05:58.158008",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -37,36 +45,6 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 4.0,
- "shortcuts": [
-  {
-   "color": "Green",
-   "doc_view": "List",
-   "label": "Reservations",
-   "link_to": "Reservation",
-   "stats_filter": "{\"arrival_date\":[\"Timespan\",\"this month\"]}",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Business Source",
-   "link_to": "Business Source",
-   "type": "DocType"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Scheme",
-   "type": "URL",
-   "url": "http://192.168.10.114:7788/scheme"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Frontdesk",
-   "type": "URL",
-   "url": "http://webmonitor.inccloudserver.com:1212/"
-  }
- ],
+ "shortcuts": [],
  "title": "eDoor Frontdesk"
 }
