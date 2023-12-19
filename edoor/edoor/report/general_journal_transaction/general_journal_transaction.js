@@ -1,7 +1,8 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
  
-frappe.query_reports["Revenue and Occupancy Summary Report"] = {
+ 
+frappe.query_reports["General Journal Transaction"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -20,6 +21,7 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 						}
 					};
 				};
+
 				//room type
 				const room_type_filter =frappe.query_report.get_filter('room_type');
 				room_type_filter.df.get_query = function() {
@@ -30,37 +32,36 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 					};
 				};
 
-				//set option for show fields
-
-				if(property){
-					 
- 
-					frappe.call({
-						method: "edoor.api.utils.get_report_config",
-						
-						args: {
-							property:property,
-							report:"Revenue and Occupancy Summary Report"
-						},
-						callback: function(r){
-							const show_columns =frappe.query_report.get_filter('show_columns');
-							show_columns.df.options  = r.message.report_fields.map(x=>{
-								return {
-									value:x.fieldname,
-									description:x.label
-								}
-							})
-						},
-						error: function(r) {
-							frappe.throw(_("Please update report configuration"))
-						},
-					});	
-
-				}
-
+				//set fitler city ledger
+				const city_ledger =frappe.query_report.get_filter('city_ledger');
+				city_ledger.df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+				//set filter reservation
+				frappe.query_report.get_filter('reservation').df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
 				
+				//set filter for stay
+				frappe.query_report.get_filter('reservation_stay').df.get_query = function() {
+					return {
+						filters: {
+							"property": property
+						}
+					};
+				};
+				
+			 
 
-
+ 
 
 				 
 			},
@@ -91,6 +92,13 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			
 		},
 		{
+			"fieldname": "business_source_type",
+			"label": __("Business Source Type"),
+			"fieldtype": "Link",
+			"options":"Business Source Type",
+			"on_change": function (query_report) {},
+		},
+		{
 			"fieldname": "business_source",
 			"label": __("Business Source"),
 			"fieldtype": "Link",
@@ -105,22 +113,80 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname": "parent_row_group",
-			"label": __("Parent Group By"),
-			"fieldtype": "Select",
-			"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nBusiness Source Type",
+			"fieldname": "guest",
+			"label": __("Guest"),
+			"fieldtype": "Link",
+			"options":"Customer",
 			"on_change": function (query_report) {},
-			hide_in_filter:1,
 		},
 		{
-			"fieldname": "row_group",
-			"label": __("Row Group By"),
-			"fieldtype": "Select",
-			"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			"default":"Date",
+			"fieldname": "city_ledger",
+			"label": __("City Ledger"),
+			"fieldtype": "Link",
+			"options":"City Ledger",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "reservation",
+			"label": __("Reservation"),
+			"fieldtype": "Link",
+			"options":"Reservation",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "reservation_stay",
+			"label": __("Reservation Stay"),
+			"fieldtype": "Link",
+			"options":"Reservation Stay",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "account_code",
+			"label": __("Account Code"),
+			"fieldtype": "Link",
+			"options":"Account Code",
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "account_category",
+			"label": __("Account Category"),
+			"fieldtype": "Link",
+			"options":"Account Category",
+			"on_change": function (query_report) {},
+		},
+ 
+		{
+			"fieldname": "ledger_type",
+			"label": __("Ledger Type"),
+			"fieldtype": "MultiSelectList",
+			"options":[
+				{"label":"Guest Ledger", "value":"Reservation Folio"},
+				{"label":"Deposit Ledger", "value":"Deposit Ledger"},
+				{"label":"Desk Folio", "value":"Desk Folio"},
+				{"label":"City Ledger", "value":"City Ledger"},
+				{"label":"Payable Ledger", "value":"Payable Ledger"},
+				{"label":"F&B", "value":"Cashier Shift"}
+			],
 			"on_change": function (query_report) {},
 			hide_in_filter:1,
 		},
+		// {
+		// 	"fieldname": "parent_row_group",
+		// 	"label": __("Parent Group By"),
+		// 	"fieldtype": "Select",
+		// 	"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nBusiness Source Type",
+		// 	"on_change": function (query_report) {},
+		// 	hide_in_filter:1,
+		// },
+		// {
+		// 	"fieldname": "row_group",
+		// 	"label": __("Row Group By"),
+		// 	"fieldtype": "Select",
+		// 	"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
+		// 	"default":"Date",
+		// 	"on_change": function (query_report) {},
+		// 	hide_in_filter:1,
+		// },
 
 		// {
 		// 	"fieldname": "column_group",
@@ -129,13 +195,6 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 		// 	"options": "None\nDaily\nWeekly\nMonthly\nQuarterly\nHalf Yearly\nYearly",
 		// 	"default":"None"
 		// },
-		{
-			"fieldname": "show_columns",
-			"label": __("Show Columns"),
-			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) {},
-			"hide_in_filter":1,
-		},
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),

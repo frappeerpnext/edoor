@@ -29,7 +29,7 @@
 						<Column field="subject" header="Subject"></Column>
 						<Column field="content" header="Description">
 							<template #body="slotProps">
-								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
+								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis content-note-comment" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
 						</Column>
 						<Column field="comment_by" header="By"></Column>
@@ -55,7 +55,6 @@ const moment = inject("$moment")
 
 function onOpenLink(data) {
 	const action = ("view_" + data.reference_doctype.toLowerCase().replaceAll(" ", "_") + "_detail")
-
 	window.postMessage(action + '|' + data.reference_name, '*')
 }
 

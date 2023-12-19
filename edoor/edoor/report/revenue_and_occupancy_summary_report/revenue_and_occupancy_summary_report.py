@@ -10,13 +10,14 @@ def execute(filters=None):
 		
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Revenue and Occupancy Summary Report"} )
 	 
+	
 	report = None
 	if filters.row_group == "Date":
 		report =  report_by_date.get_report(filters, report_config)
 
 	message = "This is report is for past date transaction"
 
-	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"]
+	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True
 
 	# return get_columns(filters), report_data, message, report_chart, get_report_summary(report_data,filters),skip_total_row
 
@@ -261,6 +262,7 @@ def folio_transaction_group_by_fields():
 		{"key":"Business Source", "value": "a.business_source"},
 		{"key":"Room Type", "value": "a.room_type_id"}
 	]
+
 
 
 

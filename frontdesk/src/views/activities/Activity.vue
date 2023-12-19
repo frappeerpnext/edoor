@@ -217,6 +217,18 @@ function loadData(show_loading = true) {
         .then((doc) => {
             data.value = doc
             gv.loading = false
+            setTimeout(function () {
+            document.querySelectorAll('[data-action]').forEach(el => {
+                if (!el.dataset.click) {
+                    el.addEventListener('click', function () {
+                        window.postMessage(el.dataset.action + "|" + el.dataset.name, "*")
+
+                    })
+                    el.setAttribute('data-click', '1');
+                    
+                }
+            })
+        }, 2000)
         })
         .catch((error) => {
             gv.loading = false

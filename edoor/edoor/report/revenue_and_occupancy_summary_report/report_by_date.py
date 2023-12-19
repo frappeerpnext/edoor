@@ -1,7 +1,7 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 import copy
-from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label
+from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields
 from edoor.api.frontdesk import get_working_day
 import frappe
 
@@ -16,16 +16,16 @@ def get_report(filters, report_config):
 
 
 def get_report_columns(filters,report_config):
-	columns = [
-		{'key': "Date","fieldname":"row_group","label":"Date","width":125},
-		
-		{"fieldname":"room_available","label":"Room Avai","width":100,"align":"center"},
-	]
-	for g in report_config.report_fields:
-		if g.show_in_report==1:
-			columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
-	 
-	return columns
+    report_fields =  get_report_fields (filters, report_config)
+    columns = [
+        {'key': "Date","fieldname":"row_group","label":"Date","width":125},
+    ]
+
+    for g in report_fields:
+        if g.show_in_report==1:
+            columns.append({"fieldname":g.fieldname,"label":g.label,"width":g.width,"fieldtype":g.fieldtype,"align": g.align })
+        
+    return columns
 
 def get_report_data(filters,report_config):
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
@@ -71,7 +71,7 @@ def get_report_data(filters,report_config):
             row["is_group"] = 0 
             row["is_total_row"] = 0 
             row["indent"] = 1 
-            row["room_available"] = 0 
+            row["room_available"] = 1 
 
             #set default value 0 for field that dont have value
             for d in  report_config.report_fields:
@@ -149,7 +149,6 @@ def get_report_data(filters,report_config):
             "is_group" : 0, 
             "row_group": "Grand Total",
         }
-
         if filters.parent_row_group in ["Date", "Month","Year"]:
             total_record["room_available"] =  sum([d['room_available'] for d in report_data if  d["is_group"]==0 and d["is_total_row"]==0])
         else:
@@ -167,13 +166,11 @@ def get_report_data(filters,report_config):
         #adr
         
         total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
-
         report_data.append(total_record)
-
 
         #get report summaryt
         if filters.show_summary ==1:
-            report_summary = get_report_summary(total_record,report_config)
+            report_summary = get_report_summary(filters,total_record,report_config)
 
         report_chart = None
         if filters.chart_type!="None":
@@ -251,12 +248,10 @@ def get_occupy_data(filters,report_config):
     data = frappe.db.sql(sql,filters,as_dict = 1)
     return data
 
-def get_report_summary(total_record,report_config):
+def get_report_summary( filters, total_record,report_config):
     report_summary = []
-    
-    
-    report_summary.append({"label":"Room Avai","value":total_record["room_available"],"indicator":"blue"})
-    for f in report_config.report_fields:
+    report_fields = get_report_fields(filters, report_config)
+    for f in report_fields :
          if f.show_in_summary==1:
               report_summary.append({"label":f.label,"value":frappe.format_value(total_record[f.fieldname],f.fieldtype),"indicator":f.summary_indicator or "blue"})
 
@@ -323,13 +318,13 @@ def get_folio_transaction_data(filters, report_config ):
 
 def get_report_chart(filters,report_data,report_config):
     precision = frappe.db.get_single_value("System Settings","currency_precision")
-
+    report_fields = get_report_fields(filters, report_config)
     columns =[]
     
     datasets = []
     if not filters.parent_row_group:
         columns = [d["row_group"] for d in  report_data if d["is_group"] == 0]
-        for f in report_config.report_fields:
+        for f in report_fields:
             if f.show_in_chart==1:
                 if (f.fieldtype=="Currency"):
                     datasets.append({

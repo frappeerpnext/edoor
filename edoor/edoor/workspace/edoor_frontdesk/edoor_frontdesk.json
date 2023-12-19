@@ -1,8 +1,22 @@
 {
- "charts": [],
- "content": "[{\"id\":\"y1cYHiaMZa\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"id\":\"p5hRVYMpJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"id\":\"sfPPB5mQgJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"id\":\"o4jUJXGbjW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"l_VQLNAWYG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheme\",\"col\":3}}]",
+ "charts": [
+  {
+   "chart_name": "monthly revenue chart",
+   "label": "Monthly Revenue Chart"
+  }
+ ],
+ "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"d9-KwlrkLc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>KPI</b></span>\",\"col\":6}},{\"id\":\"-p3OztHk3r\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Shortcut</b></span>\",\"col\":6}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"Pcl8uffhIr\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Revenue Chart\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"y1cYHiaMZa\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Frontdesk</span>\",\"col\":12}},{\"id\":\"p5hRVYMpJq\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Frontdesk\",\"col\":3}},{\"id\":\"sfPPB5mQgJ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservations\",\"col\":3}},{\"id\":\"o4jUJXGbjW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Business Source\",\"col\":3}},{\"id\":\"l_VQLNAWYG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheme\",\"col\":3}}]",
  "creation": "2023-04-27 15:51:56.916990",
- "custom_blocks": [],
+ "custom_blocks": [
+  {
+   "custom_block_name": "hr",
+   "label": "hr"
+  },
+  {
+   "custom_block_name": "eDoor Profile Banner",
+   "label": "eDoor Profile Banner"
+  }
+ ],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -12,7 +26,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-13 09:05:54.137049",
+ "modified": "2023-12-19 09:20:47.770577",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",

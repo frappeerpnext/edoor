@@ -145,6 +145,7 @@
   "is_auto_post",
   "is_master_folio",
   "business_source",
+  "business_source_type",
   "keyword",
   "is_housekeeping_account",
   "inventory_tab",
@@ -948,11 +949,17 @@
    "fieldname": "nationality",
    "fieldtype": "Data",
    "label": "Nationality"
+  },
+  {
+   "fetch_from": "business_source.business_source_type",
+   "fieldname": "business_source_type",
+   "fieldtype": "Data",
+   "label": "Business Source Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-17 13:00:52.628832",
+ "modified": "2023-12-18 16:22:01.614422",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

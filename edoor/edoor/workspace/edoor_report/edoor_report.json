@@ -45,7 +45,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Revenue and Occupancy",
-   "link_count": 1,
+   "link_count": 3,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -58,9 +58,29 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Revenue Forecast",
+   "link_count": 0,
+   "link_to": "Revenue Forecast",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "General Journal Transaction",
+   "link_count": 0,
+   "link_to": "General Journal Transaction",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-12-18 08:53:19.442558",
+ "modified": "2023-12-18 17:57:56.748174",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

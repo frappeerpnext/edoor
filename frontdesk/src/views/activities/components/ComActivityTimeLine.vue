@@ -107,19 +107,5 @@ const events = computed (()=>{
 function onViewDetail(d){
     window.postMessage("view_" + d.reference_doctype.toLowerCase().replaceAll(" ","_") + "_detail|" + d.reference_name ,"*")
 }
-const onLoadComment = async function (e) {
-    console.log(e)
-    if (e.data.action == "load_comment") {
-        setTimeout(function () {
-            loadData(false);
-        }, e.data.timeout || 5000);
-    }
-}
 
-onMounted(() => {
-    window.addEventListener('message', onLoadComment, false);
-})
-onUnmounted(() => {
-    window.removeEventListener('message', onLoadComment, false);
-})
 </script>

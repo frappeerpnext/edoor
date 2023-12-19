@@ -490,6 +490,11 @@ def update_fetch_from_field(self):
 		self.guest_name = ""
 		self.guest_type = ""
 		self.nationality = ""
+
+	if self.business_source:
+		self.business_source_type = frappe.db.get_value("Business Source", self.business_source,"business_source_type")
+	else:
+		self.business_source_type = ""
 	
 
 def update_folio_transaction(self):

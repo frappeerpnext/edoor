@@ -876,6 +876,24 @@ def five_minute_job():
     """
     frappe.db.sql(sql)
 
+    sql="""
+        update `tabFolio Transaction` a 
+        inner join `tabBusiness Source` b on a.business_source = b.name
+        set 
+            a.business_source_type = b.business_source_type
+        where 
+            ifnull(a.business_source_type,'') != ifnull(b.business_source_type,'') """
+    frappe.db.sql(sql)
+    #update account category
+    sql="""
+        update `tabFolio Transaction` a 
+        inner join `tabAccount Code` b on a.account_code = b.name
+        set 
+            a.account_category = b.account_category
+        where 
+            ifnull(a.account_category,'') != ifnull(b.account_category,'') """
+    frappe.db.sql(sql)
+
 
 
     frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status in ('Void','Cancelled')")
@@ -1422,3 +1440,9 @@ def update_is_arrival_date_in_room_rate(stay_name):
 			name='{}'
 		""".format(first_stay_date[0]["name"])
 		frappe.db.sql(sql)
+
+@frappe.whitelist()
+def get_report_config(property,report):
+    if not property:
+        return {}
+    return frappe.get_last_doc("Report Configuration", filters={"property":property, "report":report} )

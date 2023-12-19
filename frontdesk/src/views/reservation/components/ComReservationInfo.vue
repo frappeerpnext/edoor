@@ -174,8 +174,14 @@ function getTooltip(){
  
 }
 const toggle = ($event, name) => {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
+
     overLayName.value = name
     op.value.toggle($event);
+
 }
 const closeOverlay = ()=>{
     op.value.hide();

@@ -14,6 +14,7 @@ def room_occupy_group_by_fields():
 		{"key":"Year", "value": "year(date)"},
 		{"key":"Reservation Type", "value": "reservation_type"},
 		{"key":"Business Source", "value": "business_source"},
+		{"key":"Business Source Type", "value": "business_source_type"},
 		{"key":"Room Type", "value": "room_type_id"}
 	]
 
@@ -34,6 +35,7 @@ def folio_transaction_group_by_fields():
 		{"key":"Year", "value": "year(posting_date)"},
 		{"key":"Reservation Type", "value": "reservation_type"},
 		{"key":"Business Source", "value": "business_source"},
+		{"key":"Business Source Type", "value": "business_source_type"},
 		{"key":"Room Type", "value": "room_type_id"}
 	]
 
@@ -54,7 +56,6 @@ def get_parent_group_by_record(filters):
 		
 
 def report_group_row_from_result_data(occupy_data, folio_transaction_data):
-
 	row_group = [d["row_group"] for d in occupy_data]
 	row_group = row_group +  [d["row_group"] for d in folio_transaction_data]
 	row_group = set(row_group)
@@ -62,8 +63,8 @@ def report_group_row_from_result_data(occupy_data, folio_transaction_data):
 	return row_group
 
 def get_parent_group_row_from_result_data(occupy_data, folio_transaction_data):
-	row_group = [d["parent_row_group"] for d in occupy_data]
-	row_group = row_group +  [d["parent_row_group"] for d in folio_transaction_data]
+	row_group = [d["parent_row_group"] or "Not Set" for d in occupy_data]
+	row_group = row_group +  [d["parent_row_group"] or "Not Set" for d in folio_transaction_data]
 	row_group = set(row_group)
 	row_group =  [{"parent_row_group": d} for d in row_group]
 	 
@@ -74,3 +75,11 @@ def get_parent_row_group_label(filters, name):
 		return frappe.db.get_value("Room Type",name,"room_type")
 	else:
 		return name
+	
+def get_report_fields(filters, report_config):
+	
+	if filters.show_columns:
+		return  [d for d in report_config.report_fields if d.fieldname in filters.show_columns]
+	else:
+		return report_config.report_fields
+	

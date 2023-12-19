@@ -330,6 +330,11 @@ onMounted(() => {
 })
 
 function onAddNewGuest(){
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
+ 
     dialog.open(ComAddGuest, {
         data:{
             // name: name.value,

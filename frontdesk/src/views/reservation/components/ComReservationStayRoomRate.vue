@@ -125,6 +125,11 @@ const getTotal = ref((column_name) => {
 
 
 function onEditRoomRate(room_rate = null) {
+  if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
+
   if( rs.reservationStay?.reservation_status != 'Cancelled' && rs.reservationStay?.reservation_status != 'Void'){
     if(room_rate){
     const dialogRef = dialog.open(ComEditReservationRoomRate, {
