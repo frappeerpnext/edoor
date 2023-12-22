@@ -49,9 +49,13 @@ const visibleAssignHousekeeper = ref(false)
 const submitLoading = ref(false)
 const selectedStatus = ref("")
 const selectedHousekeeper = ref("")
+const gv = inject("$gv")
 
 function onChangeHousekeepingStatus() {
-
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     if (hk.selectedRooms.length == 0) {
         toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select room to change housekeeping status", life: 3000 })
     } else {
@@ -60,6 +64,10 @@ function onChangeHousekeepingStatus() {
 }
 
 function AssingnHousekeeper() {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     if (hk.selectedRooms.length == 0) {
         toast.add({ severity: 'warn', summary: "Assingn Housekeeper", detail: "Please select room to assign in housekeeper", life: 3000 })
     } else {

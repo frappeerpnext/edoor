@@ -11,26 +11,7 @@ frappe.query_reports["Group Booking Report"] = {
 			default:frappe.defaults.get_user_default("business_branch") ,
 			"reqd": 1,
 			"on_change": function (query_report) {
-				const property = frappe.query_report.get_filter_value("property")
-				const business_source_filter =frappe.query_report.get_filter('business_source');
-				business_source_filter.df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-				//set filter reservation
-				frappe.query_report.get_filter('reservation').df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-				
-
-				 
+				setLinkField()
 			},
 		},
 		{
@@ -214,6 +195,29 @@ frappe.query_reports["Group Booking Report"] = {
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		 
+		setLinkField()
 	},
 };
+function setLinkField() {
+	const property = frappe.query_report.get_filter_value("property")
+	if (property) {
+		const business_source_filter = frappe.query_report.get_filter('business_source');
+		business_source_filter.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+		//set filter reservation
+		frappe.query_report.get_filter('reservation').df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+
+	}
+
+} 

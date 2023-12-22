@@ -7,34 +7,39 @@
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
-              <ComStayInfoNoBox v-tippy="doc.guest_name.length > 20 ? doc.guest_name : ''" label="Guest" class="w-full" v-if="doc?.guest_name">
-                <span @click="onViewCustomerDetail(doc.guest)" class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
-                        {{ doc.guest }} - {{ doc.guest_name }}
-                    </span>
+              <ComStayInfoNoBox v-tippy="doc.guest_name.length > 20 ? doc.guest_name : ''" label="Guest" class="w-full"
+                v-if="doc?.guest_name">
+                <span @click="onViewCustomerDetail(doc.guest)"
+                  class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
+                  {{ doc.guest }} - {{ doc.guest_name }}
+                </span>
               </ComStayInfoNoBox>
-              
-              <ComStayInfoNoBox  label="Sale Number" class="w-full" v-if="doc?.sale">
-                <span @click="onViewSaleDetail()" class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
-                        {{ doc.sale }}
-                    </span>
+
+              <ComStayInfoNoBox label="Sale Number" class="w-full" v-if="doc?.sale">
+                <span @click="onViewSaleDetail()"
+                  class="-ml-2 overflow-hidden white-space-nowrap text-right link_line_action1 text-overflow-ellipsis">
+                  {{ doc.sale }}
+                </span>
               </ComStayInfoNoBox>
 
               <ComStayInfoNoBox label="Folio Number" v-if="doc?.transaction_number" :value="doc.transaction_number" />
               <ComStayInfoNoBox label="Type" v-if="doc?.type" :value="doc?.type" />
               <ComStayInfoNoBox label="Bank Name" v-if="doc?.bank_name" :value="doc?.bank_name" />
-              <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number" :value="doc?.credit_card_number" />
+              <ComStayInfoNoBox label="Credit Card Number" v-if="doc?.credit_card_number"
+                :value="doc?.credit_card_number" />
               <ComStayInfoNoBox label="Account Code" v-if="doc?.account_code" :value="doc?.account_code" />
               <ComStayInfoNoBox label="Account Name" v-if="doc?.account_name" :value="doc?.account_name" />
               <ComStayInfoNoBox label="Payment By" v-if="doc?.payment_by" :value="doc?.payment_by" />
-              <ComStayInfoNoBox label="Phone Number" v-if="doc?.payment_by_phone_number" :value="doc?.payment_by_phone_number" />
+              <ComStayInfoNoBox label="Phone Number" v-if="doc?.payment_by_phone_number"
+                :value="doc?.payment_by_phone_number" />
 
 
-              <ComStayInfoNoBox :label="doc.target_transaction_type" isSlot :fill="false" v-if="doc.target_transaction_type">
+              <ComStayInfoNoBox :label="doc.target_transaction_type" isSlot :fill="false"
+                v-if="doc.target_transaction_type">
 
-                <Button class="p-0 link_line_action1"
-                  @click="onOpenLink()" link>
+                <Button class="p-0 link_line_action1" @click="onOpenLink()" link>
                   <span>{{ doc?.target_transaction_number }}</span>
-                  
+
                 </Button>
               </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Post Amount" v-if="doc?.input_amount" :value="doc?.input_amount" isCurrency />
@@ -45,8 +50,9 @@
               <ComStayInfoNoBox label="Card Holder Name" v-if="doc?.card_holder_name" :value="doc?.card_holder_name" />
               <ComStayInfoNoBox label="Credit Expired Date" v-if="doc?.credit_expired_date"
                 :value="gv.datetimeFormat(doc?.credit_expired_date)" />
-              <ComStayInfoNoBox label="Bank Fee" v-if="doc?.bank_fee" :value="doc?.bank_fee + ' %'"/>
-              <ComStayInfoNoBox label="Bank Fee Amount" v-if="doc?.bank_fee_amount" :value="'$ ' + doc?.bank_fee_amount" />
+              <ComStayInfoNoBox label="Bank Fee" v-if="doc?.bank_fee" :value="doc?.bank_fee + ' %'" />
+              <ComStayInfoNoBox label="Bank Fee Amount" v-if="doc?.bank_fee_amount"
+                :value="'$ ' + doc?.bank_fee_amount" />
               <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'No' && account_code.allow_tax"
                 :value="doc?.rate_include_tax" />
               <ComStayInfoNoBox label="Rate Include Tax" v-if="doc?.rate_include_tax != 'Yes' && account_code.allow_tax"
@@ -88,19 +94,18 @@
                 </OverlayPanel>
               </ComStayInfoNoBox>
 
-              <ComStayInfoNoBox label="Discount Amount"
-                v-if="doc?.discount > 0 && doc?.account_code"
+              <ComStayInfoNoBox label="Discount Amount" v-if="doc?.discount > 0 && doc?.account_code"
                 :value="doc?.discount_amount" isCurrency>
-                <Button v-if="doc?.discount" @click="togglePostDiscountAmount"
-                  icon="pi pi-question text-xs" class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary"
-                  rounded outlined aria-label="Total Tax" />
+                <Button v-if="doc?.discount" @click="togglePostDiscountAmount" icon="pi pi-question text-xs"
+                  class="float-left w-1rem h-1rem -ms-1 surface-border" severity="secondary" rounded outlined
+                  aria-label="Total Tax" />
                 <OverlayPanel ref="opPostDiscountAmount">
                   <div class="table-order-tax">
                     <table class="inner-tip-tab">
                       <tr>
                         <td class='p-2'>Discount Type : </td>
                         <td class='p-2 text-end'>
-                          {{doc?.discount_type +  '  ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '')}}
+                          {{ doc?.discount_type + ' ' + (doc?.discount_type == 'Percent' ? doc?.discount + '%' : '') }}
                         </td>
                       </tr>
                     </table>
@@ -128,11 +133,11 @@
                           <CurrencyFormat :value="doc?.total_tax" />
                         </td>
                       </tr>
-                      <tr class='border-top-1'
-                        v-if="doc?.discount > 0 && doc?.account_code">
+                      <tr class='border-top-1' v-if="doc?.discount > 0 && doc?.account_code">
                         <td class='p-2'>Discount : </td>
                         <td class='p-2 text-end'>
-                          - <CurrencyFormat :value="doc?.discount_amount ? doc?.discount_amount : '0'" />
+                          -
+                          <CurrencyFormat :value="doc?.discount_amount ? doc?.discount_amount : '0'" />
                         </td>
                       </tr>
                       <tr class="border-top-1 border-black-alpha-90" v-if="doc?.total_amount">
@@ -160,22 +165,25 @@
             <tbody>
               <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
               <ComStayInfoNoBox label="Ref. No" isSlot :fill="false">
-                <Button  class="p-0 link_line_action1"
-                  @click="changeRef($event)" link>
+                <Button class="p-0 link_line_action1" @click="changeRef($event)" link>
                   <span v-if="doc?.reference_number">{{ doc?.reference_number }}</span>
                   <span v-else>Add Ref. No</span>
                 </Button>
-                
+
               </ComStayInfoNoBox>
               <!-- <ComStayInfoNoBox v-else label="Ref. No" :value="doc?.reference_number"/> -->
               <ComStayInfoNoBox label="Posted Date" :value="moment(doc?.posting_date).format('DD-MM-YYYY')" />
               <ComStayInfoNoBox label="Create By" :value="doc?.owner?.split('@')[0]" />
               <ComStayInfoNoBox label="Created Date" isSlot :fill="false">
-                <div class="font-semibold"><ComTimeago :date="doc?.creation"/></div>
+                <div class="font-semibold">
+                  <ComTimeago :date="doc?.creation" />
+                </div>
               </ComStayInfoNoBox>
               <ComStayInfoNoBox label="Last Modified by" :value="doc?.modified_by?.split('@')[0]" />
               <ComStayInfoNoBox label="Last Modified Date" isSlot :fill="false">
-                <div class="font-semibold"><ComTimeago :date="doc?.modified"/></div>
+                <div class="font-semibold">
+                  <ComTimeago :date="doc?.modified" />
+                </div>
               </ComStayInfoNoBox>
             </tbody>
           </table>
@@ -183,7 +191,7 @@
       </div>
     </div>
     <hr class="my-2">
-    <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" :attacheds="[doc?.name]"/>
+    <ComDocument doctype="Folio Transaction" :docname="doc?.name" v-if="!loading" :fill="true" :attacheds="[doc?.name]" />
 
     <div v-if="doc.note" class="link_line_action_res_note px-3 mt-3">
       <div class="pt-2 pb-3 text-color-black">
@@ -208,10 +216,8 @@
       </div>
     </div>
     <div class="mt-3">
-      <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name" 
-      :filters="['custom_folio_transaction', '=', doc.name]" 
-        
-      />
+      <ComCommentAndNotice v-if="doc && doc?.name" doctype="Folio Transaction" :docname="doc?.name"
+        :filters="['custom_folio_transaction', '=', doc.name]" />
     </div>
 
     <template #footer-left>
@@ -219,8 +225,7 @@
 
       <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print"
         v-if="doc.print_format" />
-              <Button class="border-none" @click="onAuditTrail" 
-        label="Audit Trail" icon="pi pi-history" />
+      <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
     </template>
     <OverlayPanel ref="openNote">
       <ComOverlayPanelContent width="350px" :loading="saving" @onSave="onSaveNote" @onCancel="onCloseNote">
@@ -277,6 +282,10 @@ const onClose = () => {
 
 
 const changeRef = ($event) => {
+  if (!gv.cashier_shift?.name) {
+    gv.toast('error', 'Please Open Cashier Shift.')
+    return
+  }
   refNum.value = doc.value.reference_number
   op.value.toggle($event)
 }
@@ -299,9 +308,9 @@ const onSaveReferenceNumber = () => {
 
     doc.value.reference_number = r.message.reference_number
     saving.value = false
-    window.socket.emit("FolioTransactionDetail", {property:window.property_name, name:window.folio_transaction_number})
+    window.socket.emit("FolioTransactionDetail", { property: window.property_name, name: window.folio_transaction_number })
     window.socket.emit("FolioTransactionList", window.property_name)
-    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 
     onCloseRefNumber()
   }).catch(() => {
@@ -323,6 +332,10 @@ const togglePostDiscountAmount = (event) => {
   opPostDiscountAmount.value.toggle(event);
 }
 const onOpenNote = ($event) => {
+  if (!gv.cashier_shift?.name) {
+    gv.toast('error', 'Please Open Cashier Shift.')
+    return
+  }
   const data = JSON.parse(JSON.stringify(doc.value))
   note.value = data.note
   openNote.value.toggle($event)
@@ -333,16 +346,18 @@ const onCloseNote = ($event) => {
 
 function onSaveNote() {
   saving.value = true
-  
-  postApi('utils.update_doctype_data',{data:{
-    "doctype":"Folio Transaction",
-    name:doc.value.name,
-    note:note.value
-  }}).then((r) => {
+
+  postApi('utils.update_doctype_data', {
+    data: {
+      "doctype": "Folio Transaction",
+      name: doc.value.name,
+      note: note.value
+    }
+  }).then((r) => {
     onCloseNote()
     saving.value = false
     doc.value.note = r.message.note
-    doc.value.modified = r.message,modified
+    doc.value.modified = r.message, modified
     doc.value.modified_by = r.message.modified_by
 
   }).catch(() => {
@@ -354,9 +369,9 @@ function onAuditTrail() {
     data: {
       doctype: 'Folio Transaction',
       docname: doc?.value.name,
-      referenceTypes:[
-                { doctype: 'Folio Transaction', label: 'Folio Transaction' },
-            ],
+      referenceTypes: [
+        { doctype: 'Folio Transaction', label: 'Folio Transaction' },
+      ],
       filter_key: "custom_folio_transaction"
     },
     props: {
@@ -425,7 +440,11 @@ function onPrintFolioTransaction() {
 }
 
 function onViewCustomerDetail(name) {
-    window.postMessage('view_guest_detail|' + name, '*')
+  if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
+  window.postMessage('view_guest_detail|' + name, '*')
 }
 function onViewSaleDetail() {
   const dialogRef = dialog.open(ComIFrameModal, {
@@ -444,8 +463,8 @@ function onViewSaleDetail() {
     },
   })
 }
-function onOpenLink(){
-  window.postMessage("view_" + doc.value.target_transaction_type.toLowerCase().replaceAll(" ","_") + "_detail|" + doc.value.target_transaction_number)
+function onOpenLink() {
+  window.postMessage("view_" + doc.value.target_transaction_type.toLowerCase().replaceAll(" ", "_") + "_detail|" + doc.value.target_transaction_number)
 }
 
 
@@ -494,5 +513,4 @@ table:not(.inner-tip-tab) td {
 
 table:not(.inner-tip-tab) tr:last-of-type td {
   border-bottom: none;
-}
-</style>
+}</style>

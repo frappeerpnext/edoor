@@ -120,6 +120,10 @@ function loadData() {
 }
 
 function onAddCityLedgerAccountType(){
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     dialog.open(ComAddCityLedgerType, {
         props: {
             header: `Add New City Ledger Account Type`,

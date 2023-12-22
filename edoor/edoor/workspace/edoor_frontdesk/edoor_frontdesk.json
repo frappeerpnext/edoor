@@ -5,9 +5,21 @@
    "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"7mtYbHQa0v\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"System Date\",\"col\":3}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":6}},{\"id\":\"cGzOsIqqVM\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link\",\"col\":3}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"Oh8e0RXSBP\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Activities\",\"col\":12}},{\"id\":\"S1Zf3rfLfX\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}}]",
+ "content": "[{\"id\":\"Z3hVVpGBNo\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"eDoor Profile Banner\",\"col\":12}},{\"id\":\"cuPl2DiJLl\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Summary KPI\",\"col\":12}},{\"id\":\"y6WQqOxbQG\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Occupancy block\",\"col\":3}},{\"id\":\"A0V-ndOtX6\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Room status\",\"col\":9}},{\"id\":\"beAViI_1RS\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Shortcut Link Title\",\"col\":12}},{\"id\":\"KchfWu506H\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Dashboard\",\"col\":3}},{\"id\":\"arK7IaW6Ak\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Frontdesk btn link\",\"col\":3}},{\"id\":\"JkUHGPY5Ny\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"housekeeping link btn\",\"col\":3}},{\"id\":\"YRQx-Hy-c-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"City Ledger link btn\",\"col\":3}},{\"id\":\"Tmyl2hFelZ\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Database link btn\",\"col\":3}},{\"id\":\"cU6Y_8Rad1\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Reservations List link btn\",\"col\":3}},{\"id\":\"LcwqL7JDWu\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Guest Ledger link btn\",\"col\":3}},{\"id\":\"hZ260Yq0mF\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Room Inventory link btn\",\"col\":3}},{\"id\":\"Uk_1LEUZpO\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"hr\",\"col\":12}},{\"id\":\"4ZwtLkxkS9\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"Oh8e0RXSBP\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Recent Activities\",\"col\":12}},{\"id\":\"3AG2SSpF3Q\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"View Full Activities\",\"col\":3}}]",
  "creation": "2023-04-27 15:51:56.916990",
  "custom_blocks": [
+  {
+   "custom_block_name": "housekeeping link btn",
+   "label": "housekeeping link btn"
+  },
+  {
+   "custom_block_name": "Dashboard",
+   "label": "Dashboard"
+  },
+  {
+   "custom_block_name": "Occupancy block",
+   "label": "Occupancy block"
+  },
   {
    "custom_block_name": "hr",
    "label": "hr"
@@ -17,12 +29,12 @@
    "label": "Recent Activities"
   },
   {
-   "custom_block_name": "System Date",
-   "label": "System Date"
+   "custom_block_name": "Room status",
+   "label": "Room status"
   },
   {
-   "custom_block_name": "Shortcut Link",
-   "label": "Shortcut Link"
+   "custom_block_name": "Frontdesk btn link",
+   "label": "Frontdesk btn link"
   },
   {
    "custom_block_name": "Summary KPI",
@@ -31,6 +43,30 @@
   {
    "custom_block_name": "Profile Banner",
    "label": "eDoor Profile Banner"
+  },
+  {
+   "custom_block_name": "Shortcut Link Title",
+   "label": "Shortcut Link Title"
+  },
+  {
+   "custom_block_name": "City Ledger link btn",
+   "label": "City Ledger link btn"
+  },
+  {
+   "custom_block_name": "Guest Database link btn",
+   "label": "Guest Database link btn"
+  },
+  {
+   "custom_block_name": "Reservations List link btn",
+   "label": "Reservations List link btn"
+  },
+  {
+   "custom_block_name": "Guest Ledger link btn",
+   "label": "Guest Ledger link btn"
+  },
+  {
+   "custom_block_name": "Room Inventory link btn",
+   "label": "Room Inventory link btn"
   }
  ],
  "docstatus": 0,
@@ -42,7 +78,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-19 15:57:44.700520",
+ "modified": "2023-12-22 11:27:59.579140",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -53,6 +89,14 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 4.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "View Full Activities",
+   "link_to": "Audit Trail Report",
+   "type": "Report"
+  }
+ ],
  "title": "eDoor Frontdesk"
 }

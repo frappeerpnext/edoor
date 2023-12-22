@@ -10,7 +10,7 @@
             </table>
         </div>
         <div class="grid mt-2">
-            <div class="col-6" v-if="!hk.room_block">
+            <div class="col-6" v-if="!hk.room_block" >
                 <SplitButton :disabled="hk.selectedRow.housekeeping_status == 'Room Block'" class="w-full"
                     :buttonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
                     :label="hk.selectedRow?.housekeeping_status" :model="items" :color="hk.selectedRow?.status_color"
@@ -218,6 +218,10 @@ function onAssignHousekeeper($event) {
 }
 
 function onSaveAssignHousekeeper($event) {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     if (!hk.selectedRow) {
     } else {
         db.updateDoc('Room', hk.selectedRow.name, {

@@ -326,6 +326,10 @@ onMounted(() => {
 })
 
 function onAddCityLedgerAccount() {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     dialog.open(ComAddCityLedgerAccount, {
         data: {
             // name: name.value,

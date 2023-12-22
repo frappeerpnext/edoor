@@ -85,3 +85,4 @@ frappe.query_reports["Audit Trail Report"] = {
 		 
 	},
 };
+

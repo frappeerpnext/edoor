@@ -151,7 +151,6 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT
-                    SUM(if(reservation_date='{1}',1,0)) AS `total_reservation_stay`, 
                     SUM(if(reservation_status = 'No Show' and (arrival_date!='{1}' and is_reserved_room=1),1,0)) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
@@ -262,6 +261,14 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                         where 
                             reservation_date = '{0}' and
                             property = '{1}'
+                    """.format(date, property) 
+    daily_reservation_stay_sql = """
+                        select 
+                            count( reservation)   as total
+                        from `tabReservation Stay`
+                        where 
+                            reservation_date = '{0}' and
+                            property = '{1}'
                     """.format(date, property)    
     
     
@@ -313,7 +320,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
         "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
-        "total_reservation_stay":stay[0]["total_reservation_stay"] or 0
+        "total_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
     }
 
 @frappe.whitelist()
@@ -336,6 +343,7 @@ def get_daily_property_summary():
             data["property"] = doc.name
             data["property_code"] = doc.property_code or ""
             data["photo"] = doc.photo 
+            data["property_background_banner"] = doc.property_background_banner 
             data["phone_number"] = doc.phone_number_1 or ""
             data["province"] = doc.province or ""
             data["address"] = doc.address_en or ""
@@ -1665,3 +1673,40 @@ def get_day_end_summary_report(property, date):
     }
 
     return data
+
+@frappe.whitelist()
+def get_recent_audit_trail():
+    property = frappe.defaults.get_user_default("business_branch")
+    
+    if not property:
+        data = frappe.db.get_list("Business Branch")
+        if len(data)>0:
+            property = data[0].name
+    if property:
+        sql = "select name,creation,comment_by,content,reference_doctype,reference_name,subject,custom_comment_by_photo from `tabComment` where custom_property = '{}' and custom_is_audit_trail=1 order by creation desc limit 20"
+
+        data =  frappe.db.sql(sql.format(property), as_dict=1)
+        for d in data:
+            d["creation"] = frappe.utils.pretty_date(d["creation"])
+        return data
+    return []
+
+@frappe.whitelist()
+def get_house_keeping_status_backend():
+    property = frappe.defaults.get_user_default("business_branch")
+    #get house keeping status
+    
+    hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
+    housekeeping_status = []
+    for d in hk_data:
+        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
+        total_room  = frappe.db.sql("select count(name) as total_room from `tabRoom` where property='{}' ".format(property,d.name),as_dict=1)[0]["total_room"] or 0
+        housekeeping_status.append({
+            "status":d.name,
+            "color":d.status_color,
+            "icon":d.icon,
+            "total":total,
+            "is_block_room":d.is_block_room,
+            "total_room":total_room
+        })
+    return housekeeping_status

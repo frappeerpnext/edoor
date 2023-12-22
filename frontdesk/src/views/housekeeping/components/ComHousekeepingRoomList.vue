@@ -1,4 +1,5 @@
 <template>
+
     <div class="hsk-wrapper h-full">
         <ComPlaceholder text="No Data" :loading="hk.loading" :is-not-empty="data.length > 0">
             <DataTable 
@@ -129,6 +130,10 @@ function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
 }
 function onAssignHousekeeper($event, r) {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     selected.value.housekeeper = r.housekeeper || ''
     selected.value.room = r.name || ''
     opHousekeeper.value.toggle($event)

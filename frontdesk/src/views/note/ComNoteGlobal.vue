@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, inject, useDialog, onMounted, updateDoc, useConfirm } from '@/plugin';
+import { ref, inject, useDialog, onMounted, updateDoc, useConfirm ,useToast } from '@/plugin';
 import ComAddNote from './ComAddNote.vue';
 import ComNoteGlobalButtonMore from "@/views/note/ComNoteGlobalButtonMore.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
@@ -102,11 +102,14 @@ const keyword = ref()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const referenceDocument = ref('');
-
+const toast = useToast()
 
 
 function onEdit(name) {
-	const dialogRef = dialog.open(ComAddNote, {
+	if(!gv.cashier_shift?.name){
+        toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
+    }else{
+		const dialogRef = dialog.open(ComAddNote, {
 		data: {
 			name: name
 		},
@@ -133,9 +136,15 @@ function onEdit(name) {
 			}
 		}
 	});
+	}
+	
 }
 
 function onPin(i) {
+	if(!gv.cashier_shift?.name){
+        toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
+    return 
+	}
 	i.custom_is_pin = !i.custom_is_pin
 	updateDoc('Comment', i.name, i).then((r) => {
 		onLoadData()

@@ -1,5 +1,5 @@
 <template>
-    <Button @click="onView" class="border-none fixed bottom-8 right-8 " style="background-color: #ff0021;z-index:900;" v-if="show_warning">
+    <Button @click="onView" class="border-none fixed bottom-20 right-8 " style="background-color: #ff0021;z-index:900;" v-if="show_warning">
         <ComIcon icon="iconConflictRoom" class="me-2" height="18px" />
         Room Conflict</Button>
 </template>

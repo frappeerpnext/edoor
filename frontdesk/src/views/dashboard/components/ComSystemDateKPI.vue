@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div class="h-full">
         <ComPanel title="System Date" class="sys-date bg text-white h-full">
             <div class="text-center content_date">

@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div>
         <div class="px-2">
             <ComHeader isRefresh @onRefresh="onRefresh()">

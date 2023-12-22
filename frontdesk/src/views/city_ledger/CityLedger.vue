@@ -6,7 +6,7 @@
                     <div class="text-2xl">City Ledger</div>
                 </template>
                 <template #end>
-                    <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" />
+                    <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" /> 
                 </template>
             </ComHeader>
             <div class="flex justify-between">
@@ -175,6 +175,7 @@
 import { ref, onMounted, onUnmounted, inject, computed, useDialog } from '@/plugin'
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
+import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -192,8 +193,7 @@ const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows:
 const order = ref({ order_by: "modified", order_type: "desc" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 // const loading = ref(false)
-const selectedColumns = ref([])
-
+const selectedColumns = ref([]) 
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },
     { "fieldname": "creation", label: "Created On" },
@@ -238,7 +238,7 @@ function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
 
         data: {
-            "doctype": "Customer",
+            "doctype": "Business Branch",
             name: property.name,
             report_name: "xx",
             fullheight: true
@@ -381,5 +381,5 @@ const isFilter = computed(() => {
     else {
         return gv.isNotEmpty(filter.value, 'start_date,end_date')
     }
-})
+}) 
 </script>

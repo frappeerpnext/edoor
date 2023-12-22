@@ -43,7 +43,7 @@ def update_housekeeper(rooms, housekeeper):
     return "Ok"
 
 @frappe.whitelist(methods="POST")
-def get_room_list(filter={}):
+def get_room_list(filter):
    filter["keyword"] = f"%{filter['keyword'] }%" 
    working_day = get_working_day(filter["property"])
 

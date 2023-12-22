@@ -84,8 +84,8 @@
                     <span class="ml-2">Disallow Post to City Ledger</span>
                 </button>
                 <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" @click="onTransferStay">
-                    <ComIcon icon="iconGeneralList" style="height: 14px;" />
-                    <span class="ml-2">Stay to Other Reservation</span>
+                    <ComIcon icon="iconMoveStay" style="height: 14px;" />
+                    <span class="ml-2">Transfer Stay to Other Reservation</span>
                 </button>
                 <button v-if="rs.reservation.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">

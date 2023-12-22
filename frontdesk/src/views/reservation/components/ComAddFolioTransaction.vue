@@ -1,4 +1,5 @@
 <template>
+    {{ isSaving }}
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
@@ -674,14 +675,16 @@ function onFolioFilterTypeChange(d){
 
 
 function onSave() {
+    
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.posting_date) data.posting_date = moment(data.posting_date).format("yyyy-MM-DD")
     if(!gv.cashier_shift?.name){
+        isSaving.value = false;
         gv.toast('error', 'Please Open Cashier Shift.')
         return
-        isSaving.value = false;
+        
     }
-
+    isSaving.value = true;
     createUpdateDoc("Folio Transaction", data)
         .then((doc) => {
             isSaving.value = false

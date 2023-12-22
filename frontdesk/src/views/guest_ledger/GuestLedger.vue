@@ -253,6 +253,7 @@ const isFilter = computed(() => {
 })
 
 function onOpenLink(column, data) {
+    console.log(data[column.fieldname])
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 function pageChange(page) {

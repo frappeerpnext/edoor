@@ -30,6 +30,7 @@ function loadData(showLoading = true) {
     }).then((result) => {
         data.value = result.message
         loading.value = false
+        console.log(data)
     }).catch(() => {
         loading.value = false
     })

@@ -45,7 +45,7 @@ def get_columns(filters):
 		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay","header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source',"default":True,"show_in_report":1},
 		{'fieldname':'room','label':'Room(s)',"default":True,"show_in_report":1,'align':'left'},
-		{'fieldname':'guests','label':'Guest','fieldtype':'Link',"options":"Customer","align":'left','post_message_action':"view_guest_detail","default":True,"show_in_report":1,"default":True},	
+		{'fieldname':'guest',  "extra_field": "guest_name", "extra_field_separator": "-" , 'label':'Guest','fieldtype':'Link',"options":"Customer","align":'left','post_message_action':"view_guest_detail","default":True,"show_in_report":1,"default":True},	
 		{'fieldname':'phone_number','label':'Phone #',"default":True},
 		{'fieldname':'email','label':'Email',"default":True},
 		{'fieldname':'opening_balance','label':'Opening Balance', 'fieldtype':'Currency',"header_class":'text-right','align':'right',"default":True,"show_in_report":1},

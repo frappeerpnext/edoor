@@ -24,18 +24,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			default:frappe.defaults.get_user_default("business_branch") ,
 			"reqd": 1,
 			"on_change": function (query_report) {
-				const property = frappe.query_report.get_filter_value("property")
-				//set filter reservation
-				const room_type_filter =frappe.query_report.get_filter('room_name_types');
-				room_type_filter.df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-				
-
+				setLinkField()
 				 
 			},
 		},
@@ -127,6 +116,21 @@ frappe.query_reports["Monthly Availability Chart"] = {
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		 
+		setLinkField()
 	},
 };
+function setLinkField() {
+	const property = frappe.query_report.get_filter_value("property")
+	if (property) {
+		const room_type_filter = frappe.query_report.get_filter('room_name_types');
+		room_type_filter.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+
+	}
+
+}

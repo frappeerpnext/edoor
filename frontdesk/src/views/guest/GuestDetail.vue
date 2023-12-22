@@ -86,6 +86,10 @@ const folioUrl =  computed(() => {
 })
 
 function onEditGuest() { 
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     dialog.open(ComAddGuest, {
         props: {
             header: `Edit Guest`,
@@ -103,6 +107,10 @@ function onEditGuest() {
 }
 
 function onDeleteGuest (name){
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     confirm.require({
         message: 'Are you sure you want to delete guest?',
         header: 'Confirmation',

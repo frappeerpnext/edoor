@@ -276,7 +276,7 @@ def get_report_data(filters,data):
 				"indent":0,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["reservation"]==g]),
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data]),sum([d["child"] for d in data if d["reservation"]==g])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["reservation"]==g]),sum([d["child"] for d in data if d["reservation"]==g])),
 				"total_debit":sum([d["total_debit"] for d in data if d["reservation"]==g]),
 				"total_credit":sum([d["total_credit"] for d in data if d["reservation"]==g]),
 				"balance":sum([d["balance"] for d in data if d["reservation"]==g]),

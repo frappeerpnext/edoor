@@ -1,84 +1,33 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
- 
+
 frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
 			label: "Property",
 			fieldtype: "Link",
-			options:"Business Branch",
-			default:frappe.defaults.get_user_default("business_branch") ,
+			options: "Business Branch",
+			default: frappe.defaults.get_user_default("business_branch"),
 			"reqd": 1,
 			"on_change": function (query_report) {
-				const property = frappe.query_report.get_filter_value("property")
-				const business_source_filter =frappe.query_report.get_filter('business_source');
-				business_source_filter.df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-				//room type
-				const room_type_filter =frappe.query_report.get_filter('room_type');
-				room_type_filter.df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-
-				//set option for show fields
-
-				if(property){
-					 
- 
-					frappe.call({
-						method: "edoor.api.utils.get_report_config",
-						
-						args: {
-							property:property,
-							report:"Revenue and Occupancy Summary Report"
-						},
-						callback: function(r){
-							const show_columns =frappe.query_report.get_filter('show_columns');
-							show_columns.df.options  = r.message.report_fields.map(x=>{
-								return {
-									value:x.fieldname,
-									description:x.label
-								}
-							})
-						},
-						error: function(r) {
-							frappe.throw(_("Please update report configuration"))
-						},
-					});	
-
-				}
-
-				
-
-
-
-				 
+				setLinkField()
 			},
 		},
 		{
-			"fieldname":"start_date",
+			"fieldname": "start_date",
 			"label": __("Start Date"),
 			"fieldtype": "Date",
-			default: new Date( (new Date()).getFullYear(), ( new Date()).getMonth(), 1),
+			default: new Date((new Date()).getFullYear(), (new Date()).getMonth(), 1),
 			"reqd": 1,
-			"on_change": function (query_report) {},
+			"on_change": function (query_report) { },
 		},
 		{
-			"fieldname":"end_date",
+			"fieldname": "end_date",
 			"label": __("End Date"),
 			"fieldtype": "Date",
 			default: new Date((new Date()).getFullYear(), (new Date()).getMonth() + 1, 0),
-			"on_change": function (query_report) {},
+			"on_change": function (query_report) { },
 			"reqd": 1
 		},
 
@@ -86,117 +35,193 @@ frappe.query_reports["Revenue and Occupancy Summary Report"] = {
 			"fieldname": "room_type",
 			"label": __("Room Type"),
 			"fieldtype": "Link",
-			"options":"Room Type",
-			"on_change": function (query_report) {},
-			
+			"options": "Room Type",
+			"on_change": function (query_report) { },
+
+		},
+		{
+			"fieldname": "reservation_type",
+			"label": __("Reservation Type"),
+			"fieldtype": "Select",
+			"options": "\nFIT\nGIT",
+			"on_change": function (query_report) { },
+
+		},
+		{
+			"fieldname": "business_source_type",
+			"label": __("Business Source Type"),
+			"fieldtype": "Link",
+			"options": "Business Source Type",
+			"on_change": function (query_report) { },
 		},
 		{
 			"fieldname": "business_source",
 			"label": __("Business Source"),
 			"fieldtype": "Link",
-			"options":"Business Source",
-			"on_change": function (query_report) {},
+			"options": "Business Source",
+			"on_change": function (query_report) { },
 		},
+	
 		{
 			"fieldname": "guest_type",
 			"label": __("Guest Type"),
 			"fieldtype": "Link",
-			"options":"Customer Group",
-			"on_change": function (query_report) {},
+			"options": "Customer Group",
+			"on_change": function (query_report) { },
 		},
 		{
 			"fieldname": "parent_row_group",
 			"label": __("Parent Group By"),
 			"fieldtype": "Select",
-			"options": "\nDate\nMonth\nYear\nReservation Type\nBusiness Source\nBusiness Source Type",
-			"on_change": function (query_report) {},
-			hide_in_filter:1,
+			"options": "\nDate\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
+			"on_change": function (query_report) { },
+			hide_in_filter: 1,
 		},
 		{
 			"fieldname": "row_group",
 			"label": __("Row Group By"),
 			"fieldtype": "Select",
-			"options": "Date\n\Month\nYear\nReservation Type\nBusiness Source\nRoom Type\nRoom\nOutlet\nTable Group\nTable\nPOS Profile\nCustomer\nCustomer Group\nStock Location\nSale Invoice\nWorking Day\nCashier Shift\nSale Type",
-			"default":"Date",
-			"on_change": function (query_report) {},
-			hide_in_filter:1,
+			"options": "Date\nMonth\nYear\nRoom Type\nReservation Type\nBusiness Source\nBusiness Source Type\nGuest Type\nNationality",
+			"default": "Date",
+			"on_change": function (query_report) { },
+			hide_in_filter: 1,
 		},
-
-		// {
-		// 	"fieldname": "column_group",
-		// 	"label": __("Column Group By"),
-		// 	"fieldtype": "Select",
-		// 	"options": "None\nDaily\nWeekly\nMonthly\nQuarterly\nHalf Yearly\nYearly",
-		// 	"default":"None"
-		// },
 		{
 			"fieldname": "show_columns",
 			"label": __("Show Columns"),
 			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) {},
-			"hide_in_filter":1,
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
 		},
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
 			"fieldtype": "Check",
-			"default":1,
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
+			"default": 1,
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
 		},
 		{
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
 			"options": "None\nbar\nline\npie",
-			"default":"bar",
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
+			"default": "bar",
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
 		},
-		 
+		{
+			"fieldname": "show_chart_series",
+			"label": __("Show Chart Series"),
+			"fieldtype": "MultiSelectList",
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
+		},
+
 	],
-	onload: function(report) {
-		report.page.add_inner_button ("Preview Report", function () {
+	onload: function (report) {
+		report.page.add_inner_button("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		 
+
+		setLinkField()
+
+
 	},
-	"formatter": function(value, row, column, data, default_formatter) {
-		const origninal_value = value  || 0
+	"formatter": function (value, row, column, data, default_formatter) {
+		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
-		
-		
-		 
-		value = value.toString().replace("style='text-align: right'","style='text-align: " + column.align + "'");	
-	 
- 
+
+
+
+		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
+
+
 		if (
-			(column.fieldtype || "") == "Int" || 
+			(column.fieldtype || "") == "Int" ||
 			((column.fieldtype || "") == "Percent") ||
-			((column.fieldtype || "") == "Currency" ) 
-		) 
-		{
-			if(origninal_value==0){
+			((column.fieldtype || "") == "Currency")
+		) {
+			if (origninal_value == 0) {
 				return "-"
 			}
-		} 
+		}
 
 
-		
-		if ((data && data.is_group==1) || (data && data.is_total_row==1)) {
-			
+
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+
 			value = $(`<span>${value}</span>`);
 
 			var $value = $(value).css("font-weight", "bold");
-			
+
 
 			value = $value.wrap("<p></p>").parent().html();
-		} 
-	 
- 
+		}
+
+
 		return value;
 	},
-	
+
 };
 
- 
+
+
+function setLinkField() {
+	const property = frappe.query_report.get_filter_value("property")
+	if (property) {
+		const business_source_filter = frappe.query_report.get_filter('business_source');
+		business_source_filter.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+		//room type
+		const room_type_filter = frappe.query_report.get_filter('room_type');
+		room_type_filter.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+
+		//set option for show fields
+
+
+
+
+		frappe.call({
+			method: "edoor.api.utils.get_report_config",
+
+			args: {
+				property: property,
+				report: "Revenue and Occupancy Summary Report"
+			},
+			callback: function (r) {
+				const show_columns = frappe.query_report.get_filter('show_columns');
+				show_columns.df.options = r.message.report_fields.map(x => {
+					return {
+						value: x.fieldname,
+						description: x.label
+					}
+				})
+				const show_chart_series = frappe.query_report.get_filter('show_chart_series');
+				show_chart_series.df.options = r.message.report_fields.filter(y=>y.show_in_chart==1).map(x => {
+					return {
+						value: x.fieldname,
+						description: x.label
+					}
+				})
+				
+			},
+			error: function (r) {
+				frappe.throw(_("Please update report configuration"))
+			},
+		});
+
+	}
+
+}

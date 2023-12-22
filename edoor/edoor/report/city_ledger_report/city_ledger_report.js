@@ -13,16 +13,7 @@ frappe.query_reports["City Ledger Report"] = {
 			default:frappe.defaults.get_user_default("business_branch") ,
 			"reqd": 1,
 			"on_change": function (query_report) {
-				const property = frappe.query_report.get_filter_value("property")
-				const business_source_filter =frappe.query_report.get_filter('business_source');
-				business_source_filter.df.get_query = function() {
-					return {
-						filters: {
-							"property": property
-						}
-					};
-				};
-				 
+				setLinkField()
 			},
 		},
 		{
@@ -61,7 +52,7 @@ frappe.query_reports["City Ledger Report"] = {
 		report.page.add_inner_button ("Preview Report", function () {
 			frappe.query_report.refresh();
 		});
-		 
+		setLinkField()
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
 	
@@ -81,4 +72,19 @@ frappe.query_reports["City Ledger Report"] = {
 	
 };
 
- 
+function setLinkField() {
+	const property = frappe.query_report.get_filter_value("property")
+	if (property) {
+		const business_source_filter = frappe.query_report.get_filter('business_source');
+		business_source_filter.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+
+
+	}
+
+} 

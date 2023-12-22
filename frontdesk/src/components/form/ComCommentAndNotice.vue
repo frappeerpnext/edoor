@@ -236,7 +236,10 @@ function onSave() {
 
 }
 function onSaveNote(doctype, data) {
-   
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     if (!data.content) {
         gv.toast('warn', 'Please input text.')
         return

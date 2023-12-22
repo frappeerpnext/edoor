@@ -3,7 +3,7 @@
     <div class="grid">
       <div class="col-12">
         <div class="w-6">
-         <label for="Note Date">Note Datexx</label>
+         <label for="Note Date">Note Date</label>
           <div class="card flex justify-content-left">
             <Calendar :selectOtherMonths="true" class="w-full p-inputtext-sm depart-arr border-round-xl" v-model="data.custom_note_date"
               dateFormat="dd-mm-yy" showIcon showButtonBar selectOtherMonths  panelClass="no-btn-clear"/>

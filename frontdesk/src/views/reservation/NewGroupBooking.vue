@@ -1,4 +1,4 @@
-<template>
+<template> 
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
@@ -469,7 +469,7 @@ const doc = ref({
         departure_time: '12:00:00',
         adult: 1,
         child: 0,
-        reservation_status: 'Reserved',
+        reservation_status: 'Confirmed',
         tax_rule: room_tax.value?.name,
         paid_by_master_room: 1,
         group_code: "",
@@ -860,8 +860,14 @@ const onSave = (assign_room = false) => {
         window.socket.emit("Dashboard", window.property_name);
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})
-        window.socket.emit("Frontdesk", window.property_name)
-        dialogRef.value.close({ reservation: result.message, assign_room: assign_room });
+        window.socket.emit("Frontdesk", window.property_name) 
+        setTimeout(function(){
+            if (window.reservation){ 
+                console.log(window.reservation)
+                window.socket.emit("ReservationDetail", window.reservation)
+            }
+        }, 5000) 
+        dialogRef.value.close({ reservation: result.message, assign_room: assign_room });  
     })
         .catch((error) => {
             isSaving.value = false
