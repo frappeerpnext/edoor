@@ -554,13 +554,13 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
 
     housekeeping_status =  frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_in")
-    comment_doc = []
+    comment_doc = [] 
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
         comment = {
             "subject":"Checked In",
             "reference_doctype":"Reservation Stay",
-            "reference_name":s["name"],
+            "reference_name":stay.name,
             "custom_audit_trail_type":"Check In",
 			"custom_icon":"pi pi-sign-in",
             "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}
