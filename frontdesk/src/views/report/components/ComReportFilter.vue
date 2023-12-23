@@ -258,8 +258,7 @@ const props = defineProps({
 
 function onShowfilter() {
     showFilter.value = !showFilter.value
-    localStorage.setItem("edoor_show_filter", showFilter.value ? "1" : "0")
-    onRefresh()
+    localStorage.setItem("edoor_show_filter", showFilter.value ? "1" : "0") 
 }
 const showCustomReport = ref()
 

@@ -60,7 +60,7 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
-                <DataTable resizableColumns columnResizeMode="fit" showGridlines stateStorage="local"
+                <DataTable resizableColumns columnResizeMode="expand" showGridlines stateStorage="local"
                     stateKey="table_city_ledger_list_state" :reorderableColumns="true" :value="data"
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" :rows="20">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"

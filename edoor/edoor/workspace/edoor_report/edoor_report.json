@@ -5,7 +5,7 @@
    "label": "Monthly Occupancy"
   }
  ],
- "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"QUrQvpFQCd\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"8OCNpBT4l6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Revenue and Occupancy\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Guest Ledger\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}},{\"id\":\"IZcX3v6LnD\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Trail Report\",\"col\":4}}]",
+ "content": "[{\"id\":\"H8O1W_w4Ky\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">eDoor Report</span>\",\"col\":12}},{\"id\":\"QUrQvpFQCd\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Monthly Occupancy\",\"col\":12}},{\"id\":\"fpWlMZ6qVG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Reservation List\",\"col\":3}},{\"id\":\"11lmDp6qUG\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monthly Availability Chart\",\"col\":3}},{\"id\":\"VOcianaWlt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Guest Ledger Transaction Report\",\"col\":3}},{\"id\":\"8OCNpBT4l6\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Revenue and Occupancy\",\"col\":3}},{\"id\":\"1aKZWlxbFJ\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Grq4RCZBNN\",\"type\":\"card\",\"data\":{\"card_name\":\"Reservation Report\",\"col\":4}},{\"id\":\"LGAbpMUxfW\",\"type\":\"card\",\"data\":{\"card_name\":\"Guest Ledger\",\"col\":4}},{\"id\":\"A5yI7gW4wi\",\"type\":\"card\",\"data\":{\"card_name\":\"Revenue and Occupancy\",\"col\":4}},{\"id\":\"IZcX3v6LnD\",\"type\":\"card\",\"data\":{\"card_name\":\"Audit Trail Report\",\"col\":4}},{\"id\":\"TAqs9zTip7\",\"type\":\"card\",\"data\":{\"card_name\":\"Front Office Report\",\"col\":4}},{\"id\":\"XLi2xm0DQw\",\"type\":\"card\",\"data\":{\"card_name\":\"Housekeeping Report\",\"col\":4}}]",
  "creation": "2023-12-12 11:29:54.491345",
  "custom_blocks": [],
  "docstatus": 0,
@@ -159,9 +159,45 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Housekeeping Report",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Stay Over Departure Guest",
+   "link_count": 0,
+   "link_to": "Housekeeping Arrival Stay Over Departure Guest",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Front Office Report",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Guest",
+   "link_count": 0,
+   "link_to": "Arrival Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-12-23 10:03:41.972809",
+ "modified": "2023-12-23 16:14:18.815834",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

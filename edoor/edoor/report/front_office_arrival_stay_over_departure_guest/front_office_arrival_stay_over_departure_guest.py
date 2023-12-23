@@ -52,9 +52,9 @@ def get_columns(filters):
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'room_rate','label':'Rate','align':'center',"width":95,"show_in_report":1},
+		{'fieldname':'room_rate','label':'Rate','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
 		{'fieldname':'total_room_rate','label':'Total Rate','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
-		{'fieldname':'reservation_status','label':'Status','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
+		{'fieldname':'reservation_status','label':'Status',"width":95,"show_in_report":1},
 		{'fieldname':'note','label':'Guest Note', 'align':'right',"show_in_report":1,"width":90},
 	]
 	return columns
@@ -160,7 +160,7 @@ def get_report_data(filters,data):
 			id =  str(uuid.uuid4())
 			report_data.append({
 				"indent":0,
-				"reservation": d,
+				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
 				"id":id
 			})

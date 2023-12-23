@@ -35,8 +35,10 @@ def get_report_data(filters,report_config):
 
     room_rate_data = get_room_rate_data(filters,report_config)
 
+
  
     parent_row_group_data =[{"parent_row_group":""}]
+
     if filters.parent_row_group:
         if filters.parent_row_group in ["Date","Month","Year"]:
             parent_row_group_data = get_parent_group_by_record(filters)
@@ -46,17 +48,18 @@ def get_report_data(filters,report_config):
     
     
     report_group_data = get_row_group_report_data(filters)
+
     room_available_datas= get_room_available(filters)
 
     #check if parent row is something else rather than date, month, year and room type 
     # then get room block from diffent function
+
     room_block_data = []
     if filters.parent_row_group not in ["Date","Month","Year","Room Type"]:
         room_block_data = get_room_block_data(filters)
     
 	#assign value for data
     report_data = []
-
     for parent in parent_row_group_data:
         parent_record = None
         if parent["parent_row_group"] !="":
@@ -67,6 +70,7 @@ def get_report_data(filters,report_config):
                  "row_group": get_parent_row_group_label(filters,parent["parent_row_group"])
             }
             report_data.append(parent_record)
+ 
             
 
         sub_report_data  = []
@@ -79,9 +83,9 @@ def get_report_data(filters,report_config):
         for row in sub_report_data:
             row["is_group"] = 0 
             row["is_total_row"] = 0 
-            row["indent"] = 1 
+            row["indent"] = 1 if parent["parent_row_group"] else 0
             row["room_available"] = 1 
-
+            
             #set default value 0 for field that dont have value
             for d in  report_config.report_fields:
                 row[d.fieldname] = 0
@@ -233,20 +237,20 @@ def get_sub_group_total_record(data,report_config,calculate_room_occupancy_inclu
 def get_row_group_report_data(filters):
     sql = ""
     if not filters.parent_row_group: 
-        sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date"
+        sql ="select date_format(date,'%%b-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s group by date_format(date,'%%b-%%Y')  order by date"
     elif filters.parent_row_group =='Month':
          sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,date_format(date,'%%b-%%Y') as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date"      
     elif filters.parent_row_group =='Year':
          sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,date_format(date,'%%Y') as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date" 
     else:
-        sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date" 
-    
+        sql ="select date_format(date,'%%b-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date" 
+
     data = frappe.db.sql(sql,filters,as_dict=1)
 
     return data
 	
 def get_occupy_data(filters,report_config):
-    sql = "select date_format(date,'%%d-%%m-%%Y') as row_group, "
+    sql = "select date_format(date,'%%b-%%Y') as row_group, "
     sql = "{} {} as parent_row_group,".format(sql,get_room_occupy_group_by_field(filters))
 
     #other aggregate field
@@ -257,7 +261,7 @@ def get_occupy_data(filters,report_config):
  
     # group by
     
-    sql = "{} group by date_format(date,'%%d-%%m-%%Y')".format(sql)
+    sql = "{} group by date_format(date,'%%b-%%Y')".format(sql)
 
     #add parent row group
     if filters.parent_row_group:
@@ -274,31 +278,33 @@ def get_room_available(filters):
     sql = ""
     if filters.parent_row_group=="Room Type":
         sql="""select 
-            date_format(date,'%%d-%%m-%%Y')  as row_group ,
+            date_format(date,'%%b-%%Y')  as row_group ,
             room_type_id as parent_row_group,
             sum(total_room) as total_rooms 
         from `tabDaily Property Data` where """
     else:
         sql="""select 
-            date_format(date,'%%d-%%m-%%Y')  as row_group , 
+            date_format(date,'%%b-%%Y')  as row_group , 
             sum(total_room) as total_rooms 
         from `tabDaily Property Data` where """
 
     sql = sql + " property=%(property)s and date between %(start_date)s and %(end_date)s " 
     if filters.room_type:
         sql = "{} and room_type_id=%(room_type)s ".format(sql)
-    sql = sql + "group by date_format(date,'%%d-%%m-%%Y') "
+    sql = sql + "group by date_format(date,'%%b-%%Y') "
 
     # add group by if parent row group is room type
     if filters.parent_row_group=="Room Type":
         sql = "{}, room_type_id".format(sql)
+
+    sql = sql + " order by year(date), month(date)"
 
     return frappe.db.sql(sql,filters, as_dict=1)
 
 
 def get_room_block_data(filters):
     sql="""select 
-            date_format(date,'%%d-%%m-%%Y')  as row_group, 
+            date_format(date,'%%b-%%Y')  as row_group, 
             sum(type='Block') as room_block 
         from `tabRoom Occupy` where """
 
@@ -307,15 +313,14 @@ def get_room_block_data(filters):
     if filters.room_type:
         sql = "{} and room_type_id=%(room_type)s ".format(sql)
 
-    sql = sql + "group by date_format(date,'%%d-%%m-%%Y') "
+    sql = sql + "group by date_format(date,'%%b-%%Y') "
     sql = sql + " having sum(type='Block')>0 "
 
     return frappe.db.sql(sql,filters, as_dict=1)
 
 
-def get_room_rate_data(filters, report_config ):
-    
-    sql = "select date_format(date,'%%d-%%m-%%Y')  as row_group,"
+def get_room_rate_data(filters, report_config):    
+    sql = "select date_format(date,'%%b-%%Y')  as row_group,"
     sql = "{} {} as parent_row_group,".format(sql,get_room_rate_group_by_field(filters))
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Reservation Room Rate' and d.sql_expression]) )
@@ -325,7 +330,7 @@ def get_room_rate_data(filters, report_config ):
     sql = "{} {}".format(sql, get_room_rate_filters(filters))
 
     # group by
-    sql = "{} group by date_format(date,'%%d-%%m-%%Y')".format(sql)
+    sql = "{} group by date_format(date,'%%b-%%Y')".format(sql)
     
     #add parent row group
     if filters.parent_row_group:

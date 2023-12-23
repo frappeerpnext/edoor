@@ -14,13 +14,13 @@
                     <div v-if="hasFilter('start_date')">
                         <Calendar :selectOtherMonths="true"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
-                            @date-select="reloadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon
+                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon
                             @clear-click="reloadIframe" />
                     </div>
                     <div v-if="hasFilter('end_date')">
-                        <Calendar :selectOtherMonths="true"
+                        <Calendar :selectOtherMonths="true" :min-date="filters.start_date"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.end_date" placeholder="End Date"
-                            @date-select="reloadIframe" showButtonBar @clear-click="reloadIframe" dateFormat="dd-mm-yy"
+                            @date-select="loadIframe" showButtonBar @clear-click="reloadIframe" dateFormat="dd-mm-yy"
                             showIcon />
                     </div>
                     <!-- invoice style for print invoice document credsit debit styoe or simple style -->
@@ -236,7 +236,7 @@ loading.value = true;
 
 
 }
-function loadIframe() {
+const loadIframe = () => {
     loading.value = true;
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
@@ -260,17 +260,21 @@ function loadIframe() {
                     end_date = moment(filters.value[p]).format("YYYY-MM-DD")
                 } else {
                     url.value = url.value + "&" + p + "=" + filters.value[p]
-                }
+                } 
             } 
         });
+    } 
+
+    if (moment(filters.value.start_date).isSame(moment(filters.value.end_date).format("yyyy-MM-DD")) || moment(filters.value.start_date).isAfter(filters.value.end_date)) {
+        filters.value.end_date = moment(filters.value.start_date).add(0, 'days').toDate();
     }
-    url.value = url.value + "&start_date=" + start_date + "&end_date=" + end_date
+    url.value = url.value + "&start_date=" + moment(filters.value.start_date).format("yyyy-MM-DD") + "&end_date=" + moment(filters.value.end_date).format("yyyy-MM-DD")
     url.value = url.value + "&refresh=" + (Math.random() * 16)
     if (extra_params.value?.filter(r => r.key == 'date').length == 0) {
 
         url.value = url.value + "&date=" + window.current_working_date
     }
-    document.getElementById(iframe_id).contentWindow.location.replace(url.value)
+    document.getElementById(iframe_id).contentWindow.location.replace(url.value)  
 }
 function onPrint() {
      document.getElementById(iframe_id).contentWindow.print()

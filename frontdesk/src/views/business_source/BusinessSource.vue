@@ -40,7 +40,7 @@
                 <DataTable 
                 class="res_list_scroll"
                 :resizableColumns="true"  
-                columnResizeMode="fit" 
+                columnResizeMode="expand" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_business_source_list_state" 

@@ -21,15 +21,15 @@ def room_occupy_group_by_fields():
 	]
 
 
-def get_folio_transaction_group_by_field(filters):
+def get_room_rate_group_by_field(filters):
     if filters.parent_row_group:
-        return [d["value"] for d in folio_transaction_group_by_fields() if d["key"] == filters.parent_row_group][0]
+        return [d["value"] for d in room_rate_group_by_fields() if d["key"] == filters.parent_row_group][0]
     else:
         return "''"
 
 
 
-def folio_transaction_group_by_fields():
+def room_rate_group_by_fields():
 	#  is base table alias
 	return [
 		{"key":"Date", "value": "date_format(posting_date,'%%d-%%m-%%Y')" },
@@ -122,8 +122,8 @@ def get_occupy_data_filters(filters):
 	return sql
  
 	
-def get_folio_transaction_filters(filters):
-	sql =  " and posting_date between %(start_date)s and %(end_date)s and property=%(property)s "
+def get_room_rate_filters(filters):
+	sql =  " and date between %(start_date)s and %(end_date)s and property=%(property)s "
 	if filters.room_type:
 		sql = "{} and room_type_id=%(room_type)s".format(sql)
 	if filters.reservation_type:
@@ -141,7 +141,7 @@ def get_folio_transaction_filters(filters):
 
 	#exclude empty
 	if filters.parent_row_group:
-		sql = "{} and {}!='' ".format(sql, get_folio_transaction_group_by_field(filters)) 
+		sql = "{} and {}!='' ".format(sql, get_room_rate_group_by_field(filters)) 
 	return sql
  
 	
@@ -161,11 +161,14 @@ def get_report_summary( filters, total_record,report_config):
 def get_report_chart(filters,report_data,report_config):
 	precision = frappe.db.get_single_value("System Settings","currency_precision")
 	report_fields = get_report_fields(filters, report_config)
+
 	if filters.show_chart_series:
 		report_fields = [d for d in report_fields if d.show_in_chart ==1 and d.fieldname in filters.show_chart_series]
 	else:
+		
 		report_fields = [d for d in report_fields if d.show_in_chart ==1]
 	columns =[]
+	
 	
 	datasets = []
 	chart_label_field = "row_group"

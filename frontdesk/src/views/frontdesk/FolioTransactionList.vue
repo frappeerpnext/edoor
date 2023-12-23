@@ -35,7 +35,7 @@
     </div>
     <div class=" h-full"> 
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
-        <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+        <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
           stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"
           tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
           <Column

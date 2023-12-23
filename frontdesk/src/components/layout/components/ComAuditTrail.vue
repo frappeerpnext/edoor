@@ -55,7 +55,7 @@
 				<DataTable 
 					class="res_list_scroll" 
 					:resizableColumns="true" 
-					columnResizeMode="fit" 
+					columnResizeMode="expand" 
 					showGridlines
 					stateStorage="local" 
 					stateKey="table_audit_trail_list_state" 

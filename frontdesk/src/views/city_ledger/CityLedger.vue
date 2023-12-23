@@ -67,7 +67,7 @@
                 <DataTable 
                 class="tb-cs-datatable"
                 :resizableColumns="true"
-                columnResizeMode="fit" 
+                columnResizeMode="expand" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_guest_ledger_state" 

@@ -5,11 +5,11 @@
                 <Button class="conten-btn" @click="AddTransaction(d)"
                     v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
-                <!-- <Button @click="viewCityLedgerReport" class="conten-btn">
+                <Button @click="viewCityLedgerReport" class="conten-btn">
                     <i class="pi pi-print mr-2"></i> Print 
-                </Button> -->
-                <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
-                    :model="print_menus" />  
+                </Button>
+                <!-- <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
+                    :model="print_menus" />   -->
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
@@ -123,7 +123,7 @@
                 <DataTable 
                 :rowClass="rowClass"
                 resizableColumns 
-                columnResizeMode="expand" 
+                columnResizeMode="fit" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_folio_transaction_list_state" 
@@ -242,8 +242,7 @@ const dialogRef = inject("dialogRef")
 const rowClass = (data) => {
     return [{ 'auto-post': data.is_auto_post }];
 
-};
-const print_menus = ref([])
+}; 
 function viewCityLedgerReport(){
     dialog.open(ComIFrameModal, {
             data: {
@@ -635,42 +634,6 @@ const onCloseAdvanceSearch = () => {
 const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
-
-print_menus.value.push({
-    label: "Extra Charge Voucher",
-    icon: 'pi pi-print',
-    command: () => { getDocList("Reservation Folio", {
-            filters: [ ["reservation_stay", "=", props.reservation_stay]],
-            limit:100,
-            fields:["name","reservation_stay"]
-        }).then((docs) => {
-
-        dialog.open(ComPrintReservationStay, {
-            data: {
-                doctype: "Reservation%20Stay",
-                reservation_stay: selectedFolio.value.reservation_stay,
-               folio: selectedFolio.value,
-            folios: docs,
-                report_name:gv.getCustomPrintFormat("eDoor Reservation Stay Folio Detail Report"),
-                view: "print"
-            },
-            props: {
-                header: "Folio Detail Report",
-                style: {
-                    width: '80vw',
-                },
-                position: "top",
-                modal: true,
-                maximizable: true,
-                closeOnEscape: false
-
-            },
-        });
-    })
-    }
-
-
-})
 
 
 </script>

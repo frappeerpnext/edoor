@@ -38,7 +38,7 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
                     stateStorage="local" stateKey="table_reservation_stay_list_state" scrollable :reorderableColumns="true"
                     :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column

@@ -38,7 +38,7 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="pageState.totalRecords > 0">
-                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
                     stateStorage="local" stateKey="table_vendor_list_state" scrollable :reorderableColumns="true"
                     :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"

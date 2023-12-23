@@ -12,10 +12,10 @@
   "property",
   "reservation",
   "reservation_stay",
+  "reservation_type",
   "stay_room_id",
+  "business_source_type",
   "business_source",
-  "guest",
-  "guest_name",
   "column_break_7",
   "room_type_id",
   "room_type",
@@ -31,6 +31,14 @@
   "input_rate",
   "rate",
   "allow_discount",
+  "guest_information_section",
+  "guest",
+  "column_break_hsfq",
+  "guest_name",
+  "column_break_ycuf",
+  "guest_type",
+  "column_break_cyct",
+  "nationality",
   "discount_section",
   "discount_type",
   "column_break_18",
@@ -305,7 +313,7 @@
    "options": "Customer"
   },
   {
-   "fetch_from": "reservation_stay.guest_name",
+   "fetch_from": "guest.customer_name_en",
    "fieldname": "guest_name",
    "fieldtype": "Data",
    "label": "Guest Name"
@@ -364,11 +372,52 @@
    "fieldname": "is_arrival",
    "fieldtype": "Check",
    "label": "Is Arrival"
+  },
+  {
+   "fetch_from": "reservation.reservation_type",
+   "fieldname": "reservation_type",
+   "fieldtype": "Data",
+   "label": "Reservation Type"
+  },
+  {
+   "fetch_from": "reservation.business_source_type",
+   "fieldname": "business_source_type",
+   "fieldtype": "Data",
+   "label": "Business Source Type"
+  },
+  {
+   "fieldname": "guest_information_section",
+   "fieldtype": "Section Break",
+   "label": "Guest Information"
+  },
+  {
+   "fetch_from": "guest.customer_group",
+   "fieldname": "guest_type",
+   "fieldtype": "Data",
+   "label": "Guest Type"
+  },
+  {
+   "fieldname": "column_break_hsfq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ycuf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_cyct",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "guest.country",
+   "fieldname": "nationality",
+   "fieldtype": "Data",
+   "label": "Nationality"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-07 16:59:17.600967",
+ "modified": "2023-12-23 11:33:47.729265",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

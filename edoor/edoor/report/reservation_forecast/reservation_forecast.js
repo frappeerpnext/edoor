@@ -205,7 +205,7 @@ function setLinkField() {
 
 			args: {
 				property: property,
-				report: "Revenue and Occupancy Summary Report"
+				report: "Reservation Forecast"
 			},
 			callback: function (r) {
 				const show_columns = frappe.query_report.get_filter('show_columns');

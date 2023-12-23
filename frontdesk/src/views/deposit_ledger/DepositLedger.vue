@@ -171,9 +171,8 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const columns = ref([
     { fieldname: 'name', label: 'Deposit #', fieldtype: "Link", post_message_action: "view_deposit_ledger_detail", default: true },
     { fieldname: 'posting_date', label: 'Posting Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
-    { fieldname: 'room_number', label: 'Room', default: true, extra_field: "room_type", },
     { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-", post_message_action: "view_customer_detail", default: true },
-
+    { fieldname: 'room_number', label: 'Room', default: true, extra_field: "room_type", },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
