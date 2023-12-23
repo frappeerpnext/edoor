@@ -6,11 +6,11 @@
     <div class="grid py-2 wp-number-cus">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar :selectOtherMonths="true" showIcon v-model="data.arrival_date"  :min-date="new Date(moment(data.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar :selectOtherMonths="true" showIcon v-model="data.arrival_date" showButtonBar  :min-date="new Date(moment(data.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar selectOtherMonths showIcon v-model="data.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(data.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar selectOtherMonths showIcon v-model="data.departure_date" showButtonBar :selectOtherMonths="true" :min-date="new Date(moment(data.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
         
         <div class="col-6">

@@ -63,6 +63,9 @@ app_license = "MIT"
 # before_install = "edoor.install.before_install"
 # after_install = "edoor.install.after_install"
 
+after_migrate = "edoor.migrate.after_migrate"
+
+
 # Uninstallation
 # ------------
 

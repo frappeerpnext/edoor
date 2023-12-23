@@ -35,7 +35,7 @@
              
             </div>
             <div>
-                <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
+                <ComRoomChartFilter :hideRefresh="true" :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
             </div>
         </div>
         <div style="max-width: 100%;">
@@ -388,7 +388,7 @@ const onRefresh = debouncer((show_loading = true) => {
  
 
 function getTotalNote() {
-    getCount('Frontdesk Note', [["note_date", ">=", working_day.date_working_day], ['property', '=', window.property_name]]).then((docs) => {
+    getCount('Comment', [["custom_note_date", ">=", working_day.date_working_day], ['custom_property', '=', window.property_name]]).then((docs) => {
         totalNotes.value = docs
     })
 }

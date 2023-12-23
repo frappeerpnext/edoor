@@ -19,7 +19,7 @@ frappe.query_reports["Front Office Arrival Stay Over Departure Guest"] = {
 			"label": __("Filter By"),
 			"fieldtype": "Select",
 			"options": "Arrival Guest\nStay Over Guest\nDeparture Guest",
-			default:"Arrival Date",
+			default:"Arrival Guest",
 			"on_change": function (query_report) {},
 			
 		},
@@ -76,6 +76,41 @@ frappe.query_reports["Front Office Arrival Stay Over Departure Guest"] = {
 			frappe.query_report.refresh();
 		});
 		setLinkField()
+	},
+	"formatter": function(value, row, column, data, default_formatter) {
+		
+		value = default_formatter(value, row, column, data);
+		var parser = new DOMParser(); // create a DOMParser object
+		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+		var element = doc.querySelector("a"); // get the element by selector
+		if (data && data.indent==0) {
+			
+ 
+			if(element){
+
+				value =$(`<span>${element.dataset.value}</span>`);  
+			}else {
+				
+				value = $(`<span>${value}</span>`);
+			}
+			
+			
+
+				var $value = $(value).css("font-weight", "bold");
+				value = $value.wrap("<p></p>").parent().html();
+			 
+		
+		}else {
+			if(column.fieldtype=="Link"){
+				
+				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
+
+ 
+			}
+			
+		}
+		
+		return value;
 	},
 };
 function setLinkField() {

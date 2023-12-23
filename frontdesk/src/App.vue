@@ -1,7 +1,7 @@
 <template>
     
     <template v-if="hasProperty">
-        <main-layout v-if="$route.meta.layout!='blank_layout'" />
+        <main-layout v-if="$route.meta.layout!='blank_layout' && ui=='main_layout'" />
         <BlankLayout v-else />
     </template>
     <Property v-else />
@@ -45,10 +45,13 @@ import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail
 import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
 import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayableLedgerDetail.vue";
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
+const urlParams = new URLSearchParams(window.location.search);
+const ui = ref(urlParams.get('layout') || "main_layout")
  
+ 
+
 const gv = inject("$gv")
 const moment= inject("$moment")
-
  
 
 window.session_id = gv.generateGuid()

@@ -41,7 +41,7 @@
         <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
 
         <div class="border-left-1 border-primary-100 m-2"></div>
-        <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
+        <Button v-if="!hideRefresh" @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
 
     </div>
 </template> 
@@ -62,7 +62,8 @@ const props = defineProps({
     viewType: {
         type: String,
         default: '<room_type>'
-    }
+    },
+    hideRefresh: Boolean
 })
 
 const selectedPeriod = computed(()=>{

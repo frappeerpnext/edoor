@@ -120,11 +120,10 @@ def get_report_data(filters,data):
 	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
 	delta = end_date - start_date
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
-    
+	report_data = []
+
 	if filters.filter_by =="Arrival Guest":
 		sql = sorted(set([d["arrival_date"] for d in data]))
-		
-		report_data = []
 		for g in sql:
 			d = g
 			id =  str(uuid.uuid4())
@@ -141,7 +140,6 @@ def get_report_data(filters,data):
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]==g]),sum([d["child"] for d in data if d["arrival_date"]==g])),
-				"adr":sum([d["adr"] for d in data if d["arrival_date"]==g]),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
@@ -149,8 +147,6 @@ def get_report_data(filters,data):
 	if filters.filter_by =="Stay Over Guest":
 		sql = sorted(set(stay_over_date))
 		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in sql]
-		
-		report_data = []
 		for g in date:
 			d = g
 			id =  str(uuid.uuid4())
@@ -167,7 +163,6 @@ def get_report_data(filters,data):
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),sum([d["child"] for d in data if d["arrival_date"]<g and d["departure_date"]>g])),
-				"adr":sum([d["adr"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
@@ -176,7 +171,6 @@ def get_report_data(filters,data):
 		
 		sql = sorted(set([d["departure_date"] for d in data]))
 		
-		report_data = []
 		for g in sql:
 			d = g
 			id =  str(uuid.uuid4())
@@ -193,7 +187,6 @@ def get_report_data(filters,data):
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["departure_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["departure_date"]==g]),sum([d["child"] for d in data if d["departure_date"]==g])),
-				"adr":sum([d["adr"] for d in data if d["departure_date"]==g]),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
@@ -207,7 +200,6 @@ def get_report_data(filters,data):
 				"reservation": "Grand Total",
 				"room_nights":sum([d["room_nights"] for d in data ]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-				"adr":sum([d["adr"] for d in data]),
 				"is_total_row":1,
 				"is_group":0,
 				"is_grand_total":1

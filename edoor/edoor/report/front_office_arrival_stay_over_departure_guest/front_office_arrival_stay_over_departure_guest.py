@@ -52,7 +52,9 @@ def get_columns(filters):
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'reservation_status','label':'Status','align':'center',"width":95,"show_in_report":1},
+		{'fieldname':'room_rate','label':'Rate','align':'center',"width":95,"show_in_report":1},
+		{'fieldname':'total_room_rate','label':'Total Rate','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
+		{'fieldname':'reservation_status','label':'Status','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
 		{'fieldname':'note','label':'Guest Note', 'align':'right',"show_in_report":1,"width":90},
 	]
 	return columns
@@ -102,6 +104,8 @@ def get_guest_data(filters):
 				is_active_reservation,
 				reservation_status,
 				adr,
+				room_rate,
+				total_room_rate,
 				note
 			from `tabReservation Stay` rst
 			where
@@ -120,11 +124,12 @@ def get_report_data(filters,data):
 	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
 	delta = end_date - start_date
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
-    
+
+	report_data = []
 	if filters.filter_by =="Arrival Guest":
 		sql = sorted(set([d["arrival_date"] for d in data]))
 		
-		report_data = []
+		
 		for g in sql:
 			d = g
 			id =  str(uuid.uuid4())
@@ -149,8 +154,7 @@ def get_report_data(filters,data):
 	if filters.filter_by =="Stay Over Guest":
 		sql = sorted(set(stay_over_date))
 		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in sql]
-		
-		report_data = []
+
 		for g in date:
 			d = g
 			id =  str(uuid.uuid4())
@@ -175,8 +179,6 @@ def get_report_data(filters,data):
 	if filters.filter_by =="Departure Guest":
 		
 		sql = sorted(set([d["departure_date"] for d in data]))
-		
-		report_data = []
 		for g in sql:
 			d = g
 			id =  str(uuid.uuid4())
@@ -213,3 +215,4 @@ def get_report_data(filters,data):
 				"is_grand_total":1
 			})
 	return report_data
+	

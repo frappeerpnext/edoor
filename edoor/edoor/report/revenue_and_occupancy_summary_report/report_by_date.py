@@ -159,7 +159,7 @@ def get_report_data(filters,report_config):
 
                 report_data.append(total_record)
                 
-
+    report_chart = None
     #show total row 
     report_summary=[]
     if len(report_data)>0:
@@ -199,7 +199,6 @@ def get_report_data(filters,report_config):
         if filters.show_summary ==1:
             report_summary = get_report_summary(filters,total_record,report_config)
 
-        report_chart = None
         if filters.chart_type!="None":
             report_chart = get_report_chart(filters, report_data,report_config)
         

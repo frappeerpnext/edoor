@@ -145,6 +145,9 @@ const onSelected = (event) => {
 }
 async function getData(keyword) {
     let apiParams = { doctype: props.doctype, txt: keyword }
+    if (apiParams.txt){
+        apiParams.txt = apiParams.txt.replaceAll('(','')
+    }
     if (props.filters) {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
     } 

@@ -169,7 +169,7 @@
                         optionValue="value" placeholder="Search Date Type" :clear="false"
                         @onSelectedValue="onSelectFilterDate" :filters="[['property', '=', property.name]]"></ComSelect>
                 </div>
-                <div class="col-6" v-if="filter.search_date_type">
+                <div class="col-6" v-if="filter.search_date_type"> 
                     <Calendar :selectOtherMonths="true" hideOnRangeSelection dateFormat="dd-mm-yy" class="w-full"
                         v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />
@@ -328,8 +328,8 @@ function loadData(show_loading = true) {
     }
 
     if (filter.value?.search_date_type && filter.value.date_range != null) {
-        filters.push([filter.value.search_date_type.value, '>=', dateRange.start])
-        filters.push([filter.value.search_date_type.value, '<=', dateRange.end])
+        filters.push([filter.value.search_date_type, '>=', dateRange.start])
+        filters.push([filter.value.search_date_type, '<=', dateRange.end])
     }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]

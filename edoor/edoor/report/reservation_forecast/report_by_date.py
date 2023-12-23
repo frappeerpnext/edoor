@@ -1,15 +1,11 @@
 # Copyright (c) 2023, Tes Pheakdey and contributors
 # For license information, please see license.txt
 import copy
-from edoor.edoor.report.revenue_and_occupancy_summary_report.utils import get_report_chart,get_report_summary,get_folio_transaction_filters,get_occupy_data_filters,get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields
+from edoor.edoor.report.revenue_forecast.utils import get_report_chart,get_report_summary, get_occupy_data_filters, get_folio_transaction_filters,get_parent_group_by_record,get_room_occupy_group_by_field,get_folio_transaction_group_by_field,get_parent_group_row_from_result_data,get_parent_row_group_label,get_report_fields
 from edoor.api.frontdesk import get_working_day
 import frappe
 
 def get_report(filters, report_config):
-
-    if filters.parent_row_group=="Date":
-        frappe.throw("There is no option available for row group <b>Month</b> and parent row group <b>Date</b>")
-    
     report_data = get_report_data(filters,report_config)
     return {
         "columns":get_report_columns(filters,report_config),
@@ -22,7 +18,7 @@ def get_report(filters, report_config):
 def get_report_columns(filters,report_config):
     report_fields =  get_report_fields (filters, report_config)
     columns = [
-        {'key': "Month","fieldname":"row_group","label":"Month","width":125},
+        {'key': "Date","fieldname":"row_group","label":"Date","width":125},
     ]
 
     for g in report_fields:
@@ -37,10 +33,9 @@ def get_report_data(filters,report_config):
     
  
     data = get_occupy_data(filters,report_config)
-    
 
     folio_transaction_data = get_folio_transaction_data(filters,report_config)
-    
+ 
     parent_row_group_data =[{"parent_row_group":""}]
     if filters.parent_row_group:
         if filters.parent_row_group in ["Date","Month","Year"]:
@@ -51,8 +46,6 @@ def get_report_data(filters,report_config):
     
     
     report_group_data = get_row_group_report_data(filters)
-    
-
     room_available_datas= get_room_available(filters)
 
     #check if parent row is something else rather than date, month, year and room type 
@@ -87,7 +80,7 @@ def get_report_data(filters,report_config):
         for row in sub_report_data:
             row["is_group"] = 0 
             row["is_total_row"] = 0 
-            row["indent"] = 1 if filters.parent_row_group else 0 
+            row["indent"] = 1 
             row["room_available"] = 1 
 
             #set default value 0 for field that dont have value
@@ -240,30 +233,32 @@ def get_sub_group_total_record(data,report_config,calculate_room_occupancy_inclu
 
 def get_row_group_report_data(filters):
     sql = ""
-    if filters.parent_row_group =='Year':
-         sql ="select date_format(date,'%%b-%%Y') as row_group,date_format(date,'%%Y') as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s group by  date_format(date,'%%b-%%Y') order by year(date),month(date)" 
+    if not filters.parent_row_group: 
+        sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date"
+    elif filters.parent_row_group =='Month':
+         sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,date_format(date,'%%b-%%Y') as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date"      
+    elif filters.parent_row_group =='Year':
+         sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,date_format(date,'%%Y') as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date" 
     else:
-        sql ="select date_format(date,'%%b-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s group by  date_format(date,'%%b-%%Y') order by year(date),month(date)" 
+        sql ="select date_format(date,'%%d-%%m-%%Y') as row_group,'' as parent_row_group from `tabDates` where date between %(start_date)s and %(end_date)s order by date" 
     
-   
     data = frappe.db.sql(sql,filters,as_dict=1)
 
     return data
 	
 def get_occupy_data(filters,report_config):
-    sql = "select date_format(date,'%%b-%%Y') as row_group, "
+    sql = "select date_format(date,'%%d-%%m-%%Y') as row_group, "
     sql = "{} {} as parent_row_group,".format(sql,get_room_occupy_group_by_field(filters))
 
     #other aggregate field
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Room Occupy' and d.sql_expression]) )
     #filter
     sql = sql+ " from `tabRoom Occupy` a  where 1=1 "
-    
     sql = "{} {}".format(sql,get_occupy_data_filters(filters)) 
-    
+ 
     # group by
     
-    sql = "{} group by date_format(date,'%%b-%%Y')".format(sql)
+    sql = "{} group by date_format(date,'%%d-%%m-%%Y')".format(sql)
 
     #add parent row group
     if filters.parent_row_group:
@@ -271,28 +266,29 @@ def get_occupy_data(filters,report_config):
  
 
     data = frappe.db.sql(sql,filters,as_dict = 1)
-   
     return data
- 
+
+
+
 
 def get_room_available(filters):
     sql = ""
     if filters.parent_row_group=="Room Type":
         sql="""select 
-            date_format(date,'%%b-%%Y')  as row_group ,
+            date_format(date,'%%d-%%m-%%Y')  as row_group ,
             room_type_id as parent_row_group,
             sum(total_room) as total_rooms 
         from `tabDaily Property Data` where """
     else:
         sql="""select 
-            date_format(date,'%%b-%%Y')  as row_group , 
+            date_format(date,'%%d-%%m-%%Y')  as row_group , 
             sum(total_room) as total_rooms 
         from `tabDaily Property Data` where """
 
     sql = sql + " property=%(property)s and date between %(start_date)s and %(end_date)s " 
     if filters.room_type:
         sql = "{} and room_type_id=%(room_type)s ".format(sql)
-    sql = sql + "group by date_format(date,'%%b-%%Y') "
+    sql = sql + "group by date_format(date,'%%d-%%m-%%Y') "
 
     # add group by if parent row group is room type
     if filters.parent_row_group=="Room Type":
@@ -303,7 +299,7 @@ def get_room_available(filters):
 
 def get_room_block_data(filters):
     sql="""select 
-            date_format(date,'%%b-%%Y')  as row_group, 
+            date_format(date,'%%d-%%m-%%Y')  as row_group, 
             sum(type='Block') as room_block 
         from `tabRoom Occupy` where """
 
@@ -312,24 +308,23 @@ def get_room_block_data(filters):
     if filters.room_type:
         sql = "{} and room_type_id=%(room_type)s ".format(sql)
 
-    sql = sql + "group by date_format(date,'%%b-%%Y') "
-    sql = sql + " having sum(type='Block')>0"
+    sql = sql + "group by date_format(date,'%%d-%%m-%%Y') "
+    sql = sql + " having sum(type='Block')>0 "
 
     return frappe.db.sql(sql,filters, as_dict=1)
 
 
 def get_folio_transaction_data(filters, report_config ):
-    sql = "select date_format(posting_date,'%%b-%%Y')  as row_group,"
+    sql = "select date_format(posting_date,'%%d-%%m-%%Y')  as row_group,"
     sql = "{} {} as parent_row_group,".format(sql,get_folio_transaction_group_by_field(filters))
         
     sql = "{} {}".format(sql,','.join([d.sql_expression for d in report_config.report_fields if d.reference_doctype =='Folio Transaction' and d.sql_expression]) )
     #filter
     sql = sql+ " from `tabFolio Transaction` a where transaction_type='Reservation Folio' "
-   
     sql = "{} {}".format(sql, get_folio_transaction_filters(filters))
 
     # group by
-    sql = "{} group by date_format(posting_date,'%%b-%%Y')".format(sql)
+    sql = "{} group by date_format(posting_date,'%%d-%%m-%%Y')".format(sql)
     
     #add parent row group
     if filters.parent_row_group:
@@ -338,3 +333,4 @@ def get_folio_transaction_data(filters, report_config ):
 
     data = frappe.db.sql(sql,filters,as_dict = 1)
     return data
+
