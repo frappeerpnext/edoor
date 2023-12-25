@@ -5,7 +5,7 @@ import frappe
 
 
 def execute(filters=None):
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Housekeeping Departure Guest Report"} )
 	
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters, report_config.report_fields, report_data)
@@ -38,7 +38,7 @@ def get_report_data (filters, report_fields):
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
 		for parent in parent_row:
-			if filters.show_in_group_by=="arrival_date":
+			if filters.show_in_group_by=="departure_date":
 				d  = frappe.format(parent,{"fieldtype":"Date"})
 			report_data.append({
 				"indent":0,
@@ -67,15 +67,14 @@ def get_data (filters,report_fields):
 	if filters.show_in_group_by and len([d for d in report_fields if d.fieldname == filters.show_in_group_by]) == 0:
 		sql = "{} , {}".format(sql, filters.show_in_group_by)
 
-	sql = "{} from `tabReservation Stay`  ".format(sql)
+	sql = "{} from `tabReservation Stay` rst ".format(sql)
 	sql = "{} {}".format(sql, get_filters(filters))
 	data = frappe.db.sql(sql, filters ,as_dict=1)
 
 	return data
 
 def get_filters(filters):
-	sql = "where property=%(property)s  "
-	sql =  " {} and arrival_date between %(start_date)s and %(end_date)s ".format(sql) 
+	sql = "where property=%(property)s  and departure_date between %(start_date)s and %(end_date)s"
 	if filters.business_source:
 		sql = "{} and business_source =  %(business_source)s".format(sql)
 	
@@ -87,8 +86,7 @@ def get_filters(filters):
 	return sql 
 
 def get_room_rate_filters(filters):
-	sql = "where property=%(property)s "
-	sql =  " {} and date between %(start_date)s and %(end_date)s ".format(sql) 
+	sql = "where property=%(property)s and date between %(start_date)s and %(end_date)s"
 
 	if filters.business_source:
 		sql = "{} and business_source =  %(business_source)s".format(sql)

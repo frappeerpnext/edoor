@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Room Inventory Report"] = {
+frappe.query_reports["Trail Balance Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -31,6 +31,59 @@ frappe.query_reports["Room Inventory Report"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname": "ledger_types",
+			"label": __("Ledger Type"),
+			"fieldtype": "MultiSelectList",
+			"options":[
+				{value:"Reservation Folio","description": "Guest Ledger"},
+				{value:"Desk Folio","description": "Desk Folio"},
+				{value:"Deposit Ledger","description": "Deposit Ledger"},
+				{value:"City Ledger","description": "City Ledger"},
+				{value:"Payable Ledger","description": "Payable Ledger"},
+				{value:"Cashier Shift","description": "Food & Beverage"},
+			],
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
+		},
+		
+		{
+			"fieldname": "guest",
+			"label":"Guest",
+			"fieldtype":"Link",
+			"options": "Customer",
+			"on_change": function (query_report) { },
+		},
+		{
+			"fieldname": "city_ledger",
+			"label":"City Ledger",
+			"fieldtype":"Link",
+			"options": "City Ledger",
+			"on_change": function (query_report) { },
+		},
+
+		{
+			"fieldname": "reservation",
+			"label":"Reservation",
+			"fieldtype":"Link",
+			"options": "Reservation",
+			"on_change": function (query_report) { },
+		},
+		{
+			"fieldname": "reservation_stay",
+			"label":"Reservation Stay",
+			"fieldtype":"Link",
+			"options": "Reservation Stay",
+			"on_change": function (query_report) { },
+		},
+		{
+			"fieldname": "show_account_code",
+			"label": __("Show Account Code"),
+			"fieldtype": "Check",
+			"default": 1,
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
+		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
 			"fieldtype": "Check",
@@ -39,25 +92,12 @@ frappe.query_reports["Room Inventory Report"] = {
 			"on_change": function (query_report) { },
 		},
 		{
-			"fieldname": "show_summary_fields",
-			"label": __("Show Summary Field"),
-			"fieldtype": "MultiSelectList",
+			"fieldname": "group_by_ledger_type",
+			"label": __("Group by Ledger Type"),
+			"fieldtype": "Check",
+			"default": 0,
+			hide_in_filter: 1,
 			"on_change": function (query_report) { },
-			"hide_in_filter": 1,
-			"options":[
-				{value:"total_room",description:"Total Room Available"},
-				{value:"occupy",description:"Occupy"},
-				{value:"ooo",description:"Out of Order"},
-				{value:"vacant",description:"Vacant"},
-				{value:"occupancy",description:"Occupancy"},
-				{value:"arrival",description:"Arrival"},
-				{value:"stay_over",description:"Occupy"},
-				{value:"departure",description:"Departure"},
-				{value:"pax",description:"Pax"},
-				{value:"adult",description:"Adult"},
-				{value:"child",description:"Child"},
-			]
-
 		},
 		
 		// {
@@ -122,15 +162,32 @@ frappe.query_reports["Room Inventory Report"] = {
 function setLinkField() {
 	const property = frappe.query_report.get_filter_value("property")
 	if (property) {
-		 
+		const reservation = frappe.query_report.get_filter('reservation');
+		reservation.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
 		
-		// frappe.query_report.get_filter('room_type').df.get_query = function () {
-		// 	return {
-		// 		filters: {
-		// 			"property": property
-		// 		}
-		// 	};
-		// };
+
+		const reservation_stay = frappe.query_report.get_filter('reservation_stay');
+		reservation_stay.df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
+		
+		frappe.query_report.get_filter('city_ledger').df.get_query = function () {
+			return {
+				filters: {
+					"property": property
+				}
+			};
+		};
 
 		 
 	}

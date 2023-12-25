@@ -1694,6 +1694,7 @@ def get_recent_audit_trail():
 @frappe.whitelist()
 def get_house_keeping_status_backend():
     property = frappe.defaults.get_user_default("business_branch")
+    working_day = get_working_day(property)
     #get house keeping status
     
     hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
@@ -1704,9 +1705,10 @@ def get_house_keeping_status_backend():
         housekeeping_status.append({
             "status":d.name,
             "color":d.status_color,
-            "icon":d.icon,
             "total":total,
             "is_block_room":d.is_block_room,
-            "total_room":total_room
+            "total_room":total_room,
+            "property":property,
+            "working_date":working_day["date_working_day"] 
         })
     return housekeeping_status

@@ -113,6 +113,7 @@ def generate_block_date(self):
 			"type":"Block",
 			"property":data.property,
 			"stay_room_id":data.name,
+			"is_active":1
 		}).insert()
 
 
@@ -125,11 +126,11 @@ def generate_block_date(self):
 			"type":"Block",
 			"property":data.property,
 			"stay_room_id":data.name,
+			"is_active":1
 		}).insert()
 	#check if block date is equal to current system date than change room status to block
 	working_day = get_working_day(data.property)
 	if getdate(working_day["date_working_day"])>=getdate(data.start_date) and getdate(working_day["date_working_day"])<=add_to_date(getdate(data.end_date),days=-1):
-			
 		room_doc = frappe.get_doc("Room", data.room_id)
 		room_doc.housekeeping_status = data.housekeeping_status 
 		room_doc.save()

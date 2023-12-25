@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Arrival Guest Report"] = {
+frappe.query_reports["Housekeeping Departure Guest Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -55,7 +55,7 @@ frappe.query_reports["Arrival Guest Report"] = {
 			"label": __("Group By"),
 			"on_change": function (query_report){ },
 			"hide_in_filter": 1,
-			"options":"\nreservation\nroom_types\narrival_date\nbusiness_source"
+			"options":"\nreservation\nroom_types\ndeparture_date\nbusiness_source"
 			
 		},
 		{
@@ -151,7 +151,7 @@ function setLinkField() {
 
 		args: {
 			property: property,
-			report: "Arrival Guest Report"
+			report: "Housekeeping Departure Guest Report"
 		},
 		callback: function (r) {
 			const show_columns = frappe.query_report.get_filter('show_columns');

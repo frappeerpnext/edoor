@@ -126,7 +126,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Revenue and Occupancy",
-   "link_count": 3,
+   "link_count": 4,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -162,18 +162,10 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
-   "label": "Housekeeping Report",
-   "link_count": 1,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
    "is_query_report": 1,
-   "label": "Arrival Stay Over Departure Guest",
+   "label": "Trail Balance Report",
    "link_count": 0,
-   "link_to": "Housekeeping Arrival Stay Over Departure Guest",
+   "link_to": "Trail Balance Report",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
@@ -182,7 +174,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Front Office Report",
-   "link_count": 1,
+   "link_count": 3,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -195,9 +187,67 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stay Over Guest",
+   "link_count": 0,
+   "link_to": "Stay Over Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Departure Guest",
+   "link_count": 0,
+   "link_to": "Departure Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Housekeeping Report",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Housekeeping Arrival Guest",
+   "link_count": 0,
+   "link_to": "Housekeeping Arrival Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Housekeeping Stay Over Guest",
+   "link_count": 0,
+   "link_to": "Housekeeping Stay Over Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Housekeeping Departure Guest",
+   "link_count": 0,
+   "link_to": "Housekeeping Departure Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-12-23 16:14:18.815834",
+ "modified": "2023-12-25 11:55:34.880453",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

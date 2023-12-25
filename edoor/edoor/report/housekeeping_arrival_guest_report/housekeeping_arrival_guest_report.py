@@ -5,7 +5,7 @@ import frappe
 
 
 def execute(filters=None):
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Housekeeping Arrival Guest Report"} )
 	
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters, report_config.report_fields, report_data)

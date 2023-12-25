@@ -5,7 +5,7 @@ import frappe
 
 
 def execute(filters=None):
-	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Arrival Guest Report"} )
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Stay Over Guest Report"} )
 	
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters, report_config.report_fields, report_data)
@@ -38,11 +38,9 @@ def get_report_data (filters, report_fields):
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
 		for parent in parent_row:
-			if filters.show_in_group_by=="arrival_date":
-				d  = frappe.format(parent,{"fieldtype":"Date"})
 			report_data.append({
 				"indent":0,
-				report_fields[0].fieldname: d,
+				report_fields[0].fieldname: parent,
 				"is_group":1
 			})
 
@@ -75,19 +73,19 @@ def get_data (filters,report_fields):
 
 def get_filters(filters):
 	sql = "where property=%(property)s  "
-	sql =  " {} and arrival_date between %(start_date)s and %(end_date)s ".format(sql) 
+	sql =  " {} and arrival_date < %(start_date)s and departure_date > %(end_date)s ".format(sql) 
 	if filters.business_source:
 		sql = "{} and business_source =  %(business_source)s".format(sql)
 	
 	if filters.room_types:
 		sql = """{} and  name in (
-			select distinct reservation_stay from `tabReservation Room Rate` rrr 
+			select distinct reservation_stay from `tabRoom Occupy` r 
 			{}	
 		) """.format(sql,get_room_rate_filters(filters))
 	return sql 
 
 def get_room_rate_filters(filters):
-	sql = "where property=%(property)s "
+	sql = "where property=%(property)s and is_departure = 0 and is_arrival = 0 "
 	sql =  " {} and date between %(start_date)s and %(end_date)s ".format(sql) 
 
 	if filters.business_source:

@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Arrival Guest Report"] = {
+frappe.query_reports["Housekeeping Arrival Guest Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -151,7 +151,7 @@ function setLinkField() {
 
 		args: {
 			property: property,
-			report: "Arrival Guest Report"
+			report: "Housekeeping Arrival Guest Report"
 		},
 		callback: function (r) {
 			const show_columns = frappe.query_report.get_filter('show_columns');

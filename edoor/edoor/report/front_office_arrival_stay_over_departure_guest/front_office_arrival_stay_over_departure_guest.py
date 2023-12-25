@@ -52,8 +52,9 @@ def get_columns(filters):
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'adr','label':'ADR','align':'right', 'fieldtype':'Currency',"show_in_report":1,"width":90},
-		{'fieldname':'room_rate','label':'Rate','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
 		{'fieldname':'total_room_rate','label':'Total Rate','fieldtype':'Currency','align':'right',"width":95,"show_in_report":1},
+		{'fieldname':'total_debit','label':'Debit','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
+		{'fieldname':'total_credit','label':'Credit','align':'right',"width":95,"show_in_report":1,'fieldtype':'Currency'},
 		{'fieldname':'reservation_status','label':'Status',"width":95,"show_in_report":1},
 		{'fieldname':'note','label':'Guest Note', 'align':'right',"show_in_report":1,"width":90},
 	]
@@ -61,13 +62,6 @@ def get_columns(filters):
 
 def get_filters(filters):
 	sql = " and property=%(property)s and is_active_reservation=1  "
-
-	if filters.filter_by =="Arrival Guest":
-		sql = sql +  " and rst.arrival_date between %(start_date)s and %(end_date)s "
-	elif filters.filter_by == "Departure Guest":
-		sql = sql +  " and rst.departure_date between %(start_date)s and %(end_date)s "
-	elif filters.filter_by == "Stay Over Guest":
-		sql = sql +  " and rst.arrival_date < %(start_date)s and rst.departure_date > %(end_date)s "
 
 	if filters.business_source:
 		sql = sql + " and rst.business_source = %(business_source)s"
@@ -105,6 +99,8 @@ def get_guest_data(filters):
 				reservation_status,
 				adr,
 				room_rate,
+				total_debit,
+				total_credit,
 				total_room_rate,
 				note
 			from `tabReservation Stay` rst
@@ -126,78 +122,95 @@ def get_report_data(filters,data):
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
 
 	report_data = []
-	if filters.filter_by =="Arrival Guest":
-		sql = sorted(set([d["arrival_date"] for d in data]))
-		
-		
-		for g in sql:
+
+	arrival = sorted(set([d["arrival_date"] for d in data]))
+	if arrival:	
+		report_data.append({
+				"indent":0,
+				"reservation": "Arrival Guest",
+				"is_group":1,
+
+			})	
+		for g in arrival:
 			d = g
 			id =  str(uuid.uuid4())
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
 				"id":id
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["arrival_date"]==g]
+			report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d["arrival_date"]==g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]==g]),sum([d["child"] for d in data if d["arrival_date"]==g])),
 				"adr":sum([d["adr"] for d in data if d["arrival_date"]==g]),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"parent":id
 			})
-	if filters.filter_by =="Stay Over Guest":
-		sql = sorted(set(stay_over_date))
-		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in sql]
 
+	stay_over = sorted(set(stay_over_date))
+	if stay_over:
+		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in stay_over]
+		report_data.append({
+				"indent":0,
+				"reservation": "Stay Over Guest",
+				"is_group":1,
+				"id":id
+			})	
 		for g in date:
 			d = g
 			id =  str(uuid.uuid4())
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
-				"id":id
+
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["arrival_date"]<g and d["departure_date"]>g]
+			report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d["arrival_date"]<g and d["departure_date"]>g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),sum([d["child"] for d in data if d["arrival_date"]<g and d["departure_date"]>g])),
 				"adr":sum([d["adr"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"parent":id
 			})
-	if filters.filter_by =="Departure Guest":
 		
-		sql = sorted(set([d["departure_date"] for d in data]))
-		for g in sql:
+	departure = sorted(set([d["departure_date"] for d in data]))
+	if departure:
+		report_data.append({
+				"indent":0,
+				"reservation": "Departure Guest",
+				"is_group":1,
+
+			})	
+		for g in departure:
 			d = g
 			id =  str(uuid.uuid4())
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
 				"id":id
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["departure_date"]==g]
+			report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d["departure_date"]==g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["departure_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["departure_date"]==g]),sum([d["child"] for d in data if d["departure_date"]==g])),
 				"adr":sum([d["adr"] for d in data if d["departure_date"]==g]),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"parent":id
 			})
 	report_data.append({
@@ -211,7 +224,7 @@ def get_report_data(filters,data):
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 				"adr":sum([d["adr"] for d in data]),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"is_grand_total":1
 			})
 	return report_data

@@ -180,7 +180,7 @@
                                             <CurrencyFormat :value="p.input_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}" />
                                         </td>
                                         <td class="border-1 p-2 text-right">
-                                            <CurrencyFormat :value="p.input_system_close_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}"/>
+                                            <CurrencyFormat :value="p.input_system_close_amount" :currency="{precision:p.currency_precision, pos_:p.pos_currency_format}"/>
                                         </td>
                                         <td class="border-1 p-2 text-right">
                                             <CurrencyFormat :value="p.input_close_amount" :currency="{precision:p.currency_precision, pos_currency_format:p.pos_currency_format}"/>

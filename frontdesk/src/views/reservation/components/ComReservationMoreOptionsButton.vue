@@ -281,56 +281,60 @@ function onGroupCheckIn() {
 }
 
 
-function onGroupUndoCheckIn() {
-
-
+function onGroupUndoCheckIn() { 
     if (rs.selecteds.filter(r=>r.reservation_status=='In-house').length ==0) {
         toast.add({ severity: 'warn', summary: "Group Undo Check In", detail: "Please select  In-house reservation stay to undo check in.", life: 3000 })
         return
     } else {
-        confirm.require({
-            message: `Are you sure you want to undo check in these reservation stay?`,
-            header: 'Undo Check In',
-            icon: 'pi pi-info-circle',
-            acceptClass: 'border-none crfm-dialog',
-            rejectClass: 'hidden',
-            acceptIcon: 'pi pi-check-circle',
-            acceptLabel: 'Ok',
-            accept: () => {
-                rs.loading = true
-                postApi("reservation.undo_check_in", {
-                   reservation_stay:rs.selecteds.filter(r=>r.reservation_status=='In-house').map(d=>d.name),
-                   reservation:rs.reservation.name,
-                   property:window.property_name
-                }).then((result) => {
-                    if (result) {
-                        //wait for equeue process finish
-                        // rs.LoadReservation(window.reservation, false)
-                        window.socket.emit("ReservationList", { property:window.property_name})
-                        window.socket.emit("ReservationStayList", { property:window.property_name})
-                        window.socket.emit("ComGuestLedger", { property:window.property_name})
-                        window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
-                        window.socket.emit("ReservationDetail", window.reservation)
-                        window.socket.emit("Frontdesk", window.property_name)
-                        window.socket.emit("FolioTransactionList", window.property_name)
-
-                    }
-                }).catch(err=>{
-                    rs.loading = false
-                })
+        const dialogRef = dialog.open(ComDialogNote, {
+        data:  {
+            api_url: "reservation.undo_check_in",
+            method: "POST",
+            confirm_message: "Are you sure you want to undo check in this reservation?",
+            data: {
+                reservation_stay:rs.selecteds.filter(r=>r.reservation_status=='In-house').map(d=>d.name),
+                reservation:rs.reservation.name,
+                property:window.property_name
+            }
+        },
+        props: {
+            header: "Undo Checked In",
+            style: {
+                width: '50vw',
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            const result = options.data;  
+            if (result) { 
+                rs.loading = false 
+                //wait for equeue process finish
+                // rs.LoadReservation(window.reservation, false)
+                window.socket.emit("ReservationList", { property:window.property_name})
+                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.socket.emit("Reports", window.property_name)
+                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationDetail", window.reservation)
+                window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("FolioTransactionList", window.property_name)
+                
+                setTimeout(() => {
+                    emit('onRefresh')
+                }, 1000);
+            }
 
             }
         });
-    }
-
-
-
+    } 
 }
 
 
-function onGroupCheckOut(is_not_undo = false) {
-    const isSelect = validateSelectReservation()
+function onGroupCheckOut(is_not_undo = false) { 
+    const isSelect = validateSelectReservation() 
     if (isSelect) {
         const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
         if (stays.length==0){
@@ -339,9 +343,9 @@ function onGroupCheckOut(is_not_undo = false) {
             return
         }
         else if (rs.selecteds.some(r => r.reservation_status !== 'In-house')) {
-    toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
-    return;
-}
+            toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
+            return;
+        }
 
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,
