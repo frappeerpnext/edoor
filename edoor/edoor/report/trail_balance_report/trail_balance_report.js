@@ -135,7 +135,7 @@ frappe.query_reports["Trail Balance Report"] = {
 			((column.fieldtype || "") == "Currency")
 		) {
 			if (origninal_value == 0) {
-				return "-"
+				return "<div style='text-align:" + (column.align || "left") + ";'>-</div>"
 			}
 		}
 

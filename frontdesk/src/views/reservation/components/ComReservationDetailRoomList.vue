@@ -99,7 +99,7 @@
                         </Column>
                         <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Balance">
                             <template #body="slotProps">
-                                <CurrencyFormat :value="slotProps.data.balance"/>
+                                <CurrencyFormat :value="slotProps.data.total_debit - slotProps.data.total_credit "/>
                             </template>
                         </Column>
                         <Column field="reservation_status" class="res__state__center text-center" header="Status">

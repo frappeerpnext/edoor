@@ -123,6 +123,10 @@ function onSave() {
             saving.value = false
         })
 }
+
+function onClose() {
+    op.value.hide();
+}
 </script>
 <style scoped>
 .text-color-black {

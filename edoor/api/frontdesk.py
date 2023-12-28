@@ -1712,3 +1712,80 @@ def get_house_keeping_status_backend():
             "working_date":working_day["date_working_day"] 
         })
     return housekeeping_status
+
+
+
+
+@frappe.whitelist()
+def get_arrival_stay_over_departure_backend():
+    property = frappe.defaults.get_user_default("business_branch")
+    
+    if not property:
+        data = frappe.db.get_list("Business Branch")
+        if len(data)>0:
+            property = data[0].name
+
+    data = {'arrival':[],'stay_over':[],'departure':[]}
+    if property:
+        working_day = get_working_day(property)
+        if working_day:
+            date = working_day["date_working_day"] 
+            if not date:
+                date = frappe.utils.today()
+            doc = frappe.get_doc("Business Branch",property)
+            
+            sql = "SELECT name,reference_number,room_type_alias,rooms,arrival_date,departure_date,business_source,room_nights,reservation_type,reservation_status,guest,guest_name,status_color from `tabReservation Stay` where property = '{}' and is_active_reservation = 1 and arrival_date = '{}'".format(property,date)
+            data["arrival"] = frappe.db.sql(sql,as_dict=1)
+            sql = """SELECT 
+                        name,
+                        reference_number,
+                        room_type_alias,
+                        rooms,
+                        arrival_date,
+                        departure_date,
+                        business_source,
+                        room_nights,
+                        reservation_type,
+                        reservation_status,
+                        guest,
+                        guest_name,
+                        status_color
+                    from `tabReservation Stay` 
+                    where 
+                        (property = '{0}' and 
+                        is_active_reservation = 1 and 
+                        departure_date = '{1}') or
+                        (property = '{0}' and 
+                        is_active_reservation = 1 and 
+                        checked_out_system_date = '{1}')
+                    """.format(property,date)
+            data["departure"] = frappe.db.sql(sql,as_dict=1)
+             
+            sql = """SELECT 
+                        name,
+                        reference_number,
+                        room_type_alias,
+                        rooms,
+                        arrival_date,
+                        departure_date,
+                        business_source,
+                        room_nights,
+                        reservation_type,
+                        reservation_status,
+                        guest,
+                        guest_name,
+                        status_color
+                    from `tabReservation Stay` 
+                    where 
+                        property = '{0}' and 
+                        arrival_date < '{1}' and  
+                        is_active_reservation = 1 and 
+                        departure_date > '{1}' and 
+                        reservation_status != 'Reserved'
+                    """.format(property,date)
+            data["stay_over"] = frappe.db.sql(sql,as_dict=1)
+
+
+    
+    return data
+            

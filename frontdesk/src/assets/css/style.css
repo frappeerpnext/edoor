@@ -1496,3 +1496,43 @@ align-items: center;
 .iframe-modal{
     height: 85vh;
 }
+.wrap-master-list-folio{
+    max-height: calc(100vh - 445px);
+    overflow-y: auto;
+}
+.di-page .total_folio_fix {
+    bottom: 70px !important;
+}
+.max-h-folio-dialgo{
+    max-height: calc(100vh - 350px) ;
+    min-height: calc(100vh - 350px) ;
+}
+.max-h-folio-stay-dialgo{
+    max-height: calc(100vh - 420px);
+    min-height: calc(100vh - 420px);
+}
+.di-page .max-h-folio-dialgo{
+    max-height: calc(100vh - 235px) !important;
+    min-height: calc(100vh - 235px) !important;
+}
+.di-page .wrap-master-list-folio {
+    max-height: calc(100vh - 332px);
+}
+.di-page .max-h-folio-stay-dialgo{
+    max-height: calc(100vh - 305px) ;
+    min-height: calc(100vh - 305px) ;
+}
+.p-dialog-maximized .max-h-folio-stay-dialgo{
+    max-height: calc(100vh - 268px) ;
+    min-height: calc(100vh - 268px) ;
+}
+.p-dialog-maximized .max-h-folio-dialgo{
+    max-height: calc(100vh - 186px) ;
+    min-height: calc(100vh - 186px) ;
+}
+.p-dialog-maximized .wrap-master-list-folio {
+    max-height: calc(100vh - 275px);
+}
+.doc_image_avatar .p-avatar.p-avatar-xl{
+    border-radius: 50%;
+}

@@ -60,17 +60,25 @@ def get_columns(filters):
 def get_filters(filters):
 	sql = " and property=%(property)s and is_active_reservation=1  "
 
-	if filters.filter_by =="Arrival Guest":
-		sql = sql +  " and rst.arrival_date between %(start_date)s and %(end_date)s "
-	elif filters.filter_by == "Departure Guest":
-		sql = sql +  " and rst.departure_date between %(start_date)s and %(end_date)s "
-	elif filters.filter_by == "Stay Over Guest":
-		sql = sql +  " and rst.arrival_date < %(start_date)s and rst.departure_date > %(end_date)s "
-
 	if filters.business_source:
 		sql = sql + " and rst.business_source = %(business_source)s"
 	if filters.get("room_types"):
-		sql = sql + " and rst.room_types in %(room_types)s "
+		sql =  """{} and  name in (
+			select distinct reservation_stay from `tabReservation Room Rate` rrr 
+			{}	
+		) """.format(sql,get_room_rate_filters(filters))
+	return sql
+
+def get_room_rate_filters(filters):
+	sql = "where property=%(property)s "
+	sql =  " {} and date between %(start_date)s and %(end_date)s ".format(sql) 
+
+	if filters.business_source:
+		sql = "{} and business_source =  %(business_source)s".format(sql)
+	
+	if filters.room_types:
+		sql = "{} and room_type_id  in %(room_types)s".format(sql)
+ 
 	return sql
 
 def get_guest_data(filters):
@@ -115,81 +123,94 @@ def get_guest_data(filters):
 	
 	return data
 
+
+
 def get_report_data(filters,data):
 	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d')
 	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
 	delta = end_date - start_date
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
+
 	report_data = []
 
-	if filters.filter_by =="Arrival Guest":
-		sql = sorted(set([d["arrival_date"] for d in data]))
-		for g in sql:
-			d = g
-			id =  str(uuid.uuid4())
-			report_data.append({
+	arrival = sorted(set([d["arrival_date"] for d in data]))
+	if arrival:	
+		report_data.append({
 				"indent":0,
+				"reservation": "Arrival Guest",
+				"is_group":1,
+
+			})	
+		for g in arrival:
+			d = g
+			report_data.append({
+				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
-				"id":id
+
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["arrival_date"]==g]
+			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["arrival_date"]==g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]==g]),sum([d["child"] for d in data if d["arrival_date"]==g])),
 				"is_total_row":1,
-				"is_group":0,
-				"parent":id
+				"is_group":1,
 			})
-	if filters.filter_by =="Stay Over Guest":
-		sql = sorted(set(stay_over_date))
-		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in sql]
+
+	stay_over = sorted(set(stay_over_date))
+	if stay_over:
+		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in stay_over]
+		report_data.append({
+				"indent":0,
+				"reservation": "Stay Over Guest",
+				"is_group":1,
+			})	
 		for g in date:
 			d = g
-			id =  str(uuid.uuid4())
 			report_data.append({
-				"indent":0,
-				"reservation": d,
+				"indent":1,
+				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
-				"id":id
+
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["arrival_date"]<g and d["departure_date"]>g]
+			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["arrival_date"]<g and d["departure_date"]>g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),sum([d["child"] for d in data if d["arrival_date"]<g and d["departure_date"]>g])),
 				"is_total_row":1,
-				"is_group":0,
-				"parent":id
+				"is_group":1,
 			})
-	if filters.filter_by =="Departure Guest":
 		
-		sql = sorted(set([d["departure_date"] for d in data]))
-		
-		for g in sql:
-			d = g
-			id =  str(uuid.uuid4())
-			report_data.append({
+	departure = sorted(set([d["departure_date"] for d in data]))
+	if departure:
+		report_data.append({
 				"indent":0,
+				"reservation": "Departure Guest",
+				"is_group":1,
+
+			})	
+		for g in departure:
+			d = g
+			report_data.append({
+				"indent":1,
 				"reservation": frappe.format(d,{"fieldtype":"Date"}),
 				"is_group":1,
-				"id":id
 			})
 			
-			report_data = report_data +  [d.update({"indent":1,"parent":id}) or d for d in data if d["departure_date"]==g]
+			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["departure_date"]==g]
 			report_data.append({
-				"indent":0,
+				"indent":1,
 				"reservation": "Total",
 				"room_nights":sum([d["room_nights"] for d in data if d["departure_date"]==g]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["departure_date"]==g]),sum([d["child"] for d in data if d["departure_date"]==g])),
 				"is_total_row":1,
-				"is_group":0,
-				"parent":id
+				"is_group":1,
 			})
 	report_data.append({
 				"indent":0,
@@ -201,7 +222,7 @@ def get_report_data(filters,data):
 				"room_nights":sum([d["room_nights"] for d in data ]),
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"is_grand_total":1
 			})
 	return report_data

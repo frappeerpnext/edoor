@@ -24,8 +24,9 @@
                         :value="data">
                         <Column field="file_url" header="File" headerStyle="width: 25px">
                             <template #body="slotProps"> 
+                                <div class="doc_image_avatar">
                                 <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url" :fileName="slotProps.data.file_name" />
-                            </template>
+                           </div> </template>
                         </Column>
                         <Column field="title" header="Title"></Column>
                         <Column v-if="showAttach" field="attached_to_name" header="Attach Name">
@@ -146,6 +147,7 @@ const onUrl = ref(false)
 const gv = inject("$gv")
 const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 function onModal(open){
+alert()
     if(!gv.cashier_shift?.name){
         toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
     }else{

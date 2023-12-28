@@ -18,8 +18,10 @@
     </div>
 </template>
 <script setup>
-    import {ref, useConfirm,deleteDoc,inject } from "@/plugin";
+    import {ref, useConfirm,deleteDoc,inject,useToast } from "@/plugin";
+    const gv = inject('$gv');
     const confirm = useConfirm()
+    const toast = useToast()
     const props = defineProps({
         data: Object
     })
@@ -35,6 +37,10 @@
         emit('onEdit', props.data.name)
     }
     function onDelete (){
+        if(!gv.cashier_shift?.name){
+        toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
+    return 
+	}
         confirm.require({
         message: 'Are you sure you want to delete reservation note?',
         header: 'Confirmation',

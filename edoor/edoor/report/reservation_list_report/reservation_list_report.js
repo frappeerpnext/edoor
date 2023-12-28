@@ -208,14 +208,30 @@ frappe.query_reports["Reservation List Report"] = {
 		 
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
-		
+		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
+		 
+
+		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
+		if (!value.toString().includes("text-align")){
+			value = "<div style='text-align:" + (column.align || "left") + ";'>" + value + "</div>"
+		}
+		
+		if (
+			(column.fieldtype || "") == "Int" ||
+			((column.fieldtype || "") == "Percent") ||
+			((column.fieldtype || "") == "Currency")
+		) {
+			if (origninal_value == 0) {
+				return "<div style='text-align:" + (column.align || "left") + ";'>-</div>"
+			}
+		}
+
 		var parser = new DOMParser(); // create a DOMParser object
 		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
 		var element = doc.querySelector("a"); // get the element by selector
 		if (data && data.indent==0) {
 			
- 
 			if(element){
 
 				value =$(`<span>${element.dataset.value}</span>`);  
@@ -223,9 +239,7 @@ frappe.query_reports["Reservation List Report"] = {
 				
 				value = $(`<span>${value}</span>`);
 			}
-			
-			
-
+			 
 				var $value = $(value).css("font-weight", "bold");
 				value = $value.wrap("<p></p>").parent().html();
 			 

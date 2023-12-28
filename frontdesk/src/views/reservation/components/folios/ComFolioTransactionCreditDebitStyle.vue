@@ -92,19 +92,19 @@
                             <CurrencyFormat :value="selectedFolio.total_credit" />
                         </template>
                     </Column>
-
+<!-- 
                     <Column footerStyle="text-align:right">
                         <template #footer>
                             <CurrencyFormat :value="totalBalance" />
                         </template>
-                    </Column>
+                    </Column> -->
 
 
-                    <!-- <Column footerStyle="text-align:right">
+                    <Column footerStyle="text-align:right">
                         <template #footer>
                             <CurrencyFormat :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
                         </template>
-                    </Column> -->
+                    </Column>
 
                     <Column />
                     <Column />

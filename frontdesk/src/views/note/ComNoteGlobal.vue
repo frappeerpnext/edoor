@@ -51,7 +51,7 @@
 						</div>
 						<div class="flex">
 							<span class="btn-in-note">
-								<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData" />
+								<ComNoteGlobalButtonMore :data="i" @onEdit="onEdit" @onDeleted="onLoadData()" />
 							</span>
 							<Button :class="i.custom_is_pin ? '' : 'hidden'"
 								class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">

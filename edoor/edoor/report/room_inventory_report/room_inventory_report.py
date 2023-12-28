@@ -11,12 +11,13 @@ def execute(filters=None):
 	min_max_day = get_min_max_day(filters)
 	columns = get_report_columns(filters,min_max_day)
 	report_data = get_report_data(filters,min_max_day)
+	
 
-	return columns, report_data["report_data"],None, None, report_data["get_report_summary"]
+	return columns, report_data["report_data"],None, report_data["report_chart"], report_data["report_summary"]
 
 def get_report_columns(filters,min_max_day):
 	columns = [
-		{"fieldname": "row_group", "label":"Room Type", "width": 250},
+		{"fieldname": "row_group", "label":"Room Type", "width": 200},
 	]
 	columns.append({
 		"fieldname":"total","label": "Total", "width":100, "align":"center"
@@ -33,8 +34,10 @@ def get_report_data(filters,min_max_day):
 	report_data = []
 	room_types = get_room_types(filters)
 	daily_property_data = get_daily_property_data(filters)
+ 
 	room_occupy = get_room_occupy(filters)
 	months = get_months(filters)
+
 	calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
 
 	for m in months:
@@ -147,42 +150,111 @@ def get_report_data(filters,min_max_day):
 		report_data.append(adult_record)
 		report_data.append(child_record)
 		report_data.append(pax_record)
-		#empty row for space
 
-		report_data.append({})
+		
 
-
+	grand_total_data = get_grand_total_row(filters, months, room_occupy, daily_property_data)
 	if len(months)>1:
-		report_data += (get_grand_total_row(filters, room_occupy, daily_property_data))
+		report_data += grand_total_data
 	
-	return {"report_data":report_data, "get_report_summary":get_report_summary(filters, room_occupy,daily_property_data)}
+	return {
+		"report_data":report_data, 
+		"report_summary":get_report_summary(filters, room_occupy,daily_property_data),
+		"report_chart": get_report_chart(filters,months, grand_total_data if len(months)>1 else report_data)
+	}
 
-def get_grand_total_row(filters, occupy_data, daily_property_data):
+def get_grand_total_row(filters,months, occupy_data, daily_property_data):
 	rows = [{
 		"row_group":"Grand Total",
 		"indent":0,
 		"is_group":1,
 	}]
 	
-	rows.append({
-		"row_group":"Vacant Room",
-		"indent":1,
-		"is_group":0,
-	})
 
+	min_day = min([d["min_date"].day for d in months])
+	max_day = max([d["max_date"].day for d in months])
 
-	# calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
-	# if calculate_room_occupancy_include_room_block  == 0:
-	# 	total_rooms = total_rooms - block
+	vacant_record = {"row_group": "Vacant Room","total":0,"indent":1,"is_group":0}
+	occupy_record = {"row_group": "Occupy","total":0,"indent":1,"is_group":0}
+	ooo_record = {"row_group": "Out of Order","total":0,"indent":1,"is_group":0}
+	occupancy_record = {"row_group": "Occupancy(%)","total":0,"indent":1,"is_group":1}
+	arrival_record = {"row_group": "Arrival","total":0,"indent":1,"is_group":0}
+	stay_over_record = {"row_group": "Stay Over","total":0,"indent":1,"is_group":0}
+	departure_record = {"row_group": "Departure","total":0,"indent":1,"is_group":0}
+	adult_record = {"row_group": "Adult","total":0,"indent":1,"is_group":0}
+	child_record = {"row_group": "Child","total":0,"indent":1,"is_group":0}
+	pax_record = {"row_group": "Pax","total":0,"indent":1,"is_group":0}
 
-	# row["occupy"] =  (total_rooms or 0) - (occupy + block)
-	# row["arrival"] = sum([d["arrival"] for d in  occupy_data])
-	# row["stay_over"] = sum([d["stay_over"] for d in  occupy_data])
-	# row["departure"] = sum([d["departure"] for d in  occupy_data])
-	# row["pax"] = sum([d["adult"] + d["child"] for d in  occupy_data])
-	# row["adult"] = sum([d["adult"]  for d in  occupy_data])
-	# row["child"] = sum([d["child"] for d in  occupy_data])
-	 
+	for n in range(min_day, max_day+1):
+		col_name = "col_" + str(n)
+		total_rooms = sum([d["total_room"] for d in daily_property_data if getdate(d["date"]).day == n])
+		occupy = sum([d["occupy"] for d in occupy_data if getdate(d["date"]).day == n])
+		block = sum([d["block"] for d in occupy_data if getdate(d["date"]).day == n])
+
+		vacant_record[col_name] = total_rooms - ((occupy or 0) + (block or 0))
+		vacant_record["total"] = (vacant_record["total"] or 0) + vacant_record[col_name] 
+		
+		#occupy record
+		occupy_record[col_name] = occupy
+		occupy_record["total"] = (occupy_record["total"] or 0) + occupy_record[col_name]
+
+		
+		#ooc record
+		ooo_record[col_name] =block
+		ooo_record["total"] = (ooo_record["total"] or 0) + ooo_record[col_name]
+		
+		#occupancy
+		calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
+		if calculate_room_occupancy_include_room_block==0:
+			total_rooms = total_rooms - (ooo_record[col_name] or 0)
+		if total_rooms<=0:
+			total_rooms = 1
+
+		occupancy_record[col_name] =round(occupy_record[col_name] /total_rooms * 100,2)
+	
+		#arrival
+		arrival_record[col_name] = sum(d["arrival"] for d  in  occupy_data  if getdate(d["date"]).day == n) or 0
+		arrival_record["total"] = (arrival_record["total"] or 0) + arrival_record[col_name]
+		
+		#stay over
+		stay_over_record[col_name] = sum(d["stay_over"] for d  in  occupy_data  if getdate(d["date"]).day == n) or 0
+		stay_over_record["total"] = (stay_over_record["total"] or 0) + stay_over_record[col_name]
+		
+		#departure
+		departure_record[col_name] = sum(d["departure"] for d  in  occupy_data  if getdate(d["date"]).day == n) or 0
+		departure_record["total"] = (departure_record["total"] or 0) + departure_record[col_name]
+
+		#adult
+		adult_record[col_name] = sum(d["adult"] for d  in  occupy_data  if getdate(d["date"]).day == n) or 0
+		adult_record["total"] = (adult_record["total"] or 0) + adult_record[col_name]
+		
+		#child
+		child_record[col_name] = sum(d["child"] for d  in   occupy_data  if getdate(d["date"]).day == n) or 0
+		child_record["total"] = (child_record["total"] or 0) + child_record[col_name]
+		#pax
+		pax_record[col_name] = sum(d["adult"]  + d["child"] for d  in   occupy_data  if getdate(d["date"]).day == n) or 0
+		pax_record["total"] = (pax_record["total"] or 0) + pax_record[col_name]
+
+	rows.append(vacant_record)
+	rows.append(occupy_record)
+	rows.append(ooo_record)
+	#update total occupancy percentage
+	total_rooms = sum([d["total_room"] for d in daily_property_data])
+	
+	if calculate_room_occupancy_include_room_block==0:
+		total_rooms = total_rooms - (ooo_record["total"] or 0)
+	if total_rooms<=0:
+		total_rooms = 1
+	occupancy_record["total"] =round((occupy_record["total"] / total_rooms) * 100,2)
+
+	rows.append(occupancy_record)
+	rows.append(arrival_record)
+	rows.append(stay_over_record)
+	rows.append(departure_record)
+	rows.append(adult_record)
+	rows.append(child_record)
+	rows.append(pax_record)
+
 	return rows
 
 def get_room_occupy(filters):
@@ -232,12 +304,12 @@ def get_months(filters):
 	return frappe.db.sql(sql,filters, as_dict=1)
 
 def get_report_summary(filters, occupay_data, daily_property_data):
-	
 	if not filters.show_summary:
 		return None
 	summary = []
 	
 	total_rooms = sum([d["total_room"] for d in  daily_property_data])
+ 
 	if not filters.show_summary_fields or  "total_room" in filters.show_summary_fields :
 		summary.append({
 			"label": "Total Rooms",
@@ -314,3 +386,53 @@ def get_report_summary(filters, occupay_data, daily_property_data):
 
 	
 	return summary
+
+
+def get_report_chart(filters,months,data):
+	min_day = min([d["min_date"].day for d in months])
+	max_day = max([d["max_date"].day for d in months])
+	precision = frappe.db.get_single_value("System Settings","currency_precision")
+	columns = []
+	datasets = [
+		{"name":"Vacant Room"},
+		{"name":"Occupy"},
+		{"name":"Occupancy(%)"},
+		{"name":"Out of Order"},
+		{"name":"Arrival"},
+		{"name":"Stay Over"},
+		{"name":"Departure"},
+		{"name":"Adult"},
+		{"name":"Child"},
+		{"name":"Pax"},
+	]
+	if filters.show_chart_fields:
+		datasets = [d for d in datasets if d["name"] in filters.show_chart_fields]
+
+	for n in range(min_day, max_day +1):
+		columns.append(n)
+
+
+	for s in datasets:
+		values = []
+		for n in range(min_day, max_day +1):
+			col_name= "col_" + str(n)
+			values.append(sum([d[col_name] for d in data if "row_group" in d and d["row_group"]==s["name"]]))
+		s["values"] = values
+	
+
+	chart = {
+		'data':{
+			'labels':columns,
+			'datasets':datasets
+		},
+		"type": filters.chart_type,
+		"lineOptions": {
+			"regionFill": 1,
+		},
+		'valuesOverPoints':1,
+		"axisOptions": {"xIsSeries": 1}
+	}
+
+	return chart
+
+

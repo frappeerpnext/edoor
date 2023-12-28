@@ -60,16 +60,35 @@ frappe.query_reports["Room Inventory Report"] = {
 
 		},
 		
-		// {
-		// 	"fieldname": "chart_type",
-		// 	"label": __("Chart Type"),
-		// 	"fieldtype": "Select",
-		// 	"options": "None\nbar\nline\npie",
-		// 	"default": "bar",
-		// 	hide_in_filter: 1,
-		// 	"on_change": function (query_report) { },
-		// }
+		{
+			"fieldname": "chart_type",
+			"label": __("Chart Type"),
+			"fieldtype": "Select",
+			"options": "None\nbar\nline\npie",
+			"default": "line",
+			hide_in_filter: 1,
+			"on_change": function (query_report) { },
+		},
+{
+			"fieldname": "show_chart_fields",
+			"label": __("Show chart fields"),
+			"fieldtype": "MultiSelectList",
+			"on_change": function (query_report) { },
+			"hide_in_filter": 1,
+			"options": [
+				{"value":"Vacant Room","description":"Vacant Room"},
+				{"value":"Occupy","description":"Occupy"},
+				{"value":"Occupancy(%)","description":"Occupancy(%)"},
+				{"value":"Out of Order","description":"Out of Order"},
+				{"value":"Arrival", "description":"Arrival"},
+				{"value":"Stay Over","description":"Stay Over"},
+				{"value":"Departure","description":"Departure", },
+				{"value":"Adult","description":"Adult"},
+				{"value":"Child", "description":"Adult"},
+				{"value":"Pax","description":"Pax"},
+			]
 
+		},
 	],
 	onload: function (report) {
 		report.page.add_inner_button("Preview Report", function () {
@@ -88,16 +107,13 @@ frappe.query_reports["Room Inventory Report"] = {
 
 		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
 
-
-		if (
-			(column.fieldtype || "") == "Int" ||
-			((column.fieldtype || "") == "Percent") ||
-			((column.fieldtype || "") == "Currency")
-		) {
-			if (origninal_value == 0) {
-				return "-"
-			}
+ 
+			
+		if (origninal_value == 0 || origninal_value == "0") {
+			return "<div style='text-align:" + (column.align || "left") + ";'>-</div>"
 		}
+	 
+
 
 
 

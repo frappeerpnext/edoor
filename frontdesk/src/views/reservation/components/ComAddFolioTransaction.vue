@@ -1,5 +1,4 @@
 <template>
-    {{ isSaving }}
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="grid justify-between override-input-text-width myInput">
             <div class="col pb-0">
@@ -635,9 +634,7 @@ function onSelectProduct(data){
     if (data?.value){
         getDoc("Product", data.value).then(r=>{
           
-            if(!doc.value.input_amount){
-                doc.value.input_amount = r.price || 0
-            }
+            doc.value.input_amount = r.price || 0
         })
     }
     

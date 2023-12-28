@@ -1,6 +1,6 @@
 <template>
 <div v-if="rs.reservationFolioList.length>0">
-    <div class="flex gap-2 min-h-folio-cus w-full">
+    <div class="flex gap-2  w-full max-h-folio-dialgo" >
         <div class="col-fixed mt-2 res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
             <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
         </div>

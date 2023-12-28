@@ -52,6 +52,10 @@
   "column_break_vbcw",
   "guest_type",
   "nationality",
+  "vendor_profile_section",
+  "vendor",
+  "column_break_rqcj",
+  "vendor_name",
   "discount_section",
   "discount_type",
   "column_break_15",
@@ -955,11 +959,32 @@
    "fieldname": "business_source_type",
    "fieldtype": "Data",
    "label": "Business Source Type"
+  },
+  {
+   "fieldname": "vendor_profile_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Profile"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "column_break_rqcj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Data",
+   "label": "Vendor Name",
+   "options": "Customer"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-18 16:22:01.614422",
+ "modified": "2023-12-26 14:17:35.674316",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

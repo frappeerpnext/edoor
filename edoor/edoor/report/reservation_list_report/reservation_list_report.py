@@ -36,7 +36,7 @@ def get_columns(filters):
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
 		{"fieldname":"arrival_date", 'align':'center',"label":"Arrival", "fieldtype":"Date","width":95,"show_in_report":1},
 		{"fieldname":"departure_date",'align':'center', "label":"Departure", "fieldtype":"Date","width":95,"show_in_report":1},
-		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1,'align':'center'},
+		{'fieldname':'room_nights','label':'Room Night',"width":40,"show_in_report":1,'align':'center',"fieldtype":"Int"},
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
@@ -292,8 +292,10 @@ def get_report_data(filters,data):
 				"total_debit":sum([d["total_debit"] for d in data if d[group_column["data_field"]]==g]),
 				"total_credit":sum([d["total_credit"] for d in data if d[group_column["data_field"]]==g]),
 				"balance":sum([d["balance"] for d in data if d[group_column["data_field"]]==g]),
+				"adr":sum([d["adr"] for d in data if d[group_column["data_field"]]==g]),
+				"total_room_rate":sum([d["total_room_rate"] for d in data if d[group_column["data_field"]]==g]),
 				"is_total_row":1,
-				"is_group":0,
+				"is_group":1,
 				"parent":id
 			})
 
@@ -309,6 +311,8 @@ def get_report_data(filters,data):
 				"total_debit":sum([d["total_debit"] for d in data]),
 				"total_credit":sum([d["total_credit"] for d in data]),
 				"balance":sum([d["balance"] for d in data ]),
+				"adr":sum([d["adr"] for d in data ]),
+				"total_room_rate":sum([d["total_room_rate"] for d in data ]),
 				"is_total_row":1,
 				"is_group":0,
 				"is_grand_total":1
@@ -322,6 +326,8 @@ def get_report_data(filters,data):
 			"total_debit":sum([d["total_debit"] for d in data]),
 			"total_credit":sum([d["total_credit"] for d in data]),
 			"balance":sum([d["balance"] for d in data ]),
+			"adr":sum([d["adr"] for d in data ]),
+			"total_room_rate":sum([d["total_room_rate"] for d in data ]),
 			"room_nights":sum([d["room_nights"] for d in data ]),
 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
 			"is_total_row":1

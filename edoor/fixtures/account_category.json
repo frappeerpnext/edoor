@@ -108,15 +108,6 @@
   "sort_order": 600
  },
  {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 100
- },
- {
   "account_category": "Payment",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -124,5 +115,14 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1300
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 100
  }
 ]

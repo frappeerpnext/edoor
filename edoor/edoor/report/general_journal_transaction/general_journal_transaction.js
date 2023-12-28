@@ -160,12 +160,12 @@ frappe.query_reports["General Journal Transaction"] = {
 			"label": __("Ledger Type"),
 			"fieldtype": "MultiSelectList",
 			"options":[
-				{"label":"Guest Ledger", "value":"Reservation Folio"},
-				{"label":"Deposit Ledger", "value":"Deposit Ledger"},
-				{"label":"Desk Folio", "value":"Desk Folio"},
-				{"label":"City Ledger", "value":"City Ledger"},
-				{"label":"Payable Ledger", "value":"Payable Ledger"},
-				{"label":"F&B", "value":"Cashier Shift"}
+				{"description":"Guest Ledger", "value":"Reservation Folio"},
+				{"description":"Deposit Ledger", "value":"Deposit Ledger"},
+				{"description":"Desk Folio", "value":"Desk Folio"},
+				{"description":"City Ledger", "value":"City Ledger"},
+				{"description":"Payable Ledger", "value":"Payable Ledger"},
+				{"description":"F&B", "value":"Cashier Shift"}
 			],
 			"on_change": function (query_report) {},
 			hide_in_filter:1,

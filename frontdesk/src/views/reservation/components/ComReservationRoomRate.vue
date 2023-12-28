@@ -157,7 +157,7 @@ function onEditRoomRate(room_rate = null){
         reservation:rs.reservation,
         },
       props: {
-        header: 'Edit Room Rate ',
+        header: 'Edit Room Rate',
         style: {
           width: '50vw',
         },

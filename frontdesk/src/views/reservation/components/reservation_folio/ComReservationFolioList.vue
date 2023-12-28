@@ -90,7 +90,7 @@
         </Accordion>
     </div>
     <div :class="is_page == true ? 'page_total_foliolist' : 'total_foliolist'"
-        class="flex flex-column bg-white mt-3 fixed  " style="width: 350px; bottom: 0px; z-index: 1;">
+        class="flex flex-column bg-white mt-3 fixed total_folio_fix " style="width: 350px; bottom: 0px; z-index: 1;">
         <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
             <div class="pr-3"><label>Total Debit</label></div>
             <div><span><span class="white-space-nowrap font-medium">

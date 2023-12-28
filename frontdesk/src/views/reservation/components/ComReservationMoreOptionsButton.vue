@@ -52,7 +52,7 @@
                     <ComIcon icon="checkoutBlack" style="height: 14px;" />
                     <span class="ml-2">Group Check Out</span>
                 </button>
-                <button @click="onGroupCheckOut(false)"
+                <button @click="onGroupUndoCheckOut"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
                     <span class="ml-2">Group Undo Check Out</span>
@@ -224,7 +224,8 @@ function validateSelectReservation() {
 
 
 function onGroupCheckIn() {
-    if (rs.selecteds.length == 0) {
+    const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
+    if (stays.length == 0) {
         if (rs.reservationStays.length > 1) {
             toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select reservation stay to check in.", life: 3000 })
             return
@@ -333,7 +334,7 @@ function onGroupUndoCheckIn() {
 }
 
 
-function onGroupCheckOut(is_not_undo = false) { 
+function onGroupCheckOut(is_not_undo = false) {  
     const isSelect = validateSelectReservation() 
     if (isSelect) {
         const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
@@ -346,7 +347,7 @@ function onGroupCheckOut(is_not_undo = false) {
             toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
             return;
         }
-
+ 
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,
             header: 'Group Check Out',
@@ -379,6 +380,59 @@ function onGroupCheckOut(is_not_undo = false) {
                 })
 
             }
+        }); 
+    }
+}
+
+function onGroupUndoCheckOut () { 
+    const isSelect = validateSelectReservation()  
+    if (isSelect) {
+        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==0 ).map((r) => r.name)
+        if (stays.length==0){ 
+            toast.add({ severity: 'warn', detail: "Please select check out reservation to performance undo check out", life: 3000 })
+            return
+        } else if (rs.selecteds.some(r => r.reservation_status === 'In-house')) {
+            toast.add({ severity: 'warn', detail: "Reservation has not been checked out yet", life: 3000 });
+            return;
+        }
+        const dialogRef = dialog.open(ComDialogNote, {
+            data:  {
+                api_url: "reservation.undo_check_out",
+                method: "POST",
+                confirm_message: "Are you sure you want to undo check out this reservation?",
+                data: {
+                    property: rs.reservation.property,
+                    reservation_stays:stays
+                }
+            },
+            props: {
+                header: "Undo Checked Out",
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
+            },
+            onClose: (options) => {
+                const data = options.data 
+                if (options.data){
+                    rs.reservationStay = data.data.message
+                    window.socket.emit("Frontdesk", window.property_name);
+                    window.socket.emit("Dashboard", window.property_name);
+                    window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("ReservationStayList", { property:window.property_name})
+                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("Reports", window.property_name)
+                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("FolioTransactionList", window.property_name)
+
+                    rs.LoadReservation()
+                }
+                
+            }
+
         });
     }
 }

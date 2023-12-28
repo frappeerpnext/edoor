@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="flex min-h-folio-cus" v-if="rs.folios?.length > 0">
+        <div class="flex max-h-folio-stay-dialgo" v-if="rs.folios?.length > 0">
             <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
                 <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />

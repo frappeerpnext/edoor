@@ -14,15 +14,7 @@ frappe.query_reports["Housekeeping Arrival Stay Over Departure Guest"] = {
 				setLinkField()
 			},
 		},
-		{
-			"fieldname": "filter_by",
-			"label": __("Filter By"),
-			"fieldtype": "Select",
-			"options": "Arrival Guest\nStay Over Guest\nDeparture Guest",
-			default:"Arrival Guest",
-			"on_change": function (query_report) {},
-			
-		},
+		
 		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
@@ -83,7 +75,7 @@ frappe.query_reports["Housekeeping Arrival Stay Over Departure Guest"] = {
 		var parser = new DOMParser(); // create a DOMParser object
 		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
 		var element = doc.querySelector("a"); // get the element by selector
-		if (data && data.indent==0) {
+		if (data && data.is_group==1) {
 			
  
 			if(element){
@@ -100,14 +92,6 @@ frappe.query_reports["Housekeeping Arrival Stay Over Departure Guest"] = {
 				value = $value.wrap("<p></p>").parent().html();
 			 
 		
-		}else {
-			if(column.fieldtype=="Link"){
-				
-				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
-
- 
-			}
-			
 		}
 		
 		return value;

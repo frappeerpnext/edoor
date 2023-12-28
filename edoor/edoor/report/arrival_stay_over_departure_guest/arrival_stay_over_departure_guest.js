@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Front Office Arrival Stay Over Departure Guest"] = {
+frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -14,7 +14,6 @@ frappe.query_reports["Front Office Arrival Stay Over Departure Guest"] = {
 				setLinkField()
 			},
 		},
-		
 		{
 			"fieldname":"start_date",
 			"label": __("Start Date"),
@@ -92,14 +91,6 @@ frappe.query_reports["Front Office Arrival Stay Over Departure Guest"] = {
 				value = $value.wrap("<p></p>").parent().html();
 			 
 		
-		}else {
-			// if(column.fieldtype=="Link"){
-				
-			// 	value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
-
- 
-			// }
-			
 		}
 		
 		return value;
