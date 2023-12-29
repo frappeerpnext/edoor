@@ -2,7 +2,7 @@
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="true" :loading="loading">
         <TabView>
             <TabPanel header="Cashier Shift Information">
-
+                <Message v-if="!doc.is_edoor_shift">This shift is an ePOS shift. Please ask ePOS user to close their shift.</Message>
                 <div class="grid mt-2">
                     <div class="col">
                         <ComReservationStayPanel  title="Shift Information">
@@ -13,6 +13,7 @@
                                    
                                     <span  v-if="doc.is_edoor_shift" class="ms-2 border-round-lg py-1 line-height-2 px-3 text-white font-medium bg-blue-700 me-1"> eDoor</span>
                                    <span v-else class="ms-3 border-round-lg line-height-2 py-1 px-3 text-white font-medium bg-red-400 me-1"> ePOS</span>
+                                   
                                     
                                     </div>
                                 </div>
@@ -296,7 +297,8 @@
 
 
             <Button class="border-none" v-if="doc.is_closed == 0 && doc.is_edoor_shift==1" @click="onEditCashierShift">Edit</Button>
-            <Button class="border-none" v-if="doc.is_closed == 0" @click="onOpenCloseShift">Close Shift</Button>
+            <Button class="border-none" v-if="doc.is_closed == 0 && doc.is_edoor_shift==1" @click="onOpenCloseShift">Close Shift</Button>
+            <Button class="border-none" v-else-if="doc.is_closed == 0 && doc.is_edoor_shift==0" @click="onOpenCloseShift">Close</Button>
 
         </template>
     </ComDialogContent>
@@ -423,7 +425,7 @@ function onEditCashierShift() {
 function onOpenCloseShift() {
 
     if (doc.value.is_edoor_shift == 0) {
-        toast.add({ severity: 'warn', summary: "This shift is an ePOS shift. Please ask ePOS user to close their shift.", detail: '', life: 3000 })
+        dialogRef.value.close()
     } else {
         dialog.open(ComCloseShift, {
         data:{

@@ -30,7 +30,7 @@
                 <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left"  :loading="loading" :disabled="currentStep == 1" v-if="currentStep < 9" @click="onBack" />
                 <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading" iconPos="right" :disabled="currentStep == steps.length" v-if="currentStep < 8" @click="onNext" />
                 <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onFinish">Finish</Button>
-                <Button class="border-none" :loading="loading" v-if="currentStep == 9" @click="onClose">Close</Button>
+                <Button class="border-none" v-if="currentStep == 9" @click="onClose">Close</Button>
             </div>
             <div class="">
                 <template v-if="currentStep == 5">
@@ -48,7 +48,6 @@
 <script setup>
 import { ref, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } from '@/plugin';
 import ComNightAuditReport from './components/ComNightAuditReport.vue'
-
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
@@ -60,7 +59,7 @@ const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
-const currentStep = ref(6)
+const currentStep = ref(9)
 const loading = ref(false)
 
 const steps = ref([
@@ -133,11 +132,16 @@ function onFinish() {
             postApi("frontdesk.run_night_audit", {
                 property: setting?.property?.name,
                 working_day:working_day.name
-            }, "", false).then((result) => {
+            }, "", false).then((result) => { 
                 currentStep.value = 9
                 refreshReport()
                 loading.value = false;
                 window.socket.emit("RunNightAudit",{property:window.property_name, action:"reload_page",session_id:window.session_id})
+                gv.cashier_shift = result.message.cashier_shift
+                localStorage.setItem("edoor_working_day", JSON.stringify(result.message))
+                window.working_day = result.message
+                gv.working_day = result.message
+                window.current_working_date = gv.working_day.date_working_day
             }).catch((err)=>{
                 loading.value = false;
             }).finally(() => {

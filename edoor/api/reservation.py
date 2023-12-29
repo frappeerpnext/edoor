@@ -865,9 +865,8 @@ def check_out(reservation,reservation_stays=None):
         data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
         if data_balance:
             balance = data_balance[0]["balance"] or 0
-            
 
-            if abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+            if balance> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
                 frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
 
         stay.checked_out_by = frappe.db.get_value("User", frappe.session.user,"full_name")
@@ -1563,7 +1562,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         if data_balance:
             balance = data_balance[0]["balance"] or 0
 
-        if abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+        if abs(round(balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
             frappe.throw("You have folio balance in reservation stay {}. To {} a reservation, balace must be 0".format(stay.name, status))
 
         stay.reservation_status = status

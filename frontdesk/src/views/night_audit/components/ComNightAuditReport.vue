@@ -1,13 +1,17 @@
-<template >
+<template > 
     <div>
-        <div class="primary_message">
-            <h2 class="text-4xl">Congratulation!</h2>
-            <p>Night audit process executed successfully.</p>
-            <p>The system date has been updated to {{ date }}. Kindly provide the printed report to your supervisor.</p>
-        </div>
+            <div class="message-content">
+                <Message severity="info" @close="closeMessage">
+                    <h2 class="text-4xl">Congratulation!</h2>
+                    <p>Night audit process executed successfully.</p>
+                    <p>The system date has been updated to {{ date }}. Kindly provide the printed report to your supervisor.</p>
+                </Message>           
+            </div>
+
+        
         <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
             <SplitterPanel :size="25" class="pa-4">
-                <div class="p-2">
+                <div class="p-2 overflow-y-auto" style="max-height: calc(100vh - 380px)">
                     <Button :class="{ active: activeButton === index }" class="night-audit-report-btn"
                         @click="onViewReport(d, activeButton = index)" v-for="(d, index) in report_list" :key="index">
                         {{ d.report_title }}
@@ -27,8 +31,9 @@
                         </div>
                     </div>
 
-                    <iframe @load="onIframeLoaded()" style="height:700px;" id="iframe_night_audit_report" width="100%"
+                    <iframe @load="onIframeLoaded()" id="iframe_night_audit_report" width="100%"
                         :src="url"></iframe>
+                        
                 </div>
                 <div v-else class="p-2 flex align-items-center h-100 justify-center">
                     <p class="text-center text-2xl">Please select report</p>
@@ -50,10 +55,13 @@ const url = ref()
 const activeButton = ref(0)
 const letter_head = ref(window.setting.property.default_letter_head)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
+let isShowMessage = true
 function onViewReport(rpt, activeButton) {
     selectedReport.value = rpt
-    showReport()
+    showReport() 
 }
+
+
 
 
 function onPrint() {
@@ -63,6 +71,11 @@ function onPrint() {
     }
 }
 
+function closeMessage () { 
+    isShowMessage = false
+    setIframeHeight(0)
+    
+}
 
 function showReport() {
     const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
@@ -78,6 +91,8 @@ function showReport() {
     if (el) {
         el.contentWindow.location.replace(url.value)
     }
+    
+    setIframeHeight()
 }
 
 function onIframeLoaded() {
@@ -90,7 +105,32 @@ function onSelectLetterHead(d) {
     showReport()
 }
 
-onMounted(() => {
+const setIframeHeight = (delay = 500) => {
+    
+    let heightMessage = -30
+    
+    const dialogContent = document.querySelector('.p-dialog-content')
+    if (isShowMessage){
+        const messageContent = document.querySelector('.message-content') 
+        heightMessage = messageContent.clientHeight
+    }
+    setTimeout(function(){
+        const iframeContent = document.getElementById('iframe_night_audit_report')
+        
+        const nightAuditStep = document.querySelector('.wrape-step-night-audit').clientHeight
+
+        const height = dialogContent.clientHeight 
+
+        const heightOfContent = height - (heightMessage + 37.6 + nightAuditStep + 140)
+
+        iframeContent.style.height = heightOfContent + 'px' 
+    }, delay)
+
+    
+ 
+}
+
+onMounted(() => { 
     date.value = moment(working_day.date_working_day).format("MMMM DD, YYYY")
     getDocList("System Report", {
         fields: ["*"],
@@ -105,7 +145,7 @@ onMounted(() => {
             selectedReport.value = data[0]
             showReport()
         }
-    })
+    }) 
 
 
 })

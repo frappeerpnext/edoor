@@ -15,6 +15,8 @@ from edoor.api.utils import update_reservation
 
 class ReservationStay(Document):
 	def  validate(self):
+		
+
 		working_day = get_working_day(self.property)
 		
 		if not self.reservation:
@@ -35,9 +37,7 @@ class ReservationStay(Document):
 				self.working_day = working_day["name"]
 				self.working_date = working_day["date_working_day"]
 				self.cashier_shift = working_day["cashier_shift"]["name"]
-
  
-
 		reservation_status = frappe.get_doc("Reservation Status", self.reservation_status)
 		#check with old doc
 		if not self.is_new():
@@ -160,14 +160,11 @@ class ReservationStay(Document):
 
 		self.balance  = (self.total_debit or 0)  -  (self.total_credit or 0)
 
-		
 		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-		if self.balance < (Decimal('0.1') ** int(currency_precision)):
+		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
 			self.balance = 0
 
-
-
-
+ 
 		#update note & housekeeping note
 		if self.is_new():
 			#set default check in and check out time
@@ -189,9 +186,9 @@ class ReservationStay(Document):
 				if self.housekeeping_note != note:
 					self = update_housekeeping_note(self=self)
 
+ 
+
 	def after_insert(self):
-		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_rate", queue='short', self = self)
-		# frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', self = self)
 		generate_room_occupy(self)
 		generate_room_rate(self)
 
@@ -207,6 +204,7 @@ class ReservationStay(Document):
 		}])
 
 	def on_update(self):
+		
 		if self.is_master:
 			reservation_stays = frappe.get_list("Reservation Stay",filters={
 				'reservation': self.reservation

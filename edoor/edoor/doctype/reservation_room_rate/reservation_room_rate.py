@@ -97,7 +97,6 @@ class ReservationRoomRate(Document):
 
 	def on_update(self):
 		# update is complimentary and house use
- 
 		sql = """
 			update `tabRoom Occupy` 
 			set 

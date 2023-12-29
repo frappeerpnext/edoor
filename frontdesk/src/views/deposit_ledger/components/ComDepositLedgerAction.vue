@@ -222,7 +222,7 @@ function reloadData() {
 }
 
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name})
+    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name,delay:0})
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;

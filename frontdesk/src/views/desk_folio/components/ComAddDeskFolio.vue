@@ -5,7 +5,7 @@
         <div class="col-6">
             <label>Posting Date</label>
             <div>
-                <Calendar selectOtherMonths class="w-full" showIcon v-model="data.posting_date" :manualInput="false" :disabled="true" :min-date="working_day" dateFormat="dd-mm-yy"/>
+                <Calendar selectOtherMonths class="w-full" showIcon v-model="data.posting_date" :manualInput="false" :disabled="false" :max-date="working_day" dateFormat="dd-mm-yy"/>
             </div>
         </div> 
         <div class="col-6">

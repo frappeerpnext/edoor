@@ -51,7 +51,7 @@
 			</div>
 		</div>
 		<div class="overflow-auto h-full pb-4">
-			<ComPlaceholder text="No Data" height="70vh" :loading="loading.value" :is-not-empty="data.length > 0">
+			<ComPlaceholder text="No Data" MaxHeight="70vh" :loading="loading.value" :is-not-empty="data.length > 0">
 				<DataTable 
 					class="res_list_scroll" 
 					:resizableColumns="true" 
@@ -137,7 +137,7 @@
 					</div>
 					<ComSelect class="col-6 " v-model="filter.type" :options="ref_data?.referenceTypes" v-if="ref_data?.referenceTypes.length>1" isMultipleSelect
 						optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="3"
-						@onSelected="loadData(false, $event)" />
+						@onSelected="loadData(false, $event)" /> 
 					<ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
 						placeholder="Please Select User" doctype="User" @onSelected="loadData(false, $event)" />
 				</div>
@@ -223,6 +223,10 @@ function loadData(show_loading = true) {
 	if (filter.value?.custom_posting_date) {
         const formattedDate = moment(filter.value.custom_posting_date, 'DD-MM-YYYY').format('YYYY-MM-DD');
         filters.push(['custom_posting_date', '=', formattedDate]);
+    }
+
+	if (filter.value?.selected_comment_by) { 
+        filters.push(['comment_by', '=', filter.value.selected_comment_by]);
     }
 
 	getDocList('Comment', {

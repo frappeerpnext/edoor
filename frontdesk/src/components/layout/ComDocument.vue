@@ -146,8 +146,7 @@ const dialog = useDialog();
 const onUrl = ref(false)
 const gv = inject("$gv")
 const pageState = ref({ page: 0, rows: 20, totalRecords: 0, activePage: 0 })
-function onModal(open){
-alert()
+function onModal(open){ 
     if(!gv.cashier_shift?.name){
         toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
     }else{

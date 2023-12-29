@@ -70,7 +70,7 @@
                 <DataTable 
                 class="tb-cs-datatable"
                 resizableColumns 
-                columnResizeMode="expand" 
+                columnResizeMode="fit" 
                 showGridlines 
                 stateStorage="local"
                 stateKey="table_guest_ledger_state" 
@@ -144,11 +144,11 @@
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
+                    <Calendar panelClass="no-btn-clear" class="w-full"  showButtonBar :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
                 <div class="col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
+                    <Calendar panelClass="no-btn-clear" showButtonBar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
                 </div>
                 <div class="col-4">
@@ -253,7 +253,7 @@ function onPrint() {
             name: window.property_name,
             report_name: "Guest Ledger Transaction Report",
             fullheight: true,
-            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","reservation_status","is_master"]
+            filter_options:["start_date","end_date","reservation","reservation_stay","business_source","guest","is_master"]
         },
         props: {
             header: "Guest Ledger Transaction",
@@ -305,8 +305,8 @@ function loadData(show_loading=true) {
     summary.value = []
     gv.loading = show_loading
     const filters = JSON.parse(JSON.stringify(filter.value))
-    filters.start_date = moment(filter.value.start_date).format("YYYY-MM-DD")
-    filters.end_date = moment(filter.value.end_date).format("YYYY-MM-DD")
+    filters.start_date = moment(filter.value.start_date).format('yyyy-MM-DD')
+    filters.end_date = moment(filter.value.end_date).format('yyyy-MM-DD')
     filters.property = property.name
     filters.order_by = order.value.order_by
     filters.order_type = order.value.order_type

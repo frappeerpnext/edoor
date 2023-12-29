@@ -244,7 +244,7 @@
 import { ref, inject,onMounted } from "@/plugin"
 import Calendar from 'primevue/calendar';
 import Checkbox from 'primevue/checkbox';
-const emit = defineEmits(['onFilter'])
+const emit = defineEmits(['onFilter','onGetHeight'])
 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const user = JSON.parse(localStorage.getItem("edoor_user"))
@@ -256,9 +256,10 @@ const props = defineProps({
     filter: Object
 })
 
-function onShowfilter() {
+function onShowfilter() { 
     showFilter.value = !showFilter.value
     localStorage.setItem("edoor_show_filter", showFilter.value ? "1" : "0") 
+    emit("onGetHeight", showFilter)
 }
 const showCustomReport = ref()
 

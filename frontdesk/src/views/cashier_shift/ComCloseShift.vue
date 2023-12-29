@@ -305,6 +305,10 @@ function onCloseShift() {
         message: 'Are you sure you can to close this shift?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none crfm-dialog',
+        rejectClass: 'hidden',
+        acceptIcon: 'pi pi-check-circle',
+        acceptLabel: 'Ok',
         accept: () => {
             loading.value = true
 

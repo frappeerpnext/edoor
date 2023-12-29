@@ -29,7 +29,7 @@ class Reservation(Document):
 		self.pax = (self.adult or 1) + (self.child or 0)
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0) 
 		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-		if self.balance < (Decimal('0.1') ** int(currency_precision)):
+		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
 			self.balance = 0
 			
 		#update note & housekeeping note

@@ -295,7 +295,7 @@ def get_report_data(filters,data):
 				"adr":sum([d["adr"] for d in data if d[group_column["data_field"]]==g]),
 				"total_room_rate":sum([d["total_room_rate"] for d in data if d[group_column["data_field"]]==g]),
 				"is_total_row":1,
-				"is_group":1,
+				"is_group":0,
 				"parent":id
 			})
 

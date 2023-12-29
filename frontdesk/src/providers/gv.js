@@ -7,7 +7,8 @@ export default class Gv {
 		this.setting = {}
 		this.countries = []
 		this.loading = false 
-		this.cashier_shift={}		
+		this.cashier_shift={}
+		this.working_day = {}		
 	}
 
 	handleServerMessage(message){ 

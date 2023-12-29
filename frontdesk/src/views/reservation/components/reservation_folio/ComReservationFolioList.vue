@@ -173,7 +173,7 @@ function onAddNewFolio(stay) {
             const data = options.data;
             if (data != undefined) {
 
-                loadReservationFolioList(data.name)
+                // loadReservationFolioList(data.name)
             }
         }
     })

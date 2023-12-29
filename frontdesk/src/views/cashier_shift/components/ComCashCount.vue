@@ -55,7 +55,7 @@
                     <td class="w-auto border-1 p-2 font-semibold">Note Type</td>
                     <td class="w-auto border-1 p-2 font-semibold">Total Note</td>
                     <td class="w-auto border-1 p-2 font-semibold text-right">Total Amount</td>
-                </tr>
+                </tr> 
                 <template v-for="(c, index) in summary.expected_cash" :key="index">
                     <tr>
                         <td colspan="3" style='background: rgb(243, 243, 243);' class="w-auto border-1 p-2 font-semibold">
@@ -89,23 +89,6 @@
                                 :currency="cashCountSetting?.filter(r => r.currency == c.currency)[0]" />
                             </strong>
 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="w-auto border-1 p-2" colspan="2"><strong>Expected Cash</strong></td>
-                        <td class="w-auto border-1 p-2 font-semibold text-right">
-                            <strong> <CurrencyFormat :value="c.expected_amount" :currency="cashCountSetting?.filter(r => r.currency == c.currency)[0]" /></strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="w-auto border-1 p-2" colspan="2"><strong>Difference Amount</strong></td>
-                        <td class="w-auto border-1 p-2 font-semibold text-right">
-                            <strong>
-                            <CurrencyFormat
-                                :value="cashCountSetting?.filter(r => r.currency == c.currency).reduce((n, d) => n + (d.total_note * d.value || 0), 0) - c.expected_amount"
-                                :currency="cashCountSetting?.filter(r => r.currency == c.currency)[0]" />
-
-                                </strong>
                         </td>
                     </tr>
                 </template>

@@ -248,7 +248,6 @@ function pageChange(page) {
 }
 
 function loadData(show_loading = true) {
-    
     let filters = [
         ["Deposit Ledger", "property", '=', property.name]
     ]

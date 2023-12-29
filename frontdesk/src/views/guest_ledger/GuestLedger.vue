@@ -71,7 +71,7 @@
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
 
-                <DataTable class="tb-cs-datatable" @page="onPage" :resizableColumns="true" columnResizeMode="expand"
+                <DataTable class="tb-cs-datatable" @page="onPage" :resizableColumns="true" columnResizeMode="fit"
                     showGridlines stateStorage="local" stateKey="table_guest_ledger_state" :reorderableColumns="true"
                     scrollable :value="data" paginator :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]"
                     tableStyle="min-width: 50rem">

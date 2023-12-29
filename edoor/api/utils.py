@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 
 import frappe
 import json
@@ -370,11 +371,15 @@ def update_reservation(name=None,doc=None, run_commit = True):
         """.format(doc.name)
         room_info_data =frappe.db.sql(sql_room_info, as_dict=1)
 
+ 
 
+        doc.total_debit = folio_data[0]["debit"] or 0
+        doc.total_credit= folio_data[0]["credit"] or 0
+        doc.balance = doc.total_debit - doc.total_credit
 
-
-        doc.total_debit = folio_data[0]["debit"]
-        doc.total_credit= folio_data[0]["credit"]
+        currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+        if abs(round(doc.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
+            doc.balance = 0
         
 
         #update to reservation
@@ -670,9 +675,8 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             if run_commit:
                 frappe.db.commit()
 
-        
-        return doc
 
+        return doc
 
 @frappe.whitelist()
 def update_city_ledger(name=None,doc=None, run_commit = True):

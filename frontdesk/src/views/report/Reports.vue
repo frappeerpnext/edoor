@@ -1,5 +1,5 @@
 <template>
-    <div class="grid">
+    <div class="grid wrapper-report">
         <div class="col flex gap-2 mt-2">
             <div class="text-2xl pt-2">eDoor Reports List</div>
             <div class="col flex gap-2 justify-end ">
@@ -11,29 +11,19 @@
                 </div>
             </div>
         </div>
-    </div> 
-    <!-- <ComHeader isRefresh @onRefresh="onRefresh()">
-        <template #start>
-            <div class="grid mb-3">
-                <div class="col flex gap-2 ml-2">
-                    <div>
-                        <div @click="onRefresh()" class="text-2xl">Reports</div>
-                    </div>
-                </div> 
-                 
-            </div> 
-        </template>
-    </ComHeader>  -->
+    </div>  
 
     <Splitter class="mb-5" state-key="report_spliter_state" state-storage="local">
-        <SplitterPanel :size="25" class="pa-4">
-            <ComReportTree @onSelectReport="onSelectReport" />
+        <SplitterPanel :size="25" class="pa-4 left-side-panel overflow-y-auto">
+            <ComReportTree @onTabClick="onTabClick" @onSelectReport="onSelectReport" />
         </SplitterPanel>
 
         <SplitterPanel :size="75" class="pa-4">
             <div v-if="selectedReport" class="p-2">
-                <ComReportFilter @onFilter="onFilter" :selectedReport="selectedReport" />
-                <iframe @load="onIframeLoaded()" style="height:700px" id="iframe" width="100%" :src="url"></iframe>
+                <div class="wrapp-filter-report"> 
+                    <ComReportFilter @onFilter="onFilter" @onGetHeight="onGetHeight" :selectedReport="selectedReport" />
+                </div>
+                <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
             </div>
             <div v-else class="p-2 flex align-items-center h-100 justify-center">
                 <p class="text-center text-2xl pt-3">Please select a report on the left bar.</p>
@@ -58,22 +48,38 @@ const gv = inject("$gv")
 const selectedReport = ref()
 const filters = ref({})
 
+function onGetHeight(f) { 
+    setIframeHeight(f.value)
+}
 
-function onSelectReport(p) {
-   
+function onSelectReport(p) { 
     selectedReport.value = p
     loadIframe()
+    setTimeout(function(){ 
+        if (selectedReport.value){
+            setIframeHeight()
+        }
+    }, 100)
 }
 function onFilter(f) {
     
     if (selectedReport.value) {
-        filters.value = f
+        filters.value = f 
 
         loadIframe()
     }
 
 }
 
+function onTabClick (){
+    const bodyHeight = document.querySelector('body').clientHeight
+    const headerBar = document.querySelector('.header-bar').clientHeight 
+    const footerHeight = document.querySelector('.wrapper-foot-deco').clientHeight 
+    const wrapperReport = document.querySelector('.wrapper-report').clientHeight
+
+    const leftSideBar = bodyHeight - (headerBar + footerHeight + wrapperReport + 17)
+    document.querySelector('.left-side-panel').style.height = leftSideBar + 'px'
+}
 
 function onIframeLoaded() {
     const iframe = document.getElementById("iframe");
@@ -85,7 +91,25 @@ function onIframeLoaded() {
  
 }
 
-
+const setIframeHeight = (f) => { 
+    let filterHeight = 0
+    const wrapperFilterReport = document.querySelector('.wrapp-filter-report').clientHeight
+    const bodyHeight = document.querySelector('body').clientHeight
+    const headerBar = document.querySelector('.header-bar').clientHeight
+    const wrapperReport = document.querySelector('.wrapper-report').clientHeight
+    const footerHeight = document.querySelector('.wrapper-foot-deco').clientHeight 
+    if (f == undefined) {
+        filterHeight = wrapperFilterReport
+    }else if (f == true){
+        filterHeight = 153
+    }else if(f == false){
+        filterHeight = 20
+    }  
+    const iframeHeight = bodyHeight - (headerBar + wrapperReport + filterHeight + footerHeight + 30)
+    const sidePanelHeight = bodyHeight - (headerBar + wrapperReport + footerHeight + 30)
+    document.querySelector('#iframe').style.height = iframeHeight + 'px' 
+    document.querySelector('.left-side-panel').style.height = sidePanelHeight + 'px'
+}
 
 function loadIframe() {
 
@@ -103,7 +127,9 @@ function loadIframe() {
 
         url.value = url.value + "&refresh=" + (Math.random() * 16)
         
-        document.getElementById("iframe").contentWindow.location.replace(url.value)
+        setTimeout(function(){
+            document.getElementById("iframe").contentWindow.location.replace(url.value)
+        }, 500)
     }
 
 }
@@ -121,7 +147,7 @@ onMounted(() => {
                 loadIframe()
             }, 3000)
         }
-    })
+    }) 
 
 });
 

@@ -103,7 +103,6 @@ def group_change_stay(data):
         for d in can_change_stay_data:
             change_stay(d)
 
-
         #temporary update arrival date and departure date to reservation for data update in front end
         stay_date = frappe.db.sql("select min(arrival_date) as arrival_date, max(departure_date) as departure_date from `tabReservation Stay` where reservation='{}' and is_active_reservation=1".format(data["reservation"]),as_dict=1)
         if stay_date:
@@ -139,11 +138,11 @@ def change_stay(data):
                 frappe.db.sql("delete from `tabRoom Occupy` where stay_room_id='{}'".format(s.name))
                 frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}'".format(s.name))
 
-
-
     if hasattr(data,"note") or "note" in data:
         doc.change_stay_note = data["note"]  
-        
+
+    doc.flags.ignore_validate = True
+    doc.flags.ignore_on_update= True
     doc.save()
 
     if doc:

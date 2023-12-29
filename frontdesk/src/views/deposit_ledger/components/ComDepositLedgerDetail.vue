@@ -219,12 +219,11 @@ const onClose = () => {
 onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
-    window.socket.on("ComDepositLedgerDetail", (arg) => {
-
-        if (arg.property == window.property_name) {
+    window.socket.on("ComDepositLedgerDetail", (arg) => {  
+        if (arg.property == window.property_name) { 
             setTimeout(function () {
                 getData()
-            }, 3000)
+            }, arg.delay == 0 ? arg.delay : 3000)
 
 
         }

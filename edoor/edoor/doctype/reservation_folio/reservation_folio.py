@@ -8,10 +8,9 @@ from frappe.model.document import Document
 
 class ReservationFolio(Document):
 	def validate(self):
-
 		#check reservation status if allow to edit
 		total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': self.reservation_stay})
-		if total_folio >= frappe.db.get_single_value("eDoor Setting","maximum_number_of_folio_in_reservation_stay"):
+		if total_folio > frappe.db.get_single_value("eDoor Setting","maximum_number_of_folio_in_reservation_stay"):
 			frappe.throw("You have reached the maximum number of folios allowed per reservation stay. Please contact your system administrator for assistance.")
 
 		doc_status = frappe.get_doc("Reservation Status", self.reservation_status)
@@ -21,16 +20,17 @@ class ReservationFolio(Document):
 
 		self.balance = (self.total_debit or 0) -( self.total_credit or 0)
 		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
-		if self.balance < (Decimal('0.1') ** int(currency_precision)):
+	 
+		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
 			self.balance = 0
-			
+
 		#validate working day 
 		if self.is_new():
 			working_day = get_working_day(self.property)
 			if not working_day["name"]:
 				frappe.throw("Please start working")
 			
-			if not working_day["cashier_shift"]["name"]:
+			if  not working_day["cashier_shift"]:
 				frappe.throw("Please start cashier shift")
 			self.working_day = working_day["name"]
 			self.working_date = working_day["date_working_day"]

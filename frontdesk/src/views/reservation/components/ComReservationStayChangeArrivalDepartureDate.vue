@@ -3,7 +3,7 @@
         <div class="grid py-2 wp-number-cus">
             <div class="col-6">
                 <label>Arrival Date</label>
-                <Calendar hideOnDateTimeSelect :disabled="(stay.can_arrival) || (rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar panelClass="no-btn-clear" showButtonBar hideOnDateTimeSelect :disabled="(stay.can_arrival) || (rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>

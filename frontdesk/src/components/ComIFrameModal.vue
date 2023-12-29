@@ -12,15 +12,14 @@
                             @input="reloadIframe" placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
                     </div>
                     <div v-if="hasFilter('start_date')">
-                        <Calendar :selectOtherMonths="true"
+                        <Calendar :selectOtherMonths="true" panelClass="no-btn-clear" 
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
-                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon
-                            @clear-click="reloadIframe" />
+                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon/>
                     </div>
                     <div v-if="hasFilter('end_date')">
                         <Calendar :selectOtherMonths="true" :min-date="filters.start_date"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.end_date" placeholder="End Date"
-                            @date-select="loadIframe" showButtonBar @clear-click="reloadIframe" dateFormat="dd-mm-yy"
+                            @date-select="loadIframe" panelClass="no-btn-clear" showButtonBar dateFormat="dd-mm-yy"
                             showIcon />
                     </div>
                     <!-- invoice style for print invoice document credsit debit styoe or simple style -->

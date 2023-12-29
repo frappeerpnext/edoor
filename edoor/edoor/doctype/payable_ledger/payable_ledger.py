@@ -25,6 +25,9 @@ class PayableLedger(Document):
 
 		
 		self.balance = (self.total_debit or 0) - (self.total_credit or 0)
+		currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+		if abs(round(self.balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
+			self.balance = 0
 
 		if not self.is_new():
 			folio_data = frappe.db.sql("select min(posting_date) as min_date from `tabFolio Transaction` where transaction_type='Payable Ledger' and transaction_number='{}'".format(self.name))

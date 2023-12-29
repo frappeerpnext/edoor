@@ -1,5 +1,5 @@
 <template> 
-    <ComDialogContent @onClose="onClose" @onOK="onSave">
+    <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="flex flex-col gap-3">
         <ComReservationStayPanel title="City Ledger Information">
             <template #content>

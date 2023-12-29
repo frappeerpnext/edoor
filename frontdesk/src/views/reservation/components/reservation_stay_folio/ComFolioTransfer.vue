@@ -28,7 +28,7 @@
                                 <label for="on-filter-folio-res">By Reservation</label>
                             </div>  
                         </div>
-                        {{ folioNumberFilter }}
+                       
                         <label>Folio Number</label>
                         <ComAutoComplete @onSelected="onSelectFolioNumber" v-model="data.new_folio_number"
                             placeholder="Select Folio" doctype="Reservation Folio" class="auto__Com_Cus w-full"

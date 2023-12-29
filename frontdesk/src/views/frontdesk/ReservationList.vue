@@ -64,7 +64,9 @@
                             <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
                             </span>
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
-                            <div v-tippy="slotProps.data.room_numbers" class="overflow-hidden text-overflow-ellipsis" style="width:300px" v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                            <div v-tippy="slotProps.data.room_numbers" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'Room'" v-if="slotProps?.data && slotProps?.data?.room_numbers">
+                             
+
                                 <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
                                     <span>{{ item }}</span>
                                     <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
@@ -89,6 +91,7 @@
                                     {{ slotProps.data[c.fieldname] }}
                             </span>
                             <span v-else>
+                               
                                 {{ slotProps.data[c.fieldname] }}
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>

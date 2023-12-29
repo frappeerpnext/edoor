@@ -11,6 +11,8 @@ from edoor.api.frontdesk import get_working_day
 class RoomBlock(Document):
 	def validate(self):
 		working_day = get_working_day(self.property)
+		if not working_day["cashier_shift"]:
+			frappe.throw("Please start cashier shift")
 
 		self.housekeeping_status = frappe.db.get_default("room_block_status")
 		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
@@ -96,6 +98,11 @@ class RoomBlock(Document):
 	def on_cancel(self):
 		frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
 		frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
+
+	def on_trash(self):
+		working_day = get_working_day(self.property)
+		if not working_day["cashier_shift"]:
+			frappe.throw("Please start cashier shift")
 
 def generate_block_date(self):
 	data = frappe.get_doc('Room Block', self.name)

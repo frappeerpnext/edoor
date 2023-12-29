@@ -121,7 +121,8 @@ def get_report_data(folio_transaction_amount,filters):
 				ifnull(reservation_stay,'') = if(%(reservation_stay)s='',ifnull(reservation_stay,''),%(reservation_stay)s)  and 
 				ifnull(account_code,'') = if(%(account_code)s='',ifnull(account_code,''),%(account_code)s)  and
 				ifnull(room_id,'') = if(%(room_id)s='',ifnull(room_id,''),%(room_id)s)  and
-				is_master_folio = if(%(is_master)s=0,is_master_folio,1)
+				is_master_folio = if(%(is_master)s=0,is_master_folio,1) and
+				ifnull(guest,'') = if(%(guest)s='',ifnull(guest,''),%(guest)s)
 				
 		""".format(filters.keyword or '',','.join(return_culomn))
 		data = frappe.db.sql(sql,filters,as_dict=1)

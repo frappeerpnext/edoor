@@ -16,23 +16,23 @@
         <template #end>
             <button @click="onRefresh"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="pi pi-refresh" />
-                <span class="ml-2">Refresh</span>
+                <i class="font-bold pi pi-refresh" />
+                <span class="pl-2 pr-3">Refresh</span>
             </button>
             <button @click="onShortCutMenu"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="pi pi-key" />
-                <span class="ml-2">Shortcut Menu</span>
+                <i class="font-bold pi pi-key" />
+                <span class="pl-2 pr-3">Shortcut Menu</span>
             </button>
             <button @click="onRoute"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="pi pi-book" />
-                <span class="ml-2">document</span>
+                <i class="font-bold pi pi-book" />
+                <span class="pl-2 pr-3">Document</span>
             </button>
             <button @click="onLogout"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="pi pi-sign-out !text-red-500" />
-                <span class="ml-2  !text-red-500">Log Out</span>
+                <i class="font-bold pi pi-sign-out !text-red-500" />
+                <span class="pl-2 pr-3 !text-red-500">Log Out</span>
             </button>
         </template>
     </Menu>

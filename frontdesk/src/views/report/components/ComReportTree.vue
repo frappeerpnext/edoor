@@ -5,7 +5,7 @@
             <InputText class="w-full" v-model="keyword" placeholder="Search Report" />
         </div>
         <div v-if="!loading">
-            <Accordion :activeIndex="0">
+            <Accordion :activeIndex="0" @tab-click="onTabClick">
                 <AccordionTab :header="p.report_title"
                     v-for="(p, index) in reports?.filter(r => r.is_group == 1 && r.parent_system_report && r.has_child)"
                     :key="index">
@@ -18,7 +18,7 @@
 </template>
 <script setup>
 import { ref, getDocList, onMounted, computed } from "@/plugin"
-const emit = defineEmits(["onSelectReport"])
+const emit = defineEmits(["onSelectReport","onTabClick"])
 const selectedReport = ref()
 const data = ref()
 const keyword = ref("")
@@ -37,11 +37,13 @@ const reports = computed(() => {
     }
 })
 
-function onSelect(p) {
-
+function onSelect(p) { 
     emit("onSelectReport", data.value.find(r => r.name == p.value))
 }
 
+function onTabClick () {
+    emit("onTabClick")
+}
 
 onMounted(() => {
     loading.value = true;
