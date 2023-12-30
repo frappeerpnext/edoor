@@ -59,7 +59,7 @@ def get_reservation_detail(name):
     
     related_reference_number = [name, reservation.guest, master_guest.name]
     related_reference_number = related_reference_number + folio_names
-    related_reference_number = related_reference_number + reservaiton_room_rates
+    # related_reference_number = related_reference_number + reservaiton_room_rates
     related_reference_number = related_reference_number + folio_transaction_names
     related_reference_number = related_reference_number + [d.name for d  in reservation_stays]
 
