@@ -1562,7 +1562,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
         if data_balance:
             balance = data_balance[0]["balance"] or 0
 
-        if abs(round(balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
+        if balance !=0 and abs(round(balance, int(currency_precision)))<= (Decimal('0.1') ** int(currency_precision)):
             frappe.throw("You have folio balance in reservation stay {}. To {} a reservation, balace must be 0".format(stay.name, status))
 
         stay.reservation_status = status
