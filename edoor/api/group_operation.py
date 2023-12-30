@@ -152,10 +152,11 @@ def change_stay(data):
         #2 is from rate plan
         # we not enqueue this because we want to get rate for update to reservation
  
-        # update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        change_room_occupy(doc)
         
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_reservation_stay_room_rate_after_resize", queue='short', data=data, stay_doc = doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = doc)
+        # frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_reservation_stay_room_rate_after_resize", queue='short', data=data, stay_doc = doc)
+        # frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = doc)
 
     return doc
 
