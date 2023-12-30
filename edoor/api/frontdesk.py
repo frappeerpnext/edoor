@@ -1695,24 +1695,31 @@ def get_recent_audit_trail():
 @frappe.whitelist()
 def get_house_keeping_status_backend():
     property = frappe.defaults.get_user_default("business_branch")
-    working_day = get_working_day(property)
-    #get house keeping status
-    
-    hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
-    housekeeping_status = []
-    for d in hk_data:
-        total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
-        total_room  = frappe.db.sql("select count(name) as total_room from `tabRoom` where property='{}' ".format(property,d.name),as_dict=1)[0]["total_room"] or 0
-        housekeeping_status.append({
-            "status":d.name,
-            "color":d.status_color,
-            "total":total,
-            "is_block_room":d.is_block_room,
-            "total_room":total_room,
-            "property":property,
-            "working_date":working_day["date_working_day"] 
-        })
-    return housekeeping_status
+    if not property:
+        data = frappe.db.get_list("Business Branch")
+        if len(data)>0:
+            property = data[0].name
+    if property:
+        working_day = get_working_day(property)
+
+        #get house keeping status
+        
+        hk_data = frappe.db.get_list("Housekeeping Status",fields=["*"],  order_by='sort_order asc')
+        housekeeping_status = []
+        for d in hk_data:
+            total  = frappe.db.sql("select count(name) as total from `tabRoom` where property='{}' and housekeeping_status='{}'".format(property,d.name),as_dict=1)[0]["total"] or 0
+            total_room  = frappe.db.sql("select count(name) as total_room from `tabRoom` where property='{}' ".format(property,d.name),as_dict=1)[0]["total_room"] or 0
+            housekeeping_status.append({
+                "status":d.name,
+                "color":d.status_color,
+                "total":total,
+                "is_block_room":d.is_block_room,
+                "total_room":total_room,
+                "property":property,
+                "working_date":working_day["date_working_day"] 
+            })
+        return housekeeping_status
+    return []
 
 
 

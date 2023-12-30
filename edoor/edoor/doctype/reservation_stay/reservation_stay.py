@@ -271,18 +271,19 @@ def update_room_occupy(self):
 
 
 	# update is complimentary and house use
-	sql = """
-		update `tabRoom Occupy` x 
-		set 
-			is_complimentary =ifnull((
-				select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-			),0) ,
-			is_house_use =ifnull((
-				select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-			) ,0)
-		where x.reservation_stay = '{0}' and x.is_active=1  
-	""".format(self.name)
-	frappe.db.sql(sql)
+	# sql = """
+	# 	update `tabRoom Occupy` x 
+	# 	set 
+	# 		is_complimentary =ifnull((
+	# 			select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+	# 		),0) ,
+	# 		is_house_use =ifnull((
+	# 			select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+	# 		) ,0)
+	# 	where x.reservation_stay = '{0}' and x.is_active=1  
+	# """.format(self.name)
+
+	# frappe.db.sql(sql)
 
 
 
