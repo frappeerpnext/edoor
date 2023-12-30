@@ -1,4 +1,4 @@
-from edoor.edoor.doctype.reservation_stay.reservation_stay import update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability
 from edoor.api.utils import update_reservation, validate_role
@@ -152,7 +152,9 @@ def change_stay(data):
         #2 is from rate plan
         # we not enqueue this because we want to get rate for update to reservation
  
-        update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        # update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
+        
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_reservation_stay_room_rate_after_resize", queue='short', data=data, stay_doc = doc)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = doc)
 
     return doc

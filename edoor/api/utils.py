@@ -464,7 +464,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
         
 
         doc.update_reservation_stay = False
-
+        doc.flags.ignore_on_update= True
         doc.save()
         if run_commit:
             frappe.db.commit()
@@ -671,6 +671,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                
     
         if is_save:
+            doc.flags.ignore_on_update= True
             doc.save()
             if run_commit:
                 frappe.db.commit()

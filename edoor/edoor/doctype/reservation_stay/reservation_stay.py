@@ -271,19 +271,19 @@ def update_room_occupy(self):
 
 
 	# update is complimentary and house use
-	# sql = """
-	# 	update `tabRoom Occupy` x 
-	# 	set 
-	# 		is_complimentary =ifnull((
-	# 			select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-	# 		),0) ,
-	# 		is_house_use =ifnull((
-	# 			select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-	# 		) ,0)
-	# 	where x.reservation_stay = '{0}' and x.is_active=1  
-	# """.format(self.name)
+	sql = """
+		update `tabRoom Occupy` x 
+		set 
+			is_complimentary =ifnull((
+				select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+			),0) ,
+			is_house_use =ifnull((
+				select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
+			) ,0)
+		where x.reservation_stay = '{0}' and x.is_active=1  
+	""".format(self.name)
 
-	# frappe.db.sql(sql)
+	frappe.db.sql(sql)
 
 
 
@@ -488,12 +488,6 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	#update first date in reservation room is_arrival = 1
 	update_is_arrival_date_in_room_rate(stay_doc.name)
 
- 
-
-	 
-			
-
-	
 	
 def update_reservation_stay_room_rate_after_move(data,stay_doc):
 
@@ -529,14 +523,13 @@ def change_room_occupy(self):
 	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
 	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
 	doc = frappe.get_doc('Reservation Stay', self.name)
-
 	generate_stay_room_occupy(self=doc)
+
 
 def generate_stay_room_occupy(self):
 	self.update_room_occupy = False
 	for stay in self.stays:
 		dates = []
- 
 		if stay.name==self.stays[len(self.stays)-1].name or  len(self.stays)==1:
 	
 			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
@@ -564,7 +557,6 @@ def generate_stay_room_occupy(self):
 				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 ,
 				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 			}).insert()
-			
 
 			#generate room to room occupy
 			frappe.get_doc({
