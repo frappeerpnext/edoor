@@ -54,6 +54,7 @@ import Enumerable from 'linq'
 const data = ref({generate_new_stay_rate_by:"stay_rate"})
 const moment = inject("$moment")
 const rs = inject("$reservation")
+const working_day = window.working_day
 const onRoomNightChanged = (event) => {
     data.value.departure_date = moment(data.value.arrival_date).add(event, "Days").toDate()
 }

@@ -557,109 +557,76 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     comment_doc = [] 
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
-        comment = {
-            "subject":"Checked In",
-            "reference_doctype":"Reservation Stay",
-            "reference_name":stay.name,
-            "custom_audit_trail_type":"Check In",
-			"custom_icon":"pi pi-sign-in",
-            "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}
-        if note:
-            comment["content"] = comment["content"] + f"<br/> Note: {note}"
-        comment_doc.append(comment)
+        if stay.reservation_status in ["Reserved","Confirmed"]:
+            comment = {
+                "subject":"Checked In",
+                "reference_doctype":"Reservation Stay",
+                "reference_name":stay.name,
+                "custom_audit_trail_type":"Check In",
+                "custom_icon":"pi pi-sign-in",
+                "content": f"Reservation stay #: {stay.name}, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest: {stay.guest}-{stay.guest_name}"}
+            if note:
+                comment["content"] = comment["content"] + f"<br/> Note: {note}"
+            comment_doc.append(comment)
 
 
 
-        if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})==0:
-            if s == stays[0]:
-                stay.is_master = 1
+            if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})==0:
+                if s == stays[0]:
+                    stay.is_master = 1
 
-        #check if stay is not assign room then alert to user to asign room first
-        if Enumerable(stay.stays).where(lambda x: (x.room_id or "") =="").count()>=1:
-            frappe.throw("Please asign room to reservation stay #{}.".format(s))
+            #check if stay is not assign room then alert to user to asign room first
+            if Enumerable(stay.stays).where(lambda x: (x.room_id or "") =="").count()>=1:
+                frappe.throw("Please asign room to reservation stay #{}.".format(s))
 
 
-        if stay.reservation_status in("In-house","Void","Cancelled","Checked In","Checked Out") and not is_undo:
-            frappe.throw("Stay # {}. Room {}. This room is already {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
-        if is_undo and not stay.reservation_status in("In-house","Checked In"):
-            frappe.throw("Stay # {}. Room {}. This room is {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
-      
-        if frappe.utils.getdate(stay.arrival_date) > working_day["date_working_day"]:
-            frappe.throw("Stay # {}. Room {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
+            if stay.reservation_status in("In-house","Void","Cancelled","Checked In","Checked Out") and not is_undo:
+                frappe.throw("Stay # {}. Room {}. This room is already {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
+            if is_undo and not stay.reservation_status in("In-house","Checked In"):
+                frappe.throw("Stay # {}. Room {}. This room is {}.".format(stay.name, stay.rooms,stay.reservation_status.lower()))
         
-        if stay.reservation_status =="No Show":
-            if stay.is_active_reservation == 1:
-                frappe.throw("You cannot Check In  No Show reservation # {}. Because this reservation don't have a reserve room.".format(stay.name))
-                
-   
-        #validate check if current room is still have guest in house
-        room_id = stay.stays[0].room_id
-        check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,add_to_date( stay.departure_date,days=-1)),as_dict=1)
-       
-        if check_room_in_house:
-             frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
-
- 
-
-        stay.reservation_status = "In-house" if not is_undo else "Confirmed"
-        stay.checked_in_by = frappe.session.user
-        stay.checked_in_date = frappe.utils.now()
-        stay.save()
-
-        
-
-        #update room housekeeing status to occupy clean
-        room_id = stay.stays[0].room_id
-        room = frappe.get_doc("Room",room_id)
-        room.housekeeping_status = housekeeping_status
-        room.reservation_stay = stay.name
-        room.save()
-        
-        #create folio 
-
-        master_folio = {}
-        if stay.is_master:
+            if frappe.utils.getdate(stay.arrival_date) > working_day["date_working_day"]:
+                frappe.throw("Stay # {}. Room {}. Arrival date must be equal to current date.".format(stay.name, stay.rooms))
             
-            #check if folio is not create yet
-            master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":stay.name,"is_master":1})
-            folio = None
-            if len(master_folios) == 0:
-                folio =create_folio(stay)
-                
-            else:
-                folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
-                folio.status="Open"
-                folio.save()
-                
-            if folio:
-                #get first rate from reservation room rate
-                room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
-                if (room_rates):
-                    for r  in room_rates:
-                        add_room_charge_to_folio(folio,r )
-                else:
-                    frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
-                
-            #Fine all other stay that that mark as paid_by_master_room then enter folio transaction master folio
-            other_stays = frappe.db.sql("select name  from `tabReservation Stay` where name !='{}' and reservation='{}' and paid_by_master_room=1 and reservation_status = 'In-house'".format(stay.name, stay.reservation),as_dict=1)
-            if other_stays:
-                for os in other_stays:
-                    #get first rate from reservation room rate
-                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":os['name'],"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
-                    if (room_rates):
-                        for r  in room_rates:
-                            add_room_charge_to_folio(folio,r )
-                    else:
-                        frappe.throw("Stay # {} does not have room rate".format(os['name']))
+            if stay.reservation_status =="No Show":
+                if stay.is_active_reservation == 1:
+                    frappe.throw("You cannot Check In  No Show reservation # {}. Because this reservation don't have a reserve room.".format(stay.name))
+                    
+    
+            #validate check if current room is still have guest in house
+            room_id = stay.stays[0].room_id
+            check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,add_to_date( stay.departure_date,days=-1)),as_dict=1)
+        
+            if check_room_in_house:
+                frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
-        else:
+    
 
-            if not stay.paid_by_master_room:
-                # if stay have master folio
+            stay.reservation_status = "In-house" if not is_undo else "Confirmed"
+            stay.checked_in_by = frappe.session.user
+            stay.checked_in_date = frappe.utils.now()
+            stay.save()
+
+            
+
+            #update room housekeeing status to occupy clean
+            room_id = stay.stays[0].room_id
+            room = frappe.get_doc("Room",room_id)
+            room.housekeeping_status = housekeeping_status
+            room.reservation_stay = stay.name
+            room.save()
+            
+            #create folio 
+
+            master_folio = {}
+            if stay.is_master:
+                
+                #check if folio is not create yet
                 master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":stay.name,"is_master":1})
                 folio = None
-                if len(master_folios)==0:
-                    folio = create_folio(stay)
+                if len(master_folios) == 0:
+                    folio =create_folio(stay)
+                    
                 else:
                     folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
                     folio.status="Open"
@@ -667,22 +634,56 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
                     
                 if folio:
                     #get first rate from reservation room rate
-                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
                     if (room_rates):
-                        for r in room_rates:
+                        for r  in room_rates:
                             add_room_charge_to_folio(folio,r )
                     else:
                         frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+                    
+                #Fine all other stay that that mark as paid_by_master_room then enter folio transaction master folio
+                other_stays = frappe.db.sql("select name  from `tabReservation Stay` where name !='{}' and reservation='{}' and paid_by_master_room=1 and reservation_status = 'In-house'".format(stay.name, stay.reservation),as_dict=1)
+                if other_stays:
+                    for os in other_stays:
+                        #get first rate from reservation room rate
+                        room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":os['name'],"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                        if (room_rates):
+                            for r  in room_rates:
+                                add_room_charge_to_folio(folio,r )
+                        else:
+                            frappe.throw("Stay # {} does not have room rate".format(os['name']))
+
             else:
-                #add room rate to folio of master room
-                master_folio = get_master_folio(reservation)
-                if master_folio:
-                    room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
-                    if (room_rates):
-                        for r in room_rates:
-                            add_room_charge_to_folio(master_folio,r )
+
+                if not stay.paid_by_master_room:
+                    # if stay have master folio
+                    master_folios = frappe.db.get_list("Reservation Folio",{"reservation_stay":stay.name,"is_master":1})
+                    folio = None
+                    if len(master_folios)==0:
+                        folio = create_folio(stay)
                     else:
-                        frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+                        folio = frappe.get_doc("Reservation Folio",master_folios[0].name)
+                        folio.status="Open"
+                        folio.save()
+                        
+                    if folio:
+                        #get first rate from reservation room rate
+                        room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                        if (room_rates):
+                            for r in room_rates:
+                                add_room_charge_to_folio(folio,r )
+                        else:
+                            frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
+                else:
+                    #add room rate to folio of master room
+                    master_folio = get_master_folio(reservation)
+                    if master_folio:
+                        room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":stay.name,"date":["<=",working_day["date_working_day"]]},order_by="date",page_length=1000)
+                        if (room_rates):
+                            for r in room_rates:
+                                add_room_charge_to_folio(master_folio,r )
+                        else:
+                            frappe.throw("Stay # {}, Room {} does not have room rate".format(stay.name, stay.rooms))
 
 
  
