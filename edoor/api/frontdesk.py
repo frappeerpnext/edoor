@@ -320,7 +320,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
         "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
-        "total_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
+        "daily_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
     }
 
 @frappe.whitelist()

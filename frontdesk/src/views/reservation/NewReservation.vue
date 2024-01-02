@@ -275,7 +275,7 @@
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
                                            
-                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room }})</div>
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room || 0 }})</div>
                                         </div>
                                     </template>
                                 </Dropdown>
@@ -561,13 +561,13 @@ const warningMessage = computed(()=>{
     const room_type =  [...new Set( doc.value.reservation_stay.filter(x=>x.room_type_id).map(item => item.room_type_id))] 
     if (room_type){
         room_type.forEach(r => {
-            const rt = room_types.value.find(rt=>rt.name==r)
-           
-            if(doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>(rt.total_vacant_room ||0)){
-                messages.push("You have over booking on room type <strong>" + rt.room_type + "</strong>. Total Over: <strong>" + Math.abs(rt.total_vacant_room -  doc.value.reservation_stay.filter(x=>x.room_type_id==r).length)) + "</strong>"
+            const rt = room_types.value.find(y=>y.name==r)    
+            
+            if( rt && doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>(rt?.total_vacant_room || 0)){
+                
+                messages.push("You have over booking on room type <strong>" + rt?.room_type + "</strong>. Total Over: <strong>" + Math.abs((rt?.total_vacant_room || 0 ) -  doc.value.reservation_stay.filter(x=>x.room_type_id==r).length)) + "</strong>"
             }
         })
-    
     }
     
     return messages

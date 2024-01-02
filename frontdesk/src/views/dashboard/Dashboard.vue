@@ -86,7 +86,7 @@
                         <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out' + ' & '+ 'Total Departure ' +  (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" title="Departure"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
-                        <ComKPI @onClick="viewSummary('Daily Reservation')" v-tippy="'Total Reservation ' + data.daily_reservation + ' & Total Reservation Stay ' +  data?.total_reservation_stay" :value="!gv.loading ? data.daily_reservation + '/' + data?.total_reservation_stay : ''"
+                        <ComKPI @onClick="viewSummary('Daily Reservation')" v-tippy="'Total Reservation ' + data.daily_reservation + ' & Total Reservation Stay ' +  data?.daily_reservation_stay" :value="!gv.loading ? data.daily_reservation + '/' + data?.daily_reservation_stay : ''"
                             title="Daily Reservation" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         
                             <ComKPI
