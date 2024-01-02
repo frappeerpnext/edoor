@@ -428,6 +428,10 @@ onUnmounted(() => {
 })
 
 function onAddDeskFolio(data) {
+    if(!gv.cashier_shift?.name){
+        gv.toast('error', 'Please Open Cashier Shift.')
+        return
+    }
     dialog.open(ComAddDeskFolio, {
         data: { data },
         props: {

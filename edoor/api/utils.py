@@ -28,9 +28,7 @@ def get_working_day(property = ''):
         "name":working_day[0]["name"] if len(working_day)>0 else '',
         "cashier_shift":cashier_shift
     }
-
-
-
+ 
 @frappe.whitelist()
 def get_chart():
     labels = ["January", "February", "March", "April", "May", "June", "July"]
@@ -56,6 +54,9 @@ def successful_login(login_manager):
  
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
+    frappe.enqueue("edoor.api.utils.update_fetch_from_field_queue", queue='long', doc=doc)
+
+def update_fetch_from_field_queue(doc, method=None, *args, **kwargs):
     skip_doctypes = ["DocType","Temp Product Menu"]
 
     if not doc.doctype in skip_doctypes:
@@ -75,8 +76,17 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
 
 
  
-
 def update_keyword(doc, method=None, *args, **kwargs):
+    skip_doctypes = ["Folio Transaction","City Ledger","Vendor","Customer","Reservation Stay","Reservation","Reservation Stay Room","Room","Room Block","Business Source"]
+    if  doc.doctype in skip_doctypes:
+        frappe.enqueue("edoor.api.utils.update_keyword_queue", queue='long', doc=doc)
+
+    
+    
+
+def update_keyword_queue(doc, method=None, *args, **kwargs):
+    
+
     meta = frappe.get_meta(doc.doctype)
     if meta.has_field("keyword"):
         fields = []
@@ -272,8 +282,8 @@ def submit_update_audit_trail_from_version(doc):
             "reference_name":doc.docname,
             "content":", ".join(data_changed)  
             })
-            # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='short', data=comment_doc)
-            add_audit_trail(comment_doc)
+            frappe.enqueue("edoor.api.utils.add_audit_trail", queue='default', data=comment_doc)
+            # add_audit_trail(comment_doc)
 
 
     
@@ -675,6 +685,10 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             doc.save()
             if run_commit:
                 frappe.db.commit()
+
+        #delete all invalid room rate record that stay out site of stay date
+        frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date<'{}'".format(doc.name, doc.arrival_date))
+        frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date>='{}'".format(doc.name, doc.departure_date))
 
 
         return doc
@@ -1106,29 +1120,6 @@ def can_view_rate():
     return 1 if can_see_rate_role in roles else 0
 
 
-def generate_temp_room_occupy_after_undo_check_out(stay_doc):
-    #get stay date to temp room occupy. we get from room occupy cause room occupy is not clear
-    room_occupy_list = frappe.db.sql("select date,room_type_id, room_id,stay_room_id,is_arrival,is_departure from `tabRoom Occupy` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
-
-    for r in room_occupy_list:
-        frappe.get_doc({
-            "doctype":"Temp Room Occupy",
-            "reservation":stay_doc.reservation,
-            "reservation_stay":stay_doc.name,
-            "room_type_id":r["room_type_id"],
-            "room_id":r["room_id"],
-            "date":r["date"],
-            "type":"Reservation",
-            "property":stay_doc.property,
-            "stay_room_id":r["stay_room_id"],
-            "adult":stay_doc.adult,
-            "child":stay_doc.child,
-            "pax":stay_doc.pax,
-            "is_arrival": r["is_arrival"],
-            "is_departure": r["is_departure"]
-        }).insert()
-
-    frappe.db.commit()
     
 @frappe.whitelist(methods="POST")
 def update_doctype_data(data):

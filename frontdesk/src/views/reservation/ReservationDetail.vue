@@ -202,12 +202,7 @@ function debouncer(fn, delay) {
             fn.apply(that, args);
         }, delay);
     };
-}
-
-
- 
-
-
+} 
 function onRoute() {
     window.open('reservation-detail/' + name.value, '_blank')
 }
@@ -216,8 +211,7 @@ function onClose() {
 }
 function onMaximize(){
     dialogRef.value.maximize()
-}
-
+} 
 onMounted(() => {
     window.has_reservation_detail_opened = true
    
@@ -243,7 +237,7 @@ onMounted(() => {
 
     window.socket.on("ReservationDetail", (reservation) => {
         if (reservation == name.value) {
-            setTimeout(function(){
+            setTimeout(function(){ 
                 onRefresh(false)
             },3000)
         }

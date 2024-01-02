@@ -1429,10 +1429,10 @@ def run_night_audit(property, working_day):
     #update room status after runight auit
 
     # update_room_status(new_working_day)
-    frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='short', working_day=new_working_day)
+    frappe.enqueue("edoor.api.frontdesk.update_room_status", queue='long', working_day=new_working_day)
     
     # update daily property data 
-    frappe.enqueue("edoor.api.frontdesk.update_daily_property_data", queue='short', working_date=doc_working_day.posting_date, property = property)
+    frappe.enqueue("edoor.api.frontdesk.update_daily_property_data", queue='long', working_date=doc_working_day.posting_date, property = property)
     
     working_day = get_working_day(property)
     return working_day

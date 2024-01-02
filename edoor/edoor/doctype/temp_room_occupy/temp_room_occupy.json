@@ -10,30 +10,13 @@
  "field_order": [
   "reservation",
   "reservation_stay",
-  "pick_up",
-  "drop_off",
   "stay_room_id",
   "property",
   "room_type_id",
-  "room_type",
-  "floor",
   "room_id",
-  "room_number",
   "date",
   "type",
-  "is_arrival",
-  "is_departure",
-  "is_active",
-  "adult",
-  "child",
-  "pax",
-  "reservation_status",
-  "business_source",
-  "building",
-  "room_type_group",
-  "housekeeper",
-  "is_complimentary",
-  "is_house_use"
+  "is_active"
  ],
  "fields": [
   {
@@ -53,13 +36,6 @@
    "in_standard_filter": 1,
    "label": "Room Type ID",
    "options": "Room Type"
-  },
-  {
-   "fetch_from": "room_type_id.room_type",
-   "fieldname": "room_type",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Room Type"
   },
   {
    "fieldname": "room_id",
@@ -91,33 +67,6 @@
    "label": "Stay Room ID"
   },
   {
-   "default": "0",
-   "fieldname": "is_arrival",
-   "fieldtype": "Check",
-   "label": "Is Arrival"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_departure",
-   "fieldtype": "Check",
-   "label": "Is Departure"
-  },
-  {
-   "fieldname": "adult",
-   "fieldtype": "Int",
-   "label": "Adult"
-  },
-  {
-   "fieldname": "child",
-   "fieldtype": "Int",
-   "label": "Child"
-  },
-  {
-   "fieldname": "pax",
-   "fieldtype": "Int",
-   "label": "Pax"
-  },
-  {
    "fieldname": "reservation",
    "fieldtype": "Link",
    "in_standard_filter": 1,
@@ -132,86 +81,16 @@
    "options": "Reservation Stay"
   },
   {
-   "fetch_from": "room_id.room_number",
-   "fieldname": "room_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Room Number"
-  },
-  {
-   "fetch_from": "reservation_stay.reservation_status",
-   "fieldname": "reservation_status",
-   "fieldtype": "Data",
-   "label": "reservation_status"
-  },
-  {
-   "fetch_from": "reservation_stay.business_source",
-   "fieldname": "business_source",
-   "fieldtype": "Link",
-   "label": "Business Source",
-   "options": "Business Source"
-  },
-  {
-   "fetch_from": "room_id.floor",
-   "fetch_if_empty": 1,
-   "fieldname": "floor",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Floor"
-  },
-  {
-   "fetch_from": "room_id.building",
-   "fieldname": "building",
-   "fieldtype": "Data",
-   "label": "Building"
-  },
-  {
-   "default": "0",
-   "fieldname": "pick_up",
-   "fieldtype": "Check",
-   "label": "Pick Up"
-  },
-  {
-   "default": "0",
-   "fieldname": "drop_off",
-   "fieldtype": "Check",
-   "label": "Drop Off"
-  },
-  {
-   "fetch_from": "room_id.room_type_group",
-   "fieldname": "room_type_group",
-   "fieldtype": "Data",
-   "label": "Room Type Group"
-  },
-  {
-   "fetch_from": "room_id.housekeeper",
-   "fieldname": "housekeeper",
-   "fieldtype": "Data",
-   "label": "Housekeeper"
-  },
-  {
    "default": "0",
    "description": "When generate these record, we set last stay is_departure = 1 and is_active = 0. When reservation is early check out, we set remove last record and set previous record is_departure = 1 and is_active = 1, Occupancy calculation must be check with is_active = 1\n\n",
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_complimentary",
-   "fieldtype": "Check",
-   "label": "Is Complimentary"
-  },
-  {
-   "default": "0",
-   "fieldname": "is_house_use",
-   "fieldtype": "Check",
-   "label": "Is House Use"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-13 18:00:12.974540",
+ "modified": "2024-01-02 10:40:52.540463",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Temp Room Occupy",

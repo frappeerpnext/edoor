@@ -10,14 +10,14 @@
                                     :options="['Arrival Date', 'Departure Date', 'Reservation', 'Stay']" :clear="false" />
             </div> 
 
-            <div class="col" v-if="hasFilter('start_date')">
+            <div class="col-3" v-if="hasFilter('start_date')">
                 <label>Start Date</label><br/>
-                <Calendar @date-select="onSelectStartDate" class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
+                <Calendar showButtonBar panelClass="no-btn-clear" @date-select="onSelectStartDate" class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
-            <div class="col" v-if="hasFilter('end_date')">
+            <div class="col-3" v-if="hasFilter('end_date')">
                 <label>End date</label><br>
-                <Calendar class="w-full" :min-date="filter.start_date" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
+                <Calendar showButtonBar panelClass="no-btn-clear" class="w-full" :min-date="filter.start_date" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
             <div class="col" v-if="hasFilter('select_filter')">

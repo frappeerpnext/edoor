@@ -15,6 +15,8 @@ from edoor.api.utils import update_reservation
 
 class ReservationStay(Document):
 	def  validate(self):
+		if self.flags.ignore_validate:
+			return
 		
 
 		working_day = get_working_day(self.property)
@@ -189,10 +191,13 @@ class ReservationStay(Document):
  
 
 	def after_insert(self):
-		generate_room_occupy(self)
-		generate_room_rate(self)
 
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+		generate_room_rate(self)
+		
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy",queue='short', self=self )
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy",queue='default', self=self )
+
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[{
 			"comment_type":"Created",
 			"subject":"Create New Reservation Stay",
 			"reference_doctype":"Reservation Stay",
@@ -205,6 +210,10 @@ class ReservationStay(Document):
 
 	def on_update(self):
 		
+		if self.flags.ignore_on_update:
+			return
+		
+
 		if self.is_master:
 			reservation_stays = frappe.get_list("Reservation Stay",filters={
 				'reservation': self.reservation
@@ -256,7 +265,7 @@ class ReservationStay(Document):
 		""",data_for_udpate)
 	
 		#run equeue process to update picup and drop off to room_occupy
-		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_room_occupy", queue='short', self = self)
+		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_room_occupy", queue='long', self = self)
 
 def update_room_occupy(self):
 	frappe.db.sql("update `tabRoom Occupy` set pick_up=0, drop_off=0 where reservation_stay='{}'".format(self.name))
@@ -270,61 +279,28 @@ def update_room_occupy(self):
 		frappe.db.sql("update `tabTemp Room Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
 
 
-	# update is complimentary and house use
-	sql = """
-		update `tabRoom Occupy` x 
-		set 
-			is_complimentary =ifnull((
-				select r.is_complimentary from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-			),0) ,
-			is_house_use =ifnull((
-				select r.is_house_use from `tabReservation Room Rate` r where r.room_type_id = x.room_type_id and r.date = x.date and r.reservation_stay='{0}'
-			) ,0)
-		where x.reservation_stay = '{0}' and x.is_active=1  
-	""".format(self.name)
-
-	frappe.db.sql(sql)
-
-
-
-
 
 def update_note(self):
 	self.note_by = frappe.session.user
 	self.note_modified = now()
 	return self
 
+
+
 def update_housekeeping_note(self):
 	self.housekeeping_note_by = frappe.session.user
 	self.housekeeping_note_modified = now()
 	return self
 
+def generate_room_rate_after_change_stay(data):
+	for d in data:
+		update_reservation_stay_room_rate_after_resize(data=d["data"], stay_doc = d["stay_doc"])
+
 def generate_room_occupy(self):		
+	frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}'".format(self.name))
 	dates = get_date_range(self.arrival_date, self.departure_date,exlude_last_date=False)
 	for stay in self.stays: 
 		for d in dates:
-			#generate room to temp room occupy
-			frappe.get_doc({
-				"doctype":"Temp Room Occupy",
-				"reservation":self.reservation,
-				"reservation_stay":self.name,
-				"room_type_id":stay.room_type_id,
-				"room_id":stay.room_id,
-				"date":d,
-				"type":"Reservation",
-				"property":self.property,
-				"stay_room_id":stay.name,
-				"adult":self.adult,
-				"child":self.child,
-				"pax":self.pax,
-				"is_arrival":1 if d==self.arrival_date else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
-			}).insert()
-
-
-			#generate room to room occupy
-
 			frappe.get_doc({
 				"doctype":"Room Occupy",
 				"room_type_id":stay.room_type_id,
@@ -343,6 +319,27 @@ def generate_room_occupy(self):
 				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
 
 			}).insert()
+
+
+def generate_temp_room_occupy(self):	
+	frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay='{}'".format(self.name))
+	dates = get_date_range(self.arrival_date, self.departure_date)
+	for stay in self.stays: 
+		for d in dates:
+			#generate room to temp room occupy
+			frappe.get_doc({
+				"doctype":"Temp Room Occupy",
+				"reservation":self.reservation,
+				"reservation_stay":self.name,
+				"room_type_id":stay.room_type_id,
+				"room_id":stay.room_id,
+				"date":d,
+				"type":"Reservation",
+				"property":self.property,
+				"stay_room_id":stay.name,
+				"is_active":1 
+			}).insert()
+
 
 def generate_room_rate(self, run_commit = True): 
 
@@ -436,7 +433,6 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 	#2 check if user resize from start forward   so we just delete record
 	frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}' and date<'{}'".format(data["name"],data["start_date"]))
 
-	
 	date_range = []
 	room_rate = 0
 	rate_type = stay_doc.rate_type
@@ -459,7 +455,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				room_rate = room_rate_doc[0]["input_rate"]
 				rate_type = room_rate_doc[0]["rate_type"]
 				is_manual_rate  = room_rate_doc[0]["is_manual_rate"]
-
+	
 	for d in date_range:
  
 		frappe.get_doc({
@@ -486,22 +482,21 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 		
 
 	#update first date in reservation room is_arrival = 1
-	update_is_arrival_date_in_room_rate(stay_doc.name)
+	frappe.enqueue("edoor.api.utils.update_is_arrival_date_in_room_rate",queue='long', stay_name=stay_doc.name) 
 
 	
 def update_reservation_stay_room_rate_after_move(data,stay_doc):
 
 	date_range = get_date_range( getdate( data["start_date"]),getdate(data["end_date"]))
 	room_rates = frappe.db.get_list("Reservation Room Rate",filters={"stay_room_id":data["name"]},order_by="date",  start=0, page_length=1000  ) 
+	
 	for d in room_rates:
 		rate_doc = frappe.get_doc("Reservation Room Rate",d.name)
+		
 		rate_doc.date = date_range[room_rates.index(d)]
 		rate_doc.room_id=data["room_id"]
 		rate_doc.room_type_id=data["room_type_id"] or frappe.db.get_value("Room", rate_doc.room_id,"room_type_id")
-	
-	
-	
-
+	 
 
 		if data["generate_rate_type"] =="rate_plan":
 
@@ -514,70 +509,3 @@ def update_reservation_stay_room_rate_after_move(data,stay_doc):
 	#update first date in reservation room is_arrival = 1
 	update_is_arrival_date_in_room_rate(stay_doc.name)
 	
-	
-
-
-
-def change_room_occupy(self):
-	sql = "WHERE reservation_stay = '{0}'".format(self.name)
-	frappe.db.sql("delete from `tabTemp Room Occupy` {}".format(sql))
-	frappe.db.sql("delete from `tabRoom Occupy` {}".format(sql))
-	doc = frappe.get_doc('Reservation Stay', self.name)
-	generate_stay_room_occupy(self=doc)
-
-
-def generate_stay_room_occupy(self):
-	self.update_room_occupy = False
-	for stay in self.stays:
-		dates = []
-		if stay.name==self.stays[len(self.stays)-1].name or  len(self.stays)==1:
-	
-			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=False)
-		else:
-			dates = get_date_range(start_date=stay.start_date, end_date=stay.end_date, exlude_last_date=True)
-
-		for d in dates:
-			#generate room to temp room occupy
-			frappe.get_doc({
-				"doctype":"Temp Room Occupy",
-				"reservation":self.reservation,
-				"reservation_stay":self.name,
-				"room_type_id":stay.room_type_id,
-				"room_id":stay.room_id,
-				"date":d,
-				"type":"Reservation",
-				"property":self.property,
-				"stay_room_id":stay.name,
-				"adult":self.adult,
-				"child":self.child,
-				"pax":self.pax,
-				"is_arrival":1 if d==self.arrival_date else 0,
-				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 ,
-				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
-			}).insert()
-
-			#generate room to room occupy
-			frappe.get_doc({
-				"doctype":"Room Occupy",
-				"room_type_id":stay.room_type_id,
-				"room_id":stay.room_id,
-				"date":d,
-				"type":"Reservation",
-				"property":self.property,
-				"stay_room_id":stay.name,
-				"reservation":self.reservation,
-				"reservation_stay":self.name,
-				"adult":self.adult,
-				"child":self.child,
-				"pax":self.pax,
-				"is_arrival":1 if d==self.arrival_date else 0,
-				"pick_up":1 if d==self.arrival_date and self.require_pickup==1 else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and self.require_drop_off==1 else 0 ,
-				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 
-				
-			}).insert()
-		
-		

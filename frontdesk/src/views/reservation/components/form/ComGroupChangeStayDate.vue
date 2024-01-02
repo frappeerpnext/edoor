@@ -3,7 +3,7 @@
         <div class="grid bg-card-info border-round-xl p-3 add-room-reserv h-full my-2">
         <div class="col">
             <label>Arrival Date<span class="text-red-500">*</span></label><br />
-            <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
+            <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
             v-model="data.arrival_date"
                 placeholder="Arrival Date" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </div>
@@ -16,7 +16,7 @@
         </div>
         <div class="arr_wfit col">
             <label>Departure<span class="text-red-500">*</span></label><br />
-            <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
+            <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
             v-model="data.departure_date"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
         </div>    

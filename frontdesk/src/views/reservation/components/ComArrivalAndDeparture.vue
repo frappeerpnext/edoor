@@ -139,7 +139,9 @@ const onMenuArriavalDeparture = (event) => {
 function OnSetupForm() {
   dialog.open(ComFormSetupArrivalAndDeparture, {
     data:{
-      stays:[rs.reservationStay.name]
+      stays:[rs.reservationStay.name],
+      pick_up:rs.reservationStay.require_pickup,
+      drop_off:rs.reservationStay.require_drop_off
     },
     props: {
       header: 'Setup Arrival & Departure Mode',

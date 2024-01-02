@@ -29,15 +29,17 @@
             </div>
             <table>
                 <ComStayInfoNoBox label="Res Stay No">
-                    <Button @click="onViewReservationStayDetail(data?.reservation_stay)" class="-ml-2 link_line_action1"
+                    <Button v-if="data?.reservation_stay" @click="onViewReservationStayDetail(data?.reservation_stay)" class="-ml-2 link_line_action1"
                         text>{{ data?.reservation_stay }}</Button>
+                    <span v-else></span>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Status">
                     <span class="-ms-2 font-semibold">{{data?.reservation_status }}</span>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Guest">
-                    <Button @click="onViewCustomerDetail(data?.guest)" class="-ml-2 link_line_action1"
+                    <Button v-if="data?.guest && data?.guest_name" @click="onViewCustomerDetail(data?.guest)" class="-ml-2 link_line_action1"
                         text>{{ data?.guest }} - {{ data?.guest_name }}</Button>
+                    <span v-else></span>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Arrival">
                     <span class="-ms-2 font-semibold">

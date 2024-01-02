@@ -33,12 +33,13 @@
   "allow_discount",
   "guest_information_section",
   "guest",
-  "column_break_hsfq",
   "guest_name",
-  "column_break_ycuf",
+  "column_break_hsfq",
   "guest_type",
-  "column_break_cyct",
   "nationality",
+  "column_break_ycuf",
+  "adult",
+  "child",
   "discount_section",
   "discount_type",
   "column_break_18",
@@ -405,19 +406,27 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "column_break_cyct",
-   "fieldtype": "Column Break"
-  },
-  {
    "fetch_from": "guest.country",
    "fieldname": "nationality",
    "fieldtype": "Data",
    "label": "Nationality"
+  },
+  {
+   "fetch_from": "reservation_stay.adult",
+   "fieldname": "adult",
+   "fieldtype": "Int",
+   "label": "Adult"
+  },
+  {
+   "fetch_from": "reservation_stay.child",
+   "fieldname": "child",
+   "fieldtype": "Int",
+   "label": "Child"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-23 11:33:47.729265",
+ "modified": "2024-01-01 14:45:13.394097",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

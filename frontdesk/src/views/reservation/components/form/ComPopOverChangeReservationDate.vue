@@ -10,7 +10,7 @@
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar selectOtherMonths showIcon v-model="data.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(data.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths showIcon v-model="data.departure_date" :selectOtherMonths="true" :min-date="new Date(moment(data.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
         
         <div class="col-6">

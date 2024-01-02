@@ -7,15 +7,15 @@
             </div>
             <div class="col-6">
                 <label>Arrival Time</label>
-                <Calendar :disabled="(rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
+                <Calendar panelClass="no-btn-clear" showButtonBar :disabled="(rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
             </div>
             <div class="col-6">
                 <label>Departure Date</label>
-                <Calendar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
                 <label>Departure Time</label>
-                <Calendar selectOtherMonths class="w-full" v-model="stay.departure_time" timeOnly /> 
+                <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths class="w-full" v-model="stay.departure_time" timeOnly /> 
             </div>
             <div class="col-6">
                 <label>Nights</label>

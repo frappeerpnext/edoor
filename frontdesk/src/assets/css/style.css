@@ -1536,3 +1536,8 @@ align-items: center;
 .doc_image_avatar .p-avatar.p-avatar-xl{
     border-radius: 50%;
 }
+.iframe_class_scroll_summary{
+    height: calc(85vh - 85px) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+}

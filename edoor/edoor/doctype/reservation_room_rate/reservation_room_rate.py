@@ -11,9 +11,6 @@ import json
 from frappe.utils.data import getdate, now
 class ReservationRoomRate(Document):
 	def validate(self):
-		# working_day = get_working_day(self.property)
-		
-		
 		rate_type_doc = frappe.get_doc("Rate Type",self.rate_type)
 		if self.is_new():
 			self.allow_discount = rate_type_doc.allow_discount or 0
@@ -96,6 +93,7 @@ class ReservationRoomRate(Document):
 		self.total_rate = (self.rate or 0) - (self.discount_amount or 0) + self.total_tax
 
 	def on_update(self):
+		pass
 		# update is complimentary and house use
 		sql = """
 			update `tabRoom Occupy` 

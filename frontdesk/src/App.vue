@@ -544,7 +544,8 @@ function onViewDailySummary(date,room_type_id, title="") {
            report_name: gv.getCustomPrintFormat("Daily Property Data Summary"),
            view:"ui",
            extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:(room_type_id || '')}],
-           fullheight: true
+           fullheight: true,
+           iframe_class:"iframe_class_scroll_summary"
        },
        props: {
            header:"Summary Data on " + moment(date).format("DD-MM-YYYY") +( title==""?"":" - " + title),
@@ -554,7 +555,9 @@ function onViewDailySummary(date,room_type_id, title="") {
            position:"top",
            modal: true,
            maximizable: true,
-           closeOnEscape: false
+           closeOnEscape: false,
+           
+        
        }
       
    });

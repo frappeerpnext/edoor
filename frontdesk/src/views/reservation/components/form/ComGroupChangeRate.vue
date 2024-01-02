@@ -43,7 +43,7 @@
                             @onSelected="onRateTypeChange" doctype="Rate Type" />
                     </div>
                     <div class="col pt-4">
-                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-placeholder">
                             <Checkbox inputId="rate_type_input" v-model="data.is_override_rate" :binary="true" :trueValue="1" :falseValue="0" />
                             <label class="cursor-pointer" for="rate_type_input" >Overwrite Room Rate with Rate Type</label>
                         </div>
@@ -103,7 +103,7 @@
                         <ComInputCurrency classCss="w-full"  v-model="data.new_rate" id="input_amount" />
                     </div>
                     <div class="col-7 pt-4">
-                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                        <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-placeholder">
                             <Checkbox inputId="rateIncludeTax" v-model="data.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue="0" />
                             <label class="cursor-pointer" for="rateIncludeTax">Rate Include Tax</label>
                         </div>
@@ -341,6 +341,10 @@ function onChangeNewRate() {
         message: 'Are you sure you want to set room rate to 0?',
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'border-none',
+        rejectClass: 'hidden',
+        acceptLabel: 'Ok',
+        acceptIcon: 'pi pi-check-circle',
         accept:()=>{
             onSubmitChangeRate()
         }

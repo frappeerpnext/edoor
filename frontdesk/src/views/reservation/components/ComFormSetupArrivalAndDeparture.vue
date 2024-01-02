@@ -92,7 +92,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, useDialog,postApi, onMounted } from "@/plugin";
+import { ref, inject, useDialog,postApi, onMounted, useToast } from "@/plugin";
 
 import ComAddDriver from "../../other/driver/ComAddDriver.vue";
 
@@ -102,8 +102,14 @@ const stay = ref({})
 const stays = ref()
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
+const toast = useToast()
  
-function onSave() {
+function onSave() { 
+    console.log(dialogRef.value.data.drop_off)
+    if (stay.value.require_pickup == 0 && stay.value.require_drop_off == 0){
+        toast.add({ severity: 'warn', summary: 'Pickup or Drop Off are Required', life: 3000 });
+        return
+    }
     isSaving.value = true;
     postApi("reservation.update_pickup_and_drop_off",{
         stays:stays.value,

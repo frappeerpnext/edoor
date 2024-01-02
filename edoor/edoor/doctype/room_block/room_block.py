@@ -84,7 +84,7 @@ class RoomBlock(Document):
 
 
 	def after_insert(self):
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[{
 			"comment_type":"Created",
 			"custom_property": self.property,
 			"subject":"Create New Room Block",

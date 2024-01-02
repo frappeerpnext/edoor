@@ -60,7 +60,7 @@ class Reservation(Document):
 
 	def after_insert(self):
 		
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short',enqueue_after_commit=20,now=False, data =[{
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default',enqueue_after_commit=20,now=False, data =[{
 			"comment_type":"Created",
 			"subject":"Create New Reservation",
 			"reference_doctype":"Reservation",

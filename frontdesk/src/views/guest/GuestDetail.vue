@@ -60,6 +60,8 @@ function onIframeLoaded(id){
     const iframe = document.getElementById(id);
     if (iframe){
         iframe.height = iframe.contentWindow.document.body.scrollHeight;
+        iframe.style.minWidth = "0px"
+    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
     }
 }
 
@@ -188,7 +190,6 @@ onUnmounted(() => {
 <style scoped>
 .iframe-view{
     overflow: auto !important;
-    max-height: 550px !important;
     min-height: 550px !important;
     margin-right: -1rem;
     padding-right: 1rem !important;

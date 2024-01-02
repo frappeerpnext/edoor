@@ -4,7 +4,7 @@
             <div class="col-12">
                 <label>Res. Date</label><br/>
                 <Calendar class="p-inputtext-sm w-full" :selectOtherMonths="true" v-model="data.reservation_date"
-                placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"/>
             </div>
             <div class="col-6">
                 <label>Ref. No</label><br/>

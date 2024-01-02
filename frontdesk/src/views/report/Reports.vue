@@ -54,10 +54,9 @@ function onGetHeight(f) {
 
 function onSelectReport(p) { 
     selectedReport.value = p
-    loadIframe()
     setTimeout(function(){ 
         if (selectedReport.value){
-            setIframeHeight()
+            loadIframe()
         }
     }, 100)
 }
@@ -127,9 +126,11 @@ function loadIframe() {
 
         url.value = url.value + "&refresh=" + (Math.random() * 16)
         
-        setTimeout(function(){
-            document.getElementById("iframe").contentWindow.location.replace(url.value)
-        }, 500)
+         
+        document.getElementById("iframe").contentWindow.location.replace(url.value)
+
+        setIframeHeight()
+         
     }
 
 }

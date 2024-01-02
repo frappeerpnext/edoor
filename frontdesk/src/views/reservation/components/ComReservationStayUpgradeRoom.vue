@@ -34,7 +34,7 @@
                                 <span class="box-input-detail">{{gv.dateFormat(lastStay.start_date)}}</span>
                             </td>
                             <td class="px-2 w-14rem"> 
-                                <Calendar class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
+                                <Calendar showButtonBar panelClass="no-btn-clear" class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2 text-left">
                                 <div class="box-input-detail flex"><span  v-tippy="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span  v-tippy="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
@@ -92,7 +92,7 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem">
-                                <Calendar    showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar showButtonBar panelClass="no-btn-clear" showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
 
                             <td class="px-2 w-16rem"> 

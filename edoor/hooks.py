@@ -112,11 +112,11 @@ doc_events = {
 		]
         
 	},
-    "Version":{
-        "after_insert":[
-            "edoor.api.utils.update_audit_trail_from_version"
-		]
-	},
+    # "Version":{
+    #     "after_insert":[
+    #         "edoor.api.utils.update_audit_trail_from_version"
+	# 	]
+	# },
 	"*": {
 		"on_update": [
             "edoor.api.utils.update_keyword",

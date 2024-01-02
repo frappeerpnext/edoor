@@ -1,7 +1,6 @@
 <template lang="">
     <ComReservationStayPanel title="Room Stay">
-        <template #content>
-      
+        <template #content> 
             <div id="room_stay" class="room-stay-list text-center"> 
             <DataTable class="p-datatable-sm mt-2" :value="rooms"  tableStyle="min-width: 50rem">
                     <Column class="w-15rem" field="start_date" header="Stay Date" >
@@ -14,8 +13,7 @@
                             {{gv.dateFormat(data.end_date) }}
                             </span> 
                         </template>
-                    </Column>
-                   
+                    </Column> 
                     <Column class="text-center w-10rem" field="room_nights" header="Nights"></Column>
                     <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">

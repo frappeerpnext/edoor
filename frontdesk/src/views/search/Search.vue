@@ -14,8 +14,8 @@
 <hr class="mt-2">
 <div v-if="ShowFilterSearch" class="col-12">
 
-<div class="flex gap-2">
-  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search " :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
+<div class="grid gap-2">
+  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search white-space-nowrap" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
 <i v-if="d.selected" class="pi pi-check ms-3"></i>    
 
 </Button>

@@ -1,4 +1,4 @@
-from edoor.edoor.doctype.reservation_stay.reservation_stay import change_room_occupy, update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import  update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability
 from edoor.api.utils import update_reservation, validate_role
@@ -98,22 +98,26 @@ def group_change_stay(data):
         data_for_change_stays.append(can_change_stay_date(d))
     
     can_change_stay_data = [d for d in data_for_change_stays if d["can_change_stay"]==True ]
+    stay_room_rate_data = []
     if len(can_change_stay_data)> 0:
-        
         for d in can_change_stay_data:
-            change_stay(d)
+            stay_doc = change_stay(d)
+            stay_room_rate_data.append({"stay_doc":stay_doc,"data":d})
+            
 
         #temporary update arrival date and departure date to reservation for data update in front end
-        stay_date = frappe.db.sql("select min(arrival_date) as arrival_date, max(departure_date) as departure_date from `tabReservation Stay` where reservation='{}' and is_active_reservation=1".format(data["reservation"]),as_dict=1)
-        if stay_date:
-            frappe.db.sql("update `tabReservation` set arrival_date='{}', departure_date='{}' where name='{}'".format( stay_date[0]["arrival_date"],stay_date[0]["departure_date"],data["reservation"]))
 
+        frappe.db.sql("update `tabReservation` set arrival_date='{}', departure_date='{}' where name='{}'".format( data["arrival"],data["departure"],data["reservation"]))
 
         #commit data change to database
         frappe.db.commit()
+         
+        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation",queue='short', reservation = data["reservation"],reservation_stay=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True]) 
+        
         
 
-        frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data["reservation"],reservation_stay=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True]) 
+        
+
         frappe.msgprint("Change stay successfully")
 
 
@@ -142,22 +146,16 @@ def change_stay(data):
         doc.change_stay_note = data["note"]  
 
     doc.flags.ignore_validate = True
-    doc.flags.ignore_on_update= True
+    doc.flags.ignore_on_update = True
     doc.save()
 
     if doc:
-        #regenerate rate is base on field name generate_new_stay_rate_by in data object
-        #there are 2 value
-        #1. stay_rate get from last and first stay rate
-        #2 is from rate plan
-        # we not enqueue this because we want to get rate for update to reservation
- 
-        update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
-        change_room_occupy(doc)
-        
-        # frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_reservation_stay_room_rate_after_resize", queue='short', data=data, stay_doc = doc)
-        # frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.change_room_occupy", queue='short', self = doc)
+        update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self=doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self=doc)
 
+
+   
     return doc
 
 def can_change_stay_date(data):
@@ -273,7 +271,12 @@ def group_change_rate_type(data):
     # {
     #     "start_date", "end_date", "rate_type", "is_override_rate"
     # }
+
     working_day = get_working_day(data["property"])
+    rate_type = frappe.get_doc("Rate Type",data["rate_type"])
+    if rate_type.is_house_use ==1 or rate_type.is_complimentary==1:
+        data["is_override_rate"] = 1 
+
     #get active stay
     sql = "select name from `tabReservation Stay` where name in %(stays)s and is_active_reservation=1 and allow_user_to_edit_information=1 and departure_date>= %(working_date)s"
     active_stays = frappe.db.sql(sql, {

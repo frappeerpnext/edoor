@@ -67,7 +67,7 @@ class DepositLedger(Document):
 
 	def after_insert(self):
 		content = f"New deposit ledger added. Deposit Ledger #:<a data-action='view_deposit_ledger_detail' data-name='{self.name}'>{self.name}</a>, Guest: <a data-action='view_guest_detail' data-name='{self.guest}'> {self.guest} - {self.guest_name}</a>"
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",
 				"custom_icon":"pi pi-dollar",

@@ -164,7 +164,7 @@
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>
-                <iframe :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
             </div>
            
 
@@ -200,7 +200,7 @@ const property_name = ref(window.property_name)
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const props = defineProps({
     BtnClassPrinter: String,
-    BtnClass: String
+    BtnClass: String,
 })
 const loading = ref(false)
 function onSelectLetterHead(l) {
@@ -276,7 +276,7 @@ const loadIframe = () => {
     document.getElementById(iframe_id).contentWindow.location.replace(url.value)  
 }
 function onPrint() {
-     document.getElementById(iframe_id).contentWindow.print()
+    document.getElementById(iframe_id).contentWindow.print()
 }
 const reloadIframe = debouncer(() => {
     loadIframe()
