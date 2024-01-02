@@ -424,8 +424,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
         doc.total_no_show= data[0]["total_no_show"] or 0
         doc.is_complimentary= data[0]["is_complimentary"] or 0
         doc.is_house_use= data[0]["is_house_use"] or 0
-
-
+        
         #update room info
         
         doc.room_types ="" if not room_info_data[0]["room_types"] else  ",".join(set(room_info_data[0]["room_types"].split(',')))
