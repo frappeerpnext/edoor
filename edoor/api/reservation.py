@@ -692,7 +692,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     frappe.msgprint(_("Check in successfully"))
 
     #enqueue add comment
-    frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='default')
+    frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')
 
 
     return {
@@ -705,7 +705,7 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
     #validate working day in doc method
     #validate user role from edoor setting role
     #delete all auto post under current stay folio
- 
+    
     stays = []
     if isinstance(reservation_stay, list):
         stays=reservation_stay
@@ -768,10 +768,11 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         
         frappe.db.sql("delete from `tabFolio Transaction` where is_auto_post=1 and reservation_room_rate in (select name from `tabReservation Room Rate` where reservation_stay='{}')".format(s))
 
-
+        folio_numbers = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}'".format(s), as_dict = 1)
         if folio_numbers:
-            for f in folio_numbers:           
-                update_reservation_folio(f["transaction_number"], None, run_commit=False)
+            for f in folio_numbers:
+                frappe.enqueue("edoor.api.utils.update_reservation_folio", queue='default', name=f["name"], doc=None, run_commit=True )
+                
 
         #end loop stay
         

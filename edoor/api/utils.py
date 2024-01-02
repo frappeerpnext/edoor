@@ -484,6 +484,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
 def update_reservation_folio(name=None, doc=None,run_commit=True):
     if name:
         doc = frappe.get_doc("Reservation Folio",name)
+
     sql_folio = """
         select 
                 sum(if(type='Debit',amount,0)) as debit,
@@ -500,6 +501,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    
  
     doc.save()
     if run_commit:

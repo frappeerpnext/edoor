@@ -1,4 +1,4 @@
-<template>
+<template> 
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
             <div class="text-2xl text-overflow-ellipsis">{{ property.name }}</div>
