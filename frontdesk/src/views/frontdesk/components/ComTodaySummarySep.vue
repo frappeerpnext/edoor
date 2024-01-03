@@ -117,7 +117,7 @@ const filters = [
             gv.getCustomPrintFormat("eDoor Unassign Room Reservation List"),
             'Unassign Room Reservation List',
             [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
-            ['keyword','room_type','start_date','end_date','business_source']
+            ['keyword','room_type','business_source']
         )
     }
     else if(props.dialogKey == "pickup_drop_off"){

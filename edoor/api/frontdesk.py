@@ -93,8 +93,7 @@ def get_meta(doctype=None):
 
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None):
- 
-    
+
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
     working_date =  frappe.utils.today() 
     if data:
@@ -129,7 +128,23 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
 
     #get all totoal unassign room
 
-    total_unassign_room = frappe.db.sql("select count( distinct reservation_stay) as total from `tabTemp Room Occupy`  WHERE  is_departure= 0 and  `date` >= '{0}' AND property = '{1}' and type='Reservation' and coalesce(room_id,'')='';".format(working_date ,property),as_dict=1)
+    total_unassign_room = frappe.db.sql("""
+        select count(name) as total from `tabReservation Stay` 
+        where name in (  
+            SELECT 
+              distinct  reservation_stay
+            FROM `tabRoom Occupy` 
+            WHERE 
+                is_active= 1 and  
+                `date` >= '{0}' AND 
+                property = '{1}' and 
+                type='Reservation' and 
+                room_type_id=if('{2}'='',room_type_id,'{2}') and 
+                ifnull(room_id,'') = ''
+        ) and is_active_reservation = 1
+        """.format(date,property, room_type_id or ''), as_dict =1)
+
+    
     if total_unassign_room:
         total_unassign_room = total_unassign_room[0]["total"]
     else:

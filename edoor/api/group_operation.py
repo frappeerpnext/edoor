@@ -152,7 +152,7 @@ def change_stay(data):
     if doc:
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self=doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self=doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self_name=doc.name)
 
 
    

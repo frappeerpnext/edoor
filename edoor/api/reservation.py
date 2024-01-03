@@ -967,7 +967,7 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
             else:
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
-                frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self = stay_doc)
+                frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = stay_doc.name)
                 
 
 
@@ -1396,7 +1396,7 @@ def change_stay(data):
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', self = doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = doc.name)
     
     frappe.db.commit()
     frappe.msgprint(_("Change stay successully"))
@@ -1464,7 +1464,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
 
 
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self = doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', stay_name = doc.name)
 
 
         #generate room rate
@@ -1486,8 +1486,6 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
 @frappe.whitelist(methods="DELETE")
 def delete_stay_room(parent,name, note):
 
-    
-
     stay = frappe.get_doc('Reservation Stay', parent)
     deleted_row = None
     for p in stay.stays:
@@ -1496,6 +1494,7 @@ def delete_stay_room(parent,name, note):
             deleted_row = p
     
     stay.remove(deleted_row)
+    
     if stay.reservation_status in ["Reserved","Confirmed"]:
         if len([d for d in stay.stays if d.room_id])>0:
             stay.reservation_status ="Reserved"
@@ -1510,7 +1509,7 @@ def delete_stay_room(parent,name, note):
         frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}'".format(name))
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = stay.reservation, reservation_stay=stay.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self = stay)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', stay_name = doc.name)
         
     update_is_arrival_date_in_room_rate(stay.name)
     return stay
@@ -2245,7 +2244,7 @@ def upgrade_room(doc,regenerate_rate=False):
     frappe.db.commit()
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data.reservation, reservation_stay=data.name)
     frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = data)
-    frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self = data)
+    frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = doc.name)
        
     return data
 
