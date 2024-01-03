@@ -2244,7 +2244,7 @@ def upgrade_room(doc,regenerate_rate=False):
     frappe.db.commit()
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data.reservation, reservation_stay=data.name)
     frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = data)
-    frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = doc.name)
+    frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = data.name)
        
     return data
 
