@@ -1491,9 +1491,9 @@ def delete_stay_room(parent,name, note):
     for p in stay.stays:
         if p.name == name:
             p.deleted_note = note or ""
-            deleted_row = p
+            stay.remove(p)
     
-    stay.remove(deleted_row)
+    
     
     if stay.reservation_status in ["Reserved","Confirmed"]:
         if len([d for d in stay.stays if d.room_id])>0:
@@ -1509,9 +1509,10 @@ def delete_stay_room(parent,name, note):
         frappe.db.sql("delete from `tabReservation Room Rate` where stay_room_id='{}'".format(name))
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = stay.reservation, reservation_stay=stay.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', stay_name = doc.name)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', stay_name = stay.name)
         
     update_is_arrival_date_in_room_rate(stay.name)
+
     return stay
 
 @frappe.whitelist(methods="POST")
