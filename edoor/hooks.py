@@ -229,6 +229,8 @@ fixtures = [
     {"dt": "Print Format", "filters": [["name", "=", "eDoor Vendor Detail"]]},
     {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},
     {"dt": "Print Format", "filters": [["name", "=", "eDoor Cancel Reservation List"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
+    
     {"dt": "Reservation Status"},
     {"dt": "Housekeeping Status"},
     {"dt": "Global Search Template"},

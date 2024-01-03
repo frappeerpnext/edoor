@@ -5,8 +5,9 @@
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
-import { ref, inject, useDialog, onMounted,getDocList } from "@/plugin";
+import { ref, inject, useDialog, onMounted,getDocList,useToast } from "@/plugin";
 
+const toast = useToast()
 const dialog = useDialog();
 const props = defineProps({
     reservation: String,
