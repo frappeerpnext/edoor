@@ -161,8 +161,9 @@ function onChangeStatus(reservation_status) {
                     If you have a No Show charge, please update the folio transaction first.
                     If you want to sell this room, please untick on check box Reserved Room`
         }
-        const stays = rs.selecteds.filter(r=>r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
 
+        const stays = rs.selecteds.filter(r=>-+r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
+      
         if (stays.length==0){
             toast.add({ severity: 'warn', detail: "Please select active reservation stay to " + reservation_status, life: 3000 })
             return
