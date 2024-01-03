@@ -217,20 +217,17 @@ scheduler_events = {
 
 on_login = "edoor.api.utils.successful_login"
 
- 
-
-
-
+  
 
 fixtures = [
-    # {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Shortcut Menu Help"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Vendor Detail"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Cancel Reservation List"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]},
+    {"dt": "Print Format", "filters": [["module", "=", "eDoor"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Shortcut Menu Help"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Vendor Detail"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Cancel Reservation List"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
+    {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]},
     
     {"dt": "Reservation Status"},
     {"dt": "Housekeeping Status"},
