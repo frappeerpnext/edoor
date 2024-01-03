@@ -1,4 +1,4 @@
-from edoor.edoor.doctype.reservation_stay.reservation_stay import  update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room_occupy, update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability
 from edoor.api.utils import update_reservation, validate_role
@@ -131,7 +131,9 @@ def change_stay(data):
     #this method is do not have validation
     doc = frappe.get_doc("Reservation Stay",data['parent'])
     doc.is_override_rate = 'is_override_rate' in data and data['is_override_rate']
-
+    doc.arrival_date = data["start_date"]
+    doc.departure_date = data["end_date"]
+    
     for s in doc.stays:
         if s.name == data['name']:
             s.start_date = data['start_date']
@@ -150,9 +152,11 @@ def change_stay(data):
     doc.save()
 
     if doc:
+       
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self=doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self_name=doc.name)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self=doc)
+
 
 
    

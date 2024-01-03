@@ -291,6 +291,7 @@ def generate_room_rate_after_change_stay(data):
 	for d in data:
 		update_reservation_stay_room_rate_after_resize(data=d["data"], stay_doc = d["stay_doc"])
 
+@frappe.whitelist()
 def generate_room_occupy(self =None, stay_name=None):
 	if not self:
 		self = frappe.get_doc("Reservation Stay", stay_name)
@@ -305,7 +306,6 @@ def generate_room_occupy(self =None, stay_name=None):
 	for stay in self.stays: 
 		dates = get_date_range(getdate( stay.start_date), getdate(stay.end_date),exlude_last_date=False if stay.name == self.stays[len(self.stays)-1].name else True)
 		for d in dates:
-		 
 			frappe.get_doc({
 				"doctype":"Room Occupy",
 				"room_type_id":stay.room_type_id,
