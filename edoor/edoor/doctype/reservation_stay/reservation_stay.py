@@ -268,11 +268,12 @@ class ReservationStay(Document):
 		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_room_occupy", queue='long', self = self)
 
 def update_room_occupy(self):
+	 
 	frappe.db.sql("update `tabRoom Occupy` set pick_up=0, drop_off=0 where reservation_stay='{}'".format(self.name))
 	if self.require_pickup==1:
 		frappe.db.sql("update `tabRoom Occupy` set pick_up=1 where reservation_stay='{}' and date='{}'".format(self.name,self.arrival_date))		
 	if self.require_drop_off==1:
-		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name,self.departure_date))
+		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name, (self.checked_out_system_date if self.is_early_checked_out==1 else self.departure_date)))
  
 
 def update_note(self):
@@ -292,6 +293,7 @@ def generate_room_rate_after_change_stay(data):
 		update_reservation_stay_room_rate_after_resize(data=d["data"], stay_doc = d["stay_doc"])
 
 @frappe.whitelist()
+
 def generate_room_occupy(self =None, stay_name=None):
 	if not self:
 		self = frappe.get_doc("Reservation Stay", stay_name)

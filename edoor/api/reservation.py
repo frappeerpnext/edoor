@@ -557,7 +557,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     comment_doc = [] 
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
-        if stay.reservation_status in ["Reserved","Confirmed"]:
+        if stay.reservation_status in ["Reserved","Confirmed","No Show"]:
             comment = {
                 "subject":"Checked In",
                 "reference_doctype":"Reservation Stay",
@@ -846,28 +846,20 @@ def check_out(reservation,reservation_stays=None):
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
 
     #check backdate role
-    
-
     room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_out")
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     comment_doc = []
-    
-    for s in reservation_stays:
 
+    for s in reservation_stays:
         stay = frappe.get_doc("Reservation Stay", s)
-        
         if stay.reservation_status=="Checked Out":
             frappe.throw("Stay # {}. Room {}. This room is already check out.".format(stay.name, stay.rooms))
-
         if not (stay.departure_date <= working_day["date_working_day"] or stay.departure_date ==add_to_date (working_day["date_working_day"] ,days=1)):
-            
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
-
         #validate folio balance
         data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
         if data_balance:
             balance = data_balance[0]["balance"] or 0
-
             if balance> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
                 frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
 
@@ -896,9 +888,20 @@ def check_out(reservation,reservation_stays=None):
         if stay.is_early_checked_out == 1:
             #delete last stay date from room occupy
             frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}' and date='{}'".format(stay.name, stay.departure_date))
-            #update last stay date is departure = 1 and is_active = 1
 
-            frappe.db.sql("update `tabRoom Occupy` set is_departure=1,is_active=1,drop_off={} where reservation_stay='{}' and date='{}'".format(stay.require_drop_off, stay.name, stay.checked_out_system_date))
+            #update last stay date is departure = 1 and is_active = 1
+            
+
+            # frappe.throw("update `tabRoom Occupy` set is_departure=1,is_active=1,drop_off={} where reservation_stay='{}' and date='{}'".format(stay.require_drop_off, stay.name, stay.checked_out_system_date))
+            frappe.db.sql("""
+                            update `tabRoom Occupy` set 
+                                is_departure=1,
+                                is_active=0,
+                                drop_off={}
+                            where 
+                                reservation_stay='{}' and 
+                                date='{}'"""
+                    .format(stay.require_drop_off, stay.name, stay.checked_out_system_date))
 
         #add to audit trail
         comment = {
@@ -913,7 +916,6 @@ def check_out(reservation,reservation_stays=None):
 
         
     frappe.enqueue("edoor.api.utils.update_reservation", queue='short', name=reservation)
-    # doc = update_reservation(name=reservation,run_commit=False)
 
     
     #close all open folio 
@@ -922,8 +924,8 @@ def check_out(reservation,reservation_stays=None):
     frappe.db.commit()
 
     #enqueu remove record from temp room occupy
-    frappe.enqueue("edoor.api.utils.remove_temp_room_occupy", queue='short', reservation=reservation)
-    frappe.enqueue("edoor.api.utils.add_audit_trail", queue='default', data=comment_doc)
+    frappe.enqueue("edoor.api.utils.remove_temp_room_occupy", queue='long', reservation=reservation)
+    frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
     return {
         "reservation":doc
     }

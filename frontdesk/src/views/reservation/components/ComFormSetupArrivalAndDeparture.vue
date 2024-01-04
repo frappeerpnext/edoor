@@ -1,5 +1,5 @@
 <template >
-    <ComDialogContent @onOK="onSave" hideButtonClose :loading="isSaving">
+    <ComDialogContent @onOK="onSave" @onClose="onClose" :loading="isSaving">
         <div class="grid">
             <div class="col-6">
                 <div class="flex flex-wrap">
@@ -105,11 +105,6 @@ const dialog = useDialog()
 const toast = useToast()
  
 function onSave() { 
-    console.log(dialogRef.value.data.drop_off)
-    if (stay.value.require_pickup == 0 && stay.value.require_drop_off == 0){
-        toast.add({ severity: 'warn', summary: 'Pickup or Drop Off are Required', life: 3000 });
-        return
-    }
     isSaving.value = true;
     postApi("reservation.update_pickup_and_drop_off",{
         stays:stays.value,
@@ -149,6 +144,10 @@ function onAddDriver(type) {
                 stay.value.drop_off_driver = data.name
         }
     })
+}
+
+const onClose = () => {
+    dialogRef.value.close()
 }
 
 onMounted(()=>{
