@@ -4,31 +4,11 @@ import json
 
 @frappe.whitelist(methods="POST")
 def update_housekeeping_status(property, rooms, status):
-   working_day = get_working_day(property)
-   doc = frappe.get_doc("Housekeeping Status", status)
+   working_day = get_working_day(property) 
    for r in rooms.split(","):
-      room = frappe.get_doc("Room",r)
-      temp_occupy_data = frappe.db.sql("select type,reservation_status from `tabTemp Room Occupy` where room_id='{}' and date='{}' and property='{}'".format(r,working_day["date_working_day"],property), as_dict=1)
-      if len(temp_occupy_data)>0:
-         temp_data = temp_occupy_data[0]
-         #validate if room have guest
-         if temp_data["type"] =="Reservation":
-            if temp_data["reservation_status"] == "In-house":
-               # validate status is vacant but room have guest then show error message
-               if (doc.is_room_occupy or 0) == 0:
-                  frappe.throw("Room {} is occupy. You can not change   status to {}".format(room.room_number, status))
-            else:
-                if (doc.is_room_occupy or 0) == 1:
-                  frappe.throw("Room {} is vacant. You can not change status to {}".format(room.room_number, status))
-         else:
-            frappe.throw("Room #{} is block. You can not change status of a block room.".format(room.room_number))
-      else:
-         #room is free but set to room occupy
-         if (doc.is_room_occupy or 0) == 1:
-            frappe.throw("Room {} is vacant. You can not change status to {}".format(room.room_number, status))
-
-      room.housekeeping_status = status
-      room.status_color = doc.status_color
+      room = frappe.get_doc("Room",r) 
+      
+      room.housekeeping_status_code = status
       room.save()
       frappe.db.commit()
 
@@ -42,17 +22,21 @@ def update_housekeeper(rooms, housekeeper):
     frappe.db.commit()
     return "Ok"
 
-@frappe.whitelist(methods="POST")
+@frappe.whitelist()
 def get_room_list(filter):
-   filter["keyword"] = f"%{filter['keyword'] }%" 
+
+   filter["keyword"] = f"%{filter['keyword'] }%" if "keyword" in filter else f'%%'
+   
    working_day = get_working_day(filter["property"])
 
-    
    sql ="""
       select 
          name,
          room_number,
          housekeeping_status,
+         housekeeping_status_code,
+         room_status,
+         building,
          '' as reservation_status,
          status_color,
          housekeeper,
@@ -65,22 +49,22 @@ def get_room_list(filter):
          room_number like %(keyword)s
    """.format(filter["keyword"])
 
-   if len(filter["room_type_id"])>0:
+   if 'room_type_id' in filter and  len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
    
-   if len(filter["housekeeping_status"])>0:
+   if  'housekeeping_status' in filter and  len(filter["housekeeping_status"])>0:
       sql = sql + " and housekeeping_status in %(housekeeping_status)s "
    
-   if len(filter["building"])>0:
+   if  'building' in filter and len(filter["building"])>0:
       sql = sql + " and building = %(building)s "
    
-   if len(filter["floor"])>0:
+   if   'floor' in filter and len(filter["floor"])>0:
       sql = sql + " and floor = %(floor)s "
    
-   if len(filter["room_type_group"])>0:
+   if  'room_type_group' in filter and len(filter["room_type_group"])>0:
       sql = sql + " and room_type_group = %(room_type_group)s "
    
-   if len(filter["housekeeper"])>0:
+   if  'housekeeper' in filter and len(filter["housekeeper"])>0:
       sql = sql + " and housekeeper = %(housekeeper)s "
    
    data = frappe.db.sql(sql,filter,as_dict=1)
@@ -95,26 +79,26 @@ def get_room_list(filter):
             type,
             stay_room_id
 
-      from `tabTemp Room Occupy`
+      from `tabRoom Occupy`
       where 
          ifnull(room_id,'') !='' and 
          date = %(date)s and 
          room_number like %(keyword)s and 
          property = %(property)s 
    """
-   if len(filter["room_type_id"])>0:
+   if  'room_type_id' in filter and  len(filter["room_type_id"])>0:
       sql = sql + " and room_type_id in %(room_type_id)s "
    
-   if len(filter["building"])>0:
+   if 'building' in filter and len(filter["building"])>0:
       sql = sql + " and building = %(building)s "
 
-   if len(filter["floor"])>0:
+   if  'floor' in filter and len(filter["floor"])>0:
       sql = sql + " and floor = %(floor)s "
    
-   if len(filter["room_type_group"])>0:
+   if  'room_type_group' in filter and len(filter["room_type_group"])>0:
       sql = sql + " and room_type_group = %(room_type_group)s "
    
-   if len(filter["date"])>0:
+   if   'date' in filter and len(filter["date"])>0:
       sql = sql + " and date = %(date)s "
 
    #filter from room occpuy in have room in room list 
@@ -124,7 +108,7 @@ def get_room_list(filter):
         
 
    occupy_data= frappe.db.sql(sql,filter,as_dict=1)
-   
+    
  
    for d in occupy_data:
       data_room = [r for r in data if r["name"]==d["room_id"] ]

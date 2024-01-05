@@ -1,4 +1,4 @@
-<template>
+<template> 
     <div>
         <div class="px-2">
             <ComHeader isRefresh @onRefresh="onRefresh()">
@@ -10,13 +10,13 @@
                 </template>
                 <template #end>
                     <ComHousekeepingActionButton />
-                </template> 
+                </template>
             </ComHeader>
             <div class="flex justify-between mb-4 overflow-auto ">
                 <div>
                     <div class="flex gap-2 me-2">
                         <div class="flex w-full gap-2">
-                            <ComHousekeepingFilter /> 
+                            <ComHousekeepingFilter />
                         </div>
                     </div>
                 </div>
@@ -32,9 +32,13 @@
                         </button>
                     </div>
                     <div>
-                        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'Back day'" class="border-noround-right border-y-none border-left-none h-full"></Button>
-                        <Button @click="onToday()" v-tippy ="'Today'"  class="border-noround border-none h-full"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
-                        <Button @click="onPrevNext('next')"  v-tippy ="'Next day'" class="border-noround-left border-y-none border-right-none h-full" icon="pi pi-angle-double-right"></Button>
+                        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'Back day'"
+                            class="border-noround-right border-y-none border-left-none h-full"></Button>
+                        <Button @click="onToday()" v-tippy="'Today'" class="border-noround border-none h-full"><img
+                                class="icon-set-svg" :src="iconTodayCalendar" /></Button>
+                        <Button @click="onPrevNext('next')" v-tippy="'Next day'"
+                            class="border-noround-left border-y-none border-right-none h-full"
+                            icon="pi pi-angle-double-right"></Button>
                     </div>
                 </div>
             </div>
@@ -93,24 +97,24 @@ function debouncer(fn, delay) {
 onMounted(() => {
     window.socket.on("Housekeeping", (arg) => {
         if (arg.property == window.property_name) {
-            setTimeout(function(){
+            setTimeout(function () {
                 hk.loadData(false)
-            },3000) 
+            }, 3000)
         }
     })
 
-    hk.loadData()    
+    hk.loadData()
 })
 
-const dateOptions = reactive ({
-    dateIncrement: {days:1}
+const dateOptions = reactive({
+    dateIncrement: { days: 1 }
 })
 
 const onPrevNext = (key) => {
-    if (key == 'prev'){
+    if (key == 'prev') {
         hk.filter.selected_date = moment(hk.filter.selected_date).add(dateOptions.dateIncrement.days * -1, 'days').toDate()
     }
-    else{
+    else {
         hk.filter.selected_date = moment(hk.filter.selected_date).add(dateOptions.dateIncrement.days, 'days').toDate()
     }
     hk.loadData()

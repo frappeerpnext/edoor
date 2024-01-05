@@ -10,6 +10,8 @@
  "engine": "InnoDB",
  "field_order": [
   "status",
+  "room_status",
+  "housekeeping_status_code",
   "status_color",
   "icon",
   "is_block_room",
@@ -60,11 +62,23 @@
    "fieldname": "is_room_occupy",
    "fieldtype": "Check",
    "label": "Is Room Occupy"
+  },
+  {
+   "fieldname": "room_status",
+   "fieldtype": "Link",
+   "label": "Room Status",
+   "options": "Room Status"
+  },
+  {
+   "fieldname": "housekeeping_status_code",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status Code",
+   "options": "Housekeeping Status Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-11 15:34:14.897004",
+ "modified": "2024-01-05 09:45:18.729596",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Housekeeping Status",

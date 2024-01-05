@@ -10,10 +10,10 @@
             </table>
         </div>
         <div class="grid mt-2">
-            <div class="col-6" v-if="!hk.room_block" >
-                <SplitButton :disabled="hk.selectedRow.housekeeping_status == 'Room Block'" class="w-full"
+            <div class="col-6" v-if="!hk.room_block">
+                <SplitButton :disabled="hk.selectedRow.room_status == 'Room Block'" class="w-full"
                     :buttonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
-                    :label="hk.selectedRow?.housekeeping_status" :model="items" :color="hk.selectedRow?.status_color"
+                    :label="hk.selectedRow?.housekeeping_status_code" :model="items" :color="hk.selectedRow?.status_color"
                     :menuButtonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
                     :class="{ 'active-button': true }">
                 </SplitButton>
@@ -41,9 +41,8 @@
                     <Button @click="onViewReservationStayDetail(hk?.reservationStay?.name)" class="-ml-3 link_line_action1"
                         text>{{ hk?.reservationStay?.name }}</Button>
                 </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Type" :value="hk?.reservationStay?.reservation_type"
-                    v-tippy="hk?.reservationStay?.reservation_type !== 'GIT' ? 'Free Independent Traveler' 
-                    :(hk?.reservationStay?.reservation_type !== 'FIT' ? 'Group Inclusive Tour' : '')" />
+                <ComStayInfoNoBox label="Type" :value="hk?.reservationStay?.reservation_type" v-tippy="hk?.reservationStay?.reservation_type !== 'GIT' ? 'Free Independent Traveler'
+                    : (hk?.reservationStay?.reservation_type !== 'FIT' ? 'Group Inclusive Tour' : '')" />
                 <ComStayInfoNoBox v-if="hk?.reservationStay?.reservation_type != 'FIT'" label="Group">
                     <div class="w-full overflow-hidden white-space-nowrap -ml-3 text-overflow-ellipsis">
                         <div v-tippy="hk?.reservationStay?.group_code" class="inline">
@@ -96,16 +95,16 @@
                 <div class="mt-auto">
                     <span class="italic">Created by: </span>
                     <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.owner.split("@")[0] }} 
-                        <ComTimeago :date="hk.reservationStay?.creation"/>                      
+                        {{ hk.reservationStay?.owner.split("@")[0] }}
+                        <ComTimeago :date="hk.reservationStay?.creation" />
                     </span>
                 </div>
                 <div class="mt-auto">
                     <span class="italic"> Last Modified: </span>
                     <span class="text-500 font-italic">
-                        {{ hk.reservationStay?.modified_by.split("@")[0] }} 
+                        {{ hk.reservationStay?.modified_by.split("@")[0] }}
                         <ComTimeago :date="hk.reservationStay?.modified" />
-                         
+
                     </span>
                 </div>
                 <div>
@@ -113,14 +112,14 @@
                         <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
                             <span class="italic">Checked-in by: </span>
                             <span class="text-500 font-italic">
-                                {{ hk.reservationStay?.checked_in_by.split("@")[0] }} 
+                                {{ hk.reservationStay?.checked_in_by.split("@")[0] }}
                                 <ComTimeago :date="hk.reservationStay?.checked_in_date" />
                             </span>
                         </div>
                         <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
                             <span class="italic"> Checked-out by: </span>
                             <span class="text-500 font-italic">
-                                {{ hk.reservationStay?.checked_out_by.split("@")[0] }} 
+                                {{ hk.reservationStay?.checked_out_by.split("@")[0] }}
                                 <ComTimeago :date="hk.reservationStay?.checked_out_date" />
                             </span>
                         </div>
@@ -137,9 +136,9 @@
                         hk?.room_block?.name }}</Button>
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Room Type" :value="hk?.room_block?.room_type" />
-                <ComStayInfoNoBox label="Block Date" :value="gv.dateFormat(hk?.room_block?.block_date)"/>
-                <ComStayInfoNoBox label="Start Date" :value="gv.dateFormat(hk?.room_block?.start_date)"/>
-                <ComStayInfoNoBox label="End Date" :value="gv.dateFormat(hk?.room_block?.end_date)"/>
+                <ComStayInfoNoBox label="Block Date" :value="gv.dateFormat(hk?.room_block?.block_date)" />
+                <ComStayInfoNoBox label="Start Date" :value="gv.dateFormat(hk?.room_block?.start_date)" />
+                <ComStayInfoNoBox label="End Date" :value="gv.dateFormat(hk?.room_block?.end_date)" />
                 <ComStayInfoNoBox label="Total Night(s)" :value="hk?.room_block?.total_night_count" />
                 <ComStayInfoNoBox label="Reason" :value="hk?.room_block?.reason" />
                 <ComStayInfoNoBox label="Block by" :value="hk?.room_block?.modified_by?.split('@')[0]" />
@@ -152,7 +151,7 @@
 import { inject, ref, useToast, onMounted, onUnmounted } from '@/plugin';
 const hk = inject("$housekeeping")
 const edoor_setting = JSON.parse(localStorage.getItem('edoor_setting'))
-const housekeeping_status = ref(edoor_setting.housekeeping_status)
+const housekeeping_status_code = ref(edoor_setting.housekeeping_status_code)
 const visible = ref(false)
 const toast = useToast();
 const opHousekeeper = ref()
@@ -164,8 +163,8 @@ const frappe = inject("$frappe")
 const db = frappe.db()
 const gv = inject('$gv');
 
-if (housekeeping_status.value.length > 0) {
-    housekeeping_status.value.forEach(h => {
+if (housekeeping_status_code.value.length > 0) {
+    housekeeping_status_code.value.forEach(h => {
 
         items.value.push({
             label: h.status,
@@ -186,22 +185,12 @@ function onSelected($event) {
     if (!hk.selectedRow) {
         toast.add({ severity: 'warn', summary: "Change housekeeping status", detail: "Please select roow to change housekeeping status", life: 3000 })
     } else {
-
-        if ($event.is_room_occupy == 0 && hk.selectedRow.reservation_stay) {
-            toast.add({ severity: 'warn', summary: "Change Status", detail: "you cannot assign room have guest to " + $event.status, life: 3000 })
-            return
-        }
-        if ($event.is_room_occupy == 1 && !hk.selectedRow.reservation_stay) {
-            toast.add({ severity: 'warn', summary: "Change Status", detail: "you cannot assign room have guest to " + $event.status, life: 3000 })
-            return
-        }
         db.updateDoc('Room', hk.selectedRow.name, {
-            housekeeping_status: $event.status,
-            status_color: $event.status_color,
+            housekeeping_status_code: $event.status
         })
             .then((doc) => {
-                visible.value = false
                 hk.selectedRow.housekeeping_status = doc.housekeeping_status
+                hk.selectedRow.housekeeping_status_code = $event.status
                 hk.selectedRow.status_color = doc.status_color
                 toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
                 window.socket.emit("ComHousekeepingStatus", window.property_name)
@@ -218,7 +207,7 @@ function onAssignHousekeeper($event) {
 }
 
 function onSaveAssignHousekeeper($event) {
-    if(!gv.cashier_shift?.name){
+    if (!gv.cashier_shift?.name) {
         gv.toast('error', 'Please Open Cashier Shift.')
         return
     }

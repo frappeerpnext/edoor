@@ -20,7 +20,7 @@
                     <div class="col">
                         <label>Start Date</label>
                         <div>
-                            <Calendar @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" :min-date="working_day" dateFormat="dd-mm-yy"/>
+                            <Calendar showButtonBar panelClass="no-btn-clear" @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" :min-date="working_day" dateFormat="dd-mm-yy"/>
                         </div>
                     </div>
                     <div class="night__wfit col-fixed px-0" style="width: 150px;">
@@ -33,7 +33,7 @@
                     <div class="col">
                         <label>Release Date</label>
                         <div>
-                            <Calendar @date-select="onDateSelect" class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1, 'days').toDate())" dateFormat="dd-mm-yy"/>
+                            <Calendar showButtonBar panelClass="no-btn-clear" @date-select="onDateSelect" class="w-full" selectOtherMonths showIcon v-model="data.end_date" :min-date="new Date(moment(data.start_date).add(1, 'days').toDate())" dateFormat="dd-mm-yy"/>
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import {inject,ref, createUpdateDoc, onMounted, watch} from '@/plugin'
+import { inject, ref, createUpdateDoc, onMounted, watch } from '@/plugin'
 import ComReservationInputNight from '@/views/reservation/components/ComReservationInputNight.vue';
 const dialogRef = inject('dialogRef');
 const gv = inject('$gv');
@@ -57,18 +57,18 @@ const data = ref({})
 const loading = ref(false)
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const working_day = moment(window.current_working_date).toDate()
- 
- 
-function onSave (){
-    if(!data.value.room_id){
+
+
+function onSave() {
+    if (!data.value.room_id) {
         gv.toast('warn', 'Please select room.')
         return
     }
-    else if(!data.value.end_date){
+    else if (!data.value.end_date) {
         gv.toast('warn', 'Please select release date.')
         return
     }
-    else if(!data.value.reason){
+    else if (!data.value.reason) {
         gv.toast('warn', 'Please input reason.')
         return
     }
@@ -85,31 +85,31 @@ function onSave (){
         is_auto_submit: true,
         total_night_count: data.value.total_night
     }
-    createUpdateDoc('Room Block',savedData).then((r)=>{
+    createUpdateDoc('Room Block', savedData).then((r) => {
         dialogRef.value.close(r)
         window.socket.emit("RoomBlockList", window.property_name)
         window.socket.emit("Frontdesk", window.property_name)
         // window.socket.emit("ComHousekeepingStatus", window.property_name)
-        window.socket.emit("Housekeeping", { property:window.property_name})
+        window.socket.emit("Housekeeping", { property: window.property_name })
         loading.value = false
-    }).catch((err)=>{
+    }).catch((err) => {
         loading.value = false
     })
 }
-function onClose(){
+function onClose() {
 
     dialogRef.value.close()
 }
 
-onMounted(()=>{ 
-    if(dialogRef.value.data.name){
+onMounted(() => {
+    if (dialogRef.value.data.name) {
         data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
-        data.value.start_date =moment(data.value.start_date).toDate()
+        data.value.start_date = moment(data.value.start_date).toDate()
         data.value.end_date = moment(data.value.end_date).toDate()
         data.value.block_date = moment(data.value.block_date).toDate()
         data.value.total_night = moment(data.value.end_date).diff(moment(data.value.start_date), 'days')
-      
-    }else {
+
+    } else {
         data.value.block_date = moment(window.current_working_date).toDate()
 
 
@@ -130,7 +130,7 @@ const onRoomNightChanged = (event) => {
     data.value.end_date = moment(data.value.start_date).add(event, "Days").toDate()
 }
 
-watch(()=> [data.value.start_date,data.value.end_date], ([newStartDate,newEndDate],[oldStartDate,oldEndDate])=>{
+watch(() => [data.value.start_date, data.value.end_date], ([newStartDate, newEndDate], [oldStartDate, oldEndDate]) => {
     data.value.total_night = moment(newEndDate).diff(moment(newStartDate), 'days')
 }) 
 </script>

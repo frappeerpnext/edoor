@@ -1435,7 +1435,7 @@ def get_exchange_rate(base_currency, second_currency):
         return data[0]["exchange_rate"]
     else:
         return 1
-
+    
 
 def update_is_arrival_date_in_room_rate(stay_name):
 	sql ="""
@@ -1459,3 +1459,30 @@ def get_report_config(property,report):
     if not property:
         return {}
     return frappe.get_last_doc("Report Configuration", filters={"property":property, "report":report} )
+
+@frappe.whitelist()
+def update_room_status_by_reservation_stay(name):
+    if name:
+        stay_doc = frappe.get_doc("Reservation Stay", name)
+        working_day = get_working_day(stay_doc.property)
+        room_list = frappe.db.sql("""select 
+                                        room_id,
+                                        min(date) as date 
+                                    from `tabRoom Occupy` 
+                                    where 
+                                        reservation_stay= '{}' and 
+                                        date <= '{}'
+                                    group by
+                                        room_id
+                                  """.format(name, working_day['date_working_day']),as_dict=1)
+        
+        for r in room_list:
+            room_doc= frappe.get_doc("Room",r["room_id"])
+            if getdate(r["date"])<working_day["date_working_day"]:
+                room_doc.room_status = "Vacant"
+            else:
+                room_doc.room_status = "Occupy"
+            room_doc.save()
+            
+        frappe.db.commit()
+

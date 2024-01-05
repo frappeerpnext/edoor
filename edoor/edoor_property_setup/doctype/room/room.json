@@ -8,22 +8,29 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "property",
+  "column_break_sagn",
   "disabled",
   "section_break_2",
-  "room_type_id",
-  "room_type",
-  "room_type_alias",
-  "property",
-  "building",
-  "floor",
   "naming_series",
   "room_number",
-  "sort_order",
-  "housekeeping_status",
-  "status_color",
-  "housekeeping_icon",
-  "housekeeper",
+  "column_break_rfar",
+  "room_type_id",
   "room_type_group",
+  "room_type",
+  "room_type_alias",
+  "column_break_lotc",
+  "building",
+  "floor",
+  "sort_order",
+  "status_section",
+  "room_status",
+  "status_color",
+  "column_break_pvyq",
+  "housekeeping_status_code",
+  "housekeeping_status",
+  "housekeeper",
+  "housekeeping_icon",
   "current_guest_tab",
   "reservation_stay",
   "reservation_status",
@@ -85,14 +92,7 @@
    "label": "Sort Order"
   },
   {
-   "default": "Vacant Clean",
-   "fieldname": "housekeeping_status",
-   "fieldtype": "Link",
-   "label": "Housekeeping Status",
-   "options": "Housekeeping Status"
-  },
-  {
-   "fetch_from": "housekeeping_status.status_color",
+   "fetch_from": ".status_color",
    "fieldname": "status_color",
    "fieldtype": "Color",
    "label": "Status Color"
@@ -108,10 +108,9 @@
    "fieldtype": "Section Break"
   },
   {
-   "fetch_from": "housekeeping_status.icon",
+   "fetch_from": ".icon",
    "fieldname": "housekeeping_icon",
    "fieldtype": "Code",
-   "hidden": 1,
    "label": "Housekeeping Icon"
   },
   {
@@ -188,14 +187,14 @@
   },
   {
    "default": "0",
-   "fetch_from": "housekeeping_status.show_in_room_availability",
+   "fetch_from": ".show_in_room_availability",
    "fieldname": "show_in_room_availability",
    "fieldtype": "Check",
    "label": "Show in Room Availability"
   },
   {
    "default": "0",
-   "fetch_from": "housekeeping_status.is_block_room",
+   "fetch_from": ".is_block_room",
    "fieldname": "is_block",
    "fieldtype": "Check",
    "label": "Is Block"
@@ -210,11 +209,52 @@
    "fieldname": "keyword",
    "fieldtype": "Small Text",
    "label": "keyword"
+  },
+  {
+   "default": "Vacant",
+   "fieldname": "room_status",
+   "fieldtype": "Link",
+   "label": "Room Status",
+   "options": "Room Status"
+  },
+  {
+   "fieldname": "column_break_sagn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_rfar",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_lotc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status_section",
+   "fieldtype": "Section Break",
+   "label": "Status"
+  },
+  {
+   "fieldname": "column_break_pvyq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Clean",
+   "fieldname": "housekeeping_status_code",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status Code",
+   "options": "Housekeeping Status Code"
+  },
+  {
+   "fieldname": "housekeeping_status",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status",
+   "options": "Housekeeping Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-23 20:48:10.257704",
+ "modified": "2024-01-05 10:33:36.942811",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",
@@ -264,7 +304,7 @@
    "share": 1
   }
  ],
- "search_fields": "room_number,property,room_type,housekeeping_status",
+ "search_fields": "room_number,property,room_type,room_status,housekeeping_status_code",
  "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",

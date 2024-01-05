@@ -1,20 +1,10 @@
 <template>
-
     <div class="hsk-wrapper h-full">
         <ComPlaceholder text="No Data" :loading="hk.loading" :is-not-empty="data.length > 0">
-            <DataTable 
-                v-model:selection="hk.selectedRooms" 
-                class="cursor-pointer res_list_scroll" 
-                dataKey="name"
-                :value="data" 
-                stateStorage="local" 
-                stateKey="table_house_keeping_room_state" 
-                @row-click="onRowSelect" 
-                tableStyle="min-width: 50rem"  
-                showGridlines 
-                paginator 
-                :rows="20"
-                :rowsPerPageOptions="[20, 30, 40, 50,100,500]" >
+            <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer res_list_scroll" dataKey="name"
+                :value="data" stateStorage="local" stateKey="table_house_keeping_room_state" @row-click="onRowSelect"
+                tableStyle="min-width: 50rem" showGridlines paginator :rows="20"
+                :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" :page="page">
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                 <Column class="text-center" field="room_number" header="Room #"></Column>
                 <Column header="Status" headerClass="text-center" bodyClass="text-center">
@@ -48,7 +38,7 @@
                 <Column field="reservation_status" header="Reservation Status" headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
-                      
+
                         <ComHkReservationStatus :statusName="slotProps.data.reservation_status" />
                     </template>
                 </Column>
@@ -60,14 +50,11 @@
                         </Button>
                     </template>
                 </Column>
-                <!-- <div class="absolute bottom-6 left-4 z-5">
-                    <strong>Total Records: <span class="ttl-column_re">{{ hk.room_list.length }}</span></strong>
-                </div> -->
             </DataTable>
         </ComPlaceholder>
-     
+
     </div>
-    <OverlayPanel ref="opHousekeeper" >
+    <OverlayPanel ref="opHousekeeper">
         <ComOverlayPanelContent width="15rem" :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
             @onSave="onSaveAssignHousekeeper">
             <ComSelect class="w-full" isFilter v-model="selected.housekeeper" placeholder="Assign Housekeeper"
@@ -80,20 +67,20 @@
         </template>
     </Column>
     <div class="hkpanel">
-        <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-3" v-model:visible="visibleRight" position="right"
-            @hide="SidebarClose">
+        <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-3"
+            v-model:visible="visibleRight" position="right" @hide="SidebarClose">
             <template #header>
                 <div class="line-height-1">
-                <div class="text-2xl">Detail OF</div>
-                <div class="text-sm">{{ hk.selectedRow?.room_type }} # {{ hk.selectedRow?.room_number }}</div>
-            </div>
+                    <div class="text-2xl">Detail OF</div>
+                    <div class="text-sm">{{ hk.selectedRow?.room_type }} # {{ hk.selectedRow?.room_number }}</div>
+                </div>
             </template>
             <ComHousekeepingRoomDetailPanel></ComHousekeepingRoomDetailPanel>
         </Sidebar>
     </div>
 </template>
 <script setup>
-import { ref, inject, postApi, computed , getDoc } from '@/plugin';
+import { ref, inject, postApi, computed, getDoc, onMounted } from '@/plugin';
 import ComHousekeepingChangeStatusButton from './ComHousekeepingChangeStatusButton.vue'
 import ComHousekeepingRoomDetailPanel from './ComHousekeepingRoomDetailPanel.vue';
 import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReservationStatus.vue'
@@ -104,6 +91,7 @@ import GuestDetail from "@/views/guest/GuestDetail.vue"
 import Paginator from 'primevue/paginator';
 const dialog = useDialog();
 const loading = ref(false)
+const page = ref(0)
 const selected = ref({
     room: '',
     housekeeper: ''
@@ -118,9 +106,9 @@ const db = frappe.db()
 
 
 function pageChange(page) {
-	hk.pageState.page = page.page
-	hk.pageState.rows = page.rows
-	hk.loadData()
+    hk.pageState.page = page.page
+    hk.pageState.rows = page.rows
+    hk.loadData()
 }
 
 const data = computed(() => {
@@ -130,7 +118,7 @@ function onSelected(room, status) {
     hk.updateRoomStatus(room, status)
 }
 function onAssignHousekeeper($event, r) {
-    if(!gv.cashier_shift?.name){
+    if (!gv.cashier_shift?.name) {
         gv.toast('error', 'Please Open Cashier Shift.')
         return
     }
@@ -158,7 +146,7 @@ function SidebarClose() {
         elements_row_hk.classList.remove('active_row_hk');
     });
 }
-function onRowSelect(r) { 
+function onRowSelect(r) {
     const elements_row_hk = document.querySelectorAll('.active_row_hk');
     if (r.originalEvent.currentTarget.classList.contains('active_row_hk')) {
         visibleRight.value = false;
@@ -184,23 +172,31 @@ function onRowSelect(r) {
     else {
         hk.reservationStay = {}
     }
-    hk.room_block=undefined
+    hk.room_block = undefined
 
-    if (r.data.room_block){
-        getDoc("Room Block",r.data.room_block).then(r=>{
-           hk.room_block=r
+    if (r.data.room_block) {
+        getDoc("Room Block", r.data.room_block).then(r => {
+            hk.room_block = r
 
         })
     }
 }
+
+onMounted(() => {
+    let obj = JSON.parse(localStorage.getItem('table_house_keeping_room_state'));
+    obj.first = 0;
+    localStorage.setItem('table_house_keeping_room_state', JSON.stringify(obj));
+    hk.loadData()
+})
+
 function getHKSummary() {
     postApi('reservation.get_reservation_housekeeping_charge_summary', { reservation_stay: hk.selectedRow.reservation_stay }, '', false)
-    .then((doc) => {
-        hk.selectedRow.summary = doc.message
-    })
-    .catch((error) => console.error(error));
+        .then((doc) => {
+            hk.selectedRow.summary = doc.message
+        })
+        .catch((error) => console.error(error));
 }
- 
+
 function onViewCustomerDetail(name) {
     const dialogRef = dialog.open(GuestDetail, {
         data: {
@@ -217,7 +213,7 @@ function onViewCustomerDetail(name) {
             maximizable: true
         },
         onClose: (options) => {
-           
+
         }
     });
 }
@@ -229,9 +225,8 @@ function onViewReservationStayDetail(rs) {
 .p-sidebar-mask.p-component-overlay {
     pointer-events: none !important;
 }
+
 .p-sidebar-mask {
     background: transparent;
 }
-
- 
 </style>

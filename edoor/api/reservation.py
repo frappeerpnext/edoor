@@ -548,12 +548,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})>0:
         if not is_master_room_check_in(doc.name,reservation_stays):
             frappe.throw("Please check in master room first")
+  
 
-        
-
-
-
-    housekeeping_status =  frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_in")
     comment_doc = [] 
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
@@ -612,7 +608,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
             #update room housekeeing status to occupy clean
             room_id = stay.stays[0].room_id
             room = frappe.get_doc("Room",room_id)
-            room.housekeeping_status = housekeeping_status
+            room.room_status = "Occupy"
             room.reservation_stay = stay.name
             room.save()
             
@@ -755,7 +751,7 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         #update housekeeping status to room
         room_id = doc.stays[0].room_id
         room = frappe.get_doc("Room",room_id)
-        room.housekeeping_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_undo_check_in")
+        room.room_status = "Vacant"
         room.reservation_stay = None
         room.save()
         
@@ -846,7 +842,7 @@ def check_out(reservation,reservation_stays=None):
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
 
     #check backdate role
-    room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_check_out")
+    
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     comment_doc = []
 
@@ -875,7 +871,9 @@ def check_out(reservation,reservation_stays=None):
         last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay.name), as_dict=1)
         for r in last_stay_room:
             room_doc = frappe.get_doc("Room", r["room_id"])
-            room_doc.housekeeping_status = room_status
+            room_doc.housekeeping_status_code = "Dirty"
+            room_doc.room_status= "Vacant"
+
             room_doc.guest = None
             room_doc.reservation_stay = None 
             room_doc.save()
@@ -896,7 +894,7 @@ def check_out(reservation,reservation_stays=None):
             frappe.db.sql("""
                             update `tabRoom Occupy` set 
                                 is_departure=1,
-                                is_active=0,
+                                is_active=1,
                                 drop_off={}
                             where 
                                 reservation_stay='{}' and 
@@ -941,10 +939,6 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
     check_user_permission("undo_check_out_role")
     allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
 
-
-
-
-    room_status = frappe.db.get_single_value("eDoor Setting","housekeeping_status_after_undo_check_out")
     comment_doc = []
     for s in reservation_stays:
         stay_doc = frappe.get_doc("Reservation Stay", s)
@@ -961,8 +955,6 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             stay_doc.checked_out_system_date = None
 
             stay_doc.save()
-
-
             #update temp room occupy
             if is_early_checked_out_reservation==0:
                 
@@ -980,7 +972,7 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay_doc.name), as_dict=1)
             if last_stay_room:
                 room_doc = frappe.get_doc("Room",last_stay_room[0]["room_id"])
-                room_doc.housekeeping_status = room_status
+                room_doc.room_status = "Occupy"
                 room_doc.guest = stay_doc.guest
                 room_doc.reservation_stay = s
                 room_doc.save()
@@ -2248,7 +2240,9 @@ def upgrade_room(doc,regenerate_rate=False):
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data.reservation, reservation_stay=data.name)
     frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = data)
     frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='default', stay_name = data.name)
-       
+    frappe.enqueue("edoor.api.utils.update_room_status_by_reservation_stay", queue='long', name=data.name)
+    
+
     return data
 
 @frappe.whitelist(methods="POST")

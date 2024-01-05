@@ -9,8 +9,8 @@
         <div v-if="doc?.docstatus == 1 && doc?.is_unblock == 0"
             class="surface-200 border-left-3 border-black-alpha-90 p-2 p-1px px-2 flex align-items-center"> <i
                 class="pi pi-lock me-2 text-lg" /> Block </div>
-                <div class="ms_message_cs_edoor">
-        <Message  class="w-full" :closable="false" v-if="doc?.docstatus == 0">
+        <div class="ms_message_cs_edoor">
+            <Message class="w-full" :closable="false" v-if="doc?.docstatus == 0">
                 <div class="col-8">
                     The status of this room block is currently in Draft mode. Please click on button
                     <strong>Submit Room Block</strong> to block this room.
@@ -18,26 +18,26 @@
                 <Button class="border-none me-3 ml-auto" @click="onSubmitRoomBlock">
                     <i class="pi pi-send me-3" />
                     Submit Room Block</Button>
-        </Message>
-        <Message class="w-full" :closable="false" v-if="doc?.docstatus == 1 && doc?.is_unblock == 0">
-            
+            </Message>
+            <Message class="w-full" :closable="false" v-if="doc?.docstatus == 1 && doc?.is_unblock == 0">
+
                 <div class="col-8">
                     This room number <strong>{{ doc?.room_number }}</strong> is blocked now. To unblock this room, please on
                     button <strong>Unblock</strong>
                 </div>
                 <Button class="border-none me-3 ml-auto" @click="onUnblock"> <i class="pi pi-lock-open me-3" /> Unblock this
                     Room</Button>
-            
-        </Message>
-    </div>
+
+            </Message>
+        </div>
         <div v-if="doc && doc?.is_unblock != 0">
             <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
                 UnBlock
             </div>
             <table>
-                <ComStayInfoNoBox label="Unblock Date" v-if="doc.unblock_date" :value="doc.unblock_date" />
-                <ComStayInfoNoBox label="Unblock Housekeeping Status" v-if="doc.unblock_housekeeping_status"
-                    :value="doc.unblock_housekeeping_status" />
+                <ComStayInfoNoBox label="Unblock Date" v-if="doc.unblock_date" :value="gv.dateFormat(doc.unblock_date)" />
+                <ComStayInfoNoBox label="Unblock Housekeeping Status" v-if="doc.unblock_housekeeping_status_code"
+                    :value="doc.unblock_housekeeping_status_code" />
             </table>
             <div class="w-full h-10rem mb-4 mt-2">
                 <label>Reason</label>
@@ -67,7 +67,7 @@
         </div>
         <div class="col-12 p-0 pt-2">
             <ComCommentAndNotice v-if="doc?.name" doctype="Room Block" :docname="doc?.name"
-            :filters="['custom_room_block', '=', doc.name]"  />
+                :filters="['custom_room_block', '=', doc.name]" />
         </div>
         <template #footer-right>
             <Button v-if="doc?.docstatus == 0" @click="onSubmitRoomBlock" class="border-0"> <i class="pi pi-send me-3" />
@@ -97,8 +97,9 @@
                 <div class="col-12 lg:col-6">
                     <label>Housekeeping Status</label>
                     <div class="w-full">
-                        <ComSelect placeholder="Housekeeping Status" class="w-full"
-                            v-model="data.unblock_housekeeping_status" :options="housekeepingStatus" />
+                        <ComSelect placeholder="Housekeeping Status" class="w-full" optionLabel="status"
+                            optionValue="status" v-model="data.unblock_housekeeping_status_code"
+                            :options="housekeeping_status_code" />
                     </div>
                 </div>
                 <div class="col-12">
@@ -124,7 +125,7 @@ const doc = ref()
 const loading = ref(false)
 const gv = inject('$gv');
 const dialog = useDialog()
-const housekeepingStatus = ref(window.setting.housekeeping_status.filter(r => r.is_room_occupy == 0).map(r => r.status));
+const housekeeping_status_code = ref(window.setting.housekeeping_status_code);
 const data = ref()
 function Refresh() {
     pageState.value.page = 0
@@ -191,7 +192,7 @@ function onAuditTrail() {
             doctype: 'Room Block',
             docname: doc?.value.name,
             referenceTypes: [{ doctype: 'Room Block', label: 'Room Block' }],
-            filter_key:"custom_room_block",
+            filter_key: "custom_room_block",
         },
 
         props: {
@@ -235,10 +236,10 @@ function onEdit() {
 
 function onSave() {
     unblock_loading.value = true
-    var savedData = {
+    const savedData = {
         name: data.value.name,
         unblock_date: gv.dateApiFormat(data.value.unblock_date),
-        unblock_housekeeping_status: data.value.unblock_housekeeping_status,
+        unblock_housekeeping_status_code: data.value.unblock_housekeeping_status_code,
         unblock_note: data.value.unblock_note,
         is_unblock: 1
     }
@@ -272,7 +273,7 @@ function loadData() {
 function onUnblock() {
     data.value = JSON.parse(JSON.stringify(doc.value))
     data.value.unblock_date = moment(data.unblock_date).toDate()
-    data.value.unblock_housekeeping_status = housekeepingStatus.value[0]
+    data.value.unblock_housekeeping_status_code = housekeeping_status_code.value[0].status
     unblockvisible.value = true
 }
 

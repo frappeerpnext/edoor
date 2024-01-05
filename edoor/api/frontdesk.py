@@ -609,6 +609,8 @@ def get_edoor_setting(property = None):
  
     
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
+    housekeeping_status_code = frappe.get_list("Housekeeping Status Code", fields=['status'])
+
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     
     edoor_setting_doc = frappe.get_doc("eDoor Setting")
@@ -653,7 +655,8 @@ def get_edoor_setting(property = None):
             "pos_currency_format": second_currency.custom_pos_currency_format
         },
         "housekeeping_status":housekeeping_status,
-        'reservation_status':reservation_status,
+        "housekeeping_status_code":housekeeping_status_code,
+        'reservation_status':reservation_status
     }
 
     
@@ -1454,21 +1457,45 @@ def run_night_audit(property, working_day):
 
 
 @frappe.whitelist()
-def update_room_status(working_day=None):
+def update_room_status(working_day=None,working_day_name=None):
+    if not working_day:
+        working_day = frappe.get_doc("Working Day", working_day_name)
+    
+    #0 update all vacant room 
+    sql = """
+        select name from `tabRoom`
+        where 
+            name not in (
+                select room_id from `tabRoom Occupy` 
+                where
+                    property = '{0}' and 
+                    date = '{1}' and 
+                    is_active=1 
+            )  and
+            property = '{0}'
+    """.format(working_day.business_branch, working_day.posting_date)
+    room_list = frappe.db.sql(sql,as_dict=1)
+    for d in room_list:
+        room_doc = frappe.get_doc("Room", d["name"])
+        room_doc.room_status = "Vacant" 
+        room_doc.save()
+    frappe.db.commit()
+
     #1. update stay over guesty
     stay_over_room = frappe.db.sql("""
                             select 
-                                name 
-                            from `tabRoom` 
+                                room_id  
+                            from `tabRoom Occupy` 
                             where 
-                                ifnull(reservation_stay,'')<>'' and 
-                                property='{}' 
-                    """.format(working_day.business_branch),as_dict=1)
-    room_status = frappe.db.get_default("housekeeping_status_after_run_night_audit")
+                                is_active = 1 and 
+                                property='{}' and
+                                date = '{}'
+                    """.format( working_day.business_branch,working_day.posting_date),as_dict=1)
     
     for r in stay_over_room:
-        room_doc = frappe.get_doc("Room", r["name"])
-        room_doc.housekeeping_status = room_status
+        room_doc = frappe.get_doc("Room", r["room_id"])
+        room_doc.housekeeping_status_code = "Dirty"
+        room_doc.room_status = "Occupy" 
         room_doc.save()
 
     #update room status that end block
@@ -1478,19 +1505,19 @@ def update_room_status(working_day=None):
 
     for d in data:
         room_doc = frappe.get_doc("Room", d["room_id"])
-        room_doc.housekeeping_status = frappe.db.get_default("hk_status_rb_release_after_audit")
+        room_doc.room_status = "Vacant"
+        room_doc.housekeeping_status_code = "Dirty"
         room_doc.save()
     
 
     #2 update room status of room block
     room_block = frappe.db.sql("select room_id from `tabTemp Room Occupy` where type='Block' and property='{}' and date='{}'".format(working_day.business_branch, working_day.posting_date),as_dict=1)
-    
-    room_status = frappe.db.get_default("room_block_status")
+   
+  
     for r in room_block:
         room_doc = frappe.get_doc("Room", r["room_id"])
-        room_doc.housekeeping_status = room_status
+        room_doc.room_status = "Room Block"
         room_doc.save()
- 
     frappe.db.commit()
     
 @frappe.whitelist()

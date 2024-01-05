@@ -1,9 +1,12 @@
 <template>
     <div class="mx-1">
-        <Listbox  :options="data" optionLabel="status" class="w-full h-full border-round-xl wrp-housekeeping" @change="onViewRoomList">
+        <Listbox :options="data" optionLabel="status" class="w-full h-full border-round-xl wrp-housekeeping"
+            @change="onViewRoomList">
             <template #option="slotProps">
-                <ComDashboardRowStatus v-tippy="slotProps.option.is_block_room ? 'Today Room Block  '+ slotProps.option.total + ' & Total Room Block ' + slotProps.option.total_block_room : ''" :is_room_block="slotProps.option.is_block_room" :value_room_block="slotProps.option.total_block_room" :value="`${slotProps.option.total}`" :badgeColor="slotProps.option.color"
-                    :icon="slotProps.option.icon">
+                <ComDashboardRowStatus
+                    v-tippy="slotProps.option.is_block_room ? 'Today Room Block  ' + slotProps.option.total + ' & Total Room Block ' + slotProps.option.total_block_room : ''"
+                    :is_room_block="slotProps.option.is_block_room" :value_room_block="slotProps.option.total_block_room"
+                    :value="`${slotProps.option.total}`" :badgeColor="slotProps.option.color" :icon="slotProps.option.icon">
                     <template #content>{{ slotProps.option.status }}
                     </template>
                 </ComDashboardRowStatus>
@@ -30,7 +33,6 @@ function loadData(showLoading = true) {
     }).then((result) => {
         data.value = result.message
         loading.value = false
-        console.log(data)
     }).catch(() => {
         loading.value = false
     })
@@ -38,7 +40,7 @@ function loadData(showLoading = true) {
 
 onMounted(() => {
     window.socket.on("ComHousekeepingStatus", (arg) => {
-        if (arg==window.property_name) {
+        if (arg == window.property_name) {
             setTimeout(() => {
                 loadData(false)
             }, 2000)

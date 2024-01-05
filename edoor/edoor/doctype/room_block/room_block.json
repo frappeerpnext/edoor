@@ -23,12 +23,12 @@
   "unblock_section",
   "is_unblock",
   "unblock_date",
-  "unblock_housekeeping_status",
+  "unblock_housekeeping_status_code",
   "note",
   "column_break_14",
   "unblock_note",
   "amended_from",
-  "housekeeping_status",
+  "housekeeping_status_code",
   "status_color",
   "keyword"
  ],
@@ -150,25 +150,10 @@
    "reqd": 1
   },
   {
-   "fieldname": "housekeeping_status",
-   "fieldtype": "Link",
-   "label": "Housekeeping Status",
-   "options": "Housekeeping Status"
-  },
-  {
    "fetch_from": "housekeeping_status.status_color",
    "fieldname": "status_color",
    "fieldtype": "Color",
    "label": "Status Color"
-  },
-  {
-   "allow_on_submit": 1,
-   "depends_on": "eval:doc.is_unblock==1",
-   "fieldname": "unblock_housekeeping_status",
-   "fieldtype": "Link",
-   "label": "Housekeeping Status",
-   "mandatory_depends_on": "eval:doc.is_unblock==1",
-   "options": "Housekeeping Status"
   },
   {
    "allow_on_submit": 1,
@@ -190,12 +175,27 @@
    "fieldtype": "Small Text",
    "hidden": 1,
    "label": "Note"
+  },
+  {
+   "fieldname": "housekeeping_status_code",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status Code",
+   "options": "Housekeeping Status Code"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.is_unblock==1",
+   "fieldname": "unblock_housekeeping_status_code",
+   "fieldtype": "Link",
+   "label": "Housekeeping Status",
+   "mandatory_depends_on": "eval:doc.is_unblock==1",
+   "options": "Housekeeping Status Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-04 11:49:09.964172",
+ "modified": "2024-01-05 11:43:49.661529",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Block",

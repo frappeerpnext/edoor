@@ -14,16 +14,19 @@ class RoomBlock(Document):
 		if not working_day["cashier_shift"]:
 			frappe.throw("Please start cashier shift")
 
-		self.housekeeping_status = frappe.db.get_default("room_block_status")
-		self.status_color = frappe.get_value("Housekeeping Status",self.housekeeping_status, "status_color")
-		
 		if getdate(self.end_date) < getdate(working_day["date_working_day"]):
 			frappe.throw("End date cannot be less than current date")
 		
 		if getdate(self.end_date)<= getdate(self.start_date):
 			self.end_date = add_to_date(getdate(self.start_date),days=1)
 		self.total_night_count = date_diff(self.end_date,self.start_date)
-		
+
+		status = frappe.get_doc("Housekeeping Status", "Room Block")
+		self.status_color=status.status_color
+
+
+
+
 		
 	def before_submit(self):
 		sql = "select name, date,type from `tabTemp Room Occupy` where stay_room_id != '{}' and room_id = '{}' and date between '{}' and '{}' and property='{}' limit 1"
@@ -50,12 +53,14 @@ class RoomBlock(Document):
 			check_user_permission("role_for_back_date_transaction")
 
 	def on_update_after_submit(self): 
-		
 		if self.is_unblock ==1:
-			if not self.unblock_housekeeping_status:
+			
+			if not self.unblock_housekeeping_status_code:
 				frappe.throw("Please select current room housekeeping status.")
+
 			room_doc = frappe.get_doc("Room", self.room_id)
-			room_doc.housekeeping_status = self.unblock_housekeeping_status 
+			room_doc.housekeeping_status_code = self.unblock_housekeeping_status_code 
+			room_doc.room_status ="Vacant"
 			room_doc.save()
 			frappe.db.sql("delete from `tabTemp Room Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
 			frappe.db.sql("delete from `tabRoom Occupy` where type='Block' and stay_room_id='{}' and room_id='{}' and property='{}'".format(self.name,self.room_id,self.property))
@@ -76,10 +81,9 @@ class RoomBlock(Document):
 				working_day = get_working_day(self.property)
 				room_doc = frappe.get_doc("Room",self.room_id)
 				if  getdate(self.start_date)<= getdate(working_day["date_working_day"])  and getdate(self.end_date) > getdate(working_day["date_working_day"]):
-					
-					room_doc.housekeeping_status = frappe.db.get_single_value("eDoor Setting","room_block_status")
+					room_doc.housekeeping_status_code ="Room Block"
 				else:
-					room_doc.housekeeping_status = frappe.db.get_single_value("eDoor Setting","hk_status_rb_release_after_audit")
+					room_doc.housekeeping_status_code = "Vacant"
 				room_doc.save()
 
 
@@ -139,5 +143,5 @@ def generate_block_date(self):
 	working_day = get_working_day(data.property)
 	if getdate(working_day["date_working_day"])>=getdate(data.start_date) and getdate(working_day["date_working_day"])<=add_to_date(getdate(data.end_date),days=-1):
 		room_doc = frappe.get_doc("Room", data.room_id)
-		room_doc.housekeeping_status = data.housekeeping_status 
+		room_doc.room_status = "Room Block"
 		room_doc.save()
