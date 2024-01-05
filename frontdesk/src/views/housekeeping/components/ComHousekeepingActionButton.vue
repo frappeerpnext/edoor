@@ -22,10 +22,7 @@
     </div>
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status" :style="{ width: '30vw' }"
         position="top">
-        <div>
-            {{ housekeeping_status_code }}
-            <!-- <ComSelect isFilter v-model="selectedStatusCode" placeholder="Housekeeping Status" doctype="Housekeeping Status"
-                :filters="{ is_block_room: 0 }" /> -->
+        <div> 
             <ComSelect isFilter placeholder="Housekeeping Status" class="w-full" optionLabel="status" optionValue="status"
                 v-model="selectedHouseKeepingStatusCode" :options="housekeeping_status_code"
                 :filters="{ is_block_room: 0 }" />
