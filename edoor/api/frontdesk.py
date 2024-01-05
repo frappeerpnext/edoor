@@ -166,7 +166,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT
-                    SUM(if(reservation_status = 'No Show' and (arrival_date!='{1}' and is_reserved_room=1),1,0)) AS `total_no_show`, 
+                    SUM(reservation_status = 'No Show' and is_reserved_room=1) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
                     SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
                     SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
@@ -609,7 +609,7 @@ def get_edoor_setting(property = None):
  
     
     housekeeping_status = frappe.get_list("Housekeeping Status",filters={"is_block_room":0}, fields=['status','status_color','icon','sort_order','is_room_occupy'],  order_by='sort_order asc')
-    housekeeping_status_code = frappe.get_list("Housekeeping Status Code", fields=['status'])
+    housekeeping_status_code = frappe.get_list("Housekeeping Status Code", fields=['status'],ignore_permissions = True )
 
     reservation_status = frappe.get_list("Reservation Status", fields=['reservation_status','name','color','is_active_reservation','show_in_reservation_list','show_in_room_chart','sort_order'],  order_by='sort_order asc')
     

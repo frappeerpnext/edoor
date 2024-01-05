@@ -83,7 +83,8 @@
                     <ComIcon icon="IconBillToCompany" style="height:15px;"></ComIcon>
                     <span class="ml-2">Disallow Post to City Ledger</span>
                 </button>
-                <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround" @click="onTransferStay">
+                <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround"
+                    @click="onTransferStay">
                     <ComIcon icon="iconMoveStay" style="height: 14px;" />
                     <span class="ml-2">Transfer Stay to Other Reservation</span>
                 </button>
@@ -147,7 +148,7 @@ const reservation = ref({})
 const toggle = (event) => {
     menu.value.toggle(event);
 }
- 
+
 function onChangeStatus(reservation_status) {
 
     if (validateSelectReservation()) {
@@ -162,9 +163,9 @@ function onChangeStatus(reservation_status) {
                     If you want to sell this room, please untick on check box Reserved Room`
         }
 
-        const stays = rs.selecteds.filter(r=>-+r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
-      
-        if (stays.length==0){
+        const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1)
+
+        if (stays.length == 0) {
             toast.add({ severity: 'warn', detail: "Please select active reservation stay to " + reservation_status, life: 3000 })
             return
         }
@@ -180,7 +181,7 @@ function onChangeStatus(reservation_status) {
                     reserved_room: false,
                     status: reservation_status,
                     show_reserved_room: reservation_status == "No Show" ? true : false,
-                    stays: rs.selecteds.filter(r=>r.is_active_reservation ==1 && r.allow_user_to_edit_information ==1)
+                    stays: rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1)
                 },
 
             }
@@ -225,7 +226,7 @@ function validateSelectReservation() {
 
 
 function onGroupCheckIn() {
-    const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
+    const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).map((r) => r.name)
     if (stays.length == 0) {
         if (rs.reservationStays.length > 1) {
             toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select reservation stay to check in.", life: 3000 })
@@ -261,17 +262,17 @@ function onGroupCheckIn() {
                     window.socket.emit("ReservationDetail", window.reservation);
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("Frontdesk", window.property_name);
-                    window.socket.emit("ReservationList", { property:window.property_name})
-                    window.socket.emit("ReservationStayList", { property:window.property_name})
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
                     window.socket.emit("FolioTransactionList", window.property_name)
 
                     rs.selecteds.forEach(r => {
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:r.name})
+                        window.socket.emit("ReservationStayDetail", { reservation_stay: r.name })
                     });
 
-                    
+
                 })
                     .catch((err) => {
                         rs.loading = false
@@ -283,64 +284,64 @@ function onGroupCheckIn() {
 }
 
 
-function onGroupUndoCheckIn() { 
-    if (rs.selecteds.filter(r=>r.reservation_status=='In-house').length ==0) {
+function onGroupUndoCheckIn() {
+    if (rs.selecteds.filter(r => r.reservation_status == 'In-house').length == 0) {
         toast.add({ severity: 'warn', summary: "Group Undo Check In", detail: "Please select  In-house reservation stay to undo check in.", life: 3000 })
         return
     } else {
         const dialogRef = dialog.open(ComDialogNote, {
-        data:  {
-            api_url: "reservation.undo_check_in",
-            method: "POST",
-            confirm_message: "Are you sure you want to undo check in this reservation?",
             data: {
-                reservation_stay:rs.selecteds.filter(r=>r.reservation_status=='In-house').map(d=>d.name),
-                reservation:rs.reservation.name,
-                property:window.property_name
-            }
-        },
-        props: {
-            header: "Undo Checked In",
-            style: {
-                width: '50vw',
+                api_url: "reservation.undo_check_in",
+                method: "POST",
+                confirm_message: "Are you sure you want to undo check in this reservation?",
+                data: {
+                    reservation_stay: rs.selecteds.filter(r => r.reservation_status == 'In-house').map(d => d.name),
+                    reservation: rs.reservation.name,
+                    property: window.property_name
+                }
             },
-            modal: true,
-            maximizable: true,
-            closeOnEscape: false,
-            position: "top"
-        },
-        onClose: (options) => {
-            const result = options.data;  
-            if (result) { 
-                rs.loading = false 
-                //wait for equeue process finish
-                // rs.LoadReservation(window.reservation, false)
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
-                window.socket.emit("ReservationDetail", window.reservation)
-                window.socket.emit("Frontdesk", window.property_name)
-                window.socket.emit("FolioTransactionList", window.property_name)
-                
-                setTimeout(() => {
-                    emit('onRefresh')
-                }, 1000);
-            }
+            props: {
+                header: "Undo Checked In",
+                style: {
+                    width: '50vw',
+                },
+                modal: true,
+                maximizable: true,
+                closeOnEscape: false,
+                position: "top"
+            },
+            onClose: (options) => {
+                const result = options.data;
+                if (result) {
+                    rs.loading = false
+                    //wait for equeue process finish
+                    // rs.LoadReservation(window.reservation, false)
+                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.socket.emit("ComGuestLedger", { property: window.property_name })
+                    window.socket.emit("Reports", window.property_name)
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.socket.emit("Frontdesk", window.property_name)
+                    window.socket.emit("FolioTransactionList", window.property_name)
+
+                    setTimeout(() => {
+                        emit('onRefresh')
+                    }, 1000);
+                }
 
             }
         });
-    } 
+    }
 }
 
 
-function onGroupCheckOut(is_not_undo = false) {  
-    const isSelect = validateSelectReservation() 
+function onGroupCheckOut(is_not_undo = false) {
+    const isSelect = validateSelectReservation()
     if (isSelect) {
-        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1 ).map((r) => r.name)
-        if (stays.length==0){
-            
+        const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).map((r) => r.name)
+        if (stays.length == 0) {
+
             toast.add({ severity: 'warn', detail: "Please select active reservation stay to check out", life: 3000 })
             return
         }
@@ -348,7 +349,7 @@ function onGroupCheckOut(is_not_undo = false) {
             toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
             return;
         }
- 
+
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,
             header: 'Group Check Out',
@@ -358,20 +359,20 @@ function onGroupCheckOut(is_not_undo = false) {
             acceptIcon: 'pi pi-check-circle',
             acceptLabel: 'Ok',
             accept: () => {
-                
+
                 postApi("reservation.check_out", {
                     reservation: rs.reservation.name,
-                    reservation_stays:stays,
+                    reservation_stays: stays,
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {
                         window.socket.emit("Frontdesk", window.property_name);
                         window.socket.emit("Dashboard", window.property_name);
-                        window.socket.emit("ReservationList", { property:window.property_name})
-                        window.socket.emit("ReservationStayList", { property:window.property_name})
-                        window.socket.emit("ComGuestLedger", { property:window.property_name})
+                        window.socket.emit("ReservationList", { property: window.property_name })
+                        window.socket.emit("ReservationStayList", { property: window.property_name })
+                        window.socket.emit("ComGuestLedger", { property: window.property_name })
                         window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                         window.socket.emit("FolioTransactionList", window.property_name)
 
                         rs.LoadReservation()
@@ -381,15 +382,15 @@ function onGroupCheckOut(is_not_undo = false) {
                 })
 
             }
-        }); 
+        });
     }
 }
 
-function onGroupUndoCheckOut () { 
-    const isSelect = validateSelectReservation()  
+function onGroupUndoCheckOut() {
+    const isSelect = validateSelectReservation()
     if (isSelect) {
-        const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==0 ).map((r) => r.name)
-        if (stays.length==0){ 
+        const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 0).map((r) => r.name)
+        if (stays.length == 0) {
             toast.add({ severity: 'warn', detail: "Please select check out reservation to performance undo check out", life: 3000 })
             return
         } else if (rs.selecteds.some(r => r.reservation_status === 'In-house')) {
@@ -397,13 +398,13 @@ function onGroupUndoCheckOut () {
             return;
         }
         const dialogRef = dialog.open(ComDialogNote, {
-            data:  {
+            data: {
                 api_url: "reservation.undo_check_out",
                 method: "POST",
                 confirm_message: "Are you sure you want to undo check out this reservation?",
                 data: {
                     property: rs.reservation.property,
-                    reservation_stays:stays
+                    reservation_stays: stays
                 }
             },
             props: {
@@ -417,21 +418,21 @@ function onGroupUndoCheckOut () {
                 position: "top"
             },
             onClose: (options) => {
-                const data = options.data 
-                if (options.data){
+                const data = options.data
+                if (options.data) {
                     rs.reservationStay = data.data.message
                     window.socket.emit("Frontdesk", window.property_name);
                     window.socket.emit("Dashboard", window.property_name);
-                    window.socket.emit("ReservationList", { property:window.property_name})
-                    window.socket.emit("ReservationStayList", { property:window.property_name})
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                     window.socket.emit("FolioTransactionList", window.property_name)
 
                     rs.LoadReservation()
                 }
-                
+
             }
 
         });
@@ -481,7 +482,7 @@ function onMarkAsPaidbyMasterroom() {
             }).then((result) => {
                 if (result) {
                     rs.LoadReservation()
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                 }
             })
                 .catch((err) => {
@@ -517,7 +518,7 @@ function onUnMarkAsPaidbyMasterroom() {
             }).then((result) => {
                 if (result) {
                     rs.LoadReservation()
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                 }
             })
                 .catch((err) => {
@@ -530,10 +531,10 @@ function onUnMarkAsPaidbyMasterroom() {
 }
 
 function onAllowPostToCityLedger() {
-    if (rs.selecteds.length==0) {
-            toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
-            return
-    } 
+    if (rs.selecteds.length == 0) {
+        toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
+        return
+    }
 
 
     confirm.require({
@@ -548,9 +549,9 @@ function onAllowPostToCityLedger() {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 1
-            },"").then((result) => {
+            }, "").then((result) => {
                 rs.LoadReservation()
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
             })
                 .catch((err) => {
                     submitLoading.value = false
@@ -561,10 +562,10 @@ function onAllowPostToCityLedger() {
 }
 
 function onUnAllowPostToCityLedger() {
-    if (rs.selecteds.length==0) {
-            toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
-            return
-    } 
+    if (rs.selecteds.length == 0) {
+        toast.add({ severity: 'warn', summary: "", detail: "Please select reservation stay.", life: 3000 })
+        return
+    }
 
     confirm.require({
         message: 'Are you sure you want to un allow post to city ledger?',
@@ -578,9 +579,9 @@ function onUnAllowPostToCityLedger() {
             postApi("reservation.update_allow_post_to_city_ledger", {
                 stays: rs.selecteds.map(x => x.name),
                 allow_post_to_city_ledger: 0
-            },"" ).then((result) => {
+            }, "").then((result) => {
                 rs.LoadReservation()
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
             })
                 .catch((err) => {
                     submitLoading.value = false
@@ -595,16 +596,16 @@ function onAuditTrail() {
         data: {
             doctype: 'Reservation',
             docname: rs.reservation.name,
-            referenceTypes:[
+            referenceTypes: [
                 { doctype: 'Reservation', label: 'Reservation' },
                 { doctype: 'Reservation Stay', label: 'Reservation stay' },
                 { doctype: 'Reservation Room Rate', label: 'Room Rate' },
                 { doctype: 'Customer', label: 'Guest' },
                 { doctype: 'Reservation Folio', label: 'Reservation Folio' },
                 { doctype: 'Folio Transaction', label: 'Folio Transaction' },
-                
+
             ],
-            filter_key:"custom_reservation"
+            filter_key: "custom_reservation"
 
         },
         props: {
@@ -626,7 +627,7 @@ function onAuditTrail() {
 function onGroupChangeRate() {
     if (rs.selecteds.filter((r) => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).length > 0) {
         const dialogRef = dialog.open(ComGroupChangeRate, {
-            data: {stays:rs.selecteds,reservation:rs.reservation.name},
+            data: { stays: rs.selecteds, reservation: rs.reservation.name },
             props: {
                 header: 'Group Change Rate',
                 style: {
@@ -642,8 +643,8 @@ function onGroupChangeRate() {
                 position: "top"
             },
             onClose: (options) => {
-                if (options.data){
-                    rs.LoadReservation(rs.reservation.name,true)
+                if (options.data) {
+                    rs.LoadReservation(rs.reservation.name, true)
 
                 }
             }
@@ -713,12 +714,12 @@ function onMarkasGITReservation() {
                             detail: 'Mark as GIT Reservation Successfully', life: 3000
                         });
                     // window.socket.emit("RefreshData", { property: rs.reservation.property, action: "refresh_res_list" })
-                    window.socket.emit("ReservationList", { property:window.property_name})
-                    window.socket.emit("ReservationStayList", { property:window.property_name})
+                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("Dashboard", window.property_name)
                     window.socket.emit("Reports", window.property_name)
                     window.socket.emit("ReservationDetail", window.reservation)
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 
                 })
         },
@@ -735,7 +736,8 @@ function onMarkasFITReservation() {
         rejectClass: 'hidden',
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
-        accept: () => {``
+        accept: () => {
+            ``
             db.updateDoc('Reservation', rs.reservation?.name, {
                 reservation_type: "FIT",
             })
@@ -745,12 +747,12 @@ function onMarkasFITReservation() {
                             severity: 'success', summary: 'Mark as FIT Reservation',
                             detail: 'Mark as FIT Reservation Successfully', life: 3000
                         });
-                    window.socket.emit("ReservationList", { property:window.property_name})
-                    window.socket.emit("ReservationStayList", { property:window.property_name})
+                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("Dashboard", window.property_name)
                     window.socket.emit("Reports", window.property_name)
                     window.socket.emit("ReservationDetail", window.reservation)
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 
                 })
         },
@@ -775,7 +777,7 @@ function onPickDrop() {
                 position: 'top'
             },
             onClose: (options) => {
-                
+
                 if (options.data) {
                     rs.selecteds = []
                 }
@@ -787,19 +789,19 @@ function onPickDrop() {
     }
 }
 
-function onTransferStay(){
-    const stays = rs.selecteds.filter(r=>r.is_active_reservation==1 && r.allow_user_to_edit_information==1)
+function onTransferStay() {
+    const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1)
 
-    if (stays.length==0) {
-            toast.add({ severity: 'warn', summary: "", detail: "Please select active reservation stay to transfer to other reservation.", life: 3000 })
-            return
-    } 
+    if (stays.length == 0) {
+        toast.add({ severity: 'warn', summary: "", detail: "Please select active reservation stay to transfer to other reservation.", life: 3000 })
+        return
+    }
 
     const dialogRef = dialog.open(ComConfirmTransferStay, {
         data: {
-            source_reservation:rs.reservation.name,
-            stays:stays.map(r=>r.name),
-            keep_rate:1
+            source_reservation: rs.reservation.name,
+            stays: stays.map(r => r.name),
+            keep_rate: 1
         },
         props: {
             header: "Transfer Stay",
@@ -813,14 +815,14 @@ function onTransferStay(){
         },
         onClose: (options) => {
             const data = options.data;
-            if (data){
+            if (data) {
                 rs.LoadReservation();
             }
         }
 
     });
 
-    
+
 }
 
 </script>
