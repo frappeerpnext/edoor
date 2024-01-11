@@ -1,5 +1,6 @@
 <template>
-    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" @onMaximize="onMaximize" :isDialog="!isPage" :loading="rs.loading">
+    <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" @onMaximize="onMaximize" :isDialog="!isPage"
+        :loading="rs.loading">
         <div :class="[isPage, 'bg-white']">
             <div class="grid">
                 <div :class="isPage ? 'col py-3' : 'col pt-0'">
@@ -11,19 +12,22 @@
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                <div v-tippy="rs.reservation?.reservation_type + '(Free Independent Travelers)'" v-if="rs.reservation?.reservation_type == 'FIT'" class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
+                                <div v-tippy="rs.reservation?.reservation_type + '(Free Independent Travelers)'"
+                                    v-if="rs.reservation?.reservation_type == 'FIT'"
+                                    class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                                     <span class="">
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
                                 </div>
-                                <div v-tippy="rs.reservation?.reservation_type + '(Group Inclusive Tour)'" v-else class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
+                                <div v-tippy="rs.reservation?.reservation_type + '(Group Inclusive Tour)'" v-else
+                                    class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
                                     <span>
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
                                     </span>
                                 </div>
                                 <span class="px-2 rounded-lg me-2 text-white p-1px"
-                                :style="{ background: rs.reservation?.status_color }">{{
-                                    rs.reservation?.reservation_status }}
+                                    :style="{ background: rs.reservation?.status_color }">{{
+                                        rs.reservation?.reservation_status }}
                                 </span>
                             </div>
                         </div>
@@ -41,7 +45,7 @@
                     </div>
                 </div>
             </div>
-       
+
             <TabView lazy v-model:activeIndex="activeTab">
                 <TabPanel header="General Information">
                     <div class="grid mt-2 ml-0 ms-0">
@@ -70,27 +74,25 @@
                         </div>
                     </div>
                     <div class="pt-2">
-                        <ComReservationDetailRoomList/>
+                        <ComReservationDetailRoomList />
                     </div>
                     <div class="pt-3">
-                        <div class="border-round-xl"> 
-                            <ComReservationNote v-if="!rs.loading && rs.reservation && rs.reservation.name" doctype="Reservation" />
+                        <div class="border-round-xl">
+                            <ComReservationNote v-if="!rs.loading && rs.reservation && rs.reservation.name"
+                                doctype="Reservation" />
                         </div>
                     </div>
                     <hr class="my-3" />
                     <div>
                         <div class="border-round-xl">
-                            
-                            <ComCommentAndNotice v-if="!rs.loading && name" 
-                                  doctype="Reservation"
-                                :docname="rs?.reservation?.name"
-                                :filters="['custom_reservation','=', name]"    
-                            />   
+
+                            <ComCommentAndNotice v-if="!rs.loading && name" doctype="Reservation"
+                                :docname="rs?.reservation?.name" :filters="['custom_reservation', '=', name]" />
                         </div>
                     </div>
                 </TabPanel>
-              
-                <TabPanel v-if="can_view_rate"  header="Room Rate">
+
+                <TabPanel v-if="can_view_rate" header="Room Rate">
                     <ComReservationRoomRate />
                 </TabPanel>
 
@@ -99,36 +101,40 @@
                         <span class="me-2">Folio</span>
                         <Badge :value="rs.totalFolio"></Badge>
                     </template>
-                   <ComReservationFolio />
+                    <ComReservationFolio />
                 </TabPanel>
-                <TabPanel > 
+                <TabPanel>
                     <template #header>
                         <span class="me-2">Document</span>
-                        <ComDocumentBadge :docname="name" :doctypes="['Reservation Stay', 'Reservation','Customer','Reservation Folio','Folio Transaction']"  :attacheds="rs.attacheds" v-if="name && !rs.loading"/>
+                        <ComDocumentBadge :docname="name"
+                            :doctypes="['Reservation Stay', 'Reservation', 'Customer', 'Reservation Folio', 'Folio Transaction']"
+                            :attacheds="rs.attacheds" v-if="name && !rs.loading" />
                     </template>
-                   
-                    <ComDocument doctype="Reservation"   :doctypes="['Reservation Stay', 'Reservation','Customer','Reservation Folio','Folio Transaction']" :attacheds="rs.attacheds" :docname="name"/>
+
+                    <ComDocument doctype="Reservation"
+                        :doctypes="['Reservation Stay', 'Reservation', 'Customer', 'Reservation Folio', 'Folio Transaction']"
+                        :attacheds="rs.attacheds" :docname="name" />
                 </TabPanel>
 
             </TabView>
         </div>
         <template #footer-left>
-            <div class="flex justify-end gap-2">  
+            <div class="flex justify-end gap-2">
                 <ComReservationMoreOptionsButton />
-                <ReservationPrintButton :reservation="name"/>
-                <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room"/>
+                <ReservationPrintButton :reservation="name" />
+                <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room" />
             </div>
-            
+
         </template>
         <template #footer-right>
-          
+
             <Button v-if="canCheckIn.length > 0" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
-               
-                Check In</Button>
+
+                Check In
+            </Button>
         </template>
     </ComDialogContent>
-
 </template>
 
 <script setup>
@@ -165,30 +171,30 @@ const name = ref("")
 const dialog = useDialog()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 
- 
+
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
 })
 const canCheckIn = computed(() => {
-  const can_check_in = rs.reservationStays.filter((r) => r.reservation_status === 'Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate());
-  return can_check_in;
+    const can_check_in = rs.reservationStays.filter((r) => r.reservation_status === 'Reserved' && moment(r.arrival_date).toDate() <= moment(working_day.date_working_day).toDate());
+    return can_check_in;
 });
 
 
 const onRefresh = debouncer((showLoading = true) => {
     rs.LoadReservation(name.value, showLoading);
-    if(activeTab.value==0){
+    if (activeTab.value == 0) {
         rs.getChargeSummary(name.value)
 
-    } else if(activeTab.value==2) { 
-        window.postMessage({action:"load_reservation_folio_list",reservation:name.value},"*")
-        window.postMessage({action:"load_folio_transaction"},"*")
-    } else if(activeTab.value==1){
+    } else if (activeTab.value == 2) {
+        window.postMessage({ action: "load_reservation_folio_list", reservation: name.value }, "*")
+        window.postMessage({ action: "load_folio_transaction" }, "*")
+    } else if (activeTab.value == 1) {
         rs.getRoomRate(name.value, showLoading);
     }
-    else if(activeTab.value==3){
-        window.postMessage({action:"refresh_document",docname:name.value})
-        window.postMessage({action:"refresh_document_count",docname:name.value})
+    else if (activeTab.value == 3) {
+        window.postMessage({ action: "refresh_document", docname: name.value })
+        window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
 }, 500);
 
@@ -202,19 +208,19 @@ function debouncer(fn, delay) {
             fn.apply(that, args);
         }, delay);
     };
-} 
+}
 function onRoute() {
     window.open('reservation-detail/' + name.value, '_blank')
 }
 function onClose() {
     dialogRef.value.close()
 }
-function onMaximize(){
+function onMaximize() {
     dialogRef.value.maximize()
-} 
+}
 onMounted(() => {
     window.has_reservation_detail_opened = true
-   
+
     if (!dialogRef) {
         if (route.params.name) {
             name.value = route.params.name
@@ -222,7 +228,7 @@ onMounted(() => {
         }
     } else {
         name.value = dialogRef.value.data.name;
-        if(dialogRef.value.data.delay_load_data){
+        if (dialogRef.value.data.delay_load_data) {
             rs.loading = true
             setTimeout(() => {
                 onRefresh()
@@ -232,14 +238,14 @@ onMounted(() => {
             onRefresh()
         }
     }
-    
+
     window.reservation = name.value
 
     window.socket.on("ReservationDetail", (reservation) => {
         if (reservation == name.value) {
-            setTimeout(function(){ 
+            setTimeout(function () {
                 onRefresh(false)
-            },3000)
+            }, 3000)
         }
     })
 });
@@ -253,19 +259,19 @@ onUnmounted(() => {
     window.reservation = ""
 })
 
-function onCheckIn(){
-    if (rs.selecteds.length==0){
-        if(rs.reservationStays.length>1){
-            toast.add({ severity: 'warn', summary: "Group Check In", detail:"Please select reservation stay to check in.", life: 3000 })
-        return
-        }else {
+function onCheckIn() {
+    if (rs.selecteds.length == 0) {
+        if (rs.reservationStays.length > 1) {
+            toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select reservation stay to check in.", life: 3000 })
+            return
+        } else {
             rs.selecteds = rs.reservationStays
         }
-       
+
     }
     const dialogRef = dialog.open(ComConfirmCheckIn, {
-        data:{
-            stays:rs.selecteds
+        data: {
+            stays: rs.selecteds
         },
         props: {
             header: 'Confirm Check In',
@@ -288,21 +294,21 @@ function onCheckIn(){
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name, false);
                     window.socket.emit("Dashboard", property.name);
-                    window.socket.emit("ReservationList", { property:window.property_name})
+                    window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
-        	        window.socket.emit("FolioTransactionList", window.property_name)
+                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+                    window.socket.emit("FolioTransactionList", window.property_name)
 
-                    
+
                 })
                     .catch((err) => {
                         rs.loading = false
                     })
-                }
+            }
         }
     })
 }
-function onAddRoomMore(){
+function onAddRoomMore() {
     const dialogRef = dialog.open(ComReservationStayAddMore, {
         props: {
             header: 'Add More Room',
@@ -316,11 +322,11 @@ function onAddRoomMore(){
         },
         onClose: (options) => {
             const data = options.data;
-           
+
             if (data) {
                 setTimeout(() => {
-                    
-                    rs.LoadReservation(data.name,false)
+
+                    rs.LoadReservation(data.name, false)
                 }, 1000);
             }
         }
@@ -328,7 +334,7 @@ function onAddRoomMore(){
 }
 
 const items = ref([
-  
+
 ]);
 </script>
 
@@ -340,6 +346,7 @@ const items = ref([
     position: relative;
     right: -3px;
 }
+
 .min-whidth-modified {
     line-height: 1.4;
 }

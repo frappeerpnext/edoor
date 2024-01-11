@@ -169,10 +169,10 @@
             <TabPanel>
                 <template #header>
                     <span>Desk Folio</span>
-                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">0</span>
+                    <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.desk_folio }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote" width="100%" :src="xxx"></iframe>
+                    <iframe @load="onIframeLoaded('iframeDeskFolio')" id="iframeDeskFolio" width="100%" :src="deskFolioUrl"></iframe>
                 </div>
             </TabPanel>
         </TabView>
@@ -209,6 +209,7 @@ const selected_date = ref(null)
 const arrivalUrl = ref("");
 const departureUrl = ref("");
 const inhouseUrl = ref("");
+const deskFolioUrl = ref("")
 const upCommingNoteUrl = ref("");
 const chartOccupancy = ref([])
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
@@ -391,6 +392,16 @@ function getUpCommingNoteUrl() {
     return url;
 }
 
+
+function getDeskFolioUrl() {
+    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&working_date=" + selected_date.value + "&format="
+        + gv.getCustomPrintFormat("eDoor Desk Folio") +
+        "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
+    url = url + "&date=" + selected_date.value
+    url = url + "&refresh=" + (Math.random() * 16)
+    return url;
+}
+
 function onShowTodayData() {
     selected_date.value = data.value.working_date
     date.value = moment(data.value.working_date).format("DD-MM-YYYY")
@@ -398,6 +409,7 @@ function onShowTodayData() {
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
     upCommingNoteUrl.value = getUpCommingNoteUrl();
+    deskFolioUrl.value = getDeskFolioUrl()
     getData()
     // this.classList.add("active");
 }
@@ -413,6 +425,7 @@ function onShowTommorowData() {
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
     upCommingNoteUrl.value = getUpCommingNoteUrl();
+    deskFolioUrl.value = getDeskFolioUrl();
     getData()
 }
 
@@ -425,6 +438,7 @@ function onDateSelect(event) {
     departureUrl.value = getDepartureUrl();
     inhouseUrl.value = getInhouseGuestUrl();
     upCommingNoteUrl.value = getUpCommingNoteUrl();
+    deskFolioUrl.value = getDeskFolioUrl();
     getData();
 }
 
@@ -462,6 +476,7 @@ function getData(loading = true) {
             departureUrl.value = getDepartureUrl();
             inhouseUrl.value = getInhouseGuestUrl();
             upCommingNoteUrl.value = getUpCommingNoteUrl();
+            deskFolioUrl.value = getDeskFolioUrl()
             gv.loading = false;
         })
         .catch((error) => {
@@ -489,6 +504,7 @@ function onRefreshIframe() {
     document.getElementById("iframeDeparture").contentWindow.location.replace(getDepartureUrl)
     document.getElementById("iframeInhouse").contentWindow.location.replace(getInhouseGuestUrl)
     document.getElementById("iframeNote").contentWindow.location.replace(getUpCommingNoteUrl)
+    document.getElementById("iframeDeskFolio").contentWindow.location.replace(getDeskFolioUrl)
 }
 
 const viewSummary = (name) => {

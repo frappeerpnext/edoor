@@ -1,4 +1,4 @@
-from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room_occupy, update_reservation_stay_room_rate_after_resize
+from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room_occupy, generate_temp_room_occupy, update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
 from edoor.api.reservation import check_room_type_availability
 from edoor.api.utils import update_reservation, validate_role
@@ -26,6 +26,8 @@ def group_change_stay(data):
         note = data["note"]
     data_for_change_stays = []
     data_for_check_validation = []
+
+    updated_stay_names = [] 
     for s in data["stays"]:
         doc = frappe.get_doc("Reservation Stay",s)              
         if (getdate(data["arrival"]) != getdate(doc.arrival_date) or getdate(data["departure"]) != getdate(doc.departure_date)) and doc.is_active_reservation==1 and doc.allow_user_to_edit_information==1:
@@ -98,11 +100,11 @@ def group_change_stay(data):
         data_for_change_stays.append(can_change_stay_date(d))
     
     can_change_stay_data = [d for d in data_for_change_stays if d["can_change_stay"]==True ]
-    stay_room_rate_data = []
+
     if len(can_change_stay_data)> 0:
         for d in can_change_stay_data:
             stay_doc = change_stay(d)
-            stay_room_rate_data.append({"stay_doc":stay_doc,"data":d})
+            updated_stay_names.append(stay_doc.name)
             
 
         #temporary update arrival date and departure date to reservation for data update in front end
@@ -111,11 +113,13 @@ def group_change_stay(data):
 
         #commit data change to database
         frappe.db.commit()
-         
+        
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation",queue='short', reservation = data["reservation"],reservation_stay=[d["parent"] for d in data_for_change_stays if d["can_change_stay"] == True]) 
-        
-        
 
+        
+        frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=updated_stay_names )
+
+         
         
 
         frappe.msgprint("Change stay successfully")
@@ -125,6 +129,7 @@ def group_change_stay(data):
         return [d for d in data_for_change_stays if d["can_change_stay"]==False]
     else:
         return [d for d in data_for_change_stays if d["can_change_stay"]==False]
+
 
 
 def change_stay(data):
@@ -154,9 +159,7 @@ def change_stay(data):
     if doc:
        
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self=doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='long', self=doc)
-
+       
 
 
    

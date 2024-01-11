@@ -22,6 +22,7 @@
   "type",
   "property",
   "is_arrival",
+  "is_stay_over",
   "is_departure",
   "is_active",
   "adult",
@@ -36,6 +37,7 @@
   "is_house_use",
   "is_complimentary",
   "rate_type",
+  "is_active_reservation",
   "guest_information_tab",
   "guest",
   "guest_name",
@@ -259,11 +261,24 @@
    "fieldtype": "Link",
    "label": "Rate Type",
    "options": "Rate Type"
+  },
+  {
+   "default": "0",
+   "fetch_from": "reservation_stay.is_active_reservation",
+   "fieldname": "is_active_reservation",
+   "fieldtype": "Check",
+   "label": "Is Active Reservation"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_stay_over",
+   "fieldtype": "Check",
+   "label": "Is Stay Over"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 15:29:01.664751",
+ "modified": "2024-01-06 17:08:32.908591",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

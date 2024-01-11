@@ -93,7 +93,6 @@ def get_parent_row_group_label(filters, name):
 		return name
 	
 def get_report_fields(filters, report_config):
-	
 	if filters.show_columns:
 		return  [d for d in report_config.report_fields if d.fieldname in filters.show_columns]
 	else:
@@ -161,10 +160,16 @@ def get_report_summary( filters, total_record,report_config):
 def get_report_chart(filters,report_data,report_config):
 	precision = frappe.db.get_single_value("System Settings","currency_precision")
 	report_fields = get_report_fields(filters, report_config)
+	 
 	if filters.show_chart_series:
 		report_fields = [d for d in report_fields if d.show_in_chart ==1 and d.fieldname in filters.show_chart_series]
 	else:
-		report_fields = [d for d in report_fields if d.show_in_chart ==1]
+		report_fields = [d for d in report_fields if d.show_in_chart_when_no_fields_selected ==1]
+	
+	if len(report_fields)==0:
+		return None
+	
+
 	columns =[]
 	
 	datasets = []
@@ -181,6 +186,11 @@ def get_report_chart(filters,report_data,report_config):
 						"name": f.label,
 						"values": [round(d[f.fieldname], int(precision)) for d in  report_data if d["is_group"] == 0 and d["is_total_row"] ==0]
 					})
+				elif f.fieldtype=="Percent":
+					datasets.append({
+						"name": f.label,
+						"values": [round(d[f.fieldname], 2) for d in  report_data if d["is_group"] == 0 and d["is_total_row"] ==0]
+					})
 				else:
 					datasets.append({
 						"name": f.label,
@@ -195,6 +205,12 @@ def get_report_chart(filters,report_data,report_config):
 					datasets.append({
 						"name": f.label,
 						"values": [round(d[f.fieldname],int(precision)) for d in  report_data if 'is_group_total' in d and  d["is_group_total"] ==1]
+					})
+				elif f.fieldtype=="Percent":
+					 
+					datasets.append({
+						"name": f.label,
+						"values": [round(d[f.fieldname],2) for d in  report_data if 'is_group_total' in d and  d["is_group_total"] ==1]
 					})
 				else:
 					datasets.append({

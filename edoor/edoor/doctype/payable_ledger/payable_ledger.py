@@ -66,7 +66,7 @@ class PayableLedger(Document):
 
 	def after_insert(self):
 		content = f"New payable ledger added. Payable Ledger #:<a data-action='view_payable_ledger_detail' data-name='{self.name}'>{self.name}</a>, Vendor:  {self.vendor} - {self.vendor_name}"
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[{
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",
 				"custom_icon":"pi pi-dollar",

@@ -21,8 +21,8 @@
                     </Button>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                
                 </div>
+
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
@@ -30,9 +30,6 @@
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
-                
-               
-             
             </div>
             <div>
                 <ComRoomChartFilter :hideRefresh="true" :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
@@ -89,15 +86,11 @@
                                     </div>
                             </template> 
                         </FullCalendar>
-                      
-                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     </template>
 <script setup>
 import { h, ref, reactive, inject, onUnmounted, useToast, useDialog, onMounted, watch, getApi, getCount, provide, computed, getDocList } from '@/plugin'
@@ -219,7 +212,6 @@ const calendarOptions = reactive({
     slotLabelDidMount: function (info) {
         const d = moment(info.date).format("DD")
         const day = moment(info.date).format("ddd")
-
         if (moment(info.date).format("yyyy-MM-DD") == working_day.date_working_day) {
             info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
         } else {
@@ -237,11 +229,8 @@ const calendarOptions = reactive({
         info.el.style.cursor="pointer"
 
     },
- 
- 
-    eventClick: ((info) => {
- 
 
+    eventClick: ((info) => {
         const data = info.event._def.extendedProps;
         info.event._def.date = info.event.start;
         window.postMessage(info.event._def, '*')
@@ -480,8 +469,12 @@ function getEvents() {
                     event.textcolor="white"
                     
                 } else if (r.id == "occupany") {
+
+                    console.log(window.setting.calculate_room_occupancy_include_room_block)
+
                     if (window.setting.calculate_room_occupancy_include_room_block==0){
                         const room_block = result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.block || 0), 0)
+                        
                         event.occupancy =( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ (total_rooms - room_block)    * 100).toFixed(2)   
                     }else {
                         event.occupancy =( result.message.room_occupy.filter(x => x.date == moment(current_date).format("YYYY-MM-DD")).reduce((n, d) => n + (d.total || 0), 0)/ total_rooms  * 100).toFixed(2) 

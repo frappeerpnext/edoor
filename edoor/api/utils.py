@@ -54,61 +54,32 @@ def successful_login(login_manager):
  
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
-    frappe.enqueue("edoor.api.utils.update_fetch_from_field_queue", queue='long', doc=doc)
-
-def update_fetch_from_field_queue(doc, method=None, *args, **kwargs):
-    skip_doctypes = ["DocType","Temp Product Menu"]
-
-    if not doc.doctype in skip_doctypes:
-        #we need to run this in queue process 
-        #for development we run casue need to track any error occure
-        #get all doctype and link field reload to current doc.doctype field that 
-        sql = "select parent,options,fieldname from `tabDocField` where options='{}'".format(doc.doctype)
-        link_fiels = frappe.db.sql(sql, as_dict=1)
-        # doctype =  set(d['parent'] for d in link_fiels)
-        for d in link_fiels:
-            sql = "select fieldname,options,fetch_from from `tabDocField` where  fetch_from <> '' and fetch_if_empty = 0 and parent='{}' and fetch_from like '{}.%'".format(d.parent, d["fieldname"])
-            fetch_fields = frappe.db.sql(sql, as_dict=1)
-            for  f in fetch_fields:
-                sql = "update `tab{}` set {}=%(value)s where {}='{}'".format(d["parent"],f["fieldname"],f["fetch_from"].split(".")[0], doc.name)
-                frappe.db.sql(sql,{"value":doc.get(f["fetch_from"].split(".")[1])})
-                #frappe.msgprint(sql)
-
+    if doc.doctype not in ["Temp Room Occupy","Contact","DocShare","Doctype","DefaultValue","Print Format","Queue Job","System Console","Scheduled Job Log","Route History","Version","Error Log","Scheduled Job Log","Console Log","Activity Log","Comment"]:
+        frappe.get_doc({
+            "doctype":"Queue Job",
+            "document_name":doc.name,
+            "document_type":doc.doctype,
+            "action":"update_fetch_from_field"
+        }).insert()
+     
+ 
 
  
 def update_keyword(doc, method=None, *args, **kwargs):
     skip_doctypes = ["Folio Transaction","City Ledger","Vendor","Customer","Reservation Stay","Reservation","Reservation Stay Room","Room","Room Block","Business Source"]
     if  doc.doctype in skip_doctypes:
-        frappe.enqueue("edoor.api.utils.update_keyword_queue", queue='long', doc=doc)
+        frappe.get_doc({
+            "doctype":"Queue Job",
+            "document_name":doc.name,
+            "document_type":doc.doctype,
+            "action":"update_keyword"
+
+        }).insert()
+
+        # frappe.enqueue("edoor.api.utils.update_keyword_queue", queue='long', doc=doc)
 
     
     
-
-def update_keyword_queue(doc, method=None, *args, **kwargs):
-    
-
-    meta = frappe.get_meta(doc.doctype)
-    if meta.has_field("keyword"):
-        fields = []
-        fields.append("b.name")
-        for d in meta.search_fields.split(","):
-            fields.append("coalesce(b.{},'')".format(d))
-
-        if fields:
-            sql = "update `tab{0}` as a, `tab{0}` as b set a.keyword = concat({1}) where a.name = b.name and a.name='{2}'"
-            sql = sql.format(doc.doctype, " , ' ',".join(fields), doc.name )
-            frappe.db.sql(sql)
-            # update keyword for searching in room chart
-            if doc.doctype == 'Reservation Stay':
-                rs = frappe.get_doc('Reservation Stay', doc.name)
-
-                data_keyword = "update `tabRoom Occupy` set data_keyword = %(keyword)s where reservation_stay = %(reservation_stay)s"
-
-                frappe.db.sql(data_keyword,{"keyword":rs.keyword,"reservation_stay":doc.name})
-                #update to child table reservation stay room
-                sql = "update `tabReservation Stay Room` set keyword =%(keyword)s where parent=%(reservation_stay)s"
-                frappe.db.sql(sql,{"keyword":rs.keyword,"reservation_stay":doc.name})
-            
 
 
 
@@ -227,7 +198,6 @@ def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
         # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
 
 def submit_update_audit_trail_from_version(doc):
-
     if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
         doctype = frappe.get_doc("Audit Trail Document", doc.ref_doctype)
         data = json.loads(doc.data)
@@ -282,7 +252,7 @@ def submit_update_audit_trail_from_version(doc):
             "reference_name":doc.docname,
             "content":", ".join(data_changed)  
             })
-            frappe.enqueue("edoor.api.utils.add_audit_trail", queue='default', data=comment_doc)
+            frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
             # add_audit_trail(comment_doc)
 
 
@@ -865,76 +835,6 @@ def create_folio(stay):
     return doc
 
 
-@frappe.whitelist()
-def five_minute_job():
-    
-    #delete void and cancel from temp room occupy
-    sql="""
-        update `tabRoom Occupy` a 
-        inner join `tabCustomer` b on a.guest = b.name
-        set 
-            a.guest_name = b.customer_name_en,
-            a.guest_type = b.customer_group,
-            a.nationality = b.country
-        where 
-            ifnull(a.guest_name,'') != ifnull(b.customer_name_en,'') or 
-            ifnull(a.guest_type,'') != ifnull(b.customer_group,'') or
-            ifnull(a.nationality,'') != ifnull(b.country,'');
-    """
-    frappe.db.sql(sql)
-
-    sql="""
-        update `tabFolio Transaction` a 
-        inner join `tabCustomer` b on a.guest = b.name
-        set 
-            a.guest_name = b.customer_name_en,
-            a.guest_type = b.customer_group,
-            a.nationality = b.country
-        where 
-            ifnull(a.guest_name,'') != ifnull(b.customer_name_en,'') or 
-            ifnull(a.guest_type,'') != ifnull(b.customer_group,'') or
-            ifnull(a.nationality,'') != ifnull(b.country,'');
-    """
-    frappe.db.sql(sql)
-
-    sql="""
-        update `tabFolio Transaction` a 
-        inner join `tabBusiness Source` b on a.business_source = b.name
-        set 
-            a.business_source_type = b.business_source_type
-        where 
-            ifnull(a.business_source_type,'') != ifnull(b.business_source_type,'') """
-    frappe.db.sql(sql)
-    
-    #update account category
-    sql="""
-        update `tabFolio Transaction` a 
-        inner join `tabAccount Code` b on a.account_code = b.name
-        set 
-            a.account_category = b.account_category
-        where 
-            ifnull(a.account_category,'') != ifnull(b.account_category,'') """
-    frappe.db.sql(sql)
-    
-    #update rate type in room occupy
-    sql="""
-        update `tabRoom Occupy` a 
-        inner join `tabReservation Room Rate` b on a.reservation_stay = b.reservation_stay and a.date = b.date and a.room_type_id = b.room_type_id
-        set 
-            a.rate_type = b.rate_type
-        where 
-            ifnull(a.rate_type,'') != ifnull(b.rate_type,'') 
-        """
-    
-    frappe.db.sql(sql)
-
-
-
-    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status in ('Void','Cancelled')")
-    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status in ('Void','Cancelled')")
-
-    frappe.db.commit()
-    return "done"
 
 
 @frappe.whitelist()
@@ -975,7 +875,8 @@ def clear_reservation():
     for r in room_list:
 
         room_doc = frappe.get_doc("Room", r.name)
-        room_doc.housekeeping_status = "Vacant Clean"
+        room_doc.room_status = "Vacant"
+        room_doc.housekeeping_status_code = "Clean"
         
         room_doc.save()
     

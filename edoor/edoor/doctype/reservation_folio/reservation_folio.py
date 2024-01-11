@@ -87,7 +87,7 @@ class ReservationFolio(Document):
 		if (self.note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.note
 
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[comment])
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
 
 	def after_delete(self):
@@ -108,5 +108,5 @@ class ReservationFolio(Document):
 		if (self.deleted_note):
 			comment["content"] = comment["content"] + "<br /> Note: " + self.deleted_note
 
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[comment])
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 

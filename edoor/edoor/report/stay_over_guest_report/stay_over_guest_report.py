@@ -72,7 +72,7 @@ def get_data (filters,report_fields):
 	return data
 
 def get_filters(filters):
-	sql = "where property=%(property)s  "
+	sql = "where property=%(property)s  and is_active_reservation = 1 "
 	sql =  " {} and arrival_date < %(start_date)s and departure_date > %(end_date)s ".format(sql) 
 	if filters.business_source:
 		sql = "{} and business_source =  %(business_source)s".format(sql)
@@ -85,7 +85,7 @@ def get_filters(filters):
 	return sql 
 
 def get_room_rate_filters(filters):
-	sql = "where property=%(property)s and is_departure = 0 and is_arrival = 0 "
+	sql = "where property=%(property)s and is_stay_over = 1 "
 	sql =  " {} and date between %(start_date)s and %(end_date)s ".format(sql) 
 
 	if filters.business_source:

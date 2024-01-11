@@ -226,60 +226,72 @@ function validateSelectReservation() {
 
 
 function onGroupCheckIn() {
-    const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).map((r) => r.name)
+    const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1)
+
     if (stays.length == 0) {
-        if (rs.reservationStays.length > 1) {
-            toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select reservation stay to check in.", life: 3000 })
-            return
-        } else {
-            rs.selecteds = rs.reservationStays
-        }
-
+        toast.add({ severity: 'warn', detail: "Please select active reservation stay to Check In", life: 3000 })
+        return
     }
-    const dialogRef = dialog.open(ComConfirmCheckIn, {
-        data: {
-            stays: rs.selecteds
-        },
-        props: {
-            header: 'Confirm Check In',
-            style: {
-                width: '450px',
-            },
-            modal: true,
-            closeOnEscape: false
-        },
-        onClose: (options) => {
-            const result = options.data;
-
-            if (result) {
-                rs.loading = true
-
-                postApi("reservation.check_in", {
-                    reservation: rs.reservation.name,
-                    reservation_stays: rs.selecteds.map(d => d["name"])
-                }).then((result) => {
-                    rs.loading = false
-                    window.socket.emit("ReservationDetail", window.reservation);
-                    window.socket.emit("Dashboard", window.property_name);
-                    window.socket.emit("Frontdesk", window.property_name);
-                    window.socket.emit("ReservationList", { property: window.property_name })
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("ComGuestLedger", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
-                    window.socket.emit("FolioTransactionList", window.property_name)
-
-                    rs.selecteds.forEach(r => {
-                        window.socket.emit("ReservationStayDetail", { reservation_stay: r.name })
-                    });
-
-
-                })
-                    .catch((err) => {
-                        rs.loading = false
-                    })
+    if (rs.selecteds.filter(r => r.reservation_status != 'In-house').length == 0) {
+        toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select Reserved reservation stay to check in.", life: 3000 })
+        return
+    } else {
+        const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).map((r) => r.name)
+        if (stays.length == 0) {
+            if (rs.reservationStays.length > 1) {
+                toast.add({ severity: 'warn', summary: "Group Check In", detail: "Please select reservation stay to check in.", life: 3000 })
+                return
+            } else {
+                rs.selecteds = rs.reservationStays
             }
+
         }
-    })
+        const dialogRef = dialog.open(ComConfirmCheckIn, {
+            data: {
+                stays: rs.selecteds
+            },
+            props: {
+                header: 'Confirm Check In',
+                style: {
+                    width: '450px',
+                },
+                modal: true,
+                closeOnEscape: false
+            },
+            onClose: (options) => {
+                const result = options.data;
+
+                if (result) {
+                    rs.loading = true
+
+                    postApi("reservation.check_in", {
+                        reservation: rs.reservation.name,
+                        reservation_stays: rs.selecteds.map(d => d["name"])
+                    }).then((result) => {
+                        rs.loading = false
+                        window.socket.emit("ReservationDetail", window.reservation);
+                        window.socket.emit("Dashboard", window.property_name);
+                        window.socket.emit("Frontdesk", window.property_name);
+                        window.socket.emit("ReservationList", { property: window.property_name })
+                        window.socket.emit("ReservationStayList", { property: window.property_name })
+                        window.socket.emit("ComGuestLedger", { property: window.property_name })
+                        window.socket.emit("Reports", window.property_name)
+                        window.socket.emit("FolioTransactionList", window.property_name)
+
+                        rs.selecteds.forEach(r => {
+                            window.socket.emit("ReservationStayDetail", { reservation_stay: r.name })
+                        });
+
+
+                    })
+                        .catch((err) => {
+                            rs.loading = false
+                        })
+                }
+            }
+        })
+    }
+
 
 }
 
@@ -349,7 +361,7 @@ function onGroupCheckOut(is_not_undo = false) {
             toast.add({ severity: 'warn', detail: "Reservation has not been checked in yet", life: 3000 });
             return;
         }
-
+        rs.loading = true
         confirm.require({
             message: `Are you sure you want to${is_not_undo ? ' undo ' : ' '}check out reservations?`,
             header: 'Group Check Out',
@@ -366,6 +378,7 @@ function onGroupCheckOut(is_not_undo = false) {
                     is_undo: !is_not_undo
                 }).then((result) => {
                     if (result) {
+                        rs.loading = false
                         window.socket.emit("Frontdesk", window.property_name);
                         window.socket.emit("Dashboard", window.property_name);
                         window.socket.emit("ReservationList", { property: window.property_name })
@@ -375,10 +388,10 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                         window.socket.emit("FolioTransactionList", window.property_name)
 
-                        rs.LoadReservation()
+                        // rs.LoadReservation()
                     }
                 }).catch((error) => {
-                    //
+                    rs.loading = false
                 })
 
             }

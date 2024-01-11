@@ -301,7 +301,7 @@ class FolioTransaction(Document):
 			else:
 				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-			frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[{
+			frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
 				"comment_type":"Created",
 				"custom_audit_trail_type":"Created",
 				"custom_icon":"pi pi-dollar",
@@ -430,7 +430,7 @@ class FolioTransaction(Document):
 		if len(reservation_names)> 0 or len(reservation_stay_names)> 0:
 			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=reservation_stay_names,reservation=reservation_names)
 
-		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='default', data =[comment])
+		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[comment])
 
 			
 
