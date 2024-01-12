@@ -519,9 +519,10 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                 sum(type='Reservation' and is_arrival=1 and is_active = 1  and is_active_reservation=1) as  arrival ,
                 sum(type='Reservation' and is_departure=1 and is_active_reservation=1) as  departure ,
                 sum(type='Reservation' and is_stay_over = 1 and is_active_reservation=1) as  stay_over ,
+                sum(type='Reservation' and is_active = 1 and is_active_reservation=0 and reservation_status='No Show') as  no_show ,
                 sum(type='Block') as  block 
             from `tabRoom Occupy` where property='{1}' and date between '{2}' and '{3}'  group by {0} """
-    return sql.format(group_by_field, property, start_date,end_date)
+    
     data = frappe.db.sql(sql.format(group_by_field, property, start_date,end_date),as_dict=1) 
  
     
@@ -530,6 +531,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     departure_data = []
     stay_over_data = []
     block_data = []
+    no_show_data = []
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
     #get total room by room type
     total_rooms_list= []
@@ -576,6 +578,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
             departure_data.append(sum([x["departure"] for x in data if x["group_by"] == d["series_label"]]))
             stay_over_data.append(sum([x["stay_over"] for x in data if x["group_by"] == d["series_label"]]))
             block_data.append(sum([x["block"] for x in data if x["group_by"] == d["series_label"]]))
+            no_show_data.append(sum([x["no_show"] for x in data if x["group_by"] == d["series_label"]]))
 
     chart_data = {
             "labels":[getdate(x["series_label"]).strftime('%d/%b') for x in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else [x["series_label"] for x in series_label],
@@ -589,6 +592,11 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                     "chartType": 'bar',
                     "name": 'Room Block',
                     "values": block_data,
+                },
+                {
+                    "chartType": 'bar',
+                    "name": 'No Show',
+                    "values": no_show_data,
                 },
 
                 {

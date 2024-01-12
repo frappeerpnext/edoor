@@ -54,14 +54,15 @@ def successful_login(login_manager):
  
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
-    if doc.doctype not in ["Note", "Temp Room Occupy","Contact","DocShare","Doctype","DefaultValue","Print Format","Queue Job","System Console","Scheduled Job Log","Route History","Version","Error Log","Scheduled Job Log","Console Log","Activity Log","Comment"]:
-        frappe.get_doc({
-            "doctype":"Queue Job",
-            "document_name":doc.name,
-            "document_type":doc.doctype,
-            "action":"update_fetch_from_field"
-        }).insert()
-     
+    if frappe.db.exists("DocType", "Queue Job"):
+        if doc.doctype not in ["Note", "Temp Room Occupy","Contact","DocShare","Doctype","DefaultValue","Print Format","Queue Job","System Console","Scheduled Job Log","Route History","Version","Error Log","Scheduled Job Log","Console Log","Activity Log","Comment"]:
+            frappe.get_doc({
+                "doctype":"Queue Job",
+                "document_name":doc.name,
+                "document_type":doc.doctype,
+                "action":"update_fetch_from_field"
+            }).insert()
+        
  
 
  
