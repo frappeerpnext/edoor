@@ -34,15 +34,15 @@ def generate_property_data(property):
 				
 			from `tabDates` d 
 			where 
-				d.date >= %(working_date)s 
+				d.date not in (select date from `tabDaily Property Data` where room_type_id = %(room_type_id)s) 
+				
 		"""
  
 
 		filter = {
 			"room_type_id":d["room_type_id"],
 			"property":property,
-			"total_room": d["total_room"] ,
-			"working_date":working_day["date_working_day"]
+			"total_room": d["total_room"] 
 		}
 		
 		data = frappe.db.sql(sql,filter,as_dict=1)

@@ -120,12 +120,12 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         FROM `tabRoom Occupy` 
         WHERE 
             is_active = 1 and
-            is_departure = 0 and
             `date` = '{0}' AND 
             property = '{1}' and 
             type='Reservation' and 
             room_type_id=if('{2}'='',room_type_id,'{2}');
     """.format(date,property, room_type_id or '')
+ 
 
     #get all totoal unassign room
 
@@ -303,9 +303,10 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         vacant_room = 0
 
     occupancy = 0
- 
+    
     if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
-        occupancy = round( (total_room_occupy or 0)  / (total_room or 1) * 100,2)
+
+        occupancy = round( (total_room_occupy or 0)   / (total_room or 1) * 100,2)
     else:
         occupancy = round( (total_room_occupy or 0)  / ((total_room or 1) - total_room_block) * 100,2)
        
@@ -468,11 +469,11 @@ def get_house_keeping_status(property, working_day):
 @frappe.whitelist()
 def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Series",show_occupancy_only=False,view_chart_type="line"):
     
-    total_room = frappe.db.sql("select count(name) from `tabRoom` where property='{}' and disabled=0".format(property))[0][0] 
-    
+
     now = datetime.now()
-    start_date = datetime(now.year, now.month, 1)
-    end_date = now + relativedelta(day=1, months=1, days=-1)
+    start_date = getdate( datetime(now.year, now.month, 1))
+
+    end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
     group_by_field =  "date"
     if duration_type=="Daily":
         group_by_field = "date"
@@ -484,22 +485,32 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     months= get_months(start_date,end_date)
 
     series_label =[]
-    #get series label
+     #get series label
     if view_chart_by=="Time Series":
         if duration_type=="Daily":
-            series_label =  [getdate(d) for d in  get_date_range(start_date, end_date, False)]
+            series_label =  [{"series_label":getdate(d)} for d in  get_date_range(start_date, end_date, False)]
         else:
-            series_label =  ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+            series_label =  [{'series_label': 'January'},
+                            {'series_label': 'February'},
+                            {'series_label': 'March'},
+                            {'series_label': 'April'},
+                            {'series_label': 'May'},
+                            {'series_label': 'June'},
+                            {'series_label': 'July'},
+                            {'series_label': 'August'},
+                            {'series_label': 'September'},
+                            {'series_label': 'October'},
+                            {'series_label': 'November'},
+                            {'series_label': 'December'}]
+
     elif view_chart_by =="Business Source":
         group_by_field = "business_source"
-        series_label =  frappe.db.sql("select distinct business_source from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by business_source".format(property, start_date, end_date),as_dict=1)
-        if series_label:
-            series_label = [d["business_source"] for d in series_label]
+        series_label =  frappe.db.sql("select distinct business_source as series_label from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' and ifnull(business_source,'') !=''  order by business_source".format(property, start_date, end_date),as_dict=1)
+
     elif view_chart_by =="Room Type":
         group_by_field = "room_type"
-        series_label =  frappe.db.sql("select distinct room_type from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by business_source".format(property, start_date, end_date),as_dict=1)
-        if series_label:
-            series_label = [d["room_type"] for d in series_label]
+        series_label =  frappe.db.sql("select distinct room_type_id, room_type as series_label from  `tabRoom Occupy` where property='{}' and  date between '{}' and '{}' order by room_type".format(property, start_date, end_date),as_dict=1)
+       
         
 
     sql = """select 
@@ -507,10 +518,10 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
                 sum(type='Reservation' and  is_active=1) as  total ,
                 sum(type='Reservation' and is_arrival=1 and is_active = 1  and is_active_reservation=1) as  arrival ,
                 sum(type='Reservation' and is_departure=1 and is_active_reservation=1) as  departure ,
-                sum(type='Reservation' and is_departure=0 and is_arrival=0 and is_active_reservation=1) as  stay_over ,
+                sum(type='Reservation' and is_stay_over = 1 and is_active_reservation=1) as  stay_over ,
                 sum(type='Block') as  block 
             from `tabRoom Occupy` where property='{1}' and date between '{2}' and '{3}'  group by {0} """
- 
+    return sql.format(group_by_field, property, start_date,end_date)
     data = frappe.db.sql(sql.format(group_by_field, property, start_date,end_date),as_dict=1) 
  
     
@@ -520,21 +531,38 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     stay_over_data = []
     block_data = []
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
+    #get total room by room type
+    total_rooms_list= []
+    if view_chart_by == "Room Type":
+        total_rooms_list = frappe.db.sql("select room_type_id ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by room_type_id".format(property, start_date,end_date), as_dict=1)
+    elif view_chart_by == "Time Series":
+        if duration_type=="Daily":
+            total_rooms_list = frappe.db.sql("select date ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by date".format(property, start_date,end_date), as_dict=1)
+        else:
+            total_rooms_list = frappe.db.sql("select date_format(date,'%M') as date ,sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}' group by date_format(date,'%M')".format(property, start_date,end_date), as_dict=1)
+
+    elif view_chart_by == "Business Source":
+        total_rooms_list =  frappe.db.sql("select sum(total_room) as total_room from `tabDaily Property Data` where property='{}' and date between '{}' and '{}'".format(property, start_date,end_date), as_dict=1)
+         
+
 
     for d in series_label:
-        occupancy = sum([x["total"] for x in data if x["group_by"] == d])
-        block= sum([x["block"] for x in data if x["group_by"] == d])
+        occupancy = sum([x["total"] for x in data if x["group_by"] == d["series_label"]])
+        block= sum([x["block"] for x in data if x["group_by"] == d["series_label"]])
         
         #check if duration tyope is monthly then we set total room = total room x total day of month
-        total_rooms = total_room
-        if duration_type=="Monthly" :
-            if view_chart_by=="Time Series":
-                total_rooms = total_room * sum([m["total_day"] for m in months if m["month_name"] == d])
-            else:
-                total_rooms = total_room * sum([m["total_day"] for m in months])
+
+        total_rooms = 0
+        if view_chart_by=="Time Series":
+            total_rooms = sum([x["total_room"]  for x in total_rooms_list if str(x["date"]) == str(d["series_label"])])
+        elif view_chart_by=='Room Type':
+            total_rooms =sum([x["total_room"]  for x in total_rooms_list if x["room_type_id"] == d["room_type_id"]])
+        elif  view_chart_by=='Business Source':
+           
+            total_rooms = sum([x["total_room"] for x in total_rooms_list])
         
         if  calculate_room_occupancy_include_room_block==1:
-             
+          
             occupancy = round(occupancy /  total_rooms * 100,2)
            
         else:
@@ -544,13 +572,13 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
         occupancy_data.append(occupancy or 0.00)
  
         if int(show_occupancy_only)==0:
-            arrival_data.append(sum([x["arrival"] for x in data if x["group_by"] == d]))
-            departure_data.append(sum([x["departure"] for x in data if x["group_by"] == d]))
-            stay_over_data.append(sum([x["stay_over"] for x in data if x["group_by"] == d]))
-            block_data.append(sum([x["block"] for x in data if x["group_by"] == d]))
+            arrival_data.append(sum([x["arrival"] for x in data if x["group_by"] == d["series_label"]]))
+            departure_data.append(sum([x["departure"] for x in data if x["group_by"] == d["series_label"]]))
+            stay_over_data.append(sum([x["stay_over"] for x in data if x["group_by"] == d["series_label"]]))
+            block_data.append(sum([x["block"] for x in data if x["group_by"] == d["series_label"]]))
 
     chart_data = {
-            "labels":[getdate(d).strftime('%d/%b') for d in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else series_label,
+            "labels":[getdate(x["series_label"]).strftime('%d/%b') for x in series_label] if view_chart_by=="Time Series" and duration_type=="Daily" else [x["series_label"] for x in series_label],
             "datasets":[]
             # "colors": ['#f7e7a9', '#d1a4ff', '#f5b3b3', '#c8e6c9', '#f2d8d8', '#c5e1a5', '#f0f4c3', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#ffccbc', '#dcedc8', '#ffe0b2', '#b3e5fc', '#ffcdd2', '#d7ccc8', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#f0f4c3', '#dcedc8', '#ffcdd2', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c', '#b2ebf2', '#f5b3b3', '#d1a4ff', '#f7e7a9', '#c5e1a5', '#f2d8d8', '#b3e5fc', '#ffe0b2', '#dcedc8', '#ffcdd2', '#fff9c4', '#e0f7fa', '#ffebee', '#c8e6c9', '#ffecb3', '#d7ccc8', '#b2dfdb', '#e6ee9c','#000000','#000080','#00008B','#0000CD','#0000FF','#006400','#008000','#008080','#008B8B','#00BFFF','#00CED1','#00FA9A','#00FF00','#00FF7F','#00FFFF','#191970','#1E90FF','#20B2AA','#228B22','#240F04','#27408B','#282828','#292421','#292D44','#2980B9','#29AB87','#29C4A9','#29C4AF','#29C4C5','#29C4D0','#29C4F0','#29C4F1','#29C4F3','#29C4F4']
     }
