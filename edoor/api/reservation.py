@@ -1275,7 +1275,6 @@ def get_reservation_comment_note(doctype, docname,):
 @frappe.whitelist(methods="POST")
 def change_stay(data):
     doc = frappe.get_doc("Reservation Stay",data['parent'])
-
     if doc.reservation_status not in ["Reserved",'In-house',"Confirmed"]:
         frappe.throw( "{} is not allow to change stay".format(doc.reservation_status))
 
