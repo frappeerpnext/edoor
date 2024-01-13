@@ -697,7 +697,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
                 folio.status="Open"
                 folio.save()
                 
-        room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":s["stay_name"],"date":["<=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
+        room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":s["stay_name"],"date":["=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
         for r  in room_rates:
             
             add_room_charge_to_folio(folio,r )
@@ -2299,11 +2299,11 @@ def unassign_room(reservation_stay, room_stay):
                           )
             
 
-            
-    if len([d for d in doc.stays if d.room_id])>0:
-        doc.reservation_status ="Reserved"
-    else:
-        doc.reservation_status ="Confirmed"
+    if not doc.reservation_status=="No Show":
+        if len([d for d in doc.stays if d.room_id])>0:
+            doc.reservation_status ="Reserved"
+        else:
+            doc.reservation_status ="Confirmed"
 
     doc.save()
 
@@ -2317,10 +2317,13 @@ def unassign_room(reservation_stay, room_stay):
     frappe.msgprint(frappe._("Unassign room successfully"))
     return doc
 
+
 @frappe.whitelist(methods="POST")
 def assign_room(data):
     doc = frappe.get_doc('Reservation Stay', data['reservation_stay'])
-    doc.reservation_status = 'Reserved'
+    if  not doc.reservation_status == "No Show":
+        doc.reservation_status = 'Reserved'
+
     if 'room_id' in data:
         if not data['room_id']:
             frappe.throw(_("Please select a room to assign."))
@@ -2524,9 +2527,11 @@ def reserved_room(property, reservation_stay):
 
     if stay.reservation_status !="No Show":
         frappe.throw("You cannot reserved room for {} reservation".format(stay.reservation_status))
-    
+
+
     if getdate(stay.departure_date)<= getdate(working_day["date_working_day"]):
         frappe.throw("Departure date must be greater than current working date")
+
 
 
     #validate room availability
@@ -2542,12 +2547,11 @@ def reserved_room(property, reservation_stay):
             if d.total_vacant_room == 0:
                 frappe.throw("Room type {} is not available".format(s.room_type))
 
-        #check if current room is already assign room 
-        # if s.room_id:
-            
-        #     data = frappe.db.sql("select name from `tabTemp Room Occupy` where is_departure = 0 and room_id='{}' and date between '{}' and '{}'".format(s.room_id, s.start_date, add_to_date(getdate(s.end_date), days=-1)),as_dict=1)
-        #     if data:
-        #         frappe.throw("Room {} is not available now".format(s.room_number))
+        if s.room_id:
+            data = frappe.db.sql("select count(room_id) as total from `tabTemp Room Occupy` where room_id='{}' and stay_room_id !='{}'".format(s.room_id, s.name),as_dict=1)
+            if data[0]["total"] > 0:
+                frappe.throw("Room Number {} is not available".format(s.room_number))
+
     
     stay.is_reserved_room=1
     stay.save()

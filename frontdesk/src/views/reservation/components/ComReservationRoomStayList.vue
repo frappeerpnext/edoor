@@ -57,16 +57,19 @@
                     <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate">
                         <template #body="{ data }">
                             <span class="text-end">
-                            <CurrencyFormat :value="data.total_rate"/>
+                            <CurrencyFormat :value="data.total_rate"/> 
                             </span>
                         </template>
                     </Column>
                     <Column header="">
-                        <template #body="slotProps">
-                            <template v-if="canNotUpgradeRoom">
-                                <ComReservationStayRoomListMoreOption :rooms="rooms" class="p-0" @onSelected="onSelected" :data="slotProps.data"/>
-                            </template>
+                        <template #body="{ data }">
+                            <ComReservationStayRoomListMoreOption :rooms="rooms" class="p-0" @onSelected="onSelected" :data="data"/>
+                          
                         </template>
+                             
+                                
+                               
+                        
                     </Column>
             </DataTable>
             </div>

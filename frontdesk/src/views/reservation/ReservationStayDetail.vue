@@ -240,7 +240,6 @@ function loadData(show_loading=true,delay_load_reservation_stay=0){
     }
 }
 
-
 function onUnreservedRoom() {
     confirm.require({
         message: 'Are you sure you want to unreserve room for this reservation?',

@@ -50,7 +50,7 @@ class ReservationStay(Document):
 
 			#check prevent unasign room
 			
-			if not old_doc.reservation_status in ['Reserved', 'Confirmed'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
+			if not old_doc.reservation_status in ['Reserved', 'Confirmed','No Show'] and len([d for d in self.stays if (d.room_id or '') == ''])>0:
 				frappe.throw("{} reservation is not allow to unasign room".format(self.reservation_status))
 		
 

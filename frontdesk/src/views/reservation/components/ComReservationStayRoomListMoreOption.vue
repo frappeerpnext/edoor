@@ -1,6 +1,5 @@
 <template>
     <div> 
-       
         <div class="flex items-center justify-end">
             <div class="res_btn_st">
                 <Button  :class="class" class="h-2rem w-2rem" style="font-size: 1.5rem" text rounded :aria-controls="data.name.replaceAll(' ', '')" icon="pi pi-ellipsis-v" @click="toggle"></Button>
@@ -146,7 +145,7 @@ function onChangeStay(data){
     
 }
 function onUnassignRoom(data){
-if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && rs.reservationStay.reservation_status=='Reserved'){
+if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && (rs.reservationStay.reservation_status=='Reserved' || rs.reservationStay.reservation_status=='No Show' )){
     dialogConfirm.require({
         message: 'Are you sure to unassign room?',
         header: 'Unassign Confirmation',
