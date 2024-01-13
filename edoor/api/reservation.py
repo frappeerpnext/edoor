@@ -682,11 +682,13 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
     for s in stays:
         stay_doc = frappe.get_doc("Reservation Stay", s["stay_name"])
         folio = {}
-        if s["paid_by_master_room"] ==1 or stay_doc.is_master ==1 :
+       
+        if s["paid_by_master_room"] ==1 or (stay_doc.is_master ==1 and master_folio) :
             folio = master_folio
         else:
             #create stay folio 
             folio = frappe.db.get_list("Reservation Folio",{"reservation_stay":s["stay_name"],"is_master":1})
+            
             if len (folio) ==0:
                 folio  =create_folio(stay_doc)
             else:
@@ -697,6 +699,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
                 
         room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":s["stay_name"],"date":["<=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
         for r  in room_rates:
+            
             add_room_charge_to_folio(folio,r )
         
 
