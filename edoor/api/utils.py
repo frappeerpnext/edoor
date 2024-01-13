@@ -796,8 +796,7 @@ def remove_temp_room_occupy(reservation):
 
 def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
     rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
- 
-    frappe.get_doc({
+    doc = {
         "doctype":"Folio Transaction",
         "transaction_type":"Reservation Folio",
         "posting_date":rate.date,
@@ -818,7 +817,11 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
         "valiate_input_amount": False,
         "reservation_room_rate": rate.name,
         "is_night_audit_posing":is_night_audit_posing
-    }).insert()
+    }
+    doc = frappe.get_doc(doc)
+    doc.flags.ignore_update_reservation = True
+ 
+    doc.insert()
     
 
 

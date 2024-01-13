@@ -61,7 +61,7 @@ class ReservationFolio(Document):
 			frappe.db.sql("update `tabReservation Folio` set is_master=0 where is_master=1 and name<>'{}' and reservation_stay='{}'".format(self.name,self.reservation_stay))
 	def on_trash(self):
 		
-		if self.is_master:
+		if self.is_master and not frappe.session.user == "Administrator":
 			frappe.throw("Master folio is not allow to delete")
 
 		if frappe.db.exists("Folio Transaction",{"transaction_type":"Reservation Folio","transaction_number":self.name}):

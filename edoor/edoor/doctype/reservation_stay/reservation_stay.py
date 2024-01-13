@@ -191,10 +191,7 @@ class ReservationStay(Document):
  
 
 	def after_insert(self):
-
 		generate_room_rate(self)
-		 
-
 		frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
 			"comment_type":"Created",
 			"subject":"Create New Reservation Stay",
@@ -261,16 +258,6 @@ class ReservationStay(Document):
 		 where parent=%(name)s
 		""",data_for_udpate)
 	
-		#run equeue process to update picup and drop off to room_occupy
-		frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.update_room_occupy", queue='long', self = self)
-
-def update_room_occupy(self):
-	 
-	frappe.db.sql("update `tabRoom Occupy` set pick_up=0, drop_off=0 where reservation_stay='{}'".format(self.name))
-	if self.require_pickup==1:
-		frappe.db.sql("update `tabRoom Occupy` set pick_up=1 where reservation_stay='{}' and date='{}'".format(self.name,self.arrival_date))		
-	if self.require_drop_off==1:
-		frappe.db.sql("update `tabRoom Occupy` set drop_off=1 where reservation_stay='{}' and date='{}'".format(self.name, (self.checked_out_system_date if self.is_early_checked_out==1 else self.departure_date)))
  
 
 def update_note(self):

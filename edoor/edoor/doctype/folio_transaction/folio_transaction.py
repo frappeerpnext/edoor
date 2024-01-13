@@ -12,6 +12,7 @@ from frappe import _
 
 class FolioTransaction(Document):
 	def validate(self):
+		 
 		if not self.account_code:
 			frappe.throw("Please select an account code")
 
@@ -546,10 +547,13 @@ def update_folio_transaction(self):
 	elif self.transaction_type=='Payable Ledger':
 		update_payable_ledger(self.transaction_number, None, False)
 	
+	
 	#update to reservation stay and reservation
+
 	if not self.parent_reference:	
 		if self.transaction_type=="Reservation Folio": 
-			frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
+			if not self.flags.ignore_update_reservation:
+				frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation_stay=self.reservation_stay,reservation=self.reservation)
 
 
 def update_sub_account_description(self):
