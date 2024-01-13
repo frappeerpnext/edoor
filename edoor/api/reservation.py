@@ -9,6 +9,9 @@ from edoor.api.utils import check_user_permission, get_date_range, get_rate_type
 import frappe
 from frappe.utils.data import add_to_date, getdate,now
 from frappe import _
+from frappe.utils import (
+	cint
+)
 
 @frappe.whitelist()
 def test():
@@ -3012,14 +3015,18 @@ def verify_reservation_stay(stay = None ,stay_name= None):
         stay = frappe.get_doc("Reservation Stay", stay_name)
 
     sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
+ 
     data = frappe.db.sql(sql,as_dict=1)
-    if stay.room_nights != data[0]["total"]-1 :
+     
+    if not  cint(stay.room_nights) == cint(data[0]["total"])-1 :
+ 
         generate_room_occupy(self=stay)
 
-    
+ 
+
     sql = "select count(name) as total from `tabTemp Room Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
     data = frappe.db.sql(sql,as_dict=1)
-    if stay.room_nights != data[0]["total"] :
+    if not cint(stay.room_nights) == cint(data[0]["total"]) :
         generate_temp_room_occupy(self=stay)
 
     
