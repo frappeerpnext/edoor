@@ -1274,6 +1274,11 @@ def get_reservation_comment_note(doctype, docname,):
 
 @frappe.whitelist(methods="POST")
 def change_stay(data):
+    doc = frappe.get_doc("Reservation Stay",data['parent'])
+
+    if doc.reservation_status not in ["Reserved",'In-house',"Confirmed"]:
+        frappe.throw( "{} is not allow to change stay".format(doc.reservation_status))
+
     allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
 
     room_id = ""
@@ -1319,7 +1324,9 @@ def change_stay(data):
                 frappe.throw(_("You cannot change stay of this reservation. Because this room is not available or block on {}".format(frappe.format(check_room_occupy[0]["date"]),{"fieldtype":"Date"}) ))
             
     
-    doc = frappe.get_doc("Reservation Stay",data['parent'])
+    
+
+    
 
     #delete all invalid room rate record that stay out site of stay date
     frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date<'{}'".format(doc.name, doc.arrival_date))
