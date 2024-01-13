@@ -88,7 +88,7 @@ def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
     if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed"]:
         #verify reservation stay this function will fix some problem that occure in room occupy generation , temp room occupy and room rate
-        frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay = reservation_stay )
+        frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay_name = name )
        
 
     reservation = frappe.get_doc("Reservation",reservation_stay.reservation)
@@ -3009,11 +3009,8 @@ def check_reservation_exist_in_future(property, fieldname,value):
     return is_exist
 
 @frappe.whitelist()  
-def verify_reservation_stay(stay = None ,stay_name= None):
-    #1 validate room occupy
-    if not stay:
-        stay = frappe.get_doc("Reservation Stay", stay_name)
-
+def verify_reservation_stay(stay_name= None):
+    stay = frappe.get_doc("Reservation Stay", stay_name)
     sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
  
     data = frappe.db.sql(sql,as_dict=1)
