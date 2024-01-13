@@ -141,6 +141,16 @@ const filters = [
             ['keyword','room_type','reservation_status','business_source']
         )
     }
+    else if(props.dialogKey == "fit_arrival"){
+        onViewData(
+            'Business%20Branch',
+            // "eDoor%20GIT%20Arrival%20Guest",
+            gv.getCustomPrintFormat("eDoor FIT Arrival Guest"),
+            'FIT Arrival',
+            [{key:"date", value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
+            ['keyword','room_type','reservation_status','business_source']
+        )
+    }
     else if(props.dialogKey  == "stay_over"){
         onViewData(
             'Business%20Branch',

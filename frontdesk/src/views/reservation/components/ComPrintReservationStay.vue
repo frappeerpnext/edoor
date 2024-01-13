@@ -1,5 +1,4 @@
 <template>
- 
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
             <div class="grid mb-3 ">
@@ -59,7 +58,7 @@
 import { ref, onMounted, inject , onUnmounted , getApi} from "@/plugin"
 const dialogRef = inject("dialogRef");
 
-
+ 
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const url = ref("")
  

@@ -93,15 +93,15 @@ def get_meta(doctype=None):
 
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None):
-
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
     working_date =  frappe.utils.today() 
+
     if data:
         working_date = data[0]["date"]
 
     if not date:
         date = working_date 
-    
+
     # get total_room
     sql = "select count(name) as total from `tabRoom` where property='{0}' and room_type_id=if('{1}'='',room_type_id,'{1}')".format(property,room_type_id or '')
     data = frappe.db.sql(sql, as_dict=1)
@@ -298,10 +298,21 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     total_room_block = frappe.db.sql(sql,as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
 
-    vacant_room = (total_room or 0) - (total_room_occupy or 0) - total_room_block
-    if vacant_room<0:
+    vacant_room =  frappe.db.sql("""select count(name) as total_room from `tabRoom` where name not in (
+            select 
+                ifnull(room_id,'') 
+            from `tabRoom Occupy` 
+            where 
+                is_active = 1 and
+                `date` = '{1}' AND 
+            is_departure = 0 and
+                property = '{0}'
+        )""".format(property, date),as_dict=1)
+    
+    if len(vacant_room)>0:
+        vacant_room = vacant_room[0]["total_room"]
+    else:
         vacant_room = 0
-
     occupancy = 0
     
     if int(frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")) ==1:
@@ -664,7 +675,6 @@ def get_edoor_setting(property = None):
         "folio_transaction_style_credit_debit":edoor_setting_doc.folio_transaction_style_credit_debit,
         "guest_ledger_report_name":edoor_setting_doc.guest_ledger_report_name,
         "guest_ledger_transaction_report":edoor_setting_doc.guest_ledger_transaction_report,
-        # "city_ledger_transaction_report":edoor_setting_doc.city_ledger_transaction_report,
         "city_ledger_report_name":edoor_setting_doc.city_ledger_report_name,
         "allow_user_to_add_back_date_transaction":edoor_setting_doc.allow_user_to_add_back_date_transaction,
         "role_for_back_date_transaction":edoor_setting_doc.role_for_back_date_transaction,
@@ -679,6 +689,7 @@ def get_edoor_setting(property = None):
         "search_table": [{"doctype":d.table_name,"title":d.title,"template":d.template} for d in edoor_setting_doc.search_table],
         "room_block_color":edoor_setting_doc.room_block_color,
         "show_additional_guest_name_in_room_chart_calendar":edoor_setting_doc.show_additional_guest_name_in_room_chart_calendar,
+        "help_url":edoor_setting_doc.help_url,
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -1153,14 +1164,14 @@ def get_occupy_data(view_type, filter):
                     room_type_id, 
                     date, 
                     sum(if(is_departure=1 ,0,1)) as total,
-                    sum(if(type='Block',1,0)) as block, 
+                    sum(type='Block') as block, 
                     sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(if(type='Reservation' and is_arrival=1,1,0)) as arrival, 
+                    sum(type='Reservation' and is_arrival=1 and is_active_reservation=1) as arrival, 
                     sum(if(type='Reservation' and is_departure=1,1,0))  as departure,
-                    sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+                    sum(type='Reservation' and is_stay_over=1) as stay_over,
                     sum(adult) as adult, 
                     sum(child) as child ,
-                    sum(if(type='Reservation' and is_departure=0,1,0)) as total_room_sold
+                    sum(type='Reservation' and is_active=1) as total_room_sold
                 from `tabRoom Occupy`  
                 where 
                     
@@ -1180,13 +1191,13 @@ def get_occupy_data(view_type, filter):
                     date, 
                     sum(if(is_departure=1,0,1)) as total,
                     sum(if(type='Block',1,0)) as block, 
-                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(is_arrival) as arrival, 
-                    sum(is_departure) as departure,
-                    sum(if(is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+                    sum(type='Reservation' and coalesce(room_id,'')='') as unassign_room, 
+                    sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1) as arrival, 
+                    sum(type='Reservation' and is_departure) as departure,
+                    sum(type='Reservation' and is_stay_over=1 and is_active = 1) as stay_over,
                     sum(adult) as adult, 
                     sum(child) as child ,       
-                    sum(if(type='Reservation' and is_departure=0,1,0)) as total_room_sold
+                    sum(type='Reservation' and is_active=1) as total_room_sold
                     from `tabRoom Occupy` 
                 where 
                     property=%(property)s and 

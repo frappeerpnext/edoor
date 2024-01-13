@@ -1,5 +1,160 @@
-import frappe
+import functools
+import re
+from edoor.api.reservation import generate_room_occupies
+from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy
 
+from rq.command import send_stop_job_command
+from rq.exceptions import InvalidJobOperation, NoSuchJobError
+from rq.job import Job
+from rq.queue import Queue
+import json
+import frappe
+from frappe import _
+from frappe.model.document import Document
+from frappe.utils import (
+	cint,
+	compare,
+	convert_utc_to_system_timezone,
+	create_batch,
+	make_filter_dict,
+)
+from frappe.utils.background_jobs import get_queues, get_redis_conn
+
+QUEUES = ["default", "long", "short"]
+JOB_STATUSES = ["queued", "started", "failed", "finished", "deferred", "scheduled", "canceled"]
+
+
+
+
+@frappe.whitelist()
+def re_run_fail_jobs():
+    args = {'doctype': 'RQ Job', 'fields': ['`tabRQ Job`.`name`', '`tabRQ Job`.`owner`', '`tabRQ Job`.`creation`', '`tabRQ Job`.`modified`', '`tabRQ Job`.`modified_by`', '`tabRQ Job`.`_user_tags`', '`tabRQ Job`.`_comments`', '`tabRQ Job`.`_assign`', '`tabRQ Job`.`_liked_by`', '`tabRQ Job`.`docstatus`', '`tabRQ Job`.`idx`', '`tabRQ Job`.`queue`', '`tabRQ Job`.`status`', '`tabRQ Job`.`job_name`'], 'filters': [['RQ Job', 'status', '=', 'failed']], 'order_by': '`tabRQ Job`.`modified` desc', 'start': '0', 'page_length': '20', 'group_by': '`tabRQ Job`.`name`', 'with_comment_count': '1', 'save_user_settings': True, 'strict': None}
+    start = cint(args.get("start"))
+    page_length = cint(args.get("page_length")) or 20
+
+    order_desc = "desc" in args.get("order_by", "")
+
+    matched_job_ids = get_matching_job_ids(args)[start : start + page_length]
+
+    conn = get_redis_conn()
+    jobs = [
+        serialize_job(job) for job in Job.fetch_many(job_ids=matched_job_ids, connection=conn) if job
+    ]
+
+    jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
+
+    # jobs = [d for d in jobs if d["job_name"] =='edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy']
+    jobs = [d for d in jobs ]# if  'Deadlock found when trying' in  d["exc_info"] ]
+    job_ids = []
+    for j in jobs:
+        job =   json.loads(j["arguments"]) 
+        if j["job_name"]  in "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy":
+            generate_room_occupy(self=None if "self" not in job["kwargs"] else job["kwargs"]["self"], stay_name=None if "stay_name" not in job["kwargs"] else job["kwargs"]["stay_name"])
+        elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
+            generate_room_occupies( stay_names=job["kwargs"]["stay_names"])    
+        job_ids.append(j["job_id"])
+    
+    remove_failed_jobs(job_ids)
+
+    return job_ids
+
+
+def serialize_job(job: Job) -> frappe._dict:
+	modified = job.last_heartbeat or job.ended_at or job.started_at or job.created_at
+	job_kwargs = job.kwargs.get("kwargs", {})
+	job_name = job_kwargs.get("job_type") or str(job.kwargs.get("job_name"))
+	if job_name == "frappe.utils.background_jobs.run_doc_method":
+		doctype = job_kwargs.get("doctype")
+		doc_method = job_kwargs.get("doc_method")
+		if doctype and doc_method:
+			job_name = f"{doctype}.{doc_method}"
+
+	# function objects have this repr: '<function functionname at 0xmemory_address >'
+	# This regex just removes unnecessary things around it.
+	if matches := re.match(r"<function (?P<func_name>.*) at 0x.*>", job_name):
+		job_name = matches.group("func_name")
+
+	return frappe._dict(
+		name=job.id,
+		job_id=job.id,
+		queue=job.origin.rsplit(":", 1)[1],
+		job_name=job_name,
+		status=job.get_status(),
+		started_at=convert_utc_to_system_timezone(job.started_at) if job.started_at else "",
+		ended_at=convert_utc_to_system_timezone(job.ended_at) if job.ended_at else "",
+		time_taken=(job.ended_at - job.started_at).total_seconds() if job.ended_at else "",
+		exc_info=job.exc_info,
+		arguments=frappe.as_json(job.kwargs),
+		timeout=job.timeout,
+		creation=convert_utc_to_system_timezone(job.created_at),
+		modified=convert_utc_to_system_timezone(modified),
+		_comment_count=0,
+		owner=job.kwargs.get("user"),
+		modified_by=job.kwargs.get("user"),
+	)
+
+
+def get_matching_job_ids(args) -> list[str]:
+    filters = make_filter_dict(args.get("filters"))
+
+    queues = _eval_filters(filters.get("queue"), QUEUES)
+    statuses = _eval_filters(filters.get("status"), JOB_STATUSES)
+
+    matched_job_ids = []
+    for queue in get_queues():
+        if not queue.name.endswith(tuple(queues)):
+            continue
+        for status in statuses:
+            matched_job_ids.extend(fetch_job_ids(queue, status))
+
+    return filter_current_site_jobs(matched_job_ids)
+    
+def _eval_filters(filter, values: list[str]) -> list[str]:
+	if filter:
+		operator, operand = filter
+		return [val for val in values if compare(val, operator, operand)]
+	return values
+
+
+def fetch_job_ids(queue: Queue, status: str) -> list[str]:
+	registry_map = {
+		"queued": queue,  # self
+		"started": queue.started_job_registry,
+		"finished": queue.finished_job_registry,
+		"failed": queue.failed_job_registry,
+		"deferred": queue.deferred_job_registry,
+		"scheduled": queue.scheduled_job_registry,
+		"canceled": queue.canceled_job_registry,
+	}
+
+	registry = registry_map.get(status)
+	if registry is not None:
+		job_ids = registry.get_job_ids()
+		return [j for j in job_ids if j]
+
+	return []
+
+def filter_current_site_jobs(job_ids: list[str]) -> list[str]:
+	site = frappe.local.site
+
+	return [j for j in job_ids if j.startswith(site)]
+
+
+
+@frappe.whitelist()
+def remove_failed_jobs(failed_jobs):
+    frappe.only_for("System Manager")
+
+    for queue in get_queues():
+        
+        fail_registry = queue.failed_job_registry
+         
+        # Delete in batches to avoid loading too many things in memory
+        conn = get_redis_conn()
+        for job_ids in create_batch(failed_jobs, 100):
+            for job in Job.fetch_many(job_ids=job_ids, connection=conn):
+                job and fail_registry.remove(job, delete_job=True)
+                    
 @frappe.whitelist()
 def five_minute_job():
     

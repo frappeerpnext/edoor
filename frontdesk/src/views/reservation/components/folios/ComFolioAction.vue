@@ -1,4 +1,5 @@
 <template>
+
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2">
         <div>
             <template
@@ -101,7 +102,9 @@ const props = defineProps({
     newDoc:Object,
     accountCodeFilter:Object,
     accountGroups:Object,
-    loading:Boolean
+    loading:Boolean,
+    parentComponent: String
+    
 })
 
 // const emit = defineEmits([ "onRefresh"])
@@ -129,7 +132,7 @@ function showAccountGroup(account_code){
 //trach user select new folio and reload folio information
 
 watch(() => props.folio, (newValue, oldValue) => {
-   
+
     selectedFolio.value = newValue
  
 })
@@ -141,8 +144,13 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
+    let filter =  [ ["reservation_stay", "=", props.folio.reservation_stay]]
+    
+    if (props.parentComponent=="Reservation"){
+        filter = [ ["reservation", "=", props.folio.reservation]]
+    }
     getDocList("Reservation Folio", {
-            filters: [ ["reservation_stay", "=", props.reservation_stay]],
+            filters: [ ["reservation_stay", "=", props.folio.reservation_stay]],
             limit:100,
             fields:["name","reservation_stay"]
         }).then((docs) => {

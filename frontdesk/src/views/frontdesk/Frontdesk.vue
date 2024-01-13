@@ -1000,9 +1000,11 @@ onMounted(() => {
     getResourceAndEvent()
     getTotalNote()
     document.body.addEventListener('scroll', handleScroll);
+
     setTimeout(() => {
         let timelineElement = document.querySelector(".fc-timeline-slot-lane").parentNode.parentNode.parentNode
         timelineElement.addEventListener("mousemove",function(e){
+            console.log("u run me");
             let calendarElement = document.querySelector(".fc-scrollgrid")
             const calendarRect = calendarElement.getBoundingClientRect();
             const headerHeight =  document.querySelector(".fc-timeline-header-row").offsetHeight;

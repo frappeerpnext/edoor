@@ -47,7 +47,14 @@ def get_reservation_folio_list(reservation):
 
 @frappe.whitelist()
 def get_reservation_detail(name):
+
+
+    #start get information
     reservation= frappe.get_doc("Reservation",name)
+
+
+
+
     reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information","room_nights"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
@@ -76,7 +83,11 @@ def get_reservation_detail(name):
 @frappe.whitelist()
 def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
-    
+    if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed"]:
+        #verify reservation stay this function will fix some problem that occure in room occupy generation , temp room occupy and room rate
+        frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay = reservation_stay )
+       
+
     reservation = frappe.get_doc("Reservation",reservation_stay.reservation)
     total_reservation_stay = frappe.db.count("Reservation Stay", {'reservation': reservation.name})
     guest=frappe.get_doc("Customer",reservation_stay.guest)
@@ -90,13 +101,9 @@ def get_reservation_stay_detail(name):
 
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
     folio_names =frappe.get_all("Reservation Folio",filters={"reservation_stay":name}, page_length=10000,pluck='name')
-    folio_transaction_names =frappe.get_all("Folio Transaction",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+    
     reservaiton_room_rates =frappe.get_all("Reservation Room Rate",filters={"reservation_stay":name}, page_length=10000,pluck='name')
 
-    related_reference_number = [name, guest.name, master_guest.name]
-    related_reference_number = related_reference_number + folio_names
-    related_reference_number = related_reference_number + reservaiton_room_rates
-    related_reference_number = related_reference_number + folio_transaction_names
     
 
     
@@ -109,7 +116,7 @@ def get_reservation_stay_detail(name):
         "master_guest":master_guest,
         "reservation_stay_names":reservation_stay_names,
         "total_folio":total_folio or 0,
-        "related_reference_number": related_reference_number
+ 
     }
 
 
@@ -870,9 +877,10 @@ def check_out(reservation,reservation_stays=None):
             frappe.throw("Reservation Stay {}, room {} cannot check out because the departure date is in the future.".format(stay.name,stay.rooms))
         #validate folio balance
         data_balance = frappe.db.sql("select max(balance) as balance from `tabReservation Folio` where reservation_stay='{}'".format(stay.name),as_dict = 1)
+        
         if data_balance:
             balance = data_balance[0]["balance"] or 0
-            if balance> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
+            if abs(balance)> 0 and  abs(round(balance, int(currency_precision)))> (Decimal('0.1') ** int(currency_precision)):
                 frappe.throw("Reservation Stay {}, room {} cannot check out because the folio balance of this reservation stay is greater than zero".format(stay.name,stay.rooms))
 
         stay.checked_out_by = frappe.db.get_value("User", frappe.session.user,"full_name")
@@ -2996,5 +3004,24 @@ def check_reservation_exist_in_future(property, fieldname,value):
     
     is_exist = frappe.db.exists("Reservation", {fieldname: value,"property":property,"arrival_date":[">=",working_day["date_working_day"]]} )
     return is_exist
+
+@frappe.whitelist()  
+def verify_reservation_stay(stay = None ,stay_name= None):
+    #1 validate room occupy
+    if not stay:
+        stay = frappe.get_doc("Reservation Stay", stay_name)
+
+    sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
+    data = frappe.db.sql(sql,as_dict=1)
+    if stay.room_nights != data[0]["total"]-1 :
+        generate_room_occupy(self=stay)
+
+    
+    sql = "select count(name) as total from `tabTemp Room Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
+    data = frappe.db.sql(sql,as_dict=1)
+    if stay.room_nights != data[0]["total"] :
+        generate_temp_room_occupy(self=stay)
+
+    
 
     

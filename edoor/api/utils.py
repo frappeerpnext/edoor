@@ -13,6 +13,7 @@ import calendar
 import urllib.parse
 import time
 
+
 @frappe.whitelist()
 def get_working_day(property = ''):
     working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}' order by creation desc limit 1".format(property),as_dict=1)
@@ -52,6 +53,7 @@ def get_chart():
 def successful_login(login_manager):
     pass
  
+
 
 def update_fetch_from_field(doc, method=None, *args, **kwargs):
     if frappe.db.exists("DocType", "Queue Job"):
@@ -817,6 +819,7 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
         "reservation_room_rate": rate.name,
         "is_night_audit_posing":is_night_audit_posing
     }).insert()
+    
 
 
 def get_master_folio(reservation):

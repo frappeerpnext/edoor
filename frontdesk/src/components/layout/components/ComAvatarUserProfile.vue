@@ -58,7 +58,7 @@ function onLogout() {
     }).catch((error) => toast.add({ severity: 'error', summary: 'Error Message', detail: error, life: 3000 }));
 }
 function onRoute() {
-    window.open(serverUrl + '/edoor-front-desk/welcome')
+    window.open(setting.help_url)
 }
 const onClick = (event) => {
     show.value.toggle(event);

@@ -292,7 +292,6 @@ def generate_room_rate_after_change_stay(data):
 @frappe.whitelist()
 
 def generate_room_occupy(self =None, stay_name=None):
-
 	if not self:
 		self = frappe.get_doc("Reservation Stay", stay_name)
 		 

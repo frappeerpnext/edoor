@@ -14,7 +14,12 @@
         </tippy>
         <ComTodaySummarySep :isHousekeeping="isHousekeeping" dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
   
-        <ComTodaySummarySep :isHousekeeping="isHousekeeping" dialogKey="unassign_room" title="Unassign Room">{{ data?.unassign_room }}</ComTodaySummarySep>
+        <tippy :content="`Today you have ${data?.unassign_room} unassign room reservation & total all unassign room is ${data?.total_unassign_room}`">
+        <ComTodaySummarySep dialogKey="unassign_room"  title="Unassign Room (Today/All)">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
+    </tippy>
+        <tippy :content="'FIT (free independent traveler) Total ' + data.fit_reservation_arrival + ' & Total Stay ' + data.fit_stay_arrival">
+            <ComTodaySummarySep   dialogKey="fit_arrival" title="Fit Arrival">{{(data.fit_reservation_arrival + ' / ' + data.fit_stay_arrival)}}</ComTodaySummarySep>
+        </tippy>
         <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) & ' + data?.git_stay_arrival + ' Stay(s)'">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + '/' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
         </tippy>
