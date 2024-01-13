@@ -139,8 +139,6 @@ scheduler_events = {
     	"cron": {
 			"*/5 * * * *": [
 				"edoor.api.schedule_task.five_minute_job",
-			],
-			"*/5 * * * *": [
 				"edoor.api.schedule_task.re_run_fail_jobs",
 			],
 			"*/10 * * * *": [
