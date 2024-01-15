@@ -255,6 +255,7 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
 }
 
 function onUnmarkasPaidbyMasterRoom() {
+
     confirm.require({
         message: 'Are you sure you want to Unmark as Piad by Master Room?',
         header: 'Confirmation',

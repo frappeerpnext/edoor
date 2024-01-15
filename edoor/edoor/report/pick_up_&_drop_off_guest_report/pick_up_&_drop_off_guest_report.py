@@ -2,7 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
-from datetime import datetime, timedelta
+
 
 def execute(filters=None):
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Pick-up & Drop-off Guest Report"} )
@@ -33,27 +33,8 @@ def get_report_columns(filters,  report_fields):
 
 def get_report_data (filters, report_fields):
 	data = get_data(filters,report_fields)
-	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d')
-	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
 	
 	report_data = []
-	drop_off = sorted(set([d["require_drop_off"] for d in data if d['departure_date']]>= start_date and d['departure_date']<= end_date))
-	frappe.throw(str(drop_off))
-	if drop_off:
-		
-		report_data.append({
-					"indent":1,
-					report_fields[0].fieldname: "Drop-off",
-					"is_group":1
-		})	
-		for d in drop_off:
-			g = d
-			report_data.append({
-				"indent":1,
-				report_fields[0].fieldname: g,
-				"is_group":1
-			})	
-		report_data = report_data + [d.update({"indent":2}) or d for d in data if d["require_drop_off"]==g]
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
 		for parent in parent_row:
@@ -61,7 +42,7 @@ def get_report_data (filters, report_fields):
 			if filters.show_in_group_by=="departure_date" and filters.show_in_group_by=="arrival_date":
 				d  = frappe.format(parent,{"fieldtype":"Date"})
 			report_data.append({
-				"indent":1,
+				"indent":0,
 				report_fields[0].fieldname: d,
 				"is_group":1
 			})

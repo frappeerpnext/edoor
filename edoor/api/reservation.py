@@ -966,6 +966,7 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             if (len(room_ids)>0):
                 arrival,departure = frappe.db.get_value("Reservation Stay", s, ["arrival_date","departure_date"]) 
                 room_ids = (room_ids[0]["room_id"].split(","))
+                
                 occupied  =frappe.db.sql("select room_id, date from `tabTemp Room Occupy` where room_id in %(room_ids)s and date between %(start_date)s and %(end_date)s order by date desc limit 1",
                                         {
                                             "room_ids":room_ids,

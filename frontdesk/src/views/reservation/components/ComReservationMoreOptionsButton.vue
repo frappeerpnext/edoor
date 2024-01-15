@@ -150,7 +150,7 @@ const toggle = (event) => {
 }
 
 function onChangeStatus(reservation_status) {
-
+ 
     if (validateSelectReservation()) {
         let confirm_message = ""
         if (reservation_status == "Cancelled") {
@@ -350,6 +350,7 @@ function onGroupUndoCheckIn() {
 
 function onGroupCheckOut(is_not_undo = false) {
     const isSelect = validateSelectReservation()
+
     if (isSelect) {
         const stays = rs.selecteds.filter(r => r.is_active_reservation == 1 && r.allow_user_to_edit_information == 1).map((r) => r.name)
         if (stays.length == 0) {
@@ -472,7 +473,7 @@ function onGroupAssignRoom() {
 }
 
 function onMarkAsPaidbyMasterroom() {
-    if (rs.selecteds.filter((r) => r.is_master == 0 && r.is_active_reservation == 1).length == 0) {
+    if (rs.selecteds.filter((r) => r.is_master == 0 && r.allow_user_to_edit_information == 1).length == 0) {
         if (rs.reservationStays.length >= 1) {
             toast.add({ severity: 'warn', summary: " Mark As Paid by Master room", detail: "Please select reservation stay for Mark As Paid by Master room.", life: 3000 })
             return
@@ -508,7 +509,8 @@ function onMarkAsPaidbyMasterroom() {
 }
 
 function onUnMarkAsPaidbyMasterroom() {
-    if (rs.selecteds.filter((r) => r.is_master == 0 && r.is_active_reservation == 1).length == 0) {
+ 
+    if (rs.selecteds.filter((r) => r.is_master == 0 && r.allow_user_to_edit_information == 1).length == 0) {
         if (rs.reservationStays.length >= 1) {
             toast.add({ severity: 'warn', summary: " Unmark As Paid by Master room", detail: "Please select reservation stay for Unmark As Paid by Master room.", life: 3000 })
             return

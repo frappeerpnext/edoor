@@ -472,7 +472,7 @@ function onUnReservedRoom() {
 }
 
 function onMarkasPaidbyMasterRoom() {
-    if(rs.reservationStay.is_active_reservation){
+    if(rs.reservationStay.allow_user_to_edit_information){
         confirm.require({
             message: 'Are you sure you want to Mark as Piad by Master Room?',
             header: 'Confirmation',
@@ -506,7 +506,8 @@ function onMarkasPaidbyMasterRoom() {
     }
 }
 function onUnmarkasPaidbyMasterRoom() {
-    if(rs.reservationStay.is_active_reservation){
+
+    if(rs.reservationStay.allow_user_to_edit_information){
         confirm.require({
         message: 'Are you sure you want to Unmark as Paid by Master Room?',
         header: 'Confirmation',
