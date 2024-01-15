@@ -268,7 +268,6 @@ def update_keyword(data):
     for x in data:
         if frappe.db.exists(x["document_type"],x["document_name"]):
             doc = frappe.get_doc(x["document_type"],x["document_name"])
-        if doc:
             meta = frappe.get_meta(doc.doctype)
             if meta.has_field("keyword"):
                 fields = []
