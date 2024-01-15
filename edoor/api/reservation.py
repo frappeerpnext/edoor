@@ -86,7 +86,7 @@ def get_reservation_detail(name):
 @frappe.whitelist()
 def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
-    if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed","No-Show"]:
+    if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed","No Show"]:
         #verify reservation stay this function will fix some problem that occure in room occupy generation , temp room occupy and room rate
         frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay_name = name )
        
@@ -1426,8 +1426,10 @@ def change_stay(data):
             update_reservation_stay_room_rate_after_resize(data=data,stay_doc= doc)
         else:
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
+
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
+       
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = doc.name)
     
     frappe.db.commit()
@@ -2286,6 +2288,12 @@ def upgrade_room(doc,regenerate_rate=False):
 @frappe.whitelist(methods="POST")
 def unassign_room(reservation_stay, room_stay):
     doc = frappe.get_doc('Reservation Stay', reservation_stay)
+    if (doc.reservation_status not in ["Reserved","No Show"]):
+        frappe.throw("{} is not allow to unassign room".format(doc.reservation_status))
+    working_day = get_working_day(doc.property)
+    if doc.reservation_status == 'No Show' and  getdate(working_day["date_working_day"])>= getdate(doc.departure_date):
+        frappe.throw("This no show reservation is in the past date. You cannot change Information".format(doc.reservation_status))
+
     for s in doc.stays:
         if s.name == room_stay:
             s.room_id = None

@@ -227,7 +227,19 @@ fixtures = [
     {
         "dt": "Print Format", "or_filters": [
         	{"module":["=", "eDoor"]},
-        	{"name":["IN", ["eDoor Blank Guest Registration Card","eDoor Cancel Reservation List","eDoor Unassign Room Reservation Lis","eDoor Dashboard Arrival Guest","eDoor Shortcut Menu Help","eDoor Vendor Detail","eDoor Vendor Detail","eDoor Cashier Shift Folio Transaction Detail"]]}
+        	{"name":[
+						"IN", 
+						[
+							"eDoor Blank Guest Registration Card",
+							"eDoor Cancel Reservation List",
+							"eDoor Unassign Room Reservation Lis",
+							"eDoor Dashboard Arrival Guest",
+							"eDoor Shortcut Menu Help",
+							"eDoor Vendor Detail",
+							"eDoor Cashier Shift Folio Transaction Detail"
+						]
+                    ]
+            }
         ]
     },
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Blank Guest Registration Card"]]},
@@ -236,8 +248,7 @@ fixtures = [
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Cashier Shift Folio Transaction Detail"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Cancel Reservation List"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]},
-    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Testing Print Format"]]},
+    # {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]}
     
     {"dt": "Reservation Status"},
     {"dt": "Housekeeping Status"},

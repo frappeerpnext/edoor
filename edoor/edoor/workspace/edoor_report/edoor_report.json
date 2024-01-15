@@ -242,7 +242,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Front Office Report",
-   "link_count": 6,
+   "link_count": 7,
    "onboard": 0,
    "type": "Card Break"
   },
@@ -305,9 +305,19 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Pick-up & Drop-off Guest Report",
+   "link_count": 0,
+   "link_to": "Pick-up & Drop-off Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-01-15 11:47:15.929491",
+ "modified": "2024-01-15 14:48:26.463981",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

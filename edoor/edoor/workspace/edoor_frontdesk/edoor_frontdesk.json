@@ -78,7 +78,7 @@
  "is_hidden": 0,
  "label": "eDoor Frontdesk",
  "links": [],
- "modified": "2023-12-28 09:06:16.868796",
+ "modified": "2024-01-15 14:48:23.821415",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Frontdesk",
@@ -88,7 +88,7 @@
  "public": 1,
  "quick_lists": [],
  "roles": [],
- "sequence_id": 3.0,
+ "sequence_id": 1.0,
  "shortcuts": [],
  "title": "eDoor Frontdesk"
 }

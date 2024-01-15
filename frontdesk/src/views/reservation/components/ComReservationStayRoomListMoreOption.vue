@@ -145,7 +145,8 @@ function onChangeStay(data){
     
 }
 function onUnassignRoom(data){
-if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || moment(data.start_date).isSame(edoor_working_day.date_working_day)) && data.room_id && (rs.reservationStay.reservation_status=='Reserved' || rs.reservationStay.reservation_status=='No Show' )){
+
+    
     dialogConfirm.require({
         message: 'Are you sure to unassign room?',
         header: 'Unassign Confirmation',
@@ -175,10 +176,7 @@ if((moment(data.start_date).isAfter(edoor_working_day.date_working_day) || momen
             })
         }
     })
-}else{
-    gv.toast('warn',"This room stay is disallow to unassign room.")
-}
-    
+  
 }
 </script>
 <style>
