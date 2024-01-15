@@ -97,54 +97,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Front Office Report",
-   "link_count": 4,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Arrival Guest",
-   "link_count": 0,
-   "link_to": "Arrival Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stay Over Guest",
-   "link_count": 0,
-   "link_to": "Stay Over Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Departure Guest",
-   "link_count": 0,
-   "link_to": "Departure Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Arrival Stay Over Departure Guest",
-   "link_count": 0,
-   "link_to": "Arrival Stay Over Departure Guest",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Housekeeping Report",
    "link_count": 4,
    "onboard": 0,
@@ -285,9 +237,77 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Front Office Report",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Guest",
+   "link_count": 0,
+   "link_to": "Arrival Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stay Over Guest",
+   "link_count": 0,
+   "link_to": "Stay Over Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Departure Guest",
+   "link_count": 0,
+   "link_to": "Departure Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Stay Over Departure Guest",
+   "link_count": 0,
+   "link_to": "Arrival Stay Over Departure Guest",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Pick-up Guest Report",
+   "link_count": 0,
+   "link_to": "Pick-up Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Drop-off Guest Report",
+   "link_count": 0,
+   "link_to": "Drop-off Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2023-12-28 09:28:27.609819",
+ "modified": "2024-01-15 11:47:15.929491",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

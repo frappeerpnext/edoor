@@ -86,7 +86,7 @@ def get_reservation_detail(name):
 @frappe.whitelist()
 def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
-    if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed"]:
+    if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed","No-Show"]:
         #verify reservation stay this function will fix some problem that occure in room occupy generation , temp room occupy and room rate
         frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay_name = name )
        
@@ -997,17 +997,11 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
                 # update room status 
                 frappe.db.sql("update  `tabRoom Occupy` set reservation_status='{}' where reservation_stay='{}'".format(stay_doc.reservation_status, stay_doc.name))
-                
 
             else:
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = stay_doc.name)
-                
-
-
-
             
-
             #update room status
             last_stay_room = frappe.db.sql("select room_id from `tabReservation Stay Room` where parent='{}' order by departure_date desc limit 1".format(stay_doc.name), as_dict=1)
             if last_stay_room:
@@ -3025,6 +3019,7 @@ def check_reservation_exist_in_future(property, fieldname,value):
 @frappe.whitelist()  
 def verify_reservation_stay(stay_name= None):
     stay = frappe.get_doc("Reservation Stay", stay_name)
+    
     sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
  
     data = frappe.db.sql(sql,as_dict=1)
