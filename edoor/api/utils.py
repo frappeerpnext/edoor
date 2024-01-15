@@ -594,6 +594,9 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
         folio_data = frappe.db.sql(sql_folio, as_dict=1)
 
+        if name == 'ST2024-0216':
+            frappe.throw(str(folio_data))
+
 
         
         doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)

@@ -618,7 +618,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     
             #validate check if current room is still have guest in house
             room_id = stay.stays[0].room_id
-            check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, stay.arrival_date,add_to_date( stay.departure_date,days=-1)),as_dict=1)
+            check_room_in_house = frappe.db.sql("select name from `tabTemp Room Occupy` where  room_id='{}' and date between '{}' and '{}' and reservation_status='In-house'".format(room_id, add_to_date(stay.arrival_date,days = -1),add_to_date( stay.departure_date,days=-1)),as_dict=1)
         
             if check_room_in_house:
                 frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))

@@ -299,8 +299,10 @@ function onCloseShift() {
         r.total_amount = r.total_note * r.value
     })
 
-
-
+    
+    saveData.flags={run_night_audit:(window.run_night_audit || 0)}
+     
+ 
     confirm.require({
         message: 'Are you sure you can to close this shift?',
         header: 'Confirmation',

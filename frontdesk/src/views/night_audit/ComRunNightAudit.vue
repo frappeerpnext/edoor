@@ -203,6 +203,8 @@ const refreshReport = () => {
 
 onMounted(() => {
     refreshReport()
+    window.run_night_audit = 1
+
     window.socket.on("ComRunNightAudit", (arg) => {
         if (arg.property == window.property_name) {
             setTimeout(function () {
@@ -213,6 +215,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+    window.run_night_audit = 0
     window.socket.off("ComRunNightAudit");
 })
 </script>
