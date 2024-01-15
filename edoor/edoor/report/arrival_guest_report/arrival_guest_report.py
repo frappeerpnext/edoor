@@ -38,6 +38,7 @@ def get_report_data (filters, report_fields):
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
 		for parent in parent_row:
+			d = parent
 			if filters.show_in_group_by=="arrival_date":
 				d  = frappe.format(parent,{"fieldtype":"Date"})
 			report_data.append({

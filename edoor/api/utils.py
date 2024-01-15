@@ -667,8 +667,9 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
         frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date<'{}'".format(doc.name, doc.arrival_date))
         frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date>='{}'".format(doc.name, doc.departure_date))
 
-
+        frappe.db.commit()
         return doc
+
 
 @frappe.whitelist()
 def update_city_ledger(name=None,doc=None, run_commit = True):

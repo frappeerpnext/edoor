@@ -1,6 +1,6 @@
 import functools
 import re
-from edoor.edoor.api.utils import update_reservation_folio
+from edoor.api.utils import update_reservation_folio
 from edoor.api.reservation import generate_room_occupies
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy
 

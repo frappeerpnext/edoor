@@ -570,6 +570,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     else:
         stays = frappe.get_list("Reservation Stay",filters={"reservation":reservation},limit=100) # limit 100 to prevent reservation that have more than 20 stay
 
+
     #check if master room is already check in
     if frappe.db.count('Reservation Stay', {'is_master': 1,"reservation":reservation})>0:
         if not is_master_room_check_in(doc.name,reservation_stays):
@@ -628,6 +629,9 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
             stay.checked_in_date = frappe.utils.now()
             stay.save()
 
+
+
+
             #update room housekeeing status to occupy clean
             room_id = stay.stays[0].room_id
             room = frappe.get_doc("Room",room_id)
@@ -643,7 +647,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=checked_in_stays, queue='short')
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation=reservation,reservation_stay=[d["stay_name"] for d in checked_in_stays])
 
-    frappe.db.commit()
+
 
     frappe.msgprint(_("Check in successfully"))
 
@@ -910,6 +914,9 @@ def check_out(reservation,reservation_stays=None):
                                 date='{}'"""
                     .format(stay.require_drop_off, stay.name, stay.checked_out_system_date))
 
+        #update reservation status
+        frappe.db.sql("update  `tabRoom Occupy` set reservation_status='{}' where reservation_stay='{}'".format(stay.reservation_status, stay.name))
+
         #add to audit trail
         comment = {
             "subject":"Checked Out",
@@ -919,6 +926,7 @@ def check_out(reservation,reservation_stays=None):
 			"custom_icon":"pi pi-sign-out",
             "content": f"Reservation stay #:<a data-action='view_reservation_stay_detail' data-name='{stay.name}'> {stay.name}</a>, Reservation #:<a data-action='view_reservation_detail' data-name='{stay.reservation}'> {stay.reservation}</a>, Ref. #: {stay.reference_number}, Room #: {stay.rooms}, Guest:<a data-action='view_guest_detail' data-name='{stay.guest}'> {stay.guest}-{stay.guest_name}</a>"
         }
+
         comment_doc.append(comment)
 
         
@@ -972,14 +980,12 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
 
     for s in reservation_stays:
         stay_doc = frappe.get_doc("Reservation Stay", s)
-
         is_early_checked_out_reservation = stay_doc.is_early_checked_out
         #validate backdate
         if getdate(stay_doc.departure_date)<getdate(working_day["date_working_day"]):
             validate_backdate_permission()
 
         if (stay_doc.reservation_status =="Checked Out" and stay_doc.departure_date >= working_day["date_working_day"] ) or (stay_doc.reservation_status =="Checked Out" and int(allow_back_date)==1):
-            
             stay_doc.reservation_status = "In-house"
             stay_doc.is_undo_check_out = True
             stay_doc.is_early_checked_out =0
@@ -988,8 +994,11 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             stay_doc.save()
             #update temp room occupy
             if is_early_checked_out_reservation==0:
-                
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
+                # update room status 
+                frappe.db.sql("update  `tabRoom Occupy` set reservation_status='{}' where reservation_stay='{}'".format(stay_doc.reservation_status, stay_doc.name))
+                
+
             else:
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = stay_doc)
                 frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = stay_doc.name)

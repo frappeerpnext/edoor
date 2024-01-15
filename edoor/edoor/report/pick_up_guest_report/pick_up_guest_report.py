@@ -6,7 +6,6 @@ import frappe
 
 def execute(filters=None):
 	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Pick-up Guest Report"} )
-	
 	report_data = get_report_data(filters, report_config.report_fields)
 	summary = get_report_summary(filters, report_config.report_fields, report_data)
 	columns = get_report_columns(filters, report_config.report_fields)
@@ -37,7 +36,9 @@ def get_report_data (filters, report_fields):
 	report_data = []
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
+		
 		for parent in parent_row:
+			d = parent
 			if filters.show_in_group_by=="arrival_date":
 				d  = frappe.format(parent,{"fieldtype":"Date"})
 			report_data.append({
@@ -45,6 +46,9 @@ def get_report_data (filters, report_fields):
 				report_fields[0].fieldname: d,
 				"is_group":1
 			})
+			
+			
+
 
 			report_data = report_data + [d for d in data if d[filters.show_in_group_by] == parent]
 			
