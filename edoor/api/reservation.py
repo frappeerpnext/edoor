@@ -622,7 +622,6 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
             if check_room_in_house:
                 frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
-    
 
             stay.reservation_status = "In-house" if not is_undo else "Confirmed"
             stay.checked_in_by = frappe.session.user
