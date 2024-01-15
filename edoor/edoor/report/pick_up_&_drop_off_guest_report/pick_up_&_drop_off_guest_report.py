@@ -34,6 +34,8 @@ def get_report_columns(filters,  report_fields):
 def get_report_data (filters, report_fields):
 	data = get_data(filters,report_fields)
 	
+	drop_off = [d['require_drop_off'] for d in data]
+	# frappe.throw(str(drop_off))
 	report_data = []
 	if filters.show_in_group_by:
 		parent_row = get_parent_row_row_by_data(filters,data)
@@ -61,7 +63,7 @@ def get_parent_row_row_by_data(filters, data):
 	return rows
 	
 def get_data (filters,report_fields):
-	sql ="select {} as indent, 0 as is_group, ".format(1 if filters.show_in_group_by else 0)
+	sql ="select {} as indent, 0 as is_group,require_drop_off,require_pickup, ".format(1 if filters.show_in_group_by else 0)
 
 	sql ="{} {}".format(sql, ",".join([d.sql_expression for d in report_fields if d.sql_expression]))
 

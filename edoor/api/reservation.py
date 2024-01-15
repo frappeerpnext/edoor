@@ -579,6 +579,7 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
 
     comment_doc = [] 
     checked_in_stays = []
+    noshow_check_in_stays = []
     for s in stays:
         stay = frappe.get_doc("Reservation Stay", s)
         if stay.reservation_status in ["Reserved","Confirmed","No Show"]:
@@ -624,9 +625,19 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
                 frappe.throw("Stay # {}, Room {} still have guest In-house.".format(stay.name, stay.stays[0].room_number))
 
 
-            stay.reservation_status = "In-house" if not is_undo else "Confirmed"
+            
             stay.checked_in_by = frappe.session.user
             stay.checked_in_date = frappe.utils.now()
+            if stay.reservation_status == 'No Show':
+                stay.checked_in_system_date = working_day["date_working_day"]
+                if not stay.arrival_date == stay.checked_in_system_date:
+                    # we store this for run enquere job
+                    noshow_check_in_stays.append(stay.name)
+
+            else:
+                stay.checked_in_system_date = stay.arrival_date
+
+            stay.reservation_status = "In-house"
             stay.save()
 
 
@@ -646,8 +657,12 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
         # post_charge_to_folio_afer_check_in(working_day, reservation, checked_in_stays)
         frappe.enqueue("edoor.api.reservation.post_charge_to_folio_afer_check_in", working_day=working_day, reservation=reservation, stays=checked_in_stays, queue='short')
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation=reservation,reservation_stay=[d["stay_name"] for d in checked_in_stays])
+    
+    if len(noshow_check_in_stays)> 0:
+        update_room_occupy_information_after_no_show_check_in(noshow_check_in_stays)
 
-
+        # frappe.enqueue("edoor.api.reservation.update_room_occupy_information_after_no_show_check_in", queue='long', stay_names = noshow_check_in_stays)
+        
 
     frappe.msgprint(_("Check in successfully"))
 
@@ -725,6 +740,7 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
     comment_doc = []
+
     for s in stays:
         doc = frappe.get_doc("Reservation Stay", s)
         comment = {
@@ -753,10 +769,13 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         
   
 
-        
-        doc.reservation_status = 'Reserved'
         doc.checked_in_by = None
         doc.checked_in_date = None
+        doc.checked_in_system_date = None
+        
+        
+        doc.reservation_status = 'Reserved'
+        
         doc.save()
     
         #update housekeeping status to room
@@ -785,12 +804,20 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
         
 
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation, reservation_stay=stays)
+    
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
 
 
 
     return doc
 
+@frappe.whitelist()
+def update_room_occupy_information_after_no_show_check_in(stay_names):
+    for stay_name in stay_names:
+        arrival_date, checked_in_date = frappe.db.get_value("Reservation Stay",stay_name,["arrival_date","checked_in_system_date"])
+        if not  arrival_date== checked_in_date:
+            frappe.db.sql("Update `tabRoom Occupy` set is_arrival=if(date='{0}',1,0),is_active=if(date>='{0}',1,0) where date<='{0}' and reservation_stay='{1}' and is_active=1".format(checked_in_date, stay_name))
+    frappe.db.commit()
 
 def is_master_room_check_in(reservation,reservation_stays):
 
@@ -876,6 +903,7 @@ def check_out(reservation,reservation_stays=None):
         stay.checked_out_system_date = working_day["date_working_day"]
         stay.is_early_checked_out = 0 if getdate(working_day["date_working_day"]) == getdate(stay.departure_date) else 1
         stay.reservation_status = "Checked Out"
+        
         stay.save()
 
 

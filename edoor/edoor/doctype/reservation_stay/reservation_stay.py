@@ -290,27 +290,30 @@ def generate_room_occupy(self =None, stay_name=None):
 	for stay in self.stays: 
 		dates = get_date_range(getdate( stay.start_date), getdate(stay.end_date),exlude_last_date=False if stay.name == self.stays[len(self.stays)-1].name else True)
 		for d in dates:
-			frappe.get_doc({
-				"doctype":"Room Occupy",
-				"room_type_id":stay.room_type_id,
-				"room_id":stay.room_id,
-				"date":d,
-				"type":"Reservation",
-				"property":self.property,
-				"stay_room_id":stay.name,
-				"reservation":self.reservation,
-				"reservation_stay":self.name,
-				"adult":self.adult,
-				"child":self.child,
-				"pax":self.pax,
-				"is_stay_over":1 if (getdate(d)>getdate(self.arrival_date) and getdate(d)< getdate(self.departure_date)) or  self.is_early_checked_out ==1  else 0,
-				"is_arrival": 1 if getdate(d)==getdate(self.arrival_date) else 0,
-				"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
-				"is_active":1 if getdate(d)<getdate(self.departure_date) or self.is_early_checked_out else 0 ,
-				"pick_up": 1 if getdate(d)==getdate(self.arrival_date) and is_pickup==1 else 0,
-				"drop_off": 1 if getdate(d)==getdate(self.departure_date) and is_drop_off ==1 else 0 
+			occ_doc = frappe.get_doc({
+					"doctype":"Room Occupy",
+					"room_type_id":stay.room_type_id,
+					"room_id":stay.room_id,
+					"date":d,
+					"type":"Reservation",
+					"property":self.property,
+					"stay_room_id":stay.name,
+					"reservation":self.reservation,
+					"reservation_stay":self.name,
+					"adult":self.adult,
+					"child":self.child,
+					"pax":self.pax,
+					"is_stay_over":1 if (getdate(d)>getdate(self.checked_in_system_date or self.arrival_date) and getdate(d)< getdate(self.departure_date)) or  self.is_early_checked_out ==1  else 0,
+					"is_arrival": 1 if getdate(d)==getdate(self.checked_in_system_date or  self.arrival_date) else 0,
+					"is_departure": 1 if getdate(d)==getdate(self.departure_date) else 0 ,
+					"is_active":1 if (getdate(d)<getdate(self.departure_date) or self.is_early_checked_out) and getdate(d)>=getdate(self.checked_in_system_date or self.arrival_date) else 0 ,
+					"pick_up": 1 if getdate(d)==getdate(self.arrival_date) and is_pickup==1 else 0,
+					"drop_off": 1 if getdate(d)==getdate(self.departure_date) and is_drop_off ==1 else 0 
 
-			}).insert()
+				})
+			 
+			occ_doc.insert( ignore_permissions=True)
+
 
 	frappe.db.commit()
 

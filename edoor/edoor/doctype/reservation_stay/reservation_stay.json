@@ -129,6 +129,7 @@
   "checked_in_date",
   "checked_out_by",
   "checked_out_date",
+  "checked_in_system_date",
   "checked_out_system_date",
   "cancelled_by",
   "cancelled_note",
@@ -859,6 +860,11 @@
    "fieldname": "guest_type",
    "fieldtype": "Data",
    "label": "Guest Type"
+  },
+  {
+   "fieldname": "checked_in_system_date",
+   "fieldtype": "Date",
+   "label": "Checked In System Date"
   }
  ],
  "image_field": "guest_photo",
@@ -870,7 +876,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2023-12-17 12:30:23.452875",
+ "modified": "2024-01-15 16:56:22.280716",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",
