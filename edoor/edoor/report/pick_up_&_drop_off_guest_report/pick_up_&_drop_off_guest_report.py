@@ -34,25 +34,33 @@ def get_report_columns(filters,  report_fields):
 def get_report_data (filters, report_fields):
 	data = get_data(filters,report_fields)
 	
-	drop_off = [d['require_drop_off'] for d in data]
-	# frappe.throw(str(drop_off))
+	pick_up = [d['status'] for d in data if d['status']=='Pick-up Guest']
+	
+	drop_off = [d['status'] for d in data if d['status']=='Drop-off Guest']
+	# frappe.throw(str(data))
 	report_data = []
-	if filters.show_in_group_by:
-		parent_row = get_parent_row_row_by_data(filters,data)
-		for parent in parent_row:
-			d = parent
-			if filters.show_in_group_by=="departure_date" and filters.show_in_group_by=="arrival_date":
-				d  = frappe.format(parent,{"fieldtype":"Date"})
-			report_data.append({
-				"indent":0,
-				report_fields[0].fieldname: d,
+	if len(pick_up) > 0:
+		report_data.append({
+				"indent":2,
+				report_fields[0].fieldname: "Pick-up Guest",
 				"is_group":1
 			})
+		if filters.show_in_group_by:
+			parent_row = get_parent_row_row_by_data(filters,data)
+			for parent in parent_row:
+				d = parent
+				if filters.show_in_group_by=="departure_date" and filters.show_in_group_by=="arrival_date":
+					d  = frappe.format(parent,{"fieldtype":"Date"})
+				report_data.append({
+					"indent":1,
+					report_fields[0].fieldname: d,
+					"is_group":1
+				})
 
-			report_data = report_data + [d for d in data if d[filters.show_in_group_by] == parent]
-			
-	else:
-		report_data = data
+				report_data = report_data + [d for d in data if d[filters.show_in_group_by] == parent]
+				
+		else:
+			report_data = data
 
 	return report_data
 

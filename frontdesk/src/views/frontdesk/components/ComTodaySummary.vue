@@ -80,5 +80,8 @@ function loadData(date,show_loading = true){
         loading.value = false
     })
 }
+onUnmounted(() => {
+    window.socket.off("TodaySummary");
+})
 
 </script>

@@ -585,6 +585,16 @@ const handleScroll = (event) => {
 };
 
 onMounted(() => {
+
+    // window.socket.on("ComRoomAvailable", (arg) => { 
+    //     if (arg == property.name) {
+    //         setTimeout(function () {
+    //             getData(false)
+    //             onRefreshIframe()
+    //         }, 3000)
+
+    //     } 
+    // })
  
 
   loading.value = true
@@ -672,7 +682,7 @@ function getEndDate(start, period) {
 }
 
 onUnmounted(() => {
-  window.socket.off("Frontdesk");
+  window.socket.off("ComRoomAvailable");
   document.body.removeEventListener('scroll', handleScroll);
 })
 
