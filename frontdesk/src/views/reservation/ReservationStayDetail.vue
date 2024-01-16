@@ -218,7 +218,8 @@ const onRefresh = debouncer(() => {
 }, 500);
 
 function loadData(show_loading=true,delay_load_reservation_stay=0){ 
-    setTimeout(() => { 
+    alert(2)
+    setTimeout(() => {   
         rs.getReservationDetail(name.value,show_loading)
         rs.getChargeSummary(name.value)
         
@@ -320,8 +321,7 @@ onMounted(() => {
     }
     window.socket.on("ReservationStayDetail", (arg) => {
     
-        if (arg.reservation_stay == rs.reservationStay.name) { 
-            alert(1)
+        if (arg.reservation_stay == rs.reservationStay.name) {   
             loadData(false,3000)
         }
     })
