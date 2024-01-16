@@ -147,41 +147,41 @@ function setLinkField() {
 
 	}
 
-	frappe.call({
-		method: "edoor.api.utils.get_report_config",
+	// frappe.call({
+	// 	method: "edoor.api.utils.get_report_config",
 
-		args: {
-			property: property,
-			report: "Pick-up & Drop-off Guest Report"
-		},
-		callback: function (r) {
-			const show_columns = frappe.query_report.get_filter('show_columns');
-			show_columns.df.options = r.message.report_fields.map(x => {
-				return {
-					value: x.fieldname,
-					description: x.label
-				}
-			})
+	// 	args: {
+	// 		property: property,
+	// 		report: "Pick-up & Drop-off Guest Report"
+	// 	},
+	// 	callback: function (r) {
+	// 		const show_columns = frappe.query_report.get_filter('show_columns');
+	// 		show_columns.df.options = r.message.report_fields.map(x => {
+	// 			return {
+	// 				value: x.fieldname,
+	// 				description: x.label
+	// 			}
+	// 		})
 
-			const show_in_summary = frappe.query_report.get_filter('show_in_summary');
-			show_in_summary.df.options = r.message.report_fields.filter(y=>y.show_in_summary==1).map(x => {
-				return {
-					value: x.fieldname,
-					description: x.label
-				}
-			})
-			// const show_in_group_by = frappe.query_report.get_filter('show_in_group_by');
-			// show_in_group_by.df.options = r.message.report_fields.filter(y=>y.show_in_group_by==1).map(x => {
-			// 	return {
-			// 		value: x.fieldname,
-			// 		description: x.label
-			// 	}
-			// })
-		},
-		error: function (r) {
-			frappe.throw(_("Please update report configuration"))
-		},
-	});
+	// 		const show_in_summary = frappe.query_report.get_filter('show_in_summary');
+	// 		show_in_summary.df.options = r.message.report_fields.filter(y=>y.show_in_summary==1).map(x => {
+	// 			return {
+	// 				value: x.fieldname,
+	// 				description: x.label
+	// 			}
+	// 		})
+	// 		// const show_in_group_by = frappe.query_report.get_filter('show_in_group_by');
+	// 		// show_in_group_by.df.options = r.message.report_fields.filter(y=>y.show_in_group_by==1).map(x => {
+	// 		// 	return {
+	// 		// 		value: x.fieldname,
+	// 		// 		description: x.label
+	// 		// 	}
+	// 		// })
+	// 	},
+	// 	error: function (r) {
+	// 		frappe.throw(_("Please update report configuration"))
+	// 	},
+	// });
 
 
 }

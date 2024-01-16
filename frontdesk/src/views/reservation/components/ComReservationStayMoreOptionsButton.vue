@@ -241,16 +241,17 @@ function onUndoCheckIn() {
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                window.socket.emit("Frontdesk", window.property_name)
+                // window.socket.emit("Frontdesk", window.property_name)
                 window.socket.emit("TodaySummary", window.property_name)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
                 window.socket.emit("Housekeeping", {property:window.property_name})
                 window.socket.emit("FolioTransactionList", window.property_name)
+                // window.socket.emit("ComRoomAvailable", window.property_name)
 
-                setTimeout(() => {
-                    emit('onRefresh')
-                }, 1000);
+                // setTimeout(() => {
+                //     emit('onRefresh')
+                // }, 1000);
             }
               
          }

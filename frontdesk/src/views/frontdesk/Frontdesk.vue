@@ -979,7 +979,8 @@ onMounted(() => {
 
     window.socket.on("Frontdesk", (arg) => {
         if (arg == window.property_name) { 
-                getResourceAndEvent(false) 
+            alert(1)
+            getResourceAndEvent(false) 
         }
     })
 

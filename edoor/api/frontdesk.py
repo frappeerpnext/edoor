@@ -1520,7 +1520,8 @@ def update_room_status(working_day=None,working_day_name=None):
                 where
                     property = '{0}' and 
                     date = '{1}' and 
-                    is_active=1 
+                    is_active=1 and 
+                    ifnull(room_id,'') !=''
             )  and
             property = '{0}'
     """.format(working_day.business_branch, working_day.posting_date)
@@ -1539,7 +1540,8 @@ def update_room_status(working_day=None,working_day_name=None):
                             where 
                                 is_active = 1 and 
                                 property='{}' and
-                                date = '{}'
+                                date = '{}' and 
+                                ifnull(room_id,'') !=''
                     """.format( working_day.business_branch,working_day.posting_date),as_dict=1)
     
     for r in stay_over_room:

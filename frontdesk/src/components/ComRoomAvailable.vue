@@ -586,15 +586,11 @@ const handleScroll = (event) => {
 
 onMounted(() => {
 
-    // window.socket.on("ComRoomAvailable", (arg) => { 
-    //     if (arg == property.name) {
-    //         setTimeout(function () {
-    //             getData(false)
-    //             onRefreshIframe()
-    //         }, 3000)
-
-    //     } 
-    // })
+    window.socket.on("ComRoomAvailable", (arg) => {
+        if (arg == window.property_name) {  
+            getResourceAndEvent(false) 
+        }
+    })
  
 
   loading.value = true
