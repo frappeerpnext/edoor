@@ -1145,7 +1145,7 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
         select 
             room_type_id, 
             date,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1) as total, 
+            sum(type='Reservation' and is_active=1 and is_departure=0) as total, 
             sum(if(type='Block',1,0)) as block, 
             sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation=1) as unassign_room, 
             sum(is_arrival=1 and is_active=1 and is_active_reservation=1) as arrival,
@@ -1174,7 +1174,7 @@ def get_occupy_data(view_type, filter):
         sql = """select 
                     room_type_id, 
                     date, 
-                    sum(is_active=1) as total,
+                    sum(is_active=1 and is_departure=0) as total,
                     sum(type='Block') as block, 
                     sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
                     sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 
@@ -1200,7 +1200,7 @@ def get_occupy_data(view_type, filter):
         #get summary by date only without room type
         sql = """select 
                     date, 
-                    sum(is_active=1) as total,
+                    sum(is_active=1 and is_departure=0) as total,
                     sum(type='Block') as block, 
                     sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
                     sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 

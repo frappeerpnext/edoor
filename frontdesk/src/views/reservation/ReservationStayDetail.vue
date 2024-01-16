@@ -217,8 +217,7 @@ const onRefresh = debouncer(() => {
     loadData(false,0)
 }, 500);
 
-function loadData(show_loading=true,delay_load_reservation_stay=0){ 
-    alert(2)
+function loadData(show_loading=true,delay_load_reservation_stay=0){
     setTimeout(() => {   
         rs.getReservationDetail(name.value,show_loading)
         rs.getChargeSummary(name.value)
@@ -230,9 +229,7 @@ function loadData(show_loading=true,delay_load_reservation_stay=0){
     window.postMessage({ action: "load_comment" }, "*")
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
-    } else if (activeTab.value == 2) {
-       
-       
+    } else if (activeTab.value == 2) { 
         window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
 
     } else if (activeTab.value == 3) {
