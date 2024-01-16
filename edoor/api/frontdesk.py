@@ -1174,11 +1174,11 @@ def get_occupy_data(view_type, filter):
         sql = """select 
                     room_type_id, 
                     date, 
-                    sum(is_active=1 and is_active_reservation = 1 and is_departure=1) as total,
+                    sum(is_active=1 and is_active_reservation = 1) as total,
                     sum(type='Block') as block, 
                     sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
                     sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 
-                    sum(type='Reservation' and is_departure=1 and is_active=1 and is_active_reservation = 1)  as departure,
+                    sum(type='Reservation' and is_departure=1  and is_active_reservation = 1)  as departure,
                     sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
                     sum(if(is_active=1 and is_active_reservation=1, adult,0)) as adult, 
                     sum(if(is_active=1 and is_active_reservation=1, child,0)) as child,
@@ -1200,11 +1200,11 @@ def get_occupy_data(view_type, filter):
         #get summary by date only without room type
         sql = """select 
                     date, 
-                    sum(is_active=1 and is_active_reservation = 1 and is_departure=1) as total,
+                    sum(is_active=1 and is_active_reservation = 1) as total,
                     sum(type='Block') as block, 
                     sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
                     sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 
-                    sum(type='Reservation' and is_departure=1 and is_active=1 and is_active_reservation = 1)  as departure,
+                    sum(type='Reservation' and is_departure=1 and  is_active_reservation = 1)  as departure,
                     sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
                     sum(if(is_active=1 and is_active_reservation=1, adult,0)) as adult, 
                     sum(if(is_active=1 and is_active_reservation=1, child,0)) as child,
