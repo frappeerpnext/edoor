@@ -288,8 +288,7 @@ function OnUndoCheckOut() {
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                // window.socket.emit("Frontdesk", window.property_name)
+                window.socket.emit("ReservationDetail", rs.reservationStay.reservation) 
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
                 window.socket.emit("FolioTransactionList", window.property_name)

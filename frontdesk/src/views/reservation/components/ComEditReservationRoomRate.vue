@@ -531,6 +531,7 @@ function onSave() {
             window.socket.emit("Reports", window.property_name)
             rs.getRoomRate(window.reservation)
             dialogRef.value.close(doc.message)
+            
         })
         .catch((error) => {
             isSaving.value = false;

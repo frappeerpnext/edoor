@@ -218,7 +218,7 @@ const onRefresh = debouncer(() => {
 }, 500);
 
 function loadData(show_loading=true,delay_load_reservation_stay=0){ 
-    setTimeout(() => {
+    setTimeout(() => { 
         rs.getReservationDetail(name.value,show_loading)
         rs.getChargeSummary(name.value)
         
@@ -321,6 +321,7 @@ onMounted(() => {
     window.socket.on("ReservationStayDetail", (arg) => {
     
         if (arg.reservation_stay == rs.reservationStay.name) { 
+            alert(1)
             loadData(false,3000)
         }
     })
@@ -406,8 +407,7 @@ const onCheckOut = () => {
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("ReservationList", { property: window.property_name })
-                    // window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+                    window.socket.emit("ReservationList", { property: window.property_name }) 
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("TodaySummary", window.property_name)

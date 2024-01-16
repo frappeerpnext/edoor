@@ -90,7 +90,8 @@ def get_occupy_data(filters):
 			from `tabRoom Occupy` 
 			where 
 				property = %(property)s and 
-				date between %(start_date)s and %(end_date)s group by date_format(date,'%%b-%%Y') 
+				date between %(start_date)s and %(end_date)s group by date_format(date,'%%b-%%Y') and 
+				is_active_reservation = 1 
 	"""
 
  
