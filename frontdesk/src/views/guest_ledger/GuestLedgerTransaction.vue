@@ -343,7 +343,7 @@ function loadData(show_loading=true) {
 onMounted(() => {
 
     window.socket.on("GuestLedgerTransaction", (arg) => {
-        if (arg.property == window.property_name) {
+        if (arg.property == window.property_name) { 
         setTimeout(function () {
             loadData(false)
         }, 3000)

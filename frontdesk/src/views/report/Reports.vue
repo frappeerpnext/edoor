@@ -143,7 +143,7 @@ function onPrint(){
 onMounted(() => {
     loadIframe()
     window.socket.on("Reports", (arg) => {
-        if (arg == window.property_name) {
+        if (arg == window.property_name) { 
             setTimeout(function () {
                 loadIframe()
             }, 3000)

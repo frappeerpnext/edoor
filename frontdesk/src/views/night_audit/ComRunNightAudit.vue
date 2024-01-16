@@ -206,7 +206,7 @@ onMounted(() => {
     window.run_night_audit = 1
 
     window.socket.on("ComRunNightAudit", (arg) => {
-        if (arg.property == window.property_name) {
+        if (arg.property == window.property_name) { 
             setTimeout(function () {
                 refreshReport()
             }, 3000)

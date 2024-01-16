@@ -36,20 +36,20 @@ def get_summary(filters,data):
 
 def get_columns(filters):
 	columns =   [
-		{"fieldname":"reservation", "label":"Res #",'align':'left', "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail"},
 		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
 		{"fieldname":"reference_number",'align':'left', "label":"Ref #","width":95,"show_in_report":1},
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
-		{'fieldname':'rooms','label':'Room','align':'center',"width":40,"show_in_report":1},
+		{'fieldname':'rooms','label':'Room','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Time","width":95,"show_in_report":1},
-		{'fieldname':'flight_number','label':'Flight',"width":40,"show_in_report":1,'align':'center'},
+		{'fieldname':'flight_number','label':'Flight',"width":90,"show_in_report":1,'align':'center'},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
-		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":40,"show_in_report":1},
+		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":50,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
-		{'fieldname':'mode_station','label':'Mode-Station',"width":40,"show_in_report":1,'align':'center'},
-		{'fieldname':'driver','label':'Driver',"width":40,"show_in_report":1,'align':'center'},
+		{'fieldname':'mode','label':'Mode',"width":40,"show_in_report":1,'align':'lrft'},
+		{'fieldname':'station','label':'Station',"width":150,"show_in_report":1,'align':'left'},
+		{'fieldname':'driver','label':'Driver',"width":100,"show_in_report":1,'align':'left'},
 		{'fieldname':'note','label':'Note', 'align':'right',"show_in_report":1,"width":90},
 	]
 	return columns
@@ -107,14 +107,17 @@ def get_guest_data(filters):
 				require_pickup,
 				require_drop_off,
 				if(require_pickup,pickup_time,drop_off_time) as time,
-				
 				arrival_mode,
 				arrival_flight_number,
 				pickup_location,
 				pickup_driver_name,
 				pickup_driver_phone_number,
 				pickup_note,
-				if(require_drop_off,drop_off_time,'') as drop_off_time,
+				if(require_drop_off,departure_mode,arrival_mode) as mode,
+				if(require_drop_off,drop_off_location,pickup_location) as station,
+				if(require_drop_off,departure_flight_number,arrival_flight_number) as flight_number,
+				if(require_drop_off,drop_off_driver_name,pickup_driver_name) as driver,
+				if(require_drop_off,drop_off_note,pickup_note) as note,
 				departure_mode,
 				departure_flight_number,
 				drop_off_location,
@@ -145,14 +148,14 @@ def get_report_data(filters,data):
 	if pickup:	
 		report_data.append({
 				"indent":0,
-				"reservation": "Pick-up Guest",
+				"name": "Pick-up Guest",
 				"is_group":1,
 
 			})	
 		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_pickup']==1]
 		report_data.append({
 				"indent":1,
-				"reservation": "Total",
+				"name": "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_pickup']==1]),sum([d["child"] for d in data if d['require_pickup']==1])),
 				"is_total_row":1,
 				"is_group":1,
@@ -162,14 +165,14 @@ def get_report_data(filters,data):
 	if drop_off:	
 		report_data.append({
 				"indent":0,
-				"reservation": "Drop-off Guest",
+				"name": "Drop-off Guest",
 				"is_group":1,
 
 			})	
 		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_drop_off']==1]
 		report_data.append({
 				"indent":1,
-				"reservation": "Total",
+				"name": "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_drop_off']==1]),sum([d["child"] for d in data if d['require_drop_off']==1])),
 				"is_total_row":1,
 				"is_group":1,
@@ -182,11 +185,11 @@ def get_report_data(filters,data):
 	
 	report_data.append({
 				"indent":0,
-				"reservation": "",
+				"name": "",
 				"is_separator":1})
 	report_data.append({
 				"indent":0,
-				"reservation": "Grand Total",
+				"name": "Grand Total",
 				"total_pax":"{}/{}".format((drop_off_adult + pickup_adult),(drop_off_child + pickup_child)),
 				"is_total_row":1,
 				"is_group":1,

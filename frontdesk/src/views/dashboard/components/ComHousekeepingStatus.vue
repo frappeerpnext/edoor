@@ -40,7 +40,7 @@ function loadData(showLoading = true) {
 
 onMounted(() => {
     window.socket.on("ComHousekeepingStatus", (arg) => {
-        if (arg == window.property_name) {
+        if (arg == window.property_name) { 
             setTimeout(() => {
                 loadData(false)
             }, 2000)

@@ -407,7 +407,7 @@ getApi('frontdesk.get_working_day', {
 
 onMounted(() => {
     window.socket.on("ReservationStayList", (arg) => {
-        if (arg.property == window.property_name) {
+        if (arg.property == window.property_name) { 
             setTimeout(function () {
                 loadData(false)
             }, 3000)

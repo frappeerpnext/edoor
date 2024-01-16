@@ -371,7 +371,7 @@ onMounted(() => {
   })
 
   window.socket.on("FolioTransactionList", (arg) => {
-    if (arg == property.name) {
+    if (arg == property.name) { 
       setTimeout(() => {
         loadData(false)
       }, 3000)

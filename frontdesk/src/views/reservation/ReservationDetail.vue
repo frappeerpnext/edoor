@@ -242,7 +242,7 @@ onMounted(() => {
     window.reservation = name.value
 
     window.socket.on("ReservationDetail", (reservation) => {
-        if (reservation == name.value) {
+        if (reservation == name.value) { 
             setTimeout(function () {
                 onRefresh(false)
             }, 3000)

@@ -16,7 +16,7 @@ def search(doctypes=None, txt="" ,filters=None):
     search_tables = frappe.get_doc("eDoor Setting").search_table
     results = []
     
-    if txt and 1==2:
+    if txt:
         
         for t in search_tables:
             if t.table_name in doctypes:
@@ -39,6 +39,7 @@ def search(doctypes=None, txt="" ,filters=None):
         
                 
                 data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
+                frappe.throw(sql)
                 results = results + data
                 results.sort(key=lambda x: x.modified, reverse=True)
     else:
