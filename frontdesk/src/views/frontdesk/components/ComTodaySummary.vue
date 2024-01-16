@@ -48,6 +48,7 @@ const loading = ref(false)
 onMounted(() => {
     window.socket.on("TodaySummary", (arg) => {
         if (arg == window.property_name) {
+            alert("ComTodaySummary")
             setTimeout(() => {
                 loadData(props.date,false)
             }, 2000)

@@ -628,6 +628,7 @@ function debouncer(fn, delay) {
 onMounted(() => {
     window.socket.on("Dashboard", (arg) => { 
         if (arg == property.name) {
+            alert("Dashboard")
             setTimeout(function () {
                 getData(false)
                 onRefreshIframe()

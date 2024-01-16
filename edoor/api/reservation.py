@@ -674,6 +674,8 @@ def check_in(reservation,reservation_stays=None,is_undo = False,note=""):
     #enqueue add comment
     frappe.enqueue("edoor.api.utils.add_audit_trail", data =comment_doc,  queue='long')
 
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+    
 
     return {
         "reservation":doc
@@ -811,9 +813,8 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation, reservation_stay=stays)
     
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
-
-
-
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+    
     return doc
 
 @frappe.whitelist()

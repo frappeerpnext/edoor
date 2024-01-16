@@ -1166,7 +1166,7 @@ def get_occupy_data(view_type, filter):
                     sum(if(is_departure=1 ,0,1)) as total,
                     sum(type='Block') as block, 
                     sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-                    sum(type='Reservation' and is_arrival=1 and is_active_reservation=1) as arrival, 
+                    sum(type='Reservation' and is_arrival=1 and is_active_reservation=1 ) as arrival, 
                     sum(if(type='Reservation' and is_departure=1,1,0))  as departure,
                     sum(type='Reservation' and is_stay_over=1) as stay_over,
                     sum(adult) as adult, 

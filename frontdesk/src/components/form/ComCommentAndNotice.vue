@@ -1,5 +1,4 @@
-<template lang="">
-    {{reference_doctypes}}
+<template lang=""> 
     <div> 
         <div class="mb-4">
             <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.custom_is_note==0?'Comment':'Note'}}</label><br/>

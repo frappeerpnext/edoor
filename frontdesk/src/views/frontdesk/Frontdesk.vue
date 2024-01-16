@@ -978,8 +978,7 @@ const handleScroll = (event) => {
 onMounted(() => {
 
     window.socket.on("Frontdesk", (arg) => {
-        if (arg == window.property_name) { 
-            alert(1)
+        if (arg == window.property_name) {  
             getResourceAndEvent(false) 
         }
     })
