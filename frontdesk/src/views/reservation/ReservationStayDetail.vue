@@ -214,10 +214,11 @@ const isPage = computed(() => {
 
 const onRefresh = debouncer(() => {
  
-    loadData()
+    loadData(false,0)
 }, 500);
 
 function loadData(show_loading=true,delay_load_reservation_stay=0){
+    alert(1)
     setTimeout(() => {
         rs.getReservationDetail(name.value,show_loading)
         rs.getChargeSummary(name.value)

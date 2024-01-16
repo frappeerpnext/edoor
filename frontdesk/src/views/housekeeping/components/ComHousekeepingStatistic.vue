@@ -30,8 +30,7 @@ watch(() => [props.date], ([newValue]) => {
 onMounted(() => {
     window.socket.on("ComHousekeepingStatistic", (arg) => {
 
-        if (arg.property == window.property_name) {
-            alert("ComHousekeepingStatistic")
+        if (arg.property == window.property_name) { 
             loadData(props.date)
         }
     })

@@ -33,7 +33,7 @@
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom"/>
+                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom" />
                     </span>
                 </div>
                 <div>
@@ -861,9 +861,11 @@ function onFilterResource(f) {
 }
 
 // search event
-function onSearch(key) {
+ 
+const onSearch = debouncer((key) => {
     getEvent();
-}
+}, 700);
+
 
 function getTotalNote() {
     getCount('Comment', [["custom_note_date", ">=", working_day.date_working_day],["custom_is_note", "=", 1],["comment_type", "=", "Comment"],["custom_is_audit_trail","=",1], ['custom_property', '=', property.name]]).then((docs) => {
@@ -1091,10 +1093,13 @@ const onClearFilter = () => {
     onFilterResource({})
 }
 
-function onSearchRoom(key) {
+ 
+
+const onSearchRoom = debouncer((key) => {
     advanceFilter.value.room_number = gv.keyword(key);
     onFilterResource(advanceFilter.value);
-}
+}, 700);
+
 
 provide('advance_filter', {
     onOpenAdvanceSearch,

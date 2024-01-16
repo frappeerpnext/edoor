@@ -22,16 +22,16 @@ def validate(filters):
 			frappe.throw("Your Max date for viewing transaction is only One Month.".format(filters.start_date, filters.end_date))
 
 def get_summary(filters,data):
-	get_count = {d['reservation'] for d in data}
+	get_count = {d['reservation'] for d in data if d["require_pickup"]==1 or d["require_drop_off"]==1}
+	drop_off_adult = sum([d["adult"] for d in data if d["require_drop_off"]==1])
+	pickup_adult = sum([d["adult"] for d in data if d["require_pickup"]==1])
+	drop_off_child = sum([d["child"] for d in data if d["require_drop_off"]==1])
+	pickup_child = sum([d["child"] for d in data if d["require_pickup"]==1])
 	if filters.show_summary:
 		return [
-			{ "label":"Total Room","value":len(data),"indicator":"red"},
 			{ "label":"Total Reservation","value":len(get_count),"indicator":"red"},
-			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
-			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
-			{ "label":"Arrival Guest","value": len(data),"indicator":"red"},
-			# { "label":"Total Credit","value":len({d[''] for d in data}),"indicator":"green"},
-			{ "label":"Departure Guest","value":len(data),"indicator":"blue"},
+			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data if d["require_pickup"]==1 or d["require_drop_off"]==1]),"indicator":"blue"},
+			{ "label":"Total Pax(A/C)","value":"{}/{}".format((drop_off_adult + pickup_adult),(drop_off_child + pickup_child))},
 		]
 
 def get_columns(filters):
@@ -42,7 +42,7 @@ def get_columns(filters):
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
 		{'fieldname':'rooms','label':'Room','align':'center',"width":40,"show_in_report":1},
-		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Date","width":95,"show_in_report":1},
+		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Time","width":95,"show_in_report":1},
 		{'fieldname':'flight_number','label':'Flight',"width":40,"show_in_report":1,'align':'center'},
 		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
@@ -106,7 +106,8 @@ def get_guest_data(filters):
 				reservation_status,
 				require_pickup,
 				require_drop_off,
-				if(require_pickup,pickup_time,if(require_drop_off,drop_off_time,'')) as time,
+				if(require_pickup,pickup_time,drop_off_time) as time,
+				
 				arrival_mode,
 				arrival_flight_number,
 				pickup_location,
@@ -137,7 +138,7 @@ def get_report_data(filters,data):
 	# end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
 	# delta = end_date - start_date
 	# stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
-
+	get_count = {d['reservation'] for d in data if d["require_pickup"]==1 or d["require_drop_off"]==1}
 	report_data = []
 
 	pickup = sorted(set([d["require_pickup"] for d in data if d['require_pickup']==1]))
@@ -148,93 +149,48 @@ def get_report_data(filters,data):
 				"is_group":1,
 
 			})	
-		report_data = report_data +  [d.update({"indent":1}) or d for d in data]
-	# 	for g in pickup:
-	# 		d = g
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": frappe.format(d,{"fieldtype":"Date"}),
-	# 			"is_group":1,
-	# 		})
-			
-	# 		report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["arrival_date"]==g]
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": "Total",
-	# 			"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]==g]),
-	# 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]==g]),sum([d["child"] for d in data if d["arrival_date"]==g])),
-	# 			"adr":sum([d["adr"] for d in data if d["arrival_date"]==g]),
-	# 			"is_total_row":1,
-	# 			"is_group":1,
-	# 		})
+		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_pickup']==1]
+		report_data.append({
+				"indent":1,
+				"reservation": "Total",
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_pickup']==1]),sum([d["child"] for d in data if d['require_pickup']==1])),
+				"is_total_row":1,
+				"is_group":1,
+			})
 
-	# stay_over = sorted(set(stay_over_date))
-	# if stay_over:
-	# 	date = [datetime.strptime(date, '%Y-%m-%d').date() for date in stay_over]
-	# 	report_data.append({
-	# 			"indent":0,
-	# 			"reservation": "Stay Over Guest",
-	# 			"is_group":1,
-	# 		})	
-	# 	for g in date:
-	# 		d = g
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": frappe.format(d,{"fieldtype":"Date"}),
-	# 			"is_group":1,
+	drop_off = sorted(set([d["require_drop_off"] for d in data if d['require_drop_off']==1]))
+	if drop_off:	
+		report_data.append({
+				"indent":0,
+				"reservation": "Drop-off Guest",
+				"is_group":1,
 
-	# 		})
-			
-	# 		report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["arrival_date"]<g and d["departure_date"]>g]
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": "Total",
-	# 			"room_nights":sum([d["room_nights"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
-	# 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),sum([d["child"] for d in data if d["arrival_date"]<g and d["departure_date"]>g])),
-	# 			"adr":sum([d["adr"] for d in data if d["arrival_date"]<g and d["departure_date"]>g]),
-	# 			"is_total_row":1,
-	# 			"is_group":1,
-	# 		})
-		
-	# departure = sorted(set([d["departure_date"] for d in data]))
-	# if departure:
-	# 	report_data.append({
-	# 			"indent":0,
-	# 			"reservation": "Departure Guest",
-	# 			"is_group":1,
-
-	# 		})	
-	# 	for g in departure:
-	# 		d = g
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": frappe.format(d,{"fieldtype":"Date"}),
-	# 			"is_group":1,
-	# 		})
-			
-	# 		report_data = report_data +  [d.update({"indent":2}) or d for d in data if d["departure_date"]==g]
-	# 		report_data.append({
-	# 			"indent":1,
-	# 			"reservation": "Total",
-	# 			"room_nights":sum([d["room_nights"] for d in data if d["departure_date"]==g]),
-	# 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d["departure_date"]==g]),sum([d["child"] for d in data if d["departure_date"]==g])),
-	# 			"adr":sum([d["adr"] for d in data if d["departure_date"]==g]),
-	# 			"is_total_row":1,
-	# 			"is_group":1,
-	# 		})
-	# report_data.append({
-	# 			"indent":0,
-	# 			"reservation": "",
-	# 			"is_separator":1})
-	# report_data.append({
-	# 			"indent":0,
-	# 			"reservation": "Grand Total",
-	# 			"room_nights":sum([d["room_nights"] for d in data ]),
-	# 			"total_pax":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data])),
-	# 			"adr":sum([d["adr"] for d in data]),
-	# 			"is_total_row":1,
-	# 			"is_group":1,
-	# 			"is_grand_total":1
-	# 		})
+			})	
+		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_drop_off']==1]
+		report_data.append({
+				"indent":1,
+				"reservation": "Total",
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_drop_off']==1]),sum([d["child"] for d in data if d['require_drop_off']==1])),
+				"is_total_row":1,
+				"is_group":1,
+			})
+	
+	drop_off_adult = sum([d["adult"] for d in data if d["require_drop_off"]==1])
+	pickup_adult = sum([d["adult"] for d in data if d["require_pickup"]==1])
+	drop_off_child = sum([d["child"] for d in data if d["require_drop_off"]==1])
+	pickup_child = sum([d["child"] for d in data if d["require_pickup"]==1])
+	
+	report_data.append({
+				"indent":0,
+				"reservation": "",
+				"is_separator":1})
+	report_data.append({
+				"indent":0,
+				"reservation": "Grand Total",
+				"total_pax":"{}/{}".format((drop_off_adult + pickup_adult),(drop_off_child + pickup_child)),
+				"is_total_row":1,
+				"is_group":1,
+				"is_grand_total":1
+			})
 	return report_data
 	

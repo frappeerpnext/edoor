@@ -167,14 +167,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     #filter base on arrival date
     stay = []
     stay_sql = """SELECT
-                    SUM(reservation_status = 'No Show' and is_reserved_room=1) AS `total_no_show`, 
                     SUM(if(reservation_status = 'Cancelled' and arrival_date='{1}',1,0)) AS `total_cancelled`, 
-                    SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`, 
-                    SUM(if(reservation_status in ('Reserved','Confirmed') and  arrival_date='{1}',1,0)) AS `arrival_remaining`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}' AND is_active_reservation = 1, 1, 0)) AS `total_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}'  and reservation_type='GIT'  AND is_active_reservation = 1, 1, 0)) AS `total_git_stay_arrival`,
-                    sum(if(reservation_status in ('Reserved','Confirmed','In-house','Checked Out') and  arrival_date='{1}'  and reservation_type='FIT'  AND is_active_reservation = 1, 1, 0)) AS `total_fit_stay_arrival`,
-                    SUM(if(require_pickup = 1 AND  is_active_reservation = 1 and  arrival_date='{1}', 1, 0)) AS `pick_up`
+                    SUM(if(reservation_status = 'Void' and arrival_date='{1}',1,0)) AS `total_void`
                 FROM `tabReservation Stay` 
                 WHERE  
                     name in (
@@ -189,7 +183,25 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
     
     stay = frappe.db.sql(stay_sql, as_dict=1)
     
+    #get data from occupy data 
+    stay_sql = """SELECT
+                    SUM(reservation_status = 'No Show' and is_active=1 and is_active_reservation=0) AS `total_no_show`, 
+                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_status in ('Reserved','Confirmed')) AS `arrival_remaining`,
+                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
+                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
+                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='FIT') AS `total_fit_stay_arrival`,
+                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`
+                FROM `tabRoom Occupy` 
+                WHERE  
+                    date = '{1}' and 
+                    property = '{0}'  and 
+                    room_type_id = if('{2}'='',room_type_id,'{2}')
+        """.format(property,date, room_type_id or '')
+
+    stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
+    
     # get today cancell by cannel date
+
     stay_sql = """SELECT 
                     SUM(if(a.reservation_status = 'No Show',1,0)) AS `today_no_show`, 
                     SUM(if(a.reservation_status = 'Cancelled',1,0)) AS `today_cancelled`, 
@@ -389,27 +401,27 @@ def get_daily_property_summary():
 @frappe.whitelist()
 def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None):
     
-    data =  ["hello"]
+    data =  []
     sql="""
         select 
             room_type_id,
             room_type,
             room_type_alias,
-            sum(if(reservation_status='No Show' and is_departure=0,0,1) ) as total_room_sold,
-            sum(if(reservation_status='No Show' and is_departure=0,0,adult) ) as adult,
-            sum(if(reservation_status='No Show' and is_departure=0,0,child) ) as child,
+            sum(if(is_active =1 and  is_active_reservation = 1  and is_departure=0,0,1) ) as total_room_sold,
+            sum(if(is_active =1 and  is_active_reservation = 1   and is_departure=0,0,adult) ) as adult,
+            sum(if(is_active =1 and  is_active_reservation = 1  and is_departure=0,0,child) ) as child,
             sum(reservation_status!='No Show' and is_departure=0 and reservation_type='FIT') as fit,
             sum(reservation_status!='No Show' and is_departure=0 and reservation_type='GIT') as git,
             sum(reservation_status!='No Show' and is_departure=0 and pick_up=1) as pick_up,
             sum(reservation_status!='No Show' and is_departure=1 and drop_off=1) as drop_off,
-            sum(reservation_status!='No Show' and is_arrival=1) as arrival,
-            sum(reservation_status!='No Show' and is_arrival=1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
-            sum(reservation_status!='No Show' and is_arrival=0 and is_departure=0 ) as stay_over,
-            sum(reservation_status!='No Show' and is_departure=1 ) as departure,
-            sum(reservation_status!='No Show' and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
-            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='No Show' ) as no_show ,
-            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='Void' ) as void ,
-            sum(reservation_status!='No Show' and is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
+            sum(is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
+            sum(is_arrival=1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
+            sum(is_active_reservation = 1 and is_departure=1 ) as departure,
+            sum(is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
+            sum(is_departure=0 and reservation_status='No Show' ) as no_show ,
+            sum(is_departure=0 and reservation_status='Void' ) as void ,
+            sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
             0 as adr,
             0 as total_rate
         from `tabRoom Occupy`
@@ -1012,9 +1024,7 @@ def get_room_inventory_resource(property = ''):
 
 @frappe.whitelist()
 def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
-  
     events = []   
-    
     sql = """
         select 
             name as id, 
@@ -1134,12 +1144,12 @@ def get_room_inventory_calendar_event(property, start=None,end=None, keyword=Non
         select 
             room_type_id, 
             date,
-            sum(if(is_departure=0 ,1,0)) as total, 
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1) as total, 
             sum(if(type='Block',1,0)) as block, 
-            sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
-            sum(is_arrival) as arrival,
-            sum(is_departure) as departure,
-            sum(if(type='Reservation' and is_departure=0 and is_arrival=0,1,0) ) as stay_over,
+            sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation=1) as unassign_room, 
+            sum(is_arrival=1 and is_active=1 and is_active_reservation=1) as arrival,
+            sum(is_departure=1 and is_active=1 and is_active_reservation=1) as departure,
+            sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
             sum(adult) as adult, 
             sum(child) as child 
         from `tabRoom Occupy` 
@@ -1163,14 +1173,14 @@ def get_occupy_data(view_type, filter):
         sql = """select 
                     room_type_id, 
                     date, 
-                    sum(if(is_departure=1 ,0,1)) as total,
+                    sum(is_active=1 and is_active_reservation = 1 and is_departure=1) as total,
                     sum(type='Block') as block, 
-                    sum(if(type='Reservation' and coalesce(room_id,'')='',1,0)) as unassign_room, 
+                    sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
                     sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 
-                    sum(if(type='Reservation' and is_departure=1,1,0))  as departure,
-                    sum(type='Reservation' and is_stay_over=1) as stay_over,
-                    sum(adult) as adult, 
-                    sum(child) as child ,
+                    sum(type='Reservation' and is_departure=1 and is_active=1 and is_active_reservation = 1)  as departure,
+                    sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
+                    sum(if(is_active=1 and is_active_reservation=1, adult,0)) as adult, 
+                    sum(if(is_active=1 and is_active_reservation=1, child,0)) as child,
                     sum(type='Reservation' and is_active=1) as total_room_sold
                 from `tabRoom Occupy`  
                 where 
@@ -1189,14 +1199,14 @@ def get_occupy_data(view_type, filter):
         #get summary by date only without room type
         sql = """select 
                     date, 
-                    sum(if(is_departure=1,0,1)) as total,
-                    sum(if(type='Block',1,0)) as block, 
-                    sum(type='Reservation' and coalesce(room_id,'')='') as unassign_room, 
-                    sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1) as arrival, 
-                    sum(type='Reservation' and is_departure) as departure,
-                    sum(type='Reservation' and is_stay_over=1 and is_active = 1) as stay_over,
-                    sum(adult) as adult, 
-                    sum(child) as child ,       
+                    sum(is_active=1 and is_active_reservation = 1 and is_departure=1) as total,
+                    sum(type='Block') as block, 
+                    sum(type='Reservation' and coalesce(room_id,'')='' and is_active=1 and is_active_reservation = 1) as unassign_room, 
+                    sum(type='Reservation' and is_arrival=1 and is_active=1 and is_active_reservation=1 ) as arrival, 
+                    sum(type='Reservation' and is_departure=1 and is_active=1 and is_active_reservation = 1)  as departure,
+                    sum(type='Reservation' and is_stay_over=1 and is_active=1 and is_active_reservation = 1) as stay_over,
+                    sum(if(is_active=1 and is_active_reservation=1, adult,0)) as adult, 
+                    sum(if(is_active=1 and is_active_reservation=1, child,0)) as child,
                     sum(type='Reservation' and is_active=1) as total_room_sold
                     from `tabRoom Occupy` 
                 where 

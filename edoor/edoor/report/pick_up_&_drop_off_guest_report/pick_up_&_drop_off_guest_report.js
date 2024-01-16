@@ -59,13 +59,7 @@ frappe.query_reports["Pick-up & Drop-off Guest Report"] = {
 			"options":"\nreservation\nroom_types\narrival_date\ndeparture_date\nbusiness_source"
 			
 		},
-		{
-			"fieldname": "show_columns",
-			"label": __("Show Columns"),
-			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) { },
-			"hide_in_filter": 1,
-		},
+		
 		{
 			"fieldname": "show_summary",
 			"label": __("Show Summary"),
@@ -73,13 +67,6 @@ frappe.query_reports["Pick-up & Drop-off Guest Report"] = {
 			default:true,
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "show_in_summary",
-			"label": __("Show in Summary"),
-			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) { },
-			"hide_in_filter": 1,
 		},
 		
 	],
