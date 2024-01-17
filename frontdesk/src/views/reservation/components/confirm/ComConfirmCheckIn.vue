@@ -7,7 +7,7 @@
         </template>
         <template v-else>
             <div v-if="rs.room_rates?.length > 0 && reservationStays?.length==0">
-                <Message severity="info"> Room rate on {{ moment(rs.room_rates[0].date).format('DD-MM-YYYY') }} is
+                <Message :severity="rs.room_rates[0].total_rate==0?'warn':'info'"> Room rate on {{ moment(rs.room_rates[0].date).format('DD-MM-YYYY') }} is
                     <CurrencyFormat :value="rs.room_rates[0].total_rate" />
                     <br />
                     Please make sure your room rate is correct.
@@ -44,16 +44,30 @@
 <script setup>
 import { ref, inject, onMounted } from '@/plugin';
 import { onUnmounted } from 'vue';
+import { useConfirm } from "primevue/useconfirm";
 const dialogRef = inject("dialogRef");
 const rs = inject("$reservation_stay")
 const isConfirm = ref(false)
 const note = ref()
 const moment = inject("$moment")
-
+const confirm = useConfirm();
 const reservationStays = ref([])
 
 function onOk() {
-    dialogRef.value.close({"note":note.value});
+    if(rs.room_rates[0].total_rate==0){
+        confirm.require({
+        message: 'Are you sure you want to proceed Check In with rate 0?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            dialogRef.value.close({"note":note.value});
+        },
+         
+    });
+    }else {
+        dialogRef.value.close({"note":note.value});
+    }
+    
 }
 
 onMounted(() => {
