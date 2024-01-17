@@ -39,7 +39,7 @@ def search(doctypes=None, txt="" ,filters=None):
         
                 
                 data = frappe.db.sql(sql,{"txt":"%{}%".format(txt)},as_dict=1)
-                frappe.throw(sql)
+                # frappe.throw(sql)
                 results = results + data
                 results.sort(key=lambda x: x.modified, reverse=True)
     else:

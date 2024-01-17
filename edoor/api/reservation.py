@@ -2478,7 +2478,7 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
         reservation.reservation_date = doc["reservation_date"]
     reservation.save()
 
-    frappe.enqueue("edoor.api.reservation.update_reservation_keyword", queue='short' , reservation=reservation.name )
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
     if doc["doctype"]=="Reservation Stay":
         return frappe.get_doc("Reservation Stay",doc["name"])
