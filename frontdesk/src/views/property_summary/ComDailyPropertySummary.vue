@@ -23,6 +23,9 @@
 
                     </Accordion>
                 </TabPanel>
+                <TabPanel :header="'Unassign room (' + data?.unassign_room.length + ')'">
+                    <ComArrivalGuest :data="data?.unassign_room" />
+                </TabPanel>
                 <TabPanel header="Pickup & Drop Off Guest">
                     <ComPickUpandDropOff :data="data?.pickup_drop_off" />
                 </TabPanel>
@@ -47,16 +50,10 @@
                         <AccordionTab header="Summary by Room Type">
                             <ComSummaryByRoomType :property="dialogRef.data.property" :date="dialogRef.data.date"
                                 :room_type_id="dialogRef.data.room_type_id" />
-                        </AccordionTab>
-
-
-
-                    </Accordion>
-
+                        </AccordionTab> 
+                    </Accordion> 
                 </TabPanel>
-            </TabView>
-
-
+            </TabView> 
         </template>
     </ComDialogContent>
 </template>
