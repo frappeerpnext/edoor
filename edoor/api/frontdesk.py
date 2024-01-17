@@ -884,13 +884,13 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
             sum(type='Reservation' and is_active=1  and reservation_status='No Show' ) as no_show ,
             sum(type='Reservation' and is_active=1 and reservation_status='Void' ) as void ,
             sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
-            sum(type='Block') as block ,
             0 as adr,
             0 as total_rate
         from `tabRoom Occupy`
         WHERE 
             `date` = '{0}' AND 
             property = '{1}' and 
+            type='Reservation' and
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
             business_source
@@ -921,10 +921,16 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
     #get total room from daily property data 
     sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
     total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    
+    #get total room block
+    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
+    room_block  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    
     for d in data:
         d["total_room"] = total_rooms
         d["adr"] = sum([r["adr"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
+        d["block"] = room_block
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
             total_room = total_room - d["block"]
@@ -958,13 +964,13 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
             sum(type='Reservation' and is_active=1  and reservation_status='No Show' ) as no_show ,
             sum(type='Reservation' and is_active=1 and reservation_status='Void' ) as void ,
             sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
-            sum(type='Block') as block ,
             0 as adr,
             0 as total_rate
         from `tabRoom Occupy`
         WHERE 
             `date` = '{0}' AND 
             property = '{1}' and 
+            type='Reservation' and
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
             reservation_type
@@ -995,10 +1001,17 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
     #get total room from daily property data 
     sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
     total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+        
+    #get total room block
+    sql = "select count(name) as total from `tabRoom Occupy` where type='Block' and  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
+    room_block  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    
+
     for d in data:
         d["total_room"] = total_rooms
         d["adr"] = sum([r["adr"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
+        d["block"] = room_block
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
             total_room = total_room - d["block"]

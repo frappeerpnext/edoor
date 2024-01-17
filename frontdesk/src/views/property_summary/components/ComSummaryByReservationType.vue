@@ -5,7 +5,7 @@
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column field="business_source" header="Business Source" />
+        <Column field="reservation_type" header="Reservation Type" headerClass="text-center" bodyClass="text-center" />
 
         <Column field="total_room" header="Total Room(s)" headerClass="text-center" bodyClass="text-center" />
         <Column field="total_room_sold" header="Room Sold" headerClass="text-center" bodyClass="text-center" />
@@ -61,7 +61,7 @@
                 <Column footer="Total:" :colspan="2" footerStyle="text-align:right" />
                 <Column footerStyle="text-align:center">
                     <template #footer>
-                        {{ data?.length> 0?data[0]["total_room"]:0 }}
+                        {{ data?.length > 0 ? data[0]["total_room"] : 0 }}
                     </template>
                 </Column>
                 <Column footerStyle="text-align:center">
@@ -71,7 +71,7 @@
                 </Column>
                 <Column footerStyle="text-align:center">
                     <template #footer>
-                        {{ getTotal('block') }}
+                        {{ data?.length > 0 ? data[0]["block"] : 0 }}
                     </template>
                 </Column>
                 <Column footerStyle="text-align:center">
@@ -128,7 +128,9 @@
                 </Column>
                 <Column footerStyle="text-align:center">
                     <template #footer>
-                        {{ (getTotal('total_room_sold') / (data?.length> 0?data[0]["occupancy_room"]:1) * 100).toFixed(2) }}%
+                        {{ (getTotal('total_room_sold') / (data?.length > 0 ? data[0]["occupancy_room"] : 1) *
+                            100).toFixed(2)
+                        }}%
                     </template>
                 </Column>
 
@@ -158,17 +160,17 @@ const getTotal = ref((column_name) => {
 onMounted(() => {
     setTimeout(() => {
         loading.value = true
-    getApi("frontdesk.get_daily_summary_by_reservation_type", {
-        property: props.property,
-        date: props.date,
-        room_type_id: props.room_type_id,
-    }).then(result => {
-        data.value = result.message
-        loading.value = false
-    }).catch(err => {
-        loading.value = false
-    })  
+        getApi("frontdesk.get_daily_summary_by_reservation_type", {
+            property: props.property,
+            date: props.date,
+            room_type_id: props.room_type_id,
+        }).then(result => {
+            data.value = result.message
+            loading.value = false
+        }).catch(err => {
+            loading.value = false
+        })
     }, 5000);
-   
+
 })
 </script>

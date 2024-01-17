@@ -1,4 +1,4 @@
-<template>  
+<template>   
     <DataTable :value="data" paginator :rows="20" tableStyle="min-width: 50rem" :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column header="No" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
@@ -58,7 +58,7 @@
                     </span>/<span v-if="slotProps?.data.rooms">
                         {{ slotProps?.data.rooms }}
                     </span>
-                    <span @click="onAssignRoom(slotProps?.data.name, slotProps?.data.name)" class="link_line_action w-auto"
+                    <span @click="onAssignRoom(slotProps?.data)" class="link_line_action w-auto"
                         v-else>
                         <i class="pi pi-pencil"></i>
                         Assign Room
@@ -98,9 +98,12 @@
     </DataTable>
 </template>
 <script setup>
-import { inject } from '@/plugin';
+import { inject, getDoc } from '@/plugin';
 const moment = inject("$moment")
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
+
+import { useDialog } from 'primevue/usedialog';
+const dialog = useDialog();
 const props = defineProps({
     data: Object
 })
@@ -108,7 +111,35 @@ function onViewDetail(action, name) {
 
     window.postMessage(action + "|" + name, "*")
 }
-function onAssignRoom(room_name, reservation_stay) {
-    window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*') 
+// function onAssignRoom(room_name, reservation_stay) {
+//     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*') 
+// }
+
+function onAssignRoom(data) {
+    getDoc("Reservation Stay", data.name).then(doc => {
+        const stay_room = doc.stays.find(r => !r.room_id)
+        if (stay_room) {
+            dialog.open(ComReservationStayAssignRoom, {
+                data: { stay_room: stay_room },
+                props: {
+                    header: `Assign Room`,
+                    style: {
+                        width: '80vw',
+                    },
+                    modal: true,
+                    closeOnEscape: false,
+                    position: 'top'
+                },
+                onClose: (options) => {
+                    if (options.data && options.data.message) {
+                        setTimeout(() => {
+                            rs.getReservationDetail(options.data.message.name)
+                        }, 1500);
+                    }
+                }
+            })
+        }
+    })
 }
+
 </script>

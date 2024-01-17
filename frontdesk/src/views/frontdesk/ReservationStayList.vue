@@ -489,10 +489,7 @@ function onAssignRoom(data) {
                 }
             })
         }
-    })
-
-
-
+    }) 
 }
 
 onUnmounted(() => {
