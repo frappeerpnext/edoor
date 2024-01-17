@@ -110,8 +110,8 @@
     const props = defineProps({
         data:Object
     })
-    const totalres = props?.data.arrival + props?.data.total_in_house + props?.data.departure + props?.data.total_cancelled + props?.data.total_no_show + props?.data.total_void
-    const totalupandoff = props?.data.pick_up + props?.data.drop_off 
+    let totalres = props?.data.arrival + props?.data.total_in_house + props?.data.departure + props?.data.total_cancelled + props?.data.total_no_show + props?.data.total_void
+    let totalupandoff = props?.data.pick_up + props?.data.drop_off 
     if (totalupandoff === 0) {
         totalupandoff = 1;
       }
