@@ -192,7 +192,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
                     sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='FIT') AS `total_fit_stay_arrival`,
                     SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`,
-                    SUM( is_active=1 and is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
+                    SUM( is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
                 FROM `tabRoom Occupy` 
                 WHERE  
                     date = '{1}' and 
