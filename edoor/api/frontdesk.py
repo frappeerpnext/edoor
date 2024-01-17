@@ -93,7 +93,7 @@ def get_meta(doctype=None):
 # Get the current date
 
 @frappe.whitelist()
-def get_dashboard_data(property = None,date = None,room_type_id=None):
+def get_dashboard_data(property = None,date = None,room_type_id=None,include_reservation_by_business_source=0,include_reservation_by_room_type=0):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)
     working_date =  frappe.utils.today() 
 
@@ -191,7 +191,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
                     sum( is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
                     sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
                     sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='FIT') AS `total_fit_stay_arrival`,
-                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`
+                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`,
+                    SUM( is_active=1 and is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
                 FROM `tabRoom Occupy` 
                 WHERE  
                     date = '{1}' and 
@@ -333,7 +334,14 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         occupancy = round( (total_room_occupy or 0)   / (total_room or 1) * 100,2)
     else:
         occupancy = round( (total_room_occupy or 0)  / ((total_room or 1) - total_room_block) * 100,2)
-       
+    
+    reservation_by_business_source= []
+    if include_reservation_by_business_source:
+        reservation_by_business_source =  get_total_reservation_by_business_source(property, date, room_type_id)
+    
+    reservation_by_room_type= []
+    if include_reservation_by_room_type:
+        reservation_by_room_type =  get_total_reservation_by_room_type(property, date, room_type_id)
 
     return {
         "working_date":working_date,
@@ -365,7 +373,360 @@ def get_dashboard_data(property = None,date = None,room_type_id=None):
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
         "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
         "daily_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
+        "reservation_by_business_source":reservation_by_business_source,
+        "reservation_by_room_type":reservation_by_room_type,
+        "total_in_house":stay[0]["total_in_house"] or 0,
     }
+
+
+def get_total_reservation_by_business_source(property = None ,date =None,room_type=None):
+ 
+    return   frappe.db.sql("""select 
+                            business_source, 
+                            count(name) as total 
+                         from `tabRoom Occupy`
+                         where
+                            property = %(property)s and 
+                            date = %(date)s and 
+                            room_type_id = if(coalesce(%(room_type_id)s,'')='', room_type_id,%(room_type_id)s) and 
+                            is_active=1 and 
+                            is_active_reservation = 1 and 
+                            type='Reservation'
+                        group by business_source    
+                         """, {
+                             "property":property,
+                             "date":date,
+                             "room_type_id":room_type or ""
+                         },as_dict =1)
+
+def get_total_reservation_by_room_type(property = None ,date =None,room_type=None):
+ 
+    return   frappe.db.sql("""select 
+                            room_type_id,
+                            room_type, 
+                            count(name) as total 
+                         from `tabRoom Occupy`
+                         where
+                            property = %(property)s and 
+                            date = %(date)s and 
+                            room_type_id = if(coalesce(%(room_type_id)s,'')='', room_type_id,%(room_type_id)s) and 
+                            is_active=1 and 
+                            is_active_reservation = 1 and 
+                            type='Reservation'
+                        group by 
+                           room_type_id,
+                            room_type   
+                         """, {
+                             "property":property,
+                             "date":date,
+                             "room_type_id":room_type or ""
+                         },as_dict =1)
+
+@frappe.whitelist()
+def get_daily_property_data_detail(property=None, date=None, room_type=None):
+    filter = {"property":property, "date":date, "room_type":room_type or ""}
+    # arrival
+    arrival_guest = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+                                  status_color
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_arrival = 1 and 
+                    c.is_active=1 and 
+                    c.is_active_reservation = 1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+
+    # stay over guest
+    stay_over = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            status_color
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_stay_over = 1 and 
+                    c.is_active=1 and 
+                    c.is_active_reservation = 1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+    # departure guest
+    departure = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            status_color
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_departure = 1 and 
+                    c.is_active_reservation = 1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+    # unassign room
+    unassign_room = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            status_color
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_active = 1   and 
+                    coalesce(c.room_id,'') = '' and 
+                    c.is_active_reservation = 1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+    # pickup drop off
+    pickup_drop_off = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            pickup_time as time,
+            arrival_mode as mode,
+            arrival_flight_number as flight_number,
+            pickup_location as location,
+            pickup_driver as driver,
+            pickup_driver_name as driver_name,
+            pickup_driver_phone_number as driver_phone_number,
+            pickup_note as note,
+            'Pickup' as type
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_active = 1   and 
+                    c.is_active_reservation = 1 and 
+                    c.pick_up=1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+    drop_off = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            drop_off_time as time,
+            departure_mode as mode,
+            departure_flight_number as flight_number,
+            drop_off_location as location,
+            drop_off_driver as driver,
+            drop_off_driver_name as driver_name,
+            drop_off_driver_phone_number as driver_phone_number,
+            drop_off_note as note,
+            'Drop Off' as type
+        from `tabReservation Stay`
+        where
+            name in (
+                select distinct c.reservation_stay from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_active = 1   and 
+                    c.is_active_reservation = 1 and 
+                    c.drop_off=1
+            ) and 
+            property = %(property)s
+    """,filter, as_dict=1)
+
+    pickup_drop_off = pickup_drop_off + drop_off
+
+
+    inactive_reservation = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            status_color,
+            cancelled_date,
+            cancelled_by,
+            cancelled_note,
+            is_reserved_room
+        from `tabReservation Stay`
+        where
+            cancelled_date = %(date)s and
+            property = %(property)s and 
+            is_active_reservation = 0
+    """,filter, as_dict=1)
+
+    #if room type is set 
+    
+    if room_type:
+        filter["parents"] = [d["name"] for d in inactive_reservation]
+        stay_name_list = frappe.db.sql("select distinct parent from `tabReservation Stay Room` where room_type_id=%(room_type)s and parent in %(parents)s",
+                                       filter,as_dict=1)
+        inactive_reservation = [d for d in inactive_reservation if d["name"] in [x["parent"] for x in stay_name_list]]
+
+    #room block 
+    room_block = frappe.db.sql("""
+        select 
+           name,
+            block_date,
+            start_date,
+            end_date,
+            total_night_count,
+            is_unblock,
+            room_number,
+            room_type,
+            reason,
+            owner
+
+        from `tabRoom Block`
+        where
+            name in (
+                select distinct stay_room_id from `tabRoom Occupy` c
+                where
+                    c.date = %(date)s and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.type='Block' 
+            ) and 
+            property = %(property)s and 
+            room_type_id =  if(%(room_type)s='',room_type_id,%(room_type)s) 
+    """,filter, as_dict=1)
+    data = {
+        "arrival": arrival_guest,
+        "stay_over": stay_over,
+        "departure":departure,
+        "unassign_room":unassign_room,
+        "pickup_drop_off":pickup_drop_off,
+        "inactive_reservation":inactive_reservation,
+        "room_block":room_block
+    }
+
+    return data
+
+
+
 
 @frappe.whitelist()
 def get_daily_property_summary():
@@ -408,21 +769,22 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             room_type_id,
             room_type,
             room_type_alias,
-            sum(if(is_active =1 and  is_active_reservation = 1  and is_departure=0,0,1) ) as total_room_sold,
-            sum(if(is_active =1 and  is_active_reservation = 1   and is_departure=0,0,adult) ) as adult,
-            sum(if(is_active =1 and  is_active_reservation = 1  and is_departure=0,0,child) ) as child,
-            sum(reservation_status!='No Show' and is_departure=0 and reservation_type='FIT') as fit,
-            sum(reservation_status!='No Show' and is_departure=0 and reservation_type='GIT') as git,
-            sum(reservation_status!='No Show' and is_departure=0 and pick_up=1) as pick_up,
-            sum(reservation_status!='No Show' and is_departure=1 and drop_off=1) as drop_off,
-            sum(is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
-            sum(is_arrival=1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
-            sum(is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
-            sum(is_active_reservation = 1 and is_departure=1 ) as departure,
-            sum(is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
-            sum(is_departure=0 and reservation_status='No Show' ) as no_show ,
-            sum(is_departure=0 and reservation_status='Void' ) as void ,
+            sum(type='Reservation' and is_active =1 and  is_active_reservation = 1 ) as total_room_sold,
+            sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,0,adult) ) as adult,
+            sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,0,child) ) as child,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
+            sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
+            sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
+            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
+            sum(type='Reservation' and is_active=1  and reservation_status='No Show' ) as no_show ,
+            sum(type='Reservation' and is_active=1 and reservation_status='Void' ) as void ,
             sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
+            sum(type='Block') as block ,
             0 as adr,
             0 as total_rate
         from `tabRoom Occupy`
@@ -460,13 +822,172 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
     room_rate_data = frappe.db.sql(sql,as_dict=1)
 
 
-    
+    calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
+
     for d in data:
-        d["toal_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
+        d["total_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
         d["adr"] = sum([r["adr"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        total_room = d["total_room"] 
+        if  calculate_room_occupancy_include_room_block==0:
+            total_room = total_room - d["block"]
+        if total_room==0:
+            total_room = 1
+        d["occupancy_room"] = total_room #we use this field to calculate occupancy 
+        d["occupancy"] = round(  d["total_room_sold"] / total_room * 100, 2)
+    return data
+
+
+@frappe.whitelist()
+def get_daily_summary_by_business_source(property = None,date = None,room_type_id=None):
+    
+    data =  []
+    sql="""
+        select 
+            business_source,
+            sum(type='Reservation' and is_active =1 and  is_active_reservation = 1 ) as total_room_sold,
+            sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,0,adult) ) as adult,
+            sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,0,child) ) as child,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
+            sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
+            sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
+            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
+            sum(type='Reservation' and is_active=1  and reservation_status='No Show' ) as no_show ,
+            sum(type='Reservation' and is_active=1 and reservation_status='Void' ) as void ,
+            sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
+            sum(type='Block') as block ,
+            0 as adr,
+            0 as total_rate
+        from `tabRoom Occupy`
+        WHERE 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            type='Reservation' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+            business_source
+    """.format(date,property, room_type_id or '') 
+
+    
+    data = frappe.db.sql(sql, as_dict=1)
+    
+    #get room rate 
+    sql="""
+        select 
+            business_source,
+            avg(total_rate) as adr,
+            sum(total_rate) as total_rate
+        from `tabReservation Room Rate`
+        WHERE 
+            is_active_reservation = 1 and 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+           business_source
+    """.format(date,property, room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,as_dict=1)
+
+
+    calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
+    #get total room from daily property data 
+    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
+    total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    for d in data:
+        d["total_room"] = total_rooms
+        d["adr"] = sum([r["adr"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
+        d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
+        total_room = d["total_room"] 
+        if  calculate_room_occupancy_include_room_block==0:
+            total_room = total_room - d["block"]
+        if total_room==0:
+            total_room = 1
+        d["occupancy_room"] = total_room #we use this field to calculate occupancy 
+        d["occupancy"] = round(  d["total_room_sold"] / total_room * 100, 2)
 
     return data
+
+
+@frappe.whitelist()
+def get_daily_summary_by_reservation_type(property = None,date = None,room_type_id=None):
+    
+    data =  []
+    sql="""
+        select 
+            reservation_type,
+            sum(type='Reservation' and is_active =1 and  is_active_reservation = 1 ) as total_room_sold,
+            sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,0,adult) ) as adult,
+            sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,0,child) ) as child,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
+            sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
+            sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
+            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
+            sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
+            sum(type='Reservation' and is_active=1  and reservation_status='No Show' ) as no_show ,
+            sum(type='Reservation' and is_active=1 and reservation_status='Void' ) as void ,
+            sum(is_departure=0 and reservation_status='Cancelled' ) as cancelled ,
+            sum(type='Block') as block ,
+            0 as adr,
+            0 as total_rate
+        from `tabRoom Occupy`
+        WHERE 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            type='Reservation' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+            reservation_type
+    """.format(date,property, room_type_id or '') 
+
+    
+    data = frappe.db.sql(sql, as_dict=1)
+    
+    #get room rate 
+    sql="""
+        select 
+            reservation_type,
+            avg(total_rate) as adr,
+            sum(total_rate) as total_rate
+        from `tabReservation Room Rate`
+        WHERE 
+            is_active_reservation = 1 and 
+            `date` = '{0}' AND 
+            property = '{1}' and 
+            room_type_id=if('{2}'='',room_type_id,'{2}')
+        group by
+           reservation_type
+    """.format(date,property, room_type_id or '')
+    room_rate_data = frappe.db.sql(sql,as_dict=1)
+
+
+    calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
+    #get total room from daily property data 
+    sql = "select sum(total_room) as total from `tabDaily Property Data` where  `date` = '{0}' AND property = '{1}' and room_type_id=if('{2}'='',room_type_id,'{2}')"
+    total_rooms  = frappe.db.sql(sql.format(date,property, room_type_id or ''),as_dict=1)[0]["total"]
+    for d in data:
+        d["total_room"] = total_rooms
+        d["adr"] = sum([r["adr"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
+        d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
+        total_room = d["total_room"] 
+        if  calculate_room_occupancy_include_room_block==0:
+            total_room = total_room - d["block"]
+        if total_room==0:
+            total_room = 1
+        d["occupancy_room"] = total_room #we use this field to calculate occupancy 
+        d["occupancy"] = round(  d["total_room_sold"] / total_room * 100, 2)
+
+    return data
+
+
 
 @frappe.whitelist()
 def get_house_keeping_status(property, working_day):
@@ -773,6 +1294,7 @@ def get_edoor_setting(property = None):
     edoor_setting["payment_type"] = pos_config.payment_type
     edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon","is_city_ledger_account","is_guest_folio_account","is_guest_desk_folio_account","is_deposit_ledger_account","show_in_guest_folio","show_in_desk_folio","show_in_city_ledger","show_in_deposit_ledger","show_in_payable_ledger"], order_by="sort_order")
 
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
     return {
         "user":get_logged_user(),
@@ -1496,9 +2018,10 @@ def run_night_audit(property, working_day):
     ).insert()
 
     #Remove room occupy for no show folio that reserved room
+    frappe.enqueue("edoor.api.frontdesk.delete_room_occupu_after_run_night_audit", queue='short', working_day=doc_working_day)
 
-    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":property, "date":doc_working_day.posting_date})
-    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":property, "date":doc_working_day.posting_date})
+    
+
 
     #queue post room change to folio
 
@@ -1515,6 +2038,12 @@ def run_night_audit(property, working_day):
     
     working_day = get_working_day(property)
     return working_day
+
+
+@frappe.whitelist()
+def delete_room_occupu_after_run_night_audit(working_day):
+    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":working_day.property, "date":working_day.posting_date})
+    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":working_day.property, "date":working_day.posting_date})
 
 
 @frappe.whitelist()

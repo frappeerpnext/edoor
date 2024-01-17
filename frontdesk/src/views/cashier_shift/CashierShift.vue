@@ -39,7 +39,7 @@
         </div>
         <div class="overflow-auto h-full">
 
-            <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
+            <ComPlaceholder text="No Data" height="70vh" columnResizeMode="expand" :loading="gv.loading" :is-not-empty="data.length > 0">
                 <DataTable class="res_list_scroll" :resizableColumns="true" showGridlines stateStorage="local"
                     stateKey="table_cashier_shift_state" :reorderableColumns="true" :value="data"
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
@@ -174,10 +174,10 @@ const columns = ref([
     { fieldname: 'total_opening_amount', label: 'Opening Amount', fieldtype: "Currency", header_class: "text-right", default: true},
   { fieldname: 'is_closed', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
     { fieldname: 'owner', label: 'Created By', },
-    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", },
+    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-left" },
 
     { fieldname: 'modified_by', label: 'Modified By', default: true },
-    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center", default: true },
+    { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-left", default: true },
 
 ])
 

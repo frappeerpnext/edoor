@@ -213,28 +213,31 @@ const isPage = computed(() => {
 })
 
 const onRefresh = debouncer(() => {
- 
-    loadData(false,0)
+    loadData()
 }, 500);
 
-function loadData(show_loading=true,delay_load_reservation_stay=0){
+function loadData(show_loading=true,delay_load_reservation_stay=0,is_socket=true){
+    
     setTimeout(() => {   
-        rs.getReservationDetail(name.value,show_loading)
+        if (is_socket){   
+            rs.getReservationDetail(name.value,show_loading)
+        }
         rs.getChargeSummary(name.value)
         
     }, delay_load_reservation_stay);
     
     rs.selectedRoomRates = []
-    //load comment 
-    window.postMessage({ action: "load_comment" }, "*")
+    //load comment  
+    window.postMessage({ action: "load_comment" }, "*") 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
     } else if (activeTab.value == 2) { 
-        window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
-
-    } else if (activeTab.value == 3) {
-        window.postMessage({ action: "refresh_document", docname: name.value })
-        window.postMessage({ action: "refresh_document_count", docname: name.value })
+        if (is_socket){
+            window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
+        }
+    } else if (activeTab.value == 3) { 
+            window.postMessage({ action: "refresh_document", docname: name.value })
+            window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
 }
 
@@ -316,10 +319,9 @@ onMounted(() => {
         rs.is_page = false
         window.reservation_stay = dialogRef.value.data.name
     }
-    window.socket.on("ReservationStayDetail", (arg) => {
-    
-        if (arg.reservation_stay == rs.reservationStay.name) {   
-            loadData(false,3000)
+    window.socket.on("ReservationStayDetail", (arg) => { 
+        if (arg.reservation_stay == rs.reservationStay.name) {
+            loadData(false,3000,false)
         }
     })
 });

@@ -334,7 +334,7 @@ function onGroupUndoCheckIn() {
                     window.socket.emit("Reports", window.property_name)
                     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                     window.socket.emit("ReservationDetail", window.reservation)
-                    window.socket.emit("Frontdesk", window.property_name)
+                    // window.socket.emit("Frontdesk", window.property_name)
                     window.socket.emit("FolioTransactionList", window.property_name)
 
                     setTimeout(() => {
@@ -389,7 +389,7 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                         window.socket.emit("FolioTransactionList", window.property_name)
 
-                        // rs.LoadReservation()
+                        rs.LoadReservation()
                     }
                 }).catch((error) => {
                     rs.loading = false
@@ -434,8 +434,7 @@ function onGroupUndoCheckOut() {
             onClose: (options) => {
                 const data = options.data
                 if (options.data) {
-                    rs.reservationStay = data.data.message
-                    window.socket.emit("Frontdesk", window.property_name);
+                    rs.reservationStay = data.data.message 
                     window.socket.emit("Dashboard", window.property_name);
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationStayList", { property: window.property_name })

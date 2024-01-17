@@ -293,9 +293,8 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
-onMounted(() => {
-    window.socket.on("ComIframeModal", (arg) => {
-
+onMounted(() => { 
+    window.socket.on("ComIframeModal", (arg) => { 
         if (arg == window.property_name) {
             loadIframe()
         }
@@ -313,7 +312,7 @@ onMounted(() => {
     loadIframe()
 });
 
-onUnmounted(() => {
+onUnmounted(() => { 
     loading.value = false;
     window.socket.off("ComIframeModal")
 })

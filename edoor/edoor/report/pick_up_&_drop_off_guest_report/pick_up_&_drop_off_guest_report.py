@@ -137,13 +137,8 @@ def get_guest_data(filters):
 	return data
 
 def get_report_data(filters,data):
-	# start_date = datetime.strptime(filters.start_date, '%Y-%m-%d')
-	# end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
-	# delta = end_date - start_date
-	# stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
-	get_count = {d['reservation'] for d in data if d["require_pickup"]==1 or d["require_drop_off"]==1}
 	report_data = []
-
+	
 	pickup = sorted(set([d["require_pickup"] for d in data if d['require_pickup']==1]))
 	if pickup:	
 		report_data.append({
@@ -151,9 +146,35 @@ def get_report_data(filters,data):
 				"name": "Pick-up Guest",
 				"is_group":1,
 
-			})	
-		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_pickup']==1]
-		report_data.append({
+			})
+		if filters.show_in_group_by:
+			group_column = get_group_by_column(filters)
+		
+			group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['require_pickup']==1]))
+			for g in group_data:
+				d = g
+				if group_column["fieldtype"]=="Date":
+					d  = frappe.format(g,{"fieldtype":"Date"})
+				id =  str(uuid.uuid4())
+				report_data.append({
+				"indent":1,
+				"name": d,
+				"is_group":1,
+				"id":id
+				})
+				report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d[group_column["data_field"]]==g and d['require_pickup']==1]
+			
+				report_data.append({
+				"indent":1,
+				"name": "Total",
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g and d['require_pickup']==1]),sum([d["child"] for d in data if d[group_column["data_field"]]==g and d['require_pickup']==1])),
+				"is_total_row":1,
+				"is_group":0,
+				"parent":id
+				})
+		else:
+			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d['require_pickup']==1]
+			report_data.append({
 				"indent":1,
 				"name": "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_pickup']==1]),sum([d["child"] for d in data if d['require_pickup']==1])),
@@ -169,8 +190,34 @@ def get_report_data(filters,data):
 				"is_group":1,
 
 			})	
-		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['require_drop_off']==1]
-		report_data.append({
+		if filters.show_in_group_by:
+			group_column = get_group_by_column(filters)
+		
+			group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['require_drop_off']==1]))
+			for g in group_data:
+				d = g
+				if group_column["fieldtype"]=="Date":
+					d  = frappe.format(g,{"fieldtype":"Date"})
+				id =  str(uuid.uuid4())
+				report_data.append({
+				"indent":1,
+				"name": d,
+				"is_group":1,
+				"id":id
+				})
+				report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1]
+			
+				report_data.append({
+				"indent":1,
+				"name": "Total",
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1]),sum([d["child"] for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1])),
+				"is_total_row":1,
+				"is_group":0,
+				"parent":id
+				})
+		else:
+			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d['require_drop_off']==1]
+			report_data.append({
 				"indent":1,
 				"name": "Total",
 				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_drop_off']==1]),sum([d["child"] for d in data if d['require_drop_off']==1])),
@@ -197,3 +244,16 @@ def get_report_data(filters,data):
 			})
 	return report_data
 	
+def get_group_by_column(filters):
+ 
+	return  [d for d in group_by_columns() if d["label"] == filters.show_in_group_by][0]
+
+def group_by_columns():
+	
+	return [
+		{"data_field":"arrival_date", "label":"Arrival Date","fieldtype":"Date"},
+		{"data_field":"departure_date", "label":"Departure Date" ,"fieldtype":"Date" },
+		{"data_field":"reservation", "label":"Reservation" ,"fieldtype":"Data" },
+		{"data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
+		{"data_field":"room_types", "label":"Room Type" ,"fieldtype":"Data" },
+	]

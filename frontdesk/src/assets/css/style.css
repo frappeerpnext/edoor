@@ -1541,3 +1541,6 @@ align-items: center;
     width: 100% !important;
     min-width: 0 !important;
 }
+.daily-list-summary tr th , .daily-list-summary tr td {
+    padding: 0.5rem 0.5rem;
+}

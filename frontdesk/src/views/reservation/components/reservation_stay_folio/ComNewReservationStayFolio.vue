@@ -22,6 +22,7 @@ const guests = ref([])
 const gv = inject("$gv")
 
 function onSave() {
+    isSaving.value = true
     if(!gv.cashier_shift?.name){
         gv.toast('error', 'Please Open Cashier Shift.')
         return

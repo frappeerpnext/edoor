@@ -56,7 +56,7 @@ frappe.query_reports["Pick-up & Drop-off Guest Report"] = {
 			"label": __("Group By"),
 			"on_change": function (query_report){ },
 			"hide_in_filter": 1,
-			"options":"\nreservation\nroom_types\narrival_date\ndeparture_date\nbusiness_source"
+			"options":"\nReservation\nRoom Type\nArrival Date\nDeparture Date\nBusiness Source"
 			
 		},
 		

@@ -75,8 +75,14 @@ def get_data (filters,report_fields):
 	return data
 
 def get_filters(filters):
-	sql = "where property=%(property)s and is_active_reservation = 1 "
-	sql =  " {} and arrival_date between %(start_date)s and %(end_date)s".format(sql) 
+	sql = """where property=%(property)s and 
+	is_active_reservation = 1 and 
+	name in ( select reservation_stay from `tabRoom Occupy` 
+	where is_active = 1 and 
+	is_arrival = 1 and 
+	is_active_reservation = 1 
+	and date between %(start_date)s and %(end_date)s) """
+	
 	if filters.business_source:
 		sql = "{} and business_source =  %(business_source)s".format(sql)
 	

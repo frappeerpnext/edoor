@@ -174,7 +174,7 @@ const columns = ref([
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'cashier_shift', label: 'Shift', default: true,header_class: "text-center" },
     { fieldname: 'owner', label: 'Created By', default: true},
-    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
+    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-left", default: true },
     { fieldname: 'modified_by', label: 'Modified By' ,},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },

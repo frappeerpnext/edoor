@@ -45,6 +45,7 @@ import ComDeskFolioDetail from "@/views/desk_folio/components/ComDeskFolioDetail
 import ComDepositLedgerDetail from "@/views/deposit_ledger/components/ComDepositLedgerDetail.vue";
 import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayableLedgerDetail.vue";
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
+import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
  
@@ -536,16 +537,12 @@ function showRoomBlockDetail(name) {
 function onViewDailySummary(date,room_type_id, title="") {
  
  
-    const dialogRef = dialog.open(ComIFrameModal, {
+    const dialogRef = dialog.open(ComDailyPropertySummary, {
 
        data: {
-           "doctype":   'Business%20Branch',
-           name: JSON.parse(localStorage.getItem("edoor_property")).name,
-           report_name: gv.getCustomPrintFormat("Daily Property Data Summary"),
-           view:"ui",
-           extra_params: [{key:"date", value:moment(date).format("YYYY-MM-DD")},{ key:"room_type_id",value:(room_type_id || '')}],
-           fullheight: true,
-           iframe_class:"iframe_class_scroll_summary"
+           property: JSON.parse(localStorage.getItem("edoor_property")).name,
+           date:moment(date).format("YYYY-MM-DD"),
+           room_type_id: (room_type_id || '')
        },
        props: {
            header:"Summary Data on " + moment(date).format("DD-MM-YYYY") +( title==""?"":" - " + title),
@@ -556,7 +553,6 @@ function onViewDailySummary(date,room_type_id, title="") {
            modal: true,
            maximizable: true,
            closeOnEscape: false,
-           
         
        }
       

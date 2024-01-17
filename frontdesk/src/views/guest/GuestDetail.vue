@@ -180,7 +180,7 @@ function loadIframe() {
 }
 
 onUnmounted(() => {
-    if (document.querySelectorAll('.guest-detail').length - 1 == 0){
+    if (document.querySelectorAll('.guest-detail').length - 1 == 0){ 
         window.socket.off("GuestDetail")
     }
 })

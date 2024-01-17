@@ -150,7 +150,7 @@ const columns = ref([
     { fieldname: 'website', label: 'Website', default: true },
 
     { fieldname: 'owner', label: 'Created By' },
-    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-center", default: true },
+    { fieldname: 'creation', fieldtype: "Timeago", label: 'Creation', header_class: "text-left", default: true },
     { fieldname: 'modified_by', label: 'Modified By' },
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
 
