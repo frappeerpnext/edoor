@@ -816,7 +816,6 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
         WHERE 
             `date` = '{0}' AND 
             property = '{1}' and 
-            type='Reservation' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
             room_type,
@@ -892,7 +891,6 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
         WHERE 
             `date` = '{0}' AND 
             property = '{1}' and 
-            type='Reservation' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
             business_source
@@ -967,7 +965,6 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
         WHERE 
             `date` = '{0}' AND 
             property = '{1}' and 
-            type='Reservation' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
             reservation_type
