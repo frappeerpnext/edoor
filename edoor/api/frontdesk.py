@@ -682,8 +682,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
     
     if room_type:
         filter["parents"] = [d["name"] for d in inactive_reservation]
-        stay_name_list = frappe.db.sql("select distinct parent from `tabReservation Stay Room` where room_type_id=%(room_type)s and parent in %(parents)s",
-                                       filter,as_dict=1)
+        stay_name_list = frappe.db.sql("select distinct parent from `tabReservation Stay Room` where room_type_id=%(room_type)s and parent in %(parents)s",filter,as_dict=1)
         inactive_reservation = [d for d in inactive_reservation if d["name"] in [x["parent"] for x in stay_name_list]]
 
     #room block 

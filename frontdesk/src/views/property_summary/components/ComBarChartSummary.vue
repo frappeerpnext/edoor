@@ -80,7 +80,7 @@
                 <div class="shadow-2 p-3 surface-50 rounded">
                     <div class="line-height-1">
                     <h3 class="text-lg font-medium">Transportation</h3>
-                    <div>Total : {{totalupandoff}}</div>
+                    <div>Total : {{data.pick_up + data.drop_off}}</div>
                     </div>
                     <div class="flex mb-2 color-text">
                         <div class="col-6 line-height-1 border-right-1 pick_up" >
