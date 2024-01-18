@@ -91,7 +91,7 @@
             </template>
         </div>
         <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
-            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium wrap__sp_not"> {{ hk.reservationStay.housekeeping_note }}</div>
+            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium wrap__sp_not">{{ hk.reservationStay.housekeeping_note }}</div>
             <div class="mb-5 leading-5 text-sm ">
                 <div class="mt-auto">
                     <span class="italic">Created by: </span>
@@ -166,8 +166,10 @@ const gv = inject('$gv');
 
 if (housekeeping_status_code.value.length > 0) {
     housekeeping_status_code.value.forEach(h => {
+
         items.value.push({
             label: h.status,
+            style:{minWidth:'185px'},
             command: () => {
 
                 onSelected(h)

@@ -2,8 +2,8 @@ import functools
 import re
 from edoor.api.utils import update_reservation_folio
 from edoor.api.reservation import generate_room_occupies
-from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy
-
+from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
+from frappe.utils import today,add_to_date,getdate
 from rq.command import send_stop_job_command
 from rq.exceptions import InvalidJobOperation, NoSuchJobError
 from rq.job import Job
@@ -292,4 +292,23 @@ def update_keyword(data):
 
         frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name='{}' and action='{}'".format(x["document_type"],x["document_name"],x["action"]))
             
+
+@frappe.whitelist()
+def validate_property_data():
+    #check if data have duplicate reservation
+    fix_generate_duplicate_room_occupy()
+
+
+def fix_generate_duplicate_room_occupy():
+    sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
+    data = frappe.db.sql(sql,as_dict=1)
+    if len(data)> 0:
+        for s in data:
+            generate_room_occupy(stay_name=s["reservation_stay"])
+    #temp room occupy
+    sql = "select reservation_stay,date,count(name) as total from `tabTemp Room Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
+    data = frappe.db.sql(sql,as_dict=1)
+    if len(data)> 0:
+        for s in data:
+            generate_temp_room_occupy(stay_name=s["reservation_stay"])
 

@@ -151,9 +151,9 @@ scheduler_events = {
 	# "daily": [
 	# 	"edoor.tasks.daily"
 	# ],
-	# "hourly": [
-	# 	"edoor.tasks.hourly"
-	# ],
+	"hourly": [
+		"edoor.api.schedule_task.validate_property_data"
+	],
 	# "weekly": [
 	# 	"edoor.tasks.weekly"
 	# ],

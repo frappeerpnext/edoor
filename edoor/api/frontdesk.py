@@ -1335,6 +1335,7 @@ def get_edoor_setting(property = None):
     edoor_setting["account_group"] = frappe.db.get_list("Account Code", filters={"parent_account_code":"All Account Code"},fields=["name","account_name","show_in_shortcut_menu","icon","is_city_ledger_account","is_guest_folio_account","is_guest_desk_folio_account","is_deposit_ledger_account","show_in_guest_folio","show_in_desk_folio","show_in_city_ledger","show_in_deposit_ledger","show_in_payable_ledger"], order_by="sort_order")
 
     frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+    frappe.enqueue("edoor.api.schedule_task.validate_property_data",queue='long')
 
     return {
         "user":get_logged_user(),

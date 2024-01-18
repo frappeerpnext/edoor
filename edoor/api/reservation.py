@@ -88,7 +88,7 @@ def get_reservation_stay_detail(name):
     reservation_stay= frappe.get_doc("Reservation Stay",name)
     if reservation_stay.reservation_status in ["Reserved","In-house","Confirmed","No Show"]:
         #verify reservation stay this function will fix some problem that occure in room occupy generation , temp room occupy and room rate
-        frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='short', stay_name = name )
+        frappe.enqueue("edoor.api.reservation.verify_reservation_stay",queue='long', stay_name = name )
        
 
     reservation = frappe.get_doc("Reservation",reservation_stay.reservation)
@@ -2621,7 +2621,7 @@ def reserved_room(property, reservation_stay):
     stay.is_reserved_room=1
     stay.save()
 
-    frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='short', stay_names=[stay.name] )
+    frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='long', stay_names=[stay.name] )
 
     
     #show no show reservation to room chart
