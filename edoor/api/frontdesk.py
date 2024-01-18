@@ -849,8 +849,8 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
     for d in data:
         d["total_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
-        d["adr"] = d["total_rate"] / d["total_room_sold"]
-        
+        d["adr"] = d["total_rate"] /  (d["total_room_sold"] if d["total_room_sold"] > 0 else 1) 
+
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
             total_room = total_room - d["block"]
@@ -928,7 +928,7 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
         d["total_room"] = total_rooms
         
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
-        d["adr"] = d["total_rate"] / d["total_room_sold"]
+        d["adr"] = d["total_rate"] /  (d["total_room_sold"] if d["total_room_sold"] > 0 else 1) 
         d["block"] = room_block
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
@@ -1008,7 +1008,7 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
     for d in data:
         d["total_room"] = total_rooms
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
-        d["adr"] = d["total_rate"] / d["total_room_sold"]
+        d["adr"] = d["total_rate"] /  (d["total_room_sold"] if d["total_room_sold"] > 0 else 1) 
 
         d["block"] = room_block
         total_room = d["total_room"] 
