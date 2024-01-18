@@ -1,5 +1,4 @@
 <template>
-    {{ rs.reservationStayNames}}
     <div v-if="rs.reservationStay">
         <div class="grid">
             <div class="col-12">
@@ -127,25 +126,38 @@ function onSave() {
  
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
-            console.log(r)
             saving.value = false
             if(dataUpdate.value.is_apply_all_stays){
+                rs.reservationStay.note = r.message.note
+                rs.reservationStay.note_by = r.message.note_by
+                rs.reservationStay.note_modified = r.message.note_modified
+                rs.reservationStay.housekeeping_note = r.message.housekeeping_note
+                rs.reservationStay.housekeeping_note_by = r.message.housekeeping_note_by
+                rs.reservationStay.housekeeping_note_modified = r.message.housekeeping_note_modified
                 rs.reservationStayNames.forEach(stay => {
                     stay.name = r.message.name
-                    rs.reservationStay.note = r.message.note
-                    rs.reservationStay.note_by = r.message.note_by
-                    rs.reservationStay.note_modified = r.message.note_modified
+                    
                 });
-                
+   
             }else{
                 rs.reservationStay.note = r.message.note
                 rs.reservationStay.note_by = r.message.note_by
                 rs.reservationStay.note_modified = r.message.note_modified
+                rs.reservationStay.housekeeping_note = r.message.housekeeping_note
+                rs.reservationStay.housekeeping_note_by = r.message.housekeeping_note_by
+                rs.reservationStay.housekeeping_note_modified = r.message.housekeeping_note_modified
+            }
+            if(dataUpdate.value.is_apply_reseration){
+                rs.reservationStay.note = r.message.note
+                rs.reservationStay.note_by = r.message.note_by
+                rs.reservationStay.note_modified = r.message.note_modified
+                rs.reservationStay.housekeeping_note = r.message.housekeeping_note
+                rs.reservationStay.housekeeping_note_by = r.message.housekeeping_note_by
+                rs.reservationStay.housekeeping_note_modified = r.message.housekeeping_note_modified
+                rs.reservation.name = r.message.name
             }
             
-            rs.reservationStay.housekeeping_note = r.message.housekeeping_note
-            rs.reservationStay.housekeeping_note_by = r.message.housekeeping_note_by
-            rs.reservationStay.housekeeping_note_modified = r.message.housekeeping_note_modified
+            
             op.value.hide()
             
         }).catch((err) => {

@@ -390,7 +390,6 @@ def get_total_reservation_by_business_source(property = None ,date =None,room_ty
                             date = %(date)s and 
                             room_type_id = if(coalesce(%(room_type_id)s,'')='', room_type_id,%(room_type_id)s) and 
                             is_active=1 and 
-                            is_active_reservation = 1 and 
                             type='Reservation'
                         group by business_source    
                          """, {
@@ -411,7 +410,6 @@ def get_total_reservation_by_room_type(property = None ,date =None,room_type=Non
                             date = %(date)s and 
                             room_type_id = if(coalesce(%(room_type_id)s,'')='', room_type_id,%(room_type_id)s) and 
                             is_active=1 and 
-                            is_active_reservation = 1 and 
                             type='Reservation'
                         group by 
                            room_type_id,
