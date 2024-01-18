@@ -311,5 +311,18 @@ def fix_generate_duplicate_room_occupy():
     if len(data)> 0:
         for s in set([d["reservation_stay"] for d  in data]):
             generate_temp_room_occupy(stay_name=s)
-            
+
+
+    # clear 
+    sql="select name from `tabReservation Stay` where arrival_date>='{}' and reservation_status='No Show' and is_reserved_room=0".format(add_to_date(getdate(today()),days=-7))
+    data = frappe.db.sql(sql,as_dict=1) 
+    sql="select name from `tabReservation Stay` where arrival_date>='{}' and reservation_status in ('Cancelled', 'Void')".format(add_to_date(getdate(today()),days=-7))
+    data = data +  frappe.db.sql(sql,as_dict=1)
+
+    frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
+    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
+    frappe.db.commit()
+
+    
+
 

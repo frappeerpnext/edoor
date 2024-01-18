@@ -36,15 +36,16 @@ def get_summary(filters,data):
 
 def get_columns(filters):
 	columns =   [
-		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":170,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
 		{"fieldname":"reference_number",'align':'left', "label":"Ref #","width":95,"show_in_report":1},
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
+		{'fieldname':'arrival_date','align':'center','label':'Arrival Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
+		{'fieldname':'departure_date','align':'center','label':'Departure Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
 		{'fieldname':'rooms','label':'Room','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Time","width":95,"show_in_report":1},
 		{'fieldname':'flight_number','label':'Flight',"width":90,"show_in_report":1,'align':'center'},
-		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
-		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
+		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":150,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":50,"show_in_report":1},
 		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
 		{'fieldname':'mode','label':'Mode',"width":40,"show_in_report":1,'align':'lrft'},
@@ -89,6 +90,7 @@ def get_guest_data(filters):
 				arrival_date,
 				departure_date,
 				rooms,
+				concat(arrival_date,'-',departure_date) as date,
 				modified,
 				reference_number,
 				creation,
