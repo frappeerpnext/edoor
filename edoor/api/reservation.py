@@ -2612,7 +2612,8 @@ def reserved_room(property, reservation_stay):
                 frappe.throw("Room type {} is not available".format(s.room_type))
 
         if s.room_id:
-            data = frappe.db.sql("select count(room_id) as total from `tabTemp Room Occupy` where room_id='{}' and stay_room_id !='{}'".format(s.room_id, s.name),as_dict=1)
+            data = frappe.db.sql("select count(room_id) as total from `tabTemp Room Occupy` where  room_id='{}' and stay_room_id !='{}' and date between '{}' and '{}'".format(s.room_id, s.name,s.start_date, add_to_date(s.end_date,days=-1) ),as_dict=1)
+
             if data[0]["total"] > 0:
                 frappe.throw("Room Number {} is not available".format(s.room_number))
 
@@ -3046,7 +3047,7 @@ def verify_reservation_stay(stay_name= None):
     stay = frappe.get_doc("Reservation Stay", stay_name)
     # verify room occupy and temp room occupy
     # if total record not matchy with room nights then regenerate it again
-    
+
     if stay.is_active_reservation ==1 or (stay.reservation_status=='No Show' and stay.is_reserved_room==1):
         sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
     

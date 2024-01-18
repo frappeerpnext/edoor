@@ -12,12 +12,12 @@
         </div>
         <div class="grid mt-2">
             <div class="col-6" v-if="!hk.room_block">
+                <SplitButton label="Save" icon="pi pi-plus" @click="save" :model="items" />
                 <SplitButton :disabled="hk.selectedRow.room_status == 'Room Block'" class="w-full"
                     :buttonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
                     :label="hk.selectedRow?.housekeeping_status_code" :model="items" :color="hk.selectedRow?.status_color"
                     :menuButtonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
-                    :class="{ 'active-button': true } ">
-                </SplitButton>
+                    :class="{ 'active-button': true } " />
             </div>
             <div class="col-6">
                 <Button class="w-full" label="Assign Housekeeper" severity="warning"
@@ -91,7 +91,7 @@
             </template>
         </div>
         <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
-            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">{{ hk.reservationStay.housekeeping_note }}</div>
+            <Textarea class="w-full py-2 my-3 mb-10 border-1  bg-slate-200 font-medium" id="textnote" v-model="hk.reservationStay.housekeeping_note" rows="5" disabled/>
             <div class="mb-5 leading-5 text-sm ">
                 <div class="mt-auto">
                     <span class="italic">Created by: </span>
@@ -168,7 +168,8 @@ if (housekeeping_status_code.value.length > 0) {
     housekeeping_status_code.value.forEach(h => {
 
         items.value.push({
-            label: h.status,
+            label: h.status + "this testkdfk",
+            icon:"",
             command: () => {
 
                 onSelected(h)

@@ -11,7 +11,7 @@
             </div>
             <div class="col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Business Source</h3>
+                    <h3 class="text-lg font-medium"> Stay by Business Source</h3>
                     <div  class="w-full " >
                         <ComChartByBusinessSource :param="data.reservation_by_business_source"/>
                     </div>
@@ -19,7 +19,7 @@
             </div>
             <div class="col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Room Type</h3>
+                    <h3 class="text-lg font-medium">Stay by Room Type</h3>
                     <div  class="w-full " >
                         <ComChartByRoomType :param="data.reservation_by_room_type"/>
                     </div>
@@ -27,7 +27,7 @@
             </div>
             <div class="col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Reservation Type</h3>
+                    <h3 class="text-lg font-medium">Stay by Reservation Type</h3>
                     <div  class="w-full " >
                         <ComChartByReservationType :param="data"/>
                     </div>

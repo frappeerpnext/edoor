@@ -20,7 +20,7 @@
         </template>
     </Column>
     <Column field="reference_number" header="Ref. #"></Column>
-    <Column field="name" header="PAX(A/C)" headerClass="text-right" bodyClass="text-right">
+    <Column field="name" header="PAX(A/C)" headerClass="text-center" bodyClass="text-center">
         <template  #body="slotProps">
             {{slotProps?.data.adult  }} / {{slotProps?.data.child }}
         </template>
