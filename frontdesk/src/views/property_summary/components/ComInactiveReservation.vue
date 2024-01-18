@@ -25,15 +25,15 @@
             {{slotProps?.data.adult  }} / {{slotProps?.data.child }}
         </template>
     </Column>
-    <Column field="reservation_type" header="Type"></Column>
-    <Column  header="Res. Date">
+    <Column field="reservation_type" header="Type" headerClass="text-center" bodyClass="text-center"></Column>
+    <Column  header="Res. Date" headerClass="text-center" bodyClass="text-center">
         <template  #body="slotProps">
             
             {{ moment(slotProps?.data.reservation_date).format("DD-MM-YYYY") }}
         </template>
        
     </Column>
-    <Column field="name" header="Stay Date">
+    <Column field="name" header="Stay Date" headerClass="text-center" bodyClass="text-center">
         <template  #body="slotProps">
             {{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{
                     moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}
@@ -48,7 +48,7 @@
           
         </template>
     </Column>
-    <Column header="Rooms" headerClass="text-center" bodyClass="text-center">
+    <Column header="Rooms">
             <template #body="slotProps">
                 {{ slotProps.data.room_type_alias }} 
                 <span v-if="slotProps.data.rooms">/ {{ slotProps.data.rooms }}</span>

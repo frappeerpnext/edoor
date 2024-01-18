@@ -55,9 +55,9 @@ def get_columns(filters):
 	return columns
 
 def get_filters(filters):
-	sql = """ and property=%(property)s and is_active_reservation=1 
-	 and arrival_date BETWEEN %(start_date)s AND %(end_date)s
-    OR departure_date BETWEEN %(start_date)s AND %(end_date)s
+	sql = """ and property=%(property)s and is_active_reservation=1 and
+				arrival_date between %(start_date)s and %(end_date)s and
+				departure_date between %(start_date)s and %(end_date)s
 	  		 """
 
 	if filters.business_source:
