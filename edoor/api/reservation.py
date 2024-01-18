@@ -2627,7 +2627,7 @@ def reserved_room(property, reservation_stay):
     
 
 
-    frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=[stay.name] )
+    frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='short', stay_names=[stay.name] )
 
     
     #show no show reservation to room chart
