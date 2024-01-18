@@ -822,14 +822,13 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             room_type_id,
             room_type_alias
     """.format(date,property, room_type_id or '') 
-    
+
     data = frappe.db.sql(sql, as_dict=1)
     
     #get room rate 
     sql="""
         select 
             room_type_id,
-            avg(total_rate) as adr,
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
@@ -849,8 +848,9 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
 
     for d in data:
         d["total_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
-        d["adr"] = sum([r["adr"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["adr"] = d["total_rate"] / d["total_room_sold"]
+        
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
             total_room = total_room - d["block"]
@@ -902,7 +902,6 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
     sql="""
         select 
             business_source,
-            avg(total_rate) as adr,
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
@@ -927,8 +926,9 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
     
     for d in data:
         d["total_room"] = total_rooms
-        d["adr"] = sum([r["adr"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
+        
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["business_source"] == d["business_source"]]) or 0
+        d["adr"] = d["total_rate"] / d["total_room_sold"]
         d["block"] = room_block
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:
@@ -982,7 +982,6 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
     sql="""
         select 
             reservation_type,
-            avg(total_rate) as adr,
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
@@ -1008,8 +1007,9 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
 
     for d in data:
         d["total_room"] = total_rooms
-        d["adr"] = sum([r["adr"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["reservation_type"] == d["reservation_type"]]) or 0
+        d["adr"] = d["total_rate"] / d["total_room_sold"]
+
         d["block"] = room_block
         total_room = d["total_room"] 
         if  calculate_room_occupancy_include_room_block==0:

@@ -1,4 +1,5 @@
 <template>
+    {{ rs.reservationStayNames}}
     <div v-if="rs.reservationStay">
         <div class="grid">
             <div class="col-12">
@@ -123,20 +124,30 @@ function onReseravationNote($event, updating) {
 function onSave() {
     saving.value = true
     dataUpdate.value.reservation = (dataUpdate.value.is_apply_reseration || dataUpdate.value.is_apply_all_stays) ? rs.reservationStay.reservation : ''
+ 
     postApi('reservation.update_note', { data: dataUpdate.value })
         .then((r) => {
+            console.log(r)
             saving.value = false
-            if (dataUpdate.value.is_apply_all_stays) {
+            if(dataUpdate.value.is_apply_all_stays){
                 rs.reservationStayNames.forEach(stay => {
-                    window.socket.emit("ReservationStayDetail", { reservation_stay: stay })
+                    stay.name = r.message.name
+                    rs.reservationStay.note = r.message.note
+                    rs.reservationStay.note_by = r.message.note_by
+                    rs.reservationStay.note_modified = r.message.note_modified
                 });
-            } else {
-                window.socket.emit("ReservationStayDetail", { reservation_stay: rs.reservationStay.name })
+                
+            }else{
+                rs.reservationStay.note = r.message.note
+                rs.reservationStay.note_by = r.message.note_by
+                rs.reservationStay.note_modified = r.message.note_modified
             }
-            if (dataUpdate.value.is_apply_reseration){
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            }     
+            
+            rs.reservationStay.housekeeping_note = r.message.housekeeping_note
+            rs.reservationStay.housekeeping_note_by = r.message.housekeeping_note_by
+            rs.reservationStay.housekeeping_note_modified = r.message.housekeeping_note_modified
             op.value.hide()
+            
         }).catch((err) => {
             saving.value = false
         })
