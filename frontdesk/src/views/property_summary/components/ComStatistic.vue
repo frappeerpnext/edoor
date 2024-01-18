@@ -1,4 +1,4 @@
-<template> 
+<template>  
     <div v-if="data">
         <div class="grid w-full" >
             <div class="col-3">

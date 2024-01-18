@@ -16,7 +16,7 @@ function renderChart() {
         datasets: [
             {
                 name: "Reservation",
-                values: [props.param.arrival, props.param.stay_over, props.param.departure, props.param.no_show],
+                values: [props.param.arrival, props.param.stay_over, props.param.departure, props.param.total_no_show],
                 type: "pie"
             }
         ],
