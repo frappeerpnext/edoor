@@ -702,6 +702,51 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
                 c.is_active_reservation = 0
             )
     """,filter, as_dict=1)
+    #get cancell and void by today obly
+    cancelled_and_void = frappe.db.sql("""
+        select 
+            reservation,
+            name,
+            reference_number,
+            adult,
+            child,
+            reservation_type,
+            reservation_date,
+            arrival_date,
+            departure_date,
+            room_nights,
+            rooms,
+            room_type_alias,
+            guest,
+            guest_name,
+            business_source,
+            adr,
+            total_room_rate,
+            reservation_status,
+            status_color,
+            cancelled_date,
+            cancelled_by,
+            cancelled_note,
+            is_reserved_room
+        from `tabReservation Stay`
+        where
+            property = %(property)s and 
+            is_active_reservation = 0 and
+            reservation_status in ('Cancelled','Void') and 
+            cancelled_date =%(date)s and 
+            name in (
+            select distinct c.parent from `tabReservation Stay Room` c
+            where
+                %(date)s between start_date and end_date and 
+                c.property = %(property)s and 
+                c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                c.is_active_reservation = 0 and 
+                c.reservation_status in ('Cancelled','Void') 
+            )
+    """,filter, as_dict=1)
+
+
+
 
     #if room type is set 
     
@@ -756,7 +801,8 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
         "unassign_room":unassign_room,
         "pickup_drop_off":pickup_drop_off,
         "inactive_reservation":inactive_reservation,
-        "room_block":room_block
+        "room_block":room_block,
+        "today_cancelled_and_void":cancelled_and_void
     }
 
     return data

@@ -87,6 +87,12 @@
         </template>
     </Column>
     
+    <Column field="cancelled_date" header="Date" headerClass="text-center" bodyClass="text-center">
+        <template  #body="slotProps">
+            {{ moment(slotProps.data.cancelled_date).format("DD-MM-YYYY") }} 
+        </template>
+    </Column>
+    
     <Column field="cancelled_by" header="By">
         <template  #body="slotProps">
           {{ slotProps?.data.cancelled_by.split("@")[0]}}
