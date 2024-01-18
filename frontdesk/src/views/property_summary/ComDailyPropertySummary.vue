@@ -30,13 +30,13 @@
                 <TabPanel header="Pickup & Drop Off Guest">
                     <ComPickUpandDropOff :data="data?.pickup_drop_off" />
                 </TabPanel>
-                <TabPanel :header="'No Show, Cancelled & Void (' + data?.inactive_reservation.length + ')'"> 
+                <TabPanel header="No Show, Cancelled & Void"> 
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
-                        <AccordionTab :header="'No Show (' + data?.inactive_reservation.length + ')'">
+                        <AccordionTab :header="'No Show Reserved Room (' + data?.inactive_reservation.length + ')'">
                             <ComInactiveReservation :data="data?.inactive_reservation" />
                         </AccordionTab> 
-                        <AccordionTab :header="'Cancelled & Void (' + data?.today_cancelled_and_void.length + ')'">
-                            <ComInactiveReservation :data="data?.today_cancelled_and_void" />
+                        <AccordionTab :header="'Cancelled, Void & No Show (' + data?.cancelled_void_and_no_show.length + ')'">
+                            <ComInactiveReservation :data="data?.cancelled_void_and_no_show" />
                         </AccordionTab> 
                     </Accordion>
                 </TabPanel>

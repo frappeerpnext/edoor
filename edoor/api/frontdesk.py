@@ -703,7 +703,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             )
     """,filter, as_dict=1)
     #get cancell and void by today obly
-    cancelled_and_void = frappe.db.sql("""
+    cancelled_void_and_no_show = frappe.db.sql("""
         select 
             reservation,
             name,
@@ -732,19 +732,20 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
         where
             property = %(property)s and 
             is_active_reservation = 0 and
-            reservation_status in ('Cancelled','Void') and 
+            reservation_status in ('Cancelled','Void','No Show') and 
             cancelled_date =%(date)s and 
             name in (
-            select distinct c.parent from `tabReservation Stay Room` c
-            where
-                %(date)s between start_date and end_date and 
-                c.property = %(property)s and 
-                c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
-                c.is_active_reservation = 0 and 
-                c.reservation_status in ('Cancelled','Void') 
+                select distinct c.parent from `tabReservation Stay Room` c
+                where
+                    %(date)s between start_date and end_date and 
+                    c.property = %(property)s and 
+                    c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                    c.is_active_reservation = 0 and 
+                    c.reservation_status in ('Cancelled','Void','No Show') 
             )
     """,filter, as_dict=1)
 
+    cancelled_void_and_no_show = [d for d in cancelled_void_and_no_show if d["is_reserved_room"]==0]
 
 
 
@@ -802,7 +803,7 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
         "pickup_drop_off":pickup_drop_off,
         "inactive_reservation":inactive_reservation,
         "room_block":room_block,
-        "today_cancelled_and_void":cancelled_and_void
+        "cancelled_void_and_no_show":cancelled_void_and_no_show
     }
 
     return data
