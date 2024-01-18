@@ -822,7 +822,6 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             room_type_id,
             room_type_alias
     """.format(date,property, room_type_id or '') 
-
     
     data = frappe.db.sql(sql, as_dict=1)
     

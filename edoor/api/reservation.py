@@ -2575,6 +2575,7 @@ def unreserved_room(property, reservation_stay):
     frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 0 where parent='{}'".format(stay.name))
     frappe.db.sql("delete from `tabTemp Room Occupy`  where reservation_stay='{}'".format(stay.name))
     frappe.db.sql("delete from `tabRoom Occupy`  where reservation_stay='{}'".format(stay.name))
+    
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
 
     frappe.db.commit()
@@ -2626,7 +2627,7 @@ def reserved_room(property, reservation_stay):
 
 
     frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='default', stay_names=[stay.name] )
-    
+
     
     #show no show reservation to room chart
     frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 1 where parent='{}'".format(stay.name))
@@ -3043,21 +3044,24 @@ def check_reservation_exist_in_future(property, fieldname,value):
 @frappe.whitelist()  
 def verify_reservation_stay(stay_name= None):
     stay = frappe.get_doc("Reservation Stay", stay_name)
+    # verify room occupy and temp room occupy
+    # if total record not matchy with room nights then regenerate it again
     
-    sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
- 
-    data = frappe.db.sql(sql,as_dict=1)
-     
-    if not  cint(stay.room_nights) == cint(data[0]["total"])-1 :
- 
-        generate_room_occupy(self=stay)
+    if stay.is_active_reservation ==1 or (stay.reservation_status=='No Show' and stay.is_reserved_room==1):
+        sql = "select count(name) as total from `tabRoom Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
+    
+        data = frappe.db.sql(sql,as_dict=1)
+        
+        if not  cint(stay.room_nights) == cint(data[0]["total"])-1 :
+    
+            generate_room_occupy(self=stay)
 
- 
+    
 
-    sql = "select count(name) as total from `tabTemp Room Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
-    data = frappe.db.sql(sql,as_dict=1)
-    if not cint(stay.room_nights) == cint(data[0]["total"]) :
-        generate_temp_room_occupy(self=stay)
+        sql = "select count(name) as total from `tabTemp Room Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
+        data = frappe.db.sql(sql,as_dict=1)
+        if not cint(stay.room_nights) == cint(data[0]["total"]) :
+            generate_temp_room_occupy(self=stay)
 
     
 
