@@ -444,7 +444,8 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             adr,
             total_room_rate,
             reservation_status,
-                                  status_color
+            room_rate_discount,
+            status_color
         from `tabReservation Stay`
         where
             name in (
@@ -685,9 +686,16 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             is_reserved_room
         from `tabReservation Stay`
         where
-            cancelled_date = %(date)s and
             property = %(property)s and 
-            is_active_reservation = 0
+            is_active_reservation = 0 and 
+            name in (
+            select distinct c.reservation_stay from `tabRoom Occupy` c
+            where
+                c.date = %(date)s and 
+                c.property = %(property)s and 
+                c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
+                c.is_active_reservation = 0
+            )
     """,filter, as_dict=1)
 
     #if room type is set 

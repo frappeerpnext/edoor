@@ -5,7 +5,7 @@
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column header="Reservation #">
+        <Column header="Reservation #" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_detail', slotProps.data.reservation)" link>
@@ -13,7 +13,7 @@
                 </Button>
             </template>
         </Column>
-        <Column field="name" header="Stay #">
+        <Column field="name" header="Stay #" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_stay_detail', slotProps.data.name)" link>
@@ -22,7 +22,7 @@
             </template>
         </Column>
         <Column field="reference_number" header="Ref. #"></Column>
-        <Column field="name" header="PAX(A/C)">
+        <Column field="name" header="PAX(A/C)" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps?.data.adult }} / {{ slotProps?.data.child }}
             </template>
@@ -84,7 +84,7 @@
         </Column>
         <Column headerClass="text-right" bodyClass="text-right" header="Discount">
             <template #body="slotProps">
-                <CurrencyFormat :value="slotProps?.data.discount" />
+                <CurrencyFormat :value="slotProps?.data.room_rate_discount" />
             </template>
 
         </Column>
@@ -101,14 +101,50 @@
                         slotProps?.data.reservation_status }}</span>
             </template>
         </Column>
+        <ColumnGroup type="footer">
+            <Row>
+                <Column footer="Total:" :colspan="2" footerStyle="text-align:right" />
+                <Column :colspan="2" footerStyle="text-align:right" />
+                <Column footerStyle="text-align:center">
+                    <template #footer>
+                        {{ getTotal('adult') }}/{{ getTotal('child') }}
+                    </template>
+                </Column>
+                <Column :colspan="3"/>
+                
+                <Column footerStyle="text-align:center">
+                    <template #footer>
+                        {{ getTotal('room_nights') }}
+                    </template>
+                </Column>
+                <Column :colspan="2"/>
+                <Column footerStyle="text-align:end">
+                    <template #footer>
+                        <CurrencyFormat :value="getTotal('total_room_rate') / getTotal('room_nights')" />
+                    </template>
+                </Column>
+                <Column footerStyle="text-align:end">
+                    <template #footer>
+                        <CurrencyFormat :value="getTotal('room_rate_discount')" />
+                    </template>
+                </Column>
+                <Column footerStyle="text-align:end">
+                    <template #footer>
+                        <CurrencyFormat :value="getTotal('total_room_rate')" />
+                    </template>
+                </Column>
+                <Column :colspan="1"/>
+            </Row>
+        </ColumnGroup>
     </DataTable>
 </template>
 <script setup>
-import { inject, getDoc } from '@/plugin';
+import { inject, getDoc, ref } from '@/plugin';
 const moment = inject("$moment")
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 
 import { useDialog } from 'primevue/usedialog';
+
 const dialog = useDialog();
 const props = defineProps({
     data: Object
@@ -116,10 +152,7 @@ const props = defineProps({
 function onViewDetail(action, name) {
 
     window.postMessage(action + "|" + name, "*")
-}
-// function onAssignRoom(room_name, reservation_stay) {
-//     window.postMessage('assign_room|' + reservation_stay + '|' + room_name, '*') 
-// }
+} 
 
 function onAssignRoom(data) {
     getDoc("Reservation Stay", data.name).then(doc => {
@@ -148,4 +181,7 @@ function onAssignRoom(data) {
     })
 }
 
+const getTotal = ref((column_name) => { 
+    return props.data?.reduce((n, d) => n + d[column_name], 0)
+});
 </script>
