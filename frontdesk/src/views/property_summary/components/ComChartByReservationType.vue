@@ -16,7 +16,7 @@ function renderChart() {
         datasets: [
             {
                 name: "Reservation Type",
-                values: [props.param.fit_reservation_arrival + props.param.fit_stay_arrival,props.param.git_reservation_arrival + props.param.git_stay_arrival],
+                values: [props.param.total_fit_stay,props.param.total_git_stay],
                 type: "pie"
             }
         ],

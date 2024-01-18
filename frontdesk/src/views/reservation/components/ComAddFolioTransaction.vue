@@ -686,7 +686,7 @@ function onSave() {
         .then((doc) => {
             isSaving.value = false
             dialogRef.value.close(doc)
-            console.log(doc);
+            console.log(data);
             window.socket.emit("ReservationList", { property: window.property_name })
             window.socket.emit("ComGuestLedger", { property: window.property_name })
             window.socket.emit("ReservationStayList", { property: window.property_name })
@@ -704,6 +704,7 @@ function onSave() {
             window.socket.emit("ComDeskFolioDetail", { property: window.property_name })
             window.socket.emit("DepositLedger", { property: window.property_name })
             window.socket.emit("ComDepositLedgerDetail", { property: window.property_name })
+            window.socket.emit("ComFolioTransactionSimpleStyle", { property: window.property_name })
 
         }).catch((err) => {
             isSaving.value = false;

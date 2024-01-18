@@ -187,12 +187,15 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     #get data from occupy data 
     stay_sql = """SELECT
                     SUM(reservation_status = 'No Show' and is_active=1 and is_active_reservation=0) AS `total_no_show`, 
-                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_status in ('Reserved','Confirmed')) AS `arrival_remaining`,
-                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
-                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
-                    sum( is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='FIT') AS `total_fit_stay_arrival`,
-                    SUM( is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`,
-                    SUM( is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
+                    SUM( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_status in ('Reserved','Confirmed')) AS `arrival_remaining`,
+                    sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
+                    sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='GIT') AS `total_git_stay_arrival`,
+                    sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_type='FIT') AS `total_fit_stay_arrival`,
+                    sum( type='Reservation' and  is_active=1 and reservation_type='GIT') AS `total_git_stay`,
+                    sum( type='Reservation' and  is_active=1 and reservation_type='FIT') AS `total_fit_stay`,
+
+                    SUM( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`,
+                    SUM( type='Reservation' and  is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
                 FROM `tabRoom Occupy` 
                 WHERE  
                     date = '{1}' and 
@@ -371,6 +374,8 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         "total_room_block": total_room_block,
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
+        "total_git_stay":stay[0]["total_git_stay"] or 0,
+        "total_fit_stay":stay[0]["total_fit_stay"] or 0,
         "daily_reservation": frappe.db.sql(daily_reservation_sql,as_dict=1)[0]["total"] or 0 ,
         "daily_reservation_stay":frappe.db.sql(daily_reservation_stay_sql,as_dict=1)[0]["total"] or 0 ,
         "reservation_by_business_source":reservation_by_business_source,
@@ -803,8 +808,8 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             sum(type='Reservation' and is_active =1 ) as total_room_sold,
             sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,adult,0) ) as adult,
             sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,child,0) ) as child,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1  and reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1  and reservation_type='GIT') as git,
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
@@ -877,8 +882,8 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
             sum(type='Reservation' and is_active =1 ) as total_room_sold,
             sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,adult,0) ) as adult,
             sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,child,0) ) as child,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1 and  reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1 and  reservation_type='GIT') as git,
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
@@ -957,8 +962,8 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
             sum(type='Reservation' and is_active =1 ) as total_room_sold,
             sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,adult,0) ) as adult,
             sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,child,0) ) as child,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='FIT') as fit,
-            sum(type='Reservation' and is_active=1 and is_active_reservation=1 and reservation_type='GIT') as git,
+            sum(type='Reservation' and is_active=1 and reservation_type='FIT') as fit,
+            sum(type='Reservation' and is_active=1 and reservation_type='GIT') as git,
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,

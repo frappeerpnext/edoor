@@ -12,11 +12,11 @@ function getStatusColor(status) {
 }
 function renderChart() {
     const data = {
-        labels: ["Arrival", "Stay Over", "Departure"],
+        labels: ["Arrival", "Stay Over", "Departure","No Show"],
         datasets: [
             {
                 name: "Reservation",
-                values: [props.param.arrival, props.param.stay_over, props.param.departure],
+                values: [props.param.arrival, props.param.stay_over, props.param.departure, props.param.no_show],
                 type: "pie"
             }
         ],
@@ -28,7 +28,7 @@ function renderChart() {
         data: data,
         type: "pie",
         height: 250,
-        colors: [getStatusColor("Reserved"), getStatusColor("In-house"), getStatusColor("Checked Out")],
+        colors: [getStatusColor("Reserved"), getStatusColor("In-house"), getStatusColor("Checked Out"),getStatusColor("No Show")],
         valuesOverPoints: 1
     }
     const chart = new Chart("#reservation_chart", chartConfig)
