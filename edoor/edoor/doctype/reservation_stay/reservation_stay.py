@@ -385,6 +385,7 @@ def generate_room_rate(self, run_commit = True):
 					"property":self.property,
 					"regenerate_rate":regenerate_rate,
 					"is_active_reservation":1,
+					"is_active":1,
 					"is_arrival": 1 if getdate(d) == getdate(self.arrival_date) else 0 
 				}).insert()
 			else:
@@ -479,7 +480,7 @@ def update_reservation_stay_room_rate_after_resize(data, stay_doc):
 				"property":stay_doc.property,
 				"regenerate_rate":0 if (data["generate_rate_type"] =="stay_rate") else 1,
 				"is_active_reservation":1,
-				
+				"is_active":1
 			}).insert()
 		
 

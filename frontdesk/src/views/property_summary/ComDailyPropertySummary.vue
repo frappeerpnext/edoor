@@ -1,4 +1,5 @@
 <template>
+    <Button @click="loadData" class="btn-refresh-in-night-audit arrival_guest"><i class="pi pi-refresh"></i></Button>
     <ComDialogContent hideButtonClose hideButtonOK>
         <ComSkeleton v-if="loading" />
         <template v-else>
@@ -78,6 +79,9 @@ import ComSummaryByReservationType from '@/views/property_summary/components/Com
 import ComSkeleton from '@/views/property_summary/components/ComSkeleton.vue';
 
 onMounted(() => {
+    loadData()
+})
+const loadData = () => {
     loading.value = true
     setTimeout(function () {
         getApi("frontdesk.get_daily_property_data_detail", {
@@ -91,9 +95,12 @@ onMounted(() => {
         }).catch(err => {
             loading.value = false
         })
-    }, 500)
-
-
-
-})
+    }, 500) 
+}
 </script>
+<style scoped>
+    .arrival_guest{
+        top:8px !important;
+        right:69px !important;
+    }
+</style>

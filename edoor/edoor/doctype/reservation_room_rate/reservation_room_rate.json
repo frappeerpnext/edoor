@@ -69,7 +69,8 @@
   "section_break_25",
   "total_rate",
   "note",
-  "is_active_reservation"
+  "is_active_reservation",
+  "is_active"
  ],
  "fields": [
   {
@@ -422,11 +423,17 @@
    "fieldname": "child",
    "fieldtype": "Int",
    "label": "Child"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-01 14:45:13.394097",
+ "modified": "2024-01-18 10:25:39.090278",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Room Rate",

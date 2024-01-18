@@ -1,4 +1,4 @@
-<template>   
+<template>    
     <DataTable :value="data" paginator :rows="20" tableStyle="min-width: 50rem" :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column header="No" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
@@ -81,6 +81,12 @@
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.adr" />
             </template>
+        </Column>
+        <Column headerClass="text-right" bodyClass="text-right" header="Discount">
+            <template #body="slotProps">
+                <CurrencyFormat :value="slotProps?.data.discount" />
+            </template>
+
         </Column>
         <Column headerClass="text-right" bodyClass="text-right" header="Total Room Rate">
             <template #body="slotProps">

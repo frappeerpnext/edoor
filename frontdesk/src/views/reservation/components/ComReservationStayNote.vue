@@ -133,8 +133,9 @@ function onSave() {
             } else {
                 window.socket.emit("ReservationStayDetail", { reservation_stay: rs.reservationStay.name })
             }
-            if (dataUpdate.value.is_apply_reseration)
+            if (dataUpdate.value.is_apply_reseration){
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            }     
             op.value.hide()
         }).catch((err) => {
             saving.value = false

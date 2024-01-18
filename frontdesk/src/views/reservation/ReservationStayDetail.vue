@@ -1,4 +1,5 @@
 <template>
+    
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">

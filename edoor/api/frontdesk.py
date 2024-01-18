@@ -834,7 +834,7 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
-            is_active_reservation = 1 and 
+            is_active = 1 and 
             `date` = '{0}' AND 
             property = '{1}' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
@@ -907,7 +907,7 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
-            is_active_reservation = 1 and 
+            is_active = 1 and 
             `date` = '{0}' AND 
             property = '{1}' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
@@ -987,7 +987,7 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
             sum(total_rate) as total_rate
         from `tabReservation Room Rate`
         WHERE 
-            is_active_reservation = 1 and 
+            is_active = 1 and 
             `date` = '{0}' AND 
             property = '{1}' and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
