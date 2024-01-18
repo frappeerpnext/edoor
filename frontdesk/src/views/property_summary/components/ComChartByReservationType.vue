@@ -19,7 +19,8 @@ function renderChart() {
                 values: [props.param.fit_reservation_arrival + props.param.fit_stay_arrival,props.param.git_reservation_arrival + props.param.git_stay_arrival],
                 type: "pie"
             }
-        ]
+        ],
+      
     };
 
 
@@ -27,7 +28,7 @@ function renderChart() {
         data: data,
         type: "pie",
         height: 250,
-        
+        valuesOverPoints: 1
 
     }
     const chart = new Chart("#reservation_type_chart", chartConfig)

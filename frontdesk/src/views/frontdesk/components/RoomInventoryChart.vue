@@ -63,7 +63,6 @@ function renderChart(){
             spaceRatio: 0.3
         },
         valuesOverPoints: 1
-        ,
     }
     const chart = new Chart("#room_inventory_occupancy_chart",chartConfig)
 

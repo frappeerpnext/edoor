@@ -303,12 +303,13 @@ def fix_generate_duplicate_room_occupy():
     sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
     data = frappe.db.sql(sql,as_dict=1)
     if len(data)> 0:
-        for s in data:
-            generate_room_occupy(stay_name=s["reservation_stay"])
+        for s in set([d["reservation_stay"] for d  in data]):
+            generate_room_occupy(stay_name=s)
     #temp room occupy
     sql = "select reservation_stay,date,count(name) as total from `tabTemp Room Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
     data = frappe.db.sql(sql,as_dict=1)
     if len(data)> 0:
-        for s in data:
-            generate_temp_room_occupy(stay_name=s["reservation_stay"])
+        for s in set([d["reservation_stay"] for d  in data]):
+            generate_temp_room_occupy(stay_name=s)
+            
 

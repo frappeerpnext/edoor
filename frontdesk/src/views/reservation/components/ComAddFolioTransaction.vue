@@ -686,6 +686,7 @@ function onSave() {
         .then((doc) => {
             isSaving.value = false
             dialogRef.value.close(doc)
+            console.log(doc);
             window.socket.emit("ReservationList", { property: window.property_name })
             window.socket.emit("ComGuestLedger", { property: window.property_name })
             window.socket.emit("ReservationStayList", { property: window.property_name })

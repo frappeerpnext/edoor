@@ -20,7 +20,8 @@ function renderChart() {
                 values: props.param.map(r=>r.total),
                 
             }
-        ]
+        ],
+        
     };
 
 
@@ -28,7 +29,7 @@ function renderChart() {
         data: data,
         type: "bar",
         height: 250,
-        
+        valuesOverPoints: 1
 
     }
     const chart = new Chart("#business_source_chart", chartConfig)

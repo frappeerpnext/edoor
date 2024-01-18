@@ -19,7 +19,8 @@ function renderChart() {
                 values: [props.param.arrival, props.param.stay_over, props.param.departure],
                 type: "pie"
             }
-        ]
+        ],
+        
     };
 
 
@@ -27,8 +28,8 @@ function renderChart() {
         data: data,
         type: "pie",
         height: 250,
-        colors: [getStatusColor("Reserved"), getStatusColor("In-house"), getStatusColor("Checked Out")]
-
+        colors: [getStatusColor("Reserved"), getStatusColor("In-house"), getStatusColor("Checked Out")],
+        valuesOverPoints: 1
     }
     const chart = new Chart("#reservation_chart", chartConfig)
 
