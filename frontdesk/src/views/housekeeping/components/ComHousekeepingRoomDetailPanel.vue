@@ -1,4 +1,5 @@
 <template>
+    <!-- {{ hk.reservationStay }} -->
     <div class="pb-20">
         <div class="">
             <hr class="mb-3">
@@ -90,7 +91,7 @@
             </template>
         </div>
         <div v-if="hk.reservationStay?.owner || hk.reservationStay?.modified_by">
-            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">Note</div>
+            <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium text-center">{{ hk.reservationStay.housekeeping_note }}</div>
             <div class="mb-5 leading-5 text-sm ">
                 <div class="mt-auto">
                     <span class="italic">Created by: </span>

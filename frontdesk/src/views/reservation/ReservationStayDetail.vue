@@ -44,6 +44,9 @@
                         <Button @click="onReservedRoom" class="conten-btn border-1" serverity="waring">Reserve Room</Button>
                     </div>
                 </Message>
+                <Message v-if="rs.reservationStay.reservation_status=='Checked Out' && rs.reservationStay.departure_date != rs.reservationStay.checked_out_system_date" severity="info">
+                    This guest is early checked out. Check out date is {{  moment(rs.reservationStay.checked_out_system_date).format("DD-MM-YYYY") }}
+                </Message>
                 <TabView lazy v-model:activeIndex="activeTab">
                     <TabPanel header="General Information">
                         <div class="grid mt-2 ml-0 ms-0">
