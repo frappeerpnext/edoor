@@ -125,7 +125,6 @@ function renderChart(){
     stacked: true,
     spaceRatio: 0.3
   },
-  valuesOverPoints: 1
 }
 const chart = new Chart("#occupancy_chart",chartConfig)
 

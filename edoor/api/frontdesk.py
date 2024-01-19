@@ -301,7 +301,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     sql = "SELECT count(name) AS `total_room_block` FROM `tabRoom Occupy` WHERE `date` = '{0}' AND property = '{1}' and type='Block' and room_type_id = if('{2}'='',room_type_id,'{2}');".format(date,property,room_type_id or '')
     total_room_block = frappe.db.sql(sql,as_dict=1)
     total_room_block = total_room_block[0]["total_room_block"] or 0
-
+    
     vacant_room =  frappe.db.sql("""select count(name) as total_room from `tabRoom` where name not in (
             select 
                 ifnull(room_id,'') 
@@ -309,9 +309,11 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
             where 
                 is_active = 1 and
                 `date` = '{1}' AND 
-            is_departure = 0 and
+                room_type_id = if('{2}'='',room_type_id,'{2}') and 
                 property = '{0}'
-        )""".format(property, date),as_dict=1)
+        ) and 
+        room_type_id = if('{2}'='',room_type_id,'{2}')                      
+        """.format(property, date,room_type_id),as_dict=1)
     
     if len(vacant_room)>0:
         vacant_room = vacant_room[0]["total_room"]

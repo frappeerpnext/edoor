@@ -19,15 +19,15 @@
                         <h3 class="text-2xl font-medium">{{ data.departure - data.departure_remaining }}</h3>
                         <span>Checked Out</span>
                     </div>
-                    <div v-tippy="'No Show Reserved Room'" class="col line-height-1 border-right-1"
-                        style="color: rgb(130, 130, 5);">
-                        <h3 class="text-2xl font-medium">{{ data.total_no_show }}</h3>
-                        <span>N/S Reserved Room</span>
-                    </div>
                     <div v-tippy="'Today Reserved Room'" class="col line-height-1 border-right-1"
                         style="color: rgb(130, 130, 5);">
                         <h3 class="text-2xl font-medium">{{ data.today_no_show }}</h3>
                         <span>Today N/S</span>
+                    </div>
+                    <div v-tippy="'No Show Reserved Room'" class="col line-height-1 border-right-1"
+                        style="color: rgb(130, 130, 5);">
+                        <h3 class="text-2xl font-medium">{{ data.total_no_show }}</h3>
+                        <span>N/S Reserved Room</span>
                     </div>
                     <div class="col line-height-1 border-right-1" style="color:rgb(237, 99, 150);">
                         <h3 class="text-2xl font-medium">{{ data.total_cancelled }}</h3>
