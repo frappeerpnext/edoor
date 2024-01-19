@@ -849,7 +849,7 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
-            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and  is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
             sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
@@ -923,7 +923,7 @@ def get_daily_summary_by_business_source(property = None,date = None,room_type_i
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
-            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
             sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
@@ -1003,7 +1003,7 @@ def get_daily_summary_by_reservation_type(property = None,date = None,room_type_
             sum(type='Reservation' and is_active=1 and is_active_reservation=1 and pick_up=1) as pick_up,
             sum(type='Reservation' and is_active_reservation=1  and is_departure=1 and drop_off=1) as drop_off,
             sum(type='Reservation' and is_active = 1 and is_active_reservation = 1 and is_arrival=1) as arrival,
-            sum(type='Reservation' and is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
+            sum(type='Reservation' and is_active=1 and  is_arrival=1 and is_active_reservation = 1 and reservation_status in ('In-house','Checked Out') ) as checked_in,
             sum(type='Reservation' and is_active=1 and is_active_reservation = 1 and is_stay_over = 1) as stay_over,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 ) as departure,
             sum(type='Reservation' and is_active_reservation = 1 and is_departure=1 and reservation_status='Checked Out' ) as checked_out ,
@@ -2476,12 +2476,14 @@ def get_arrival_stay_over_departure_backend():
                         status_color
                     from `tabReservation Stay` 
                     where 
-                        (property = '{0}' and 
-                        is_active_reservation = 1 and 
-                        departure_date = '{1}') or
-                        (property = '{0}' and 
-                        is_active_reservation = 1 and 
-                        checked_out_system_date = '{1}')
+                        name in (
+                        select reservation_stay from `tabRoom Occupy`
+                        where
+                            date = '{1}' and 
+                            property='{0}' and 
+                            is_departure = 1 and 
+                            is_active_reservation= 1 
+                        )
                     """.format(property,date)
             data["departure"] = frappe.db.sql(sql,as_dict=1)
              
