@@ -103,14 +103,10 @@ def get_reservation_stay_detail(name):
         master_guest = frappe.get_doc("Customer",reservation.guest)
 
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
-    folio_names =frappe.get_all("Reservation Folio",filters={"reservation_stay":name}, page_length=10000,pluck='name')
-    
-    reservaiton_room_rates =frappe.get_all("Reservation Room Rate",filters={"reservation_stay":name}, page_length=10000,pluck='name')
+  
 
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
     
-
-    
-
     return {
         "reservation":reservation,
         "total_reservation_stay": total_reservation_stay,
@@ -283,6 +279,9 @@ def check_room_occupy(property,room_type_id, room_id, start_date=None, end_date=
 
 @frappe.whitelist(methods="POST")
 def add_new_reservation(doc):
+    if not  "rate_type"  in doc["reservation"]:
+        frappe.throw("Please select rate type")
+
     #for group booking stay can be 0 
     if len(doc["reservation_stay"]) == 0:
         frappe.throw("Please select room to add reservation")
@@ -3058,8 +3057,8 @@ def verify_reservation_stay(stay_name= None):
     
         data = frappe.db.sql(sql,as_dict=1)
         
-        if not  cint(stay.room_nights) == cint(data[0]["total"])-1 :
-    
+        if not  cint(stay.room_nights) == cint(data[0]["total"])-1:
+           
             generate_room_occupy(self=stay)
 
         sql = "select count(name) as total from `tabTemp Room Occupy` where reservation_stay = '{}' and date between '{}' and '{}'".format(stay_name, stay.arrival_date, stay.departure_date)
