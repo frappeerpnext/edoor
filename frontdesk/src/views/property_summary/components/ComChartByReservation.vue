@@ -12,7 +12,7 @@ function getStatusColor(status) {
 }
 function renderChart() {
     const data = {
-        labels: ["Arrival", "Stay Over", "Departure","No Show"],
+        labels: ["Arrival", "Stay Over", "Departure","N/S Reserved Room"],
         datasets: [
             {
                 name: "Reservation",

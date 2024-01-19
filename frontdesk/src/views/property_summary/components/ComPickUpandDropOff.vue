@@ -23,7 +23,7 @@
                 </Button>
             </template>
         </Column>
-        <Column field="reference_number" header="Ref #" headerClass="text-center" bodyClass="text-center" />
+        <Column field="reference_number" header="Ref #" headerClass="text-center" headerStyle="min-width:100px;" bodyClass="text-center" />
         <Column header="Pax(A/C)" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.adult }} / {{ slotProps.data.child }}
@@ -69,7 +69,7 @@
 
         </Column>
         <Column field="mode" header="Mode"/>
-        <Column field="flight_number" header="Flight #"/>
+        <Column field="flight_number" header="Flight #" headerStyle="min-width:100px;"/>
         <Column field="location" header="Location"/>
         <Column field="driver_name" header="Driver"/>
         <Column field="driver_phone_number" header="Phone #"/>

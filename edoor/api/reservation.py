@@ -1714,6 +1714,7 @@ def update_reservation_status(reservation, stays, status, note,reserved_room=Tru
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[s["name"] for s in stays])
 
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
 
     return stays
@@ -2576,10 +2577,11 @@ def unreserved_room(property, reservation_stay):
     frappe.db.sql("delete from `tabTemp Room Occupy`  where reservation_stay='{}'".format(stay.name))
     frappe.db.sql("delete from `tabRoom Occupy`  where reservation_stay='{}'".format(stay.name))
     
-    frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
 
     frappe.db.commit()
     frappe.msgprint("Unreserved room successfully")
+    frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
 @frappe.whitelist(methods="POST")
 def reserved_room(property, reservation_stay):
@@ -2630,6 +2632,7 @@ def reserved_room(property, reservation_stay):
     frappe.db.commit()
     frappe.msgprint("Reserved room successfully")
     frappe.enqueue("edoor.api.reservation.update_reservation_room_rate", queue='long', stays=[stay.name])
+    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
 
 
 @frappe.whitelist()

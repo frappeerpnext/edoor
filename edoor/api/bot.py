@@ -1,31 +1,33 @@
+#updater = Updater('5027474274:AAGiZtbOzO1xCNOql0B5PuxTDIG9GncGd6Y', True)
+import frappe
+from telegram.ext import *
+ 
+    
+print('Starting a bot....')
 
-from telegram import Bot,Update
-from telegram.ext import Updater,CommandHandler
-from telegram.utils.request import Request
-import os
-from datetime import datetime
+     
+async def start_commmand(update, context):
+    await update.message.reply_text('Hello! your odrer is here ')
+    print(update)
+
+async def start_commmand2(update, context):
+    await update.message.reply_text('Hello! than for ur order')
+
+async def send_today_revenue(update, context):
+    data =["Pheakdey"]
+    data = frappe.get_doc("Sale","SO2024-0175")
+    
+    
+    await update.message.reply_text(data.name)
 
 
+if __name__ == '__main__':
+    application = Application.builder().token('5027474274:AAGiZtbOzO1xCNOql0B5PuxTDIG9GncGd6Y').build()
 
-pwd="5027474274:AAGiZtbOzO1xCNOql0B5PuxTDIG9GncGd6Y"
+    # Commands
+    application.add_handler(CommandHandler('myorder', start_commmand))
+    application.add_handler(CommandHandler('neworder', start_commmand2))
+    application.add_handler(CommandHandler('TodayRevenue', send_today_revenue))
 
-def get_time(update,context):
-    print(update.message.text)
-    now=datetime.now()
-    dt_string=now.strftime("%d/%m/%Y_%H:%M:%S")
-    update.message.reply_text(f"Current Time is : {dt_string}")
-
-def main():
-    req=Request(connect_timeout=0.5)
-    my_bot=Bot(token=pwd,request=req)
-    updater=Updater(bot=my_bot,use_context=True)
-    dp=updater.dispatcher
-#adding commands
-    cmd=[("gettime","get the current date time in string format")]
-    my_bot.set_my_commands(cmd)
-    dp.add_handler(CommandHandler("gettime",get_time))
-    updater.start_polling()
-    updater.idle()
-
-if __name__=="__main__":
-    main()
+    # Run bot
+    application.run_polling(1.0)

@@ -35,7 +35,7 @@
                         <AccordionTab :header="'No Show Reserved Room (' + data?.inactive_reservation.length + ')'">
                             <ComInactiveReservation :data="data?.inactive_reservation" />
                         </AccordionTab> 
-                        <AccordionTab :header="'Cancelled, Void & No Show (' + data?.cancelled_void_and_no_show.length + ')'">
+                        <AccordionTab :header="'Today No Show, Cancelled & Void  (' + data?.cancelled_void_and_no_show.length + ')'">
                             <ComInactiveReservation :data="data?.cancelled_void_and_no_show" />
                         </AccordionTab> 
                     </Accordion>

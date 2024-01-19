@@ -186,6 +186,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     
     #get data from occupy data 
     stay_sql = """SELECT
+
                     SUM(reservation_status = 'No Show' and is_active=1 and is_active_reservation=0) AS `total_no_show`, 
                     SUM( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and reservation_status in ('Reserved','Confirmed')) AS `arrival_remaining`,
                     sum( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1) AS `total_arrival`,
@@ -195,7 +196,9 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                     sum( type='Reservation' and  is_active=1 and reservation_type='FIT') AS `total_fit_stay`,
 
                     SUM( type='Reservation' and  is_active=1 and is_active_reservation=1 and is_arrival=1 and pick_up=1 ) AS `pick_up`,
-                    SUM( type='Reservation' and  is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`
+                    SUM( type='Reservation' and   is_active_reservation=1 and drop_off=1 ) AS `drop_off`,
+                    SUM( type='Reservation' and  is_active_reservation=1 and reservation_status = 'In-house' ) AS `total_in_house`,
+                    SUM( type='Reservation' and  is_active_reservation=1 and is_stay_over=1 ) AS `total_stay_over`
                 FROM `tabRoom Occupy` 
                 WHERE  
                     date = '{1}' and 
@@ -225,8 +228,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     #filter base on departure date
     stay_sql = """SELECT 
                     SUM(if(reservation_status in ('In-house','Reserved','Confirmed'),1,0)) AS `departure_remaining`,
-                    sum(if(is_active_reservation = 1, 1, 0)) AS `total_departure`,
-                    SUM(if(require_drop_off = 1  AND  is_active_reservation = 1, 1, 0)) AS `drop_off`
+                    sum(if(is_active_reservation = 1, 1, 0)) AS `total_departure`
                 FROM `tabReservation Stay` 
                 WHERE 
                      name in (
@@ -246,22 +248,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
     stay =[stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
 
 
-    #get stay over
-    stay_sql = """SELECT 
-                    count(name) AS `total_stay_over`
-                FROM `tabRoom Occupy` 
-                WHERE   
-                    type='Reservation' and
-                    is_stay_over = 1 and
-                    date = '{0}'  AND  
-                    property = '{1}' and 
-                    room_type_id = if('{2}'='',room_type_id,'{2}') and  
-                    reservation_status in ('In-house', 'Confirmed','Reserved','Checked Out')
-                ;""".format(date,property,room_type_id or "")
-    
- 
 
-    stay = [stay[0] | frappe.db.sql(stay_sql, as_dict=1)[0]]
     
 
     git_reservation_sql = """

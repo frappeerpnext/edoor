@@ -81,7 +81,7 @@
         </template>
         
     </Column>
-    <Column field="status_color" header="Status">
+    <Column field="status_color" header="Status" headerClass="text-center" bodyClass="text-center">
         <template  #body="slotProps">
             <span class="px-2 rounded-lg text-white p-1px border-round-3xl" :style="{ backgroundColor: slotProps?.data.status_color }">{{ slotProps?.data.reservation_status}}</span>
         </template>

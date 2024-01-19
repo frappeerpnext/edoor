@@ -55,7 +55,7 @@
                     <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label && !skip_columns.includes(r.fieldname))" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
                     :frozen="c.frozen">
                         <template #body="slotProps" >
-                            <span  :class="slotProps.data['disabled'] ? 'row-disabled':''">
+                            <span  :class="slotProps.data['is_disabled'] ? 'row-disabled':''">
                                 <Button v-if="c.fieldtype=='Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)" link>
                                     {{ slotProps.data[c.fieldname] }} 
                                     <span v-if="c.extra_field_separator" v-html="c.extra_field_separator" > </span>
@@ -230,7 +230,7 @@ function loadData(show_loading = true) {
     let fields = [...columns.value.map(r=>r.fieldname),  ...columns.value.map(r=>r.extra_field)]
     fields = [...fields , ...selectedColumns.value]
     fields =  [...new Set(fields.filter(x=>x))]
-    fields.push('disabled')
+    fields.push('is_disabled')
     getDocList('Customer', {
         fields: fields,
         orderBy: {
