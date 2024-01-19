@@ -54,7 +54,7 @@ const confirm = useConfirm();
 const reservationStays = ref([])
 
 function onOk() {
-    if(rs.room_rates[0].total_rate==0){
+    if(rs.room_rates[0]?.total_rate && rs.room_rates[0].total_rate==0){
         confirm.require({
         message: 'Are you sure you want to proceed Check In with rate 0?',
         header: 'Confirmation',
