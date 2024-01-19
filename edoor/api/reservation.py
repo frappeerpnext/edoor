@@ -996,21 +996,18 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
     # validate room occupy
     if int(frappe.db.get_single_value("eDoor Setting","enable_over_booking"))!=1:
         for s in reservation_stays:
-            room_ids = frappe.db.sql ("select GROUP_CONCAT(room_id separator ',') as room_id from `tabReservation Stay Room` where parent='{}'".format(s),as_dict=1)
-            if (len(room_ids)>0):
-                arrival,departure = frappe.db.get_value("Reservation Stay", s, ["arrival_date","departure_date"]) 
-                room_ids = (room_ids[0]["room_id"].split(","))
-                occupied  =frappe.db.sql("select room_id, date from `tabTemp Room Occupy` where room_id in %(room_ids)s and date between %(start_date)s and %(end_date)s order by date desc limit 1",
-                                        {
-                                            "room_ids":room_ids,
-                                            "start_date":arrival,
-                                            "end_date":add_to_date(departure, days=-1)
-
-                                        },
-                                        as_dict = 1)
-                if len(occupied):
-                    room_number = frappe.db.get_value("Room", occupied[0]["room_id"], "room_number")
-                    frappe.throw("Room number {} is not available on {}".format( room_number,frappe.format_value(occupied[0]["date"], "Date")))
+            room_stay_data = frappe.db.sql("select room_id,room_number,start_date,end_date from `tabReservation Stay Room` where parent='{}'".format(s),as_dict=1)
+            if (len(room_stay_data)>0):
+                for r in room_stay_data:
+                    occupied  =frappe.db.sql("select room_id, date from `tabTemp Room Occupy` where room_id=%(room_id)s and date between %(start_date)s and %(end_date)s order by date desc limit 1",
+                                            {
+                                                "room_id":r["room_id"],
+                                                "start_date":r["start_date"],
+                                                "end_date":add_to_date(r["end_date"], days=-1)
+                                            },
+                                            as_dict = 1)
+                    if len(occupied):
+                        frappe.throw("Room number {} is not available on {}".format( r["room_number"],frappe.format_value(occupied[0]["date"], "Date")))
 
     for s in reservation_stays:
         stay_doc = frappe.get_doc("Reservation Stay", s)

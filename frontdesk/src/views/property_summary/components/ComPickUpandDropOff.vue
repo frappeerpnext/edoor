@@ -1,5 +1,5 @@
 <template>
-    <DataTable :value="data"  paginator :rows="20" :rowsPerPageOptions="[5, 10, 20, 50]">
+    <DataTable :value="data" paginator :rows="20" :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column header="No" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ data.indexOf(slotProps.data) + 1 }}
@@ -23,7 +23,9 @@
                 </Button>
             </template>
         </Column>
-        <Column field="reference_number" header="Ref #" headerClass="text-center" headerStyle="min-width:100px;" bodyClass="text-center" />
+        <Column field="reference_number" header="Ref #" headerClass="text-center" headerStyle="min-width:100px;"
+            bodyClass="text-center" />
+        <Column field="business_source" header="Source"></Column>
         <Column header="Pax(A/C)" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.adult }} / {{ slotProps.data.child }}
@@ -42,44 +44,43 @@
         </Column>
         <Column header="Rooms" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
-                {{ slotProps.data.room_type_alias }} 
+                {{ slotProps.data.room_type_alias }}
                 <span v-if="slotProps.data.rooms">/ {{ slotProps.data.rooms }}</span>
             </template>
 
         </Column>
         <Column field="guest" header="Guest">
             <template #body="slotProps">
-                <Button class="p-0 link_line_action1"
-                    @click="onViewDetail('view_guest_detail', slotProps.data.guest)" link>
+                <Button class="p-0 link_line_action1" @click="onViewDetail('view_guest_detail', slotProps.data.guest)" link>
                     {{ slotProps.data.guest }} - {{ slotProps.data.guest_name }}
                 </Button>
 
             </template>
         </Column>
-        
-        <Column field="business_source" header="Source"/>
+
+        <Column field="business_source" header="Source" />
         <Column header="Time" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <span v-if="slotProps.data.time">
-                    {{ slotProps.data.time.split(":")[0] }} : 
-                    {{ slotProps.data.time.split(":")[1] }} 
+                    {{ slotProps.data.time.split(":")[0] }} :
+                    {{ slotProps.data.time.split(":")[1] }}
                 </span>
-                
+
             </template>
 
         </Column>
-        <Column field="mode" header="Mode"/>
-        <Column field="flight_number" header="Flight #" headerStyle="min-width:100px;"/>
-        <Column field="location" header="Location"/>
-        <Column field="driver_name" header="Driver"/>
-        <Column field="driver_phone_number" header="Phone #"/>
+        <Column field="mode" header="Mode" />
+        <Column field="flight_number" header="Flight #" headerStyle="min-width:100px;" />
+        <Column field="location" header="Location" />
+        <Column field="driver_name" header="Driver" />
+        <Column field="driver_phone_number" header="Phone #" />
         <Column header="Type" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.type }}
             </template>
         </Column>
-        <Column field="note" header="Note"/>
-        
+        <Column field="note" header="Note" />
+
     </DataTable>
 </template>
 <script setup>

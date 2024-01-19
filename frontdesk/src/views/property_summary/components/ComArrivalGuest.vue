@@ -1,4 +1,4 @@
-<template>    
+<template>
     <DataTable :value="data" paginator :rows="20" tableStyle="min-width: 50rem" :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column header="No" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
@@ -22,6 +22,7 @@
             </template>
         </Column>
         <Column field="reference_number" header="Ref. #"></Column>
+        <Column field="business_source" header="Source"></Column>
         <Column field="name" header="PAX(A/C)" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps?.data.adult }} / {{ slotProps?.data.child }}
@@ -58,8 +59,7 @@
                     </span>/<span v-if="slotProps?.data.rooms">
                         {{ slotProps?.data.rooms }}
                     </span>
-                    <span @click="onAssignRoom(slotProps?.data)" class="link_line_action w-auto"
-                        v-else>
+                    <span @click="onAssignRoom(slotProps?.data)" class="link_line_action w-auto" v-else>
                         <i class="pi pi-pencil"></i>
                         Assign Room
                     </span>
@@ -110,14 +110,14 @@
                         {{ getTotal('adult') }}/{{ getTotal('child') }}
                     </template>
                 </Column>
-                <Column :colspan="3"/>
-                
+                <Column :colspan="3" />
+
                 <Column footerStyle="text-align:center">
                     <template #footer>
                         {{ getTotal('room_nights') }}
                     </template>
                 </Column>
-                <Column :colspan="2"/>
+                <Column :colspan="2" />
                 <Column footerStyle="text-align:end">
                     <template #footer>
                         <CurrencyFormat :value="getTotal('total_room_rate') / getTotal('room_nights')" />
@@ -133,7 +133,7 @@
                         <CurrencyFormat :value="getTotal('total_room_rate')" />
                     </template>
                 </Column>
-                <Column :colspan="1"/>
+                <Column :colspan="1" />
             </Row>
         </ColumnGroup>
     </DataTable>
@@ -152,7 +152,7 @@ const props = defineProps({
 function onViewDetail(action, name) {
 
     window.postMessage(action + "|" + name, "*")
-} 
+}
 
 function onAssignRoom(data) {
     getDoc("Reservation Stay", data.name).then(doc => {
@@ -181,7 +181,7 @@ function onAssignRoom(data) {
     })
 }
 
-const getTotal = ref((column_name) => { 
+const getTotal = ref((column_name) => {
     return props.data?.reduce((n, d) => n + d[column_name], 0)
 });
 </script>

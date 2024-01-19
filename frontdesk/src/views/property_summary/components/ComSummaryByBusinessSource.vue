@@ -52,7 +52,7 @@
         </Column>
         <Column headerClass="text-center" bodyClass="text-center" header="Occupancy">
             <template #body="slotProps">
-                {{ slotProps?.data.occupancy }}%
+                {{ slotProps?.data?.occupancy || 0}}%
             </template>
 
         </Column>
