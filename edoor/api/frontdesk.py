@@ -644,7 +644,6 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
                     c.date = %(date)s and 
                     c.property = %(property)s and 
                     c.room_type_id = if(%(room_type)s='',c.room_type_id,%(room_type)s) and 
-                    c.is_active = 1   and 
                     c.is_active_reservation = 1 and 
                     c.drop_off=1
             ) and 

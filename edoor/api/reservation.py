@@ -981,18 +981,18 @@ def check_out(reservation,reservation_stays=None):
         "reservation":doc
     }
 
+
 @frappe.whitelist(methods="POST")
 def undo_check_out(property=None, reservation = None, reservation_stays=None,note=""):
     stay_doc = {}
     working_day = get_working_day(property)
-
     #validate backdate 
-
     #validate role
+
     check_user_permission("undo_check_out_role")
     allow_back_date = frappe.db.get_single_value("eDoor Setting","allow_user_to_add_back_date_transaction")
-
     comment_doc = []
+    
     # validate room occupy
     if int(frappe.db.get_single_value("eDoor Setting","enable_over_booking"))!=1:
         for s in reservation_stays:
@@ -1000,7 +1000,6 @@ def undo_check_out(property=None, reservation = None, reservation_stays=None,not
             if (len(room_ids)>0):
                 arrival,departure = frappe.db.get_value("Reservation Stay", s, ["arrival_date","departure_date"]) 
                 room_ids = (room_ids[0]["room_id"].split(","))
-                
                 occupied  =frappe.db.sql("select room_id, date from `tabTemp Room Occupy` where room_id in %(room_ids)s and date between %(start_date)s and %(end_date)s order by date desc limit 1",
                                         {
                                             "room_ids":room_ids,
@@ -1431,8 +1430,7 @@ def change_stay(data):
             
             if (doc.reservation_status=='In-house' and room_id != stays[0].room_id) or (doc.reservation_status=='In-house' and getdate(stays[0].start_date)!=getdate(data["start_date"])):
                 frappe.throw("In-house reservation is not allow to change date or room number")
-
-
+    
     for s in stays:
         
             
