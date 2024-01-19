@@ -313,7 +313,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                 property = '{0}'
         ) and 
         room_type_id = if('{2}'='',room_type_id,'{2}')                      
-        """.format(property, date,room_type_id),as_dict=1)
+        """.format(property, date,room_type_id or ''),as_dict=1)
     
     if len(vacant_room)>0:
         vacant_room = vacant_room[0]["total_room"]
