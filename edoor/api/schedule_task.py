@@ -299,6 +299,7 @@ def validate_property_data():
     fix_generate_duplicate_room_occupy()
 
 
+
 def fix_generate_duplicate_room_occupy():
     sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
     data = frappe.db.sql(sql,as_dict=1)

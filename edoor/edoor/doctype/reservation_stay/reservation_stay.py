@@ -280,7 +280,7 @@ def generate_room_rate_after_change_stay(data):
 def generate_room_occupy(self =None, stay_name=None):
 
 		 
-	frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}'".format(self.name))
+	frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay='{}'".format( stay_name if not self else self.name))
 	frappe.db.commit()
 	if not self:
 		if frappe.db.exists("Reservation Stay", stay_name):
@@ -328,7 +328,7 @@ def generate_room_occupy(self =None, stay_name=None):
 def generate_temp_room_occupy(self=None, stay_name =None ):	
  
 		
-	frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay='{}'".format(self.name))
+	frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay='{}'".format(stay_name if not self else self.name))
 	
 	if not self:
 		if frappe.db.exists("Reservation Stay", stay_name):
