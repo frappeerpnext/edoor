@@ -308,6 +308,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
             from `tabRoom Occupy` 
             where 
                 is_active = 1 and
+                is_departure = 0 and 
                 `date` = '{1}' AND 
                 room_type_id = if('{2}'='',room_type_id,'{2}') and 
                 property = '{0}'
