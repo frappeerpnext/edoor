@@ -104,12 +104,13 @@
         <ColumnGroup type="footer">
             <Row>
                 <Column footer="Total:" :colspan="2" footerStyle="text-align:right" />
-                <Column :colspan="2" footerStyle="text-align:right" />
+                <Column :colspan="3" footerStyle="text-align:right" />
                 <Column footerStyle="text-align:center">
                     <template #footer>
                         {{ getTotal('adult') }}/{{ getTotal('child') }}
                     </template>
                 </Column>
+
                 <Column :colspan="3" />
 
                 <Column footerStyle="text-align:center">

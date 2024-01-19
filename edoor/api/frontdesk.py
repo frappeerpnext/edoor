@@ -2502,10 +2502,14 @@ def get_arrival_stay_over_departure_backend():
                     from `tabReservation Stay` 
                     where 
                         property = '{0}' and 
-                        arrival_date < '{1}' and  
-                        is_active_reservation = 1 and 
-                        departure_date > '{1}' and 
-                        reservation_status != 'Reserved'
+                        name in (
+                            select reservation_stay from `tabRoom Occupy`
+                            where
+                            type='Reservation' and  
+                            is_stay_over = 1 and 
+                            is_active_reservation= 1 and 
+                            date = '{1}' 
+                        ) 
                     """.format(property,date)
             data["stay_over"] = frappe.db.sql(sql,as_dict=1)
 
