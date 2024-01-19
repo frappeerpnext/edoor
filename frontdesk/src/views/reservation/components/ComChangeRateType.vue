@@ -12,7 +12,9 @@
                     </span>
                     </label>
                 </div>
-                <div class="flex gap-2">
+                <Message severity="warn" v-if="rate_type_data?.allow_user_to_edit_rate==0">This rate this is not allow to change rate. Room rate will be set to <CurrencyFormat :value="0" /> </Message>
+
+                <div class="flex gap-2" v-if="rate_type_data?.allow_user_to_edit_rate==1">
                     <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true" />
                     <label for="apply-all-stay" class="cursor-pointer">Regenerate New Rate</label>
                 </div>
@@ -66,6 +68,7 @@ const onRateTypeChange = (rate_type) => {
                     rate_type_data.value.tax_1_rate = result.message.tax_rule.tax_1_rate
                     rate_type_data.value.tax_2_rate = result.message.tax_rule.tax_2_rate
                     rate_type_data.value.tax_3_rate = result.message.tax_rule.tax_3_rate
+                    rate_type_data.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
                 } else {
                     clearRateTypeTax()
                 }

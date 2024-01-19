@@ -92,25 +92,7 @@ class ReservationRoomRate(Document):
 		self.total_tax = (self.tax_1_amount or 0 ) + (self.tax_2_amount or 0 ) + (self.tax_3_amount or 0 ) 
 		self.total_rate = (self.rate or 0) - (self.discount_amount or 0) + self.total_tax
 
-	def on_update(self):
-		pass
-		# update is complimentary and house use
-		sql = """
-			update `tabRoom Occupy` 
-			set 
-				is_complimentary={0}, 
-				is_house_use={1},
-				rate_type = '{5}'
-			where 
-				reservation_stay = '{2}'  and 
-				room_type_id='{3}' and 
-				date = '{4}' and  
-				type='Reservation'
-			""".format(self.is_complimentary, self.is_house_use, self.reservation_stay, self.room_type_id,self.date,self.rate_type)
- 
-		frappe.db.sql(sql)
-		frappe.db.commit()
-		
+
 
 	 
 

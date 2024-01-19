@@ -330,10 +330,15 @@ def add_new_reservation(doc):
     else:
         guest = frappe.get_doc(doc["guest_info"]).save()
     
-    #prevent code call on_pdate to reservation stay
- 
+
+    #assign is_complementary or is house use o reservation
+    is_complementary, is_house_use = frappe.db.get_value("Rate Type", doc["reservation"]["rate_type"],["is_complimentary","is_house_use"])
+
+    doc["reservation"]["is_complimentary"] = is_complementary
+    doc["reservation"]["is_house_use"] = is_house_use
+
     reservation = frappe.get_doc(doc["reservation"]).insert()
-    # frappe.msgprint(str(reservation.group_color))
+ 
     
     #start insert insert reservation stay
     i = 0
@@ -380,6 +385,9 @@ def add_new_reservation(doc):
             "reservation_status":"Reserved" if (room or '') !='' else "Confirmed",
             "arrival_time":reservation.arrival_time,
             "departure_time":reservation.departure_time,
+            "rate":reservation.rate_type,
+            "is_complimentary":is_complementary,
+            "is_house_use":is_house_use,
             "note":reservation.note,
             "tax_rule":reservation.tax_rule,
             "rate_include_tax":reservation.rate_include_tax or "No",
@@ -1267,11 +1275,16 @@ def change_rate_type(property=None,reservation=None, reservation_stay=None, rate
                                             "reservation_stay":['in',active_stays],
                                             "date":['>=',working_day["date_working_day"]]
                                 }, page_length=10000)
-   
+
+    is_complimentary, is_house_use = frappe.db.get_value("Rate Type", rate_type,["is_complimentary","is_house_use"])
+
     for r in room_rates:
         doc = frappe.get_doc("Reservation Room Rate",r.name)
         doc.rate_type = rate_type
-        doc.regenerate_rate = regenerate_new_rate
+        doc.regenerate_rate = regenerate_new_rate,
+        if is_complimentary ==1 or is_house_use==1:
+            doc.input_rate = 0
+
         doc.save()
 
     #update rate type to reservation stay

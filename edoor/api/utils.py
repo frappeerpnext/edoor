@@ -7,12 +7,12 @@ import re
 from dateutil.rrule import rrule, MONTHLY
 from py_linq import Enumerable
 from frappe import local
-from frappe.utils.data import getdate
+from frappe.utils.data import getdate,add_to_date
 from frappe import _
 import calendar
 import urllib.parse
 import time
-
+import copy
 
 @frappe.whitelist()
 def get_working_day(property = ''):
@@ -594,8 +594,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
         folio_data = frappe.db.sql(sql_folio, as_dict=1)
 
-        if name == 'ST2024-0216':
-            frappe.throw(str(folio_data))
+
 
 
         
@@ -631,18 +630,6 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
             data = frappe.db.sql(sql,as_dict=1)
     
-            #update is_complimentary
-            sql = "select max(is_complimentary) as total, max(is_house_use) as is_house_use from `tabReservation Room Rate` where reservation_stay='{}'".format(doc.name)
-            complimentary_data = frappe.db.sql(sql, as_dict = 1)
-            if len(complimentary_data)>0:
-                doc.is_complimentary = complimentary_data[0]["total"]
-                doc.is_house_use = complimentary_data[0]["is_house_use"]
-            else:
-                doc.is_complimentary = 0
-                doc.is_house_use = 0
-    
-
-            
             if data:
                 d = data[0]
                 stay.rate =  d["rate"] or 0
@@ -656,12 +643,45 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 stay.total_tax =  d["total_tax"] or  0
                 
                
-    
+        #update is_complimentary
+        sql = "select max(is_complimentary) as is_complimentary, max(is_house_use) as is_house_use from `tabReservation Room Rate` where reservation_stay='{}'".format(doc.name)
+        complimentary_data = frappe.db.sql(sql, as_dict = 1)
+        if len(complimentary_data)>0:
+            doc.is_complimentary = complimentary_data[0]["is_complimentary"] 
+            doc.is_house_use = complimentary_data[0]["is_house_use"]
+        else:
+            doc.is_complimentary = 0
+            doc.is_house_use = 0
+
+        #update room rate, is_complimentary and house use to room occupy
+        data = frappe.db.sql("select rate_type,date,is_complimentary,is_house_use from `tabReservation Room Rate` where reservation_stay='{}' order by date".format(doc.name),as_dict=1)
+        
+        if len(data)> 0:
+            #in room dont have record departure date so we include last record 
+            data.append(copy.deepcopy( data[len(data)-1]))
+            
+            data[len(data)-1]["date"] = add_to_date( data[len(data)-1]["date"] ,days=1)
+
+         
+            for r in set([x["rate_type"] for x in data]):
+                room_rate = [d for d in data if d["rate_type"] == r][0]
+                
+                frappe.db.sql("update `tabRoom Occupy` set rate_type=%(rate_type)s, is_complimentary=%(is_complimentary)s, is_house_use=%(is_house_use)s where reservation_stay=%(reservation_stay)s and date in %(dates)s",
+                              {
+                                  "reservation_stay":doc.name,
+                                  "is_complimentary":room_rate["is_complimentary"],
+                                  "is_house_use":room_rate["is_house_use"],
+                                  "dates":set([y["date"] for y in data if y["rate_type"]==r]),
+                                  "rate_type":r
+                })
+                
+                 
+
         if is_save:
             doc.flags.ignore_on_update= True
             doc.save()
-            if run_commit:
-                frappe.db.commit()
+            
+            frappe.db.commit()
 
         #delete all invalid room rate record that stay out site of stay date
         frappe.db.sql("delete from `tabReservation Room Rate` where reservation_stay='{}' and date<'{}'".format(doc.name, doc.arrival_date))

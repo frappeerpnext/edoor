@@ -1,10 +1,10 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="ms_message_cs_edoor">
-        <Message v-if="hasFutureResertion" >
-            {{ checkFutureReservationInfo.message }} <br/>
-            <Button class="border-none ml-auto mr-3" @click="onViewFutureReservation">View Reservation</Button>
-        </Message>
+            <Message v-if="hasFutureResertion">
+                {{ checkFutureReservationInfo.message }} <br />
+                <Button class="border-none ml-auto mr-3" @click="onViewFutureReservation">View Reservation</Button>
+            </Message>
         </div>
         <div class="n__re-custom grid">
             <div class="col">
@@ -15,7 +15,8 @@
                                 <label>Reservation Date <span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
                                     v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
-                                    dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" :maxDate="moment(working_day.date_working_day).toDate()" />
+                                    dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
+                                    :maxDate="moment(working_day.date_working_day).toDate()" />
                             </div>
                             <div class="col-6"> </div>
                         </div>
@@ -23,7 +24,8 @@
                             <div class="col-6">
                                 <label>Reference No</label><br />
                                 <InputText type="text" class="p-inputtext-sm w-full" placeholder="Reference Number"
-                                    v-model="doc.reservation.reference_number" :maxlength="50" v-debounce="onChangeReference"/>
+                                    v-model="doc.reservation.reference_number" :maxlength="50"
+                                    v-debounce="onChangeReference" />
                             </div>
                             <div class="col-6">
                                 <label>Internal Ref. No</label><br />
@@ -36,7 +38,8 @@
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
-                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear" :minDate="minDate" />
+                                    @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar
+                                    panelClass="no-btn-clear" :minDate="minDate" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
@@ -47,7 +50,7 @@
                             </div>
                             <div class="arr_wfit col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
-                                
+
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
                                     v-model="doc.reservation.departure_date" placeholder="Departure Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon
@@ -62,7 +65,7 @@
                                     <label>Business Source<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" :filters="{property:property.name}" />
+                                        class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -87,20 +90,19 @@
                         </div>
                         <div class="flex justify-end gap-3 mt-4">
                             <div class="flex align-items-center relative gap-2">
-                                <label for="allowmaster" class="font-medium cursor-pointer ">Mark as Paid by Master Room</label>
-                                <Checkbox 
+                                <label for="allowmaster" class="font-medium cursor-pointer ">Mark as Paid by Master
+                                    Room</label>
+                                <Checkbox
                                     v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
                                     v-model="doc.reservation.paid_by_master_room" :binary="true" :trueValue="1"
-                                    inputId="allowmaster"
-                                    :falseValue="0" />
+                                    inputId="allowmaster" :falseValue="0" />
                             </div>
                             <div class="flex align-items-center relative gap-2">
                                 <label for="allowcity" class="font-medium cursor-pointer">Allow Post to City Ledger</label>
-                                <Checkbox 
+                                <Checkbox
                                     v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
                                     v-model="doc.reservation.allow_post_to_city_ledger" :binary="true" :trueValue="1"
-                                    inputId="allowcity"
-                                    :falseValue="0" />
+                                    inputId="allowcity" :falseValue="0" />
                             </div>
                         </div>
                     </div>
@@ -114,21 +116,26 @@
 
                             <label>Return Guest</label>
                             <ComAutoComplete isIconSearch v-model="doc.reservation.guest" class="pb-2"
-                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer"/>
+                                placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer" />
                             <hr class="my-3" />
                             <div class="grid">
                                 <div class="col-12 pt-2">
                                     <label>New Guest Name<span class="text-red-500">*</span></label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="New Guest Name"
-                                        v-model="doc.guest_info.customer_name_en" :maxlength="50" v-debounce="onNewGuestName"/>
-                                        <div class="ms_message_cs_edoor">
-                                    <Message  class="flex w-full justify-content-between" v-if="doc?.guest_info?.customerExist">
-                                        <div class="flex w-full justify-content-between">
-                                        <span>This guest is already exist. View guest detail | <a class="p-0 link_line_action1" @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{ doc.guest_info.existingGuest }}</a></span>
-                                        </div>
-                                </Message>
-                            </div>
+                                        v-model="doc.guest_info.customer_name_en" :maxlength="50"
+                                        v-debounce="onNewGuestName" />
+                                    <div class="ms_message_cs_edoor">
+                                        <Message class="flex w-full justify-content-between"
+                                            v-if="doc?.guest_info?.customerExist">
+                                            <div class="flex w-full justify-content-between">
+                                                <span>This guest is already exist. View guest detail | <a
+                                                        class="p-0 link_line_action1"
+                                                        @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{
+                                                            doc.guest_info.existingGuest }}</a></span>
+                                            </div>
+                                        </Message>
                                     </div>
+                                </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
                                     <label>Guest Type<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.guest_info.customer_group" class="w-full"
@@ -147,12 +154,14 @@
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Phone Number</label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
-                                        v-model="doc.guest_info.phone_number" :maxlength="50" v-debounce="onChangeGuestPhoneNumber"/>
+                                        v-model="doc.guest_info.phone_number" :maxlength="50"
+                                        v-debounce="onChangeGuestPhoneNumber" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-8 pt-1">
                                     <label>Email Address</label><br />
                                     <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email Address"
-                                        v-model="doc.guest_info.email_address" :maxlength="50" v-debounce="onChangeGuestEmail"/>
+                                        v-model="doc.guest_info.email_address" :maxlength="50"
+                                        v-debounce="onChangeGuestEmail" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
                                     <label>Identity Type</label><br />
@@ -228,7 +237,7 @@
                                         <CurrencyFormat :value="totalTax3Amount" />
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -274,8 +283,9 @@
                                     class="w-full">
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
-                                           
-                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room || 0 }})</div>
+
+                                            <div>{{ slotProps.option.room_type }} ({{ slotProps.option.total_vacant_room ||
+                                                0 }})</div>
                                         </div>
                                     </template>
                                 </Dropdown>
@@ -287,8 +297,10 @@
                                     placeholder="Select Room" showClear filter class="w-full" />
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-15rem text-right">
-                                <div v-tippy="!doc.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' " class="box-input-detail">
-                                    <div :class="!doc.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" @click="onOpenChangeRate($event, d)"
+                                <div v-tippy="!doc.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate' : ''"
+                                    class="box-input-detail">
+                                    <div :class="!doc.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''"
+                                        @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic inline ">
                                         <div v-tippy="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
                                             class="link_line_action flex justify-between">
@@ -307,31 +319,34 @@
                                 </div>
                             </td>
                             <td class="p-2 w-4rem">
-                                <InputNumber inputClass="w-4rem" v-model="d.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
-                                    class="child-adults-txt" />
+                                <InputNumber inputClass="w-4rem" v-model="d.adult" inputId="stacked-buttons" showButtons
+                                    :min="1" :max="100" class="child-adults-txt" />
                             </td>
                             <td class="p-2 w-4rem">
-                                <InputNumber inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
-                                    class="child-adults-txt" />
+                                <InputNumber inputClass="w-4rem" v-model="d.child" inputId="stacked-buttons" showButtons
+                                    :min="0" :max="100" class="child-adults-txt" />
                             </td>
 
                             <td class="p-2 w-8rem">
                                 <div class="box-input-detail text-center">
-                                    {{ doc.reservation.room_night}}
+                                    {{ doc.reservation.room_night }}
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-if="doc.tax_rule.rate_include_tax == 'Yes'">
-                                    
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12"
+                                    v-if="doc.tax_rule.rate_include_tax == 'Yes'">
+
                                     <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
                                 </div>
                                 <div class="p-inputtext-pt text-end border-1 border-white h-12" v-else>
-                                    <CurrencyFormat :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
+                                    <CurrencyFormat
+                                        :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
                                 </div>
                             </td>
-                            
+
                             <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end">
-                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12" aria-label="Filter" />
+                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
+                                    aria-label="Filter" />
                             </td>
                         </tr>
                     </tbody>
@@ -346,8 +361,8 @@
                 </div>
 
             </div>
-            
-            <Message severity="warn"  v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index" >
+
+            <Message severity="warn" v-if="warningMessage" v-for="(m, index) in warningMessage" :key="index">
                 <p v-html="m"></p>
             </Message>
 
@@ -369,7 +384,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { ref, inject, computed, onMounted, postApi, getApi, getDoc,useDialog,getDocList } from "@/plugin"
+import { ref, inject, computed, onMounted, postApi, getApi, getDoc, useDialog, getDocList } from "@/plugin"
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
@@ -392,7 +407,7 @@ const can_view_rate = window.can_view_rate
 const room_tax = ref()
 const minDate = ref()
 const hasFutureResertion = ref(false)
-const checkFutureReservationInfo=ref({})
+const checkFutureReservationInfo = ref({})
 
 
 
@@ -415,7 +430,7 @@ const doc = ref({
         paid_by_master_room: 0,
         group_code: "",
         group_name: "",
-        allow_post_to_city_ledger:1
+        allow_post_to_city_ledger: 1
     },
     guest_info: {
         "doctype": "Customer",
@@ -447,7 +462,7 @@ const roomRateTax = ref((d) => {
     const tax_3_amount = getTax3Amount(d.rate * doc.value.reservation.room_night)
     return tax_1_amount + tax_2_amount + tax_3_amount
 });
- 
+
 
 function getTax1Amount(rate) {
     if (room_tax.value) {
@@ -537,7 +552,7 @@ const departureMinDate = computed(() => {
 const onDateSelect = (date) => {
 
     let arrival_date = moment(doc.value.reservation.arrival_date).format("YYYY-MM-DD")
-    
+
     arrival_date = moment(arrival_date).toDate()
 
     let departure_date = moment(doc.value.reservation.departure_date).format("YYYY-MM-DD")
@@ -556,20 +571,20 @@ const onDateSelect = (date) => {
 }
 
 
-const warningMessage = computed(()=>{
+const warningMessage = computed(() => {
     const messages = []
-    const room_type =  [...new Set( doc.value.reservation_stay.filter(x=>x.room_type_id).map(item => item.room_type_id))] 
-    if (room_type){
+    const room_type = [...new Set(doc.value.reservation_stay.filter(x => x.room_type_id).map(item => item.room_type_id))]
+    if (room_type) {
         room_type.forEach(r => {
-            const rt = room_types.value.find(y=>y.name==r)    
-            
-            if( rt && doc.value.reservation_stay.filter(x=>x.room_type_id==r).length>(rt?.total_vacant_room || 0)){
-                
-                messages.push("You have over booking on room type <strong>" + rt?.room_type + "</strong>. Total Over: <strong>" + Math.abs((rt?.total_vacant_room || 0 ) -  doc.value.reservation_stay.filter(x=>x.room_type_id==r).length)) + "</strong>"
+            const rt = room_types.value.find(y => y.name == r)
+
+            if (rt && doc.value.reservation_stay.filter(x => x.room_type_id == r).length > (rt?.total_vacant_room || 0)) {
+
+                messages.push("You have over booking on room type <strong>" + rt?.room_type + "</strong>. Total Over: <strong>" + Math.abs((rt?.total_vacant_room || 0) - doc.value.reservation_stay.filter(x => x.room_type_id == r).length)) + "</strong>"
             }
         })
     }
-    
+
     return messages
 })
 
@@ -611,13 +626,13 @@ function onSelectedCustomer(event) {
             })
 
         //check future reservation
-        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest",value:event.value}).then(r=>{
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest", value: event.value }).then(r => {
             hasFutureResertion.value = r.message
             checkFutureReservationInfo.value = {
-                    message: `This guest id ${event.value} is already exist in the system`,
-                    fieldname:"guest",
-                    value:event.value,
-                }
+                message: `This guest id ${event.value} is already exist in the system`,
+                fieldname: "guest",
+                value: event.value,
+            }
 
         })
 
@@ -666,110 +681,110 @@ const onAddRoom = () => {
     )
 }
 
-function onChangeReference(v){
-    if(v){ 
-        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"reference_number",value:v}).then(r=>{
+function onChangeReference(v) {
+    if (v) {
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "reference_number", value: v }).then(r => {
             hasFutureResertion.value = r.message
-            if (r.message){
+            if (r.message) {
                 checkFutureReservationInfo.value = {
                     message: `This reference number ${v} is already exist in the system`,
-                    fieldname:"reference_number",
-                    value:v,
+                    fieldname: "reference_number",
+                    value: v,
                 }
             }
         })
-    }else {
+    } else {
         hasFutureResertion.value = false
     }
 }
 
-function onChangeGuestPhoneNumber(v){
-    if(v){ 
-        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_phone_number",value:v}).then(r=>{
+function onChangeGuestPhoneNumber(v) {
+    if (v) {
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest_phone_number", value: v }).then(r => {
             hasFutureResertion.value = r.message
-            if (r.message){
+            if (r.message) {
                 checkFutureReservationInfo.value = {
                     message: `This phone number ${v} is already exist in the system`,
-                    fieldname:"guest_phone_number",
-                    value:v,
+                    fieldname: "guest_phone_number",
+                    value: v,
                 }
             }
         })
-    }else {
+    } else {
         hasFutureResertion.value = false
     }
 }
 
 
-function onChangeGuestEmail(v){
-    if(v){ 
-        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_email",value:v}).then(r=>{
+function onChangeGuestEmail(v) {
+    if (v) {
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest_email", value: v }).then(r => {
             hasFutureResertion.value = r.message
-            if (r.message){
+            if (r.message) {
                 checkFutureReservationInfo.value = {
                     message: `This email ${v} is already exist in the system`,
-                    fieldname:"guest_email",
-                    value:v,
+                    fieldname: "guest_email",
+                    value: v,
                 }
             }
         })
-    }else {
+    } else {
         hasFutureResertion.value = false
     }
 }
 
- 
 
-function onNewGuestName(v){
-    if(v){ 
-        getApi("reservation.check_reservation_exist_in_future",{property:window.property_name, fieldname:"guest_name",value:v}).then(r=>{
+
+function onNewGuestName(v) {
+    if (v) {
+        getApi("reservation.check_reservation_exist_in_future", { property: window.property_name, fieldname: "guest_name", value: v }).then(r => {
             hasFutureResertion.value = r.message
-            if (r.message){
+            if (r.message) {
                 checkFutureReservationInfo.value = {
                     message: `This guest name ${v} is already exist in the system`,
-                    fieldname:"guest_name",
-                    value:v,
+                    fieldname: "guest_name",
+                    value: v,
                 }
             }
         })
 
-        getDocList("Customer",{filters:[["customer_name_en","=",v]]}).then(data=>{
-            doc.value.guest_info.customerExist = data.length> 0
-            if(data.length>0){
+        getDocList("Customer", { filters: [["customer_name_en", "=", v]] }).then(data => {
+            doc.value.guest_info.customerExist = data.length > 0
+            if (data.length > 0) {
                 doc.value.guest_info.existingGuest = data[0]["name"]
             }
         })
 
-    }else {
+    } else {
         hasFutureResertion.value = false
     }
 }
 
-const onViewGuestDetail =(name)=>{
+const onViewGuestDetail = (name) => {
     window.postMessage('view_guest_detail|' + name, '*');
 }
 
-function onViewFutureReservation(){
+function onViewFutureReservation() {
     const dialogRef = dialog.open(ComIFrameModal, {
-       data: {
-           "doctype": "Business%20Branch",
-           name: window.property_name,
-           report_name: gv.getCustomPrintFormat("eDoor Existed Reservation"),
-           view:"ui",
-           extra_params:[{key:"fieldname",value:checkFutureReservationInfo.value.fieldname },{key:"value",value:checkFutureReservationInfo.value.value}],
-           fullheight: true
-       },
-       props: {
-           header: `View reservation by reference: ${doc.value.reservation.reference_number}`,
-           style: {
-               width: '90vw',
-           },
-           position:"top",
-           modal: true,
-           maximizable: true,
-           closeOnEscape: false
-       }
-   });
+        data: {
+            "doctype": "Business%20Branch",
+            name: window.property_name,
+            report_name: gv.getCustomPrintFormat("eDoor Existed Reservation"),
+            view: "ui",
+            extra_params: [{ key: "fieldname", value: checkFutureReservationInfo.value.fieldname }, { key: "value", value: checkFutureReservationInfo.value.value }],
+            fullheight: true
+        },
+        props: {
+            header: `View reservation by reference: ${doc.value.reservation.reference_number}`,
+            style: {
+                width: '90vw',
+            },
+            position: "top",
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false
+        }
+    });
 }
 
 const onSave = () => {
@@ -795,8 +810,8 @@ const onSave = () => {
     ).then((result) => {
         isSaving.value = false
         window.socket.emit("Dashboard", window.property_name);
-        window.socket.emit("ReservationList", { property:window.property_name})
-        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.socket.emit("ReservationList", { property: window.property_name })
+        window.socket.emit("ReservationStayList", { property: window.property_name })
         window.socket.emit("Frontdesk", window.property_name)
 
         dialogRef.value.close(result.message);
@@ -815,7 +830,7 @@ onMounted(() => {
 
     }).then((result) => {
         working_day.value = (result.message)
-        minDate.value = window.setting.allow_user_to_add_back_date_transaction==1? moment().add(-50, 'years').toDate():moment(working_day.value.date_working_day).toDate()
+        minDate.value = window.setting.allow_user_to_add_back_date_transaction == 1 ? moment().add(-50, 'years').toDate() : moment(working_day.value.date_working_day).toDate()
 
         doc.value.reservation.reservation_date = moment(working_day.value.date_working_day).toDate()
 
@@ -877,7 +892,7 @@ const updateRate = () => {
         const room_type = room_types.value.find(r => r.name == s.room_type_id)
 
 
-        if (room_type) { 
+        if (room_type) {
             s.rate = room_type.rate.rate
 
         }
@@ -903,27 +918,27 @@ const onRateTypeChange = (rate_type) => {
 
     if (rate_type) {
         getApi("utils.get_rate_type_info", { name: rate_type })
-        .then((result) => {
+            .then((result) => {
 
-            //check if rate type change then resert room revenue code and tax
-            doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
-            const tax_rule = result.message.tax_rule
-            doc.value.tax_rule = {
-                rate_include_tax: tax_rule?.is_rate_include_tax ? "Yes" : "No",
-                tax_1_rate: tax_rule?.tax_1_rate || 0,
-                tax_2_rate: tax_rule?.tax_2_rate || 0,
-                tax_3_rate: tax_rule?.tax_3_rate || 0,
-            }
-            room_tax.value = tax_rule
-            doc.value.reservation.rate_type = rate_type
-            doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
+                //check if rate type change then resert room revenue code and tax
+                doc.value.reservation.tax_rule = (result.message?.tax_rule?.name || "")
+                const tax_rule = result.message.tax_rule
+                doc.value.tax_rule = {
+                    rate_include_tax: tax_rule?.is_rate_include_tax ? "Yes" : "No",
+                    tax_1_rate: tax_rule?.tax_1_rate || 0,
+                    tax_2_rate: tax_rule?.tax_2_rate || 0,
+                    tax_3_rate: tax_rule?.tax_3_rate || 0,
+                }
+                room_tax.value = tax_rule
+                doc.value.reservation.rate_type = rate_type
+                doc.value.allow_user_to_edit_rate = result.message.allow_user_to_edit_rate
                 //check if stay have not manully rate update
-            if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
-                getRoomType()
-            }
+                if (doc.value.reservation_stay.filter(r => (r.is_manual_rate || false) == false).length > 0) {
+                    getRoomType()
+                }
 
-        })
-    }  
+            })
+    }
 }
 
 const onChangeRate = () => {
@@ -953,4 +968,5 @@ function onClose() {
 .p-button.p-component .p-button-icon {
     font-weight: 600;
     font-size: 1.25rem;
-}</style>
+}
+</style>

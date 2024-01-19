@@ -15,7 +15,7 @@
                                 <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
                                     placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar
                                     :maxDate="moment(working_day.date_working_day).toDate()"
-                                    :selectOtherMonths="true" />
+                                    :selectOtherMonths="true" panelClass="no-btn-clear"/>
                             </div>
                             <div class="col-6"> </div>
                         </div>
