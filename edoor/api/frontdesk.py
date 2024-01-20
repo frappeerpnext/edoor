@@ -2099,10 +2099,6 @@ def run_night_audit(property, working_day):
         }
     ).insert()
 
-    #Remove room occupy for no show folio that reserved room
-    frappe.enqueue("edoor.api.frontdesk.delete_room_occupu_after_run_night_audit", queue='short', working_day=doc_working_day)
-
-    
 
 
     #queue post room change to folio
@@ -2121,11 +2117,6 @@ def run_night_audit(property, working_day):
     working_day = get_working_day(property)
     return working_day
 
-
-@frappe.whitelist()
-def delete_room_occupu_after_run_night_audit(working_day):
-    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":working_day.property, "date":working_day.posting_date})
-    frappe.db.sql("delete from `tabRoom Occupy` where reservation_status='No Show' and property=%(property)s and date<=%(date)s", {"property":working_day.property, "date":working_day.posting_date})
 
 
 @frappe.whitelist()
