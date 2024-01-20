@@ -64,7 +64,6 @@ def re_run_fail_jobs():
                  reservation=job["kwargs"]["reservation"],
                  stays=job["kwargs"]["stays"],
                  working_day=job["kwargs"]["working_day"],
-                 working_day=job["kwargs"]["working_day"],
                  run_commit=True)
             
 
