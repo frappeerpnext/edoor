@@ -105,7 +105,7 @@ def get_reservation_stay_detail(name):
     total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': name})
   
 
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+
     
     return {
         "reservation":reservation,
@@ -820,7 +820,6 @@ def undo_check_in(reservation_stay, reservation, property,note=""):
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = reservation, reservation_stay=stays)
     
     frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
     
     return doc
 
@@ -2498,7 +2497,7 @@ def update_reservation_information(doc, apply_all_active_stay=False,update_to_re
         reservation.reservation_date = doc["reservation_date"]
     reservation.save()
 
-    frappe.enqueue("edoor.api.schedule_task.run_queue_job",queue='long')
+ 
 
     if doc["doctype"]=="Reservation Stay":
         return frappe.get_doc("Reservation Stay",doc["name"])
@@ -2631,7 +2630,6 @@ def reserved_room(property, reservation_stay):
     stay.save()
 
     frappe.enqueue("edoor.api.reservation.generate_room_occupies",queue='long', stay_names=[stay.name] )
-
     
     #show no show reservation to room chart
     frappe.db.sql("update `tabReservation Stay Room` set show_in_room_chart = 1 where parent='{}'".format(stay.name))
