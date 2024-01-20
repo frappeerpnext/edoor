@@ -151,15 +151,21 @@
         newData.is_move = 0
         postApi('reservation.change_stay', {data: newData}).then((r)=>{
             loading.value = false
+            
             rs.getReservationDetail(rs.reservationStay.name)
+
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationList", { property:window.property_name})
+         
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+          
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            window.postMessage("Frontdesk",{"action":"Frontdesk"},"*")
+          
+            window.postMessage({"action":"Frontdesk"},"*")
+            
             window.socket.emit("ComGuestLedger", { property:window.property_name})
             window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-
+            
             
             onClose(true)
             

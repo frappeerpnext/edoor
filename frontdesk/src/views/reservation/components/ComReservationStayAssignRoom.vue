@@ -190,7 +190,7 @@
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-            window.postMessage("Frontdesk",{"action":"Frontdesk"},"*")
+            window.postMessage({"action":"Frontdesk"},"*")
             window.socket.emit("TodaySummary", window.property_name)
             window.socket.emit("ComGuestLedger", { property:window.property_name})
             window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
