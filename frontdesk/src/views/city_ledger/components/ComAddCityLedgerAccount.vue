@@ -108,7 +108,7 @@ function onSave(){
     loading.value = true
     createUpdateDoc("City Ledger", data.value)
     .then((r)=>{
-        window.socket.emit("Dashboard",property.name)
+
         window.socket.emit("CityLedgerAccount",window.property_name)
         window.socket.emit("ComCityLedgerDetail",window.property_name)
 

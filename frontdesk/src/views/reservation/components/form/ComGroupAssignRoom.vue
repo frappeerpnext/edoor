@@ -172,8 +172,8 @@ function onSave() {
         
     }).then((result) => {
         loading.value = false
-        window.socket.emit("Dashboard", window.property_name);
-        window.socket.emit("Frontdesk", window.property_name);
+        window.postMessage({"action":"Dashboard"},"*")
+        window.postMessage("Frontdesk",{"action":"Frontdesk"},"*")
         window.socket.emit("ReservationDetail", reservation.value.name)
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})

@@ -371,59 +371,6 @@ function onDeleteFolio() {
 
 }
 
-// function onTransferFolioItem() {
-//     if (selectedFolio.value.status == "Open") {
-//     const selectedFolioTransactions = JSON.parse( sessionStorage.getItem("folo_transaction_table_state_" + selectedFolio.value.name) ).selection
-
-//     if (selectedFolioTransactions.length == 0) {
-//         toast.add({ severity: 'warn', summary: "", detail: "Please select a filio transaction to transfer", life: 3000 })
-//         return
-//     }
-
-//     const dialogRef = dialog.open(ComFolioTransfer, {
-//         data: { 
-//                 reservation:selectedFolio.value.reservation,
-//                 reservation_stay:selectedFolio.value.reservation_stay,
-//                 folio_number: selectedFolio.value.name,
-//                 folio_transaction:selectedFolioTransactions,
-                
-//             },
-//         props: {
-//             header: 'Folio Transfer',
-//             style: {
-//                 width: '80vw',
-//             },
-
-//             modal: true,
-//             position: "top"
-//         },
-//         onClose: (options) => {
-//             const data = options.data;
- 
-//             if (data) {
-//                 selectedFolioTransactions.value=[]
-              
-//                 reloadData()
-
-//                 setTimeout(() => {                  
-//                     window.socket.emit("ReservationDetail", selectedFolio.value.reservation)    
-//                     window.socket.emit("Frontdesk", selectedFolio.value.reservation)    
-//                 }, 3000);
-
-                
-//             }
-//         }
-//     })
-// }else {
-//     toast.add({ severity: 'warn', summary: "", detail: "Folio is already closed.", life: 3000 }) 
-// }
-// }
-
-
-
-
-
- 
  
 </script>
  

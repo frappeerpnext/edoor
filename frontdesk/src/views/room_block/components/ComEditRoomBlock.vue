@@ -88,7 +88,7 @@ function onSave() {
     createUpdateDoc('Room Block', savedData).then((r) => {
         dialogRef.value.close(r)
         // window.socket.emit("RoomBlockList", window.property_name)
-        window.socket.emit("Frontdesk", window.property_name)
+        
         // window.socket.emit("ComHousekeepingStatus", window.property_name)
         window.socket.emit("Housekeeping", { property: window.property_name })
         loading.value = false

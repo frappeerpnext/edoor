@@ -178,7 +178,7 @@ const onCheckOut = () => {
                 reservation_stays: [props.data.name]
             }, "Check out successfully").then((result) => {
                 rs.loading = false
-                window.socket.emit("Dashboard", window.property_name);
+                window.postMessage({"action":"Dashboard"},"*")
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ComGuestLedger", { property:window.property_name})

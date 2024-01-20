@@ -167,7 +167,7 @@ function onStayGuestSave() {
             if (r){
                 window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
                 window.socket.emit("ReservationDetail", window.reservation)
-                window.socket.emit("Frontdesk", window.property_name)
+                window.postMessage("Frontdesk",{"action":"Frontdesk"},"*")
                 dialogRef.value.close(r);
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationList", { property:window.property_name})

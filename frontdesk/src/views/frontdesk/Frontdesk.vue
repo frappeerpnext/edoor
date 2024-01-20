@@ -369,7 +369,7 @@ const calendarOptions = reactive({
         }
         const event = $event.event._def
         event.start_date =  $event.event.start
-                event.end_date=  $event.event.end
+        event.end_date=  $event.event.end
         const elements    = document.querySelectorAll('.' + $event.event._def.extendedProps.reservation_stay);
         elements.forEach(e=>{
             e.parentNode.parentNode.parentNode.style.boxShadow = '2px 2px 5px 1px rgba(0, 0, 0, 0.8)';
@@ -454,7 +454,13 @@ const calendarOptions = reactive({
         } else { 
  
         const dialogRef = dialog.open(ComConfirmChangeStay, {
-            data: { event: $event.event, show_keep_rate: 1, new_event: $event.newResource?._resource,old_event:{start:$event.oldEvent.start,end:$event.oldEvent.end} },
+            data: { 
+                event: $event.event,
+                 show_keep_rate: 1,
+                  new_event: $event.newResource?._resource,
+                  old_event:{start:$event.oldEvent.start,end:$event.oldEvent.end} ,
+                  disable_reload_frontdesk:true
+                },
             props: {
                 header: title,
                 style: {
@@ -977,14 +983,24 @@ const handleScroll = (event) => {
     }
 };
 
+
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Frontdesk"){
+            setTimeout(()=>{
+                getResourceAndEvent() 
+            },1000*10)
+            
+        }
+    };
+}
+
+
 onMounted(() => {
 
-    window.socket.on("Frontdesk", (arg) => {
-        if (arg == window.property_name) {   
-            getResourceAndEvent(false) 
-        }
-    })
-
+    window.addEventListener('message', actionRefreshData, false);
+    
     gv.loading = true
     const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
     if (state) {
@@ -1073,7 +1089,7 @@ function getEndDate(start, period) {
 }
 
 onUnmounted(() => {
-    window.socket.off("Frontdesk");
+    window.removeEventListener('message', actionRefreshData, false);
     document.body.removeEventListener('scroll', handleScroll);
 })
 

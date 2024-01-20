@@ -116,7 +116,7 @@ function onSave() {
                 rs.reservationStay = JSON.parse(JSON.stringify(doc.message))
             }
             dialogRef.value.close("refresh");
-            window.socket.emit("Dashboard", window.property_name)
+            window.postMessage({"action":"Dashboard"},"*")
             window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
             window.socket.emit("ReservationDetail", window.reservation)
             window.socket.emit("TodaySummary", window.property_name)

@@ -205,7 +205,9 @@ function onViewGuestDetail(gs){
 }
 
 function onSave(){
+    
     isSaving.value = true
+    
     postApi("reservation.change_stay", 
         {
             data:{
@@ -226,10 +228,7 @@ function onSave(){
         isSaving.value = false
         //we delay wait data to update complete
         if (!dialogRef.value.data.disable_reload_frontdesk){
-            setTimeout(function(){
-            window.socket.emit("Frontdesk", window.property_name);
-        }, 1000)
-        
+            window.postMessage({action:"Frontdesk"},"*")        
         }
         
         dialogRef.value.close(result);

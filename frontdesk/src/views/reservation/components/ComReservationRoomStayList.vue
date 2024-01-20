@@ -118,10 +118,10 @@ function onUpgradeRoom() {
             
             if(options.data){
                 //we delay time to reload here to wait until equeue job is done in server
-                
+                window.postMessage({action:"Frontdesk"},"*")
                 setTimeout(() => {
                     rs.getReservationDetail(rs.reservationStay.name)  
-                    window.socket.emit("Frontdesk", window.property_name)
+                  
                 }, 1500);
                 
             }

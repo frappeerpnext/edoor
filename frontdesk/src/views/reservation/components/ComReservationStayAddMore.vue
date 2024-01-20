@@ -383,7 +383,7 @@ const onSave = () => {
 
         if (r) {
             isSaving.value = false
-            window.socket.emit("Dashboard", rs.reservation.property);
+            window.postMessage({"action":"Dashboard"},"*")
             window.socket.emit("ReservationList", { property:window.property_name})
             // window.socket.emit("ReservationDetail", window.reservation)
             dialogRef.value.close(r)

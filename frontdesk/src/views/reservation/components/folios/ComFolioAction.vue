@@ -525,7 +525,7 @@ function onTransferFolioItem() {
 
                 setTimeout(() => {                  
                     window.socket.emit("ReservationDetail", selectedFolio.value.reservation)    
-                    window.socket.emit("Frontdesk", selectedFolio.value.reservation)    
+                    
                 }, 3000);
 
                 

@@ -369,10 +369,10 @@ const onCheckIn = () => {
                 }).then((result) => {
                     rs.loading = false
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
-                    window.socket.emit("Dashboard", window.property_name);
+                    window.postMessage({"action":"Dashboard"},"*")
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                    window.socket.emit("Frontdesk", window.property_name)
+                    window.postMessage({action:"Frontdesk"},"*")
                     window.socket.emit("TodaySummary", window.property_name)
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
@@ -408,11 +408,11 @@ const onCheckOut = () => {
                     rs.loading = false
                     onRefresh()
                     window.socket.emit("ComHousekeepingStatus", window.property_name);
-                    window.socket.emit("Dashboard", window.property_name);
+                    window.postMessage({"action":"Dashboard"},"*")
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("ReservationList", { property: window.property_name }) 
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                    window.socket.emit("Frontdesk", window.property_name)
+                    window.postMessage({action:"Frontdesk"},"*")
                     window.socket.emit("TodaySummary", window.property_name)
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
                     window.socket.emit("GuestLedgerTransaction", { property: window.property_name })

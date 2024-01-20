@@ -118,9 +118,9 @@ function onSave() {
         window.socket.emit("ReservationList", { property: window.property_name })
         window.socket.emit("Reports", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
-        window.socket.emit("Dashboard", window.property_name)
+        window.postMessage({"action":"Dashboard"},"*")
         window.socket.emit("ReservationStayList", { property: window.property_name })
-        window.socket.emit("Frontdesk", window.property_name)
+        window.postMessage("Frontdesk",{"action":"Frontdesk"},"*")
         window.socket.emit("ReservationStayDetail", { reservation_stay: active_reservations.map(r => r.name) })
         window.socket.emit("ReservationDetail", rs.reservation.name);
 

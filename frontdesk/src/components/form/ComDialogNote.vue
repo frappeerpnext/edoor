@@ -74,12 +74,12 @@ function onOk() {
 }
 function onLoadSocket(){
 
-    window.socket.emit("Dashboard", window.property_name)
+    window.postMessage({action:"Dashboard"},"*")
+    
     window.socket.emit("ReservationList", { property:window.property_name})
     window.socket.emit("ReservationStayList", { property:window.property_name})
-
     if (!dialogRef.value.data.disable_reload_frontdesk){
-        window.socket.emit("Frontdesk", window.property_name)
+        window.postMessage({action:"Frontdesk"},"*")
     }
 
     window.socket.emit("TodaySummary", window.property_name)

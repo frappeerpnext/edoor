@@ -789,7 +789,7 @@ function onViewFutureReservation() {
 
 const onSave = () => {
 
-    isSaving.value = true
+
     const data = JSON.parse(JSON.stringify(doc.value))
     if (data.reservation.reservation_date) data.reservation.reservation_date = moment(data.reservation.reservation_date).format("yyyy-MM-DD")
     if (data.reservation.arrival_date) data.reservation.arrival_date = moment(data.reservation.arrival_date).format("yyyy-MM-DD")
@@ -802,17 +802,26 @@ const onSave = () => {
     data.reservation.tax_3_rate = doc.value.tax_rule.tax_3_rate
     data.reservation.rate_include_tax = doc.value.tax_rule.rate_include_tax
     data.reservation_stay = data.reservation_stay.filter(r => r.room_type_id)
-
+    isSaving.value = true
     postApi('reservation.add_new_reservation', {
         doc: data
     },
         "Add new reservation successfully"
     ).then((result) => {
         isSaving.value = false
-        window.socket.emit("Dashboard", window.property_name);
+        
+        if(data.reservation.arrival_date==window.current_working_date || data.reservation.departure_date==window.current_working_date  ){
+            window.postMessage({"action":"Dashboard"},"*")
+        }
+        
+        
+
+        
         window.socket.emit("ReservationList", { property: window.property_name })
         window.socket.emit("ReservationStayList", { property: window.property_name })
-        window.socket.emit("Frontdesk", window.property_name)
+
+        window.postMessage({"action":"Frontdesk"},"*")
+
 
         dialogRef.value.close(result.message);
     })

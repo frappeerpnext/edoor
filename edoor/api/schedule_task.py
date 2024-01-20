@@ -45,7 +45,13 @@ def re_run_fail_jobs():
     jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
 
     # jobs = [d for d in jobs if d["job_name"] =='edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy']
-    jobs = [d for d in jobs  if  ['Deadlock found when trying', 'Lock wait timeout exceeded','Document has been modified after you have opened it'] in  d["exc_info"] ]
+    fail_job_types = [
+            'Deadlock found when trying', 
+            'Lock wait timeout exceeded',
+            'Document has been modified after you have opened it'
+    ]
+    jobs = [d for d in jobs if "exc_info" in d]
+    jobs = [d for d in jobs  if  fail_job_types  in  d["exc_info"] ]
     job_ids = []
     for j in jobs:
         job =   json.loads(j["arguments"]) 

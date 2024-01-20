@@ -625,23 +625,29 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
-onMounted(() => {
-    window.socket.on("Dashboard", (arg) => { 
-        if (arg == property.name) {  
-            setTimeout(function () {
+
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        alert("dashboard")
+        if(e.data.action=="Dashboard"){
+           
+            setTimeout(()=>{
                 getData(false)
                 onRefreshIframe()
-            }, 3000)
-
+            },e.data.delay || 1000*10)
         }
+    };
+}
 
-
-    })
-
-
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false);
+    
 })
+
 onUnmounted(() => {
-    window.socket.off("Dashboard");
+    window.removeEventListener('message', actionRefreshData, false);
+    
 })
 
 </script>

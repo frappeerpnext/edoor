@@ -857,13 +857,13 @@ const onSave = (assign_room = false) => {
     }
     ).then((result) => {
         isSaving.value = false
-        window.socket.emit("Dashboard", window.property_name);
+        window.postMessage({action:"Dashboard"},"*")
         window.socket.emit("ReservationList", { property:window.property_name})
         window.socket.emit("ReservationStayList", { property:window.property_name})
-        window.socket.emit("Frontdesk", window.property_name) 
+        window.postMessage({action:"Frontdesk"},"*")
         setTimeout(function(){
             if (window.reservation){ 
-                console.log(window.reservation)
+                
                 window.socket.emit("ReservationDetail", window.reservation)
             }
         }, 5000) 
