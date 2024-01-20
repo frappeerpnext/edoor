@@ -477,7 +477,8 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             adr,
             total_room_rate,
             reservation_status,
-            status_color
+            status_color,
+            room_rate_discount
         from `tabReservation Stay`
         where
             name in (
@@ -513,7 +514,8 @@ def get_daily_property_data_detail(property=None, date=None, room_type=None):
             adr,
             total_room_rate,
             reservation_status,
-            status_color
+            status_color,
+            room_rate_discount
         from `tabReservation Stay`
         where
             name in (

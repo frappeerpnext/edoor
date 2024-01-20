@@ -248,7 +248,7 @@ def ten_minute_job():
 
 @frappe.whitelist()
 def run_queue_job():
-    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job`",as_dict = 1)
+    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 100",as_dict = 1)
     
     update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
     update_keyword([d for d in data if d["action"] =="update_keyword"])
@@ -330,8 +330,10 @@ def fix_generate_duplicate_room_occupy():
     sql="select name from `tabReservation Stay` where arrival_date>='{}' and reservation_status in ('Cancelled', 'Void')".format(add_to_date(getdate(today()),days=-7))
     data = data +  frappe.db.sql(sql,as_dict=1)
 
-    frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
-    frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
+    if len(data)>0:
+        frappe.db.sql("delete from `tabRoom Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
+        frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
+        
     frappe.db.commit()
 
     
