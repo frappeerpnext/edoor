@@ -287,6 +287,8 @@ def get_date_range(start_date, end_date, exlude_last_date=True):
 def update_reservation(name=None,doc=None, run_commit = True):
     if name or doc:
         if name:
+            if not frappe.db.exists("Reservation", name):
+                return
             doc = frappe.get_doc("Reservation",name)
 
         sql = """select 

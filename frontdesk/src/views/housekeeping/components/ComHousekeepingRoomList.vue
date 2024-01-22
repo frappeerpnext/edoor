@@ -183,7 +183,7 @@ function onRowSelect(r) {
 }
 
 onMounted(() => {
-    let obj = JSON.parse(localStorage.getItem('table_house_keeping_room_state'));
+    let obj = JSON.parse(localStorage.getItem('table_house_keeping_room_state')); 
     obj.first = 0;
     localStorage.setItem('table_house_keeping_room_state', JSON.stringify(obj));
     hk.loadData()
