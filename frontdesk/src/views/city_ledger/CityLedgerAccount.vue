@@ -277,16 +277,20 @@ function debouncer(fn, delay) {
     };
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="CityLedgerAccount"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000*3)
+            
+        }
+    };
+}
+
 onMounted(() => {
     //socket reload
-
-    window.socket.on("CityLedgerAccount", (arg) => {
-        if (arg == window.property_name) {
-            setTimeout(function () {
-                loadData(false)
-            }, 3000)
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false)
 
     let state = localStorage.getItem("page_state_city_ledger")
     if (state) {
@@ -353,7 +357,7 @@ function onAddCityLedgerAccount() {
 }
 
 onUnmounted(() => {
-    window.socket.off("CityLedgerAccount");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 const showAdvanceSearch = ref()

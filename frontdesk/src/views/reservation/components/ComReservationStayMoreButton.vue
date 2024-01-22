@@ -145,11 +145,11 @@ function onCheckIn() {
                         // window.socket.emit("RefresheDoorDashboard", rs.reservation.property); 
                         window.socket.emit("ReservationList", { property: window.property_name })
                         window.socket.emit("ReservationStayList", { property: window.property_name })
-                        window.socket.emit("ComGuestLedger", { property:window.property_name})
-                        window.socket.emit("Reports", window.property_name)
+                        window.postMessage({action:"GuestLedger"},"*")
+                        window.postMessage({action:"Reports"},"*")
                         window.postMessage({action:"ReservationStayDetail"},"*")
                         window.postMessage({action:"ReservationDetail"},"*")
-                        window.socket.emit("FolioTransactionList", window.property_name)
+                        window.postMessage({action:"FolioTransactionList"},"*")
 
                     })
                     .catch((err) => {
@@ -181,11 +181,11 @@ const onCheckOut = () => {
                 window.postMessage({"action":"Dashboard"},"*")
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"Reports"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({action:"ReservationDetail"},"*")
-                window.socket.emit("FolioTransactionList", window.property_name) 
+                window.postMessage({action:"FolioTransactionList"},"*") 
             })
                 .catch((err) => {
                     rs.loading = false
@@ -382,7 +382,7 @@ function onMarkAsMasterRoom() {
                 props.data.is_master = doc.message.is_master
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({action:"ReservationDetail"},"*")
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
+                window.postMessage({action:"GuestLedger"},"*")
                 toast.add({
                         severity: 'success',
                         detail: 'Update Successful', life: 3000

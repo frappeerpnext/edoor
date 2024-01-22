@@ -77,7 +77,7 @@ function onSave(){
             toast.add({ severity: 'warn', summary:"Reservation Stay #" +  x.reservation_stay, detail: x.message, life: 7000 }) 
         });
         dialogRef.value.close(rs.selecteds = [])
-        window.socket.emit("ReservationList", { property:window.property_name})
+        window.postMessage({action:"ReservationList"},"*")
         window.postMessage({action:"ReservationDetail"},"*")
     }).catch((err) => {
         loading.value = false

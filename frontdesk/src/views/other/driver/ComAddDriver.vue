@@ -93,7 +93,7 @@ function onOK() {
         loading.value = false
         window.postMessage({action:"ReservationStayDetail"},"*")
         window.postMessage({action:"ReservationDetail"},"*")
-        window.socket.emit("Reports", window.property_name)
+        window.postMessage({action:"Reports"},"*")
         onClose(r)
     }).catch((err) => {
         loading.value = false

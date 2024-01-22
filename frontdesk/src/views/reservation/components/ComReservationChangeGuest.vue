@@ -125,9 +125,9 @@ function onAdditionalSave(){
             window.postMessage({action:"ReservationStayDetail"},"*")
             window.postMessage({action:"ReservationDetail"},"*")
             dialogRef.value.close()
-            window.socket.emit("Reports", window.property_name) 
-            window.socket.emit("ReservationStayList", { property:window.property_name})
-            window.socket.emit("ReservationList", { property:window.property_name})
+            window.postMessage({action:"Reports"},"*") 
+            window.postMessage({action:"ReservationStayList"},"*")
+            window.postMessage({action:"ReservationList"},"*")
             
         }
         loading.value = false
@@ -169,9 +169,9 @@ function onStayGuestSave() {
                 window.postMessage({action:"ReservationDetail"},"*")
                 window.postMessage({"action":"Frontdesk"},"*")
                 dialogRef.value.close(r);
-                window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"Reports"},"*")
             }
         }).catch(()=>{
             loading.value = false

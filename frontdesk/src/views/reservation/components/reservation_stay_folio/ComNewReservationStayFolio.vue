@@ -32,8 +32,8 @@ function onSave() {
         dialogRef.value.close(doc)
         isSaving.value = false
         window.postMessage({action:"ReservationStayDetail"},"*")
-        window.socket.emit("ComGuestLedger", { property:window.property_name})
-        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+        window.postMessage({action:"GuestLedger"},"*")
+        window.postMessage({action:"GuestLedgerTransaction"},"*")
         window.socket.emit("ReservationDetail", doc.reservation) 
 
     }).catch(()=>{

@@ -46,15 +46,20 @@ const chartData = ref([])
 const loading = ref(false)
 
 onMounted(() => {
-    window.socket.on("TodaySummary", (arg) => {
-        if (arg == window.property_name) {  
-            setTimeout(() => {
-                loadData(props.date,false)
-            }, 2000)
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false);
     loadData(props.date)
 })
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="TodaySummary"){
+            setTimeout(()=>{
+                loadData(props.date,false)
+            },1000*10)
+            
+        }
+    };
+}
 
 function loadData(date,show_loading = true){
     loading.value = show_loading
@@ -81,7 +86,7 @@ function loadData(date,show_loading = true){
     })
 }
 onUnmounted(() => {
-    window.socket.off("TodaySummary");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

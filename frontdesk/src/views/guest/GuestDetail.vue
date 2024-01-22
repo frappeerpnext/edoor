@@ -127,11 +127,11 @@ function onDeleteGuest (name){
             .then(() =>{
                 loading.value = false
                 window.socket.emit("RefreshGuestDatabase", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationList", { property:window.property_name})
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"ReservationList"},"*")
                 window.socket.emit("GuestList", window.property_name)
-                window.socket.emit("Reports", window.property_name)
-        	    window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"Reports"},"*")
+        	    window.postMessage({action:"FolioTransactionList"},"*")
 
 
                 dialogRef.value.close()

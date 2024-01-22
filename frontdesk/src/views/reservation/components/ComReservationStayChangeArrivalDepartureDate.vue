@@ -73,12 +73,12 @@ function onSave(){
             loading.value = false
             rs.getReservationDetail(r.message.name)
             window.postMessage({"action":"Dashboard"},"*")
-            window.socket.emit("ReservationList", { property:window.property_name})
-            window.socket.emit("ReservationStayList", { property:window.property_name})
+            window.postMessage({action:"ReservationList"},"*")
+            window.postMessage({action:"ReservationStayList"},"*")
             window.postMessage({action:"ReservationStayDetail"},"*")
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.postMessage({action:"Frontdesk"},"*")
-            window.socket.emit("Reports", window.property_name)
+            window.postMessage({action:"Reports"},"*")
             setTimeout(function(){
                 window.socket.emit("ComIframeModal", window.property_name)
             }, 3000)

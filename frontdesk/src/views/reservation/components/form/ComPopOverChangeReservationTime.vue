@@ -51,7 +51,7 @@ function onSave() {
   }).then((result) => {
     loading.value = false
         emit("onClose" ) 
-        window.socket.emit("Reports", window.property_name)
+        window.postMessage({action:"Reports"},"*")
         window.socket.emit("ComIframeModal", window.property_name)
         window.postMessage({"action":"Dashboard"},"*")
         window.socket.emit("ReservationStayDetail", { reservation_stay:active_reservations.map(r=>r.name)})

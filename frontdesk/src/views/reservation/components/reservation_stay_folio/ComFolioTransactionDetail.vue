@@ -309,7 +309,7 @@ const onSaveReferenceNumber = () => {
     doc.value.reference_number = r.message.reference_number
     saving.value = false
     window.socket.emit("FolioTransactionDetail", { property: window.property_name, name: window.folio_transaction_number })
-    window.socket.emit("FolioTransactionList", window.property_name)
+    window.postMessage({action:"FolioTransactionList"},"*")
     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 
     onCloseRefNumber()
@@ -394,15 +394,20 @@ function onOpenFolioDetail(name) {
   window.parent.postMessage('view_folio_detail|' + name, '*')
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="FolioTransactionDetail"){
+            setTimeout(()=>{
+              onLoad(false)
+            },1000*2)
+            
+        }
+    };
+}
+
 onMounted(() => {
   window.folio_transaction_number = dialogRef.value.data.folio_transaction_number
-  window.socket.on("FolioTransactionDetail", (arg) => {
-    if (arg.property == property.name && arg.name == window.folio_transaction_number) {
-      setTimeout(() => {
-        onLoad(false)
-      }, 2000)
-    }
-  })
+  window.addEventListener('message', actionRefreshData, false);
   onLoad()
 })
 function onLoad(showLoading = true) {
@@ -469,7 +474,7 @@ function onOpenLink() {
 
 
 onUnmounted(() => {
-  window.socket.off("FolioTransactionDetail")
+  window.removeEventListener('message', actionRefreshData, false);
 })
 
 

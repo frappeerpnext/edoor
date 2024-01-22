@@ -183,9 +183,9 @@ function onOK() {
         window.socket.emit("GuestDetail", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
         window.socket.emit("GuestList", window.property_name)
-        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-        window.socket.emit("Reports", window.property_name)
-        window.socket.emit("FolioTransactionList", window.property_name) 
+        window.postMessage({action:"GuestLedgerTransaction"},"*")
+        window.postMessage({action:"Reports"},"*")
+        window.postMessage({action:"FolioTransactionList"},"*") 
         if (window.reservation) {
             window.postMessage({action:"ReservationDetail"},"*")
         }

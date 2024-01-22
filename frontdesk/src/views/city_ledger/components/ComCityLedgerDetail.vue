@@ -162,7 +162,7 @@ function onDeletecityLedger() {
             deleteDoc('City Ledger', data.value.name)
                 .then((r) => {
                     // loadData()
-                    window.socket.emit("CityLedgerAccount", window.property_name)
+                    window.postMessage({action:"CityLedgerAccount"},"*")
                     dialogRef.value.close(r)
                 }).catch((err) => {
                     loading.value = false
@@ -182,17 +182,22 @@ function loadData(show_loading = true) {
         })
 }
 
-onMounted(() => {
-    loadData()
-    window.socket.on("ComCityLedgerDetail", (arg) => {
-        if (arg == property.name) {
-            setTimeout(function () {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Frontdesk"){
+            setTimeout(()=>{
                 loadData(false)
-            }, 3000)
+            },1000*3)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    loadData() 
+    window.addEventListener('message', actionRefreshData, false);
 })
 onUnmounted(() => {
-    window.socket.off("ComCityLedgerDetail");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 </script>

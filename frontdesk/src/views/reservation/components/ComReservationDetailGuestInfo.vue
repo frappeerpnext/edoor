@@ -136,7 +136,7 @@ function onAdvancedSearch(guest_type) {
                 loading.value = true
                 rs.LoadReservation(rs.reservation.name)
                
-                window.socket.emit("ReservationList", { property:window.property_name})
+                window.postMessage({action:"ReservationList"},"*")
                 gv.toast('success', 'Updated Successful')
             }
         }

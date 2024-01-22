@@ -59,7 +59,7 @@ def re_run_fail_jobs():
         elif j["job_name"] == "edoor.api.utils.update_reservation":
             update_reservation(name=job["kwargs"]["name"], run_commit=True)
         elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
-            update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"], run_commit=True) 
+             update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"]) 
         elif j["job_name"] == "edoor.api.reservation.post_charge_to_folio_afer_check_in":
             post_charge_to_folio_afer_check_in(
                  reservation=job["kwargs"]["reservation"],

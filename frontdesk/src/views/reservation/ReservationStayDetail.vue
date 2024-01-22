@@ -263,8 +263,8 @@ function onUnreservedRoom() {
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ComGuestLedger", { property: window.property_name })
-                window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"GuestLedgerTransaction"},"*")
+                window.postMessage({action:"Reports"},"*")
             })
         },
     });
@@ -300,8 +300,8 @@ function onReservedRoom() {
                 window.socket.emit("ReservationList", { property: window.property_name })
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ComGuestLedger", { property: window.property_name })
-                window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"GuestLedgerTransaction"},"*")
+                window.postMessage({action:"Reports"},"*")
             })
         },
     });
@@ -380,11 +380,11 @@ const onCheckIn = () => {
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.postMessage({action:"Frontdesk"},"*")
-                    window.socket.emit("TodaySummary", window.property_name)
+                    window.postMessage({action:"TodaySummary"},"*")
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
-                    window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
-        	        window.socket.emit("FolioTransactionList", window.property_name)
+                    window.postMessage({action:"GuestLedgerTransaction"},"*")
+                    window.postMessage({action:"Reports"},"*")
+        	        window.postMessage({action:"FolioTransactionList"},"*")
 
                     onRefresh(false)
                 })
@@ -420,11 +420,11 @@ const onCheckOut = () => {
                     window.socket.emit("ReservationList", { property: window.property_name }) 
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     window.postMessage({action:"Frontdesk"},"*")
-                    window.socket.emit("TodaySummary", window.property_name)
+                    window.postMessage({action:"TodaySummary"},"*")
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
-                    window.socket.emit("GuestLedgerTransaction", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
-        	        window.socket.emit("FolioTransactionList", window.property_name)
+                    window.postMessage({action:"GuestLedgerTransaction"},"*")
+                    window.postMessage({action:"Reports"},"*")
+        	        window.postMessage({action:"FolioTransactionList"},"*")
                     window.socket.emit("ComRunNightAudit", { property: window.property_name })
 
                 })

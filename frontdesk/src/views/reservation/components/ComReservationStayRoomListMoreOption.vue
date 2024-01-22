@@ -161,15 +161,15 @@ function onUnassignRoom(data){
                 loading.value = false
                 rs.reservationStay = r.message
                 window.postMessage({"action":"Dashboard"},"*")
-                window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationList", { property:window.property_name})
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"ReservationList"},"*")
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 window.postMessage({action:"ReservationStayDetail"},"*")      
                 window.postMessage({"action":"Frontdesk"},"*")  
-                window.socket.emit("TodaySummary", window.property_name)
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"TodaySummary"},"*")
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"GuestLedgerTransaction"},"*")
+                window.postMessage({action:"Reports"},"*")
 
             }).catch(()=>{
                 loading.value = false

@@ -340,15 +340,19 @@ function loadData(show_loading=true) {
     })
 }
 
-onMounted(() => {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="GuestLedgerTransaction"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000*10)
+            
+        }
+    };
+}
 
-    window.socket.on("GuestLedgerTransaction", (arg) => {
-        if (arg.property == window.property_name) { 
-        setTimeout(function () {
-            loadData(false)
-        }, 3000)
-    }
-    })
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false)
 
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
     if (state) {
@@ -366,7 +370,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-    window.socket.off("GuestLedgerTransaction");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 const showAdvanceSearch = ref()

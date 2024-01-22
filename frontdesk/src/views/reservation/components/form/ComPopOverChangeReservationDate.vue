@@ -116,7 +116,7 @@ function onSave() {
 
         emit("onClose")
         window.socket.emit("ReservationList", { property: window.property_name })
-        window.socket.emit("Reports", window.property_name)
+        window.postMessage({action:"Reports"},"*")
         window.socket.emit("ComIframeModal", window.property_name)
         window.postMessage({"action":"Dashboard"},"*")
         window.socket.emit("ReservationStayList", { property: window.property_name })

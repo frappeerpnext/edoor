@@ -119,8 +119,8 @@ function onSave() {
             window.postMessage({"action":"Dashboard"},"*")
             window.postMessage({action:"ReservationStayDetail"},"*")
             window.postMessage({action:"ReservationDetail"},"*")
-            window.socket.emit("TodaySummary", window.property_name)
-            window.socket.emit("Reports", window.property_name)
+            window.postMessage({action:"TodaySummary"},"*")
+            window.postMessage({action:"Reports"},"*")
         })
         .catch((error) => {
             isSaving.value = false;

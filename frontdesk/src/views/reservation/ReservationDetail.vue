@@ -296,9 +296,9 @@ function onCheckIn() {
                     rs.LoadReservation(rs.reservation.name, false);
                     window.postMessage({"action":"Dashboard"},"*")
                     window.socket.emit("ReservationList", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
+                    window.postMessage({action:"Reports"},"*")
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("FolioTransactionList", window.property_name)
+                    window.postMessage({action:"FolioTransactionList"},"*")
 
 
                 })

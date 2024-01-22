@@ -138,22 +138,24 @@ function onPrint(){
     document.getElementById("iframe").contentWindow.print()
 }
 
-
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Reports"){
+            setTimeout(()=>{
+                loadIframe()
+            },1000*3)
+            
+        }
+    };
+}
 
 onMounted(() => {
-    loadIframe()
-    window.socket.on("Reports", (arg) => {
-        if (arg == window.property_name) { 
-            setTimeout(function () {
-                loadIframe()
-            }, 3000)
-        }
-    }) 
-
+    loadIframe() 
+    window.addEventListener('message', actionRefreshData, false)
 });
 
 onUnmounted(() => {
-    window.socket.off("Reports");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 

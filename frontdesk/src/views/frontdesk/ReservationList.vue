@@ -448,7 +448,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("ReservationList");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

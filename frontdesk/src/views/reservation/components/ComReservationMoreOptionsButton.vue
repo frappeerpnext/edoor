@@ -275,8 +275,8 @@ function onGroupCheckIn() {
                         window.socket.emit("ReservationList", { property: window.property_name })
                         window.socket.emit("ReservationStayList", { property: window.property_name })
                         window.socket.emit("ComGuestLedger", { property: window.property_name })
-                        window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("FolioTransactionList", window.property_name)
+                        window.postMessage({action:"Reports"},"*")
+                        window.postMessage({action:"FolioTransactionList"},"*")
 
                         rs.selecteds.forEach(r => {
                             window.socket.emit("ReservationStayDetail", { reservation_stay: r.name })
@@ -331,11 +331,11 @@ function onGroupUndoCheckIn() {
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
+                    window.postMessage({action:"Reports"},"*")
                     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
                     window.postMessage({action:"ReservationDetail"},"*")
                     window.postMessage({"action":"Frontdesk"},"*")
-                    window.socket.emit("FolioTransactionList", window.property_name)
+                    window.postMessage({action:"FolioTransactionList"},"*")
 
                     setTimeout(() => {
                         emit('onRefresh')
@@ -385,9 +385,9 @@ function onGroupCheckOut(is_not_undo = false) {
                         window.socket.emit("ReservationList", { property: window.property_name })
                         window.socket.emit("ReservationStayList", { property: window.property_name })
                         window.socket.emit("ComGuestLedger", { property: window.property_name })
-                        window.socket.emit("Reports", window.property_name)
+                        window.postMessage({action:"Reports"},"*")
                         window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
-                        window.socket.emit("FolioTransactionList", window.property_name)
+                        window.postMessage({action:"FolioTransactionList"},"*")
 
                         rs.LoadReservation()
                     }
@@ -439,9 +439,9 @@ function onGroupUndoCheckOut() {
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.socket.emit("ComGuestLedger", { property: window.property_name })
-                    window.socket.emit("Reports", window.property_name)
+                    window.postMessage({action:"Reports"},"*")
                     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
-                    window.socket.emit("FolioTransactionList", window.property_name)
+                    window.postMessage({action:"FolioTransactionList"},"*")
 
                     rs.LoadReservation()
                 }
@@ -733,7 +733,7 @@ function onMarkasGITReservation() {
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.postMessage({"action":"Dashboard"},"*")
-                    window.socket.emit("Reports", window.property_name)
+                    window.postMessage({action:"Reports"},"*")
                     window.postMessage({action:"ReservationDetail"},"*")
                     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 
@@ -766,7 +766,7 @@ function onMarkasFITReservation() {
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("ReservationStayList", { property: window.property_name })
                     window.postMessage({"action":"Dashboard"},"*")
-                    window.socket.emit("Reports", window.property_name)
+                    window.postMessage({action:"Reports"},"*")
                     window.postMessage({action:"ReservationDetail"},"*")
                     window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
 

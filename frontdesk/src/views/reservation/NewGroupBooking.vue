@@ -858,8 +858,8 @@ const onSave = (assign_room = false) => {
     ).then((result) => {
         isSaving.value = false
         window.postMessage({action:"Dashboard"},"*")
-        window.socket.emit("ReservationList", { property:window.property_name})
-        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.postMessage({action:"ReservationList"},"*")
+        window.postMessage({action:"ReservationStayList"},"*")
         window.postMessage({action:"Frontdesk"},"*")
         setTimeout(function(){
             if (window.reservation){ 

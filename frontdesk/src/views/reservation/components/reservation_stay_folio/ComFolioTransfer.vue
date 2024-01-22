@@ -143,9 +143,9 @@ function onOk() {
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationStayList", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationList", {reservation_stay:window.reservation_stay})
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
-                window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"GuestLedgerTransaction"},"*")
+                window.postMessage({action:"FolioTransactionList"},"*")
 
             }).catch((err) => {
                 loading.value = false

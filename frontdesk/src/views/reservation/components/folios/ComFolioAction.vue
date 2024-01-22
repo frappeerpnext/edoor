@@ -368,8 +368,8 @@ function MarkasMasterFolio() {
                 },"Mark Folio as Master Folio Successfully")
                     .then((doc) => {
                         window.postMessage({action:"load_reservation_folio_list",selected_folio_name:selectedFolio.value.name})
-                        window.socket.emit("ComGuestLedger", { property:window.property_name})
-                        window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                        window.postMessage({action:"GuestLedger"},"*")
+                        window.postMessage({action:"GuestLedgerTransaction"},"*")
 
                     })
             },
@@ -401,9 +401,9 @@ function openFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
+                    window.postMessage({action:"GuestLedger"},"*")
                     window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.postMessage({action:"GuestLedgerTransaction"},"*")
                 })
         },
 
@@ -443,8 +443,8 @@ function closeFolio() {
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
                     window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("ComGuestLedger", { property:window.property_name})
-                    window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
+                    window.postMessage({action:"GuestLedger"},"*")
+                    window.postMessage({action:"GuestLedgerTransaction"},"*")
                 })
         },
 

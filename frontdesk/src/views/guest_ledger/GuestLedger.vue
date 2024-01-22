@@ -375,14 +375,19 @@ function loadData(show_loading = true) {
     })
 }
 
-onMounted(() => {
-    window.socket.on("ComGuestLedger", (arg) => {
-        if (arg.property == window.property_name) { 
-            setTimeout(function () {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="GuestLedger"){
+            setTimeout(()=>{
                 loadData(false)
-            }, 3000)
+            },1000*10)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false); 
     let state = JSON.parse(localStorage.getItem("page_state_guest_ledger"))
     if (state) {
         if (state.selectedColumns) {
@@ -421,6 +426,6 @@ const onCloseColumn = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("GuestLedger");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 </script>

@@ -33,11 +33,11 @@ const onSave = () => {
         rs.reservationStay.adult = doc.adult
         rs.reservationStay.child = doc.child
         isLoading.value = false;
-        window.socket.emit("ReservationList", { property:window.property_name})
-        window.socket.emit("ReservationStayList", { property:window.property_name})
+        window.postMessage({action:"ReservationList"},"*")
+        window.postMessage({action:"ReservationStayList"},"*")
         window.postMessage({action:"ReservationStayDetail"},"*")
         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-        window.socket.emit("Reports", window.property_name)
+        window.postMessage({action:"Reports"},"*")
         emit("onClose")
     }).catch((ex) => {
         isLoading.value = false;

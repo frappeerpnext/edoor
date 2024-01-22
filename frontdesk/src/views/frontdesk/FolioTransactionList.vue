@@ -369,16 +369,21 @@ onMounted(() => {
     })
 
   })
-
-  window.socket.on("FolioTransactionList", (arg) => {
-    if (arg == property.name) { 
-      setTimeout(() => {
-        loadData(false)
-      }, 3000)
-    }
-  })
+ 
+  window.addEventListener('message', actionRefreshData, false);
 
 })
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="FolioTransactionList"){
+            setTimeout(()=>{
+              loadData(false)
+            },1000*3)
+            
+        }
+    };
+}
 
 const advanceSearch = (event) => {
   showAdvanceSearch.value.toggle(event);
@@ -399,7 +404,7 @@ const onCloseColumn = () => {
 }
 
 onUnmounted(() => {
-  window.socket.off("FolioTransactionList")
+  window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

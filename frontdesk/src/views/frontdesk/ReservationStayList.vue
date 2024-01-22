@@ -405,14 +405,19 @@ getApi('frontdesk.get_working_day', {
     working_date.value = r.message?.date_working_day
 })
 
-onMounted(() => {
-    window.socket.on("ReservationStayList", (arg) => {
-        if (arg.property == window.property_name) { 
-            setTimeout(function () {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ReservationStayList"){
+            setTimeout(()=>{
                 loadData(false)
-            }, 3000)
+            },1000*10)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false); 
     let state = localStorage.getItem("page_state_reservation_stay")
     if (state) {
         state = JSON.parse(state)
@@ -493,6 +498,6 @@ function onAssignRoom(data) {
 }
 
 onUnmounted(() => {
-    window.socket.off("ReservationStayList");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 </script>

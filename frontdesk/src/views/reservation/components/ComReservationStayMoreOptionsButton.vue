@@ -194,7 +194,7 @@ function onMarkAsMasterRoom() {
             }).then((doc) => {
                 rs.loading = false
                 rs.reservationStay = doc.message
-                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
               
@@ -236,14 +236,14 @@ function onUndoCheckIn() {
                 rs.reservationStay = data.data.message
                 window.socket.emit("ComHousekeepingStatus", window.property_name)
                 window.postMessage({"action":"Dashboard"},"*")
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
                 
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)  
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"Reports"},"*")
                 window.socket.emit("Housekeeping", {property:window.property_name})
-                window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"FolioTransactionList"},"*")
                 window.socket.emit("ComRoomAvailable", window.property_name)
 
                 setTimeout(() => {
@@ -284,13 +284,13 @@ function OnUndoCheckOut() {
                 rs.reservationStay = data.data.message
                 window.socket.emit("ComHousekeepingStatus", window.property_name)
                 window.postMessage({"action":"Dashboard"},"*")
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
                 
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation) 
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
-                window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"Reports"},"*")
+                window.postMessage({action:"FolioTransactionList"},"*")
 
                 rs.loading = false
 
@@ -419,13 +419,13 @@ function onReservedRoom() {
             }).then((resul)=>{
                 loading.value = false
                 rs.getReservationDetail(rs.reservationStay.name);
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({"action":"Frontdesk"},"*")
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
-                window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"Reports"},"*")
+                window.postMessage({action:"FolioTransactionList"},"*")
 
                 
 
@@ -452,13 +452,13 @@ function onUnReservedRoom() {
                 reservation_stay: rs.reservationStay.name
             }).then((resul)=>{
                 loading.value = false
-                window.socket.emit("ReservationList", { property:window.property_name})
-                window.socket.emit("ReservationStayList", { property:window.property_name})
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({"action":"Frontdesk"},"*")
-                window.socket.emit("ComGuestLedger", { property:window.property_name})
-                window.socket.emit("Reports", window.property_name)
-                window.socket.emit("FolioTransactionList", window.property_name)
+                window.postMessage({action:"GuestLedger"},"*")
+                window.postMessage({action:"Reports"},"*")
+                window.postMessage({action:"FolioTransactionList"},"*")
 
             
             })  
@@ -489,7 +489,7 @@ function onMarkasPaidbyMasterRoom() {
                         rs.loading = false
                         rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                        window.socket.emit("ReservationStayList", { property:window.property_name})
+                        window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     }
@@ -528,7 +528,7 @@ function onUnmarkasPaidbyMasterRoom() {
                     loading.value = false;
                     rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)
-                    window.socket.emit("ReservationStayList", { property:window.property_name})
+                    window.postMessage({action:"ReservationStayList"},"*")
                     window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
 
@@ -624,14 +624,14 @@ function onMarkasGITReservation() {
             })
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
-                        window.socket.emit("ReservationList", { property:window.property_name})
-                        window.socket.emit("ReservationStayList", { property:window.property_name})
+                        window.postMessage({action:"ReservationList"},"*")
+                        window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({"action":"Dashboard"},"*")
 
                         window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                         window.postMessage({"action":"Frontdesk"},"*")
-                        window.socket.emit("Reports", window.property_name)
+                        window.postMessage({action:"Reports"},"*")
                 })
         },
 
@@ -655,13 +655,13 @@ function onMarkasFITReservation() {
                 .then((doc) => {
                     rs.reservationStay.reservation_type = doc.reservation_type,
 
-                        window.socket.emit("ReservationList", { property:window.property_name})
-                        window.socket.emit("ReservationStayList", { property:window.property_name})
+                        window.postMessage({action:"ReservationList"},"*")
+                        window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({"action":"Dashboard"},"*")
 
                         window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-                        window.socket.emit("Reports", window.property_name)
+                        window.postMessage({action:"Reports"},"*")
 
                 })
         },
