@@ -329,6 +329,17 @@ function debouncer(fn, delay) {
     }, delay);
   };
 }
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="RoomBlockList"){
+            setTimeout(()=>{
+              loadData(false)
+            },1000*3)
+            
+        }
+    };
+}  
 onMounted(() => {
   let state = localStorage.getItem("page_state_room_block")
   if (state) {
@@ -366,13 +377,8 @@ onMounted(() => {
       })
     })
   })
-  window.socket.on("RoomBlockList", (arg) => {
-        if (arg == window.property_name) {
-            setTimeout(function(){
-                loadData(false)
-            },3000) 
-        }
-    })
+  
+  window.addEventListener('message', actionRefreshData, false);
 
 })
 function onAddNewRommBlock(room_block) {
@@ -419,6 +425,6 @@ const onCloseColumn = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("RoomBlockList");
+  window.removeEventListener('message', actionRefreshData, false)
 })
 </script>

@@ -159,7 +159,7 @@
          
             window.postMessage({action:"ReservationStayDetail"},"*")
           
-            window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+            window.postMessage({action:"ReservationDetail"},"*")
           
             window.postMessage({"action":"Frontdesk"},"*")
             

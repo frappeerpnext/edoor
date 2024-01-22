@@ -94,15 +94,19 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
-onMounted(() => {
-    window.socket.on("Housekeeping", (arg) => {
-        if (arg.property == window.property_name) {
-            setTimeout(function () {
-                hk.loadData(false)
-            }, 3000)
-        }
-    })
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Housekeeping"){
+            setTimeout(()=>{
+                hk.loadData(false)
+            },1000*3)
+        }
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false);
     hk.loadData()
 })
 
@@ -126,7 +130,7 @@ const onToday = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("Housekeeping")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

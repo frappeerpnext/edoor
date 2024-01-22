@@ -129,7 +129,7 @@ function onSave() {
         .then((result) => {
             isLoading.value = false
             emit('onSave', result.message)
-            window.socket.emit("ReservationStayList", { property: window.property_name })
+            window.postMessage({action:"ReservationStayList"},"*")
             
          
         })

@@ -216,22 +216,25 @@ const onClose = () => {
     dialogRef.value.close();
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComDepositLedgerDetail"){
+            setTimeout(()=>{
+                getData()
+            },1000*3)
+            
+        }
+    };
+}
+
 onMounted(() => {
     name.value = dialogRef.value.data.name;
     getData()
-    window.socket.on("ComDepositLedgerDetail", (arg) => {  
-        if (arg.property == window.property_name) { 
-            setTimeout(function () {
-                getData()
-            }, arg.delay == 0 ? arg.delay : 3000)
-
-
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false)
 })
 
 onUnmounted(() => {
-    window.socket.off("ComDepositLedgerDetail")
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 

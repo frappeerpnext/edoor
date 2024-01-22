@@ -425,12 +425,10 @@ function onDeleteCityLedgerTransaction(name) {
         onClose: (options) => {
             if(options.data){
                 loadData()
-                window.socket.emit("CityLedgerAccount",window.property_name)
-                window.socket.emit("ComCityLedgerDetail",window.property_name)
+                window.postMessage({action:"CityLedgerAccount"},"*")
+                window.postMessage({action:"ComCityLedgerDetail"},"*")
             }
-            
             loading.value = false;
-            
          }
     });
  

@@ -125,8 +125,7 @@ function onDeleteGuest (name){
             loading.value = true
             deleteDoc('Customer',name)
             .then(() =>{
-                loading.value = false
-                window.socket.emit("RefreshGuestDatabase", { property:window.property_name})
+                loading.value = false 
                 window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationList"},"*")
                 window.socket.emit("GuestList", window.property_name)
@@ -142,12 +141,10 @@ function onDeleteGuest (name){
     });
 }
  
-onMounted(() => {
-
+onMounted(() => { 
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
     } 
-
     if (document.querySelectorAll('.guest-detail').length == 1){
         window.socket.on("GuestDetail", (arg) => {
             if( arg == window.property_name){

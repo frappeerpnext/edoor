@@ -51,14 +51,7 @@ const data = ref([])
 const filter = ref({})
 const confirm = useConfirm()
 const dialog = useDialog()
-
-window.socket.on("RefreshCityLedgerType", (arg) => {
-    if (arg == setting.property.name) {
-        setTimeout(function () {
-            loadData()
-        }, 3000)
-    }
-})
+ 
 
 function onEdit (selected){ 
  dialog.open(ComAddCityLedgerType, {
@@ -157,10 +150,21 @@ function debouncer(fn, delay) {
     };
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="CityLedgerType"){
+            setTimeout(()=>{
+                loadData()
+            },1000*3) 
+        }
+    };
+}
+
 onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false)
     loadData()
 })
 onUnmounted(() => {
-    window.socket.off("RefreshCityLedgerType");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 </script>

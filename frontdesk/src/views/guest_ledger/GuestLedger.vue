@@ -380,7 +380,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="GuestLedger"){
             setTimeout(()=>{
                 loadData(false)
-            },1000*10)
+            },1000*2)
             
         }
     };

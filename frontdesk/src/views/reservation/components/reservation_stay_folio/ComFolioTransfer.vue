@@ -141,8 +141,8 @@ function onOk() {
                 loading.value = false
                 dialogRef.value.close("refresh_data")
                 window.postMessage({action:"ReservationStayDetail"},"*")
-                window.socket.emit("ReservationStayList", {reservation_stay:window.reservation_stay})
-                window.socket.emit("ReservationList", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"ReservationList"},"*")
                 window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"GuestLedgerTransaction"},"*")
                 window.postMessage({action:"FolioTransactionList"},"*")

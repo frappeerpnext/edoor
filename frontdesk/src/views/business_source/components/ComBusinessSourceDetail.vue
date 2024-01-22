@@ -72,7 +72,7 @@ function onDelete() {
              deleteDoc('Business Source',name.value)
                  .then((r) =>{ 
                     dialogRef.value.close(r)
-                    window.socket.emit("BusinessSource",window.property_name)
+                    window.postMessage({action:"BusinessSource"},"*")
                     
                     
                  } ).catch((err)=>{
@@ -82,18 +82,23 @@ function onDelete() {
     });
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComBusinessSourceDetail"){
+            setTimeout(()=>{
+                document.getElementById("iframeBusinessSourceDetail").contentWindow.location.replace(url.value + "&refresh=" + (Math.random() * 16))
+            },1000)
+        }
+    };
+}
+
 onMounted(() => {
     name.value = dialogRef.value.data.name
-    window.socket.on("ComBusinessSourceDetail",  (arg) => {
-        if (arg == window.property_name){
-            document.getElementById("iframeBusinessSourceDetail").contentWindow.location.replace(url.value + "&refresh=" + (Math.random() * 16))
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false);
 })
 
 onUnmounted(() => {
-      
-      window.socket.off("ComBusinessSourceDetail")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

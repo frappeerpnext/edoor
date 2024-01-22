@@ -310,7 +310,7 @@ const onSaveReferenceNumber = () => {
     saving.value = false
     window.socket.emit("FolioTransactionDetail", { property: window.property_name, name: window.folio_transaction_number })
     window.postMessage({action:"FolioTransactionList"},"*")
-    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+    window.postMessage({action:"ReservationStayDetail"},"*") 
 
     onCloseRefNumber()
   }).catch(() => {

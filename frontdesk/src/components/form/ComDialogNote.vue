@@ -86,8 +86,7 @@ function onLoadSocket(){
     window.postMessage({action:"Reports"},"*")
     window.postMessage({action:"ReservationDetail"},"*")
     window.postMessage({action:"FolioTransactionList"},"*")
-    window.socket.emit("PayableLedger",{property:window.property_name})
- 
+    window.postMessage({action:"PayableLedger"},"*")
 
     if(data.value.data.stays && data.value.data.stays.length > 0){
         data.value.data.stays.forEach(r => { 

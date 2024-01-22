@@ -2106,7 +2106,7 @@ def run_night_audit(property, working_day):
     #queue post room change to folio
 
     #post_room_change_to_folio(new_working_day)
-    frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='short', working_day=new_working_day)
+    frappe.enqueue("edoor.api.frontdesk.post_room_change_to_folio", queue='long', working_day=new_working_day)
 
     #update room status after runight auit
 
@@ -2223,8 +2223,114 @@ def post_room_change_to_folio(working_day):
             
             if folio:
                 add_room_charge_to_folio(folio, r,1)
+                
+    frappe.enqueue("edoor.api.frontdesk.update_transaction_balance_after_run_night_audit", queue='long', working_day=working_day)
 
+@frappe.whitelist()
+def update_transaction_balance_after_run_night_audit(working_day):
     #verify if reservation stay and and reservation is update balance
+    # post enque job to update update folio balance
+    sql= "select distinct reservation,reservation_stay, transaction_number from `tabFolio Transaction` where transaction_type='Reservation Folio' and posting_date = '{}' and property='{}'".format(working_day.posting_date, working_day.business_branch)
+    data = frappe.db.sql(sql,as_dict=1)
+    
+    frappe.enqueue("edoor.api.frontdesk.update_ledger_balance_after_run_night_audit", queue='long', ledger_type='Reservation Folio', names = set([d["transaction_number"] for d in data]))
+    frappe.enqueue("edoor.api.frontdesk.update_reservation_stay_credit_debit_balance", queue='long', names = set([d["reservation_stay"] for d in data]))
+    frappe.enqueue("edoor.api.frontdesk.update_reservation_credit_debit_balance", queue='long',  names = set([d["reservation"] for d in data]))
+
+
+@frappe.whitelist()
+def update_ledger_balance_after_run_night_audit(ledger_type, names):
+    if names:
+        sql = """
+            select 
+                    transaction_type,
+                    transaction_number,
+                    coalesce(sum(if(type='Debit',amount,0)),0) as debit,
+                    coalesce(sum(if(type='Credit',amount,0)),0) as credit
+                from `tabFolio Transaction` 
+                where
+                    transaction_type = %(ledger_type)s and 
+                    transaction_number in  %(names)s
+                group by
+                    transaction_type,
+                    transaction_number 
+        """
+        data_folio_balance = frappe.db.sql(sql, {
+            "names":names,
+            "ledger_type":ledger_type,
+        }, as_dict =1)
+
+        for d in data_folio_balance:
+            frappe.db.sql("update `tab{0}` set total_debit={1}, total_credit={2}, balance={1}-{2} where name='{3}'".format(
+                ledger_type,
+                d["debit"],
+                d["credit"],
+                d["transaction_number"],
+            ))
+        frappe.db.commit()
+
+ 
+@frappe.whitelist()
+def update_reservation_credit_debit_balance(names):
+    if names:
+        sql = """
+            select 
+                    reservation,
+                    coalesce(sum(if(type='Debit',amount,0)),0) as debit,
+                    coalesce(sum(if(type='Credit',amount,0)),0) as credit
+                from `tabFolio Transaction` 
+                where
+                    transaction_type = 'Reservation Folio' and 
+                    reservation in  %(names)s
+                group by
+                    reservation
+        """
+        data_folio_balance = frappe.db.sql(sql, {
+            "names":names,
+        }, as_dict =1)
+
+        for d in data_folio_balance:
+            frappe.db.sql("update `tabReservation` set total_debit={0}, total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                d["debit"],
+                d["credit"],
+                d["reservation"],
+            ))
+        frappe.db.commit()
+ 
+@frappe.whitelist()
+def update_reservation_stay_credit_debit_balance(names):
+    if names:
+        sql = """
+            select 
+                    reservation_stay,
+                    coalesce(sum(if(type='Debit',amount,0)),0) as debit,
+                    coalesce(sum(if(type='Credit',amount,0)),0) as credit
+                from `tabFolio Transaction` 
+                where
+                    transaction_type = 'Reservation Folio' and 
+                    reservation_stay in  %(names)s
+                group by
+                    reservation_stay 
+        """
+        data_folio_balance = frappe.db.sql(sql, {
+            "names":names,
+        }, as_dict =1)
+
+        for d in data_folio_balance:
+            frappe.db.sql("update `tabReservation Stay` set total_debit={0}, total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                d["debit"],
+                d["credit"],
+                d["reservation_stay"],
+            ))
+            
+            frappe.db.sql("update `tabReservation Stay Room` set total_debit={0}, total_credit={1}, balance={0}-{1} where parent='{2}'".format(
+                d["debit"],
+                d["credit"],
+                d["reservation_stay"],
+            ))
+        frappe.db.commit()
+
+
 
 
 

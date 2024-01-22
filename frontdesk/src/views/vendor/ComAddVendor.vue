@@ -94,10 +94,10 @@ function onLoad() {
   getDoc('Vendor', dialogRef.value.data.name)
     .then((r) => {
       data.value = r
-      window.socket.emit("Vendor", window.property_name)
-      window.socket.emit("ComVendorDetail", window.property_name)
-      window.socket.emit("PayableLedger", {property:window.property_name})
-      window.socket.emit("ComPayableLedgerDetail", {property:window.property_name})
+      window.postMessage({action:"Vendor"},"*")
+      window.socket.emit("ComVendorDetail", window.property_name) 
+      window.postMessage({action:"PayableLedger"},"*")
+      window.postMessage({action:"ComPayableLedgerDetail"},"*")
       loading.value = false
     })
     .catch((error) => {

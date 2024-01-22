@@ -195,7 +195,7 @@ function onSelected($event) {
                 hk.selectedRow.housekeeping_status_code = $event.status
                 hk.selectedRow.status_color = doc.status_color
                 toast.add({ severity: 'success', summary: "Change Status", detail: "Change housekeeping status successfully", life: 3000 })
-                window.socket.emit("ComHousekeepingStatus", window.property_name)
+                window.postMessage({"action":"ComHousekeepingStatus"},"*")
                 submitLoading.value = false
             })
             .catch((error) => {

@@ -124,9 +124,8 @@ function onSave() {
         new_name: data.value.business_source
     }
     createUpdateDoc("Business Source", data.value , '', rename).then((r) => {
-        
-        window.socket.emit("BusinessSource",window.property_name)
-        window.socket.emit("ComBusinessSourceDetail",window.property_name)
+        window.postMessage({action:"BusinessSource"},"*")
+        window.postMessage({action:"ComBusinessSourceDetail"},"*")
         dialogRef.value.close(rename.new_name)
     }).catch((err) => {
         loading.value = false

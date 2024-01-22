@@ -37,20 +37,20 @@ def get_summary(filters,data):
 
 def get_columns(filters):
 	columns =   [
-		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":170,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":190,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
 		{"fieldname":"reference_number",'align':'left', "label":"Ref #","width":95,"show_in_report":1},
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
-		{'fieldname':'arrival_date','align':'center','label':'Arrival Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
-		{'fieldname':'departure_date','align':'center','label':'Departure Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
-		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
-		{'fieldname':'rooms','label':'Room','align':'left',"width":90,"show_in_report":1},
+		{'fieldname':'arrival_date','align':'center','label':'Arrival Date',"width":120 ,"show_in_report":1,"fieldtype":"Date"},
+		{'fieldname':'departure_date','align':'center','label':'Departure Date',"width":120 ,"show_in_report":1,"fieldtype":"Date"},
+		{'fieldname':'room_type_alias','label':'Room Type',"width":50,"show_in_report":1},
+		{'fieldname':'rooms','label':'Room','align':'left',"width":60,"show_in_report":1},
 		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Time","width":95,"show_in_report":1},
 		{'fieldname':'flight_number','label':'Flight',"width":90,"show_in_report":1,'align':'center'},
-		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":150,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
+		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":130,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
 		{'fieldname': 'total_pax', 'label': 'Pax(A/C)','align':'center',"width":50,"show_in_report":1},
-		{'fieldname':'business_source','label':'Source','align':'left',"width":90,"show_in_report":1},
-		{'fieldname':'mode','label':'Mode',"width":40,"show_in_report":1,'align':'lrft'},
-		{'fieldname':'station','label':'Station',"width":150,"show_in_report":1,'align':'left'},
+		{'fieldname':'business_source','label':'Source','align':'left',"width":100,"show_in_report":1},
+		{'fieldname':'mode','label':'Mode',"width":60,"show_in_report":1,'align':'center'},
+		{'fieldname':'station','label':'Station',"width":100,"show_in_report":1,'align':'left'},
 		{'fieldname':'driver','label':'Driver',"width":100,"show_in_report":1,'align':'left'},
 		{'fieldname':'note','label':'Note', 'align':'right',"show_in_report":1,"width":90},
 	]
@@ -58,8 +58,10 @@ def get_columns(filters):
 
 def get_filters(filters):
 	sql = """ and property=%(property)s and is_active_reservation=1 and
-				arrival_date between %(start_date)s and %(end_date)s or
-				departure_date between %(start_date)s and %(end_date)s
+	((arrival_date between %(start_date)s and %(end_date)s AND require_pickup = 1)
+    OR (departure_date between %(start_date)s and %(end_date)s AND require_drop_off = 1)
+    OR (arrival_date between %(start_date)s and %(end_date)s AND departure_date between %(start_date)s and %(end_date)s AND require_pickup = 1 AND require_drop_off = 1))
+				
 	  		 """
 
 	if filters.business_source:
@@ -142,7 +144,7 @@ def get_guest_data(filters):
 def get_report_data(filters,data):
 	report_data = []
 	
-	pickup = sorted(set([d["require_pickup"] for d in data if d['require_pickup']==1 or d['require_drop_off']==1]))
+	pickup = sorted(set([d["require_pickup"] for d in data if d['require_pickup']==1]))
 	if pickup:	
 		report_data.append({
 				"indent":0,
@@ -153,7 +155,7 @@ def get_report_data(filters,data):
 		if filters.show_in_group_by:
 			group_column = get_group_by_column(filters)
 		
-			group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['require_pickup']==1 or d['require_drop_off']==1]))
+			group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['require_pickup']==1]))
 			for g in group_data:
 				d = g
 				if group_column["fieldtype"]=="Date":

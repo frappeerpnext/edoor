@@ -115,14 +115,14 @@ function onSave() {
         loading.value = false
 
         emit("onClose")
-        window.socket.emit("ReservationList", { property: window.property_name })
+        window.postMessage({action:"ReservationList"},"*")
         window.postMessage({action:"Reports"},"*")
         window.socket.emit("ComIframeModal", window.property_name)
         window.postMessage({"action":"Dashboard"},"*")
-        window.socket.emit("ReservationStayList", { property: window.property_name })
+        window.postMessage({action:"ReservationStayList"},"*")
         window.postMessage({"action":"Frontdesk"},"*")
-        window.socket.emit("ReservationStayDetail", { reservation_stay: active_reservations.map(r => r.name) })
-        window.socket.emit("ReservationDetail", rs.reservation.name);
+        window.postMessage({"action":"ReservationStayDetail"},"*")
+        window.postMessage({"action":"ReservationDetail"},"*")
 
     }).catch((err) => {
         loading.value = false

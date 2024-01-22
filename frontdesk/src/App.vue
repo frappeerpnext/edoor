@@ -172,8 +172,6 @@ const actionClickHandler = async function (e) {
         }
     }
 };
-window.addEventListener('message', actionClickHandler, false);
-
 
 onUnmounted(() => {
     window.removeEventListener('message', actionClickHandler, false);
@@ -181,6 +179,7 @@ onUnmounted(() => {
     window.socket.off("RunNightAudit")
 })
 onMounted(() => {
+    window.addEventListener('message', actionClickHandler, false);
     window.socket.on("UpdateCashierShift", (arg) => {
         if (window.property_name == arg.business_branch) {
             if(window.session_id==arg.session_id){

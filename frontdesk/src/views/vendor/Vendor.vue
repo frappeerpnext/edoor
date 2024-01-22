@@ -308,15 +308,18 @@ onMounted(() => {
     })
 
 
-    window.socket.on("Vendor", (arg) => {
-
-        if (arg == window.property_name) {
-
-            loadData(false)
-
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false);
 })
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Vendor"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000)
+        }
+    };
+}
 
 function onAddNewVendor() {
     if(!gv.cashier_shift?.name){
@@ -367,7 +370,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("Vendor");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

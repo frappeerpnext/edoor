@@ -702,8 +702,8 @@ function onSave() {
             window.postMessage({action:"DeskFolio"},"*") 
             window.postMessage({action:"ComDeskFolioDetail"},"*")
             window.postMessage({action:"DepositLedger"},"*")
-            window.socket.emit("ComDepositLedgerDetail", { property: window.property_name })
-            window.socket.emit("ComFolioTransactionSimpleStyle", { property: window.property_name })
+            window.postMessage({action:"ComDepositLedgerDetail"},"*")
+            window.postMessage({action:"load_folio_transaction"},"*")
 
         }).catch((err) => {
             isSaving.value = false;

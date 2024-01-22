@@ -402,7 +402,7 @@ function openFolio() {
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
                     window.postMessage({action:"GuestLedger"},"*")
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.postMessage({action:"ReservationStayList"},"*")
                     window.postMessage({action:"GuestLedgerTransaction"},"*")
                 })
         },
@@ -442,7 +442,7 @@ function closeFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
+                    window.postMessage({action:"ReservationStayList"},"*")
                     window.postMessage({action:"GuestLedger"},"*")
                     window.postMessage({action:"GuestLedgerTransaction"},"*")
                 })

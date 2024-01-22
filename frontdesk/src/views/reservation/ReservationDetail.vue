@@ -248,7 +248,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="ReservationDetail"){
             setTimeout(()=>{
                 onRefresh(false)
-            },1000*10) 
+            },1000*2) 
         }
     };
 }
@@ -295,7 +295,7 @@ function onCheckIn() {
                     rs.loading = false
                     rs.LoadReservation(rs.reservation.name, false);
                     window.postMessage({"action":"Dashboard"},"*")
-                    window.socket.emit("ReservationList", { property: window.property_name })
+                    window.postMessage({action:"ReservationList"},"*")
                     window.postMessage({action:"Reports"},"*")
                     window.postMessage({action:"ReservationStayDetail"},"*")
                     window.postMessage({action:"FolioTransactionList"},"*")

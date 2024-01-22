@@ -37,7 +37,6 @@ function onSave(){
   }
   createUpdateDoc('Customer Group',guestType.value,null,rename.value)
   .then((r)=>{
-    // window.socket.emit("RefreshData", { property:setting.property.name , action: "refresh_guest_type" })
     window.socket.emit("GuestList", window.property_name)
     window.socket.emit("GuestType", window.property_name)
 

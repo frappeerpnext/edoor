@@ -538,8 +538,8 @@ def update_folio_transaction(self):
 
 	#update folio transaction to reservation folio
 	if self.transaction_type=="Reservation Folio":
-		 
-		update_reservation_folio(self.transaction_number, None, False)
+		if not self.flags.ignore_update_reservation_folio:
+			update_reservation_folio(self.transaction_number, None, False)
 	elif self.transaction_type =="City Ledger":
 		update_city_ledger(self.transaction_number, None, False)
 	elif self.transaction_type =="Deposit Ledger":

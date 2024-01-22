@@ -143,8 +143,8 @@ function onCheckIn() {
                         rs.loading = false
                         rs.LoadReservation(rs.reservation.name);
                         // window.socket.emit("RefresheDoorDashboard", rs.reservation.property); 
-                        window.socket.emit("ReservationList", { property: window.property_name })
-                        window.socket.emit("ReservationStayList", { property: window.property_name })
+                        window.postMessage({action:"ReservationList"},"*")
+                        window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({action:"GuestLedger"},"*")
                         window.postMessage({action:"Reports"},"*")
                         window.postMessage({action:"ReservationStayDetail"},"*")
@@ -179,8 +179,8 @@ const onCheckOut = () => {
             }, "Check out successfully").then((result) => {
                 rs.loading = false
                 window.postMessage({"action":"Dashboard"},"*")
-                window.socket.emit("ReservationList", { property: window.property_name })
-                window.socket.emit("ReservationStayList", { property: window.property_name })
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"Reports"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")

@@ -147,9 +147,8 @@ function onSubmitRoomBlock() {
                 then(result => {
                     doc.value = result
                     loading.value = false
-                    window.socket.emit("ComHousekeepingStatus", window.property_name)
-                    window.socket.emit("RoomBlockList", window.property_name)
-
+                    window.postMessage({"action":"ComHousekeepingStatus"},"*")
+                    window.postMessage({"action":"RoomBlockList"},"*")
                 }).catch(err => {
                     loading.value = false
                 })
@@ -173,8 +172,8 @@ function onDelete() {
                 then(result => {
                     dialogRef.value.close()
                     loading.value = false
-                    window.socket.emit("RoomBlockList", window.property_name)
-                    window.socket.emit("ComHousekeepingStatus", window.property_name)
+                    window.postMessage({"action":"RoomBlockList"},"*")                    
+                    window.postMessage({"action":"ComHousekeepingStatus"},"*")
 
                 }).catch(err => {
                     loading.value = false
@@ -242,10 +241,10 @@ function onSave() {
         is_unblock: 1
     }
     updateDoc('Room Block', data.value.name, savedData).then((r) => {
-        window.socket.emit("RoomBlockList", window.property_name)
+        window.postMessage({"action":"RoomBlockList"},"*")        
         window.postMessage({"action":"Dashboard"},"*")
-        window.socket.emit("ComHousekeepingStatus", window.property_name)
-        window.socket.emit("Housekeeping", { property: window.property_name })
+        window.postMessage({"action":"ComHousekeepingStatus"},"*")
+        window.postMessage({action:"Housekeeping"},"*")
         window.socket.emit("ComHousekeepingRoomDetailPanel", { property: window.property_name })
         doc.value = r
         unblockvisible.value = false

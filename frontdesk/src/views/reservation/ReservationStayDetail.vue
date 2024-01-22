@@ -220,12 +220,10 @@ const onRefresh = debouncer(() => {
     loadData()
 }, 500);
 
-function loadData(show_loading=true,delay_load_reservation_stay=0,is_socket=true){
+function loadData(show_loading=true,delay_load_reservation_stay=0){
     
-    setTimeout(() => {   
-        if (is_socket){   
-            rs.getReservationDetail(name.value,show_loading)
-        }
+    setTimeout(() => {    
+        rs.getReservationDetail(name.value,show_loading) 
         rs.getChargeSummary(name.value)
         
     }, delay_load_reservation_stay);
@@ -235,13 +233,11 @@ function loadData(show_loading=true,delay_load_reservation_stay=0,is_socket=true
     window.postMessage({ action: "load_comment" }, "*") 
     if (activeTab.value == 1) {
         rs.getRoomRate(name.value)
-    } else if (activeTab.value == 2) { 
-        if (is_socket){
-            window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
-        }
+    } else if (activeTab.value == 2) {  
+        window.postMessage({ action: "load_reservation_stay_folio_list" }, "*")
     } else if (activeTab.value == 3) { 
-            window.postMessage({ action: "refresh_document", docname: name.value })
-            window.postMessage({ action: "refresh_document_count", docname: name.value })
+        window.postMessage({ action: "refresh_document", docname: name.value })
+        window.postMessage({ action: "refresh_document_count", docname: name.value })
     }
 }
 
@@ -260,9 +256,9 @@ function onUnreservedRoom() {
                 reservation_stay: rs.reservationStay.name
             }).then((resul) => {
                 rs.getReservationDetail(rs.reservationStay.name)
-                window.socket.emit("ReservationStayList", { property: window.property_name })
-                window.socket.emit("ReservationList", { property: window.property_name })
-                window.socket.emit("ComGuestLedger", { property: window.property_name })
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"GuestLedgerTransaction"},"*")
                 window.postMessage({action:"Reports"},"*")
             })
@@ -297,9 +293,9 @@ function onReservedRoom() {
                 reservation_stay: rs.reservationStay.name
             }).then((resul) => {
                 rs.getReservationDetail(rs.reservationStay.name)
-                window.socket.emit("ReservationList", { property: window.property_name })
-                window.socket.emit("ReservationStayList", { property: window.property_name })
-                window.socket.emit("ComGuestLedger", { property: window.property_name })
+                window.postMessage({action:"ReservationList"},"*")
+                window.postMessage({action:"ReservationStayList"},"*")
+                window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"GuestLedgerTransaction"},"*")
                 window.postMessage({action:"Reports"},"*")
             })
@@ -329,9 +325,9 @@ onMounted(() => {
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if(e.data.action=="ReservationStayDetail"){
-            setTimeout(()=>{ 
-                loadData()
-            },1000*10)
+            setTimeout(()=>{
+                loadData(false,0)
+            },1000*2)
             
         }
     };
@@ -375,13 +371,13 @@ const onCheckIn = () => {
                     note: result.note
                 }).then((result) => {
                     rs.loading = false
-                    window.socket.emit("ComHousekeepingStatus", window.property_name);
+                    window.postMessage({"action":"ComHousekeepingStatus"},"*");
                     window.postMessage({"action":"Dashboard"},"*")
-                    window.socket.emit("ReservationList", { property: window.property_name })
-                    window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                    window.postMessage({action:"ReservationList"},"*")
+                    window.postMessage({action:"ReservationDetail"},"*")
                     window.postMessage({action:"Frontdesk"},"*")
                     window.postMessage({action:"TodaySummary"},"*")
-                    window.socket.emit("ComGuestLedger", { property: window.property_name })
+                    window.postMessage({action:"GuestLedger"},"*")
                     window.postMessage({action:"GuestLedgerTransaction"},"*")
                     window.postMessage({action:"Reports"},"*")
         	        window.postMessage({action:"FolioTransactionList"},"*")
@@ -414,14 +410,14 @@ const onCheckOut = () => {
                 .then((result) => {
                     rs.loading = false
                     onRefresh()
-                    window.socket.emit("ComHousekeepingStatus", window.property_name);
+                    window.postMessage({"action":"ComHousekeepingStatus"},"*");
                     window.postMessage({"action":"Dashboard"},"*")
-                    window.socket.emit("ReservationStayList", { property: window.property_name })
-                    window.socket.emit("ReservationList", { property: window.property_name }) 
-                    window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                    window.postMessage({action:"ReservationStayList"},"*")
+                    window.postMessage({action:"ReservationList"},"*") 
+                    window.postMessage({action:"ReservationDetail"},"*")
                     window.postMessage({action:"Frontdesk"},"*")
                     window.postMessage({action:"TodaySummary"},"*")
-                    window.socket.emit("ComGuestLedger", { property: window.property_name })
+                    window.postMessage({action:"GuestLedger"},"*")
                     window.postMessage({action:"GuestLedgerTransaction"},"*")
                     window.postMessage({action:"Reports"},"*")
         	        window.postMessage({action:"FolioTransactionList"},"*")

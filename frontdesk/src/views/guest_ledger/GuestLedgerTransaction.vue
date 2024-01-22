@@ -345,7 +345,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="GuestLedgerTransaction"){
             setTimeout(()=>{
                 loadData(false)
-            },1000*10)
+            },1000*2)
             
         }
     };

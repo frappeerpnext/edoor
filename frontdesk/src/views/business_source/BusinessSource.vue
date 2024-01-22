@@ -325,16 +325,19 @@ onMounted(() => {
         })
     })
     
-
-    window.socket.on("BusinessSource", (arg) => {
-        
-        if (arg == window.property_name) {
-
-                loadData(false)
-             
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false)
 })
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="BusinessSource"){
+            setTimeout(()=>{
+                loadData(false) 
+            },1000*2)
+            
+        }
+    };
+}
 
 function onAddNewBusinessSource(){
     dialog.open(ComAddBusinessSource, {
@@ -379,7 +382,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("BusinessSource");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 </script>

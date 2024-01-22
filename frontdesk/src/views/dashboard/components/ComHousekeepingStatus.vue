@@ -38,14 +38,19 @@ function loadData(showLoading = true) {
     })
 }
 
-onMounted(() => {
-    window.socket.on("ComHousekeepingStatus", (arg) => {
-        if (arg == window.property_name) { 
-            setTimeout(() => {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComHousekeepingStatus"){
+            setTimeout(()=>{
                 loadData(false)
-            }, 2000)
+            },1000*2)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false)
     loadData()
 })
 const onViewRoomList = (status) => {
@@ -97,7 +102,7 @@ const onViewRoomList = (status) => {
 }
 
 onUnmounted(() => {
-    window.socket.off("ComHousekeepingStatus")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

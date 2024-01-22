@@ -210,16 +210,13 @@ function onAddFolioTransaction(account_code) {
 
 }
 
-function reloadData(){
-    window.socket.emit("ComDeskFolioDetail",{name:selectedFolio.value.name})
-    window.socket.emit("DeskFolio",{property:window.property_name})
-    
-
-
+function reloadData(){ 
+    window.postMessage({action:"ComDeskFolioDetail"},"*")
+    window.postMessage({action:"DeskFolio"},"*")
 }
  
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComDeskFolioDetail",{property:window.property_name})
+    window.postMessage({action:"ComDeskFolioDetail"},"*")
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -272,9 +269,9 @@ function EditFolio() {
         },
         onClose: (options) => {
             let data = options.data;
-            if (data != undefined) {
-                window.socket.emit("ComDeskFolioDetail",{name:data.name})
-                window.socket.emit("DeskFolio",{property:window.property_name})
+            if (data != undefined) { 
+                window.postMessage({action:"ComDeskFolioDetail"},"*")
+                window.postMessage({action:"DeskFolio"},"*")
             }
         }
     })
@@ -295,9 +292,9 @@ function openFolio() {
                 status: 'Open',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status;
-                    window.socket.emit("ComDeskFolioDetail",{name:selectedFolio.value.name})
-                    window.socket.emit("DesFkolio",{property:window.property_name})
+                    selectedFolio.value.status = doc.status; 
+                    window.postMessage({action:"ComDeskFolioDetail"},"*")
+                    window.postMessage({action:"DesFkolio"},"*")
                 })
         },
 
@@ -320,10 +317,9 @@ function closeFolio() {
                 status: 'Closed',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status;
-                    
-                    window.socket.emit("ComDeskFolioDetail",{name:selectedFolio.value.name})
-                    window.socket.emit("DeskFolio",{property:window.property_name})
+                    selectedFolio.value.status = doc.status; 
+                    window.postMessage({action:"ComDeskFolioDetail"},"*")
+                    window.postMessage({action:"DeskFolio"},"*")
                 })
         },
 
@@ -356,13 +352,9 @@ function onDeleteFolio() {
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) {
-                window.socket.emit("DeskFolio",{property:window.property_name})
-              
-             
-                
-                emit("onClose")
-
+            if (data) { 
+                window.postMessage({action:"DeskFolio"},"*") 
+                emit("onClose") 
             }
         }
     });

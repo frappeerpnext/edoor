@@ -624,14 +624,11 @@ function debouncer(fn, delay) {
             fn.apply(that, args);
         }, delay);
     };
-}
-
-
+} 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         alert("dashboard")
         if(e.data.action=="Dashboard"){
-           
             setTimeout(()=>{
                 getData(false)
                 onRefreshIframe()
@@ -641,8 +638,7 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
-    window.addEventListener('message', actionRefreshData, false);
-    
+    window.addEventListener('message', actionRefreshData, false); 
 })
 
 onUnmounted(() => {

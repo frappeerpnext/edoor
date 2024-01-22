@@ -121,8 +121,8 @@
                 createUpdateDoc('Reservation Folio', doc)
                 .then((doc) => {
                     loadReservationFolioList(doc.name)
-                    loading.value = false
-                    window.socket.emit("ReservationDetail", {reservation_stay:rs.reservation.name})
+                    loading.value = false 
+                    window.postMessage({action:"ReservationDetail"},"*") 
                 }).catch(()=>{
                     loading.value = false
                 })

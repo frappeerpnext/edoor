@@ -319,7 +319,7 @@ function onChangeRateType() {
         //refresh reservation stay
         stays.value.forEach(s => {
              
-            window.socket.emit("ReservationStayDetail",{reservation_stay:s.name})
+            window.postMessage({"action":"ReservationStayDetail"},"*")
         })
         
         dialogRef.value.close(reservation.value)
@@ -383,7 +383,7 @@ function onSubmitChangeRate(){
         //reload reservation after close
         //refresh reservation stay
         stays.value.forEach(s => {
-            window.socket.emit("ReservationStayDetail",{reservation_stay:s.name})
+            window.postMessage({"action":"ReservationStayDetail"},"*")
         })
         dialogRef.value.close(reservation.value)
         
@@ -429,7 +429,7 @@ function onGroupDiscount(){
         //reload reservation after close
         //refresh reservation stay
         stays.value.forEach(s => {
-            window.socket.emit("ReservationStayDetail",{reservation_stay:s.name})
+            window.postMessage({"action":"ReservationStayDetail"},"*")
         })
         dialogRef.value.close(reservation.value)
         
@@ -466,7 +466,7 @@ function onGroupChangeTax(){
         //reload reservation after close
         //refresh reservation stay
         stays.value.forEach(s => {
-            window.socket.emit("ReservationStayDetail",{reservation_stay:s.name})
+            window.postMessage({"action":"ReservationStayDetail"},"*")
         })
         dialogRef.value.close(reservation.value)
         

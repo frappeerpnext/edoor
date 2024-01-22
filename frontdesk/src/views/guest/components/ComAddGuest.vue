@@ -175,11 +175,11 @@ function onOK() {
     data.photo = data.attach
     createUpdateDoc('Customer', data, '', false)
     .then((r) => {
-        window.socket.emit("ReservationList", { property: window.property_name })
-        window.socket.emit("ReservationStayList", { property: window.property_name })
-        window.socket.emit("Housekeeping", { property: window.property_name })
+        window.postMessage({action:"ReservationList"},"*")
+        window.postMessage({action:"ReservationStayList"},"*")
+        window.postMessage({action:"Housekeeping"},"*")
         window.postMessage({action:"Frontdesk"},"*")
-        window.socket.emit("ComGuestLedger", { property: window.property_name })
+        window.postMessage({action:"GuestLedger"},"*")
         window.socket.emit("GuestDetail", window.property_name)
         window.socket.emit("ComIframeModal", window.property_name)
         window.socket.emit("GuestList", window.property_name)

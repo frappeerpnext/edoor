@@ -214,15 +214,15 @@ function onAddFolioTransaction(account_code) {
 }
 
 function reloadData() {
-    window.socket.emit("DepositLedger", { property: window.property_name })
-    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name})
+    window.postMessage({action:"DepositLedger"},"*")
+    window.postMessage({action:"ComDepositLedgerDetai"},"*")
 
 
 
 }
 
-const onRefresh = debouncer(() => {
-    window.socket.emit("ComDepositLedgerDetail", { property: window.property_name,delay:0})
+const onRefresh = debouncer(() => { 
+    window.postMessage({action:"ComDepositLedgerDetai"},"*")
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -276,8 +276,8 @@ function EditFolio() {
         onClose: (options) => {
             let data = options.data;
             if (data != undefined) {
-                window.socket.emit("ComDepositLedgerDetail", { name: data.name })
-                window.socket.emit("DepositLedger", { property: window.property_name })
+                window.postMessage({action:"ComDepositLedgerDetail"},"*")
+                window.postMessage({action:"DepositLedger"},"*")
             }
         }
     })
@@ -299,8 +299,8 @@ function openFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-                    window.socket.emit("ComDepositLedgerDetail", { name: selectedFolio.value.name })
-                    window.socket.emit("DepositLedger", { property: window.property_name })
+                    window.postMessage({action:"ComDepositLedgerDetail"},"*")
+                    window.postMessage({action:"DepositLedger"},"*")
                 })
         },
 
@@ -324,9 +324,8 @@ function closeFolio() {
             })
                 .then((doc) => {
                     selectedFolio.value.status = doc.status;
-
-                    window.socket.emit("ComDepositLedgerDetail", { name: selectedFolio.value.name })
-                    window.socket.emit("DepositLedger", { property: window.property_name })
+                    window.postMessage({action:"ComDepositLedgerDetail"},"*")
+                    window.postMessage({action:"DepositLedger"},"*")  
                 })
         },
 
@@ -359,11 +358,8 @@ function onDeleteFolio() {
         },
         onClose: (options) => {
             const data = options.data;
-            if (data) {
-                window.socket.emit("DepositLedger", { "property": window.property_name })
-
-
-
+            if (data) { 
+                window.postMessage({action:"DepositLedger"},"*")
                 emit("onClose")
 
             }

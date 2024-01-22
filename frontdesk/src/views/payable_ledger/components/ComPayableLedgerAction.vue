@@ -209,16 +209,16 @@ function onAddFolioTransaction(account_code) {
 
 }
 
-function reloadData(){
-    window.socket.emit("ComPayableLedgerDetail",{property: window.property_name})
-    window.socket.emit("PayableLedger",{property:window.property_name})
+function reloadData(){ 
+    window.postMessage({action:"ComPayableLedgerDetail"},"*")
+    window.postMessage({action:"PayableLedger"},"*")
     
 
 
 }
  
 const onRefresh = debouncer(() => {
-    window.socket.emit("ComPayableLedgerDetail",{property: window.property_name})
+    window.postMessage({action:"ComPayableLedgerDetail"},"*")
 }, 500);
 function debouncer(fn, delay) {
     var timeoutID = null;
@@ -271,9 +271,9 @@ function EditFolio() {
         },
         onClose: (options) => {
             let data = options.data;
-            if (data != undefined) {
-                window.socket.emit("ComPayableLedgerDetail",{name:data.name})
-                window.socket.emit("PayableLedger",{property:window.property_name})
+            if (data != undefined) { 
+                window.postMessage({action:"ComPayableLedgerDetail"},"*") 
+                window.postMessage({action:"PayableLedger"},"*") 
             }
         }
     })
@@ -294,9 +294,9 @@ function openFolio() {
                 status: 'Open',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status;
-                    window.socket.emit("ComPayableLedgerDetail",{name:selectedFolio.value.name})
-                    window.socket.emit("PayableLedger",{property:window.property_name})
+                    selectedFolio.value.status = doc.status; 
+                    window.postMessage({action:"ComPayableLedgerDetail"},"*") 
+                    window.postMessage({action:"PayableLedger"},"*") 
                 })
         },
 
@@ -319,10 +319,9 @@ function closeFolio() {
                 status: 'Closed',
             })
                 .then((doc) => {
-                    selectedFolio.value.status = doc.status;
-                    
-                    window.socket.emit("ComPayableLedgerDetail",{name:selectedFolio.value.name})
-                    window.socket.emit("PayableLedger",{property:window.property_name})
+                    selectedFolio.value.status = doc.status; 
+                    window.postMessage({action:"ComPayableLedgerDetail"},"*") 
+                    window.postMessage({action:"PayableLedger"},"*") 
                 })
         },
 

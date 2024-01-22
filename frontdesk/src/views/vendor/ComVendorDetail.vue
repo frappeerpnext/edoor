@@ -72,9 +72,7 @@ function onDelete() {
              deleteDoc('Vendor',name.value)
                  .then((r) =>{ 
                     dialogRef.value.close(r)
-                    window.socket.emit("Vendor",window.property_name)
-                    
-                    
+                    window.postMessage({action:"Vendor"},"*")
                  } ).catch((err)=>{
                     loading.value = false
                  })         

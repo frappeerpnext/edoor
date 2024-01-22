@@ -584,15 +584,19 @@ const handleScroll = (event) => {
   }
 };
 
-onMounted(() => {
-
-    window.socket.on("ComRoomAvailable", (arg) => {
-        if (arg == window.property_name) {  
-            getResourceAndEvent(false) 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComRoomAvailable"){
+            setTimeout(()=>{
+                getResourceAndEvent(false) 
+            },1000*2)
+            
         }
-    })
- 
+    };
+}
 
+onMounted(() => {
+  window.addEventListener('message', actionRefreshData, false)
   loading.value = true
   const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
   if (state) {
@@ -678,7 +682,7 @@ function getEndDate(start, period) {
 }
 
 onUnmounted(() => {
-  window.socket.off("ComRoomAvailable");
+    window.removeEventListener('message', actionRefreshData, false)
   document.body.removeEventListener('scroll', handleScroll);
 })
 

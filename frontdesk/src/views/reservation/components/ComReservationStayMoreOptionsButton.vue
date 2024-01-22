@@ -196,7 +196,7 @@ function onMarkAsMasterRoom() {
                 rs.reservationStay = doc.message
                 window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationStayDetail"},"*")
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                window.postMessage({action:"ReservationDetail"},"*")
               
 
             })
@@ -234,18 +234,16 @@ function onUndoCheckIn() {
             if (options.data){
                 rs.loading = false
                 rs.reservationStay = data.data.message
-                window.socket.emit("ComHousekeepingStatus", window.property_name)
+                window.postMessage({"action":"ComHousekeepingStatus"},"*")
                 window.postMessage({"action":"Dashboard"},"*")
                 window.postMessage({action:"ReservationList"},"*")
                 window.postMessage({action:"ReservationStayList"},"*")
-                
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation)  
+                window.postMessage({action:"ReservationDetail"},"*")  
                 window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"Reports"},"*")
-                window.socket.emit("Housekeeping", {property:window.property_name})
+                window.postMessage({action:"Housekeeping"},"*")
                 window.postMessage({action:"FolioTransactionList"},"*")
-                window.socket.emit("ComRoomAvailable", window.property_name)
-
+                window.postMessage({action:"ComRoomAvailable"},"*")
                 setTimeout(() => {
                     emit('onRefresh')
                 }, 1000);
@@ -282,12 +280,12 @@ function OnUndoCheckOut() {
             const data = options.data 
             if (options.data){
                 rs.reservationStay = data.data.message
-                window.socket.emit("ComHousekeepingStatus", window.property_name)
+                window.postMessage({"action":"ComHousekeepingStatus"},"*")
                 window.postMessage({"action":"Dashboard"},"*")
                 window.postMessage({action:"ReservationList"},"*")
                 window.postMessage({action:"ReservationStayList"},"*")
                 
-                window.socket.emit("ReservationDetail", rs.reservationStay.reservation) 
+                window.postMessage({action:"ReservationDetail"},"*") 
                 window.postMessage({action:"GuestLedger"},"*")
                 window.postMessage({action:"Reports"},"*")
                 window.postMessage({action:"FolioTransactionList"},"*")
@@ -491,7 +489,7 @@ function onMarkasPaidbyMasterRoom() {
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                         window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                        window.postMessage({action:"ReservationDetail"},"*")
                     }
                 })
                     .catch((err) => {
@@ -530,7 +528,7 @@ function onUnmarkasPaidbyMasterRoom() {
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     window.postMessage({action:"ReservationStayList"},"*")
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
 
                 })
         },
@@ -564,7 +562,7 @@ function onDisallowPosttoCityLedger(){
                     .then((doc) => {
                         rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;  
                         window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                        window.postMessage({action:"ReservationDetail"},"*")
                     })
             },
 
@@ -595,7 +593,7 @@ function onAllowPosttoCityLedger(){
                 .then((doc) => {
                     rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger; 
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
                 })
         },
 
@@ -629,7 +627,7 @@ function onMarkasGITReservation() {
                         window.postMessage({"action":"Dashboard"},"*")
 
                         window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                        window.postMessage({action:"ReservationDetail"},"*")
                         window.postMessage({"action":"Frontdesk"},"*")
                         window.postMessage({action:"Reports"},"*")
                 })
@@ -660,7 +658,7 @@ function onMarkasFITReservation() {
                         window.postMessage({"action":"Dashboard"},"*")
 
                         window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
+                        window.postMessage({action:"ReservationDetail"},"*")
                         window.postMessage({action:"Reports"},"*")
 
                 })

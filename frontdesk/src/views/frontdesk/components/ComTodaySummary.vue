@@ -55,7 +55,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="TodaySummary"){
             setTimeout(()=>{
                 loadData(props.date,false)
-            },1000*10)
+            },1000*2)
             
         }
     };

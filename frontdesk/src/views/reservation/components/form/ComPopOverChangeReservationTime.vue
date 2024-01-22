@@ -54,9 +54,8 @@ function onSave() {
         window.postMessage({action:"Reports"},"*")
         window.socket.emit("ComIframeModal", window.property_name)
         window.postMessage({"action":"Dashboard"},"*")
-        window.socket.emit("ReservationStayDetail", { reservation_stay:active_reservations.map(r=>r.name)})
-        window.socket.emit("ReservationDetail", rs.reservation.name);
-
+        window.postMessage({"action":"ReservationStayDetail"},"*")
+        window.postMessage({"action":"ReservationDetail"},"*") 
   }).catch((err) => {
     loading.value = false
   })
