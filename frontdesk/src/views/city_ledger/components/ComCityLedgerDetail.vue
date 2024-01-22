@@ -184,7 +184,7 @@ function loadData(show_loading = true) {
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="Frontdesk"){
+        if(e.data.action=="ComCityLedgerDetail"){
             setTimeout(()=>{
                 loadData(false)
             },1000*3)

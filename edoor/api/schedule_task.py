@@ -49,26 +49,30 @@ def re_run_fail_jobs():
 
     job_ids = []
     for j in jobs:
-        job =   json.loads(j["arguments"]) 
-        if j["job_name"]  in "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy":
-            generate_room_occupy(self=None if "self" not in job["kwargs"] else job["kwargs"]["self"], stay_name=None if "stay_name" not in job["kwargs"] else job["kwargs"]["stay_name"])
-        elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
-            generate_room_occupies( stay_names=job["kwargs"]["stay_names"])    
-        elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
-            update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True)     
-        elif j["job_name"] == "edoor.api.utils.update_reservation":
-            update_reservation(name=job["kwargs"]["name"], run_commit=True)
-        elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
-             update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"]) 
-        elif j["job_name"] == "edoor.api.reservation.post_charge_to_folio_afer_check_in":
-            post_charge_to_folio_afer_check_in(
-                 reservation=job["kwargs"]["reservation"],
-                 stays=job["kwargs"]["stays"],
-                 working_day=job["kwargs"]["working_day"],
-                 run_commit=True)
-            
+        try:
+            job =   json.loads(j["arguments"]) 
+            if j["job_name"]  in "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy":
+                generate_room_occupy(self=None if "self" not in job["kwargs"] else job["kwargs"]["self"], stay_name=None if "stay_name" not in job["kwargs"] else job["kwargs"]["stay_name"])
+            elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
+                generate_room_occupies( stay_names=job["kwargs"]["stay_names"])    
+            elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
+                update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True)     
+            elif j["job_name"] == "edoor.api.utils.update_reservation":
+                update_reservation(name=job["kwargs"]["name"], run_commit=True)
+            elif j["job_name"] == "edoor.api.utils.update_reservation_stay_and_reservation":
+                update_reservation_stay_and_reservation(reservation=job["kwargs"]["reservation"],reservation_stay=job["kwargs"]["reservation_stay"]) 
+            elif j["job_name"] == "edoor.api.reservation.post_charge_to_folio_afer_check_in":
+                post_charge_to_folio_afer_check_in(
+                    reservation=job["kwargs"]["reservation"],
+                    stays=job["kwargs"]["stays"],
+                    working_day=job["kwargs"]["working_day"],
+                    run_commit=True)
+                
 
-        job_ids.append(j["job_id"])
+            job_ids.append(j["job_id"])
+        except:
+            print("An exception occurred")
+        
     
     remove_failed_jobs(job_ids)
 

@@ -355,14 +355,19 @@ getApi('frontdesk.get_working_day', {
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
 
-onMounted(() => {
-    window.socket.on("PayableLedger", (arg) => {
-        if (arg.property == window.property_name) {
-            setTimeout(function () {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Frontdesk"){
+            setTimeout(()=>{
                 loadData(false)
-            }, 3000)
+            },1000*3)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false)
 
     let state = localStorage.getItem("page_state_payable_ledger")
     if (state) {

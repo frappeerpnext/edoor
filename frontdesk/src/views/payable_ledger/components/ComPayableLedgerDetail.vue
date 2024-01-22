@@ -201,20 +201,27 @@ const onClose = () => {
     dialogRef.value.close();
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComPayableLedgerDetail"){
+            setTimeout(()=>{
+                getData()
+            },1000*2)
+            
+        }
+    };
+}
+
 onMounted(() => {
     name.value = dialogRef.value.data.name;
-    getData()
-    window.socket.on("ComPayableLedgerDetail", (arg) => {
-        if (arg.property == window.property_name) {
-            getData()
-        }
-    })
+    getData() 
+    window.addEventListener('message', actionRefreshData, false)
 })
 function onViewVendorDetail(g) {
     window.postMessage("view_vendor_detail|" + g)
 }
 onUnmounted(() => {
-    window.socket.off("ComPayableLedgerDetail")
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 
