@@ -122,7 +122,7 @@ function onAdditionalSave(){
         guest: saveGuest,
     }).then((r) => {
         if (r) { 
-            window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
+            window.postMessage({action:"ReservationStayDetail"},"*")
             window.socket.emit("ReservationDetail", window.reservation)
             dialogRef.value.close()
             window.socket.emit("Reports", window.property_name) 
@@ -165,7 +165,7 @@ function onStayGuestSave() {
         }).then((r)=>{
             loading.value = false
             if (r){
-                window.socket.emit("ReservationStayDetail", {reservation_stay:rs.reservationStay.name})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.postMessage({"action":"Frontdesk"},"*")
                 dialogRef.value.close(r);

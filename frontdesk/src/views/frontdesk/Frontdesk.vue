@@ -1138,11 +1138,11 @@ function showConflictRoom(conflig_rooms) {
                     let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
                     let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                     if (conflig_rooms.includes(c.id)) {
-                        room_type_el.parentNode?.style.backgroundColor = setting.room_conflict_background_color;
+                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
                         el.style.backgroundColor = setting.room_conflict_background_color;
 
                     } else {
-                        room_type_el.parentNode?.style.backgroundColor = '';
+                        room_type_el.parentNode.style.backgroundColor = '';
                         el.style.backgroundColor = '';
                     }
                 })
@@ -1152,11 +1152,11 @@ function showConflictRoom(conflig_rooms) {
                     let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
                     let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                     if (conflig_rooms.includes(c.id)) {
-                        room_type_el.parentNode?.style.backgroundColor = setting.room_conflict_background_color;
+                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
                         el.style.backgroundColor = setting.room_conflict_background_color;
 
                     } else {
-                        room_type_el.parentNode?.style.backgroundColor = '';
+                        room_type_el.parentNode.style.backgroundColor = '';
                         el.style.backgroundColor = '';
                     }
                 })

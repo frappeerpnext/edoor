@@ -195,7 +195,7 @@ function onMarkAsMasterRoom() {
                 rs.loading = false
                 rs.reservationStay = doc.message
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
               
 
@@ -421,7 +421,7 @@ function onReservedRoom() {
                 rs.getReservationDetail(rs.reservationStay.name);
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({"action":"Frontdesk"},"*")
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
@@ -454,7 +454,7 @@ function onUnReservedRoom() {
                 loading.value = false
                 window.socket.emit("ReservationList", { property:window.property_name})
                 window.socket.emit("ReservationStayList", { property:window.property_name})
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.postMessage({"action":"Frontdesk"},"*")
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
@@ -490,7 +490,7 @@ function onMarkasPaidbyMasterRoom() {
                         rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                         window.socket.emit("ReservationStayList", { property:window.property_name})
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     }
                 })
@@ -529,7 +529,7 @@ function onUnmarkasPaidbyMasterRoom() {
                     rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                     window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                     window.socket.emit("ReservationStayList", { property:window.property_name})
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
 
                 })
@@ -563,7 +563,7 @@ function onDisallowPosttoCityLedger(){
                 )
                     .then((doc) => {
                         rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;  
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                     })
             },
@@ -594,7 +594,7 @@ function onAllowPosttoCityLedger(){
             )
                 .then((doc) => {
                     rs.reservationStay.allow_post_to_city_ledger = doc.allow_post_to_city_ledger; 
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                 })
         },
@@ -628,7 +628,7 @@ function onMarkasGITReservation() {
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.postMessage({"action":"Dashboard"},"*")
 
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                         window.postMessage({"action":"Frontdesk"},"*")
                         window.socket.emit("Reports", window.property_name)
@@ -659,7 +659,7 @@ function onMarkasFITReservation() {
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.postMessage({"action":"Dashboard"},"*")
 
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
                         window.socket.emit("Reports", window.property_name)
 

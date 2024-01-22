@@ -140,7 +140,7 @@ function onOk() {
             }).then((r) => {
                 loading.value = false
                 dialogRef.value.close("refresh_data")
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationStayList", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ReservationList", {reservation_stay:window.reservation_stay})
                 window.socket.emit("ComGuestLedger", { property:window.property_name})

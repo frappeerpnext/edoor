@@ -174,7 +174,7 @@ function onDeleteAdditionalGuest(){
             reservationStayData.additional_guests = additionalGuests
             updateDoc('Reservation Stay', reservationStayData.name, reservationStayData, 'Deleted successful').then((doc) => {
                 rs.reservationStay = doc
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("Reports", window.property_name)
                 window.socket.emit("ReservationStayList", { property:window.property_name})
                 window.socket.emit("ReservationList", { property:window.property_name})

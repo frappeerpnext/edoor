@@ -147,7 +147,7 @@ function onCheckIn() {
                         window.socket.emit("ReservationStayList", { property: window.property_name })
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
-                        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                        window.postMessage({action:"ReservationStayDetail"},"*")
                         window.socket.emit("ReservationDetail", window.reservation)
                         window.socket.emit("FolioTransactionList", window.property_name)
 
@@ -183,7 +183,7 @@ const onCheckOut = () => {
                 window.socket.emit("ReservationStayList", { property: window.property_name })
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.socket.emit("FolioTransactionList", window.property_name)
 
@@ -269,7 +269,7 @@ function onUnmarkasPaidbyMasterRoom() {
                 paid_by_master_room: 0,
             })
                 .then((doc) => {
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
@@ -299,7 +299,7 @@ function onMarkasPaidbyMasterRoom() {
                 paid_by_master_room: 1
             }).then((result) => {
                 if (result) {
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.paid_by_master_room = 1
                     
@@ -328,7 +328,7 @@ function onAllowPosttoCityLedger() {
                 allow_post_to_city_ledger: 1,
             })
                 .then((doc) => { 
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
@@ -354,7 +354,7 @@ function onUnallowPosttoCityLedger() {
                 allow_post_to_city_ledger: 0,
             })
                 .then((doc) => { 
-                    window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("ReservationDetail", window.reservation)
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
@@ -384,7 +384,7 @@ function onMarkAsMasterRoom() {
             }).then((doc) => {
                 rs.reservationStays.forEach(r => r.is_master = false);
                 props.data.is_master = doc.message.is_master
-                window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+                window.postMessage({action:"ReservationStayDetail"},"*")
                 window.socket.emit("ReservationDetail", window.reservation)
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 toast.add({
