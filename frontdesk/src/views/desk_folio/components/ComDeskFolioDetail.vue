@@ -209,18 +209,25 @@ const onClose = () => {
     dialogRef.value.close();
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComDeskFolioDetail"){
+            setTimeout(()=>{
+                getData()
+            },1000*2)
+            
+        }
+    };
+}
+
 onMounted(() => {
     name.value = dialogRef.value.data.name;
-    getData()
-    window.socket.on("ComDeskFolioDetail", (arg) => {
-        if (arg.property == window.property_name) {
-            getData()
-        }
-    })
+    getData() 
+    window.addEventListener('message', actionRefreshData, false);
 })
 
 onUnmounted(() => {
-    window.socket.off("ComDeskFolioDetail")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 

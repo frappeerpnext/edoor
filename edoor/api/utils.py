@@ -573,6 +573,9 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
     
     if name or doc:
         if name:
+            if not frappe.db.exists("Reservation Stay",name ):
+                return
+            
             doc = frappe.get_doc("Reservation Stay",name)
 
         #1 update data to reservation stay room the rest will update from reservation stay validate event

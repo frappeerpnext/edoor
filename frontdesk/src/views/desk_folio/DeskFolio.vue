@@ -349,9 +349,6 @@ getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
     working_date.value = r.message?.date_working_day
-    // const startDate = moment(working_date.value)
-    // const endDate = moment(working_date.value).add(1, 'days')
-    // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
 
 const actionRefreshData = async function (e) {
