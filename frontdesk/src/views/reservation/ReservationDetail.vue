@@ -239,18 +239,20 @@ onMounted(() => {
         }
     }
 
-    window.reservation = name.value
-
-    window.socket.on("ReservationDetail", (reservation) => {
-        if (reservation == name.value) { 
-            setTimeout(function () {
-                onRefresh(false)
-            }, 3000)
-        }
-    })
+    window.reservation = name.value 
+    window.addEventListener('message', actionRefreshData, false);
 });
 
-// window.reservation = rs.reservation.name
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Frontdesk"){
+            setTimeout(()=>{
+                onRefresh(false)
+            },1000*10)
+            
+        }
+    };
+}
 
 onUnmounted(() => {
     rs.clear()
@@ -296,7 +298,7 @@ function onCheckIn() {
                     window.postMessage({"action":"Dashboard"},"*")
                     window.socket.emit("ReservationList", { property: window.property_name })
                     window.socket.emit("Reports", window.property_name)
-                    window.socket.emit("ReservationStayDetail", { reservation_stay: window.reservation_stay })
+                    window.postMessage({action:"ReservationStayDetail"},"*")
                     window.socket.emit("FolioTransactionList", window.property_name)
 
 

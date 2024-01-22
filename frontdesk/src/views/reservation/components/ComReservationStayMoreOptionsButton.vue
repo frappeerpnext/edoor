@@ -479,19 +479,26 @@ function onMarkasPaidbyMasterRoom() {
             acceptIcon: 'pi pi-check-circle',
             acceptLabel: 'Ok',
             accept: () => {
-                updateDoc('Reservation Stay', rs.reservationStay.name, {
-                    paid_by_master_room: 1,
-                })
-                    .then((doc) => {
+                rs.loading = true
+                postApi("reservation.update_mark_as_paid_by_master_room", {
+                    reservation:rs.reservation.name,
+                    stays: [rs.reservationStay.name],
+                    paid_by_master_room: 1
+                }).then((result) => {
+                    if (result) {
                         rs.loading = false
                         rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
                         window.socket.emit("RefreshReservationDetail", rs.reservation.name)
                         window.socket.emit("ReservationStayList", { property:window.property_name})
                         window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                         window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
-
+                    }
+                })
+                    .catch((err) => {
+                        rs.loading = false
                     })
-
+                    
+               
             },
 
         });

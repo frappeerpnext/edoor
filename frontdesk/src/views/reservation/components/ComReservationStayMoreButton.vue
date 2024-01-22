@@ -292,19 +292,23 @@ function onMarkasPaidbyMasterRoom() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
-            db.updateDoc('Reservation Stay', props.data.name, {
-                paid_by_master_room: 1,
-            })
-                .then((doc) => {
+            
+            postApi("reservation.update_mark_as_paid_by_master_room", {
+                reservation:rs.reservation.name,
+                stays: [props.data.name],
+                paid_by_master_room: 1
+            }).then((result) => {
+                if (result) {
                     window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
                     window.socket.emit("ReservationDetail", window.reservation)
-                    props.data.paid_by_master_room = doc.paid_by_master_room;
-                    toast.add({
-                        severity: 'success',
-                        detail: 'Update Successful', life: 3000
-                    });
-                   
-                })
+                    props.data.paid_by_master_room = 1
+                    
+                     
+                }
+            })
+                 
+                
+          
 
         },
 
@@ -372,6 +376,7 @@ function onMarkAsMasterRoom() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         accept: () => {
+            
             postApi("reservation.mark_as_master_folio", {
                 reservation: rs.reservation.name,
                 reservation_stay: props.data.name,

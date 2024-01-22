@@ -91,7 +91,7 @@ function onOK() {
     
     createUpdateDoc('Drivers',  data).then((r) => {
         loading.value = false
-        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        window.postMessage({action:"ReservationStayDetail"},"*")
         window.socket.emit("ReservationDetail", window.reservation)
         window.socket.emit("Reports", window.property_name)
         onClose(r)

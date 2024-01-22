@@ -323,12 +323,19 @@ onMounted(() => {
         rs.is_page = false
         window.reservation_stay = dialogRef.value.data.name
     }
-    window.socket.on("ReservationStayDetail", (arg) => { 
-        if (arg.reservation_stay == rs.reservationStay.name) {
-            loadData(false,3000,false)
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false);
 });
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ReservationStayDetail"){
+            setTimeout(()=>{ 
+                loadData()
+            },1000*10)
+            
+        }
+    };
+}
 
 
 function onNavigateStay(isNext) {
@@ -445,8 +452,8 @@ const OnViewReservation = () => {
     }
 }
 onUnmounted(() => {
-    rs.clear()
-    window.socket.off('ReservationStayDetail');
+    rs.clear() 
+    window.removeEventListener('message', actionRefreshData, false);
     window.reservation_stay = ""
 })
 function onAuditTrail() {

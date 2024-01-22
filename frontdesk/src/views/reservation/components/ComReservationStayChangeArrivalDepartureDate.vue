@@ -75,7 +75,7 @@ function onSave(){
             window.postMessage({"action":"Dashboard"},"*")
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayList", { property:window.property_name})
-            window.socket.emit("ReservationStayDetail", { reservation_stay:window.reservation_stay})
+            window.postMessage({action:"ReservationStayDetail"},"*")
             window.socket.emit("ReservationDetail", rs.reservationStay.reservation)
             window.postMessage({action:"Frontdesk"},"*")
             window.socket.emit("Reports", window.property_name)

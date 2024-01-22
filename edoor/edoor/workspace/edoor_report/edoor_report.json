@@ -311,13 +311,13 @@
    "is_query_report": 1,
    "label": "Pick-up & Drop-off Guest Report",
    "link_count": 0,
-   "link_to": "Pick-up & Drop-off Guest Report",
+   "link_to": "Pick-up and Drop-off Guest Report",
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2024-01-20 09:16:52.240225",
+ "modified": "2024-01-22 09:53:10.080626",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

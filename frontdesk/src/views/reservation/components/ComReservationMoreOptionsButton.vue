@@ -490,6 +490,7 @@ function onMarkAsPaidbyMasterroom() {
         acceptLabel: 'Ok',
         accept: () => {
             postApi("reservation.update_mark_as_paid_by_master_room", {
+                reservation:rs.reservation.name,
                 stays: rs.selecteds.map(x => x.name),
                 paid_by_master_room: 1
             }).then((result) => {
@@ -527,6 +528,7 @@ function onUnMarkAsPaidbyMasterroom() {
         acceptLabel: 'Ok',
         accept: () => {
             postApi("reservation.update_mark_as_paid_by_master_room", {
+                reservation:rs.reservation.name,
                 stays: rs.selecteds.map(x => x.name),
                 paid_by_master_room: 0
             }).then((result) => {

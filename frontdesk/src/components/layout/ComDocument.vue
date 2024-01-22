@@ -307,7 +307,7 @@ function onSave(){
         window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
         window.socket.emit("ReservationDetail", window.reservation)
         window.socket.emit("GuestDetail", window.property_name)
-        window.socket.emit("ReservationStayDetail", {reservation_stay:window.reservation_stay})
+        window.postMessage({action:"ReservationStayDetail"},"*")
         
     }).catch((err)=>{
         saving.value = false

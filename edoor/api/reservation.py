@@ -54,31 +54,15 @@ def get_reservation_detail(name):
 
     #start get information
     reservation= frappe.get_doc("Reservation",name)
-
-
-
-
     reservation_stays = frappe.get_list("Reservation Stay",filters={'reservation': name},fields=['name','rooms_data','require_drop_off','require_pickup','room_type_alias','is_active_reservation','rate_type','guest','total_credit','balance','total_debit','total_room_rate','reservation_status','status_color','guest_name','pax','child','adult','adr', 'reference_number','arrival_date','arrival_time','departure_date','departure_time','room_types','rooms',"is_master","paid_by_master_room","allow_post_to_city_ledger","allow_user_to_edit_information","room_nights"])
     master_guest = frappe.get_doc("Customer",reservation.guest)
     total_folio = frappe.db.count('Reservation Folio', {'reservation': name})
-    
-    folio_names =frappe.get_all("Reservation Folio",filters={"reservation":name}, page_length=10000,pluck='name')
-    reservaiton_room_rates =frappe.get_all("Reservation Room Rate",filters={"reservation":name}, page_length=10000,pluck='name')
-
-    folio_transaction_names =frappe.get_all("Folio Transaction",filters={"reservation":name}, page_length=10000,pluck='name')
-    
-    related_reference_number = [name, reservation.guest, master_guest.name]
-    related_reference_number = related_reference_number + folio_names
-    # related_reference_number = related_reference_number + reservaiton_room_rates
-    related_reference_number = related_reference_number + folio_transaction_names
-    related_reference_number = related_reference_number + [d.name for d  in reservation_stays]
 
     return {
         "reservation":reservation,
         "reservation_stays":reservation_stays,
         "master_guest": master_guest,
         "total_folio":total_folio or 0,
-         "related_reference_number": related_reference_number
     }
 
 
@@ -872,15 +856,15 @@ def mark_as_master_folio(reservation,reservation_stay):
 
 @frappe.whitelist(methods="POST")
 def check_out(reservation,reservation_stays=None):
-    #reservation stay is array
-    #validate user role
-    #validate cashier shift 
-    #remove guest and stay number from room
-    
+
+    # reservation stay is array
+    # validate user role
+    # validate cashier shift 
+    # remove guest and stay number from room
+
+
     check_user_permission("check_out_role")
-
-
-
+ 
      
     doc = frappe.get_doc("Reservation",reservation)
     if not reservation:
@@ -891,7 +875,16 @@ def check_out(reservation,reservation_stays=None):
     if not working_day["cashier_shift"]:
         frappe.throw("There is no cashier shift open. Please open cashier shift first")   
 
-    #check backdate role
+    #validate if user check out master room first
+    # check if stay list is have master room include
+    master_stay_data = frappe.db.sql("select name from `tabReservation Stay` where name in %(reservation_stays)s and is_master=1",{"reservation_stays":reservation_stays},as_dict=1)
+    if len(master_stay_data)>0:
+        data = frappe.db.sql("select name from `tabReservation Stay` where reservation_status in ('In-house','Reserved', 'Confirmed') and  reservation=%(reservation)s and name not in %(reservation_stays)s and paid_by_master_room=1 ",{
+            "reservation":reservation,
+            "reservation_stays":reservation_stays
+        },as_dict=1)
+        if len(data)> 0:
+            frappe.throw("You cannot check out master room, because there's reservation stay that mark as paid by master room is still remaining.")
     
     currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
     comment_doc = []
@@ -917,7 +910,6 @@ def check_out(reservation,reservation_stays=None):
         stay.reservation_status = "Checked Out"
         
         stay.save()
-
 
         #update room status
         #get last stay room form temp occupy
@@ -2798,7 +2790,13 @@ def get_reservation_room_rate(reservation):
     
     
 @frappe.whitelist(methods="POST")
-def update_mark_as_paid_by_master_room(stays, paid_by_master_room):
+def update_mark_as_paid_by_master_room(reservation, stays, paid_by_master_room):
+    if paid_by_master_room==1:
+        #validate if there is master stay have active
+        data = frappe.db.sql("select name from `tabReservation Stay` where is_master=1 and reservation='{}' and reservation_status in ('In-house','Reserve','Confirmed')".format(reservation),as_dict=1)
+        if len(data)==0:
+            frappe.throw("There is no master room. Please assign a master room first")
+
     for s in stays:
         frappe.db.set_value("Reservation Stay", s,"paid_by_master_room",paid_by_master_room)
     if paid_by_master_room==1:
@@ -3064,6 +3062,34 @@ def verify_reservation_stay(stay_name= None):
         if not cint(stay.room_nights) == cint(data[0]["total"]) :
             generate_temp_room_occupy(self=stay)
 
-    
+        #validate credit debit balance
+        sql_folio = """
+            select  
+                    coalesce(sum(if(type='Debit',amount,0)),0) as debit,
+                    coalesce(sum(if(type='Credit',amount,0)),0) as credit
+                from `tabFolio Transaction` 
+                where
+                    reservation_stay = '{}' and 
+                    transaction_type = 'Reservation Folio'
+            """.format(
+                    stay_name
+                )
+
+        folio_data = frappe.db.sql(sql_folio, as_dict=1)
+        if len(folio_data)>0:
+            
+            if folio_data[0]["credit"] != stay.total_credit or folio_data[0]["debit"] != stay.total_debit:
+                frappe.throw("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
+                frappe.db.sql("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
+
+
+        #validate room room rate generate
+        sql="select count(name) as  total from `tabReservation Room Rate` where reservation_stay='{}' and date between '{}' and '{}'".format(stay_name,stay.arrival_date, add_to_date(stay.departure_date,days=-1))
+
+        data = frappe.db.sql(sql,as_dict=1)
+        if len(data)>0:
+            if stay.room_nights !=  data[0]["total"]:
+                generate_room_rate(self = stay, run_commit=False)
+
 
     

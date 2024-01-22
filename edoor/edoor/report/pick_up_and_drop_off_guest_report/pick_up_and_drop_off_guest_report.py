@@ -1,4 +1,5 @@
 
+
 import frappe
 from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days
@@ -57,6 +58,7 @@ def get_columns(filters):
 
 def get_filters(filters):
 	sql = """ and property=%(property)s and is_active_reservation=1 and
+	require_drop_off = 1 or require_pickup = 1 and
 				arrival_date between %(start_date)s and %(end_date)s and
 				departure_date between %(start_date)s and %(end_date)s
 	  		 """
@@ -90,7 +92,6 @@ def get_guest_data(filters):
 				arrival_date,
 				departure_date,
 				rooms,
-				concat(arrival_date,'-',departure_date) as date,
 				modified,
 				reference_number,
 				creation,

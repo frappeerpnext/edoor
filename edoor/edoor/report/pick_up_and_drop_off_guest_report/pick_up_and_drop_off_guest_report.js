@@ -2,7 +2,7 @@
 // Copyright (c) 2023, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Pick-up & Drop-off Guest Report"] = {
+frappe.query_reports["Pick-up and Drop-off Guest Report"] = {
 	"filters": [
 		{
 			fieldname: "property",

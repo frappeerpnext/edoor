@@ -294,10 +294,8 @@ const calendarOptions = reactive({
                 confirm_message: "Are you sure you want to change room block date?",
                 name:$event.event._def.publicId,
                 data: {
-                    
-                        start_date:moment($event.event.start).format("YYYY-MM-DD"), 
-                        end_date:moment($event.event.end).format("YYYY-MM-DD")
-
+                    start_date:moment($event.event.start).format("YYYY-MM-DD"), 
+                    end_date:moment($event.event.end).format("YYYY-MM-DD")
                 },
                 disable_reload_frontdesk:true
 
@@ -990,7 +988,7 @@ const actionRefreshData = async function (e) {
         if(e.data.action=="Frontdesk"){
             setTimeout(()=>{
                 getResourceAndEvent() 
-            },1000*10)
+            },1000*5)
             
         }
     };
@@ -1140,11 +1138,11 @@ function showConflictRoom(conflig_rooms) {
                     let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
                     let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                     if (conflig_rooms.includes(c.id)) {
-                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
+                        room_type_el.parentNode?.style.backgroundColor = setting.room_conflict_background_color;
                         el.style.backgroundColor = setting.room_conflict_background_color;
 
                     } else {
-                        room_type_el.parentNode.style.backgroundColor = '';
+                        room_type_el.parentNode?.style.backgroundColor = '';
                         el.style.backgroundColor = '';
                     }
                 })
@@ -1154,11 +1152,11 @@ function showConflictRoom(conflig_rooms) {
                     let room_type_el = document.querySelector('td[data-resource-id="' + c.id + '"]')
                     let el = document.querySelector('table.fc-scrollgrid-sync-table td.fc-timeline-lane[data-resource-id="' + c.id + '"]')
                     if (conflig_rooms.includes(c.id)) {
-                        room_type_el.parentNode.style.backgroundColor = setting.room_conflict_background_color;
+                        room_type_el.parentNode?.style.backgroundColor = setting.room_conflict_background_color;
                         el.style.backgroundColor = setting.room_conflict_background_color;
 
                     } else {
-                        room_type_el.parentNode.style.backgroundColor = '';
+                        room_type_el.parentNode?.style.backgroundColor = '';
                         el.style.backgroundColor = '';
                     }
                 })

@@ -1,5 +1,4 @@
-<template> 
-{{ data?.room_rate_discount }}
+<template>
     <DataTable :value="data" paginator :rows="20" tableStyle="min-width: 50rem" :rowsPerPageOptions="[5, 10, 20, 50]">
         <Column header="No" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">

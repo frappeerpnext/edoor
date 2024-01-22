@@ -92,8 +92,8 @@ function onLoadSocket(){
  
 
     if(data.value.data.stays && data.value.data.stays.length > 0){
-        data.value.data.stays.forEach(r => {
-            window.socket.emit("ReservationStayDetail", { reservation_stay:r.name})
+        data.value.data.stays.forEach(r => { 
+            window.postMessage({action:"ReservationStayDetail"},"*")
         });
     }
 }

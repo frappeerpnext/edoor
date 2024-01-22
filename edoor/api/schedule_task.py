@@ -309,7 +309,8 @@ def validate_property_data():
     #check if data have duplicate reservation
     fix_generate_duplicate_room_occupy()
 
-
+    #valiate room rate
+    # TODO 
 
 def fix_generate_duplicate_room_occupy():
     sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
