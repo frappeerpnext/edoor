@@ -92,7 +92,7 @@ function onOK() {
     createUpdateDoc('Drivers',  data).then((r) => {
         loading.value = false
         window.postMessage({action:"ReservationStayDetail"},"*")
-        window.socket.emit("ReservationDetail", window.reservation)
+        window.postMessage({action:"ReservationDetail"},"*")
         window.socket.emit("Reports", window.property_name)
         onClose(r)
     }).catch((err) => {

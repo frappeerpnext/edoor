@@ -305,7 +305,7 @@ function onSave(){
         opEdit.value.hide()
         onLoad()
         window.socket.emit("FolioTransactionDetail", { property:window.property_name, name: window.folio_transaction_number})
-        window.socket.emit("ReservationDetail", window.reservation)
+        window.postMessage({action:"ReservationDetail"},"*")
         window.socket.emit("GuestDetail", window.property_name)
         window.postMessage({action:"ReservationStayDetail"},"*")
         

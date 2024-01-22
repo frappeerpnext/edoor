@@ -40,8 +40,8 @@ def get_columns(filters):
 		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":170,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
 		{"fieldname":"reference_number",'align':'left', "label":"Ref #","width":95,"show_in_report":1},
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
-		{'fieldname':'arrival_date','align':'center','label':'Arrival Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
-		{'fieldname':'departure_date','align':'center','label':'Departure Date',"width":90 ,"show_in_report":1,"fieldtype":"Date"},
+		{'fieldname':'arrival_date','align':'center','label':'Arrival Date',"width":100 ,"show_in_report":1,"fieldtype":"Date"},
+		{'fieldname':'departure_date','align':'center','label':'Departure Date',"width":100 ,"show_in_report":1,"fieldtype":"Date"},
 		{'fieldname':'room_type_alias','align':'center','label':'Room Type',"width":50,"show_in_report":1},
 		{'fieldname':'rooms','label':'Room','align':'left',"width":90,"show_in_report":1},
 		{"fieldname":"time", 'align':'left',"label":"Time", "fieldtype":"Time","width":95,"show_in_report":1},
@@ -58,7 +58,7 @@ def get_columns(filters):
 
 def get_filters(filters):
 	sql = """ and property=%(property)s and is_active_reservation=1 and
-	if(require_pickup = 1,arrival_date between %(start_date)s and %(end_date)s,'') or 
+	if(require_pickup = 1,arrival_date between %(start_date)s and %(end_date)s,'') and 
 	if(require_drop_off = 1,departure_date between %(start_date)s and %(end_date)s,'')
 
 	  		 """

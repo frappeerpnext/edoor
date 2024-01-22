@@ -86,7 +86,7 @@ function onLoadSocket(){
     window.socket.emit("ComGuestLedger", { property:window.property_name})
     window.socket.emit("GuestLedgerTransaction", { property:window.property_name})
     window.socket.emit("Reports", window.property_name)
-    window.socket.emit("ReservationDetail", window.reservation)
+    window.postMessage({action:"ReservationDetail"},"*")
     window.socket.emit("FolioTransactionList", window.property_name)
     window.socket.emit("PayableLedger",{property:window.property_name})
  

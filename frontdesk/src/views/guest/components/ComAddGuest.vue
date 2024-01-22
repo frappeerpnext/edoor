@@ -187,7 +187,7 @@ function onOK() {
         window.socket.emit("Reports", window.property_name)
         window.socket.emit("FolioTransactionList", window.property_name) 
         if (window.reservation) {
-            window.socket.emit("ReservationDetail", window.reservation)
+            window.postMessage({action:"ReservationDetail"},"*")
         }
         onClose(r)
         loading.value = false

@@ -864,7 +864,7 @@ const onSave = (assign_room = false) => {
         setTimeout(function(){
             if (window.reservation){ 
                 
-                window.socket.emit("ReservationDetail", window.reservation)
+                window.postMessage({action:"ReservationDetail"},"*")
             }
         }, 5000) 
         dialogRef.value.close({ reservation: result.message, assign_room: assign_room });  

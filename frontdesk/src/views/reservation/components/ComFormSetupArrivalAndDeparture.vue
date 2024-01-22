@@ -118,7 +118,7 @@ function onSave() {
             dialogRef.value.close("refresh");
             window.postMessage({"action":"Dashboard"},"*")
             window.postMessage({action:"ReservationStayDetail"},"*")
-            window.socket.emit("ReservationDetail", window.reservation)
+            window.postMessage({action:"ReservationDetail"},"*")
             window.socket.emit("TodaySummary", window.property_name)
             window.socket.emit("Reports", window.property_name)
         })

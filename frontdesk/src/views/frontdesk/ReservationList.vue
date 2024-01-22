@@ -371,20 +371,22 @@ function debouncer(fn, delay) {
 getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
-    working_date.value = r.message?.date_working_day
-    // const startDate = moment(working_date.value)
-    // const endDate = moment(working_date.value).add(1, 'days')
-    // filter.value.date_range = [new Date(startDate), new Date(endDate)];
+    working_date.value = r.message?.date_working_day 
 })
 
-onMounted(() => {
-    window.socket.on("ReservationList", (arg) => {
-        if (arg.property == window.property_name) { 
-            setTimeout(function(){
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ReservationList"){
+            setTimeout(()=>{
                 loadData(false)
-            },3000) 
+            },1000*10)
+            
         }
-    })
+    };
+}
+
+onMounted(() => { 
+    window.addEventListener('message', actionRefreshData, false);
 
     let state = localStorage.getItem("page_state_reservation")
     if (state) {

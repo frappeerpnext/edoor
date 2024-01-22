@@ -99,7 +99,7 @@ const onSave = () => {
             window.socket.emit("ReservationList", { property:window.property_name})
             window.socket.emit("ReservationStayList", { property:window.property_name})
             window.postMessage({action:"ReservationStayDetail"},"*")
-            window.socket.emit("ReservationDetail", window.reservation)
+            window.postMessage({action:"ReservationDetail"},"*")
         emit("onClose", doc.message)
     }).catch((ex) => {
         isLoading.value = false;

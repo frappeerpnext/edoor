@@ -148,7 +148,7 @@ function onCheckIn() {
                         window.socket.emit("ComGuestLedger", { property:window.property_name})
                         window.socket.emit("Reports", window.property_name)
                         window.postMessage({action:"ReservationStayDetail"},"*")
-                        window.socket.emit("ReservationDetail", window.reservation)
+                        window.postMessage({action:"ReservationDetail"},"*")
                         window.socket.emit("FolioTransactionList", window.property_name)
 
                     })
@@ -184,12 +184,8 @@ const onCheckOut = () => {
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 window.socket.emit("Reports", window.property_name)
                 window.postMessage({action:"ReservationStayDetail"},"*")
-                window.socket.emit("ReservationDetail", window.reservation)
-                window.socket.emit("FolioTransactionList", window.property_name)
-
-                // window.socket.emit("RefreshReservationDetail", rs.reservation.name);
-                // window.socket.emit("RefreshData", { property: window.property_name, action: "refresh_iframe_in_modal" });
-                // window.socket.emit("RefreshData", {property:window.property_name,action:"refresh_summary"})
+                window.postMessage({action:"ReservationDetail"},"*")
+                window.socket.emit("FolioTransactionList", window.property_name) 
             })
                 .catch((err) => {
                     rs.loading = false
@@ -270,7 +266,7 @@ function onUnmarkasPaidbyMasterRoom() {
             })
                 .then((doc) => {
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
                     props.data.paid_by_master_room = doc.paid_by_master_room;
                     toast.add({
                         severity: 'success',
@@ -300,7 +296,7 @@ function onMarkasPaidbyMasterRoom() {
             }).then((result) => {
                 if (result) {
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
                     props.data.paid_by_master_room = 1
                     
                      
@@ -329,7 +325,7 @@ function onAllowPosttoCityLedger() {
             })
                 .then((doc) => { 
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
                         severity: 'success',
@@ -355,7 +351,7 @@ function onUnallowPosttoCityLedger() {
             })
                 .then((doc) => { 
                     window.postMessage({action:"ReservationStayDetail"},"*")
-                    window.socket.emit("ReservationDetail", window.reservation)
+                    window.postMessage({action:"ReservationDetail"},"*")
                     props.data.allow_post_to_city_ledger = doc.allow_post_to_city_ledger;
                     toast.add({
                         severity: 'success',
@@ -385,7 +381,7 @@ function onMarkAsMasterRoom() {
                 rs.reservationStays.forEach(r => r.is_master = false);
                 props.data.is_master = doc.message.is_master
                 window.postMessage({action:"ReservationStayDetail"},"*")
-                window.socket.emit("ReservationDetail", window.reservation)
+                window.postMessage({action:"ReservationDetail"},"*")
                 window.socket.emit("ComGuestLedger", { property:window.property_name})
                 toast.add({
                         severity: 'success',

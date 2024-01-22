@@ -245,18 +245,17 @@ onMounted(() => {
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="Frontdesk"){
+        if(e.data.action=="ReservationDetail"){
             setTimeout(()=>{
                 onRefresh(false)
-            },1000*10)
-            
+            },1000*10) 
         }
     };
 }
 
 onUnmounted(() => {
-    rs.clear()
-    window.socket.off("ReservationDetail");
+    rs.clear() 
+    window.removeEventListener('message', actionRefreshData, false);
     window.has_reservation_detail_opened = false
     window.reservation = ""
 })
