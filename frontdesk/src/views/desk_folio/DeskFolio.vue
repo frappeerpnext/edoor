@@ -354,15 +354,19 @@ getApi('frontdesk.get_working_day', {
     // filter.value.date_range = [new Date(startDate), new Date(endDate)];
 })
 
-onMounted(() => {
-    window.socket.on("DeskFolio", (arg) => {
-        if (arg.property == window.property_name) {
-            setTimeout(function () {
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="Frontdesk"){
+            setTimeout(()=>{
                 loadData(false)
-                
-            }, 3000)
+            },1000*3)
+            
         }
-    })
+    };
+}
+
+onMounted(() => {
+    window.addEventListener('message', actionRefreshData, false); 
 
     let state = localStorage.getItem("page_state_desk_folio")
     if (state) {
@@ -424,7 +428,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("DeskFolio");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 function onAddDeskFolio(data) {

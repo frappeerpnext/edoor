@@ -349,15 +349,12 @@ function debouncer(fn, delay) {
 getApi('frontdesk.get_working_day', {
     property: JSON.parse(localStorage.getItem("edoor_property")).name
 }).then((r) => {
-    working_date.value = r.message?.date_working_day
-    // const startDate = moment(working_date.value)
-    // const endDate = moment(working_date.value).add(1, 'days')
-    // filter.value.date_range = [new Date(startDate), new Date(endDate)];
+    working_date.value = r.message?.date_working_day 
 })
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="Frontdesk"){
+        if(e.data.action=="PayableLedger"){
             setTimeout(()=>{
                 loadData(false)
             },1000*3)
@@ -429,7 +426,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("PayableLedger");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 function onAddPayableLedger(data) {

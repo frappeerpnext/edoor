@@ -3079,7 +3079,7 @@ def verify_reservation_stay(stay_name= None):
         if len(folio_data)>0:
             
             if folio_data[0]["credit"] != stay.total_credit or folio_data[0]["debit"] != stay.total_debit:
-                frappe.throw("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
+               
                 frappe.db.sql("update `tabReservation Stay` set total_credit={0} , total_debit={1}, balance={1}-{0} where name='{2}'".format(folio_data[0]["credit"],folio_data[0]["debit"], stay_name))
 
 
