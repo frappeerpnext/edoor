@@ -701,7 +701,7 @@ function onSave() {
             window.postMessage({action:"PayableLedger"},"*")
             window.postMessage({action:"DeskFolio"},"*") 
             window.postMessage({action:"ComDeskFolioDetail"},"*")
-            window.socket.emit("DepositLedger", { property: window.property_name })
+            window.postMessage({action:"DepositLedger"},"*")
             window.socket.emit("ComDepositLedgerDetail", { property: window.property_name })
             window.socket.emit("ComFolioTransactionSimpleStyle", { property: window.property_name })
 

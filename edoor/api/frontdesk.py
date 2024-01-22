@@ -2210,7 +2210,6 @@ def update_daily_property_data(property, working_date):
 @frappe.whitelist()
 def post_room_change_to_folio(working_day):  
     room_rates = frappe.db.get_all("Reservation Room Rate",fields=["*"] , filters={"property":working_day.business_branch,"date":working_day.posting_date },page_length=1000)
-
     for r in room_rates:
         stay_doc = frappe.get_doc("Reservation Stay",r.reservation_stay)
         if stay_doc.is_active_reservation==1 and stay_doc.reservation_status=="In-house":
@@ -2225,7 +2224,6 @@ def post_room_change_to_folio(working_day):
             if folio:
                 add_room_charge_to_folio(folio, r,1)
 
-    
     #verify if reservation stay and and reservation is update balance
 
 

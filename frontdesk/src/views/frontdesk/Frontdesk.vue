@@ -995,10 +995,8 @@ const actionRefreshData = async function (e) {
 }
 
 
-onMounted(() => {
-
+onMounted(() => { 
     window.addEventListener('message', actionRefreshData, false);
-    
     gv.loading = true
     const state = JSON.parse(sessionStorage.getItem("reservation_chart"))
     if (state) {

@@ -28,9 +28,11 @@ class FolioTransaction(Document):
 			
 		 
 		#validate folio status
-		if self.transaction_type =='Reservation Folio':
-			if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
-				frappe.throw(f"This folio {self.transaction_number} is already closed")
+		 
+		if not  self.flags.ignore_validate_close_folio:
+			if self.transaction_type =='Reservation Folio' :
+				if frappe.db.get_value("Reservation Folio", self.transaction_number, "status") =='Closed':
+					frappe.throw(f"This folio {self.transaction_number} is already closed")
 				
 		# when update note
 		if hasattr(self,"is_update_note") and self.is_update_note:

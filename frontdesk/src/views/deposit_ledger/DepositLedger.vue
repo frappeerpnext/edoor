@@ -363,7 +363,7 @@ getApi('frontdesk.get_working_day', {
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="Frontdesk"){
+        if(e.data.action=="DepositLedger"){
             setTimeout(()=>{
                 loadData(false)
             },1000*3)
@@ -435,7 +435,7 @@ const onCloseAdvanceSearch = () => {
 }
 
 onUnmounted(() => {
-    window.socket.off("DepositLedger");
+    window.removeEventListener('message', actionRefreshData, false)
 })
 
 

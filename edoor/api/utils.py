@@ -472,8 +472,6 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
-    
- 
     doc.save()
     if run_commit:
         frappe.db.commit()
@@ -846,6 +844,7 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
     }
     doc = frappe.get_doc(doc)
     doc.flags.ignore_update_reservation = True
+    doc.flags.ignore_validate_close_folio = True
  
     doc.insert()
     
