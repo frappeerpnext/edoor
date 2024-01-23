@@ -204,6 +204,8 @@ class FolioTransaction(Document):
 
 		#update discount account code and bank fee account
 		account_doc = frappe.get_doc("Account Code", self.account_code)
+		self.account_category = account_doc.account_category
+
 		self.discount_account = account_doc.discount_account
 		self.bank_fee_account = account_doc.bank_fee_account
 
@@ -499,8 +501,8 @@ def update_fetch_from_field(self):
 	else:
 		self.business_source_type = ""
 
-	self.account_category = frappe.db.get_value("Account Code",self.account_code, "account_category")
 	
+
 	
 
 def update_folio_transaction(self):
