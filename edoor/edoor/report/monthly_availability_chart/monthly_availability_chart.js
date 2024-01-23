@@ -5,7 +5,7 @@ let reservation_status = []
 let room_block_color = "red"
 
 frappe.query_reports["Monthly Availability Chart"] = {
-	onload: function (frm) {
+	onload: function (report) {
 
 		frappe.db.get_list("Reservation Status", { fields: ["name", "alias", "color"] }).then((r) => {
 
@@ -100,7 +100,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 		if (data.indent == 2 && column.is_date == 1) {
 			if (value) {
 				let status = reservation_status.filter(r => r.alias == value)
-
+				console.log(status)
 				let color = ""
 				if (status.length > 0) {
 					color = status[0].color

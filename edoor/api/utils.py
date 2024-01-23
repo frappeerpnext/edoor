@@ -474,7 +474,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
-    doc.save()
+    doc.save(   ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
         
@@ -570,7 +570,6 @@ def update_payable_ledger(name=None, doc=None,run_commit=True):
 
 @frappe.whitelist()
 def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
-    
     if name or doc:
         if name:
             if not frappe.db.exists("Reservation Stay",name ):
@@ -681,7 +680,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
 
         if is_save:
             doc.flags.ignore_on_update= True
-            doc.save()
+            doc.save(  ignore_permissions=True)
             
             frappe.db.commit()
 

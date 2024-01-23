@@ -85,7 +85,7 @@ def get_report_data(filters):
 
 	reservation_status = get_reservation_status()
 	months = get_month(filters)
- 
+	
 	data =   frappe.db.sql(sql,filters,as_dict=1)
 	report_data = []
 	occupy_data = get_occupy_data(filters)
@@ -129,7 +129,6 @@ def get_report_data(filters):
 	
 		for rt in room_types:
 			rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
-			
 			current_month_data = [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]]
 			totol_room_sold = len([d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Reservation"])
 			total_rooms = len(rooms) * total_day
@@ -162,7 +161,6 @@ def get_report_data(filters):
 			#start render room record
 			for md in current_month_data:
 				room = [d for d in rooms if d["name"]==md["room_id"] ] 
-				
 				if room:
 					if md["type"]=="Block":
 						room[0][str(int(getdate(md["date"]).strftime('%d')))] = "BL"
@@ -189,7 +187,7 @@ def get_report_data(filters):
 
 
 def get_occupy_data(filters):
-	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_departure=0 and is_active=1 and date between %(start_date)s and %(end_date)s and property=%(property)s"
+	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_departure=0 and date between %(start_date)s and %(end_date)s and property=%(property)s"
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	return data
 
