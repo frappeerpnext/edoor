@@ -1926,10 +1926,23 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
             """
     
     sql = sql.format(transaction_type, transaction_number,reservation,reservation_stay)
-  
+    filters={
+        "parent_reference":""
+        }
+    if transaction_type:
+        filters["transaction_type"]=transaction_type
+    if transaction_number:
+        filters["transaction_number"]=transaction_number
+    if reservation:
+        filters["reservation"]=reservation
+    if reservation_stay:
+        filters["reservation_stay"]=reservation_stay
+    data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000)
+    
+ 
 
   
-    data = frappe.db.sql(sql,as_dict=1)
+    # data = frappe.db.sql(sql,as_dict=1)
 
     balance = 0
     folio_transactions = []

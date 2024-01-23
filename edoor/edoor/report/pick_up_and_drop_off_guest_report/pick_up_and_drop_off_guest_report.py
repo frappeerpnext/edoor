@@ -9,9 +9,10 @@ from datetime import datetime, timedelta
 import uuid
 
 def execute(filters=None):
-	data = get_guest_data(filters)
-	summary = get_summary(filters,data)
-	report_data = get_report_data(filters,data)
+	data = get_pickup_data(filters)
+	drop = get_drop_off_data(filters)
+	summary = get_summary(filters,data,drop)
+	report_data = get_report_data(filters,data,drop)
 	return get_columns(filters),report_data,None,None, summary
 
 def validate(filters):
@@ -22,11 +23,11 @@ def validate(filters):
 		if datediff > 30:
 			frappe.throw("Your Max date for viewing transaction is only One Month.".format(filters.start_date, filters.end_date))
 
-def get_summary(filters,data):
+def get_summary(filters,data,dropoff):
 	get_count = {d['reservation'] for d in data if d["require_pickup"]==1 or d["require_drop_off"]==1}
-	drop_off_adult = sum([d["adult"] for d in data if d["require_drop_off"]==1])
+	drop_off_adult = sum([d["adult"] for d in dropoff if d["require_drop_off"]==1])
 	pickup_adult = sum([d["adult"] for d in data if d["require_pickup"]==1])
-	drop_off_child = sum([d["child"] for d in data if d["require_drop_off"]==1])
+	drop_off_child = sum([d["child"] for d in dropoff if d["require_drop_off"]==1])
 	pickup_child = sum([d["child"] for d in data if d["require_pickup"]==1])
 	if filters.show_summary:
 		return [
@@ -56,11 +57,23 @@ def get_columns(filters):
 	]
 	return columns
 
-def get_filters(filters):
+def get_pickup_filters(filters):
 	sql = """ and property=%(property)s and is_active_reservation=1 and
-	((arrival_date between %(start_date)s and %(end_date)s AND require_pickup = 1)
-    OR (departure_date between %(start_date)s and %(end_date)s AND require_drop_off = 1)
-    OR (arrival_date between %(start_date)s and %(end_date)s AND departure_date between %(start_date)s and %(end_date)s AND require_pickup = 1 AND require_drop_off = 1))
+	arrival_date between %(start_date)s and %(end_date)s
+				
+	  		 """
+
+	if filters.business_source:
+		sql = sql + " and rst.business_source = %(business_source)s"
+	if filters.get("room_types"):
+		sql =  """{} and  name in (
+			select distinct reservation_stay from `tabReservation Room Rate` rrr 
+			{}	
+		) """.format(sql,get_room_rate_filters(filters))
+	return sql
+def get_drop_off_filters(filters):
+	sql = """ and property=%(property)s and is_active_reservation=1 and
+	departure_date between %(start_date)s and %(end_date)s
 				
 	  		 """
 
@@ -85,7 +98,7 @@ def get_room_rate_filters(filters):
  
 	return sql
 
-def get_guest_data(filters):
+def get_pickup_data(filters):
 	sql="""
 			select 
 				name,
@@ -134,14 +147,69 @@ def get_guest_data(filters):
 				1=1  
 				{}
 			
-		""".format(get_filters(filters))
+		""".format(get_pickup_filters(filters))
 
 	data =   frappe.db.sql(sql,filters,as_dict=1)
 
 	
 	return data
+def get_drop_off_data(filters):
+	sql="""
+			select 
+				name,
+				reservation_date,
+				arrival_date,
+				departure_date,
+				rooms,
+				modified,
+				reference_number,
+				creation,
+				reservation_type,
+				reservation,
+				room_type_alias,
+				business_source,
+				adult,
+				child,
+				concat(adult,'/',child) as total_pax,
+				pax,
+				room_nights,
+				guest,
+				guest_name,
+				is_active_reservation,
+				reservation_status,
+				require_pickup,
+				require_drop_off,
+				if(require_pickup,pickup_time,drop_off_time) as time,
+				arrival_mode,
+				arrival_flight_number,
+				pickup_location,
+				pickup_driver_name,
+				pickup_driver_phone_number,
+				pickup_note,
+				if(require_drop_off,departure_mode,arrival_mode) as mode,
+				if(require_drop_off,drop_off_location,pickup_location) as station,
+				if(require_drop_off,departure_flight_number,arrival_flight_number) as flight_number,
+				if(require_drop_off,drop_off_driver_name,pickup_driver_name) as driver,
+				if(require_drop_off,drop_off_note,pickup_note) as note,
+				departure_mode,
+				departure_flight_number,
+				drop_off_location,
+				drop_off_driver_name,
+				drop_off_driver_phone_number,
+				drop_off_note
+			from `tabReservation Stay` rst
+			where
+				1=1  
+				{}
+			
+		""".format(get_drop_off_filters(filters))
 
-def get_report_data(filters,data):
+	dropoff =   frappe.db.sql(sql,filters,as_dict=1)
+
+	
+	return dropoff
+
+def get_report_data(filters,data,dropoff):
 	report_data = []
 	
 	pickup = sorted(set([d["require_pickup"] for d in data if d['require_pickup']==1]))
@@ -187,7 +255,7 @@ def get_report_data(filters,data):
 				"is_group":1,
 			})
 
-	drop_off = sorted(set([d["require_drop_off"] for d in data if d['require_drop_off']==1]))
+	drop_off = sorted(set([d["require_drop_off"] for d in dropoff if d['require_drop_off']==1]))
 	if drop_off:	
 		report_data.append({
 				"indent":0,
@@ -198,7 +266,7 @@ def get_report_data(filters,data):
 		if filters.show_in_group_by:
 			group_column = get_group_by_column(filters)
 		
-			group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['require_drop_off']==1]))
+			group_data = sorted(set([d[group_column["data_field"]] for d  in dropoff if d['require_drop_off']==1]))
 			for g in group_data:
 				d = g
 				if group_column["fieldtype"]=="Date":
@@ -210,29 +278,29 @@ def get_report_data(filters,data):
 				"is_group":1,
 				"id":id
 				})
-				report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1]
+				report_data = report_data +  [d.update({"indent":2,"parent":id}) or d for d in dropoff if d[group_column["data_field"]]==g and d['require_drop_off']==1]
 			
 				report_data.append({
 				"indent":1,
 				"name": "Total",
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1]),sum([d["child"] for d in data if d[group_column["data_field"]]==g and d['require_drop_off']==1])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in dropoff if d[group_column["data_field"]]==g and d['require_drop_off']==1]),sum([d["child"] for d in dropoff if d[group_column["data_field"]]==g and d['require_drop_off']==1])),
 				"is_total_row":1,
 				"is_group":0,
 				"parent":id
 				})
 		else:
-			report_data = report_data +  [d.update({"indent":2}) or d for d in data if d['require_drop_off']==1]
+			report_data = report_data +  [d.update({"indent":2}) or d for d in dropoff if d['require_drop_off']==1]
 			report_data.append({
 				"indent":1,
 				"name": "Total",
-				"total_pax":"{}/{}".format(sum([d["adult"] for d in data if d['require_drop_off']==1]),sum([d["child"] for d in data if d['require_drop_off']==1])),
+				"total_pax":"{}/{}".format(sum([d["adult"] for d in dropoff if d['require_drop_off']==1]),sum([d["child"] for d in dropoff if d['require_drop_off']==1])),
 				"is_total_row":1,
 				"is_group":1,
 			})
 	
-	drop_off_adult = sum([d["adult"] for d in data if d["require_drop_off"]==1])
+	drop_off_adult = sum([d["adult"] for d in dropoff if d["require_drop_off"]==1])
 	pickup_adult = sum([d["adult"] for d in data if d["require_pickup"]==1])
-	drop_off_child = sum([d["child"] for d in data if d["require_drop_off"]==1])
+	drop_off_child = sum([d["child"] for d in dropoff if d["require_drop_off"]==1])
 	pickup_child = sum([d["child"] for d in data if d["require_pickup"]==1])
 	
 	report_data.append({
