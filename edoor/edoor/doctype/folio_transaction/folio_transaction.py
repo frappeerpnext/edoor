@@ -498,6 +498,9 @@ def update_fetch_from_field(self):
 		self.business_source_type = frappe.db.get_value("Business Source", self.business_source,"business_source_type")
 	else:
 		self.business_source_type = ""
+
+	self.account_category = frappe.db.get_value("Account Code",self.account_code, "account_category")
+	
 	
 
 def update_folio_transaction(self):
