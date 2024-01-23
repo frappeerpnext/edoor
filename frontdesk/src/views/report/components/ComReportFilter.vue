@@ -102,7 +102,7 @@
                 optionLabel="account_name" optionValue="account_name"
                 extraFields="account_name"
                     v-model="filter.account_name"   placeholder="Account Name" doctype="Account Code"
-                    :filters="{ parent_account_code: ['=','1200'] }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
+                    :filters="{ parent_account_code: ['=','10200'] }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
             </div>
             <div class="col"  v-if="hasFilter('arrival_modes')">
                 <label>Arrival Mode</label><br>
