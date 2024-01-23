@@ -83,13 +83,13 @@
                     <Column footerStyle="text-align:right">
                         <template #footer>
 
-                            <CurrencyFormat :value="selectedFolio.total_debit" />
+                            <CurrencyFormat  v-if="can_view_rate" :value="selectedFolio.total_debit" />
                         </template>
                     </Column>
 
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="selectedFolio.total_credit" />
+                            <CurrencyFormat  v-if="can_view_rate" :value="selectedFolio.total_credit" />
                         </template>
                     </Column>
 <!-- 
@@ -102,7 +102,7 @@
 
                     <Column footerStyle="text-align:right">
                         <template #footer>
-                            <CurrencyFormat :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
+                            <CurrencyFormat v-if="can_view_rate" :value="(selectedFolio.total_debit - selectedFolio.total_credit)" />
                         </template>
                     </Column>
 
