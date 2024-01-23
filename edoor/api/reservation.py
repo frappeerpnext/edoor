@@ -1937,7 +1937,7 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
         filters["reservation"]=reservation
     if reservation_stay:
         filters["reservation_stay"]=reservation_stay
-    data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000)
+    data = frappe.db.get_list("Folio Transaction", fields=["*"], filters=filters, page_length=1000, order_by='name')
     
  
 
