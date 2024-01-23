@@ -189,7 +189,7 @@ def get_report_data(filters):
 
 
 def get_occupy_data(filters):
-	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_departure=0 and date between %(start_date)s and %(end_date)s and property=%(property)s"
+	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_departure=0 and is_active=1 and date between %(start_date)s and %(end_date)s and property=%(property)s"
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	return data
 
