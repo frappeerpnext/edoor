@@ -80,7 +80,8 @@ def get_report_data(filters):
 			where
 				3=3
 				{0}
-			
+			order by 
+				sort_order, room_number
 		""".format(get_filters(filters))
 
 	reservation_status = get_reservation_status()
@@ -89,6 +90,7 @@ def get_report_data(filters):
 	data =   frappe.db.sql(sql,filters,as_dict=1)
 	report_data = []
 	occupy_data = get_occupy_data(filters)
+ 
 	calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block")
 	
 	for m in months:
@@ -113,9 +115,9 @@ def get_report_data(filters):
 		}
 		for n in range(1,total_day +1):
 			total_rooms = len(data) 
-			totol_room_sold = len([d for d in occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n and d["type"]=="Reservation" ]) 
+			totol_room_sold = len([d for d in occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n and d["type"]=="Reservation" ]) 
 			if calculate_room_occupancy_include_room_block == 0:
-				total_rooms = total_rooms - len( [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["type"]=="Block"])
+				total_rooms = total_rooms - len( [d for d in  occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["type"]=="Block"])
 			
 
 			month_record[str(n)] =   round(totol_room_sold / total_rooms * 100,2) 
@@ -129,8 +131,10 @@ def get_report_data(filters):
 	
 		for rt in room_types:
 			rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
-			current_month_data = [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]]
-			totol_room_sold = len([d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Reservation"])
+
+			current_month_data = [d for d in  occupy_data if  int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0]]
+
+			totol_room_sold = len([d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Reservation"])
 			total_rooms = len(rooms) * total_day
 			if calculate_room_occupancy_include_room_block ==0:
 				total_rooms = total_rooms - len( [d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Block"])
@@ -143,14 +147,14 @@ def get_report_data(filters):
 			}
 			for n in range(1,total_day +1):
 				total_rooms = len(rooms)
-				totol_room_sold = len([d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n and d["room_type_id"]==rt[0] and d["type"]=="Reservation" ]) 
+				totol_room_sold = len([d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n and d["room_type_id"]==rt[0] and d["type"]=="Reservation" ]) 
 				if calculate_room_occupancy_include_room_block == 0:
-					total_rooms = total_rooms - len( [d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["room_type_id"]==rt[0] and d["type"]=="Block"])
+					total_rooms = total_rooms - len( [d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and int(getdate(d["date"]).strftime('%d')) == n   and d["room_type_id"]==rt[0] and d["type"]=="Block"])
 				
 				room_type_record[str(n)] = round(totol_room_sold / total_rooms * 100,2)
 
 			report_data.append(room_type_record)
-
+			
 			for r in rooms:
 				totol_room_sold = len([d for d in occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Reservation" ]) 
 				total_rooms =  total_day
@@ -159,6 +163,7 @@ def get_report_data(filters):
 				r["occupancy"] = round(totol_room_sold / total_rooms * 100,2)
 
 			#start render room record
+			
 			for md in current_month_data:
 				room = [d for d in rooms if d["name"]==md["room_id"] ] 
 				if room:
@@ -182,12 +187,12 @@ def get_report_data(filters):
 		"occupancy":round(totol_room_sold / total_rooms * 100,2),
 		"is_grand_total":1
 	})
-
+	 
 	return report_data
 
 
 def get_occupy_data(filters):
-	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_departure=0 and date between %(start_date)s and %(end_date)s and property=%(property)s"
+	sql = "select date,room_id,room_type_id,reservation_status,type from `tabRoom Occupy` where is_active=1 and date between %(start_date)s and %(end_date)s and property=%(property)s"
 	data = frappe.db.sql(sql,filters,as_dict=1)
 	return data
 

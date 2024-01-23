@@ -467,21 +467,21 @@ const min_date = computed(() => {
 const amount = computed(() => {
     if (tax_rule.value) {
         if (doc.value.rate_include_tax == "Yes") {
-            let priceBefore = gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
+            let priceBefore = gv.getRateBeforeTax(((doc.value.input_amount || 0) * (doc.value.quantity)) - (discount_amount.value), tax_rule.value, doc.value.tax_1_rate, doc.value.tax_2_rate, doc.value.tax_3_rate)
             let priceAfter = priceBefore + discount_amount.value
-            return (priceAfter * doc.value.quantity || 1)  
+            return (priceAfter * doc.value.quantity)  
 
         } else {
-            return ((doc.value.input_amount || 0) * (doc.value.quantity || 1))
+            return ((doc.value.input_amount || 0) * (doc.value.quantity))
         }
     }
-    return ((doc.value.input_amount || 0) * (doc.value.quantity || 1)) - discount_amount.value
+    return ((doc.value.input_amount || 0) * (doc.value.quantity)) - discount_amount.value
 })
 
 
 const discount_amount = computed(() => {
     if (doc.value.discount_type == "Percent") {
-        return ((doc.value.input_amount || 0) * (doc.value.quantity || 1)) * (doc.value.discount / 100 || 0)
+        return ((doc.value.input_amount || 0) * (doc.value.quantity)) * (doc.value.discount / 100 || 0)
     } else {
         return (doc.value.discount || 0)
     }
