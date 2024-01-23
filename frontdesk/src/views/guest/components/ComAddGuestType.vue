@@ -37,7 +37,7 @@ function onSave(){
   }
   createUpdateDoc('Customer Group',guestType.value,null,rename.value)
   .then((r)=>{
-    window.socket.emit("GuestList", window.property_name)
+    window.postMessage({action:"GuestList"},"*")
     window.socket.emit("GuestType", window.property_name)
 
     dialogRef.value.close(r)

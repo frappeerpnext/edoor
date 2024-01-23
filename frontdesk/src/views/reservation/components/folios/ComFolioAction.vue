@@ -344,7 +344,7 @@ function EditFolio() {
           
                 window.postMessage({action:"load_reservation_folio_list"},"*")
                 window.postMessage({action:"load_reservation_stay_folio_list"},"*")
-                window.socket.emit("ReservationDetail", selectedFolio.value.reservation)
+                window.postMessage({action:"ReservationDetail"},"*")
 
             }
         }
@@ -523,9 +523,8 @@ function onTransferFolioItem() {
               
                 reloadData()
 
-                setTimeout(() => {                  
-                    window.socket.emit("ReservationDetail", selectedFolio.value.reservation)    
-                    
+                setTimeout(() => {   
+                    window.postMessage({action:"ReservationDetail"},"*")
                 }, 3000);
 
                 

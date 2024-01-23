@@ -141,8 +141,7 @@ function onCheckIn() {
                 })
                     .then((result) => {
                         rs.loading = false
-                        rs.LoadReservation(rs.reservation.name);
-                        // window.socket.emit("RefresheDoorDashboard", rs.reservation.property); 
+                        rs.LoadReservation(rs.reservation.name); 
                         window.postMessage({action:"ReservationList"},"*")
                         window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({action:"GuestLedger"},"*")

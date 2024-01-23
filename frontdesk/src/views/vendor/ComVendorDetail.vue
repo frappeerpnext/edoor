@@ -80,18 +80,24 @@ function onDelete() {
     });
 }
 
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComVendorDetail"){
+            setTimeout(()=>{
+                document.getElementById("iframeVendorDetail").contentWindow.location.replace(url.value + "&refresh=" + (Math.random() * 16))
+            },1000*10)
+            
+        }
+    };
+}
+
 onMounted(() => {
     name.value = dialogRef.value.data.name
-    window.socket.on("ComVendorDetail",  (arg) => {
-        if (arg == window.property_name){
-            document.getElementById("iframeVendorDetail").contentWindow.location.replace(url.value + "&refresh=" + (Math.random() * 16))
-        }
-    })
+    window.addEventListener('message', actionRefreshData, false);
 })
 
 onUnmounted(() => {
-      
-      window.socket.off("ComVendorDetail")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script>

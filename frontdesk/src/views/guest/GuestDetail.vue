@@ -128,7 +128,7 @@ function onDeleteGuest (name){
                 loading.value = false 
                 window.postMessage({action:"ReservationStayList"},"*")
                 window.postMessage({action:"ReservationList"},"*")
-                window.socket.emit("GuestList", window.property_name)
+                window.postMessage({action:"GuestList"},"*")
                 window.postMessage({action:"Reports"},"*")
         	    window.postMessage({action:"FolioTransactionList"},"*")
 
@@ -140,17 +140,24 @@ function onDeleteGuest (name){
         },
     });
 }
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="GuestDetail"){
+            setTimeout(()=>{
+                loadIframe()
+            },1000)
+            
+        }
+    };
+}
  
 onMounted(() => { 
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
     } 
     if (document.querySelectorAll('.guest-detail').length == 1){
-        window.socket.on("GuestDetail", (arg) => {
-            if( arg == window.property_name){
-                loadIframe()
-            }    
-        })
+        window.addEventListener('message', actionRefreshData, false);
     }
 });
 
@@ -178,7 +185,7 @@ function loadIframe() {
 
 onUnmounted(() => {
     if (document.querySelectorAll('.guest-detail').length - 1 == 0){ 
-        window.socket.off("GuestDetail")
+        window.removeEventListener('message', actionRefreshData, false);
     }
 })
 

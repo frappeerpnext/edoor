@@ -184,7 +184,7 @@
          postApi("reservation.assign_room",{data: selectedStay.value})
         .then((r)=>{
             loading.value = false
-            window.socket.emit("ComIframeModal", window.property_name)
+            window.postMessage({action:"ComIframeModal"},"*")
             window.postMessage({"action":"Dashboard"},"*")
             window.postMessage({action:"ReservationList"},"*")
             window.postMessage({action:"ReservationStayList"},"*")

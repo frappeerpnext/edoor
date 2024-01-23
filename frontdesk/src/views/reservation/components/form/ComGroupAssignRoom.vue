@@ -174,14 +174,14 @@ function onSave() {
         loading.value = false
         window.postMessage({"action":"Dashboard"},"*")
         window.postMessage({"action":"Frontdesk"},"*")
-        window.socket.emit("ReservationDetail", reservation.value.name)
+        window.postMessage({"action":"ReservationDetail"},"*")
         window.postMessage({action:"ReservationList"},"*")
         window.postMessage({action:"ReservationStayList"},"*")
         window.postMessage({action:"GuestLedger"},"*")
         window.postMessage({action:"Reports"},"*")
         dialogRef.value.close("open_reservation_detail")
         data.value.map(r=>r.reservation_stay).forEach(r => {
-            window.socket.emit("ReservationStayDetail", {reservation_stay:r})
+            window.postMessage({action:"ReservationStayDetail"},"*")
         });
         window.postMessage({action:"FolioTransactionList"},"*")
 

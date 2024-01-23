@@ -293,12 +293,20 @@ function debouncer(fn, delay) {
         }, delay);
     };
 }
-onMounted(() => { 
-    window.socket.on("ComIframeModal", (arg) => { 
-        if (arg == window.property_name) {
-            loadIframe()
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="ComIframeModal"){
+            setTimeout(()=>{
+                loadIframe()
+            },1000)
+            
         }
-    })
+    };
+}
+
+onMounted(() => { 
+    window.addEventListener('message', actionRefreshData, false); 
     show_toolbar.value = dialogRef.value.data.show_toolbar || 1
   
     show_letter_head.value = dialogRef.value.data.show_letter_head ==undefined?true:dialogRef.value.data.show_letter_head 
@@ -314,7 +322,7 @@ onMounted(() => {
 
 onUnmounted(() => { 
     loading.value = false;
-    window.socket.off("ComIframeModal")
+    window.removeEventListener('message', actionRefreshData, false);
 })
 
 </script> 

@@ -95,7 +95,7 @@ function onLoad() {
     .then((r) => {
       data.value = r
       window.postMessage({action:"Vendor"},"*")
-      window.socket.emit("ComVendorDetail", window.property_name) 
+      window.postMessage({action:"ComVendorDetail"},"*")
       window.postMessage({action:"PayableLedger"},"*")
       window.postMessage({action:"ComPayableLedgerDetail"},"*")
       loading.value = false

@@ -34,8 +34,7 @@ function onSave() {
         window.postMessage({action:"ReservationStayDetail"},"*")
         window.postMessage({action:"GuestLedger"},"*")
         window.postMessage({action:"GuestLedgerTransaction"},"*")
-        window.socket.emit("ReservationDetail", doc.reservation) 
-
+        window.postMessage({action:"ReservationDetail"},"*")
     }).catch(()=>{
         isSaving.value = false
     })

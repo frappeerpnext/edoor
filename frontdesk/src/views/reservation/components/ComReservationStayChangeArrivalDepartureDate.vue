@@ -80,7 +80,7 @@ function onSave(){
             window.postMessage({action:"Frontdesk"},"*")
             window.postMessage({action:"Reports"},"*")
             setTimeout(function(){
-                window.socket.emit("ComIframeModal", window.property_name)
+                window.postMessage({action:"ComIframeModal"},"*")
             }, 3000)
   
             onClose()

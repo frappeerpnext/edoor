@@ -987,7 +987,7 @@ const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
         if(e.data.action=="Frontdesk"){
             setTimeout(()=>{
-                getResourceAndEvent() 
+                getEvent() 
             },1000*5)
             
         }

@@ -72,7 +72,7 @@ function onSave(){
   .then((r)=>{
     loading.value = false
     dialogRef.value.close(r)
-    window.socket.emit("RoomBlockList",window.property_name)
+    window.postMessage({"action":"RoomBlockList"},"*")   
   }).catch((err)=>{
     loading.value = false 
   })
@@ -82,7 +82,7 @@ onMounted(() => {
   if(dialogRef.value.data.name){
     getDoc("Comment", dialogRef.value.data.name).then((r)=>{
       data.value = r
-      window.socket.emit("RoomBlockList",window.property_name)
+      window.postMessage({"action":"RoomBlockList"},"*")
     })
   }else{
     data.value.custom_note_date = new Date()

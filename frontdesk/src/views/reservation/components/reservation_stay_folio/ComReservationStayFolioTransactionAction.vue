@@ -152,11 +152,8 @@ function onOpenDelete() {
             if(options.data){
                 window.postMessage({action:"load_reservation_folio_list"},"*")
                 window.postMessage({action:"load_reservation_stay_folio_list"},"*")
-                window.postMessage({action:"load_folio_transaction"},"*")
-             
-                
-                window.socket.emit("ComDeskFolioDetail",{name:props.data.transaction_number})
-                window.socket.emit("ComDeskFolioDetail",{name:props.data.transaction_number})
+                window.postMessage({action:"load_folio_transaction"},"*") 
+                window.postMessage({action:"ComDeskFolioDetail"},"*")
             }
             
             loading.value = false;

@@ -117,7 +117,7 @@ function onSave() {
         emit("onClose")
         window.postMessage({action:"ReservationList"},"*")
         window.postMessage({action:"Reports"},"*")
-        window.socket.emit("ComIframeModal", window.property_name)
+        window.postMessage({action:"ComIframeModal"},"*")
         window.postMessage({"action":"Dashboard"},"*")
         window.postMessage({action:"ReservationStayList"},"*")
         window.postMessage({"action":"Frontdesk"},"*")

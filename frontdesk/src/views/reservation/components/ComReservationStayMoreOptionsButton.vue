@@ -485,8 +485,7 @@ function onMarkasPaidbyMasterRoom() {
                 }).then((result) => {
                     if (result) {
                         rs.loading = false
-                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room;
-                        window.socket.emit("RefreshReservationDetail", rs.reservation.name)
+                        rs.reservationStay.paid_by_master_room = doc.paid_by_master_room; 
                         window.postMessage({action:"ReservationStayList"},"*")
                         window.postMessage({action:"ReservationStayDetail"},"*")
                         window.postMessage({action:"ReservationDetail"},"*")

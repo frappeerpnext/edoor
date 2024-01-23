@@ -318,16 +318,20 @@ onMounted(() => {
             })
         })
     })
-
-    window.socket.on("GuestList", (arg) => {
-        if (arg == window.property_name) {
-            setTimeout(function(){
-                loadData(false)
-            },3000) 
-        }
-    })
-
+ 
+    window.addEventListener('message', actionRefreshData, false);
 })
+
+const actionRefreshData = async function (e) {
+    if (e.isTrusted && typeof (e.data) != 'string') {
+        if(e.data.action=="GuestList"){
+            setTimeout(()=>{
+                loadData(false)
+            },1000*3)
+            
+        }
+    };
+}
 
 function onAddNewGuest(){
     if(!gv.cashier_shift?.name){
@@ -383,6 +387,6 @@ onMounted(()=>{
 })
 
 onUnmounted(() => {
-    window.socket.off("GuestList");
+    window.removeEventListener('message', actionRefreshData, false);
 })
 </script>
