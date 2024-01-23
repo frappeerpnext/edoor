@@ -32,14 +32,6 @@ export default class Reservation {
 			this.reservationStays = result.message.reservation_stays
 			this.masterGuest = result.message.master_guest
 			this.getRoomList()
-			var attachedsFiles = this.reservationStays.map(r=>r.name)
-
-			attachedsFiles[attachedsFiles.length] = name || this.reservation?.name
-
-			this.attacheds = attachedsFiles
-			this.attacheds =   [...new Set(this.attacheds.concat(result.message.related_reference_number.filter(r=>r)))]
-			
-
 			this.totalFolio = result.message.total_folio
 
 			this.loading = false

@@ -19,7 +19,7 @@
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_stay_detail', slotProps.data.name)" link>
-                    {{ slotProps.data.reservation }}
+                    {{ slotProps.data.reservation_stay }}
                 </Button>
             </template>
         </Column>

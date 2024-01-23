@@ -111,7 +111,7 @@
                         </template>
                         <ComDocument doctype="Reservation Stay"
                             :doctypes="['Reservation Stay', 'Reservation Folio', 'Folio Transaction']" :docname="name"
-                            :fill="false" :attacheds="rs.attacheds" />
+                            :fill="false"  />
                     </TabPanel>
                 </TabView>
             </div>

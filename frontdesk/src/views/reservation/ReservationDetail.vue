@@ -105,15 +105,13 @@
                 </TabPanel>
                 <TabPanel>
                     <template #header>
-                        <span class="me-2">Document</span>
-                        <ComDocumentBadge :docname="name"
-                            :doctypes="['Reservation Stay', 'Reservation', 'Customer', 'Reservation Folio', 'Folio Transaction']"
-                            :attacheds="rs.attacheds" v-if="name && !rs.loading" />
+                            <span class="me-2">Document</span>
+                            <Badge :value="totalDocument"></Badge>
                     </template>
 
                     <ComDocument doctype="Reservation"
                         :doctypes="['Reservation Stay', 'Reservation', 'Customer', 'Reservation Folio', 'Folio Transaction']"
-                        :attacheds="rs.attacheds" :docname="name" />
+                        :attacheds="rs.attacheds" :docname="name" @updateCount="onUpdateDocumentCount" />
                 </TabPanel>
 
             </TabView>
@@ -170,7 +168,7 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const name = ref("")
 const dialog = useDialog()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-
+const totalDocument = ref(0)
 
 const isPage = computed(() => {
     return route.name == 'ReservationDetail'
@@ -217,6 +215,10 @@ function onClose() {
 }
 function onMaximize() {
     dialogRef.value.maximize()
+}
+
+function onUpdateDocumentCount(n){
+    totalDocument.value = n
 }
 onMounted(() => {
     window.has_reservation_detail_opened = true

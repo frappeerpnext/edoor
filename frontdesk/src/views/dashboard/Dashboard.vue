@@ -627,7 +627,6 @@ function debouncer(fn, delay) {
 } 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        alert("dashboard")
         if(e.data.action=="Dashboard"){
             setTimeout(()=>{
                 getData(false)
