@@ -1307,6 +1307,7 @@ def get_edoor_setting(property = None):
         "room_block_color":edoor_setting_doc.room_block_color,
         "show_additional_guest_name_in_room_chart_calendar":edoor_setting_doc.show_additional_guest_name_in_room_chart_calendar,
         "help_url":edoor_setting_doc.help_url,
+        
         "currency":{
             "name":currency.name,
             "locale":currency.custom_locale,
@@ -1363,6 +1364,7 @@ def get_edoor_setting(property = None):
         "phone_number_2":property.phone_number_1,
         "pos_profile":property.default_pos_profile,
         "default_letter_head":property.default_letter_head,
+        "default_walk_in_business_source":property.default_walk_in_business_source,
         "edoor_letterhead":[d.letterhead for d in property.edoor_letterhead]
     }
 

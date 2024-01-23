@@ -38,6 +38,7 @@
   "is_complimentary",
   "rate_type",
   "is_active_reservation",
+  "is_walk_in",
   "guest_information_tab",
   "guest",
   "guest_name",
@@ -274,11 +275,17 @@
    "fieldname": "is_stay_over",
    "fieldtype": "Check",
    "label": "Is Stay Over"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_walk_in",
+   "fieldtype": "Check",
+   "label": "Is Walk-In"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-06 17:08:32.908591",
+ "modified": "2024-01-23 16:25:08.809336",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Room Occupy",

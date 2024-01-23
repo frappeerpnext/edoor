@@ -385,6 +385,7 @@ def add_new_reservation(doc):
             "group_color":reservation.group_color,
             "adult":d["adult"],
             "child":d["child"],
+            "is_walk_in":0 if not "is_walk_in"  in doc["reservation"] else doc["reservation"]["is_walk_in"],
             "stays":[
                 {
                     "doctype":"Reservation Stay Room",
@@ -1915,20 +1916,13 @@ def get_folio_transaction(transaction_type="", transaction_number="",reservation
     else:
         show_account_code = int(show_account_code)
 
-    sql = """select * 
-            from `tabFolio Transaction` 
-            where 
-                ifnull(parent_reference,'') = '' and  
-                transaction_type=if('{0}'='',transaction_type,'{0}') and 
-                transaction_number=if('{1}'='',transaction_number,'{1}') and 
-                ifnull(reservation,'')=if('{2}'='',ifnull(reservation,''),'{2}') and 
-                ifnull(reservation_stay,'')=if('{3}'='',ifnull(reservation_stay,''),'{3}') 
-            """
     
-    sql = sql.format(transaction_type, transaction_number,reservation,reservation_stay)
+    
+   
     filters={
         "parent_reference":""
-        }
+    }
+
     if transaction_type:
         filters["transaction_type"]=transaction_type
     if transaction_number:
@@ -2232,9 +2226,12 @@ def update_business_source(reservation, business_source, regenerate_rate,reserva
 
 
     reservation_doc.business_source = business_source
+    
     reservation_doc.save()
  
-     
+    #update reservation to stay
+    frappe.db.sql("update `tabReservation Stay` set business_source='{}' where reservation='{}'".format(reservation_doc.business_source, reservation_doc.name)) 
+    
     working_day = get_working_day(reservation_doc.property)
 
     if regenerate_rate:
@@ -2258,9 +2255,13 @@ def update_business_source(reservation, business_source, regenerate_rate,reserva
          
         update_reservation(name=reservation, run_commit = False)
     
+
+
     frappe.db.commit()
     if reservation_stay:
-        return frappe.get_doc("Reservation Stay", reservation_stay)
+        doc =  frappe.get_doc("Reservation Stay", reservation_stay)
+        
+        return doc
     else:
         return reservation_doc
     

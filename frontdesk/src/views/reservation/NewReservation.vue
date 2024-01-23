@@ -12,8 +12,9 @@
                     <div class="">
                         <div class="grid">
                             <div class="col">
+                                
                                 <label>Reservation Date <span class="text-red-500">*</span></label><br />
-                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full"
+                                <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm w-full"
                                     v-model="doc.reservation.reservation_date" placeholder="Reservation Date"
                                     dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"
                                     :maxDate="moment(working_day.date_working_day).toDate()" />
@@ -36,7 +37,7 @@
                         <div class="grid m-0">
                             <div class="arr_wfit col px-0">
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
-                                <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
+                                <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar
                                     panelClass="no-btn-clear" :minDate="minDate" />
@@ -65,7 +66,7 @@
                                     <label>Business Source<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
-                                        class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
+                                        class="auto__Com_Cus w-full" :filters="business_source_filter" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
@@ -411,6 +412,8 @@ const checkFutureReservationInfo = ref({})
 
 
 
+
+
 const onOpenChangeRate = (event, stay) => {
     selectedStay.value = stay
     rate.value = JSON.parse(JSON.stringify(stay)).rate
@@ -430,7 +433,9 @@ const doc = ref({
         paid_by_master_room: 0,
         group_code: "",
         group_name: "",
-        allow_post_to_city_ledger: 1
+        allow_post_to_city_ledger: 1,
+        is_walk_in: dialogRef.value.data?.is_walk_in || 0,
+       
     },
     guest_info: {
         "doctype": "Customer",
@@ -444,6 +449,18 @@ const doc = ref({
         tax_3_rate: 0,
     }
 })
+
+
+const business_source_filter =ref({ property: property.name })
+if (doc.value.reservation.is_walk_in==1){
+    doc.value.reservation.business_source = window.setting.property?.default_walk_in_business_source
+    business_source_filter.value.is_walk_in_business_source = 1
+    doc.value.reservation.allow_post_to_city_ledger= 0
+} else {
+    business_source_filter.value.is_walk_in_business_source = 0
+
+}
+
 
 const gender_list = ["Not Set", "Male", "Female"]
 

@@ -41,6 +41,7 @@
   "room_type_alias",
   "rooms",
   "reservation_status_note",
+  "is_walk_in",
   "guest_information_section",
   "guest",
   "guest_phone_number",
@@ -865,6 +866,12 @@
    "fieldname": "checked_in_system_date",
    "fieldtype": "Date",
    "label": "Checked In System Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_walk_in",
+   "fieldtype": "Check",
+   "label": "Is Walk-In"
   }
  ],
  "image_field": "guest_photo",
@@ -876,7 +883,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2024-01-19 15:53:09.043377",
+ "modified": "2024-01-23 16:23:13.953025",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

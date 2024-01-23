@@ -96,12 +96,12 @@ def get_report_data(filters):
 	for m in months:
 		#get room occupancy of current month
 		
-		totol_room_sold = len([d for d in occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["type"]=="Reservation" ]) 
+		totol_room_sold = len([d for d in occupy_data if  int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["type"]=="Reservation" ]) 
 		total_day = m["total_day"]
 
 		total_rooms = len(data) * total_day
 		if calculate_room_occupancy_include_room_block ==0:
-			total_rooms = total_rooms - len( [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["type"]=="Block"])
+			total_rooms = total_rooms - len( [d for d in  occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["type"]=="Block"])
 		
 		#start render room type record
 
@@ -137,7 +137,7 @@ def get_report_data(filters):
 			totol_room_sold = len([d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Reservation"])
 			total_rooms = len(rooms) * total_day
 			if calculate_room_occupancy_include_room_block ==0:
-				total_rooms = total_rooms - len( [d for d in current_month_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Block"])
+				total_rooms = total_rooms - len( [d for d in current_month_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0]  and d["type"]=="Block"])
 			
 			room_type_record = {
 			"indent":1,
@@ -156,10 +156,10 @@ def get_report_data(filters):
 			report_data.append(room_type_record)
 			
 			for r in rooms:
-				totol_room_sold = len([d for d in occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Reservation" ]) 
+				totol_room_sold = len([d for d in occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Reservation" ]) 
 				total_rooms =  total_day
 				if calculate_room_occupancy_include_room_block ==0:
-					total_rooms = total_rooms - len( [d for d in  occupy_data if getdate(d["date"]).strftime('%m') == str(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Block"])
+					total_rooms = total_rooms - len( [d for d in  occupy_data if int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0] and d["room_id"] == r["name"] and d["type"]=="Block"])
 				r["occupancy"] = round(totol_room_sold / total_rooms * 100,2)
 
 			#start render room record

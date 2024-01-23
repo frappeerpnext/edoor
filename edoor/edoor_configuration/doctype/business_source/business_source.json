@@ -18,6 +18,7 @@
   "email",
   "auto_create_city_ledger_account",
   "city_ledger_type",
+  "is_walk_in_business_source",
   "credit_card_information_section",
   "bank_name",
   "credit_card_number",
@@ -109,11 +110,17 @@
    "label": "City Ledger Type",
    "mandatory_depends_on": "eval:doc.auto_create_city_ledger_account ==1",
    "options": "City Ledger Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_walk_in_business_source",
+   "fieldtype": "Check",
+   "label": "Is Walk-In Business Source"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-20 12:13:49.951563",
+ "modified": "2024-01-23 16:28:06.233102",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Business Source",

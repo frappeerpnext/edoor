@@ -31,6 +31,7 @@
   "room_types",
   "room_type_alias",
   "room_numbers",
+  "is_walk_in",
   "section_break_21",
   "business_source",
   "business_source_type",
@@ -663,6 +664,12 @@
    "fieldtype": "Check",
    "label": "Is House Use",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_walk_in",
+   "fieldtype": "Check",
+   "label": "Is Walk-In"
   }
  ],
  "image_field": "guest_photo",
@@ -674,7 +681,7 @@
    "link_fieldname": "reservation"
   }
  ],
- "modified": "2023-11-26 11:41:38.408115",
+ "modified": "2024-01-23 16:24:09.278199",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation",

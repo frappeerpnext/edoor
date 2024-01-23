@@ -317,7 +317,8 @@ def generate_room_occupy(self =None, stay_name=None):
 					"drop_off": 1 if getdate(d)==getdate(self.departure_date) and is_drop_off ==1 else 0 ,
 					"rate_type":self.rate_type,
 					"is_complimentary":self.is_complimentary,
-					"is_house_use":self.is_house_use
+					"is_house_use":self.is_house_use,
+					"is_walk_in":self.is_walk_in
 				})
 			if occ_doc.is_stay_over==1 and occ_doc.is_arrival==1:
 				occ_doc.is_stay_over==0

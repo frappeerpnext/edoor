@@ -80,6 +80,7 @@ def get_report_data(filters):
 
 	#inhouse adult
 	report_data.append(occupy_data["in_house_adult"])
+
 	#inhouse child
 	report_data.append(occupy_data["in_house_child"])
 
@@ -91,6 +92,35 @@ def get_report_data(filters):
 		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
 		
 	})
+
+	# in-hopuse walk in adult
+	report_data.append({
+		"title": "Walk-In In-house Adult",
+		"current": occupy_data["walk_in_adult"]["current"],
+		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		
+	})
+	
+	# in-hopuse walk in child
+	report_data.append({
+		"title": "Walk-In In-house Child",
+		"current": occupy_data["walk_in_child"]["current"],
+		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		
+	})
+	# in-hopuse walk in pax
+	report_data.append({
+		"title": "Walk-In In-house Pax",
+		"current": (occupy_data["walk_in_child"]["current"] or 0) + (occupy_data["walk_in_adult"]["current"] or 0), 
+		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		
+	})
+
+
+
 
 
 	return report_data
@@ -104,7 +134,9 @@ def get_data_from_occupy_record(filters):
 			sum(type='Reservation' and is_complimentary=1)  as total_complimentary ,
 			sum(type='Reservation' and is_house_use=1)  as total_house_use,
 			sum(if(type='Reservation',adult,0))  as total_in_house_adult,
-			sum(if(type='Reservation',child,0))  as total_in_house_child
+			sum(if(type='Reservation',child,0))  as total_in_house_child,
+			sum(if(type='Reservation' and is_walk_in=1,adult,0))  as total_in_house_walk_in_adult,
+			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child
 
 		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s and is_active=1"""
 	
@@ -117,6 +149,8 @@ def get_data_from_occupy_record(filters):
 				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use"] or 0},
 				"in_house_adult":{"title":"In-house Adult", "current": data[0]["total_in_house_adult"] or 0},	
 				"in_house_child":{"title":"In-house Child", "current": data[0]["total_in_house_child"] or 0},	
+				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
+				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
 	}
 
 	#mtd
