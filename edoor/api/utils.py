@@ -90,6 +90,7 @@ def update_keyword(doc, method=None, *args, **kwargs):
 def update_comment_after_insert(doc, method=None, *args, **kwargs):
     if doc.comment_type=="Deleted":
         return
+    if doc.comment_type == "Workflow": return
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
     update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
@@ -185,7 +186,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
                 update_files.append("subject='Adding {}'".format(doc.comment_type))
 
     
-
+    
     frappe.db.sql("update `tabComment` set {} where name='{}'".format(",".join(update_files), doc.name))
     frappe.db.commit()
 

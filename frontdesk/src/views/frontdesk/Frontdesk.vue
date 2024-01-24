@@ -21,8 +21,7 @@
                     <ComWalkInReservation/>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
-                    
-                    
+ 
                 </div>
             </template>
         </ComHeader>
@@ -178,56 +177,6 @@ let advanceFilter = ref({
     floor: ""
 })
 
-function onClick() {
-   
-   const dialogRef = dialog.open(NewReservation, {
-       props: {
-           header: 'New FIT Reservation',
-           style: {
-               width: '80vw',
-           },
-           breakpoints: {
-               '960px': '100vw',
-               '640px': '100vw'
-           },
-           modal: true,
-           maximizable: true,
-           closeOnEscape: false,
-           position: "top"
-       },
-       onClose: (options) => {
-            
-           const data = options.data;
-           if (data != undefined) {
-               onViewReservationDetail(data.name)
-           }
-       }
-   });
-}
-
-
-function onViewReservationDetail(name) {
-   const dialogRef = dialog.open(ReservationDetail, {
-       data: {
-           name: name,
-           delay_load_data:1500
-       },
-       props: {
-           header: 'Reservation Detail',
-           contentClass: 'ex-pedd',
-           style: {
-               width: '80vw',
-           },
-           modal: true,
-           maximizable: true,
-           closeOnEscape: false,
-           position:"top"
-       },
-       onClose: (options) => {
-
-       }
-   });
-}
 const isFilter = computed(() => { 
     if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
         return true

@@ -1,5 +1,6 @@
 <template>
     <!-- {{ rs }} -->
+    <!-- {{ guest }} -->
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
 
         <div class="mb-3">
@@ -11,12 +12,12 @@
         <ComReservationStayPanel class="mb-3" title="Guest Information">
             <template #content>
                 <div class="grid">
-                    <div class="col-12 pt-2">
+                    <div class="col-12 xl:col-6 pt-2">
                         <label>Guest Name<span class="text-red-500">*</span></label><br />
                         <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Guest Name"
                             v-model="guest.customer_name_en" :maxlength="50" />
                     </div>
-                    <div class="col-12 pt-2">
+                    <div class="col-12 xl:col-6 pt-2">
                         <label>Company</label><br />
                         <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="Company"
                             v-model="guest.company_name" :maxlength="50" />
@@ -26,7 +27,7 @@
                         <ComAutoComplete v-model="guest.customer_group" class="w-full" placeholder="Guest Type"
                             doctype="Customer Group" />
                     </div>
-                    <div class="col-12 lg:col-6 pt-2">
+                    <div class="col-12 lg:col-6 xl:col-4 pt-2">
                         <label>Province</label><br />
                         <ComAutoComplete v-model="guest.province" class="w-full" placeholder="province" doctype="Province" />
                     </div>
@@ -35,7 +36,7 @@
                         <Dropdown v-model="guest.gender" :options="optionGender" placeholder="Gender" class="w-full" />
                     </div>
                     
-                    <div class="col-12 lg:col-6 xl:col-4 pt-2">
+                    <div class="col-12 lg:col-6  pt-2">
                         <label>Date of birth</label><br />
                         <Calendar class="p-inputtext-sm w-full" v-model="guest.date_of_birth" placeholder="Date of birth"
                             showIcon showButtonBar dateFormat="dd-mm-yy" :selectOtherMonths="true" />
@@ -136,6 +137,7 @@ function onLoad() {
             guest.value = doc
             guest.value.date_of_birth = doc.date_of_birth ? moment(doc.date_of_birth).toDate() : ''
             guest.value.expired_date = doc.expired_date ? moment(doc.expired_date).toDate() : ''
+            guest.value.gender = doc.gender
             loading.value = false
         })
         .catch((error) => {
