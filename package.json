@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/frappeerpnext/edoor/issues"
   },
-  "homepage": "https://github.com/frappeerpnext/edoor#readme"
+  "homepage": "https://github.com/frappeerpnext/edoor#readme",
+  "dependencies": {
+    "@varlet/ui": "^2.22.0"
+  }
 }

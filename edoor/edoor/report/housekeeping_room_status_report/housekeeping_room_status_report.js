@@ -1,7 +1,7 @@
-// Copyright (c) 2023, Tes Pheakdey and contributors
+// Copyright (c) 2024, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Arrival Stay Over Departure Guest"] = {
+frappe.query_reports["Housekeeping Room Status Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -23,34 +23,44 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname":"end_date",
-			"label": __("End Date"),
-			"fieldtype": "Date",
-			default:frappe.datetime.get_today(),
-			"reqd": 1,
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "business_source",
-			"label": __("Business Source"),
-			"fieldtype": "Link",
-			"options":"Business Source",
-			"on_change": function (query_report) {},
-		} ,
-		{
 			"fieldname": "room_types",
 			"label": __("Room Type"),
 			"fieldtype": "MultiSelectList",
 			get_data: function(txt) {
 				return frappe.db.get_link_options('Room Type', txt);
 			},
-			// get_data: function(txt) {
-			// 	return frappe.db.get_link_options('Room Type', txt).then((data) => {
-			// 		// Modify the data to include both room_type_id and room_type_name
-			// 		return data.map(item => ({ value: item.name, label: item.room_type }));
-			// 	});
-			// },
-			"on_change": function (query_report){}
+		},
+		{
+			"fieldname": "building",
+			"label": __("Building"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Building', txt);
+			},
+		},
+		{
+			"fieldname": "floor",
+			"label": __("Floor"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Floor', txt);
+			},
+		},
+		{
+			"fieldname": "housekeeper",
+			"label": __("Housekeeper"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Housekeeper', txt);
+			},
+		},
+		{
+			"fieldname": "housekeeping_status",
+			"label": __("Housekeeping Status"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return frappe.db.get_link_options('Housekeeping Status', txt);
+			},
 		},
 		{
 			"fieldname": "order_by",
@@ -78,7 +88,6 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		
 	],
 	onload: function(report) {
 		report.page.add_inner_button ("Preview Report", function () {

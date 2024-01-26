@@ -195,71 +195,6 @@ def update_comment_keyword(doc, method=None, *args, **kwargs):
         frappe.db.sql("update `tabComment` set custom_keyword=concat(ifnull(subject,''), ' ', ifnull(content,''), ' ', ifnull(reference_name,''),' ',ifnull(custom_item_description,''), ' ', ifnull(custom_note,'')  ) where name='{}'".format(doc.name))
         frappe.db.commit()
 
-def update_audit_trail_from_version(doc, method=None, *args, **kwargs):
-    
-    if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
-        submit_update_audit_trail_from_version(doc)
-        # frappe.enqueue("edoor.api.utils.submit_update_audit_trail_from_version", queue='short', doc=doc)
-
-def submit_update_audit_trail_from_version(doc):
-    if frappe.db.exists("Audit Trail Document",doc.ref_doctype,cache=True):
-        doctype = frappe.get_doc("Audit Trail Document", doc.ref_doctype)
-        data = json.loads(doc.data)
-        data_changed = []
-        if doc.ref_doctype == "Reservation Room Rate":
-            data_changed.append("<b>Date:</b> " +  frappe.db.get_value("Reservation Room Rate", doc.docname,"date").strftime('%d-%m-%Y'))
-
-        for d in data["changed"]:
-            if d[0] in [f.field_name for f in doctype.tracking_field] and ((d[1] or '')!='' or (d[2] or '')!=''):
-                field = [f  for f in doctype.tracking_field if f.field_name==d[0]][0]
-                if field.field_type=="Check":
-                    data_changed.append(f'<b>{field.label}</b>: {"Yes" if d[1]==1 else "No"} <b>to</b> {"Yes" if d[2]==1 else "No"}')
-                elif 'tax_' in field.field_name:
-                    ref_doc = frappe.get_doc(doc.ref_doctype,doc.docname)
-                    if field.field_name == 'tax_1_rate':
-                        data_changed.append(f'<b>{ref_doc.tax_1_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
-                    elif field.field_name == 'tax_1_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_1_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
-                    elif field.field_name == 'tax_2_rate':
-                        data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
-                    elif field.field_name == 'tax_2_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_2_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
-                    elif field.field_name == 'tax_2_rate':
-                        data_changed.append(f'<b>{ref_doc.tax_2_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
-                    
-                    elif field.field_name == 'tax_3_rate':
-                        data_changed.append(f'<b>{ref_doc.tax_3_name}</b>: {d[1]}% <b>to</b> {d[2]}%')
-                    elif field.field_name == 'tax_3_amount':
-                        data_changed.append(f'<b>{ref_doc.tax_3_name} Amount </b>: {d[1]} <b>to</b> {d[2]}')
-                        
-                else:
-                    if field.hide_old_value==1:
-                        data_changed.append(f'<b>{field.label}</b>: {d[2]}')
-                    else:
-                        data_changed.append(f'<b>{field.label}</b>: {d[1]} <b>to</b> {d[2]}')
-
-
-        if doc.ref_doctype == "Reservation Room Rate":
-            if len(data_changed)==1:
-                #we skip it cause have only 1 record is date
-                return
-
-        if len(data_changed)>0:
-            comment_doc = []
-            comment_doc.append({
-            "creation":doc.creation,
-            "subject": "Change Value",
-            "custom_audit_trail_type":"Updated",
-            "custom_icon":"pi pi-file-edit",
-            "reference_doctype":doc.ref_doctype,
-            "reference_name":doc.docname,
-            "content":", ".join(data_changed)  
-            })
-            # frappe.enqueue("edoor.api.utils.add_audit_trail", queue='long', data=comment_doc)
-            add_audit_trail(comment_doc, update_creation_date=True)
-
-
-    
 
 
 
@@ -821,6 +756,7 @@ def remove_temp_room_occupy(reservation):
     frappe.db.commit()
 
 def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
+    frappe.db.sql("delete from `tabFolio Transaction` where reservation_room_rate='{}'".format(rate.name))
     rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
     doc = {
         "doctype":"Folio Transaction",

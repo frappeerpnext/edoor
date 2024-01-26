@@ -694,7 +694,7 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
     
 
     #loop throw stay and add room charge to folio transaction
-    test = []
+    
     for s in stays:
         stay_doc = frappe.get_doc("Reservation Stay", s["stay_name"])
         folio = {}
@@ -715,7 +715,6 @@ def post_charge_to_folio_afer_check_in(working_day, reservation , stays):
                 
         room_rates = frappe.db.get_list("Reservation Room Rate",fields=["*"], filters={"reservation_stay":s["stay_name"],"date":["=",working_day["date_working_day"]]},order_by="date desc",page_length=1000)
         for r  in room_rates:
-            
             add_room_charge_to_folio(folio,r )
         
 

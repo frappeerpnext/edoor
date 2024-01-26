@@ -1,7 +1,7 @@
-// Copyright (c) 2023, Tes Pheakdey and contributors
+// Copyright (c) 2024, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Arrival Stay Over Departure Guest"] = {
+frappe.query_reports["No Show Cancel and Void Reservation Report"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -31,27 +31,20 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			"on_change": function (query_report) {},
 		},
 		{
+			"fieldname": "reservation_type",
+			"label": __("Reservation Type"),
+			"fieldtype": "Select",
+			"options":"\nFIT\nGIT",
+			"on_change": function (query_report) {},
+		} ,
+		 
+		{
 			"fieldname": "business_source",
 			"label": __("Business Source"),
 			"fieldtype": "Link",
 			"options":"Business Source",
 			"on_change": function (query_report) {},
 		} ,
-		{
-			"fieldname": "room_types",
-			"label": __("Room Type"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Room Type', txt);
-			},
-			// get_data: function(txt) {
-			// 	return frappe.db.get_link_options('Room Type', txt).then((data) => {
-			// 		// Modify the data to include both room_type_id and room_type_name
-			// 		return data.map(item => ({ value: item.name, label: item.room_type }));
-			// 	});
-			// },
-			"on_change": function (query_report){}
-		},
 		{
 			"fieldname": "order_by",
 			"label": __("Order By"),
@@ -78,7 +71,6 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		
 	],
 	onload: function(report) {
 		report.page.add_inner_button ("Preview Report", function () {
@@ -86,31 +78,38 @@ frappe.query_reports["Arrival Stay Over Departure Guest"] = {
 		});
 		setLinkField()
 	},
-	"formatter": function(value, row, column, data, default_formatter) {
-		
+	"formatter": function (value, row, column, data, default_formatter) {
+		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
-		var parser = new DOMParser(); // create a DOMParser object
-		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
-		var element = doc.querySelector("a"); // get the element by selector
-		if (data && data.is_group==1) {
-			
- 
-			if(element){
 
-				value =$(`<span>${element.dataset.value}</span>`);  
-			}else {
-				
-				value = $(`<span>${value}</span>`);
+
+
+		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
+
+
+		if (
+			(column.fieldtype || "") == "Int" ||
+			((column.fieldtype || "") == "Percent") ||
+			((column.fieldtype || "") == "Currency")
+		) {
+			if (origninal_value == 0) {
+				return "-"
 			}
-			
-			
-
-				var $value = $(value).css("font-weight", "bold");
-				value = $value.wrap("<p></p>").parent().html();
-			 
-		
 		}
-		
+
+
+
+		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+
+			value = $(`<span>${value}</span>`);
+
+			var $value = $(value).css("font-weight", "bold");
+
+
+			value = $value.wrap("<p></p>").parent().html();
+		}
+
+
 		return value;
 	},
 };

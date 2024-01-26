@@ -1,6 +1,6 @@
 import functools
 import re
-from edoor.api.utils import update_reservation, update_reservation_folio,submit_update_audit_trail_from_version, update_reservation_stay_and_reservation
+from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
@@ -46,7 +46,6 @@ def re_run_fail_jobs():
 
     jobs = [d for d in jobs if "exc_info" in d]
     jobs = [d for d in jobs  if  ("Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
-
     job_ids = []
     for j in jobs:
         try:
@@ -65,8 +64,7 @@ def re_run_fail_jobs():
                 post_charge_to_folio_afer_check_in(
                     reservation=job["kwargs"]["reservation"],
                     stays=job["kwargs"]["stays"],
-                    working_day=job["kwargs"]["working_day"],
-                    run_commit=True)
+                    working_day=job["kwargs"]["working_day"])
                 
 
             job_ids.append(j["job_id"])
@@ -344,30 +342,7 @@ def fix_generate_duplicate_room_occupy():
 
     
 
-@frappe.whitelist()
-def generate_audit_trail_from_version():
-    audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name')
-    version_data = frappe.db.get_list('Version',
-                        filters={
-                            'ref_doctype': ["in",audit_trail_documents],
-                            "custom_is_converted_to_audit_trail":0
-                        },
-                        fields=['name','ref_doctype', 'docname',"creation"],
-                        page_length=100
-                    )
- 
-    if len(version_data)> 0:
-        for v in version_data:
-            
-            if frappe.db.exists(v.ref_doctype, v.docname):
-                doc = frappe.get_doc("Version", v.name)
 
-                submit_update_audit_trail_from_version(doc)
-        
-        #update is converted
-        frappe.db.sql("update `tabVersion` set custom_is_converted_to_audit_trail=1 where name in %(names)s", {"names":[d.name for d in version_data]})
-        frappe.db.commit()
-        return version_data
 
 
 

@@ -429,7 +429,9 @@ function onOpenCloseShift() {
     } else {
         dialog.open(ComCloseShift, {
         data:{
-            name: doc.value.name
+            name: doc.value.name,
+            is_run_night_audit: dialogRef.value.data?.is_run_night_audit || 0
+
         },
         props: {
             header:"Close Shift",

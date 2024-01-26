@@ -259,7 +259,7 @@ def get_report_summary(filters, opening_data, data):
 			{"label": "Opening", "value": opening_data["net_total"],"datatype":"Currency"},
 			{"label": "Debit", "value": sum([d["debit"] for d in data ]), "indicator": "blue","datatype":"Currency"},
 			{"label": "Credit", "value": sum([d["credit"] for d in data ]), "indicator": "orange","datatype":"Currency"},
-			{"label": "Credit", "value":  opening_data["net_total"] +  sum([d["debit"] -  d["credit"] for d in data ]), "indicator": "green","datatype":"Currency"},
+			{"label": "Balance", "value":  opening_data["net_total"] +  sum([d["debit"] -  d["credit"] for d in data ]), "indicator": "green","datatype":"Currency"},
 			
 		]
 	return None

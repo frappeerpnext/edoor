@@ -241,7 +241,8 @@ function onClearCashCount() {
 }
 
 function onCloseShift() {
-
+     
+ 
     doc.value.cash_float.forEach(c => {
         const expected_cash = summary?.value.expected_cash.find(r => r.currency == c.currency)
         if (expected_cash) {
@@ -295,6 +296,7 @@ function onCloseShift() {
     })
 
     saveData.cash_count = cashCountSetting.value
+    saveData.is_run_night_audit =(dialogRef.value.data.is_run_night_audit || 0)
     saveData.cash_count.forEach(r => {
         r.total_amount = r.total_note * r.value
     })

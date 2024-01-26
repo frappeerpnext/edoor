@@ -133,7 +133,7 @@ def get_report_data(filters,data):
 
 	report_data = []
 
-	arrival = sorted(set([d["arrival_date"] for d in data]))
+	arrival = sorted(set([d["arrival_date"] for d in data if d['arrival_date'] >= start_date and d['arrival_date'] <= end_date]))
 	if arrival:	
 		report_data.append({
 				"indent":0,
@@ -187,7 +187,7 @@ def get_report_data(filters,data):
 				"is_group":1,
 			})
 		
-	departure = sorted(set([d["departure_date"] for d in data]))
+	departure = sorted(set([d["departure_date"] for d in data if d['departure_date'] >= start_date and d['departure_date'] <= end_date ]))
 	if departure:
 		report_data.append({
 				"indent":0,

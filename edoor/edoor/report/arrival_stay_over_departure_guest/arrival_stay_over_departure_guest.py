@@ -70,7 +70,25 @@ def get_filters(filters):
 			select distinct reservation_stay from `tabReservation Room Rate` rrr 
 			{}	
 		) """.format(sql,get_room_rate_filters(filters))
+	sql = sql + " order by {} {}".format(
+		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
+		filters.sort_order
+	)
 	return sql
+
+def get_order_field():
+	return [
+		{"label":"Created On","field":"rst.creation"},
+		{"label":"Reservation","field":"rst.reservation"},
+		{"label":"Reservation Stay","field":"rst.name"},
+		{"label":"Arrival Date","field":"rst.arrival_date"},
+		{"label":"Departure Date","field":"rst.departure_date"},
+		{"label":"Room Type","field":"rst.room_type_alias"},
+		{"label":"Business Source","field":"rst.business_source"},
+		{"label":"Reservation Status","field":"rst.reservation_status"},
+		{"label":"Last Update On","field":"rst.modified"},
+		]
+
 
 def get_room_rate_filters(filters):
 	sql = "where property=%(property)s "
@@ -131,14 +149,14 @@ def get_guest_data(filters):
 	return data
 
 def get_report_data(filters,data):
-	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d')
-	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d')
+	start_date = datetime.strptime(filters.start_date, '%Y-%m-%d').date()
+	end_date = datetime.strptime(filters.end_date, '%Y-%m-%d').date()
 	delta = end_date - start_date
 	stay_over_date=[datetime.strftime(start_date + timedelta(days=i), '%Y-%m-%d') for i in range(delta.days + 1)]
 
 	report_data = []
 
-	arrival = sorted(set([d["arrival_date"] for d in data]))
+	arrival =  sorted(set([d["arrival_date"] for d in data if d['arrival_date'] >= start_date and d['arrival_date'] <= end_date]))
 	if arrival:	
 		report_data.append({
 				"indent":0,
@@ -168,6 +186,7 @@ def get_report_data(filters,data):
 	stay_over = sorted(set(stay_over_date))
 	if stay_over:
 		date = [datetime.strptime(date, '%Y-%m-%d').date() for date in stay_over]
+		
 		report_data.append({
 				"indent":0,
 				"reservation": "Stay Over Guest",
@@ -193,7 +212,7 @@ def get_report_data(filters,data):
 				"is_group":1,
 			})
 		
-	departure = sorted(set([d["departure_date"] for d in data]))
+	departure = sorted(set([d["departure_date"] for d in data if d["departure_date"] >= start_date and d["departure_date"] <= end_date]))
 	if departure:
 		report_data.append({
 				"indent":0,

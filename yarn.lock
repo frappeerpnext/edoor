@@ -2,3 +2,46 @@
 # yarn lockfile v1
 
 
+"@popperjs/core@^2.11.6":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
+"@varlet/icons@2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@varlet/icons/-/icons-2.22.0.tgz#82c896b8d1fc2cef644a59ecb7782304b41fda60"
+  integrity sha512-0ECkj5+YewHq5qmgYOTukTTuHxO5zSESWdNmPQz/8CU1Z43wqd0ttxHP7uHSr90SMV4ggHLGklNCRUwMuB/i7Q==
+
+"@varlet/shared@2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@varlet/shared/-/shared-2.22.0.tgz#e0415c3f60efe8dd503a985d55d57982e88df70d"
+  integrity sha512-4gsH4XNOe5WZVu16sAi5ILOBBpWz0T8T7YC5TuKc4URsOyIyq+Fku/p9/pT84OmadOomztgiRPveqQSY0jmqNg==
+
+"@varlet/ui@^2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@varlet/ui/-/ui-2.22.0.tgz#c746f5a80bdc3e06291f60821e81f791aa28f585"
+  integrity sha512-5Ktxh23ILglEIePkVkX7X/nx7DotEKedZpSUQektApeghXGWZJKTZfJNAwX+1GqVGjnNa6ELktWYYW7piFpDEA==
+  dependencies:
+    "@popperjs/core" "^2.11.6"
+    "@varlet/icons" "2.22.0"
+    "@varlet/shared" "2.22.0"
+    "@varlet/use" "2.22.0"
+    dayjs "^1.10.4"
+    decimal.js "^10.2.1"
+
+"@varlet/use@2.22.0":
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/@varlet/use/-/use-2.22.0.tgz#05c40829e195568b7527144854a5864fbe9342d1"
+  integrity sha512-AS3dRe/ZR/JwjOhZ6EJPacVOg4P1L5+kZq7VLIbYOhNCYjMeYhBJIfJvqFUhNnlbPwYnZ6tfg50l1advkZ09tw==
+  dependencies:
+    "@varlet/shared" "2.22.0"
+
+dayjs@^1.10.4:
+  version "1.11.10"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
+  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
+
+decimal.js@^10.2.1:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/decimal.js/-/decimal.js-10.4.3.tgz#1044092884d245d1b7f65725fa4ad4c6f781cc23"
+  integrity sha512-VBBaLc1MgL5XpzgIP7ny5Z6Nx3UrRkIViUkPUdtl9aya5amy3De1gsUUSB1g3+3sExYNjCAsAznmukyxCb1GRA==

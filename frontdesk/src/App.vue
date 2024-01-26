@@ -64,15 +64,11 @@ const dialog = useDialog();
 const hasProperty = ref(false)
 
 if (localStorage.getItem("edoor_property") == null) {
-
     const user = JSON.parse(localStorage.getItem("edoor_user"))
-
     if (user?.property?.length == 1) {
         localStorage.setItem("edoor_property", JSON.stringify(user.property[0]))
         hasProperty.value = true
     }
-
-
 
 } else {
     hasProperty.value = true
@@ -108,6 +104,8 @@ const actionClickHandler = async function (e) {
                 showFolioDetail(data[1])
             } else if (data[0] == "view_cashier_shift_detail") {
                 showCashierShiftDetail(data[1])
+            } else if (data[0] == "view_cashier_shift_detail_from_run_night_audit") {
+                showCashierShiftDetail(data[1], 1)
             } else if (data[0] == "close_shift") {
                 openCloseShift()
           
@@ -495,10 +493,11 @@ function showFolioDetail(name) {
     });
 }
 
-function showCashierShiftDetail(name) {
+function showCashierShiftDetail(name,is_run_night_audit=0) {
     const dialogRef = dialog.open(ComCashierShiftDetail, {
         data: {
             name: name,
+            is_run_night_audit: is_run_night_audit
         },
         props: {
             header:"Cashier Shift Detail - " + name,
