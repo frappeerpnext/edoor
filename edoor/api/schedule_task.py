@@ -344,7 +344,7 @@ def fix_generate_duplicate_room_occupy():
 
 @frappe.whitelist()
 def generate_audit_trail_from_version():
-    audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name')
+    audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name',filters={"is_epos_audit_trail":0})
     version_data = frappe.db.get_list('Version',
                         filters={
                             'ref_doctype': ["in",audit_trail_documents],

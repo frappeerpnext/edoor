@@ -495,7 +495,15 @@ def update_fetch_from_field(self):
 		self.guest_name = ""
 		self.guest_type = ""
 		self.nationality = ""
+	
 
+	if self.reservation_stay:
+		if  not self.reservation_status:
+			self.reservation_status = frappe.db.get_value("Reservation Stay",self.reservation_stay,"reservation_status")
+
+		if not self.business_source:
+			self.business_source = frappe.db.get_value("Reservation Stay",self.reservation_stay,"business_source")
+			
 	if self.business_source:
 		self.business_source_type = frappe.db.get_value("Business Source", self.business_source,"business_source_type")
 	else:
