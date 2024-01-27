@@ -137,6 +137,9 @@ doc_events = {
 
 scheduler_events = {
     	"cron": {
+            "*/1 * * * *": [
+				"edoor.api.schedule_task.generate_audit_trail_from_version",
+			],
 			"*/5 * * * *": [
 				"edoor.api.schedule_task.five_minute_job",
 				"edoor.api.schedule_task.re_run_fail_jobs",

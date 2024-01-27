@@ -1,6 +1,6 @@
 import functools
 import re
-from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation
+from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
 from frappe.utils import today,add_to_date,getdate
@@ -342,6 +342,30 @@ def fix_generate_duplicate_room_occupy():
 
     
 
+@frappe.whitelist()
+def generate_audit_trail_from_version():
+    audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name')
+    version_data = frappe.db.get_list('Version',
+                        filters={
+                            'ref_doctype': ["in",audit_trail_documents],
+                            "custom_is_converted_to_audit_trail":0
+                        },
+                        fields=['name','ref_doctype', 'docname',"creation"],
+                        page_length=100
+                    )
+ 
+    if len(version_data)> 0:
+        for v in version_data:
+            
+            if frappe.db.exists(v.ref_doctype, v.docname):
+                doc = frappe.get_doc("Version", v.name)
+
+                submit_update_audit_trail_from_version(doc)
+        
+        #update is converted
+        frappe.db.sql("update `tabVersion` set custom_is_converted_to_audit_trail=1 where name in %(names)s", {"names":[d.name for d in version_data]})
+        frappe.db.commit()
+        return version_data
 
 
 

@@ -124,5 +124,23 @@
   "name": "Room Charge",
   "note": null,
   "sort_order": 100
+ },
+ {
+  "account_category": "POS Bill to Desk Folio",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-01-26 17:16:54.898701",
+  "name": "POS Bill to Desk Folio",
+  "note": null,
+  "sort_order": 0
+ },
+ {
+  "account_category": "POS Bill to City Ledger",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-01-26 11:29:28.533178",
+  "name": "POS Bill to City Ledger",
+  "note": null,
+  "sort_order": 0
  }
 ]
