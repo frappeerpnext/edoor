@@ -1,5 +1,6 @@
 
 import frappe
+from edoor.api.frontdesk import get_working_day
 from frappe import _
 from frappe.utils import date_diff,today ,add_months, add_days
 from frappe.utils.data import strip
@@ -10,33 +11,22 @@ import uuid
 def execute(filters=None):
 	# data = get_guest_data(filters)
 	# summary = get_summary(filters,data)
-	report_data = get_data(filters)
+	data = get_data(filters)
+	occupy_data = get_occupy_data(filters)
+	report_data = get_report_data(filters,data,occupy_data)
 	return get_columns(filters),report_data,None,None, None
 
-
-# def get_summary(filters,data):
-# 	get_count = {d['reservation'] for d in data}
-# 	if filters.show_summary:
-# 		return [
-# 			{ "label":"Total Room","value":len(data),"indicator":"red"},
-# 			{ "label":"Total Reservation","value":len(get_count),"indicator":"red"},
-# 			{ "label":"Total Room Nights","value":sum([d["room_nights"] for d in data ]),"indicator":"blue"},
-# 			{ "label":"Total Pax(A/C)","value":"{}/{}".format(sum([d["adult"] for d in data ]),sum([d["child"] for d in data]))},
-# 			{ "label":"Arrival Guest","value": len(data),"indicator":"red"},
-# 			# { "label":"Total Credit","value":len({d[''] for d in data}),"indicator":"green"},
-# 			{ "label":"Departure Guest","value":len(data),"indicator":"blue"},
-# 		]
 
 def get_columns(filters):
 	columns =   [
 		{"fieldname":"room_number", "label":"Room #",'align':'left',"width":130,"show_in_report":1,},
-		{"fieldname":"housekeeping_status", "label":"Status",'align':'left', "width":115,"show_in_report":1,},
+		{"fieldname":"housekeeping_status", "label":"Status",'align':'left', "width":160,"show_in_report":1,},
 		{'fieldname':'room_type','align':'left','label':'Room Type',"width":170,"show_in_report":1},
-		{'fieldname':'reservation_stay','label':'Stay #','fieldtype':'Link','options':"Reservation Stay","header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True,"show_in_report":1},
-		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":90,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
-		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":90,"show_in_report":1},
-		{'fieldname':'reservation_status','label':'Status','align':'center',"width":95,"show_in_report":1},
-		{'fieldname':'housekeeper','label':'Housekeeper','align':'left',"show_in_report":1,"width":90},
+		{'fieldname':'reservation_stay','label':'Stay #',"width":130,'fieldtype':'Link','options':"Reservation Stay","header_class":'text-center','post_message_action':"view_reservation_stay_detail","default":True,"show_in_report":1},
+		{"fieldname":"guest", "label":"Guest", "fieldtype":"Link","options":"Customer","width":130,"show_in_report":0,"post_message_action": "view_guest_detail","url":"/frontdesk/guest-detail"},
+		{"fieldname":"guest_name", "label":"Guest Name",'align':'left',"width":130,"show_in_report":1},
+		{'fieldname':'reservation_status','label':'Status','align':'center',"width":110,"show_in_report":1},
+		{'fieldname':'housekeeper','label':'Housekeeper','align':'left',"show_in_report":1,"width":100},
 	]
 	return columns
 
@@ -111,7 +101,7 @@ def get_filters(filters):
 	
 	
 	sql = sql + " order by {} {}".format(
-		[d for d in  get_order_field() if d["label"] == filters.order_by][0]["field"],
+		[d for d in  get_order_field_data() if d["label"] == filters.order_by][0]["field"],
 		filters.sort_order
 	)
 
@@ -128,13 +118,14 @@ def get_order_field_data():
 		{"label":"Reservation Status","field":"rc.reservation_status"},
 		{"label":"Last Update On","field":"rc.modified"},
 		]
-def get_reservation_stay_data(filters):
+def get_occupy_data(filters):
 	sql ="""
       select 
             date,
             room_id,
             is_arrival,                           
-            is_departure, 
+            is_departure,
+			is_active,
             reservation_stay,                      
             reservation_status,
             type,
@@ -149,10 +140,38 @@ def get_reservation_stay_data(filters):
 	occupy_data =   frappe.db.sql(sql,filters,as_dict=1)
 	return occupy_data
 
-def get_report_date(filters,data,occupy_data):
-	report_data = []
+def get_report_data(filters,data,occupy_data):
+	working_day = get_working_day(filters["property"])
 	
+	for d in occupy_data:
+		data_room = [r for r in data if r['name']==d['room_id']]
+		room = None
+		if data_room:
+			room = data_room[0]
+			
+			if room:
+				
+				if d.get("type") =="Reservation":
+					room['reservation_stay'] = d['reservation_stay']
+					room['reservation_status'] = d['reservation_status']
 
-	return report_data
+					if d['is_arrival'] == 1:
+						if working_day["date_working_day"] == d["date"] and d["reservation_status"]=="Reserved":
+							room['reservation_status'] = "Arrival"
+					elif  d["is_departure"] == 1 and d["reservation_status"] in ["In-house","Reserved"]:
+						room["reservation_status"] = "Departure"
+					elif d["is_arrival"]==0 and d["is_departure"] ==0 and d["reservation_status"] in ["In-house"]:
+						room["reservation_status"] = "Stay Over"
+
+					if d["reservation_stay"]:
+						guest, guest_name = frappe.db.get_value('Reservation Stay', d["reservation_stay"] , ['guest', 'guest_name'])
+						room["guest"] =guest
+						room["guest_name"] =guest_name
+				else:
+					room["room_block"] = d["stay_room_id"]
+					room["housekeeping_status"] = frappe.db.get_single_value("eDoor Setting","room_block_status")
+					room["status_color"] = frappe.db.get_single_value("eDoor Setting","room_block_color")
+
+	return data
 
 

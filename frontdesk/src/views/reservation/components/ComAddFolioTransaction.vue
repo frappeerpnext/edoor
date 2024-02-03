@@ -132,10 +132,10 @@
                             <div v-if="doc.target_transaction_number" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
                                     <span class="text-500 font-italic">You Selected</span> {{ doc.target_transaction_number }}  
-                                    <span v-if="doc.selected_target_transaction_data?.description">
+                                    <!-- <span v-if="doc.selected_target_transaction_data?.description != doc.target_transaction_number">
                                         {{ doc.selected_target_transaction_data?.description }}
                                      
-                                    </span>
+                                    </span> -->
  
 
                                 </div>

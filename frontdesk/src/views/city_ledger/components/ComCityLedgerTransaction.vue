@@ -135,13 +135,14 @@
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
+                            
                             <Button v-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
                                 @click="onOpenLink(c, slotProps.data)" link>
                                 {{ slotProps.data[c.fieldname] }}
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
                                 <span v-if="c.extra_field">{{ slotProps.data[c.extra_field] }} </span>
                             </Button>
-                            <span v-else-if="c.fieldtype == 'Date'">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
+                            <span v-else-if="c.fieldtype == 'Date'" style="color: black;">{{ moment(slotProps.data[c.fieldname]).format("DD-MM-YYYY") }}
                             </span>
                             
                             <ComTimeago v-else-if="c.fieldtype == 'Timeago'" :date='slotProps.data[c.fieldname]' />
@@ -152,8 +153,7 @@
                                 
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'Status'" class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                                }}
+                            :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]}}
                             </span>
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />

@@ -2166,7 +2166,9 @@ def update_room_rate(room_rate_names= None,data=None,reservation_stays=None):
             status = frappe.db.get_value("Reservation Stay",s,"reservation_status")
             if frappe.db.get_value("Reservation Status",status, "allow_user_to_edit_information")==0:
                 frappe.throw("Reservation Stay: {0} is {1}. {1} reservation is not allow to change information".format(s, status) )
- 
+    else:
+        reservation_stays.append(data["reservation_stay"])
+
     if  len(room_rate_names) ==0:
         room_rate_names.append(data["name"])
     for d in room_rate_names:

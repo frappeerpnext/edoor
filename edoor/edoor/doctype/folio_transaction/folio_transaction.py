@@ -125,20 +125,21 @@ class FolioTransaction(Document):
 			if not working_day["name"]:
 				frappe.throw("Please start working day")
 			
-			if not working_day["cashier_shift"]["name"]:
-				frappe.throw("Please start cashier shift")
+			if not self.transaction_type =='Cashier Shift':
+				if not working_day["cashier_shift"]["name"]:
+					frappe.throw("Please start cashier shift")
 
 			#validate record for back date trasaction
 
 			if getdate(working_day["date_working_day"])> getdate(self.posting_date):
 				check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
 
-
 			
 
 			self.working_day = working_day["name"]
 			self.working_date = working_day["date_working_day"]
-			self.cashier_shift = working_day["cashier_shift"]["name"]
+			if not self.transaction_type =='Cashier Shift':
+				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 			#check if not guest selected then add reservation folio guest to this folio transaction
 			if self.transaction_type == "Reservation Folio":
@@ -503,7 +504,7 @@ def update_fetch_from_field(self):
 
 		if not self.business_source:
 			self.business_source = frappe.db.get_value("Reservation Stay",self.reservation_stay,"business_source")
-			
+
 	if self.business_source:
 		self.business_source_type = frappe.db.get_value("Business Source", self.business_source,"business_source_type")
 	else:

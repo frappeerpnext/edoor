@@ -3,6 +3,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation",
+  "is_epos_audit_trail": 0,
   "modified": "2023-11-08 12:29:31.498574",
   "name": "Reservation",
   "tracking_field": [
@@ -147,6 +148,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Stay",
+  "is_epos_audit_trail": 0,
   "modified": "2023-12-06 11:13:35.138823",
   "name": "Reservation Stay",
   "tracking_field": [
@@ -453,6 +455,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Folio",
+  "is_epos_audit_trail": 0,
   "modified": "2023-10-31 15:26:02.594726",
   "name": "Reservation Folio",
   "tracking_field": [
@@ -471,6 +474,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Folio Transaction",
+  "is_epos_audit_trail": 0,
   "modified": "2023-11-17 20:33:47.785483",
   "name": "Folio Transaction",
   "tracking_field": [
@@ -606,6 +610,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Reservation Room Rate",
+  "is_epos_audit_trail": 0,
   "modified": "2023-12-05 09:40:36.356045",
   "name": "Reservation Room Rate",
   "tracking_field": [
@@ -750,6 +755,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Room Block",
+  "is_epos_audit_trail": 0,
   "modified": "2023-11-04 11:58:22.936123",
   "name": "Room Block",
   "tracking_field": [
@@ -831,6 +837,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Deposit Ledger",
+  "is_epos_audit_trail": 0,
   "modified": "2023-11-17 20:14:40.072506",
   "name": "Deposit Ledger",
   "tracking_field": [
@@ -894,6 +901,7 @@
   "docstatus": 0,
   "doctype": "Audit Trail Document",
   "doctype_name": "Cashier Shift",
+  "is_epos_audit_trail": 0,
   "modified": "2023-11-26 18:29:21.131591",
   "name": "Cashier Shift",
   "tracking_field": [
@@ -948,6 +956,314 @@
     "hide_old_value": 0,
     "label": "Closed Note",
     "parent": "Cashier Shift",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Membership",
+  "is_epos_audit_trail": 1,
+  "modified": "2024-01-27 11:33:31.812447",
+  "name": "Membership",
+  "tracking_field": [
+   {
+    "field_name": "posting_date",
+    "field_type": "Date",
+    "hide_old_value": 0,
+    "label": "Posting Date",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference_no",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reference No",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "customer",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Member",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "member_name",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Member Name",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "membership",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Membership Option",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "start_date",
+    "field_type": "Date",
+    "hide_old_value": 0,
+    "label": "Start Date",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "end_date",
+    "field_type": "Date",
+    "hide_old_value": 0,
+    "label": "End Date",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "is_delay_access",
+    "field_type": "Check",
+    "hide_old_value": 0,
+    "label": "Delay Access",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "delay_access",
+    "field_type": "Int",
+    "hide_old_value": 0,
+    "label": "Delay Duration",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "delay_access_base_on",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Delay Duration Base On",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Small Text",
+    "hide_old_value": 0,
+    "label": "Note",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "max_access",
+    "field_type": "Int",
+    "hide_old_value": 0,
+    "label": "Max Access",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "personal_trainer",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Trainer",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "trainer_name_en",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Trainer Name",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "trainer_note",
+    "field_type": "Small Text",
+    "hide_old_value": 0,
+    "label": "Trainer Note",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "time_training",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Training Time",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "trainer_fee_percentage",
+    "field_type": "Float",
+    "hide_old_value": 0,
+    "label": "Training Fee (%)",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "price",
+    "field_type": "Currency",
+    "hide_old_value": 0,
+    "label": "Price",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Discount Type",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "discount",
+    "field_type": "Float",
+    "hide_old_value": 0,
+    "label": "Discount",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "grand_total",
+    "field_type": "Currency",
+    "hide_old_value": 0,
+    "label": "Grand Total",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "total_paid",
+    "field_type": "Currency",
+    "hide_old_value": 0,
+    "label": "Total Paid",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "balance",
+    "field_type": "Currency",
+    "hide_old_value": 0,
+    "label": "Balance",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "docstatus",
+    "field_type": "Int",
+    "hide_old_value": 0,
+    "label": "Document Status",
+    "parent": "Membership",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Audit Trail Document",
+  "doctype_name": "Membership Payment",
+  "is_epos_audit_trail": 1,
+  "modified": "2024-01-27 11:42:18.377063",
+  "name": "Membership Payment",
+  "tracking_field": [
+   {
+    "field_name": "posting_date",
+    "field_type": "Date",
+    "hide_old_value": 0,
+    "label": "Posting Date",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "reference",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Reference",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "payment_type",
+    "field_type": "Data",
+    "hide_old_value": 0,
+    "label": "Payment Type",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "input_amount",
+    "field_type": "Float",
+    "hide_old_value": 0,
+    "label": "Input Amount",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "payment_amount",
+    "field_type": "Currency",
+    "hide_old_value": 0,
+    "label": "Payment Amount",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "exchange_rate",
+    "field_type": "Float",
+    "hide_old_value": 0,
+    "label": "Exchange Rate",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "docstatus",
+    "field_type": "Int",
+    "hide_old_value": 0,
+    "label": "Document Status",
+    "parent": "Membership Payment",
+    "parentfield": "tracking_field",
+    "parenttype": "Audit Trail Document"
+   },
+   {
+    "field_name": "note",
+    "field_type": "Small Text",
+    "hide_old_value": 0,
+    "label": "Note",
+    "parent": "Membership Payment",
     "parentfield": "tracking_field",
     "parenttype": "Audit Trail Document"
    }

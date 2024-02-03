@@ -81,9 +81,9 @@ frappe.query_reports["Monthly Availability Chart"] = {
 	]
 	,
 	"formatter": function (value, row, column, data, default_formatter) {
+		
 		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
-
 
 		if (
 			(column.fieldtype || "") == "Int" ||

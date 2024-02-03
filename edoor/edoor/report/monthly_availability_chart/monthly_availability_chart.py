@@ -130,6 +130,7 @@ def get_report_data(filters):
 		
 	
 		for rt in room_types:
+			
 			rooms = copy.deepcopy([d for d in data if d["room_type_id"]==rt[0]])
 
 			current_month_data = [d for d in  occupy_data if  int(getdate(d["date"]).strftime('%m')) == int(m["month_number"]) and d["room_type_id"]==rt[0]]

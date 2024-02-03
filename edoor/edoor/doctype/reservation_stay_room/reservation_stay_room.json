@@ -450,7 +450,6 @@
   {
    "fieldname": "hide_section_section",
    "fieldtype": "Section Break",
-   "hidden": 1,
    "label": "Hide Section"
   },
   {
@@ -544,7 +543,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-11-25 09:54:14.093137",
+ "modified": "2024-01-28 16:38:35.969188",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay Room",

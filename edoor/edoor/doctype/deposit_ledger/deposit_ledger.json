@@ -39,7 +39,7 @@
    "fieldname": "naming_series",
    "fieldtype": "Select",
    "label": "Folio Number",
-   "options": "DF.YYYY.-.####"
+   "options": "DL.YYYY.-.####"
   },
   {
    "fieldname": "posting_date",
@@ -183,7 +183,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-21 08:42:28.490150",
+ "modified": "2024-02-02 11:25:32.449711",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Deposit Ledger",

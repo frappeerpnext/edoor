@@ -68,9 +68,11 @@
                              
 
                                 <template v-for="(item, index) in slotProps.data.room_numbers.split(',')" :key="index">
+                                    <div class="inline-block overflow-hidden text-overflow-ellipsis max-w-10rem">
                                     <span>{{ item }}</span>
                                     <span v-if="index != Object.keys(slotProps.data.room_numbers.split(',')).length - 1">,
                                     </span>
+                                    </div>
                                 </template>
                             </div>
                             <div v-tippy="slotProps.data.room_type_alias" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'room_type'" v-if="slotProps?.data && slotProps?.data?.room_type_alias">

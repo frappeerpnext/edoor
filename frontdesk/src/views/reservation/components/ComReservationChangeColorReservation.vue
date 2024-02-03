@@ -1,7 +1,7 @@
 <template>
     <ComOverlayPanelContent title="Change Color" :loading="loading" @onSave="onSave" @onCancel="emit('onClose')">
-        <div> 
-            <ComColorPicker v-model="color"/>
+        <div>
+            <ComColorPicker v-model="color" />
         </div>
     </ComOverlayPanelContent>
 </template>     
@@ -13,21 +13,22 @@ const rs = inject('$reservation');
 const loading = ref(false)
 const reservation = ref(JSON.parse(JSON.stringify(rs.reservation)))
 const color = ref(reservation.value.group_color)
-function onSave(){
+function onSave() {
     loading.value = true
     postApi('reservation.update_group_color',
         {
             data: {
-                reservation:reservation.value.name, 
-                group_color:color.value || ''
+                reservation: reservation.value.name,
+                group_color: color.value || ''
             }
-        }).then((r)=>{
+        }).then((r) => {
             rs.reservation = r.message
             loading.value = false
+            window.postMessage({ action: "Frontdesk" }, "*")
             rs.LoadReservation(reservation.value.name, false);
             emit('onClose')
-    }).catch(()=>{
-        loading.value = false
-    })
+        }).catch(() => {
+            loading.value = false
+        })
 }
 </script>

@@ -36,15 +36,6 @@
   "sort_order": 900
  },
  {
-  "account_category": "Room Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:12:28.091900",
-  "name": "Room Discount",
-  "note": null,
-  "sort_order": 200
- },
- {
   "account_category": "City Ledger",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -61,15 +52,6 @@
   "name": "Other Charge Discount",
   "note": null,
   "sort_order": 700
- },
- {
-  "account_category": "POS Bill to Room",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:05.093149",
-  "name": "POS Bill to Room",
-  "note": null,
-  "sort_order": 1000
  },
  {
   "account_category": "Service Charge",
@@ -90,6 +72,33 @@
   "sort_order": 500
  },
  {
+  "account_category": "POS Bill to Room",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:05.093149",
+  "name": "POS Bill to Room",
+  "note": null,
+  "sort_order": 1000
+ },
+ {
+  "account_category": "Room Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:11:54.619116",
+  "name": "Room Charge",
+  "note": null,
+  "sort_order": 100
+ },
+ {
+  "account_category": "Room Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:12:28.091900",
+  "name": "Room Discount",
+  "note": null,
+  "sort_order": 200
+ },
+ {
   "account_category": "Folio Transfer",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -108,24 +117,6 @@
   "sort_order": 600
  },
  {
-  "account_category": "Payment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 16:59:46.108506",
-  "name": "Payment",
-  "note": "a",
-  "sort_order": 1300
- },
- {
-  "account_category": "Room Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:11:54.619116",
-  "name": "Room Charge",
-  "note": null,
-  "sort_order": 100
- },
- {
   "account_category": "POS Bill to Desk Folio",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -133,6 +124,15 @@
   "name": "POS Bill to Desk Folio",
   "note": null,
   "sort_order": 0
+ },
+ {
+  "account_category": "Payment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 16:59:46.108506",
+  "name": "Payment",
+  "note": "a",
+  "sort_order": 1300
  },
  {
   "account_category": "POS Bill to City Ledger",

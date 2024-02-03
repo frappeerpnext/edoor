@@ -1,8 +1,8 @@
 <template>
-    <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="'Walk-in Reservataion'" @click="onClick" label="Walk-in reservation" class="d-bg-set btn-inner-set-icon border-none">
+    <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="'Walk-in Reservataion'" @click="onClick" label="Walk-In Guest" class="d-bg-set btn-inner-set-icon border-none">
         <!-- <img class="mr-2" :src="iconEdoorNewReservation"> -->
         <ComIcon icon="iconWalkIn" style="width:30px;" height="20px"></ComIcon>
-        Walk-in Reservation
+        Walk-In Guest
     </Button>
 </template>
 <script setup>

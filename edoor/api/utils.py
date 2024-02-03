@@ -13,6 +13,8 @@ import calendar
 import urllib.parse
 import time
 import copy
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 @frappe.whitelist()
 def get_working_day(property = ''):
@@ -596,10 +598,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
             )
 
         folio_data = frappe.db.sql(sql_folio, as_dict=1)
-
-
-
-
+ 
         
         doc.total_debit =  Enumerable(folio_data).sum(lambda x: x.debit or 0)
         doc.total_credit=  Enumerable(folio_data).sum(lambda x: x.credit or 0)
@@ -617,7 +616,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 select 
                     min(rate) as rate,
                     min(input_rate) as input_rate,
-                    avg(total_rate) as adr,
+                    sum(total_rate)/count(name) as adr,
                     sum(discount_amount) as discount_amount,
                     sum(tax_1_amount) as tax_1_amount,
                     sum(tax_2_amount) as tax_2_amount,
@@ -645,6 +644,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                 stay.tax_3_amount =d["tax_3_amount"] or  0
                 stay.total_tax =  d["total_tax"] or  0
                 
+             
                
         #update is_complimentary
         sql = "select max(is_complimentary) as is_complimentary, max(is_house_use) as is_house_use from `tabReservation Room Rate` where reservation_stay='{}'".format(doc.name)
@@ -897,6 +897,7 @@ def clear_reservation():
     frappe.db.sql("delete from `tabDesk Folio`")
     frappe.db.sql("delete from `tabCashier Shift Cash Count`")
     frappe.db.sql("delete from `tabDaily Property Data`")
+    frappe.db.sql("delete from `tabAdditional Stay Guest`")
 
     frappe.db.sql("delete from `tabComment` where reference_doctype in  ('Reservation','Reservation Stay','Reservation Stay Room','Reservation Room Rate','Temp Room Occupy','Room Occupy','Folio Transaction','Reservation Folio','Sale Product','Sale Payment','Sale','Working Day','Cashier Shift','Frontdesk Note','Room Block')")
     frappe.db.sql("delete from `tabComment` where custom_is_note=1")
@@ -1428,3 +1429,28 @@ def update_room_status_by_reservation_stay(name):
             
         frappe.db.commit()
 
+
+@frappe.whitelist()
+def run_me():
+    import os
+
+    current_directory = os.getcwd()
+ 
+    # Define the scope of the credentials
+    scope = ["https://spreadsheets.google.com/feeds",
+              "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive.file",
+                 "https://www.googleapis.com/auth/drive"]
+    # Define the credentials
+    creds = ServiceAccountCredentials.from_json_keyfile_name('/home/erpuser/frappe_2024/apps/edoor/edoor/api/basic-strata-252303-3a01b0d60c6c.json', scope)
+
+    # Authorize the client
+    client = gspread.authorize(creds)
+
+    # Open the Google Sheet
+    sheet = client.open('New Spreadsheet 168').sheet1
+
+    # Append data to the Google Sheet
+    data = frappe.db.sql("select name, product_name_en from `tabProduct`")
+    
+    sheet.append_rows(data)

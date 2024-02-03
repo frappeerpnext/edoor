@@ -1,7 +1,7 @@
 // Copyright (c) 2024, Tes Pheakdey and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Housekeeping Room Status Report"] = {
+frappe.query_reports["End of Day Detail"] = {
 	"filters": [
 		{
 			fieldname: "property",
@@ -23,70 +23,16 @@ frappe.query_reports["Housekeeping Room Status Report"] = {
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname": "room_types",
-			"label": __("Room Type"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Room Type', txt);
-			},
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "building",
-			"label": __("Building"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Building', txt);
-			},
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "floor",
-			"label": __("Floor"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Floor', txt);
-			},
-		},
-		{
-			"fieldname": "housekeeper",
-			"label": __("Housekeeper"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Housekeeper', txt);
-			},
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "housekeeping_status",
-			"label": __("Housekeeping Status"),
-			"fieldtype": "MultiSelectList",
-			get_data: function(txt) {
-				return frappe.db.get_link_options('Housekeeping Status', txt);
-			},
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "order_by",
-			"label": __("Order By"),
-			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
-			default:"Last Update On",
+			"fieldname": "group_by_ledger_name",
+			"label": __("Group By Ledger Name"),
+			"fieldtype": "Check",
+			default:true,
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname": "sort_order",
-			"label": __("Sort Order"),
-			"fieldtype": "Select",
-			"options": "ASC\nDESC",
-			default:"ASC",
-			hide_in_filter:1,
-			"on_change": function (query_report) {},
-		},
-		{
-			"fieldname": "show_summary",
-			"label": __("Show Summary"),
+			"fieldname": "show_account_code",
+			"label": __("Show Account Code"),
 			"fieldtype": "Check",
 			default:true,
 			hide_in_filter:1,
@@ -100,12 +46,56 @@ frappe.query_reports["Housekeeping Room Status Report"] = {
 		setLinkField()
 	},
 	"formatter": function(value, row, column, data, default_formatter) {
-
+		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
+		 
+
+		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
+		if (!value.toString().includes("text-align")){
+			value = "<div style='text-align:" + (column.align || "left") + ";'>" + value + "</div>"
+		}
+		
+		if (
+			(column.fieldtype || "") == "Int" ||
+			((column.fieldtype || "") == "Percent") ||
+			((column.fieldtype || "") == "Currency")
+		) {
+			if (origninal_value == 0) {
+				return "<div style='text-align:" + (column.align || "left") + ";'>-</div>"
+			}
+		}
+
 		var parser = new DOMParser(); // create a DOMParser object
 		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
 		var element = doc.querySelector("a"); // get the element by selector
-	
+		if (data && data.indent==0 ) {
+			
+			if(element){
+
+				value =$(`<span>${element.dataset.value}</span>`);  
+			}else {
+				
+				value = $(`<span>${value}</span>`);
+			}
+			 
+				var $value = $(value).css("font-weight", "bold");
+				value = $value.wrap("<p></p>").parent().html();
+			 
+		
+		}else if (data && data.indent==1 ) {
+			
+			if(element){
+
+				value =$(`<span>${element.dataset.value}</span>`);  
+			}else {
+				
+				value = $(`<span>${value}</span>`);
+			}
+			 
+				var $value = $(value).css("font-weight", "bold");
+				value = $value.wrap("<p></p>").parent().html();
+		}
+		
 		return value;
 	},
 };
@@ -130,5 +120,4 @@ function setLinkField() {
 		};
 
 	}
-
 }
