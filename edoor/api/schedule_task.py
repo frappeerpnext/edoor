@@ -256,6 +256,9 @@ def run_queue_job():
     update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
     update_keyword([d for d in data if d["action"] =="update_keyword"])
 
+    frappe.db.commit()
+    
+
 @frappe.whitelist()
 def update_fetch_from_field(data):
     for x in data:

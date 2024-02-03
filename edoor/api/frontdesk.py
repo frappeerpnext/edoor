@@ -1099,7 +1099,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
     working_day = get_working_day(property)
 
     now = getdate(working_day["date_working_day"])
-    
+
     start_date = getdate( datetime(now.year, now.month, 1))
 
     end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
@@ -1421,12 +1421,12 @@ def get_room_chart_data(property,group_by,start_date,end_date):
 @frappe.whitelist()
 def get_working_day(property = ''):
     
-    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}'  order by creation desc limit 1".format(property),as_dict=1)
+    working_day = frappe.db.sql("select  posting_date as date,name,pos_profile from `tabWorking Day` where business_branch = '{0}'  order by posting_date desc, creation desc limit 1".format(property),as_dict=1)
 
     cashier_shift = None
     
     if len(working_day)>0:
-        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
+        data = frappe.db.sql("select creation, shift_name,name from `tabCashier Shift` where business_branch = '{}' and working_day='{}' and pos_profile='{}' and is_closed =0 and is_edoor_shift =1  ORDER BY posting_date desc, creation desc limit 1".format(property,working_day[0]["name"],working_day[0]["pos_profile"]),as_dict=1)
     
         
         if len(data)>0:
