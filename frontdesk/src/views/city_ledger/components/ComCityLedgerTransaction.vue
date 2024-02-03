@@ -135,8 +135,10 @@
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
-                            
-                            <Button v-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
+                            <button v-if="c.fieldname=='name'" @click="onOpenLink(c, slotProps.data)"  class="link_line_action1 auto_post">{{
+                        slotProps.data?.name }}</button>
+
+                            <Button v-else-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
                                 @click="onOpenLink(c, slotProps.data)" link>
                                 {{ slotProps.data[c.fieldname] }}
                                 <span v-if="c.extra_field_separator" v-html="c.extra_field_separator"> </span>
@@ -635,3 +637,11 @@ const onCloseColumn = () => {
 
 
 </script>
+
+
+<style scoped>
+.link_line_action1.auto_post{
+    border: 1px dashed #ff3720 !important;
+    color: #ff3720 !important;
+}
+</style>

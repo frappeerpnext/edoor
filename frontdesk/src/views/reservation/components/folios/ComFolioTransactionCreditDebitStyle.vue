@@ -13,7 +13,7 @@
             </Column>
             <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" class="link_line_action1">{{
+                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" class="link_line_action1 auto_post">{{
                         slotProps.data?.name }}</button>
                 </template>
             </Column>
@@ -92,12 +92,7 @@
                             <CurrencyFormat  v-if="can_view_rate" :value="selectedFolio.total_credit" />
                         </template>
                     </Column>
-<!-- 
-                    <Column footerStyle="text-align:right">
-                        <template #footer>
-                            <CurrencyFormat :value="totalBalance" />
-                        </template>
-                    </Column> -->
+ 
 
 
                     <Column footerStyle="text-align:right">
@@ -220,9 +215,7 @@ const rowStyleClass = (r) => {
     if (!r.name) {
         classRow = classRow + "ui-helper-hidden "
     } else {
-        if (r.is_auto_post) {
-            classRow = classRow + ("auto-post ")
-        }
+       
         if (r.debit > 0) {
             classRow = classRow + ("row-debit ")
         }
@@ -339,5 +332,9 @@ onUnmounted(() => {
 <style>
 .ui-helper-hidden .p-selection-column .p-checkbox {
     display: none !important;
+}
+.link_line_action1.auto_post{
+    border: 1px dashed #ff3720 !important;
+    color: #ff3720 !important;
 }
 </style>

@@ -14,7 +14,7 @@
             <Column selectionMode="multiple" headerStyle="width: 3rem"  v-if="showCheckbox"/>
             <Column field="name" header="Folio Transaction" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1">{{slotProps.data?.name}}</button>
+                    <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1 auto_post">{{slotProps.data?.name}}</button>
                 </template>
             </Column>
             <Column field="posting_date" header="Date" headerClass="text-center" bodyClass="text-center">
@@ -427,12 +427,9 @@ onUnmounted(()=>{
         display: none !important;
     }
     
-    .auto-post td span, .auto-post td {
-        color: var(--bg-og-color-hover) !important;
-    }
-    .auto-post td button.link_line_action1{
-        border: 1px dashed var(--bg-og-color-hover) !important;
-        color: var(--bg-og-color-hover) !important;
-    }
+    .link_line_action1.auto_post{
+        border: 1px dashed #ff3720 !important;
+        color: #ff3720 !important;
+        }
 </style>
  

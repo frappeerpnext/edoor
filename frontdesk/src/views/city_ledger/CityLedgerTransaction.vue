@@ -86,6 +86,8 @@
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
                         :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
+                          
+                           
                             <Button v-if="c.fieldtype == 'Link'" :class="'p-0 ' + (slotProps.data[c.fieldname] != '' ? 'link_line_action1' : '')" @click="onOpenLink(c, slotProps.data)"
                                 link>
                                 {{ slotProps.data[c.fieldname] }}
@@ -400,3 +402,10 @@ const onCloseColumn = () => {
     opShowColumn.value.hide()
 }
 </script>
+
+<style scoped>
+    .link_line_action1.auto_post{
+        border: 1px dashed #ff3720 !important;
+        color: #ff3720 !important;
+    }
+</style>
