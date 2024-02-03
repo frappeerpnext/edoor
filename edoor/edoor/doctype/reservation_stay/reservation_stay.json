@@ -556,9 +556,8 @@
   },
   {
    "fieldname": "note_by",
-   "fieldtype": "Link",
-   "label": "Note By",
-   "options": "User"
+   "fieldtype": "Data",
+   "label": "Note By"
   },
   {
    "fieldname": "note_modified",
@@ -883,7 +882,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2024-01-23 16:23:13.953025",
+ "modified": "2024-02-03 11:16:25.728825",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

@@ -1096,9 +1096,10 @@ def get_house_keeping_status(property, working_day):
 
 @frappe.whitelist()
 def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Series",show_occupancy_only=False,view_chart_type="line"):
-    
+    working_day = get_working_day(property)
 
-    now = datetime.now()
+    now = getdate(working_day["date_working_day"])
+    
     start_date = getdate( datetime(now.year, now.month, 1))
 
     end_date = getdate( now + relativedelta(day=1, months=1, days=-1))
