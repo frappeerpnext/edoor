@@ -164,6 +164,19 @@
                     </div>
                 </div>   
             </div>
+            <div class="col mt-4"  v-if="hasFilter('show_summary')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Show Summary</label>
+                    </div>
+                    <div>
+                        <Checkbox input-id="filter_is_active" class="mx-3" v-model="filter.show_summary" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
+            </div>
             <div class="col" v-if="hasFilter('guest')">
                 <label>Guest</label><br/>
                 <ComSelect        class="auto__Com_Cus w-full" 
@@ -281,6 +294,7 @@ const filter = ref({
     order_by:"Last Update On",
     audit_order:"Last Update On",
     is_active_reservation: "1" ,
+    show_summary: "1" ,
     sort_order: "ASC",
     filter_date_by:"Arrival Date",
     summary_filter:"Business Source",

@@ -14,7 +14,8 @@
             <Column selectionMode="multiple" headerStyle="width: 3rem"  v-if="showCheckbox"/>
             <Column field="name" header="Folio Transaction" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <button v-if="slotProps.data?.name" @click="onViewFolioDetail(slotProps)" class="link_line_action1 auto_post">{{slotProps.data?.name}}</button>
+                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + slotProps.data?.is_auto_post==1?'auto_post':''" >
+                        {{slotProps.data?.name}}</button>
                 </template>
             </Column>
             <Column field="posting_date" header="Date" headerClass="text-center" bodyClass="text-center">
