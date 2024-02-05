@@ -241,6 +241,7 @@ function onClearCashCount() {
 }
 
 function onCloseShift() {
+ 
      
  
     doc.value.cash_float.forEach(c => {
@@ -322,13 +323,16 @@ function onCloseShift() {
                 gv.cashier_shift = null
 
                 window.working_day.cashier_shift = null
+
                 localStorage.setItem("edoor_working_day", JSON.stringify(window.working_day))
+                
                 doc.session_id = window.session_id
 
                 window.socket.emit("UpdateCashierShift", doc);
                 loading.value = false
                 openPrint()
                 dialogRef.value.close(doc);
+                window.postMessage("get_workingday","*")
 
             }).catch(ex => {
                 loading.value = false

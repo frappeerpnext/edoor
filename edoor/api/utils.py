@@ -681,7 +681,7 @@ def update_reservation_stay(name=None, doc=None,run_commit=True,is_save=True):
                  
 
         if is_save:
-            doc.flags.ignore_on_update= True
+            # doc.flags.ignore_on_update= True
             doc.save(  ignore_permissions=True)
             
             frappe.db.commit()

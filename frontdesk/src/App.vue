@@ -148,6 +148,9 @@ const actionClickHandler = async function (e) {
             else if (data[0] == "view_vendor_detail") {
                 showVendorDetail(data[1])
             }
+            else if (data[0] == "get_workingday") {
+                getWorkingDay();
+            }
         }
 
     }else if (e.data.extendedProps)  {
@@ -171,6 +174,15 @@ const actionClickHandler = async function (e) {
     }
 };
 
+function getWorkingDay(){
+    getApi("frontdesk.get_working_day",{property:window.property_name}).then(r=>{
+        gv.cashier_shift = r.message.cashier_shift
+        window.working_day = r.message
+        localStorage.setItem("edoor_working_day",JSON.stringify(window.working_day))
+        window.socket.emit("UpdateCashierShift", r.message.cashier_shift);
+    });
+}
+
 onUnmounted(() => {
     window.removeEventListener('message', actionClickHandler, false);
     window.socket.off("UpdateCashierShift")
@@ -190,7 +202,7 @@ onMounted(() => {
                 if(arg.is_closed==1){
                     toast.add({ severity: 'warn', summary: "Close cashier shift", detail: 'This cashier shift is closed. Your browser will be reload.', life: 5000 })
                     setTimeout(function(){
-                        window.reload()
+                        location.reload();
                     }, 5000)
                 }
                 
