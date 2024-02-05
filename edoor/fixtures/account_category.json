@@ -99,15 +99,6 @@
   "sort_order": 200
  },
  {
-  "account_category": "Folio Transfer",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 17:42:38.233705",
-  "name": "Folio Transfer",
-  "note": null,
-  "sort_order": 1100
- },
- {
   "account_category": "Other Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -124,6 +115,15 @@
   "name": "POS Bill to Desk Folio",
   "note": null,
   "sort_order": 0
+ },
+ {
+  "account_category": "Folio Transfer",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 17:42:38.233705",
+  "name": "Folio Transfer",
+  "note": null,
+  "sort_order": 1100
  },
  {
   "account_category": "Payment",

@@ -2387,10 +2387,11 @@ def get_day_end_summary_report(property, date):
     if len(occupy_data)>0:
         room_sold = occupy_data[0]["total_room_sold"] or 0
         room_block = occupy_data[0]["total_block"] or 0
-    adr = room_revenue or 0 / (1 if room_sold==0 else room_sold)
+    adr = (room_revenue or 0) / (1 if room_sold==0 else room_sold)
 
     #occupancy
     total_rooms =frappe.db.count('Room', {'property': property, "disabled":0})
+    
     vacant_room = total_rooms - (room_sold + room_block)
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
 
@@ -2398,7 +2399,8 @@ def get_day_end_summary_report(property, date):
     if calculate_room_occupancy_include_room_block==1:
         total_rooms = total_rooms - room_block 
 
-    occupancy = room_sold or 0 / (1 if total_rooms == 0 else total_rooms)
+    
+    occupancy = round( (room_sold or 0) / (1 if total_rooms == 0 else total_rooms)*100,2)
 
     ledger_types = [
         {"label":"Guest Ledger", "value":"Reservation Folio"},
