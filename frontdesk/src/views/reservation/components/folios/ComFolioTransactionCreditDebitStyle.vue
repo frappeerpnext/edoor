@@ -13,7 +13,7 @@
             </Column>
             <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
-                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + slotProps.data?.is_auto_post==1?'auto_post':''" >{{
+                    <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')" >{{
                         slotProps.data?.name }}</button>
                 </template>
             </Column>

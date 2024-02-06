@@ -135,7 +135,8 @@
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
-                            <button v-if="c.fieldname=='name'" @click="onOpenLink(c, slotProps.data)"  class="link_line_action1 auto_post">{{
+                            
+                            <button v-if="c.fieldname=='name'" @click="onOpenLink(c, slotProps.data)"  :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')">{{
                         slotProps.data?.name }}</button>
 
                             <Button v-else-if="c.fieldtype == 'Link' && slotProps.data[c.fieldname]" class="p-0 link_line_action1"
@@ -155,7 +156,7 @@
                                 
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'Status'" class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                            :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]}}
+                            :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{ slotProps.data[c.fieldname]}}
                             </span>
                             <div v-else-if="c.fieldtype == 'Debit'">
                                 <CurrencyFormat v-if="slotProps.data.type == 'Debit'" :value="slotProps.data[c.fieldname]" />
@@ -281,10 +282,12 @@ const columns = ref([
     { fieldname: 'modified_by', label: 'Modified By', default: true},
     { fieldname: 'modified', fieldtype: "Timeago", label: 'Last Modified', header_class: "text-center" },
     { fieldname: 'reservation_status', fieldtype: "Status", label: 'Status', header_class: "text-center", default: true },
-
+    
     { fieldname: 'note', label: 'Note', default: true },
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },
+    { fieldname: 'reservation_status_color' },
+    
     // { fieldname: 'parent_reference' },
 ])
 

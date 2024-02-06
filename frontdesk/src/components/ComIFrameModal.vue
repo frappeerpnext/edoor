@@ -1,5 +1,5 @@
 <template>
-    <div class="wrap-dialog iframe-modal" style="overflow: auto;" :class="{ 'full-height': dialogRef.data.fullheight }">
+    <div class="wrap-dialog iframe-modal " style="overflow: auto;" :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 " >
             <div class="grid mb-3 ">
                 <div class="col flex gap-2">
@@ -164,7 +164,7 @@
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>
-                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;padding-bottom:30px;" :id="iframe_id" width="100%" :src="url"></iframe>
             </div>
            
 

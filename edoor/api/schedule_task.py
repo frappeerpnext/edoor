@@ -251,13 +251,13 @@ def ten_minute_job():
 
 @frappe.whitelist()
 def run_queue_job():
-    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 100",as_dict = 1)
+    data = frappe.db.sql( "select distinct document_name, document_type, action from `tabQueue Job` limit 500",as_dict = 1)
     
     update_fetch_from_field([d for d in data if d["action"] =="update_fetch_from_field"])
     update_keyword([d for d in data if d["action"] =="update_keyword"])
 
     frappe.db.commit()
-    
+
 
 @frappe.whitelist()
 def update_fetch_from_field(data):

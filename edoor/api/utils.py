@@ -507,6 +507,7 @@ def update_deposit_ledger(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
+    doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
     doc.save(ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
@@ -1430,27 +1431,8 @@ def update_room_status_by_reservation_stay(name):
         frappe.db.commit()
 
 
+
+
 @frappe.whitelist()
-def run_me():
-    import os
-
-    current_directory = os.getcwd()
- 
-    # Define the scope of the credentials
-    scope = ["https://spreadsheets.google.com/feeds",
-              "https://www.googleapis.com/auth/spreadsheets",
-                "https://www.googleapis.com/auth/drive.file",
-                 "https://www.googleapis.com/auth/drive"]
-    # Define the credentials
-    creds = ServiceAccountCredentials.from_json_keyfile_name('/home/erpuser/frappe_2024/apps/edoor/edoor/api/basic-strata-252303-3a01b0d60c6c.json', scope)
-
-    # Authorize the client
-    client = gspread.authorize(creds)
-
-    # Open the Google Sheet
-    sheet = client.open('New Spreadsheet 168').sheet1
-
-    # Append data to the Google Sheet
-    data = frappe.db.sql("select name, product_name_en from `tabProduct`")
-    
-    sheet.append_rows(data)
+def ping():
+    return "pong"
