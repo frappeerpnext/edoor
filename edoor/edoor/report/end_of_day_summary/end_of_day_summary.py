@@ -102,7 +102,7 @@ def get_report_data(filters,data,data1,data2):
 	report_data.append({
 		"indent":0,
 		"account_name":"Opening Balance",
-		"amount":opening_balance,
+		"amount":opening_balance[0],
 	})
 
 	if filters.group_by_ledger_name:
@@ -119,7 +119,7 @@ def get_report_data(filters,data,data1,data2):
 				report_data.append({
 					"indent":0,
 					"account_name":l['label'] + " Opening Balance",
-					"amount": opening_balance_data
+					"amount": opening_balance_data[0]
 				})
 				for d in group_account_name:
 					report_data.append({

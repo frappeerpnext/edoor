@@ -101,20 +101,21 @@ def get_report_data(filters,data,data1,data2):
 	ledger_type = get_ledger_types()
 	
 	opening_balance = sorted(set([d['amount'] for d in data1]))
-	
+	# frappe.throw(str(opening_balance))
 	ledger_types = [l for l in ledger_type]
 	
 	report_data.append({
 		"indent":0,
 		"account_name":"Opening Balance",
-		"amount":opening_balance,
+		"amount": opening_balance[0],
 	})
 
 	if filters.group_by_ledger_name:
 		
 		for l in ledger_types:
 			group_account_name = sorted(set(d['account_group_name'] for d in data if d['transaction_type']==l['value']))
-			opening_balance_data = sorted(set(d['amount'] for d in data2))
+			
+			opening_balance_data = sorted(set([d['amount'] for d in data1]))
 			
 			if len(group_account_name) > 0 :
 				report_data.append({
@@ -124,7 +125,7 @@ def get_report_data(filters,data,data1,data2):
 				report_data.append({
 					"indent":0,
 					"account_name":l['label'] + " Opening Balance",
-					"amount": opening_balance_data
+					"amount": opening_balance_data[0]
 				})
 				for d in group_account_name:
 					report_data.append({

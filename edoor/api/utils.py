@@ -717,7 +717,7 @@ def update_city_ledger(name=None,doc=None, run_commit = True):
     doc.total_credit=folio_data[0]["credit"]
     doc.balance= (doc.total_debit or 0) - (doc.total_credit or 0)
     
-    doc.save()
+    doc.save( ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
         
