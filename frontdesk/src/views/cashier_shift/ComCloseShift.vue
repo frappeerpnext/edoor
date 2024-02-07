@@ -149,7 +149,7 @@
     </ComDialogContent>
 </template>
 <script setup>
-import { useToast, ref, inject, getDoc, onMounted, getApi, computed, useConfirm, createUpdateDoc, useDialog, watch } from "@/plugin"
+import { useToast, ref, inject, getDoc, onUnmounted, onMounted, getApi, computed, useConfirm, createUpdateDoc, useDialog, watch } from "@/plugin"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComCashCount from "@/views/cashier_shift/components/ComCashCount.vue";
 const doc = ref({})
@@ -255,7 +255,7 @@ function onCloseShift() {
 
     //client validateion
 
-    const saveData = JSON.parse(JSON.stringify(doc.value))
+    let saveData = JSON.parse(JSON.stringify(doc.value))
 
     saveData.total_system_close_amount = summary.value.cash_in_hand
 
@@ -297,15 +297,15 @@ function onCloseShift() {
     })
 
     saveData.cash_count = cashCountSetting.value
-    saveData.is_run_night_audit =(dialogRef.value.data.is_run_night_audit || 0)
+    
+    saveData.is_run_night_audit = ( window.run_night_audit || 0)
+
+   
     saveData.cash_count.forEach(r => {
         r.total_amount = r.total_note * r.value
     })
 
-    
-    saveData.flags={run_night_audit:(window.run_night_audit || 0)}
-     
- 
+  
     confirm.require({
         message: 'Are you sure you can to close this shift?',
         header: 'Confirmation',
@@ -405,5 +405,9 @@ function getCashCountSetting() {
 onMounted(() => {
     getData()
     getCashCountSetting()
+
+   
+
 })
+
 </script>
