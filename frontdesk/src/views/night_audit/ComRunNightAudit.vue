@@ -20,9 +20,11 @@
     <div v-if="currentStep == 9" style="height: 100vh;">
         <ComNightAuditReport />
     </div>
-    <div v-else class="wrp-night-audit-content w-full view-table-iframe">
+    <div v-else class="wrp-night-audit-content w-full view-table-iframe" style="overflow: auto;
+    max-width: 100%;
+    max-height: 70vh;">
         <iframe @load="onIframeLoaded()" id="iframe_run_night_audit"
-            style="min-height:71vh; width: 100%; overflow-x: hidden;padding-bottom:20px;" :src="url"></iframe>
+            style="min-height:70vh; width: 100%;" :src="url"></iframe>
     </div>
 
     <div class="wrp-action-btn-in-night-audit pb-2">

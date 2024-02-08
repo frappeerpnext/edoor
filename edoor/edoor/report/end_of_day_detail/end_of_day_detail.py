@@ -55,16 +55,20 @@ def get_data(filters):
 	data =   frappe.db.sql(sql,filters,as_dict=1)
 	return data
 
+def get_filters(filters):
+	sql = " and property=%(property)s and posting_date < %(start_date)s "
+
+	return sql
 def get_opening_balance(filters):
 	sql = """
 		select
 			ifnull(sum(amount*if(type='Debit',1,-1)),0) as amount,
 			transaction_type
-    	from `tabFolio Transaction` 
+    	from `tabFolio Transaction` ft
     	where
-			property = %(property)s and 
-        	posting_date < %(start_date)s
-		""".format(filters.property,filters.start_date)
+			1=1  
+			{}
+		""".format(get_filters(filters))
 	data1 =   frappe.db.sql(sql,filters,as_dict=1)
 	return data1
 
@@ -74,8 +78,7 @@ def get_opening_balance_data(filters):
 	for d in ledger_types:
 		sql = """
 			select
-				ifnull(sum(amount*if(type='Debit',1,-1)),0) as amount,
-				transaction_type
+				ifnull(sum(amount*if(type='Debit',1,-1)),0) as amount
 			from `tabFolio Transaction` 
 			where
 				property = '{}' and 
@@ -115,18 +118,20 @@ def get_report_data(filters,data,data1,data2):
 		for l in ledger_types:
 			group_account_name = sorted(set(d['account_group_name'] for d in data if d['transaction_type']==l['value']))
 			
-			opening_balance_data = sorted(set([d['amount'] for d in data1]))
-			
+			opening_balance_data = sorted(set(d['amount'] for d in data2))
+			# transc = sorted(set([d['transaction_type'] for d in data1 if d['transaction_type'] == l['value']]))
+			# frappe.throw(str(opening_balance_data[0]))
 			if len(group_account_name) > 0 :
 				report_data.append({
 					"indent":0,
 					"account_name":l['label'],
 				})
+			
 				report_data.append({
-					"indent":0,
-					"account_name":l['label'] + " Opening Balance",
-					"amount": opening_balance_data[0]
-				})
+						"indent":0,
+						"account_name":l['label'] + " Opening Balance",
+						"amount": opening_balance_data[0] 
+					})
 				for d in group_account_name:
 					report_data.append({
 						"indent":0,

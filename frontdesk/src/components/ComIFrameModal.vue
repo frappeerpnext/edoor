@@ -164,7 +164,7 @@
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>
-                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;padding-bottom:30px;" :id="iframe_id" width="100%" :src="url"></iframe>
+                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
             </div>
            
 
