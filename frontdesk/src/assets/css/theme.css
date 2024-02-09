@@ -5177,11 +5177,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-dialog .p-dialog-content .wrap-dialog .wrap-dialog-content {
   padding: 1rem;
 }
-
-.p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
+@media (min-width: 1024px) {
+  .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
   max-height: calc(90vh - 118px) !important;
 }
-
+@media (max-width: 1024px) {
+  .p-dialog:not(.p-dialog-maximized) .p-dialog-content .wrap-dialog .wrap-dialog-content {
+    padding-bottom: 50px;
+  }
+}
+}
 .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
   max-height: calc(100vh - 89px) !important;
 }

@@ -24,7 +24,7 @@
         </template>
     </ComHeader>
     <div class="grid">
-        <div class="col-2">
+        <div class="col-12 md:col-2">
             <ComSystemDateKPI :data="data"></ComSystemDateKPI>
         </div>
         <div class="col">

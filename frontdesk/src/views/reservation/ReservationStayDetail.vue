@@ -201,6 +201,8 @@ import ComReservationStayHeaderStatus from '@/views/reservation/components/ComRe
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import Message from 'primevue/message';
+
+
 const rs = inject('$reservation_stay');
 const dialog = useDialog()
 const route = useRoute()
@@ -215,6 +217,7 @@ const can_view_rate = ref(window.can_view_rate)
 const isPage = computed(() => {
     return route.name == 'ReservationStayDetail'
 })
+
 
 const onRefresh = debouncer(() => {
     loadData()
@@ -320,6 +323,15 @@ onMounted(() => {
         window.reservation_stay = dialogRef.value.data.name
     }
     window.addEventListener('message', actionRefreshData, false);
+
+    
+ if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
+ 
+
 });
 
 const actionRefreshData = async function (e) {

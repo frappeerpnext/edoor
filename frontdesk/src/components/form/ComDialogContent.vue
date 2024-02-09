@@ -78,7 +78,12 @@ const props = defineProps({
     hideIcon: {
         type: Boolean,
         default:false
-    }
+    },
+    maximizable: {
+        type: Boolean,
+        default:false
+    },
+    
 })
 function onOK() { 
     emit('onOK')

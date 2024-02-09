@@ -1,4 +1,5 @@
 <template>
+    
     <div class="wrap-page">
         <ProgressBar class="absolute top-0 right-0 left-0" style="z-index: 9999; height: 6px" v-if="gv.loading"
             mode="indeterminate">
@@ -7,8 +8,9 @@
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full"> 
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-                        <!-- {{ eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus') }} -->
-                        <template v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')" :key="index">
+                        <ComDrawerMenu v-if="isMobile()" :user="user"/>
+                        
+                        <template v-else  v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')" :key="index">
                             <ComHeaderBarItemButton
                                 :data="m"
                                 @onClick="onRoute">
@@ -20,12 +22,16 @@
                                 </template>
                             </ComHeaderBarItemButton>
                         </template>                     
+                        <div v-if="isMobile()" class="flex align-items-center">
+                            <p class="text-white text-2xl">eDoor Front Desk</p>
+                        </div>
                     </div>
                 </div>
                 <div class="flex-grow">
                     <div class="mr-auto flex justify-end h-full items-center">
-                        <div class="px-2 flex items-center text-white pro-timebar">
+                        <div  class="hidden md:block px-2 items-center text-white pro-timebar">
                             <ComHeaderDateTimeUpdate />
+                            
                         </div>
                         <div class="px-2 flex items-center">
                             <div>
@@ -120,7 +126,8 @@ import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
-
+import { useMobileDetection } from "vue3-mobile-detection";
+const { isMobile } = useMobileDetection();
 const dialog = useDialog();
 const router = useRouter()
 const route = useRoute()
@@ -135,6 +142,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 
 import ComIFrameModal from "../../components/ComIFrameModal.vue";
 import ComRunNightAudit from "@/views/night_audit/ComRunNightAudit.vue";
+import ComDrawerMenu from './comDrawerMenu.vue'
 const moment = inject("$moment")
 
 const eDoorMenu = computed(()=>{ 
@@ -237,7 +245,7 @@ function onBlankGuestRegistration() {
 function onSearch() {
     if(!window.open_search){
         window.open_search = true
-        dialog.open(Search, {
+       const myDialog = dialog.open(Search, {
         props: {
             header: 'Search',
             style: {
@@ -245,9 +253,16 @@ function onSearch() {
             },
             modal: true,
             position: 'top',
-            closeOnEscape: true
+            closeOnEscape: true,
+            maximizable: true,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
+
         },
     });
+  
     }
   
 }
@@ -273,3 +288,8 @@ function onCloseCashierShift() {
  
  
 </script>
+<style>
+.p-sidebar-left .p-sidebar{
+    width: 26rem;
+}
+</style>

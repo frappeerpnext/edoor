@@ -1544,3 +1544,10 @@ align-items: center;
 .daily-list-summary tr th , .daily-list-summary tr td {
     padding: 0.5rem 0.5rem;
 }
+@media (max-width: 1024px) {
+    .search_style_section{
+        max-height: 50vh !important;
+        padding-bottom: 50px !important;
+    }
+
+}

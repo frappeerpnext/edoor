@@ -19,20 +19,26 @@ MyPage = Class.extend({
 			fieldtype: 'Link',
 			fieldname: 'property',
 			options:"Business Branch",
-			change() {
-				
-				 alert(123)
-			}
+
 		});
 		this.date = this.page.add_field({
 			label: 'Date',
 			fieldtype: 'Date',
 			fieldname: 'date',
 			options:"Date",
-			change() {
-				
-				alert(123)
-		   }
+			default:frappe.datetime.get_today(),
+		});
+		this.ledger_group = this.page.add_field({
+			label: 'Group By Ledger Name',
+			fieldtype: 'Check',
+			fieldname: 'group_by_ledger_name',
+			default:1
+		});
+		this.show_account = this.page.add_field({
+			label: 'Show Account Code',
+			fieldtype: 'Check',
+			fieldname: 'show_account_code',
+			default:1
 		});
 		this.report_name = this.page.add_field({
 			label: 'Report Name',
@@ -42,6 +48,7 @@ MyPage = Class.extend({
 				'End of Day Detail',
 				'End of Day Summary',
 			],
+			default:'End of Day Detail'
 			
 		});
 		this.iframe = document.querySelector("#iframe_end_of_day_report")
@@ -54,24 +61,27 @@ MyPage = Class.extend({
 	make: function() {
 		$(frappe.render_template("end_of_day_report", this)).appendTo(this.page.main);
 	},onViewReport:function(){
+		const ledgerGroup = this.ledger_group.get_value();
+		const showAccount = this.show_account.get_value();
 		let newUrl;
-		if (this.report_name.get_value()=="End of Day Detail"){
-			newUrl = "/printview?doctype=Business%20Branch&name=ESTC%20HOTEL&format=eDoor%20Working%20Day%20Transaction%20Detail%20Report&&settings=%7B%7D&show_toolbar=0&start_date=2024-01-31&group_by_ledger_type=1&show_account_code=1&_lang=en&refresh=2.886933436472656"
-			this.iframe.src = newUrl;
-		}else if (this.report_name.get_value()=="End of Day Summary"){
-			newUrl = "/printview?doctype=Business%20Branch&name=ESTC%20HOTEL&format=eDoor%20Working%20Day%20Transaction%20Summary%20Report&&settings=%7B%7D&show_toolbar=0&start_date=2024-01-31&group_by_ledger_type=1&show_account_code=1&_lang=en&refresh=2.886933436472656"
-			this.iframe.src = newUrl;
+		if(this.property.get_value() != ''){
+			if (this.report_name.get_value()=="End of Day Detail"){
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Detail%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURI(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
+				this.iframe.src = newUrl;
+			}else if (this.report_name.get_value()=="End of Day Summary"){
+				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=eDoor%20Working%20Day%20Transaction%20Summary%20Report&&settings=%7B%7D&show_toolbar=0&start_date="+ encodeURI(this.date.get_value()) +"&group_by_ledger_type="+ ledgerGroup +"&show_account_code="+ showAccount +"&_lang=en&refresh=2.886933436472656"
+				this.iframe.src = newUrl;
+			}else{
+				this.iframe.src = this.iframe.src + "&refresh=" + (Math.random() * 16)
+			}
 		}else{
-			this.report_name = "End of Day Detail"
-			this.iframe.src = this.iframe.src + "&refresh=" + (Math.random() * 16)
+			frappe.msgprint("Please Select <strong>Property</strong> to View Report.")
 		}
 		
-		//const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 		
-		// iframe.contentWindow.location.replace(url.value)
 	},
 	onPrint: function(){
-		alert("u print me!!")
+		this.iframe.contentWindow.print()
 	}
 })
 

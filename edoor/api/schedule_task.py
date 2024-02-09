@@ -224,17 +224,17 @@ def five_minute_job():
             ifnull(a.account_category,'') != ifnull(b.account_category,'') """
     frappe.db.sql(sql)
     
-    #update rate type in room occupy
-    sql="""
-        update `tabRoom Occupy` a 
-        inner join `tabReservation Room Rate` b on a.reservation_stay = b.reservation_stay and a.date = b.date and a.room_type_id = b.room_type_id
-        set 
-            a.rate_type = b.rate_type
-        where 
-            ifnull(a.rate_type,'') != ifnull(b.rate_type,'') 
-        """
+    # #update rate type in room occupy
+    # sql="""
+    #     update `tabRoom Occupy` a 
+    #     inner join `tabReservation Room Rate` b on a.reservation_stay = b.reservation_stay and a.date = b.date and a.room_type_id = b.room_type_id
+    #     set 
+    #         a.rate_type = b.rate_type
+    #     where 
+    #         ifnull(a.rate_type,'') != ifnull(b.rate_type,'') 
+    #     """
     
-    frappe.db.sql(sql)
+    # frappe.db.sql(sql)
 
 
 

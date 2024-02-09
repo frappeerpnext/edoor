@@ -35,8 +35,8 @@
         <template v-else>
             <div>
                 <ComPlaceholder :text="'No Data With  `  ' + keyword + '  `  Keyword'" :loading="loading" :is-not-empty="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype) ).length > 0">
-               <div class="flex">
-                <div class="col-2 bg-card-info p-0">
+               <div class="grid pt-2">
+                <div class="md:col-2 hidden md:block col-12 bg-card-info p-0">
                 <Listbox filtericon="HI" v-model="selectedDoctype" :options="resultDoctypes" class="w-full bg-transparent p-2">
                     <template  #option="slotProps">
                         <div class="flex align-items-center justify-between">
@@ -47,7 +47,7 @@
                     </template>
                 </Listbox>
                 </div>
-                        <div class="col-10 p-0 search_style_section">     
+                <div class="md:col-10 col-12 p-0 search_style_section">     
                 <DataView @page="pagechange()" :first="first" :value="results.filter(r => r.doctype === (selectedDoctype?.doctype || r.doctype))" paginator :rows="20">
                 
                     <template #list="slotProps">

@@ -48,7 +48,10 @@ import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
- 
+import { useMobileDetection } from "vue3-mobile-detection";
+const { isMobile } = useMobileDetection();
+window.isMobile= isMobile()
+
  
 
 const gv = inject("$gv")
@@ -333,7 +336,11 @@ function showReservationDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         }
     });
     }else {

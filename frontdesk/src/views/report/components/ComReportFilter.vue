@@ -25,6 +25,11 @@
                 <ComSelect class="w-full"  v-model="filter.select_filter" placeholder="Select Filter"
                 :options="['Reservation','Reservation Stay','Reservation Room Rate','Guest','Reservation Folio','Folio Transaction']" />
             </div>
+            <div class="col" v-if="hasFilter('cashier_shift')">
+                <label>Cashier Shift</label><br>
+                <ComAutoComplete v-model="filter.cashier_shift" placeholder="Cashier Shift" doctype="Cashier Shift"
+                class="auto__Com_Cus w-full" :filters="{ business_branch: property.name,is_edoor_shift: 1 }" />
+            </div>
             <div class="col" v-if="hasFilter('reservation_type')">
                 <label>Reservation Type</label><br>
                 <ComSelect class="w-full"   v-model="filter.reservation_type" placeholder="Select Reservation Type" :showClear="true"
@@ -164,6 +169,32 @@
                     </div>
                 </div>   
             </div>
+            <div class="col mt-4"  v-if="hasFilter('show_cash_float')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Show Cash Float</label>
+                    </div>
+                    <div>
+                        <Checkbox class="mx-3" v-model="filter.show_cash_float" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
+            </div>
+            <div class="col mt-4"  v-if="hasFilter('show_cash_count')">
+                <div class="h-full" >
+                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
+                    <div>
+                        <label for="filter_is_active" class="font-medium cursor-pointer">Show Cash Count</label>
+                    </div>
+                    <div>
+                        <Checkbox class="mx-3" v-model="filter.show_cash_count" :binary="true" trueValue="1"
+                                falseValue="0" /> 
+                    </div>
+                    </div>
+                </div>   
+            </div>
             <div class="col mt-4"  v-if="hasFilter('show_summary')">
                 <div class="h-full" >
                     <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
@@ -298,7 +329,9 @@ const filter = ref({
     sort_order: "ASC",
     filter_date_by:"Arrival Date",
     summary_filter:"Business Source",
-    group_by_ledger_type:"0"
+    group_by_ledger_type:"0",
+    show_cash_count:"1",
+    show_cash_float:"1"
 
 })
 function onSelectLetterHead(l){
