@@ -8,7 +8,7 @@
             <div class="mx-auto flex items-stretch h-full">
                 <div class="header-logo flex-auto h-full"> 
                     <div class="flex h-full wrap-pro-bar top-pro-bar-cus">
-                        <ComDrawerMenu v-if="isMobile()" :user="user"/>
+                        <ComDrawerMenu v-if="isMobile" :user="user"/>
                         
                         <template v-else  v-for="(m, index) in eDoorMenu.filter(r => r.parent_edoor_menu == 'All Menus')" :key="index">
                             <ComHeaderBarItemButton
@@ -22,7 +22,7 @@
                                 </template>
                             </ComHeaderBarItemButton>
                         </template>                     
-                        <div v-if="isMobile()" class="flex align-items-center">
+                        <div v-if="isMobile" class="flex align-items-center">
                             <p class="text-white text-2xl">eDoor Front Desk</p>
                         </div>
                     </div>
@@ -126,9 +126,8 @@ import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
-import { useMobileDetection } from "vue3-mobile-detection";
-const { isMobile } = useMobileDetection();
-window.isMobile= isMobile()
+
+const isMobile = ref(window.isMobile)
 
 
 const dialog = useDialog();

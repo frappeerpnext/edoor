@@ -138,7 +138,6 @@ import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
-import Vue3MobileDetection from "vue3-mobile-detection";
 
 
 // use components //
@@ -242,7 +241,7 @@ app.use(DialogService);
 app.use(ConfirmationService);
 app.use(VueSortable);
 app.use(shortkey)
-app.use(Vue3MobileDetection);
+ 
 
 app.use(
 	VueTippy,

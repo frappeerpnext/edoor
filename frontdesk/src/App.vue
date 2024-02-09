@@ -48,7 +48,10 @@ import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
+
+window.isMobile= ('ontouchstart' in window || navigator.maxTouchPoints > 0);
  
+
  
 
 const gv = inject("$gv")
