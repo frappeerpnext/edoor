@@ -4,11 +4,13 @@
             <div class="text-2xl text-overflow-ellipsis">{{ property.name }}</div>
             <div class="txt-st__det" v-if="property.property_code">ID: {{ property.property_code }}, {{ property.province }}
             </div>
+
+          
         </template>
         <template #center>
-            <Button label="Today" class="w-48 btn-date__t border-noround-right border-none"
+            <Button label="Today" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
-            <Button label="Tomorrow" class="w-48 btn-date__t border-noround border-x-none border-none"
+            <Button label="Tomorrow" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
                 <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar" panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
@@ -16,7 +18,7 @@
               
         </template>
         <template #end>
-            <div class="flex gap-2 justify-content-end">
+            <div v-if="!isMobile" class="flex gap-2 justify-content-end">
                 <NewFITReservationButton />
                 <NewGITReservationButton />
  
@@ -24,21 +26,21 @@
         </template>
     </ComHeader>
     <div class="grid">
-        <div class="col-12 md:col-2">
+        <div class="col-12 md:col-6 lg:col-2">
             <ComSystemDateKPI :data="data"></ComSystemDateKPI>
         </div>
-        <div class="col">
+        <div class="col-12 md:col-6 lg:col">
             <div class="bg-white h-full border-round-lg">
                 <ComPanel title="Occupancy">
                     <div class="grid">
-                        <div class="col-6 flex align-items-center justify-content-center mt-3">
+                        <div class="col-12 md:col-6 flex align-items-center justify-content-center mt-3">
 
                             <ComChartDoughnut :percentage="data?.occupancy" show-percentage="Occupied"
                                 :showPercentageInteger="false" :is-legend="false" :data="chartOccupancy"
                                 v-if="chartOccupancy.length > 0" />
                             <Skeleton v-else shape="circle" size="18rem"></Skeleton>
                         </div>
-                        <div class="col-5">
+                        <div class="col-12 md:col-5">
                             <ComChartStatus @onClick="onViewRoomOccupy" :value="data.total_room_occupy" title="Occupied"
                                 class="btn-green-edoor"></ComChartStatus>
 
@@ -74,7 +76,7 @@
                 </ComPanel>
             </div>
         </div>
-        <div class="col">
+        <div class="col-12  md:col-6 lg:col">
             <div class="bg-white h-full border-round-lg">
                 <ComPanel title="Summary">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
@@ -111,7 +113,7 @@
                 </ComPanel>
             </div>
         </div>
-        <div class="col-2">
+        <div class="col-12 md:col-6 lg:col-2">
             <ComPanel title="Room Status" class="h-full">
                 <ComHousekeepingStatus />
             </ComPanel>
@@ -126,7 +128,7 @@
         <TabView class="tabview-custom" lazy>
             <TabPanel>
                 <template #header>
-                    <span>Arrival Remaining </span>
+                    <span class="white-space-nowrap">Arrival Remaining </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining
                     }}</span>
                 </template>
@@ -137,7 +139,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span>Departure Remaining</span>
+                    <span class="white-space-nowrap" >Departure Remaining</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
                     }}</span>
                 </template>
@@ -148,7 +150,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span>Stay Over</span>
+                    <span class="white-space-nowrap" >Stay Over</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -158,7 +160,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span>Upcoming note</span>
+                    <span class="white-space-nowrap" >Upcoming note</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -168,7 +170,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span>Desk Folio</span>
+                    <span class="white-space-nowrap" >Desk Folio</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.desk_folio }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -196,7 +198,7 @@ import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
  
- 
+const isMobile = ref(window.isMobile) 
 const toast = useToast();
 const moment = inject("$moment")
 const gv = inject("$gv")

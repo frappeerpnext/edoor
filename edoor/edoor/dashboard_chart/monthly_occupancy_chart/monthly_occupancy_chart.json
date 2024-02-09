@@ -7,10 +7,10 @@
  "doctype": "Dashboard Chart",
  "filters_json": "{\"chart_type\":\"bar\"}",
  "group_by_type": "Count",
- "idx": 0,
+ "idx": 140,
  "is_public": 0,
  "is_standard": 1,
- "modified": "2023-12-19 12:08:30.492699",
+ "modified": "2024-02-09 16:22:12.757287",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Monthly Occupancy Chart",
@@ -26,6 +26,9 @@
   },
   {
    "role": "Frontdesk Manager"
+  },
+  {
+   "role": "Prepared Report User"
   }
  ],
  "time_interval": "Yearly",

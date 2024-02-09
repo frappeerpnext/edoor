@@ -1546,8 +1546,8 @@ align-items: center;
 }
 @media (max-width: 1024px) {
     .search_style_section{
-        max-height: 50vh !important;
-        padding-bottom: 50px !important;
+        max-height: 100% !important;
+        padding-bottom: 30px !important;
     }
 
 }

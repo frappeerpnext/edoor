@@ -1,12 +1,12 @@
 <template>
-    <div :class="wrClass ? wrClass : 'py-3'" class="flex items-center justify-content-between">
-        <div >
+    <div :class="wrClass ? wrClass : 'py-3'" class="grid items-center justify-content-between">
+        <div class="col-12 md:col-6 lg:col-3 " >
             <slot name="start"></slot>
         </div>
-        <div>
+        <div class="col-12 md:col-6 lg:col flex justify-content-center">
             <slot name="center"></slot>
         </div>
-        <div class="flex gap-2">
+        <div class="col-12 md:col-6 lg:col flex gap-2 justify-content-end">
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>

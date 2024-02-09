@@ -1,50 +1,49 @@
 <template>
     <Button icon="pi pi-bars" style="background: transparent" class="border-none" @click="visible = true" />
-
-    <Sidebar v-model:visible="visible">
-        <template #header>
-            <div>
-                <div class="profile bg-primary w-4rem h-4rem border-circle overflow-hidden">
-                    <img class="image-profile w-full h-full" style="object-fit: cover;" :src="user.photo"/>
+    <div class="wrapper-sidebar"> 
+        <Sidebar v-model:visible="visible" id="sbar"> 
+            <template #header>
+                <div>
+                    <div class="profile bg-primary w-4rem h-4rem border-circle overflow-hidden">
+                        <img class="image-profile w-full h-full" style="object-fit: cover;" :src="user.photo"/>
+                    </div>
+                    <h1 class="text-2xl font-semibold pt-3 text-white">{{user.full_name}}</h1>
+                    <p class="text-white">rathanachamroeun155@gmail.com</p>
                 </div>
-                <h1 class="text-2xl font-semibold pt-3 text-white">{{user.full_name}}</h1>
-                <p class="text-white">rathanachamroeun155@gmail.com</p>
+            </template>
+            <div class="pt-3">
+                <template v-for="(item, index) in items" :key="index">
+                    <div v-if="!item.items">
+                        <a v-ripple @click="onNavigate(item)">
+                            <span class="flex align-items-center gap-2 w-full ml-4" style="padding-top:1.25rem; padding-bottom:1.25rem">
+                                <span v-html="item.icon"></span>
+                                <span class="font-bold text-white white-space-nowrap">{{ item.label }}</span> 
+                            </span>
+                        </a>
+                    </div>
+                    <div v-else class="wrapper-drop-sm">
+                        <Accordion>
+                            <AccordionTab>
+                                <template #header>
+                                    <span class="flex align-items-center gap-2 w-full">
+                                        <span v-html="item.icon"></span>
+                                        <span class="font-bold white-space-nowrap">{{ item.label }}</span>
+                                    </span>
+                                </template> 
+                                <Menu :model="item.items" class="w-full md:w-15rem">
+                                    <template #item="{ item, props }">
+                                        <a v-ripple @click="onNavigate(item)">
+                                            <span class="ml-2">{{ item.label }}</span>
+                                        </a> 
+                                    </template>
+                                </Menu>
+                            </AccordionTab> 
+                        </Accordion> 
+                    </div>
+                </template>  
             </div>
-        </template>
-        <hr/>
-        <div class="pt-3">
-            <template v-for="(item, index) in items" :key="index">
-                <div v-if="!item.items">
-                    <a v-ripple @click="onNavigate(item)">
-                        <span class="ml-2">{{ item.label }}</span>
-                    </a>
-                </div>
-                <div v-else>
-                    <Accordion>
-                        <AccordionTab   >
-                            <template #header>
-                                <span class="flex align-items-center gap-2 w-full">
-                                <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-                                <span class="font-bold white-space-nowrap">{{ item.label }}</span>
-                                </span>
-                            </template>
-
-                            <Menu :model="item.items" class="w-full md:w-15rem">
-                                <template #item="{ item, props }">
-                                    <a v-ripple @click="onNavigate(item)">
-                                        <span class="ml-2">{{ item.label }}</span>
-                                    </a>
-
-
-                                </template>
-                            </Menu>
-                        </AccordionTab>
-
-                    </Accordion>
-                </div>
-            </template> 
-        </div>
-    </Sidebar>
+        </Sidebar>
+    </div>
 </template>
 <script setup>
 import { ref, computed, useRouter, onMounted } from "@/plugin"
@@ -92,27 +91,36 @@ onMounted(() => {
 })
 </script>
 <style>
-.p-sidebar-header{
-    overflow: hidden;
-    display: block;
+#sbar .p-sidebar-content{
     position: relative;
-    height: 40px;
+    z-index: 1;
+    background: #204887;
+}
+#sbar{
+    overflow: hidden;
+    background: #204887;
+}
+#sbar .p-sidebar-header{ 
+    margin-bottom: 24px;
+    display: flex;
+    position: relative;
+    height: 180px;
     width: 100%;
     background: rgb(57, 27, 112);
     transform: scale(1, 1);
 }
-.p-sidebar-header::before{
+#sbar .p-sidebar-header::before{
     content: "";
     display: block;
     position: absolute;
     border-radius: 100%;
     width: 100%;
     height: 300px;
-    background-color: white;
+    background: #204887;
     right: -25%;
-    top: 20px;
+    top: 156px;
 }
-.p-sidebar-header::after{
+#sbar .p-sidebar-header::after{
     content: "";
     display: block;
     position: absolute;
@@ -120,8 +128,25 @@ onMounted(() => {
     width: 100%;
     height: 300px;
     background-color: rgb(57, 27, 112);
-    left: -25%;
-    top: -240px;
+    left: -27%;
+    top: -100px;
+    -webkit-clip-path: ellipse(100% 15% at -15% 100%);
     clip-path: ellipse(100% 15% at -15% 100%);
 }
+.wrapper-drop-sm .p-accordion .p-accordion-header .p-accordion-header-link{
+    border: 0;
+    background-color: transparent;
+    padding-left: 0;
+    color: #fff !important;
+} 
+.wrapper-drop-sm .p-accordion .p-accordion-header:not(.p-disabled).p-highlight .p-accordion-header-link{
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+.wrapper-drop-sm .p-accordion .p-accordion-header:not(.p-highlight):not(.p-disabled):hover .p-accordion-header-link{
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none; 
+} 
 </style>
