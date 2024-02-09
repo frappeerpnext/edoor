@@ -190,9 +190,15 @@ onUnmounted(()=>{
     
 })
 onMounted(()=>{
+    if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
     window.open_search = true
     loading.value = true
     loadData()
+    
     
 })
 </script>

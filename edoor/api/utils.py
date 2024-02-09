@@ -850,7 +850,7 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
     doc = frappe.get_doc(doc)
     doc.flags.ignore_update_reservation = True
     doc.flags.ignore_validate_close_folio = True
-    doc.flags.ignore_update_reservation_folio = True
+    # doc.flags.ignore_update_reservation_folio = True
  
     doc.insert()
     return doc

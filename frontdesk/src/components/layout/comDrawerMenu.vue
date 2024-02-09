@@ -110,7 +110,7 @@ onMounted(() => {
     height: 300px;
     background-color: white;
     right: -25%;
-    top: 20px
+    top: 20px;
 }
 .p-sidebar-header::after{
     content: "";
