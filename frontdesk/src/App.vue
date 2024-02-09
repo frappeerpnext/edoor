@@ -48,10 +48,7 @@ import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
-import { useMobileDetection } from "vue3-mobile-detection";
-const { isMobile } = useMobileDetection();
-window.isMobile= isMobile()
-
+ 
  
 
 const gv = inject("$gv")

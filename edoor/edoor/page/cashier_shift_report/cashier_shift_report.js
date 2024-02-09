@@ -32,8 +32,9 @@ MyPage = Class.extend({
 			fieldtype: 'Link',
 			fieldname: 'cashier_shift',
 			options:"Cashier Shift",
-			
+
 		});
+		
 		this.ledger_group = this.page.add_field({
 			label: 'Group By Ledger Name',
 			fieldtype: 'Check',
@@ -84,6 +85,9 @@ MyPage = Class.extend({
 		const cashFloat = this.cash_float.get_value();
 		const cashCount = this.cash_count.get_value();
 		let newUrl;
+		this.cashier_shift.filters = [
+			['Cashier Shift', 'is_edoor_shift', '=', 1],
+		];
 		if(this.property.get_value() != '' && this.cashier_shift.get_value() != ''){
 			if (this.report_name.get_value()=="Cashier Shift Transaction Detail"){
 				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Detail&&settings=%7B%7D&show_toolbar=0&cashier_shift="+ encodeURI(this.cashier_shift.get_value()) 

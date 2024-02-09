@@ -128,6 +128,9 @@ import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComC
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
 import { useMobileDetection } from "vue3-mobile-detection";
 const { isMobile } = useMobileDetection();
+window.isMobile= isMobile()
+
+
 const dialog = useDialog();
 const router = useRouter()
 const route = useRoute()
