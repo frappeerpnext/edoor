@@ -1,5 +1,5 @@
 <template>
-    <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+    <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="ms_message_cs_edoor">
             <Message v-if="hasFutureResertion">
                 {{ checkFutureReservationInfo.message }} <br />
@@ -7,11 +7,11 @@
             </Message>
         </div>
         <div class="n__re-custom grid">
-            <div class="col">
+            <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <div class="">
                         <div class="grid">
-                            <div class="col">
+                            <div class="col-12 md:col">
                                 
                                 <label>Reservation Date <span class="text-red-500">*</span></label><br />
                                 <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm w-full"
@@ -35,7 +35,7 @@
                             </div>
                         </div>
                         <div class="grid m-0">
-                            <div class="arr_wfit col px-0">
+                            <div class="col-12 md:col px-0">
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar :disabled="doc.reservation.is_walk_in" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
@@ -43,13 +43,11 @@
                                     panelClass="no-btn-clear" :minDate="minDate" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
-                                <div>
-                                    <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
-                                </div>
+                                <label class="hiddent">Night<span class="text-red-500">*</span></label><br />
                                 <ComReservationInputNight v-model="doc.reservation.room_night"
                                     @onUpdate="onRoomNightChanged" />
                             </div>
-                            <div class="arr_wfit col px-0">
+                            <div class="col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
 
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full"
@@ -89,7 +87,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex justify-end gap-3 mt-4">
+                        <div class="grid justify-end gap-3 mt-4">
                             <div class="flex align-items-center relative gap-2">
                                 <label for="allowmaster" class="font-medium cursor-pointer ">Mark as Paid by Master
                                     Room</label>
@@ -109,7 +107,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <h1 class="text-lg line-height-4 font-bold mb-2">Guest Information</h1>
                     <div>
@@ -246,7 +244,7 @@
         </div>
 
         <div class="bg-card-info border-round-xl mt-2 p-3 add-room-reserv">
-            <div class="n__re-custom">
+            <div class="n__re-custom overflow-auto">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -269,7 +267,7 @@
                                 <label class="text-center px-2">Children</label>
                             </th>
                             <th>
-                                <label class="text-center px-2">Total Nights</label>
+                                <label class="text-center px-2 white-space-nowrap">Total Nights</label>
                             </th>
                             <th v-if="can_view_rate" class="text-right">
                                 <label class="px-2">Amount</label>
@@ -334,18 +332,18 @@
                                 </div>
                             </td>
                             <td v-if="can_view_rate" class="p-2 w-10rem">
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12"
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap"
                                     v-if="doc.tax_rule.rate_include_tax == 'Yes'">
 
                                     <CurrencyFormat :value="(d.rate) * (doc.reservation.room_night ?? 0)" />
                                 </div>
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-else>
+                                <div class="p-inputtext-pt text-end border-1 border-white h-12 white-space-nowrap" v-else>
                                     <CurrencyFormat
                                         :value="(roomRateTax(d)) + (d.rate * doc.reservation.room_night ?? 0)" />
                                 </div>
                             </td>
 
-                            <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end">
+                            <td v-if="doc.reservation_stay.length > 1" class="pl-2 text-end w-3rem">
                                 <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
                                     aria-label="Filter" />
                             </td>

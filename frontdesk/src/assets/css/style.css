@@ -1549,5 +1549,8 @@ align-items: center;
         max-height: 100% !important;
         padding-bottom: 30px !important;
     }
+    .max-h-screen-newres{
+        max-height: 70vh !important;
+    }
 
 }

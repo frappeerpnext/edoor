@@ -3,17 +3,19 @@
         <div class="col-12 md:col-6 lg:col-3 " >
             <slot name="start"></slot>
         </div>
-        <div class="col-12 md:col-6 lg:col flex justify-content-center">
+        <div v-if="$slots.center" class="col-12 md:col-6 lg:col flex justify-content-center">
             <slot name="center"></slot>
         </div>
         <div class="col-12 md:col-6 lg:col flex gap-2 justify-content-end">
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
-            <Button v-if="isRefresh" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
+            <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
         </div>
     </div>
 </template>
 <script setup>
+import { ref } from '@/plugin'
+const isMobile = ref(window.isMobile) 
 const props = defineProps({
     isRefresh: {
         type: Boolean,

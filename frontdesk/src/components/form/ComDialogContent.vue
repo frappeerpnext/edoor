@@ -1,5 +1,5 @@
 <template>
-    <div :class="isDialog ? 'wrap-dialog' : 'bg-white p-2 relative di-page'">
+    <div  :class="[isDialog ? 'wrap-dialog' : 'bg-white p-2 relative di-page', dialogClass]">
         <div :class="isDialog ? 'wrap-dialog-content overflow-auto' : ''">
             <slot name="default"></slot>
             <div v-if="loading">
@@ -50,6 +50,9 @@ const props = defineProps({
     loading: {
         type: Boolean,
         default: false
+    },
+    dialogClass: {
+        type: String,
     },
     titleButtonOK: {
         type: String,

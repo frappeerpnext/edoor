@@ -3,30 +3,31 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="flex mb-3 justify-between stickyReservationStatus">
-                    <ComReservationStayHeaderStatus />
-                    <div class="flex gap-2">
-                        <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
-                            class="rounded-lg conten-btn flex" link>
-                            <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
-                            </icon>
-                        </button>
-                        <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn "
-                            link>
-                            <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
-                        </button>
-                        <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
-                            <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
-                                :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
-                                class="border-noround-right border-y-none border-left-none">
-                            </Button>
-                            <Button class="border-noround border-rl-ed border-none">{{
-                                (rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1 }} / {{
-        rs?.reservationStayNames.length }} </Button>
-                            <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
-                                :disabled="rs?.canNavigateNext(name) || rs.loading"
-                                class="border-noround-left border-y-none border-right-none"
-                                icon="pi pi-angle-double-right"></Button>
+                <div class="overflow-hidden w-full">
+                    <div class="flex mb-3 justify-between stickyReservationStatus overflow-scroll lg:overflow-hidden w-max lg:w-full">
+                        <ComReservationStayHeaderStatus />
+                        <div class="flex gap-2">
+                            <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
+                                class="rounded-lg conten-btn flex" link>
+                                <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
+                                </icon>
+                            </button>
+                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn "
+                                link>
+                                <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
+                            </button>
+                            <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
+                                <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
+                                    :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
+                                    class="border-noround-right border-y-none border-left-none">
+                                </Button>
+                                <Button class="border-noround border-rl-ed border-none">{{
+                                    (rs?.reservationStayNames.indexOf(rs.reservationStay?.name)) + 1 }} / {{rs?.reservationStayNames.length }} </Button>
+                                <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(1)"
+                                    :disabled="rs?.canNavigateNext(name) || rs.loading"
+                                    class="border-noround-left border-y-none border-right-none"
+                                    icon="pi pi-angle-double-right"></Button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,9 +51,9 @@
                 <TabView lazy v-model:activeIndex="activeTab">
                     <TabPanel header="General Information">
                         <div class="grid mt-2 ml-0 ms-0">
-                            <div class="col-8 pl-0">
+                            <div class="col-12 lg:col-8 pl-0">
                                 <div class="grid">
-                                    <div class="col-4">
+                                    <div class="col-12 lg:col-4">
                                         <div class="grid">
                                             <div class="col-12">
                                                 <ComReservationStayDetailGuestInfo />
@@ -62,8 +63,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8">
+                                    <div class="col-12 lg:col-8">
                                         <ComReservationStayInfo />
+                                    </div>
+                                    <div class="col-12" v-if="isMobile">
+                                        <div class="grid">
+                                            <ComReservationStayDetailChargeSummary
+                                            @onViewReservation="OnViewReservation()"/>
+                                            <ComArrivalAndDeparture/>
+                                        </div>
                                     </div>
                                     <div class="col-12">
                                         <ComReservationRoomStayList />
@@ -83,11 +91,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-4">
+                            <div class="col-12 lg:col-4" v-if="!isMobile">
                                 <div class="grid">
                                     <ComReservationStayDetailChargeSummary v-if="can_view_rate"
-                                        @onViewReservation="OnViewReservation()" />
-                                    <ComArrivalAndDeparture />
+                                        @onViewReservation="OnViewReservation()"/>
+                                    <ComArrivalAndDeparture/>
                                 </div>
                             </div>
                         </div>
@@ -202,6 +210,7 @@ import ComReservationStayMoreOptionsButton from '@/views/reservation/components/
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import Message from 'primevue/message';
 
+const isMobile = ref(window.isMobile)
 
 const rs = inject('$reservation_stay');
 const dialog = useDialog()

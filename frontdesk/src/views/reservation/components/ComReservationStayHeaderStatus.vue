@@ -3,7 +3,7 @@
     <div class="flex items-center">
         <div class="flex">
             <span @click="OnViewReservation">
-                <ComTagReservation title="RES#:" :value="rs?.reservation?.name" class="link_line_action w-auto">
+                <ComTagReservation title="RES#:" :value="rs?.reservation?.name" class="link_line_action w-auto hidden md:inline-block">
                     <span class="number_action_line inline-block">
                         {{ rs?.reservationStayNames.length }} </span>
                 </ComTagReservation>

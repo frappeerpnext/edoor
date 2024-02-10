@@ -1,11 +1,16 @@
 <template> 
     <ComHeader isRefresh @onRefresh="onRefresh()">
         <template #start>
+            <div class="flex justify-content-between align-content-center">
+                <div class="col">
             <div class="text-2xl text-overflow-ellipsis">{{ property.name }}</div>
             <div class="txt-st__det" v-if="property.property_code">ID: {{ property.property_code }}, {{ property.province }}
             </div>
-
-          
+</div>
+            <div class="col" v-if="isMobile">
+                <ComNewReservationMobileButton/>
+            </div>
+        </div>
         </template>
         <template #center>
             <Button label="Today" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
@@ -193,11 +198,11 @@ import ComChartStatus from './components/ComChartStatus.vue';
 import ComShowCancelOcc from './components/ComShowCancelOcc.vue';
 import NewFITReservationButton from "@/views/reservation/components/NewFITReservationButton.vue"
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
+import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import OccupancyChart from './components/OccupancyChart.vue';
 import ComHousekeepingStatus from './components/ComHousekeepingStatus.vue';
 import ComChartDoughnut from '../../components/chart/ComChartDoughnut.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
- 
 const isMobile = ref(window.isMobile) 
 const toast = useToast();
 const moment = inject("$moment")
@@ -228,7 +233,6 @@ const statusColor = computed(() => {
     }
 
 })
-
 
 
 

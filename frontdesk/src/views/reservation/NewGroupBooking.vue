@@ -1,16 +1,16 @@
 <template> 
-    <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
+    <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" @onOK="onSave" :loading="isSaving" hideButtonClose>
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
         
             <Button class="border-none" @click="onViewFutureReservation">View Reservation</Button>
         </Message>
         <div class="n__re-custom grid">
-            <div class="col">
+            <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <div class="">
                         <div class="grid">
-                            <div class="col">
+                            <div class="col-12 md:col">
                                 <label>Reservation Date<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
                                     placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar
@@ -39,7 +39,7 @@
                                         class="w-full" />
                                 </div>
                             </div>
-                            <div class="col-12 lg:col-5">
+                            <div class="col-8 lg:col-5">
                                 <div class="pt-2">
                                     <label>Group Name</label><br />
                                     <InputText v-model="doc.reservation.group_name" placeholder="Group Name"
@@ -47,7 +47,7 @@
 
                                 </div>
                             </div>
-                            <div class=" col-12 lg:col-2">
+                            <div class="col-4 lg:col-2">
                                 <div class="pt-2 rounded-lg cursor-pointer" style="height: 44px;">
                                     <label class="white-space-nowrap overflow-hidden">Group Color</label>
                                     <div class="w-full h-full rounded-lg border-1" style="border-color: #a0bde0;"
@@ -59,7 +59,7 @@
                             </div>
                         </div>
                         <div class="grid m-0">
-                            <div class="arr_wfit col px-0">
+                            <div class="col-12 md:col px-0">
                                 <label>Arrival<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
                                     v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
@@ -73,7 +73,7 @@
                                 <ComReservationInputNight v-model="doc.reservation.room_night"
                                     @onUpdate="onRoomNightChanged" />
                             </div>
-                            <div class="arr_wfit col px-0">
+                            <div class="col px-0">
                                 <label>Departure<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
                                     placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
@@ -125,7 +125,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="w-full flex justify-end mt-4 gap-3">
+                        <div class="w-full grid justify-end mt-4 gap-3">
                             <div class="flex align-items-center">
                                 <label
                                     v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
                     <h1 class="text-lg line-height-4 font-bold mb-2">Guest Information</h1>
                     <div>
@@ -216,7 +216,7 @@
         </div>
         <div class="grid pt-2" v-if="room_tax && (room_tax.tax_1_rate + room_tax.tax_2_rate + room_tax.tax_3_rate) > 0">
             <div class="col">
-                <div class="bg-card-info border-round-xl p-3 h-full">
+                <div class="bg-card-info border-round-xl p-3 h-full overflow-auto">
                     <div class="flex gap-2 align-items-center relative my-3" style="width: 12.7rem;">
                         <label for="rate_tax" class="font-medium cursor-pointer">Rate Include Tax</label>
                         <span class="absolute right-0 w-full">
@@ -289,17 +289,18 @@
 
             </div>
             <hr class="my-3">
-                <table class="w-full">
+            <div class="w-full overflow-auto">
+                <table class="w-full ">
                     <thead>
                         <tr>
                             <th class="text-left pb-1">
-                                <label>Room Type</label>
+                                <label class="white-space-nowrap">Room Type</label>
                             </th>
                             <th class="text-center pb-1">
-                                <label class="px-2">Total Rooms</label>
+                                <label class="px-2 white-space-nowrap">Total Rooms</label>
                             </th>
                             <th class="text-center pb-1">
-                                <label class="text-center px-2">Total Room Available</label>
+                                <label class="text-center px-2 white-space-nowrap">Total Room Available</label>
                             </th>
                             <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
                                 <label class="text-right px-2">Rate</label>
@@ -388,7 +389,7 @@
                         </tr>
                     </tbody>
                 </table>
-
+</div>
             </div>
         
         </div>

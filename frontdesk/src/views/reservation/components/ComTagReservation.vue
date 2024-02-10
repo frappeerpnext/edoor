@@ -1,5 +1,5 @@
 <template>
-<div class="px-2 rounded-lg me-2 font-bold inline-block" :style="style" :class="class">
+<div class="px-2 rounded-lg me-2 font-bold" :style="style" :class="class">
 {{ title }} {{ value }}
 <slot></slot>
 </div> 

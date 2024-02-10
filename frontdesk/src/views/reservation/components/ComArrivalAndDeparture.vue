@@ -1,5 +1,5 @@
 <template>
-  <div class="col-12" v-if="rs.reservationStay.require_pickup || rs.reservationStay.require_drop_off">
+  <div class="col-12 p-0 lg:p-2" v-if="rs.reservationStay.require_pickup || rs.reservationStay.require_drop_off">
     <ComReservationStayPanel title="Arrival & Departure Mode">
       <template #btn>
         <Button icon="pi pi-ellipsis-h" class="h-2rem w-2rem" style="font-size: 1.5rem" aria-haspopup="true"
