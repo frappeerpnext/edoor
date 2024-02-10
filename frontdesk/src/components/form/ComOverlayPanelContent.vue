@@ -1,6 +1,6 @@
 <template>
     <div class="">
-        <div :style="[{minWidth: width}, {maxWidth: width}]">
+        <div :style="[{minWidth: width ? width : ''}, {maxWidth: width ? width : ''}]">
             <slot name="top"></slot>
             <h1 class="font-semibold text-lg" :class="ttl_header">{{ title }}</h1>
             <slot name="default"></slot>
@@ -54,7 +54,8 @@
         titleButtonCancel: {
             type: String,
             default: 'Close'
-        }
+        },
+        panelClass: String
     })
     const onClickSave = () => {
         emit('onSave')

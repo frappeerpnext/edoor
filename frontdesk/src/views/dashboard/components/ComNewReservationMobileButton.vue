@@ -1,5 +1,5 @@
 <template>
- <SplitButton class="border-split-none mt-2 w-full" label="Reservation" icon="pi pi-plus-circle" :model="items_add_new" />
+ <SplitButton class="border-split-none w-full" label="Reservation" icon="pi pi-plus-circle" :model="items_add_new" />
 </template>
 <script setup>
 import { ref } from '@/plugin'

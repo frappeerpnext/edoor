@@ -2,7 +2,7 @@
 <div>
    <div class="flex items-center" >
       <div @click="onClick"  class="flex-none avatar-guest cursor-pointer">
-         <ComAvatar :image="photo" :colorStatus="colorStatus" />
+         <ComAvatar :image="photo" :colorStatus="colorStatus" avatarClass="mr-2"/>
       </div>
       <div class="flex-grow-1 overflow-hidden">
          <div @click="onClick"   v-tippy="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>

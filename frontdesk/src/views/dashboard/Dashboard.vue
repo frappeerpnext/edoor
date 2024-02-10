@@ -7,7 +7,7 @@
             <div class="txt-st__det" v-if="property.property_code">ID: {{ property.property_code }}, {{ property.province }}
             </div>
 </div>
-            <div class="col" v-if="isMobile">
+            <div class="col pt-3" v-if="isMobile">
                 <ComNewReservationMobileButton/>
             </div>
         </div>

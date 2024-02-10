@@ -11,17 +11,29 @@
                 </div>
             </template>
             <template #end> 
-                <div class="flex gap-2 justify-content-end">
-                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote">
-                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" /> Uncomming Note <Badge
+              
+                <div class="flex gap-2 w-full justify-content-between md:justify-content-end">
+                   
+                    <Button :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
+                       
+                        <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />
+                        <span>Upcomming Note</span>
+                        <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
+                     
                     </Badge>
+                    
                     </Button>
+<template v-if="isMobile">
+    <ComNewReservationMobileButton />
+</template>  
+<template v-else>
                     <ComWalkInReservation/>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
- 
+                  
+</template> 
                 </div>
             </template>
         </ComHeader>
@@ -133,7 +145,7 @@ import ComNoteGlobal from '@/views/note/ComNoteGlobal.vue'
 import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 
 import ComWalkInReservation from '@/views/reservation/components/ComWalkInReservation.vue';
-
+import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import FullCalendar from '@fullcalendar/vue3'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 
@@ -169,6 +181,7 @@ const showNote = ref(false)
 const loading = ref(false)
 const totalNotes = ref(0)
 const conflictRooms = ref()
+const isMobile = ref(window.isMobile) 
 let advanceFilter = ref({
     room_type: "",
     room_number: "",

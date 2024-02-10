@@ -2,8 +2,8 @@
     <div class="w-full flex align-items-center text-color border-noround" :class="align">
         <div class="flex" :class="{'cursor-pointer':isDisplayImage}" @click="onShowImage" v-if="!fileName">
             <template v-if="image">
-                <Avatar v-if="isMobile" :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="bg-gray-300 border-circle" shape="circle" :style="{borderColor:colorStatus}" />
-                <Avatar v-else :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" class="mr-2 bg-gray-300 border-circle" shape="circle" :style="{borderColor:colorStatus}" />
+                <Avatar v-if="isMobile" :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" :class="avatarClass" class="bg-gray-300 border-circle" shape="circle" :style="{borderColor:colorStatus}" />
+                <Avatar v-else :size="size" :image="image" :icon="image ? '' : 'pi pi-user'" :class="avatarClass" class="bg-gray-300 border-circle" shape="circle" :style="{borderColor:colorStatus}" />
             </template>
             <Avatar v-else-if="label" :size="size" class="mr-2 bg-gray-300 border-circle" shape="circle" :label="getAbbreviation()"/>
             <div v-else class="mr-3 bg-gray-300 border-circle p-1 border-2" :style="{borderColor:colorStatus}">
@@ -52,7 +52,8 @@ const props = defineProps({
     isDisplayImage:{
         type: Boolean,
         default: false
-    }
+    },
+    avatarClass: String
 })
 const icon = ref()
 const display = ref(false)

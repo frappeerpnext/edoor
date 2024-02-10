@@ -1,7 +1,7 @@
 <template>
-    <ComReservationStayPanel title="Stay Information">
+    <ComReservationStayPanel title="Stay Information" panelClass="block">
         <template #btn>
-            <div class="flex items-center">
+            <div class="flex items-center justify-content-end">
                 <span>{{ stay?.reservationStay?.reservation_color_code || "Select Reservation Color Code" }}</span> 
                 <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>
                 <span>
