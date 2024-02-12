@@ -196,14 +196,17 @@ function onAdvancedSearch(guest_type) {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            },
         },
         data:{
             guest_type: guest_type,
             is_change_master_guest: guest_type == 'master_guest',
             is_change_stay_guest: guest_type == 'stay_guest',
             is_change_additional_guest: guest_type == 'additional_guest',
-        },
+        }, 
         onClose(r) {
             if(r.data){ 
                 rs.getReservationDetail(rs.reservationStay.name)
@@ -222,7 +225,10 @@ function onEditGuest(guest_type) {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            },
         },
         data:{
             name: selectGuestName.value,

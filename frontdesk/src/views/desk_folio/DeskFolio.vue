@@ -4,7 +4,7 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Desk Folio</div>
+                    <div class="text-xl md:text-2xl">Desk Folio</div>
                 </template>
                 <template #end>
                     <Button class="border-none" label="Add New Desk Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />
@@ -13,7 +13,7 @@
         </div>
         <div class="mb-3 flex justify-between">
             <div class="flex gap-2">
-                <div>
+                <div v-if="!isMobile">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
                         <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -23,7 +23,7 @@
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 </div>
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
 
@@ -114,9 +114,15 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
     <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
-        <ComOverlayPanelContent style="width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+        <ComOverlayPanelContent style="max-width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
+                <div class="col-12" v-if="isMobile">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-search" />
+                        <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+                    </span>
+                </div>
                 <div class="col-6" >
                 <ComAutoComplete class="w-full"   width="100%" optionLabel="customer_name_en" optionValue="name"
                     v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
@@ -132,17 +138,17 @@
                     :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
-                                <div class="col-6" >
+                                <div class="col-12 md:col-6" >
                     <div class="flex relative">
                     <!-- <lable for="filter_date">Filter Date</lable> -->
                     <Calendar class="w-full" inputClass="pl-6" :disabled="!filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
                 @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
-                <div v-tippy="'Filter By Date'" class="check-box-filter">
+                <div v-tippy="'Filter By Date'" class="check-box-filter w-full">
                     <Checkbox class="absolute" inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true" selectionMode="range"/>
                     </div>
                     </div>
                 </div>
-                    <div class="col-6" v-if="filter.search_date_type">
+                    <div class="col-12 md:col-6" v-if="filter.search_date_type">
                     
                 </div>
             </div>
@@ -161,7 +167,7 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
+const isMobile = ref(window.isMobile) 
 const columns = ref([
     { fieldname: 'name', label: 'Desk Folio #', fieldtype: "Link", post_message_action: "view_desk_folio_detail", default: true },
     { fieldname: 'room_number', label: 'Room', default: true ,header_class: "text-center"},

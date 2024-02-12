@@ -1,5 +1,6 @@
 import functools
 import re
+
 from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
@@ -404,3 +405,89 @@ def validate_opening_folio_balance():
                 frappe.db.sql(sql)
     if do_commit:
         frappe.db.commit()
+
+
+@frappe.whitelist()
+def validate_reservation_stay_balance():
+    data_folios = frappe.db.sql("""
+                                select name as reservation_stay, total_credit,total_debit,balance from `tabReservation Stay` 
+                                where 
+                                    name in (
+                                        select reservation_stay from `tabReservation Folio` where status='Open'
+                                    ) 
+                                """,as_dict=1)
+
+    sql = """
+    select 
+        reservation_stay,
+        sum(if(type='Debit',amount,0)) as debit,
+        sum(if(type='Credit',amount,0)) as credit
+    from `tabFolio Transaction`
+    where 
+        transaction_type='Reservation Folio' and 
+        reservation_stay in %(reservation_stays)s    
+    group by
+        reservation_stay
+"""
+    data_folio_transaction =frappe.db.sql(sql, {"reservation_stays":set([d["reservation_stay"] for d in data_folios])},as_dict=1)
+    do_commit = False
+    for f in data_folios:
+        t =  [d for d in data_folio_transaction if d["reservation_stay"] ==f["reservation_stay"]]
+        if t:
+             t=t[0]
+             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                do_commit = True
+                sql="update `tabReservation Stay` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                    t["debit"], 
+                    t["credit"],
+                    f["reservation_stay"]
+                )
+                frappe.db.sql(sql)
+    if do_commit:
+        frappe.db.commit()
+
+    return "Done"
+
+
+    
+
+@frappe.whitelist()
+def validate_reservation_balance():
+    data_folios = frappe.db.sql("""
+                                select name as reservation, total_credit,total_debit,balance from `tabReservation` 
+                                where 
+                                    name in (
+                                        select reservation from `tabReservation Folio` where status='Open'
+                                    ) 
+                                """,as_dict=1)
+
+    sql = """
+    select 
+        reservation,
+        sum(if(type='Debit',amount,0)) as debit,
+        sum(if(type='Credit',amount,0)) as credit
+    from `tabFolio Transaction`
+    where 
+        transaction_type='Reservation Folio' and 
+        reservation in %(reservations)s    
+    group by
+        reservation
+"""
+    data_folio_transaction =frappe.db.sql(sql, {"reservations":set([d["reservation"] for d in data_folios])},as_dict=1)
+    do_commit = False
+    for f in data_folios:
+        t =  [d for d in data_folio_transaction if d["reservation"] ==f["reservation"]]
+        if t:
+             t=t[0]
+             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                do_commit = True
+                sql="update `tabReservation` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                    t["debit"], 
+                    t["credit"],
+                    f["reservation"]
+                )
+                frappe.db.sql(sql)
+    if do_commit:
+        frappe.db.commit()
+
+    return "Done"

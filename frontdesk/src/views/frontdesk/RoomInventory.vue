@@ -158,7 +158,9 @@ let advanceFilter = ref({
     building: "",
     floor: ""
 })
-
+if (isMobile) {
+    showSummary.value = false
+}
  
 
 provide('get_count_note', {

@@ -47,6 +47,7 @@
                 stateKey="table_reservation_list_state" 
                 :reorderableColumns="true" 
                 :value="data"
+                scrollable
                 tableStyle="min-width: 50rem" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column  v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"

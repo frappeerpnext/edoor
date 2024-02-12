@@ -3,7 +3,7 @@
     <div>
       <ComHeader isRefresh @onRefresh="Refresh()">
         <template #start>
-          <div class="text-2xl">Block Room</div>
+          <div class="text-xl md:text-2xl">Block Room</div>
         </template>
         <template #end>
           <Button class="border-none" @click="onAddNewRommBlock()">Add New Room Block</Button>
@@ -11,7 +11,7 @@
       </ComHeader>
       <div class="mb-3 flex justify-between">
         <div class="flex gap-2">
-          <div class="w-20rem">
+          <div v-if="!isMobile" class="w-20rem">
             <div class="w-full p-input-icon-left">
               <i class="pi pi-search" />
               <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -21,7 +21,7 @@
             <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
           </div>
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-            <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+            <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
         </div>
         
@@ -38,7 +38,7 @@
     <div class="overflow-auto h-full">
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
-          stateStorage="local" stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
+          stateStorage="local" scrollable stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
           tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
           <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
             :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
@@ -111,10 +111,16 @@
       </template>
     </ComOverlayPanelContent>
   </OverlayPanel>
-  <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+  <OverlayPanel ref="showAdvanceSearch" >
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
       icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
       <div class="grid">
+        <div v-if="isMobile" class="col-12">
+            <div class="w-full p-input-icon-left">
+              <i class="pi pi-search" />
+              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+            </div>
+          </div>
         <ComSelect class="col-6" width="100%" :options="['Draft','Blocked','Unblocked']" v-model="filter.block_status" @onSelected="onSearch" placeholder="Block Status" />
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
           optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
@@ -152,7 +158,7 @@ const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
+const isMobile = ref(window.isMobile) 
 const columns = ref([
   { fieldname: 'name', label: 'Room Block Code', header_class: "text-center", fieldtype: "Link", post_message_action: "view_room_block_detail", default: true },
   { fieldname: 'block_date', label: 'Block Date', header_class: "text-center", fieldtype: "Date", default: true },

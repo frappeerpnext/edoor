@@ -101,5 +101,10 @@ onMounted(()=> {
     }else {
         data.value.posting_date = moment(window.current_working_date).toDate()
     }
+    if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
 })
 </script>

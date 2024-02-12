@@ -1,15 +1,15 @@
 <template>
-  <div class="flex-col flex" style="height: calc(100vh - 92px);">
+  <div class="flex-col flex" >
     <div>
       <ComHeader isRefresh @onRefresh="Refresh()">
         <template #start>
-          <div class="text-2xl">Folio Transaction</div>
+          <div class="text-xl md:text-2xl">Folio Transaction</div>
         </template>
 
       </ComHeader>
       <div class="mb-3 flex justify-between">
         <div class="flex gap-2">
-          <div>
+          <div v-if="!isMobile" >
             <div class="p-input-icon-left">
               <i class="pi pi-search" />
               <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -22,7 +22,7 @@
         </div>
         <div class="flex">
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-            <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+            <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
           <div class="px-2">
             <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
@@ -33,9 +33,9 @@
         </div>
       </div>
     </div>
-    <div class=" h-full"> 
+    <div class="overflow-auto" style="height: calc(100% );" > 
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
-        <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
+        <DataTable scrollable  class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
           stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"
           tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
           <Column
@@ -114,17 +114,23 @@
     </ComOverlayPanelContent>
   </OverlayPanel>
 
-  <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+  <OverlayPanel ref="showAdvanceSearch" >
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
       icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
       <div class="grid">
+        <div class="col-12" v-if="isMobile" >
+            <div class="p-input-icon-left w-full">
+              <i class="pi pi-search" />
+              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+            </div>
+          </div>
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]" optionLabel="room_number"
           optionValue="name" v-model="filter.selected_room_id" @onSelected="onSearch" placeholder="Room" doctype="Room"
           isFilter />
         <ComSelect class="col-6" width="100%" :filters="[['property', '=', property.name]]"
           v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type" isFilter
           optionLabel="room_type" optionValue="name" />
-        <div class="col-6">
+        <div class="col-12 md:col-6">
           <div class="flex relative">
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection
               dateFormat="dd-mm-yy" v-model="filter.date_range" selectionMode="range" :manualInput="false"
@@ -153,7 +159,7 @@ const showAdvanceSearch = ref()
 const selectedColumns = ref([]);
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = window.property
-
+const isMobile = ref(window.isMobile) 
 const columns = ref([
   { fieldname: 'name', label: 'Folio Transaction', header_class: "text-center", fieldtype: "Link", post_message_action: "view_folio_transaction_detail", default: true },
   { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },

@@ -2,15 +2,14 @@
     <ComDialogContent hideButtonOK :hideButtonClose="false" @onClose="onClose" :loading="loading">
         
         <div class="iframe-view guest-detail">
- 
-            <TabView  lazy>
+            <TabView lazy class="tabview-custom">
                 <TabPanel header="General Information">
                     <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
                         :src="generalInfoUrl">
                     </iframe>
                 </TabPanel>
                 <TabPanel header="Stay History">
-                    <iframe  @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
+                    <iframe @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
                         :src="stayHistoryUrl">
                     </iframe>
                 </TabPanel>
@@ -43,7 +42,6 @@
     </ComDialogContent>
 </template>
 <script setup>
-
 import { inject, ref, onMounted,computed,useDialog,deleteDoc,useConfirm,onUnmounted } from '@/plugin'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 
@@ -56,14 +54,12 @@ const name = ref("")
 const loading = ref(false)
 const gv = inject("$gv")
 
-function onIframeLoaded(id){
+function onIframeLoaded(id){ 
     const iframe = document.getElementById(id);
     if (iframe){
-        iframe.height = iframe.contentWindow.document.body.scrollHeight;
         iframe.style.minWidth = "0px"
-        if (!window.isMobile){
-            iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-        }
+        iframe.style.minWidth = (iframe.contentWindow.document.body.scrollWidth - 20) + 'px';
+        iframe.height = (iframe.contentWindow.document.body.scrollHeight + 53) + 'px';
     }
 }
 

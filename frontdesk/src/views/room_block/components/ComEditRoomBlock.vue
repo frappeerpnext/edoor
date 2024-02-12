@@ -17,7 +17,7 @@
             </div>
             <div class="col-12"> 
                 <div class="grid">
-                    <div class="col">
+                    <div class="col-12 md:col">
                         <label>Start Date</label>
                         <div>
                             <Calendar showButtonBar panelClass="no-btn-clear" @date-select="onSelectStartDate" selectOtherMonths class="w-full" showIcon v-model="data.start_date" :min-date="working_day" dateFormat="dd-mm-yy"/>
@@ -52,6 +52,7 @@ import { inject, ref, createUpdateDoc, onMounted, watch } from '@/plugin'
 import ComReservationInputNight from '@/views/reservation/components/ComReservationInputNight.vue';
 const dialogRef = inject('dialogRef');
 const gv = inject('$gv');
+const isMobile = ref(window.isMobile) 
 const moment = inject('$moment');
 const data = ref({})
 const loading = ref(false)
@@ -99,6 +100,11 @@ function onClose() {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
     if (dialogRef.value.data.name) {
         data.value = JSON.parse(JSON.stringify(dialogRef.value.data))
         data.value.start_date = moment(data.value.start_date).toDate()
@@ -115,6 +121,7 @@ onMounted(() => {
         data.value.end_date = moment(data.value.start_date).add(1, 'days').toDate()
         data.value.property = property.name
     }
+ 
 })
 
 const onSelectStartDate = (date) => {

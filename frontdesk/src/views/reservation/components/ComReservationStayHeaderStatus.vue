@@ -3,14 +3,14 @@
     <div class="flex items-center">
         <div class="flex">
             <span @click="OnViewReservation">
-                <ComTagReservation title="RES#:" :value="rs?.reservation?.name" class="link_line_action w-auto hidden md:inline-block">
+                <ComTagReservation title="RES#:" :value="rs?.reservation?.name" class="link_line_action w-auto hidden lg:inline-block">
                     <span class="number_action_line inline-block">
                         {{ rs?.reservationStayNames.length }} </span>
                 </ComTagReservation>
             </span>
-            <ComTagReservation title="RES STAY#:" :value="rs.reservationStay?.name" class="bg-card-info p-1px">
+            <ComTagReservation title="RES STAY#:" :value="rs.reservationStay?.name" class="bg-card-info p-1px hidden lg:inline-block">
             </ComTagReservation>
-            <ComTagReservation title="ROOMS#:" class="bg-card-info p-1px" v-if="rs.reservationStay">
+            <ComTagReservation title="ROOMS#:" class="bg-card-info p-1px hidden lg:inline-block" v-if="rs.reservationStay">
                 <div class="inline" v-if="rs.reservationStay?.stays">
                     
                     <div class="inline" v-for="(i, index)  in rs.reservationStay?.stays?.slice(0, 3)" :key="index">

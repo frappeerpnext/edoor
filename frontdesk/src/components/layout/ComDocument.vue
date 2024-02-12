@@ -32,7 +32,7 @@
                                     </template>
                                 </Column>
                                 <Column field="title" header="Title"></Column>
-                                <Column v-if="showAttach" field="attached_to_name" header="Attach Name">
+                                <Column v-if="showAttach" field="attached_to_name" header="Attach Name" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <Button v-if="doctype != slotProps.data.attached_to_doctype"
                                             @click="onDetail(slotProps.data)" :label="slotProps.data.attached_to_name" link
@@ -51,7 +51,7 @@
                                         {{ slotProps.data.modified_by?.split("@")[0] }}
                                     </template>
                                 </Column>
-                                <Column field="modified" header="Last Modified">
+                                <Column field="modified" header="Last Modified" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <ComTimeago :date='slotProps.data.modified' />
                                     </template>
@@ -64,12 +64,13 @@
                                 </Column>
                             </DataTable>
                             <div>
+                                <template v-if="isMobile"><strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords}}</span></strong></template>
                                 <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                                     :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
                                     @page="pageChange">
-                                    <template #start="slotProps">
-                                        <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
-                                        }}</span></strong>
+                                    <template #start="slotProps" v-if="!isMobile">
+                                        <span><strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
+                                        }}</span></strong></span>
                                     </template>
                                 </Paginator>
                             </div>
@@ -91,7 +92,7 @@
                     </div>
                 </ComOverlayPanelContent>
             </OverlayPanel>
-            <Dialog v-model:visible="visible" modal header="Documents" :style="{ width: '50vw' }">
+            <Dialog v-model:visible="visible" modal header="Documents" :style="{ width: '50vw' }" :pt="{root: `${isMobile ? 'p-dialog-maximized' : ''}`}">
                 <ComDialogContent hideFooter>
                     <ComAttachFile :docname="docname" :doctype="doctype" @onSuccess="onSuccess" @onClose="onModal(false)" />
                 </ComDialogContent>
@@ -104,6 +105,8 @@ import { deleteDoc, getDocList, updateDoc, ref, onMounted, useConfirm, inject, u
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
+
+const isMobile = ref(window.isMobile)
 
 const toast = useToast()
 const emit = defineEmits(["updateCount"])
@@ -184,7 +187,10 @@ function onModalWebcam(open) {
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                    root: `${isMobile ? 'p-dialog-maximized' : ''}`
+                }
             },
         });
     }

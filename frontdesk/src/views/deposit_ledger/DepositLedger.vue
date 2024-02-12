@@ -3,7 +3,7 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Deposit Ledger</div>
+                    <div class="text-xl md:text-2xl">Deposit Ledger</div>
                 </template>
                 <template #end>
                     <Button class="border-none" label="Add New Deposit Ledger" icon="pi pi-plus"
@@ -13,7 +13,7 @@
         </div>
         <div class="mb-3 flex justify-between">
             <div class="flex gap-2">
-                <div>
+                <div v-if="!isMobile" >
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
                         <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -23,7 +23,7 @@
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 </div>
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
 
@@ -114,19 +114,21 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:50rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-            <div class="-ml-2 -mr-2">
-                <div class="flex">
+            <div class="grid">
+                <div class="col-12" v-if="isMobile" >
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-search" />
+                        <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+                    </span>
+                </div>
                     <ComAutoComplete class="col-6 input-wrp-search-autocomplete" width="100%" optionLabel="customer_name_en" optionValue="name"
                         v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
 
                     <ComSelect class="col-6" v-model="filter.selected_status" @onSelected="onSearch"
                         placeholder="Status" :options="['Open', 'Closed']" />
-                </div>
-                
-                <div class="flex">
                     <ComSelect class="col-6" isFilter optionLabel="room_type" optionValue="name"
                         v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                         :filters="{ property: property.name }"></ComSelect>
@@ -135,7 +137,7 @@
                         :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
                         v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                         :filters="{ property: property.name }"></ComSelect>
-                </div>
+             
                 
                 <div class="col-6">
                     <Checkbox inputId="filter_date" @change="onFilterDate" v-model="filter.filter_date" :binary="true"/>
@@ -166,6 +168,7 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
+const isMobile = ref(window.isMobile) 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
  
 const columns = ref([

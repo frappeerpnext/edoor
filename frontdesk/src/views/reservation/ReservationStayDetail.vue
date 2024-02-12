@@ -3,8 +3,8 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="overflow-hidden w-full">
-                    <div class="flex mb-3 justify-between stickyReservationStatus overflow-scroll lg:overflow-hidden w-max lg:w-full">
+                <div class="overflow-auto w-full">
+                    <div class="flex mb-3 justify-between stickyReservationStatus overflow-scroll lg:overflow-hidden w-full lg:w-full">
                         <ComReservationStayHeaderStatus />
                         <div class="flex gap-2">
                             <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
@@ -12,7 +12,7 @@
                                 <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                                 </icon>
                             </button>
-                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn "
+                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn hidden lg:inline-block"
                                 link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
@@ -48,7 +48,7 @@
                 <Message v-if="rs.reservationStay.reservation_status=='Checked Out' && rs.reservationStay.departure_date != rs.reservationStay.checked_out_system_date" severity="info">
                     This guest is early checked out. Check out date is {{  moment(rs.reservationStay.checked_out_system_date).format("DD-MM-YYYY") }}
                 </Message>
-                <TabView lazy v-model:activeIndex="activeTab">
+                <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom">
                     <TabPanel header="General Information">
                         <div class="grid mt-2 ml-0 ms-0">
                             <div class="col-12 lg:col-8 pl-0">
@@ -59,7 +59,7 @@
                                                 <ComReservationStayDetailGuestInfo />
                                             </div>
                                             <div class="col-12">
-                                                <ComReservationBusinessSourceAndRate /> 
+                                                <ComReservationBusinessSourceAndRate />
                                             </div>
                                         </div>
                                     </div>

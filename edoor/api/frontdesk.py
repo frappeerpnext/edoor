@@ -2206,7 +2206,7 @@ def update_daily_property_data(property, working_date):
             "date":working_date,
             "room_type_id":d["room_type_id"],
             "total_room":d["total_rooms"]
-        }).insert()
+        }).insert(ignore_permissions=True)
     frappe.db.commit()
 
 

@@ -1,6 +1,6 @@
 <template>
-
     <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2">
+        <slot name="button"></slot>
         <div>
             <template
                 v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
@@ -107,7 +107,7 @@ const props = defineProps({
     
 })
 
-// const emit = defineEmits([ "onRefresh"])
+const isMobile = ref(window.isMobile)
 const emit = defineEmits(['onAuditTrail', "onRefresh"])
 const selectedFolio = ref(props.folio)
 const transaction = ref([])

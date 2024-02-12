@@ -11,23 +11,27 @@
                 class="pi pi-lock me-2 text-lg" /> Block </div>
         <div class="ms_message_cs_edoor">
             <Message class="w-full" :closable="false" v-if="doc?.docstatus == 0">
-                <div class="col-8">
+                <div class="grid">
+                <div class="col-12 md:col-8">
                     The status of this room block is currently in Draft mode. Please click on button
                     <strong>Submit Room Block</strong> to block this room.
                 </div>
-                <Button class="border-none me-3 ml-auto" @click="onSubmitRoomBlock">
+                <Button class="border-none me-3 ml-auto col" @click="onSubmitRoomBlock">
                     <i class="pi pi-send me-3" />
                     Submit Room Block</Button>
+                </div>
             </Message>
             <Message class="w-full" :closable="false" v-if="doc?.docstatus == 1 && doc?.is_unblock == 0">
-
-                <div class="col-8">
+<div class="grid w-full">
+                <div class="col-12 md:col-8">
                     This room number <strong>{{ doc?.room_number }}</strong> is blocked now. To unblock this room, please on
                     button <strong>Unblock</strong>
                 </div>
+                <div class="col-12 md:col flex justify-content-end">
                 <Button class="border-none me-3 ml-auto" @click="onUnblock"> <i class="pi pi-lock-open me-3" /> Unblock this
                     Room</Button>
-
+                    </div>
+</div>
             </Message>
         </div>
         <div v-if="doc && doc?.is_unblock != 0">
@@ -127,6 +131,7 @@ const gv = inject('$gv');
 const dialog = useDialog()
 const housekeeping_status_code = ref(window.setting.housekeeping_status_code);
 const data = ref()
+const isMobile = ref(window.isMobile) 
 function Refresh() {
     pageState.value.page = 0
     loadData()
@@ -275,6 +280,11 @@ function onUnblock() {
 
 onMounted(() => {
     loadData()
+    if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
 });
 
 const onClose = () => {

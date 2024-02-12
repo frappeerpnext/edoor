@@ -2,7 +2,7 @@
     
     <div class="d-bg-edoor wrapper-foot-deco fixed bottom-0 w-full items-center flex" style="z-index: 12;">
         <div class="grid align-content-center pt-2 justify-between  text-white px-2 w-full" v-if="data?.date_working_day">
-           <div class="col-12 md:col-10 hidden md:flex">
+           <div class="col-12 md:col-10 hidden md:flex p-0">
             <p>Working Day # : {{ data.name }}, System date : {{ moment(data?.date_working_day).format("DD-MMM-YYYY") }}
  
                 <template v-if="gv.cashier_shift?.name">
@@ -11,7 +11,7 @@
                 </template>
             </p>
            </div>
-           <div class="col-12 md:col justify-content-end flex">
+           <div class="col-12 md:col justify-content-end flex p-0">
   <p>Powered by : {{ powered_by_text }}</p>
            </div>
             

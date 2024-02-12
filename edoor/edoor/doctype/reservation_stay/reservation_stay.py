@@ -355,7 +355,7 @@ def generate_temp_room_occupy(self=None, stay_name =None ):
 				"property":self.property,
 				"stay_room_id":stay.name,
 				"is_active":1 
-			}).insert()
+			}).insert(ignore_permissions=True)
 
 
 def generate_room_rate(self, run_commit = True): 

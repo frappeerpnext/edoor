@@ -1,9 +1,13 @@
 <template>
     <div>
-        <div class="flex max-h-folio-stay-dialgo" v-if="rs.folios?.length > 0">
-            <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/>
+        <div class="flex max-h-folio-stay-dialgo" v-if="rs.folios?.length > 0"> 
+                <ComResevationStayFolioList v-if="!isMobile" @onSelectFolio="onSelectFolio"/> 
             <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
-                <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
+                <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" >
+                    <template #button>
+                        <Button v-if="isMobile" icon="pi pi-bars" @click="visible = true" /> 
+                    </template>
+                </ComFolioAction>
                 <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
                 <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>
@@ -20,7 +24,13 @@
             <div class="text-center text-600">Create a Folio to post transactions.</div>
         </div>
     </div>
+    <Sidebar v-model:visible="visible">
+        <template #header>
+            <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/> 
+        </template>
+    </Sidebar>
 </template>
+
 <script setup>
 import { inject, ref, onUnmounted ,provide,getDocList,onMounted} from '@/plugin';
 import ComResevationStayFolioList from "@/views/reservation/components/reservation_stay_folio/ComResevationStayFolioList.vue"
@@ -32,6 +42,8 @@ import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction
 import ComNewReservationStayFolio from "@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue"
 import { useDialog } from 'primevue/usedialog';
 
+const isMobile = ref(window.isMobile)
+const visible = ref(false)
 const dialog = useDialog();
 const rs = inject("$reservation_stay")
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
@@ -40,6 +52,7 @@ const loading = ref(false)
 const setting  = window.setting
 
 function onSelectFolio(f){
+        visible.value = false
         selectedFolio.value=f
         selectedFolio.value.allow_post_to_city_ledger = rs.reservationStay.allow_post_to_city_ledger
     }

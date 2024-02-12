@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-col flex" style="height: calc(100vh - 92px);">
+    <div class="flex-col flex" >
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
@@ -38,9 +38,9 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-                <DataTable class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
+                <DataTable  class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
                     stateStorage="local" stateKey="table_reservation_stay_list_state" scrollable :reorderableColumns="true"
-                    :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
+                    :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"

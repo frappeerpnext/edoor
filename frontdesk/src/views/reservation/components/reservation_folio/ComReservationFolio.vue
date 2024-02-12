@@ -4,7 +4,7 @@
         <div class="col-fixed mt-2 res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
             <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
         </div>
-        <div class="col px-0 pt-2 overflow-auto">
+        <div class="col pl-0 pt-2 overflow-auto">
             
             <div v-if="selectedFolio">
                 <div class="w-full p-2 border-1 border-round-lg mb-2 flex ">

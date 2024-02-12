@@ -8,7 +8,7 @@
                         <img class="image-profile w-full h-full" style="object-fit: cover;" :src="user.photo"/>
                     </div>
                     <h1 class="text-2xl font-semibold pt-3">{{user.full_name}}</h1>
-                    <p>rathanachamroeun155@gmail.com</p>
+                    <!-- <p>rathanachamroeun155@gmail.com</p> -->
                 </div>
             </template>
             <div class="pt-3"> 

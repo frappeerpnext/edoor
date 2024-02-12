@@ -19,7 +19,7 @@
             </div>
         </template>
         <template v-else>
-            <Button class="border-y-none border-left-none border-noround-right">
+            <Button class="border-y-none border-left-none border-noround-right white-space-nowrap">
                {{selectedPeriod}}
             </Button>
             <div class="mr-2 relative h-full">
