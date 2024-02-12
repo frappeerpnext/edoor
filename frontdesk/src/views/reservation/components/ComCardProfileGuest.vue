@@ -5,7 +5,7 @@
          <ComAvatar :image="photo" :colorStatus="colorStatus" avatarClass="mr-2"/>
       </div>
       <div class="flex-grow-1 overflow-hidden">
-         <div @click="onClick"   v-tippy="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>
+         <div @click="onClick" v-tippy="name" class="font-semibold overflow-hidden text-overflow-ellipsis whitespace-nowrap color-purple-edoor cursor-pointer" >{{ name }}</div>
          <div v-tippy="phoneNumber1" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" ><span v-html="phoneNumber1 ?? '<span class=\'font-italic text-gray-400\'>No phone number</span>'"></span></div>
          <div v-tippy="email" class="overflow-hidden text-overflow-ellipsis whitespace-nowrap" > <span v-html="email ?? '<span class=\'font-italic text-gray-400\'>No email adress</span>'"></span></div>
       </div>

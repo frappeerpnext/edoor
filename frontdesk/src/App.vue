@@ -276,9 +276,11 @@ function showGuestDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position: "top"
-        },
-
+            position: "top",
+            pt: {
+                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            }
+        }
     });
 }
 function showVendorDetail(name) {

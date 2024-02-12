@@ -105,7 +105,8 @@ def get_reservation_stay_detail(name):
 
 @frappe.whitelist()
 def get_folio_summary_by_transaction_type(transaction_type, transaction_number):
-     
+    
+
 
     sql = """
         select 
@@ -123,9 +124,28 @@ def get_folio_summary_by_transaction_type(transaction_type, transaction_number):
         transaction_type,
         transaction_number
     )
-   
 
-    return frappe.db.sql(sql, as_dict=1)
+    data = frappe.db.sql(sql, as_dict=1)
+    #validate to reservation filio 
+    balance = frappe.db.get_value(transaction_type,transaction_number,"balance")
+    
+
+    if balance != sum([d["amount"] for d in data]):
+        
+        sql="update `tab{0}` set total_debit={1},total_credit={2}, balance={1}-{2} where name='{3}'".format(
+            transaction_type,
+            sum(d["amount"] for d in data if d["amount"]> 0), 
+            abs(sum(d["amount"] for d in data if d["amount"]< 0)),
+            transaction_number
+        )
+        frappe.db.sql(sql)
+         
+        frappe.db.commit()
+
+    
+    
+
+    return data
 
 
 @frappe.whitelist()

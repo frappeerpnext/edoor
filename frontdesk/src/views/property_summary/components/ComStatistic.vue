@@ -1,7 +1,7 @@
 <template>  
     <div v-if="data">
         <div class="grid w-full" >
-            <div class="col-3">
+            <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
                     <h3 class="text-lg font-medium">Reservation</h3>
                     <div  class="w-full " >
@@ -9,7 +9,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
                     <h3 class="text-lg font-medium"> Stay by Business Source</h3>
                     <div  class="w-full " >
@@ -17,7 +17,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
                     <h3 class="text-lg font-medium">Stay by Room Type</h3>
                     <div  class="w-full " >
@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
                     <h3 class="text-lg font-medium">Stay by Reservation Type</h3>
                     <div  class="w-full " >

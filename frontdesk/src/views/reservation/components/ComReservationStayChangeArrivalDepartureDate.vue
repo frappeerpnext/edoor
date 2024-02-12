@@ -1,5 +1,5 @@
 <template>
-    <ComOverlayPanelContent title="Change Date" style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
+    <ComOverlayPanelContent title="Change Date" :style="[{width : isMobile ? '100%' : '40rem'}]" :loading="loading" @onSave="onSave" @onCancel="onClose">
         <div class="grid py-2 wp-number-cus">
             <div class="col-6">
                 <label>Arrival Date</label>
@@ -26,6 +26,9 @@
 </template>
 <script setup>
 import { ref,inject,postApi } from '@/plugin'
+
+const isMobile = ref(window.isMobile)
+
 const moment = inject("$moment")
 const rs = inject("$reservation_stay")
 const gv = inject("$gv")

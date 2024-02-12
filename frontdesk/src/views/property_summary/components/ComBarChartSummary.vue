@@ -1,39 +1,39 @@
 <template>
     <div class="grid w-full mt-1">
-        <div class="col-6">
+        <div class="col-12 lg:col-6">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
                     <h3 class="text-lg font-medium">Summary</h3>
                     <div>Reservation : {{ data.daily_reservation }}</div>
                 </div>
-                <div class="flex mb-2">
-                    <div class="col line-height-1 border-right-1" style="color: rgb(236, 134, 75);">
+                <div class="grid mb-2">
+                    <div class="col-4 md:col line-height-1 border-right-1" style="color: rgb(236, 134, 75);">
                         <h3 class="text-2xl font-medium">{{ data.arrival }}</h3>
                         <span>Arrival</span>
                     </div>
-                    <div class="col line-height-1 border-right-1" style="color: #50ac58;">
+                    <div class="col-4 md:col line-height-1 border-right-1" style="color: #50ac58;">
                         <h3 class="text-2xl font-medium">{{ data.total_in_house }}</h3>
                         <span>In House</span>
                     </div>
-                    <div class="col line-height-1 border-right-1" style="color:rgb(79, 79, 79);">
+                    <div class="col-4 md:col line-height-1 border-right-1" style="color:rgb(79, 79, 79);">
                         <h3 class="text-2xl font-medium">{{ data.departure - data.departure_remaining }}</h3>
                         <span>Checked Out</span>
                     </div>
-                    <div v-tippy="'Today Reserved Room'" class="col line-height-1 border-right-1"
+                    <div v-tippy="'Today Reserved Room'" class="col-4 md:col line-height-1 border-right-1"
                         style="color: rgb(130, 130, 5);">
                         <h3 class="text-2xl font-medium">{{ data.today_no_show }}</h3>
                         <span>Today N/S</span>
                     </div>
-                    <div v-tippy="'No Show Reserved Room'" class="col line-height-1 border-right-1"
+                    <div v-tippy="'No Show Reserved Room'" class="col-4 md:col line-height-1 border-right-1"
                         style="color: rgb(130, 130, 5);">
                         <h3 class="text-2xl font-medium">{{ data.total_no_show }}</h3>
                         <span>N/S Reserved Room</span>
                     </div>
-                    <div class="col line-height-1 border-right-1" style="color:rgb(237, 99, 150);">
+                    <div class="col-4 md:col line-height-1 border-right-1" style="color:rgb(237, 99, 150);">
                         <h3 class="text-2xl font-medium">{{ data.total_cancelled }}</h3>
                         <span>Cancelled</span>
                     </div>
-                    <div class="col line-height-1" style="color:rgb(255, 0, 0);">
+                    <div class="col-4 md:col line-height-1" style="color:rgb(255, 0, 0);">
                         <h3 class="text-2xl font-medium">{{ data.total_void }}</h3>
                         <span>Void</span>
                     </div>
@@ -56,7 +56,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-4">
+        <div class="col-12 lg:col-4">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
                     <h3 class="text-lg font-medium">Occupancy</h3>
@@ -90,7 +90,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-2">
+        <div class="col-12 lg:col-2">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
                     <h3 class="text-lg font-medium">Transportation</h3>

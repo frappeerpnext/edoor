@@ -4,34 +4,40 @@
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center">
-                        <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-2xl ml-4">Room Inventory</div> 
-                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
-                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
+                        <div @click="onRefresh()" class="text-xl md:text-2xl md:ml-4  white-space-nowrap">Room Inventory</div> 
+                      
+                        <div class="ml-8 text-xl md:text-2xl white-space-nowrap" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div class="ml-8 text-xl md:text-2xl white-space-nowrap" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
                 </div>
             </template>
             <template #end> 
-                <div class="flex gap-2 justify-content-end">
-                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="bg-yellow-500 border-none" @click="showNote=!showNote">
+                <div class="flex gap-2 w-full justify-content-end">
+                    <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
                       <ComIcon icon="iconNoteWhite" class="me-2" height="18px" /> Uncomming Note <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
                     </Badge>
                     </Button>
+                    <template v-if="isMobile">
+    <ComNewReservationMobileButton  />
+</template>  
+<template v-else>
                     <NewFITReservationButton/>
                     <NewGITReservationButton/>
+</template>
                 </div>
 
             </template>
         </ComHeader>
-        <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
-            <div class="flex gap-2">
-                <div>
-                    <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
+        <div class="grid justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
+            <div  class="col flex gap-2">
+                <div> 
+                    <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
             </div>
-            <div>
+            <div class="col flex justify-content-end">
                 <ComRoomChartFilter :hideRefresh="true" :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
             </div>
         </div>
@@ -115,7 +121,7 @@ import ComCalendarEvent from '@/views/frontdesk/components/ComCalendarEvent.vue'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import RoomInventoryChart from '@/views/frontdesk/components/RoomInventoryChart.vue'
 import FullCalendar from '@fullcalendar/vue3'
-
+import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 
 const resources = ref([])
 const events = ref([])
@@ -126,7 +132,7 @@ const filter = ref({
     end_date: '',
     period: "15_days"
 })
-
+const isMobile = ref(window.isMobile) 
 const showAdvanceSearch = ref()
 
 const fullCalendar = ref(null)

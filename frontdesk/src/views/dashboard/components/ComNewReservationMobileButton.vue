@@ -8,6 +8,45 @@ import NewGroupBooking from '@/views/reservation/NewGroupBooking.vue';
 import { useDialog } from 'primevue/usedialog';
 const items_add_new = ref([])
 const dialog = useDialog();
+const props = defineProps({
+    is_walk_in: {
+        type: Boolean,
+        default: false
+    },
+})
+if (props.is_walk_in) {
+    items_add_new.value.push({
+    label: "New Walk-In Guest",
+    icon: 'pi pi-user',
+    command: () => {
+        const dialogRef = dialog.open(NewReservation, {
+        data:{
+            is_walk_in:1
+        },
+        props: {
+            header: 'New Walk-In Guest',
+            style: {
+                width: '80vw',
+            },
+            breakpoints: {
+                '960px': '100vw',
+                '640px': '100vw'
+            },
+            modal: true,
+            maximizable: true,
+            closeOnEscape: false,
+            position: "top"
+        },
+        onClose: (options) => {
+            const data = options.data;
+            if (data != undefined) {
+                onViewReservationDetail(data.name)
+            }
+        }
+    });
+    }
+})
+}
 items_add_new.value.push({
     label: "New FIT Reservation",
     icon: 'pi pi-user',
@@ -37,6 +76,7 @@ items_add_new.value.push({
     });
     }
 })
+
 
 
 //Confirmattion Voucher

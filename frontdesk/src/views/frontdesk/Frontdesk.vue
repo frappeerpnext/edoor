@@ -3,10 +3,10 @@
         <ComHeader>
             <template #start>
                 <div class="flex">
-                    <div class="flex align-items-center">
-                        <div @click="onRefresh()" class="text-2xl">Front Desk</div> 
-                        <div class="ml-8 header-title text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
-                        <div class="ml-8 header-title text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                    <div class="flex align-items-center justify-content-between w-full">
+                        <div @click="onRefresh()" class="text-xl md:text-2xl">Front Desk</div> 
+                        <div class="ml-8 header-title text-xl md:text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div class="ml-8 header-title text-xl md:text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
                 </div>
             </template>
@@ -17,7 +17,7 @@
                     <Button :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
                        
                         <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />
-                        <span>Upcomming Note</span>
+                        <span>Uncomming Note</span>
                         <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
@@ -26,7 +26,7 @@
                     
                     </Button>
 <template v-if="isMobile">
-    <ComNewReservationMobileButton />
+    <ComNewReservationMobileButton :is_walk_in="true" />
 </template>  
 <template v-else>
                     <ComWalkInReservation/>
@@ -38,11 +38,14 @@
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3 filter-calen-fro sticky_search_bar" id="front_desk_search_sticky"> 
+               
             <div class="flex gap-2">
+                <template v-if="!isMobile">
                 <Button @click="onShowSummary" :icon="showSummary? 'pi pi-ellipsis-v':'pi pi-ellipsis-h'" class="text-3xl content_btn_b border-none"></Button>
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
                 </div>
+                
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
@@ -55,21 +58,24 @@
                         <InputText class="btn-set__h w-full"  v-model="keyword.keyword" placeholder="Search" v-debounce="onSearch"/>
                     </span>
                 </div>
+            </template>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="onOpenAdvanceSearch"/>
                 </div> 
+          
                 <div v-if="isFilter">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
             </div>
+       
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)" @onRefresh="onRefresh()"/>
             </div>
         </div>
         <div style="max-width: 100%;">
             <div id="fron__desk-fixed-top">
-                <div :class="showSummary ? 'flex gap-2' : ''">
-                    <div v-if="showSummary" class="relative" style="width:280px">
+                <div :class=" (showSummary) ? 'flex gap-2' : ''">
+                    <div v-if="(!isMobile && showSummary)" class="relative" style="width:280px">
                         <div>
                             <div class="w-full">
                                 <ComPanel title="Today Guest" class="mb-3 pb-3">
@@ -117,7 +123,7 @@
         </div>
     </div>
     <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
-        <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-4"></ComRoomChartFilterSelect>
+        <ComRoomChartFilterSelect headerClass="grid" bodyClass="col-12 md:col-4"></ComRoomChartFilterSelect>
     </OverlayPanel>
  
 
@@ -189,7 +195,9 @@ let advanceFilter = ref({
     building: "",
     floor: ""
 })
-
+if (isMobile) {
+    showSummary.value = false
+}
 const isFilter = computed(() => { 
     if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
         return true
@@ -237,7 +245,7 @@ const calendarOptions = reactive({
     selectable: true,
     editable: true,
     eventResizableFromStart: true,
-    resourceAreaWidth: "250px",
+    resourceAreaWidth: window.isMobile? "100px":"250px",
     height: 'auto',
     slotDuration: {
         "hours": 12
@@ -245,7 +253,6 @@ const calendarOptions = reactive({
     slotLabelInterval: {
         "hours": 24
     },
-
     slotLabelFormat: function (date) {
         return " "
     },
@@ -642,7 +649,17 @@ function resourceColumn(view_type) {
             }
         ]
     } else {
-        return [
+        
+        if (window.isMobile){
+            return [
+            {
+                labelText: 'xxx',
+                headerContent: 'Room'
+            },
+            
+        ]
+        }else {
+            return [
             {
                 labelText: 'xxx',
                 headerContent: 'Room'
@@ -686,6 +703,8 @@ function resourceColumn(view_type) {
                 }
             }
         ]
+        }
+        
     }
 }
 

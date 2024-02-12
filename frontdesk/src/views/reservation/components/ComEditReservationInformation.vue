@@ -1,5 +1,5 @@
 <template>
-    <ComOverlayPanelContent title="Update Reservation Information" width="50rem" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
+    <ComOverlayPanelContent title="Update Reservation Information" :width="isMobile ? '100%' : '50rem'" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
         <div class="py-2 grid">
             <div class="col-12">
                 <label>Res. Date</label><br/>
@@ -53,6 +53,8 @@
 
 import { ref, inject, onMounted,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
+
+const isMobile = ref(window.isMobile)
 
 const moment = inject("$moment")
 const emit = defineEmits(['onClose'])

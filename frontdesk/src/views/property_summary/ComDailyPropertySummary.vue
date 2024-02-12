@@ -1,6 +1,6 @@
 <template>
     <Button @click="loadData" class="btn-refresh-in-night-audit arrival_guest"><i class="pi pi-refresh"></i></Button>
-    <ComDialogContent hideButtonClose hideButtonOK>
+    <ComDialogContent dialogClass="max-h-screen-newres overflow-auto" hideButtonClose hideButtonOK>
         <ComSkeleton v-if="loading" />
         <template v-else>
             <ComStatistic :property="dialogRef.data.property" :date="dialogRef.data.date"

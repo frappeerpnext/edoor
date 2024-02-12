@@ -61,7 +61,9 @@ function onIframeLoaded(id){
     if (iframe){
         iframe.height = iframe.contentWindow.document.body.scrollHeight;
         iframe.style.minWidth = "0px"
-    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
+        if (!window.isMobile){
+            iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
+        }
     }
 }
 

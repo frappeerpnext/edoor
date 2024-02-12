@@ -145,64 +145,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Revenue and Occupancy",
-   "link_count": 5,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Revenue and Occupancy",
-   "link_count": 0,
-   "link_to": "Revenue and Occupancy Summary Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "General Journal Transaction",
-   "link_count": 0,
-   "link_to": "General Journal Transaction",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Monthly Occupancy",
-   "link_count": 0,
-   "link_to": "Monthly Occupancy Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Trail Balance Report",
-   "link_count": 0,
-   "link_to": "Trail Balance Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Manager Flash Report",
-   "link_count": 0,
-   "link_to": "Manager Flash Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Property Ledger",
    "link_count": 3,
    "onboard": 0,
@@ -393,9 +335,77 @@
    "link_type": "Page",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Revenue and Occupancy",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Revenue and Occupancy",
+   "link_count": 0,
+   "link_to": "Revenue and Occupancy Summary Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "General Journal Transaction",
+   "link_count": 0,
+   "link_to": "General Journal Transaction",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Monthly Occupancy",
+   "link_count": 0,
+   "link_to": "Monthly Occupancy Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Trail Balance Report",
+   "link_count": 0,
+   "link_to": "Trail Balance Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Manager Flash Report",
+   "link_count": 0,
+   "link_to": "Manager Flash Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Room Revenue Detail",
+   "link_count": 0,
+   "link_to": "Room Revenue Detail Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-02-07 17:24:02.172271",
+ "modified": "2024-02-12 09:42:44.587292",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

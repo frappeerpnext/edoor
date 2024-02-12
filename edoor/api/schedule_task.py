@@ -373,3 +373,34 @@ def generate_audit_trail_from_version():
 
 
 
+@frappe.whitelist()
+def validate_opening_folio_balance():
+    data_folios = frappe.db.sql("select name, total_credit,total_debit,balance from `tabReservation Folio` where status = 'Open'",as_dict=1)
+    sql = """
+    select 
+        transaction_number,
+        sum(if(type='Debit',amount,0)) as debit,
+        sum(if(type='Credit',amount,0)) as credit
+    from `tabFolio Transaction`
+    where 
+        transaction_type='Reservation Folio' and 
+        transaction_number in %(folio_numbers)s    
+    group by
+        transaction_number
+"""
+    data_folio_transaction =frappe.db.sql(sql, {"folio_numbers":set([d["name"] for d in data_folios])},as_dict=1)
+    do_commit = False
+    for f in data_folios:
+        t =  [d for d in data_folio_transaction if d["transaction_number"] ==f["name"]]
+        if t:
+             t=t[0]
+             if t["debit"] != f["total_debit"] or t["credit"] != f["total_credit"]:
+                do_commit = True
+                sql="update `tabReservation Folio` set total_debit={0},total_credit={1}, balance={0}-{1} where name='{2}'".format(
+                    t["debit"], 
+                    t["credit"],
+                    f["name"]
+                )
+                frappe.db.sql(sql)
+    if do_commit:
+        frappe.db.commit()
