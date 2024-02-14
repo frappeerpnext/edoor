@@ -339,10 +339,10 @@ function showReservationDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            // breakpoints:{
+            //     '960px': '80vw',
+            //     '640px': '100vw'
+            // },
         }
     });
     }else {

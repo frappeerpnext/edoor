@@ -23,7 +23,7 @@
             <Card class="mt-3" v-if="!slotProps.item.date">
                 <template #title>
                     <div class="line-height-1">
-                        <span class="text-xl">{{ slotProps.item.subject }}</span>
+                        <span class="text-lg md:text-xl">{{ slotProps.item.subject }}</span>
 
                         <div class="font-italic text-500 text-sm inline"
                             v-if="slotProps.item.custom_note_date && slotProps.item.custom_is_note"
@@ -59,7 +59,7 @@
                             </div>
                         </div>
 
-                        <div class="col p-0">
+                        <div class="col-12 md:col p-0">
                             <div class="content-note-comment" v-html="slotProps.item.content">
                             </div>
                         </div>

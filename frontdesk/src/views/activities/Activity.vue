@@ -3,9 +3,23 @@
         <div class="px-2">
             <ComHeader isRefresh @onRefresh="onRefresh()">
                 <template #start>
-                    <div class="flex align-items-center">
+                    <div class="flex align-items-center" :class="isMobile ? 'justify-content-between' : ''">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
                         <div class="text-xl md:text-2xl  md:ms-4">Activity</div>
+                        <div v-if="isMobile" class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
+                        <button type="button" @click="onToggleView"
+                            :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
+                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />
+                        
+                               Line 
+                        </button>
+                        <button @click="onToggleView"
+                            :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
+                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />
+                          
+                            Table
+                        </button>
+                    </div>
                     </div>
                 </template>
             </ComHeader>
@@ -35,7 +49,7 @@
                                 </div>
                                 <div class="flex gap-2 px-2">
                                     <div>
-                                        <div class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
+                                        <div v-if="!isMobile" class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
                         <button type="button" @click="onToggleView"
                             :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
                             <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify md:me-2" />
