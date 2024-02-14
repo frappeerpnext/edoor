@@ -335,11 +335,12 @@ onMounted(() => {
 
     
  if(window.isMobile){
-    const elem = document.querySelector(".p-dialog");
-		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
-
+    let elem = document.querySelectorAll(".p-dialog");
+    if (elem){
+        elem = elem[elem.length-1]
+        elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+    }
  }
- 
 
 });
 

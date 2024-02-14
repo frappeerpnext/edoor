@@ -4,8 +4,8 @@
             <ComHeader isRefresh @onRefresh="onRefresh()">
                 <template #start>
                     <div class="flex align-items-center">
-                        <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-xl md:text-2xl ml-4">Activity</div>
+                        <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
+                        <div class="text-xl md:text-2xl  md:ms-4">Activity</div>
                     </div>
                 </template>
             </ComHeader>
@@ -19,7 +19,7 @@
                         <div>
                             <div class="mb-3 flex justify-between">
                                 <div class="flex gap-2">
-                                    <div>
+                                    <div v-if="!isMobile">
                                         <span class="p-input-icon-left">
                                             <i class="pi pi-search" />
                                             <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -29,20 +29,26 @@
                                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                                     </div>
                                     <div v-if="isFilter">
-                                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
+                                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash"
                                             @click="onClearFilter" />
                                     </div>
                                 </div>
-                                <div class="flex gap-2">
+                                <div class="flex gap-2 px-2">
                                     <div>
                                         <div class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
                         <button type="button" @click="onToggleView"
                             :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+                            <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify md:me-2" />
+                            <template v-if="!isMobile">
+                               Line 
+                            </template>
                         </button>
                         <button @click="onToggleView"
                             :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+                            <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table md:me-2" />
+                            <template v-if="!isMobile">
+                            Table
+                            </template>
                         </button>
                     </div>
                                     </div>
@@ -92,7 +98,7 @@
     </div>
 
     <OverlayPanel ref="showAdvanceSearch" style="max-width:55rem">
-        <ComOverlayPanelContent style="min-width:50rem" title="Advance Filter" @onSave="onClearFilter"
+        <ComOverlayPanelContent  title="Advance Filter" @onSave="onClearFilter"
             titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
             @onCancel="onCloseAdvanceSearch">
             <div class="grid">
@@ -106,10 +112,10 @@
                     <Calendar class="w-full" :selectOtherMonths="true" :minDate="filter.start_date" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="loadData(false, $event)"  />
                 </div>
-                <ComSelect class="col-6 " v-model="filter.type" :options="reference_doctypes" isMultipleSelect
+                <ComSelect class="col-12 md:col-6 " v-model="filter.type" :options="reference_doctypes" isMultipleSelect
                     optionLabel="label" placeholder="Select Filter" :maxSelectedLabels="10"
                     @onSelected="loadData(false, $event)" />
-                <ComSelect v-model="filter.selected_comment_by" class="col-6" optionLabel="full_name" optionValue="name"
+                <ComSelect v-model="filter.selected_comment_by" class="col-12 md:col-6" optionLabel="full_name" optionValue="name"
                     placeholder="Please Select User" doctype="User" @onSelected="loadData(false, $event)" />
             </div>
 
@@ -122,6 +128,7 @@ import Paginator from 'primevue/paginator';
 import ComHousekeepingStatistic from "@/views/housekeeping/components/ComHousekeepingStatistic.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
 import ComActivityTable from "@/views/activities/components/ComActivityTable.vue";
+const isMobile = ref(window.isMobile) 
 const edoor_activity_show_summary = localStorage.getItem("edoor_activity_show_summary")
 const gv = inject("$gv")
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -133,6 +140,7 @@ const toggleView = ref(true)//true view as timeline, false view as table
 
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 50, totalRecords: 0, activePage: 0 })
 const showAdvanceSearch = ref()
+
 
 
 const reference_doctypes = ref([
@@ -289,6 +297,10 @@ function debouncer(fn, delay) {
 onMounted(() => {
     
 loadData()
+if (isMobile) {
+    showSummary.value = false;
+    localStorage.setItem("edoor_activity_show_summary", "0")
+}
 })
 
 

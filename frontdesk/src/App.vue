@@ -421,7 +421,11 @@ function showReservationStayDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

@@ -231,7 +231,11 @@ function showReservationStayDetail(selected) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position:"top"
+            position:"top",
+            breakpoints: {
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         }, 
     });
 }

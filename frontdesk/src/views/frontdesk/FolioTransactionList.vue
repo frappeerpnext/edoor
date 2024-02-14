@@ -33,7 +33,7 @@
         </div>
       </div>
     </div>
-    <div class="overflow-auto" style="height: calc(100% );" > 
+    <div class="overflow-auto" style="height: calc(100% );min-height: 70vh;" > 
       <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
         <DataTable scrollable  class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
           stateStorage="local" stateKey="table_folio_transaction_list_state" :reorderableColumns="true" :value="data"

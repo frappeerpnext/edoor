@@ -115,7 +115,7 @@ function onViewReservationDetail(name) {
                 width: '80vw',
             },
             breakpoints: {
-                '960px': '100vw',
+                '960px': '80vw',
                 '640px': '100vw'
             },
             modal: true,
