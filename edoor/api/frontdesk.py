@@ -1,4 +1,5 @@
 import secrets
+import time
  
 from edoor.api.utils import get_date_range, get_master_folio,add_room_charge_to_folio, get_months, validate_role
 import frappe
@@ -9,7 +10,6 @@ from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
 from frappe.desk.search import search_link
-
 
 @frappe.whitelist(methods="POST")
 def search(doctypes=None, txt="" ,filters=None):
@@ -90,8 +90,19 @@ def get_meta(doctype=None):
     data =  frappe.get_meta(doctype)
     return data
 
-# Get the current date
 
+@frappe.whitelist()
+def get_dashboard_data_by_timespan(property,timespan="today"):
+    time.sleep(5)
+    working_day = get_working_day(property)
+    if timespan=="today":
+        return get_dashboard_data(property=property, date=working_day['date_working_day'])
+    elif timespan=="tomorrow":
+        return get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=1))
+    else:
+        return get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=-1))
+
+# Get the current date
 @frappe.whitelist()
 def get_dashboard_data(property = None,date = None,room_type_id=None,include_reservation_by_business_source=0,include_reservation_by_room_type=0):
     data = frappe.db.sql("select max(posting_date) as date from `tabWorking Day` where business_branch = '{}' limit 1".format(property),as_dict=1)

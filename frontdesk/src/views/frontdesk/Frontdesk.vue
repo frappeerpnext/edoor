@@ -4,9 +4,9 @@
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center justify-content-between w-full">
-                        <div @click="onRefresh()" class="text-xl md:text-2xl">Front Desk</div> 
-                        <div class="ml-8 header-title text-xl md:text-2xl" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
-                        <div class="ml-8 header-title text-xl md:text-2xl" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div @click="onRefresh()" class="text-xl md:text-2xl white-space-nowrap">Front Desk</div> 
+                        <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
+                        <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
                 </div>
             </template>

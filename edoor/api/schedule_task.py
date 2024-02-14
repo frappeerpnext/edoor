@@ -323,6 +323,7 @@ def validate_property_data():
 
 def fix_generate_duplicate_room_occupy():
     sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))
+
     data = frappe.db.sql(sql,as_dict=1)
     if len(data)> 0:
         for s in set([d["reservation_stay"] for d  in data]):
@@ -333,6 +334,23 @@ def fix_generate_duplicate_room_occupy():
     if len(data)> 0:
         for s in set([d["reservation_stay"] for d  in data]):
             generate_temp_room_occupy(stay_name=s)
+
+    # find count room occupy by stay and compare to room night in reservation 
+    # if differenct then update run script update room occupy
+    sql="""with a as(
+                select name, room_nights from `tabReservation Stay` where reservation_status in ('Reserved','In-house','Confirmed') 
+            ),
+            b as (
+                select x.reservation_stay as  name, count(x.name) as room_nights from `tabRoom Occupy` x inner join a on a.name=x.reservation_stay group by x.reservation_stay
+            )
+            select a.name  from a left join b on a.name = b.name where a.room_nights <> coalesce(b.room_nights,0)-1
+        """
+    data = frappe.db.sql(sql,as_dict=1)
+
+    for d in data:
+            generate_room_occupy(stay_name=d["name"])
+            generate_temp_room_occupy(stay_name=d["name"])
+
 
 
     # clear 
@@ -346,6 +364,9 @@ def fix_generate_duplicate_room_occupy():
         frappe.db.sql("delete from `tabTemp Room Occupy` where reservation_stay in %(stays)s", {"stays":set([d["name"] for d in data])})
         
     frappe.db.commit()
+
+   
+
 
     
 

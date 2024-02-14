@@ -1529,7 +1529,8 @@ def post_room_charge_to_folio_after_extend_stay(stays):
             })
             #update folio balance
             folio = get_stay_posting_folio(stay_doc)
-            update_reservation_folio(doc=folio, run_commit=False)
+            if folio:
+                update_reservation_folio(doc=folio, run_commit=False)
 
             #post to audit trail
 

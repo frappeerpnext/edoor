@@ -1,6 +1,6 @@
 from edoor.edoor.doctype.reservation_stay.reservation_stay import  generate_room_occupy, generate_temp_room_occupy, update_reservation_stay_room_rate_after_resize
 from edoor.api.frontdesk import get_working_day
-from edoor.api.reservation import check_room_type_availability
+from edoor.api.reservation import check_room_type_availability, post_room_charge_to_folio_after_extend_stay
 from edoor.api.utils import update_reservation, validate_role
 from py_linq import Enumerable
 import frappe
@@ -152,13 +152,16 @@ def change_stay(data):
     if hasattr(data,"note") or "note" in data:
         doc.change_stay_note = data["note"]  
 
-    doc.flags.ignore_validate = True
+    # doc.flags.ignore_validate = True
     doc.flags.ignore_on_update = True
     doc.save()
 
     if doc:
        
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
+        post_room_charge_to_folio_after_extend_stay([doc.name])
+        frappe.msgprint(doc.rooms)
+
        
 
 
