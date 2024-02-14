@@ -1,5 +1,5 @@
 <template>
-    <div class="col-fixed relative pl-0 pr-0 py-0" style="width: 250px;">
+    <div class="col-fixed relative pl-0 pr-0 py-0" :style="`width: ${panelWidth ? panelWidth : '250px'}`">
  
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
             <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
@@ -48,7 +48,7 @@
                 </template>
             </div>
 
-            <div v-if="can_view_rate" :class="rs.is_page == true ? 'flex flex-column bg-white mt-3 page_total_foliolist' : 'flex flex-column bg-white mt-3 fixed total_foliolist'" style="width: 250px;bottom:0px;z-index: 1;">
+            <div v-if="can_view_rate" :class="rs.is_page == true ? 'flex flex-column bg-white mt-3 page_total_foliolist' : 'flex flex-column bg-white mt-3 relative lg:fixed total_foliolist'" :style="`width: ${panelWidth ? panelWidth : '250px'};bottom:0px;z-index: 1;`">
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
                     <div class="pr-3"><label>Total Debit</label></div>
                     <div><span>
@@ -89,6 +89,10 @@ import plus_svg from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
 import { useDialog } from 'primevue/usedialog';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
+
+const props = defineProps({
+    panelWidth: [String, Number]
+})
 
 const emit = defineEmits(["onSelectFolio"])
 
@@ -142,7 +146,7 @@ function onAddCreatNewFolio() {
 
             header: 'Create New Folio',
             style: {
-                width: '50vw',
+                width: `${isMobile ? '90vw' : '50vw'}`,
             },
             modal: true,
             position: 'top',

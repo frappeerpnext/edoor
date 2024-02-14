@@ -324,7 +324,6 @@
    "fetch_from": "reservation_status.color",
    "fieldname": "status_color",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Status Color"
   },
   {
@@ -882,7 +881,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2024-02-03 11:16:25.728825",
+ "modified": "2024-02-13 08:43:28.003946",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

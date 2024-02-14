@@ -41,7 +41,7 @@ import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')
 const loading = ref(false);
-
+const isMobile = ref(window.isMobile) 
 const property = window.property
 const data = ref({
   custom_property : window.property_name,
@@ -88,6 +88,11 @@ onMounted(() => {
     data.value.custom_note_date = new Date()
     data.value.property = property.name
   }
+  if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
 })
 
 function onClose(){

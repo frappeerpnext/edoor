@@ -953,6 +953,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
 .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
     max-height: calc(100vh - 89px) !important;
 }
+@media (max-width: 767.98px) {
+    .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
+        max-height: calc(100vh - 128px) !important;
+    }
+}
 .p-dialog .footer-fixed{
     background-color: #FFF;
     height: 49px;

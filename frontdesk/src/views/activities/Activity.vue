@@ -5,7 +5,7 @@
                 <template #start>
                     <div class="flex align-items-center">
                         <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-2xl ml-4">Activity</div>
+                        <div class="text-xl md:text-2xl ml-4">Activity</div>
                     </div>
                 </template>
             </ComHeader>

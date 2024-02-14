@@ -32,9 +32,9 @@ def get_room_rate_group_by_field(filters):
 def room_rate_group_by_fields():
 	#  is base table alias
 	return [
-		{"key":"Date", "value": "date_format(posting_date,'%%d-%%m-%%Y')" },
-		{"key":"Month", "value": "date_format(posting_date,'%%b-%%Y')"},
-		{"key":"Year", "value": "year(posting_date)"},
+		{"key":"Date", "value": "date_format(date,'%%d-%%m-%%Y')" },
+		{"key":"Month", "value": "date_format(date,'%%b-%%Y')"},
+		{"key":"Year", "value": "year(date)"},
 		{"key":"Reservation Type", "value": "reservation_type"},
 		{"key":"Business Source", "value": "business_source"},
 		{"key":"Business Source Type", "value": "business_source_type"},

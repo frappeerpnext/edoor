@@ -8,6 +8,17 @@
 frappe.pages['cashier-shift-report'].on_page_load = function(wrapper) {
 	new MyPage(wrapper);
 }
+frappe.ui.form.on('Cashier Shift Report', {
+    onload: function(frm) {
+        cur_frm.set_query('cashier_shift', function() {
+            return {
+                filters: [
+                    ['Cashier Shift', 'is_edoor_shift', '=', 1]
+                ]
+            };
+        });
+    }
+});
 
 MyPage = Class.extend({
 	init: function(wrapper) {
@@ -31,8 +42,7 @@ MyPage = Class.extend({
 			label: 'Cashier Shift',
 			fieldtype: 'Link',
 			fieldname: 'cashier_shift',
-			options:"Cashier Shift",
-
+			options: 'Cashier Shift',
 		});
 		
 		this.ledger_group = this.page.add_field({
@@ -85,9 +95,9 @@ MyPage = Class.extend({
 		const cashFloat = this.cash_float.get_value();
 		const cashCount = this.cash_count.get_value();
 		let newUrl;
-		this.cashier_shift.filters = [
-			['Cashier Shift', 'is_edoor_shift', '=', 1],
-		];
+		// this.cashier_shift.filters = [
+		// 	['Cashier Shift', 'is_edoor_shift', '=', 1],
+		// ];
 		if(this.property.get_value() != '' && this.cashier_shift.get_value() != ''){
 			if (this.report_name.get_value()=="Cashier Shift Transaction Detail"){
 				newUrl = "/printview?doctype=Business%20Branch&name="+ encodeURI(this.property.get_value()) +"&format=Night%20Audit%20Cashier%20Shift%20Transaction%20Detail&&settings=%7B%7D&show_toolbar=0&cashier_shift="+ encodeURI(this.cashier_shift.get_value()) 
@@ -108,5 +118,6 @@ MyPage = Class.extend({
 	},
 	onPrint: function(){
 		this.iframe.contentWindow.print()
-	}
+	},
+	
 })

@@ -271,11 +271,17 @@ function loadData() {
     })
 }
 
-function onUnblock() {
+function onUnblock() { 
+     if(window.isMobile){
+    const elem = document.querySelector(".p-dialog");
+		elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+
+ }
     data.value = JSON.parse(JSON.stringify(doc.value))
     data.value.unblock_date = moment(data.unblock_date).toDate()
     data.value.unblock_housekeeping_status_code = housekeeping_status_code.value[0].status
     unblockvisible.value = true
+     
 }
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-col flex" >
+    <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
@@ -37,10 +37,19 @@
             </div>
         </div>
         <div class="overflow-auto h-full">
-            <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data?.length > 0">
-                <DataTable  class="res_list_scroll" :resizableColumns="true" columnResizeMode="expand" showGridlines
-                    stateStorage="local" stateKey="table_reservation_stay_list_state" scrollable :reorderableColumns="true"
-                    :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
+            <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data?.length > 0">
+                <DataTable  
+                    class="res_list_scroll" 
+                    :resizableColumns="true" 
+                    columnResizeMode="expand" 
+                    showGridlines
+                    stateStorage="local" 
+                    stateKey="table_reservation_stay_list_state" 
+                    scrollable 
+                    :reorderableColumns="true"
+                    :value="data" 
+                    :tableStyle="`min-width: ${width}%`" 
+                    @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
@@ -194,6 +203,7 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
+const width = ref(0)
 
 const columns = ref([
     { fieldname: 'reservation', label: 'Reservation #', header_class: "text-center", fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
@@ -417,6 +427,7 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+    width.value = 100
     window.addEventListener('message', actionRefreshData, false); 
     let state = localStorage.getItem("page_state_reservation_stay")
     if (state) {

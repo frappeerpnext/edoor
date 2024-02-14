@@ -8,8 +8,6 @@
                 <Button @click="viewCityLedgerReport" class="conten-btn">
                     <i class="pi pi-print mr-2"></i> Print 
                 </Button>
-                <!-- <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
-                    :model="print_menus" />   -->
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
@@ -87,35 +85,12 @@
             </ComOverlayPanelContent>
         </OverlayPanel>
         <div v-if="cityLedgerAmountSummary">
-            <div class="flex w-full gap-2 mb-3">
-                <div class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">opening Balance</span><span
-                        class="text-xl line-height-2 font-semibold text-end">
-                        <span>
-                            <CurrencyFormat :value="cityLedgerAmountSummary?.opening_balance" />
-                        </span></span>
-                </div>
-                <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total border">
-                    <span class="text-500 uppercase text-sm text-end">total debit</span><span
-                        class="text-xl line-height-2 font-semibold text-end">
-                        <span>
-                            <CurrencyFormat :value="cityLedgerAmountSummary?.debit" />
-                        </span></span>
-                </div>
-                <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total  border">
-                    <span class="text-500 uppercase text-sm text-end">total credit</span><span
-                        class="text-xl line-height-2 font-semibold text-end">
-                        <span>
-                            <CurrencyFormat :value="cityLedgerAmountSummary?.credit" />
-                        </span></span>
-                </div>
-                <div class="flex flex-column rounded-lg grow p-2 shadow-charge-total bg-green-50 border border-green-edoor">
-                    <span class="text-500 uppercase text-sm text-end">balance</span><span
-                        class="text-xl line-height-2 font-semibold text-end">
-                        <span>
-                            <CurrencyFormat :value="cityLedgerAmountSummary?.balance" />
-                        </span></span>
-                </div>
+            <div class="grid my-3">
+                <ComBoxSummaryBalanceTransaction label="opening Balance" :value='cityLedgerAmountSummary?.opening_balance' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="debit" :value='cityLedgerAmountSummary?.debit' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="credit" :value='cityLedgerAmountSummary?.credit' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="balance" :value='cityLedgerAmountSummary?.balance' :isCurrency="true" :class="'bg-green-50 border border-green-edoor md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="Transatction Durring" :value='moment().format("DD-MM-YYYY")' :class="'bg-purple-50 border-purple-300 md:mx-1 my-1'"  />
             </div>
         </div>
         <div style="min-height:42rem;">
@@ -182,7 +157,7 @@
                         </template>
                     </Column>
                 </DataTable>
-                <Paginator class="p__paginator bg-ed-paging" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
+                <Paginator class="p__paginator bg-ed-paging" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                     :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                     <template #start="slotProps">
                         <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
@@ -222,6 +197,7 @@ import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
 import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTransactionMoreOption.vue"
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
 const props = defineProps({
     name: String,
@@ -237,7 +213,7 @@ const cityLedgerAmountSummary = ref()
 const data = ref([])
 const filter = ref({})
 const loading = ref(false)
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage : 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
@@ -287,8 +263,7 @@ const columns = ref([
     { fieldname: 'type', default: true },
     { fieldname: 'is_auto_post' },
     { fieldname: 'reservation_status_color' },
-    
-    // { fieldname: 'parent_reference' },
+     
 ])
 
 const selectedColumns = ref([]);
@@ -357,8 +332,7 @@ function AddTransaction(account_code) {
 
         }
     })
-}
-
+} 
 
 function showPrintPreview(data) {  
 const dialogRef = dialog.open(ComIFrameModal, {
@@ -381,11 +355,7 @@ const dialogRef = dialog.open(ComIFrameModal, {
 }
 
 
-function onEditFolioTransaction(name) {
-    // if(disabled){
-    //     gv.toast("warn","city ledger transaction can't edit")
-    //     return
-    // }
+function onEditFolioTransaction(name) { 
     const dialogRef = dialog.open(ComAddFolioTransaction, {
         data: {
             folio_transaction_number: name
@@ -445,7 +415,6 @@ function onOpenLink(column, data) {
 function pageChange(page) {
     pageState.value.page = page.page
     pageState.value.rows = page.rows
-
     loadData()
 }
 function onDateSelect() {
@@ -554,7 +523,12 @@ function onOrderBy(data) {
 
 }
 
-const Refresh = debouncer(() => {
+const Refresh = debouncer(() => { 
+    let state = localStorage.getItem("page_state_folio_transaction")
+    if (state){
+        state = JSON.parse(state)
+        state.activePage = 0
+    }
     pageState.value.page = 0
     loadData()
 }, 500);
@@ -585,6 +559,7 @@ onMounted(() => {
     if (state) {
         state = JSON.parse(state)
         state.page = 0
+        state.activePage = 0
         pageState.value = state
         if (state.selectedColumns) {
             selectedColumns.value = state.selectedColumns

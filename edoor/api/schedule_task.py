@@ -315,8 +315,11 @@ def validate_property_data():
     #check if data have duplicate reservation
     fix_generate_duplicate_room_occupy()
 
-    #valiate room rate
-    # TODO 
+    #fix folio transaction that dont have reservation status color
+    frappe.db.sql("update `tabFolio Transaction` set reservation_status_color=(select color from `tabReservation Status` where name=`tabFolio Transaction`.reservation_status ) where transaction_type='Reservation Folio' and coalesce(reservation_status_color,'')=''")
+    frappe.db.sql("update `tabFolio Transaction` set reservation_type=(select reservation_type from `tabReservation Stay` where name=`tabFolio Transaction`.reservation_stay ) where transaction_type='Reservation Folio' and coalesce(reservation_type,'')=''")
+    frappe.db.commit()
+    
 
 def fix_generate_duplicate_room_occupy():
     sql = "select reservation_stay,date,count(name) as total from `tabRoom Occupy` where date>='{}' group by reservation_stay,date having count(name)>1".format(add_to_date(getdate(today()),days=-7))

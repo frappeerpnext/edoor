@@ -54,15 +54,9 @@
                 </div>
             </div>
             <div>
-                <div class="flex w-full gap-3 mb-3 mt-3">
-                    <div :class="(index === summary.length - 1) ? 'bg-green-50 border-green-edoor' : 'bg-white'"
-                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border" v-for="(s, index) in summary"
-                        :key="index">
-                        <span class="text-500 uppercase text-sm text-end">{{ s.label }}</span><span
-                            class="text-xl line-height-2 font-semibold text-end">
-                            <span>{{ s.value }}</span></span>
-                    </div>
-                </div>
+                
+                <ComSummaryofBalence :summary="summary" :start_date="filter.start_date" :end_date="filter.end_date" />
+             
             </div>
         </div>
         <div class="overflow-auto h-full">
@@ -185,7 +179,7 @@ import { ref, onMounted, onUnmounted, inject, computed, useDialog, watch } from 
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-
+import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -205,6 +199,7 @@ const sortOptions = ref([
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
 ])
+const formattedDateRange = `${moment(filter.value.start_date).format("DD-MM-YYYY")}  To  ${moment(filter.value.end_date).format("DD-MM-YYYY")}`;
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const opShowColumn = ref();
 

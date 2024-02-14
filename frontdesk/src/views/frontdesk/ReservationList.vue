@@ -48,7 +48,7 @@
                 :reorderableColumns="true" 
                 :value="data"
                 scrollable
-                tableStyle="min-width: 50rem" 
+                :tableStyle="`min-width: ${width}%`" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column  v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"
                         :field="c.fieldname" :header="c.label"
@@ -76,7 +76,7 @@
                                     </div>
                                 </template>
                             </div>
-                            <div v-tippy="slotProps.data.room_type_alias" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'room_type'" v-if="slotProps?.data && slotProps?.data?.room_type_alias">
+                            <div v-tippy="slotProps.data.room_types" class="overflow-hidden text-overflow-ellipsis" v-else-if="c.fieldtype == 'room_type'" v-if="slotProps?.data && slotProps?.data?.room_type_alias">
                                 <template v-for="(item, index) in slotProps.data.room_type_alias.split(',')" :key="index">
                                     <span>{{ item }}</span>
                                     <span v-if="index != Object.keys(slotProps.data.room_type_alias.split(',')).length - 1">, </span>
@@ -185,17 +185,19 @@ const moment = inject("$moment")
 const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
+const width = ref(0)
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 const columns = ref([
     { fieldname: 'name', label: 'Reservation #', fieldtype: "Link", post_message_action: "view_reservation_detail", default: true },
     { fieldname: 'reference_number', label: 'Ref. #' },
     { fieldname: 'reservation_type', label: 'Res. Type', header_class: "text-center", default: true },
-    { fieldname: 'reservation_date', label: 'Res. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
+    { fieldname: 'reservation_date', label: 'Res. Date', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'arrival_date', label: 'Arrival', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'departure_date', label: 'Departure', fieldtype: "Date", header_class: "text-center", default: true },
     { fieldname: 'room_nights', label: 'Room Nights', header_class: "text-center", default: true },
-    { fieldname: 'room_type_alias', fieldtype: "room_type", label: 'Room Type', default: true },
+    { fieldname: 'room_type_alias', fieldtype: "room_type", label: 'RT Alias', default: true },
+    { fieldname: 'room_types',  label: 'Room Type', default: false },
     { fieldname: 'room_numbers', label: 'Rooms', fieldtype: "Room", header_class:"", default: true },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
@@ -389,6 +391,7 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => { 
+    width.value = 100
     window.addEventListener('message', actionRefreshData, false);
 
     let state = localStorage.getItem("page_state_reservation")

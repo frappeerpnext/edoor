@@ -106,6 +106,8 @@ import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
 import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 
+const isMobile = ref(window.isMobile)
+
 const rs = inject('$reservation_stay')
 const data = ref([])
 const setting = JSON.parse(localStorage.getItem('edoor_setting'))
@@ -144,7 +146,10 @@ function onEditRoomRate(room_rate = null) {
         },
         position: "top",
         modal: true,
-        closeOnEscape: false
+        closeOnEscape: false,
+        pt: {
+          root: `${isMobile ? 'p-dialog-maximized' : ''}`
+        }
       },
       onClose: (options) => {
         const result = options.data;
@@ -171,7 +176,10 @@ function onEditRoomRate(room_rate = null) {
         },
         position: "top",
         modal: true,
-        closeOnEscape: false
+        closeOnEscape: false,
+        pt: {
+          root: `${isMobile ? 'p-dialog-maximized' : ''}`
+        }
       },
       onClose: (options) => {
         const result = options.data;

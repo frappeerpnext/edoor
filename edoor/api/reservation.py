@@ -1480,17 +1480,82 @@ def change_stay(data):
         else:
             update_reservation_stay_room_rate_after_move(data=data,stay_doc= doc)
 
+        
+
+        post_room_charge_to_folio_after_extend_stay(stays=[doc.name])
+        frappe.db.commit()
+
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
        
         frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = doc.name)
     
-    frappe.db.commit()
+
     frappe.msgprint(_("Change stay successully"))
+
+
     return doc
     
 
+def post_room_charge_to_folio_after_extend_stay(stays):
 
+    for s in stays:
+        stay_doc = frappe.get_doc("Reservation Stay", s)
+        working_day = get_working_day(stay_doc.property)
+        if getdate( stay_doc.departure_date) > getdate(working_day["date_working_day"]):
+            sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
+            room_rates = frappe.db.sql(sql_rate,as_dict=1)
+            if room_rates:
+                room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
+
+                # check if room chage already post to folio
+                sql="select name from `tabFolio Transaction` where reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
+                if not frappe.db.sql(sql,as_dict=1):
+                    # start add charge to filio
+                    # get folio post to master or post to self folio
+                    folio = get_stay_posting_folio(stay_doc)
+                    if folio:
+                        add_room_charge_to_folio( folio, room_rate_doc,0,"Room Extended")
+                    else:
+                        frappe.throw("Please create folio for reservation stay #{}".format(stay_doc.name))
+
+        else:
+            # delete unexted room 
+            room_rates= frappe.db.sql("select name from `tabReservation Room Rate` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
+            # folio_transactions = frappe.db.sql("select name, total_amount from `tabReservation`")
+            frappe.db.sql("delete from `tabFolio Transaction` where reservation_stay=%(reservation_stay)s and reservation_room_rate not in %(reservation_room_rate)s",{
+                "reservation_stay":stay_doc.name,
+                "reservation_room_rate": set([d["name"] for d in room_rates])
+            })
+            #update folio balance
+            folio = get_stay_posting_folio(stay_doc)
+            update_reservation_folio(doc=folio, run_commit=False)
+
+            #post to audit trail
+
+
+
+
+                    
+
+
+    
+def get_stay_posting_folio(stay_doc):
+    data=[]
+    if stay_doc.paid_by_master_room==0:
+        data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1".format(stay_doc.name),as_dict=1)
+    else:
+        master_stay_names = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}' and is_master=1".format(stay_doc.reservation),as_dict=1)
+        if master_stay_names:
+            data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1".format(master_stay_names[0]["name"]),as_dict=1)
+
+    if data:
+        return frappe.get_doc("Reservation Folio", data[0]["name"])
+    return None
+        
+
+
+        
 @frappe.whitelist(methods="POST")
 def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, departure_date=None, arrival_time=None, departure_time=None):
     
@@ -1534,9 +1599,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
 
                 if available_room[0]["total_vacant_room"]<=0:
                     frappe.throw("You cannot change stay of this reservation. Because you don't have enough room for room type {}".format(available_room[0]["room_type"]))
-            
-
-
+        
         default_check_in_date = frappe.db.get_single_value("eDoor Setting","default_check_in_time")
         default_check_out_date = frappe.db.get_single_value("eDoor Setting","default_check_out_time")
 
@@ -1550,9 +1613,7 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
         doc.save()
 
 
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
-        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = doc.name)
-
+       
 
         #generate room rate
         update_reservation_stay_room_rate_after_resize(data= {
@@ -1565,6 +1626,11 @@ def change_reservation_stay_min_max_date(reservation_stay, arrival_date=None, de
             "generate_rate_type": "stay_rate",
             "name": doc.stays[0].name
         },stay_doc= doc)
+
+        post_room_charge_to_folio_after_extend_stay([doc.name])
+
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = doc)
+        frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy", queue='short', stay_name = doc.name)
 
         frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = doc.reservation, reservation_stay=doc.name)
         frappe.db.commit()
@@ -2361,6 +2427,8 @@ def upgrade_room(doc,regenerate_rate=False):
             "is_arrival": 1 if getdate(d) == getdate(data.arrival_date) else 0
         }).insert()
 
+    post_room_charge_to_folio_after_extend_stay([data.name])
+    
     frappe.db.commit()
     frappe.enqueue("edoor.api.utils.update_reservation_stay_and_reservation", queue='short', reservation = data.reservation, reservation_stay=data.name)
     frappe.enqueue("edoor.edoor.doctype.reservation_stay.reservation_stay.generate_temp_room_occupy", queue='short', self = data)

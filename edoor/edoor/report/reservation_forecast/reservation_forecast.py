@@ -36,7 +36,7 @@ def execute(filters=None):
 		report =  report_by_nationality.get_report(filters, report_config)
 	elif filters.row_group == "Room Type":
 		report =  report_by_room_type.get_report(filters, report_config)
-
+	
 	message = None
 	return report["columns"], report["data"],message,report["report_chart"], report["report_summary"],True
 

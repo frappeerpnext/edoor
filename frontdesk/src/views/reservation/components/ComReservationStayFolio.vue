@@ -2,10 +2,10 @@
     <div>
         <div class="flex max-h-folio-stay-dialgo" v-if="rs.folios?.length > 0"> 
                 <ComResevationStayFolioList v-if="!isMobile" @onSelectFolio="onSelectFolio"/> 
-            <div class="col pt-2 overflow-x-auto" v-if="selectedFolio">  
+            <div class="col pt-2 px-0 lg:px-2 overflow-x-hidden lg:overflow-x-auto" v-if="selectedFolio">  
                 <ComFolioAction :loading="loading" @onRefresh="onRefresh" @onAuditTrail="" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="setting?.account_group.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" >
                     <template #button>
-                        <Button v-if="isMobile" icon="pi pi-bars" @click="visible = true" /> 
+                        <Button class="nav-folio-btn" v-if="isMobile" icon="pi pi-bars" style="background: transparent;" @click="visible = true" /> 
                     </template>
                 </ComFolioAction>
                 <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
@@ -24,9 +24,9 @@
             <div class="text-center text-600">Create a Folio to post transactions.</div>
         </div>
     </div>
-    <Sidebar v-model:visible="visible">
-        <template #header>
-            <ComResevationStayFolioList @onSelectFolio="onSelectFolio"/> 
+    <Sidebar v-model:visible="visible" :showCloseIcon="false">
+        <template #default>
+            <ComResevationStayFolioList @onSelectFolio="onSelectFolio" panelWidth="100%"/> 
         </template>
     </Sidebar>
 </template>
@@ -106,7 +106,6 @@ function loadReservationStayFolioList(selected_name=""){
 
 
 function onAddCreatNewFolio() {
-
     const dialogRef = dialog.open(ComNewReservationStayFolio, {
         data: {
             guest: rs.reservationStay.guest,
@@ -168,3 +167,12 @@ onUnmounted(()=>{
  
 
 </script>
+<style>
+    .nav-folio-btn .pi-bars:before{
+        color: var(--bg-purple-cs);
+    }
+    .nav-folio-btn{
+        border-color: var(--bg-purple-cs);
+        padding: 0.45rem 0.65rem 0.45rem !important;
+    }
+</style>

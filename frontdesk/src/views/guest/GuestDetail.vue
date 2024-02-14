@@ -98,7 +98,10 @@ function onEditGuest() {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            },
         },
         data:{
             name: name.value,

@@ -822,7 +822,7 @@ def remove_temp_room_occupy(reservation):
                   """.format(reservation))
     frappe.db.commit()
 
-def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
+def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note=""):
     frappe.db.sql("delete from `tabFolio Transaction` where reservation_room_rate='{}'".format(rate.name))
     rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
     doc = {
@@ -845,7 +845,8 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0):
         "is_auto_post":1,
         "valiate_input_amount": False,
         "reservation_room_rate": rate.name,
-        "is_night_audit_posing":is_night_audit_posing
+        "is_night_audit_posing":is_night_audit_posing,
+        "note":note
     }
     doc = frappe.get_doc(doc)
     doc.flags.ignore_update_reservation = True

@@ -1,16 +1,20 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
-        <div class="mb-3">
+        <div class="">
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
+                    <div class="flex justify-between">
                     <div class="text-2xl">Note list</div>
+                    <Button v-if="isMobile" label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
+                    </div>
                 </template>
                 <template #end>
-                    <Button label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
+                    <Button v-if="!isMobile" label="Add Note" severity="warning" outlined icon="pi pi-plus" @click="onAddNote('')" />
                 </template>
             </ComHeader>
+           
             <div class="mb-3 flex justify-between">
-                <div class="flex gap-2">
+                <div v-if="!isMobile" class="flex gap-2">
                     <div class="col-6 p-0">
                         <div class="p-input-icon-left w-full">
                             <i class="pi pi-search" />
@@ -18,7 +22,7 @@
                         </div>
                     </div>
                     <div class="col-6 p-0">
-                        <div class="flex relative">
+                        <div class="flex relative ">
                             <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
                                 v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                                 placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon />
@@ -28,7 +32,13 @@
                         </div>
                     </div>
                 </div>
-                <div>
+                <div v-else class="flex gap-2 col">
+                <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
+                <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
+                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
+                </div>
+            </div>
+                <div class="flex justify-end col">
                     <ComOrderBy doctype="Comment" @onOrderBy="onOrderBy" />
                 </div>
             </div>
@@ -117,6 +127,29 @@
             </Paginator>
         </div>
     </div>
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:50rem">
+        <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+            icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
+            <div class="grid mt-3">
+                <div class="col-12">
+                        <div class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="flex relative ">
+                            <Calendar :selectOtherMonths="true" class="w-full" inputClass="pl-6" hideOnRangeSelection dateFormat="dd-mm-yy"
+                                v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
+                                placeholder="Select Date Range" :disabled="!filter.search_by_date" showIcon />
+                            <div class="check-box-filter">
+                                <Checkbox v-model="filter.search_by_date" :binary="true" @change="onChecked" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </ComOverlayPanelContent>
+    </OverlayPanel>
 </template>
 <script setup>
 import { ref, inject, onMounted, updateDoc, useDialog, getDocList, getCount, useConfirm, deleteDoc } from '@/plugin';
@@ -130,10 +163,10 @@ const confirm = useConfirm()
 const notes = ref([]);
 const dialog = useDialog()
 const loading = ref(false);
-
+const showAdvanceSearch = ref()
 const gv = inject('$gv');
 const moment = inject("$moment")
-
+const isMobile = ref(window.isMobile) 
 const filter = ref({})
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
@@ -144,7 +177,17 @@ function onViewDetail(d){
 const Refresh = debouncer(() => {
     onLoadData()
 }, 500);
-
+const advanceSearch = (event) => {
+    showAdvanceSearch.value.toggle(event);
+}
+const onClearFilter = () => {
+    filter.value = {}
+    onLoadData()
+    showAdvanceSearch.value.hide()
+}
+const onCloseAdvanceSearch = () => {
+    showAdvanceSearch.value.hide()
+}
 function onEdit(name) {
     const dialogRef = dialog.open(ComAddNote, {
         data: {

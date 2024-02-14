@@ -50,7 +50,7 @@
                 scrollable 
                 :reorderableColumns="true"   
                 :value="data" 
-                tableStyle="min-width: 50rem" 
+                :tableStyle="`min-width: ${width}%`" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label && !skip_columns.includes(r.fieldname))" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
                     :frozen="c.frozen">
@@ -142,6 +142,7 @@ const gv = inject("$gv")
 const dialog = useDialog()
 const opShowColumn = ref();
 const data = ref([])
+const width = ref(0)
 const filter = ref({})
 const showAdvanceSearch = ref()
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
@@ -281,6 +282,7 @@ function debouncer(fn, delay) {
 }
 
 onMounted(() => {
+    width.value = 100
     let state = localStorage.getItem("page_state_customer")
     if (state) {
         state = JSON.parse(state)
@@ -379,12 +381,12 @@ const onCloseAdvanceSearch = () => {
     showAdvanceSearch.value.hide()
 }
 
-const care = ref(0)
-const dd = ref()
-onMounted(()=>{
-    const height = care.value.clientHeight
-    dd.value = height
-})
+// const care = ref(0)
+// const dd = ref()
+// onMounted(()=>{
+//     const height = care.value.clientHeight
+//     dd.value = height
+// })
 
 onUnmounted(() => {
     window.removeEventListener('message', actionRefreshData, false);

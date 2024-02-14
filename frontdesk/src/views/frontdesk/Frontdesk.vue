@@ -72,7 +72,7 @@
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)" @onRefresh="onRefresh()"/>
             </div>
         </div>
-        <div class="pb-7" style="max-width: 100%;">
+        <div class="pb-5" style="max-width: 100%;">
             <div id="fron__desk-fixed-top">
                 <div :class=" (showSummary) ? 'flex gap-2' : ''">
                     <div v-if="(!isMobile && showSummary)" class="relative" style="width:280px">

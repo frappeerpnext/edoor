@@ -1,86 +1,85 @@
 <template>
-    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2">
-        <slot name="button"></slot>
-        <div>
-            <template
-                v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
-                :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
-                    v-if="showAccountGroup(d)">
-                    Post {{ d.account_name }}
-                </Button>
-            </template>
-
-            <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
-                @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
-            <Menu ref="folio_menu" id="folio_menu" :popup="true">
-                <template #end>
-                    <template
-                        v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 0)"
-                        :key="index">
-                        <button
-                        v-if="showAccountGroup(d)"
-                            @click="onAddFolioTransaction(d)"
-                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <i :class="d.icon" />
-                            <span class="ml-2 ">Post {{ d.account_name }}</span>
-                        </button>
-                    </template>
-                    <button v-if="!selectedFolio.is_master" @click="MarkasMasterFolio"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-verified" />
-                        <span class="ml-2"> Mark as Master Folio</span>
-                    </button>
-
-                    <button @click="onTransferFolioItem"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-arrow-right-arrow-left" />
-                        <span class="ml-2">Transfer Items</span>
-                    </button>
-
-                    <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-ban" />
-                        <span class="ml-2">Close Folio</span>
-                    </button>
-                    <button @click="EditFolio(true)"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-file-edit" />
-                        <span class="ml-2">Edit Folio </span>
-                    </button>
-
-                    <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-check-circle" />
-                        <span class="ml-2">Open Folio</span>
-                    </button>
-
-                    <button @click="deleteFilio"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-times-circle" />
-                        <span class="ml-2">Delete Folio</span>
-                    </button>
-                    <button @click="onAuditTrail"
-                        class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                        <i class="pi pi-history" />
-                        <span class="ml-2">Audit Trail</span>
-                    </button>
-
+    <div class="overflow-x-auto overflow-y-auto lg:overflow-hidden">
+        <div class="flex gap-1 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
+            <slot name="button"></slot>
+            <div>
+                <template
+                    v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 1)"
+                    :key="index">
+                    <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
+                        v-if="showAccountGroup(d)">
+                        Post {{ d.account_name }}
+                    </Button>
                 </template>
-            </Menu>
+
+                <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
+                    @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
+                <Menu ref="folio_menu" id="folio_menu" :popup="true">
+                    <template #end>
+                        <template
+                            v-for="(d, index) in accountGroups?.filter(r => r.show_in_shortcut_menu == 0)"
+                            :key="index">
+                            <button
+                            v-if="showAccountGroup(d)"
+                                @click="onAddFolioTransaction(d)"
+                                class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                                <i :class="d.icon" />
+                                <span class="ml-2 ">Post {{ d.account_name }}</span>
+                            </button>
+                        </template>
+                        <button v-if="!selectedFolio.is_master" @click="MarkasMasterFolio"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-verified" />
+                            <span class="ml-2"> Mark as Master Folio</span>
+                        </button>
+
+                        <button @click="onTransferFolioItem"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-arrow-right-arrow-left" />
+                            <span class="ml-2">Transfer Items</span>
+                        </button>
+
+                        <button @click="closeFolio(`${isMobile ? 'top' : 'center'}`)" v-if="selectedFolio?.status == 'Open'"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-ban" />
+                            <span class="ml-2">Close Folio</span>
+                        </button>
+                        <button @click="EditFolio(true)"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-file-edit" />
+                            <span class="ml-2">Edit Folio </span>
+                        </button>
+
+                        <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-check-circle" />
+                            <span class="ml-2">Open Folio</span>
+                        </button>
+
+                        <button @click="deleteFilio"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-times-circle" />
+                            <span class="ml-2">Delete Folio</span>
+                        </button>
+                        <button @click="onAuditTrail"
+                            class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
+                            <i class="pi pi-history" />
+                            <span class="ml-2">Audit Trail</span>
+                        </button>
+
+                    </template>
+                </Menu>
+            </div>
+            <div class="flex items-center">
+                <span>
+                    <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp p-3" label="Print" icon="pi pi-print"
+                        :model="print_menus" />    
+                    <Button @click="onRefresh()" icon="pi pi-refresh" style="font-size: .98rem !important;" class="content_btn_b ml-2 m-3 p-2" :loading="loading"></Button>
+                </span>
+            </div>
+            
         </div>
-        <div class="flex items-center">
-            <span>
-                <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp p-3" label="Print" icon="pi pi-print"
-                    :model="print_menus" />    
-                <!-- <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b ml-2" :loading="loading"></Button> -->
-            </span>
-            <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
-        </div>
-        
     </div>
-
-
 </template>
 <script setup>
 
@@ -427,7 +426,7 @@ function debouncer(fn, delay) {
     };
 }
 
-function closeFolio() {
+function closeFolio(position) {
     confirm.require({
         header: 'Close Folio ' + selectedFolio.value.name,
         message: 'Are you sure you want to Close Folio ' + selectedFolio.value.name + '?',
@@ -436,6 +435,7 @@ function closeFolio() {
         acceptIcon: 'pi pi-check-circle',
         acceptLabel: 'Ok',
         rejectClass: 'hidden',
+        position: position,
         accept: () => {
             updateDoc('Reservation Folio', selectedFolio.value.name, {
                 status: 'Closed',

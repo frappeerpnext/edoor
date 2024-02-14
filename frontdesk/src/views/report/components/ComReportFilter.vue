@@ -247,11 +247,22 @@
                     :options="['ASC', 'DESC']" 
                     :clear="false" />
             </div> 
-            <div class="col" v-if="hasFilter('summary_filter')">
-                <label>Summary By</label><br/>
-                <ComSelect class="auto__Com_Cus w-full" v-model="filter.summary_filter" placeholder="Summary By"
-                    :options="['Arrival Date', 'Departure Date', 'Reservation' , 'Reservation Date','Reservation Type','Guest','Room Type','Business Source','Business Source Type','Nationality','Rate Type','Reservation Status']" 
-                    :default="['Business Source']"/>
+            <div class="col" v-if="hasFilter('row_group')">
+                <label>Group By</label><br/>
+                <ComSelect class="auto__Com_Cus w-full" v-model="filter.row_group" placeholder="Group By"
+                    :options="['Date', 'Month', 'Room Type' , 'Reservation Type','Business Source','Business Source Type','Guest Type','Nationality']" 
+                    />
+            </div>
+           
+            <div class="col" v-if="hasFilter('guest_type')">
+                <label>Guest Type</label><br>
+                <ComAutoComplete v-model="filter.guest_type" placeholder="Guest Type" doctype="Customer Group"
+                class="auto__Com_Cus w-full" />
+            </div>
+            <div class="col" v-if="hasFilter('business_source_type')">
+                <label>Business Source Type</label><br>
+                <ComAutoComplete v-model="filter.business_source_type" placeholder="Business Source Type" doctype="Business Source Type"
+                class="auto__Com_Cus w-full" />
             </div>
         </div>
         </div>
@@ -331,7 +342,8 @@ const filter = ref({
     summary_filter:"Business Source",
     group_by_ledger_type:"0",
     show_cash_count:"1",
-    show_cash_float:"1"
+    show_cash_float:"1",
+    row_group:"Date"
 
 })
 function onSelectLetterHead(l){

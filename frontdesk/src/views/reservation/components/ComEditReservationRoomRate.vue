@@ -98,7 +98,7 @@
         <!--  -->
         <hr class="my-1">
         <div class="grid">
-            <div class="col mt-2 ">
+            <div class="col-12 lg:col mt-2 ">
                 <div class="grid">
                     <div class="col-6">
                         <div>
@@ -113,7 +113,7 @@
                             <ComInputCurrency classCss="w-full"  v-model="doc.input_rate"
                                 :disabled="doc.is_manual_rate == 0" />
                             <div v-tippy="'Use Manually Update Rate'" class="absolute right-2 top-2/4 mb-2">                                
-                                <Checkbox :disabled="!doc.allow_user_to_edit_rate"  input-id="manual_rate" class="" v-model="doc.is_manual_rate" :trueValue="1"
+                                <Checkbox :disabled="!doc.allow_user_to_edit_rate"  input-id="manual_rate" v-model="doc.is_manual_rate" :trueValue="1"
                                     :falseValue="0" :binary="true" @input="onUseManualRate" />
                             </div>
                         </div>
@@ -159,7 +159,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-5">
+            <div class="col-12 lg:col-5">
                 <div class="grid justify-end ">
                     <div class="col-12">
                         <div class="flex justify-end text-end"

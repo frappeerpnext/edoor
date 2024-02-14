@@ -12,9 +12,9 @@
             </div>
         </div>
         <div v-if="!hideFooter" :class="[isDialog == false ? 'border-t p-2 page-footer-fixed':'border-t border-gray-200 p-2 pb-0 footer-fixed dialog-ftt', loading ? 'unset-absolute' : '']">
-            <div>
+            <div class="overflow-auto lg:overflow-hidden">
                 <slot name="footer-top"></slot>
-                <div class="flex justify-between items-center">
+                <div class="flex gap-1 lg:gap-0 justify-between items-center w-max lg:w-full">
                     <div class="flex gap-2">
                         <slot name="footer-left"></slot>
                     </div>

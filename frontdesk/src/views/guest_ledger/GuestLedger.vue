@@ -1,4 +1,5 @@
 <template>
+    
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
@@ -9,9 +10,10 @@
                         </div>
                     </div>
                 </template>
-                <template #end>
+                <!-- <template #end>
                     <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i> Print</Button>
                 </template>
+                 -->
             </ComHeader>
             <div class="flex justify-between">
                 <div>
@@ -24,7 +26,7 @@
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
                         <div>
-                            <ComSelect :options="['Open', 'Closed']" placeholder="All Status" v-model="filter.status"
+                            <ComSelect :options="['All Status','Open', 'Closed']" placeholder="All Status" v-model="filter.status"
                                 :clear="false" @onSelected="onSearch" />
                         </div>
                         <div class="w-20rem">
@@ -46,26 +48,14 @@
                 <div class="flex">
                     <div class="px-2">
                         <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
-                        <!-- <Dropdown v-model="filter.order_by" :options="sortOptions" optionValue="fieldname" optionLabel="label"
-                                placeholder="Sort By" @change="onSelectOrderBy" />
-                            <Button @click="onOrderTypeClick">{{ filter.order_type }}</Button> -->
-                    </div>
+                                 </div>
                     <Button class="content_btn_b h-full px-3" @click="toggleShowColumn">
                         <ComIcon icon="iconEditGrid" height="16px"></ComIcon>
                     </Button>
                 </div>
             </div>
             <div>
-                <div class="flex w-full gap-3 mb-3 mt-3">
-                    <div :class="(index === summary.length - 1) ? 'bg-green-50 border-green-edoor' : 'bg-white'"
-                        class="flex flex-column rounded-lg  grow p-2 shadow-charge-total border"
-                        v-for="(s, index) in summary" :key="index">
-                        <span class="text-500 uppercase text-sm text-end">{{ s.label }}</span>
-                        <span class="text-xl line-height-2 font-semibold text-end">
-                            <span>{{ s.value }}</span>
-                        </span>
-                    </div>
-                </div>
+                <ComSummaryofBalence :summary="summary" :start_date="filter.start_date" :end_date="filter.end_date" />
             </div>
         </div>
         <div class="overflow-auto h-full">
@@ -208,7 +198,7 @@ import { ref, onMounted, onUnmounted, inject, computed, useDialog } from '@/plug
 import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-
+import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
@@ -220,7 +210,7 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).startOf('month').toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "", keyword: "" })
+const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "", keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({ order_by: "modified", order_type: "desc" })
 const loading = ref(false)
@@ -230,6 +220,8 @@ const sortOptions = ref([
     { "fieldname": "creation", label: "Created On" },
     { "fieldname": "name", label: "ID" }
 ])
+
+
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
 const opShowColumn = ref();
 
@@ -253,7 +245,6 @@ const isFilter = computed(() => {
 })
 
 function onOpenLink(column, data) {
-    console.log(data[column.fieldname])
     window.postMessage(column.post_message_action + "|" + data[column.fieldname], '*')
 }
 function pageChange(page) {
@@ -281,6 +272,7 @@ function onResetTable() {
     localStorage.removeItem("table_guest_ledger_state")
     window.location.reload()
 }
+
 
 function onPrint() {
     const dialogRef = dialog.open(ComIFrameModal, {
@@ -316,13 +308,8 @@ function debouncer(fn, delay) {
     };
 }
 
-function onOrderTypeClick() {
-    order.value.order_type = order.value.order_type == "desc" ? "asc" : "desc"
-    loadData()
-}
-function onSelectOrderBy() {
-    loadData()
-}
+ 
+
 
 function onDateSelect(d) {
     onSearch()
@@ -420,6 +407,7 @@ function onOrderBy(data) {
     pageState.value.page = 0
     loadData()
 }
+
 
 const onCloseColumn = () => {
     opShowColumn.value.hide()

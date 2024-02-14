@@ -60,9 +60,16 @@
         </div>
         <div class="overflow-auto h-full">
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="data.length > 0">
-                <DataTable resizableColumns columnResizeMode="expand" showGridlines stateStorage="local"
-                    stateKey="table_city_ledger_list_state" :reorderableColumns="true" :value="data"
-                    tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" :rows="20">
+                <DataTable 
+                    resizableColumns 
+                    columnResizeMode="expand" 
+                    showGridlines stateStorage="local"
+                    stateKey="table_city_ledger_list_state" 
+                    :reorderableColumns="true" 
+                    :value="data"
+                    tableStyle="min-width: 50rem" 
+                    @row-dblclick="onViewReservationStayDetail" 
+                    :rows="20">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
                         :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
@@ -100,7 +107,7 @@
             </ComPlaceholder>
         </div>
         <div v-if="data.length > 0">
-            <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
+            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                 :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
                     <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
@@ -146,7 +153,7 @@ const dialog = useDialog()
 const opShowColumn = ref();
 const data = ref([])
 const filter = ref({})
-const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0 })
+const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 
 

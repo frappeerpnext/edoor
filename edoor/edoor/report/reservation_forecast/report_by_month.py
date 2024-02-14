@@ -43,7 +43,7 @@ def get_report_data(filters,report_config):
         if filters.parent_row_group in ["Date","Month","Year"]:
             parent_row_group_data = get_parent_group_by_record(filters)
         else:
-            parent_row_group_data = get_parent_group_row_from_result_data(data, folio_transaction_data)
+            parent_row_group_data = get_parent_group_row_from_result_data(data)
 
     
     
@@ -155,6 +155,7 @@ def get_report_data(filters,report_config):
             if len(sub_report_data):
                 
                 total_record = get_sub_group_total_record(sub_report_data, report_config, calculate_room_occupancy_include_room_block)
+                
                 #update total to group record
                 if parent_record:
                     for f in get_report_fields(filters, report_config):
@@ -209,15 +210,16 @@ def get_report_data(filters,report_config):
     return  {"report_data":report_data, "report_summary": report_summary,"report_chart":report_chart}
 
 def get_sub_group_total_record(data,report_config,calculate_room_occupancy_include_room_block):
-    
+   
     total_record = {
             "is_total_row":1,
-            "is_group" : 0, 
+            "is_group" : 1,
             "row_group": "Total",
             "is_group_total":1,
             "indent":1,
             "room_available":  sum([d['room_available'] for d in data if 'room_available' in d])
         }
+    
     for f in report_config.report_fields :
         total_record[f.fieldname] = sum([d[f.fieldname] for d in data if 'is_group' in d and  d["is_group"]==0 ])
 
@@ -228,7 +230,7 @@ def get_sub_group_total_record(data,report_config,calculate_room_occupancy_inclu
     total_record["occupancy"] = total_record["occupancy"] * 100
 
     #adr
-
+    
     total_record['adr'] = (total_record["total_rate"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
     return total_record
 

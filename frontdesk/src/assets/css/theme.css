@@ -5186,10 +5186,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     padding-bottom: 50px;
   }
 }
-}
-.p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
-  max-height: calc(100vh - 89px) !important;
-}
+} 
 .p-dialog .p-dialog-content:last-of-type {
   border-bottom-right-radius: 6px;
   border-bottom-left-radius: 6px;
