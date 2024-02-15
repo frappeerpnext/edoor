@@ -36,20 +36,24 @@ MyPage = Class.extend({
 			fieldtype: 'Link',
 			fieldname: 'property',
 			options:"Business Branch",
-			change() {
-				this.setLinked()
-			}
+			change: () => {
+				const selectedProperty = this.property.get_value()
+				console.log(selectedProperty);
+				this.cashier_shift.df.filters.business_branch = selectedProperty;
+			},
 
 		});
+		
+
 		this.cashier_shift = this.page.add_field({
-			label: 'Cashier Shift',
+    		label: 'Cashier Shift',
 			fieldtype: 'Link',
 			fieldname: 'cashier_shift',
 			options: 'Cashier Shift',
-			filters:{
+			filters: {
 				'is_edoor_shift': 1,
 				'business_branch': this.property.get_value(),
-			  },
+			},
 		});
 		
 		this.ledger_group = this.page.add_field({
@@ -133,7 +137,7 @@ MyPage = Class.extend({
 			cashier_shift.df.get_query = function () {
 				return {
 					filters: {
-						"property": property
+						"business_branch": property
 					}
 				};
 			};

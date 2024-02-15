@@ -3,11 +3,21 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Reservation List</div>
+                    <div :class="isMobile ? 'flex justify-content-between': ''">
+<div class="text-2xl">Reservation List</div>
+                        <div class="w-50" v-if="isMobile">
+<ComNewReservationMobileButton />
+                        </div>
+                    </div>
+                    
                 </template>
                 <template #end>
-                    <NewFITReservationButton />
-                    <NewGITReservationButton />
+                   
+                    <template v-if="!isMobile">
+                       <NewFITReservationButton />
+                    <NewGITReservationButton /> 
+                    </template>
+                    
                 </template>
             </ComHeader>
             <div class="mb-3 flex justify-between">
@@ -178,8 +188,9 @@ import NewFITReservationButton from '../reservation/components/NewFITReservation
 import NewGITReservationButton from "@/views/reservation/components/NewGITReservationButton.vue"
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
+import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import { Timeago } from 'vue2-timeago'
-
+const isMobile = ref(window.isMobile) 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")

@@ -65,13 +65,24 @@ frappe.query_reports["Room Revenue Detail Report"] = {
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname": "show_in_summary",
-			"label": __("Show in Summary"),
-			"fieldtype": "MultiSelectList",
-			"on_change": function (query_report) { },
-			"hide_in_filter": 1,
-		},
+		// {
+		// 	"fieldname": "show_in_summary",
+		// 	"label": __("Summary Field"),
+		// 	"fieldtype": "MultiSelectList",
+		// 	get_data: function(txt) {
+		// 		return [
+		// 			{"value":"total_record","description":"Total Room",name:"Total Room",fieldtype:"Int", width:100,align:"center"},
+		// 			{"value":"room_charge","description":"Total Room Revenue",name:"Total Room Revenue",fieldtype:"Currency", width:100,align:"center"},
+		// 			{"value":"room_charge_adjustment","description":"Total Room Adj",fieldtype:"Currency",name:"Total Room Adj", width:100,align:"center"},
+		// 			{"value":"other_room_charge","description":"Total Other Room Revenue",name:"Total Other Room Revenue",fieldtype:"Currency", width:100,align:"center"},
+		// 			{"value":"service_charge","description":"Total Service Charge",name:"Total Service Charge",fieldtype:"Currency", width:100,align:"right"},
+		// 			{"value":"tax","description":"Total Tax",name:"Total Tax",fieldtype:"Currency", width:100 ,align:"right"},
+		// 			{"value":"occupy","description":"Total Occ.",name:"BalTotal Occ.ance",fieldtype:"Currency", width:100,align:"right"},
+		// 		]
+		// 	},
+		// 	hide_in_filter:1,
+		// 	"on_change": function (query_report) {},
+		// },
 		
 	],
 	onload: function(report) {

@@ -3,9 +3,8 @@ import frappe
 
 
 def execute(filters=None):
-	
 	report_data =get_report_data(filters)
-	summary = None
+	summary = get_summary(filters,report_data)
 	columns = get_report_columns(filters)
 	 
 
@@ -55,11 +54,25 @@ def get_report_data (filters):
 		if row:
 			row=row[0]
 			row["occupy"] = occ["occupy"]
- 
+	total_adr = 0
 	for d in report_data:
 		if "occupy" in d and d["occupy"]>0 and "total_revenue" in d:
 			d["adr"] = d["total_revenue"] / d["occupy"]
-
+			total_adr += d['adr']	
+	total_revenue = sum([d["room_charge"] for d in charge_data]) + sum([d["room_charge_adjustment"] for d in charge_data]) + sum([d["other_room_charge"] for d in charge_data]) + sum([d["service_charge"] for d in charge_data]) + sum([d["tax"] for d in charge_data])
+	
+	report_data.append({
+		"indent":0,
+		"room_number": "Total",
+		"room_charge":sum([d["room_charge"] for d in charge_data]),
+		"room_charge_adjustment":sum([d["room_charge_adjustment"] for d in charge_data]),
+		"other_room_charge":sum([d["other_room_charge"] for d in charge_data]),
+		"service_charge":sum([d["service_charge"] for d in charge_data]),
+		"tax":sum([d["tax"] for d in charge_data]),
+		"total_revenue":total_revenue,
+		"occupy":sum([d["occupy"] for d in occupy_data]),
+		"adr":total_adr,
+	})
 	return report_data
 
 
@@ -125,20 +138,28 @@ def get_room_number(filters):
 
 
 
-def get_report_summary(filters,report_fields, data):
-	summary = []
-	summary_fields = [d for d in report_fields if d.show_in_summary==1 ]
-	if filters.show_in_summary:
-		summary_fields = [d for d in summary_fields if d.fieldname in filters.show_in_summary]
-
-	for x in summary_fields:
-		summary.append({
-        "value": sum([d[x.fieldname] for d in data if d["is_group"] == 0 and x.fieldname in d]),
-        "indicator": x.summary_indicator,
-        "label": x.label,
-        "datatype": x.fieldtype
-})
-	return summary
+def get_summary(filters,data):
+	report_data = get_report_data(filters)
+	# get charge data 
+	total_adr = 0
+	for d in report_data:
+		if "occupy" in d and d["occupy"]>0 and "total_revenue" in d:
+			d["adr"] = d["total_revenue"] / d["occupy"]
+			total_adr += d['adr']	
+	total_revenue = sum([d["room_charge"] for d in get_room_charge_data(filters)]) + sum([d["room_charge_adjustment"] for d in get_room_charge_data(filters)]) + sum([d["other_room_charge"] for d in get_room_charge_data(filters)]) + sum([d["service_charge"] for d in get_room_charge_data(filters)]) + sum([d["tax"] for d in get_room_charge_data(filters)])
+	if filters.show_summary:
+		return [
+			{ "label":"Total Room","value":len(data),"indicator":"red"},
+			{ "label":"Total Room Revenue","value":sum([d["room_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"red"},
+			{ "label":"Total Room Adj","value":sum([d["room_charge_adjustment"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"blue"},
+			{ "label":"Total Other Room Revenue","value":sum([d["other_room_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"green"},
+			{ "label":"Total Service Charge","value":sum([d["service_charge"] for d in get_room_charge_data(filters) ]),"datatype": "Currency","indicator":"red"},
+			{ "label":"Total Tax","value":sum([d["tax"] for d in get_room_charge_data(filters)]),"datatype": "Currency","indicator":"blue"},
+			{ "label":"Total Revenue","value":total_revenue,"datatype": "Currency","indicator":"blue"},
+			{ "label":"Total Occ.","value":sum([d["occupy"] for d in get_occupy_data(filters)]),"indicator":"green"},
+			{ "label":"Total ADR","value":total_adr,"datatype": "Currency","indicator":"green"},
+			
+		]
 
 
 

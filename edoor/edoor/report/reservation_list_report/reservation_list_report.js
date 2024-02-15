@@ -140,7 +140,7 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldname": "chart_type",
 			"label": __("Chart Type"),
 			"fieldtype": "Select",
-			"options": "None\nbar\nline\npie",
+			"options": "None\nbar\nline\npie", 
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
