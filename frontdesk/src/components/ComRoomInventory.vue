@@ -2,7 +2,7 @@
 <ComDialogContent  hideButtonOK style="min-height:80vh;" :hideButtonClose="false" @onClose="onClose" >
     <div>
        
-        <div class="flex justify-between mt-2 mb-4 filter-calen-fro" id="front_desk_search_sticky"> 
+        <div class="flex justify-between mt-2 mb-4 filter-calen-fro overflow-auto gap-2 lg:gap-0" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>

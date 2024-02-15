@@ -1,7 +1,7 @@
 <template>
     <div class="wrap-dialog iframe-modal " style="overflow: auto;" :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 " >
-            <div class="grid mb-3 ">
+            <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
                 <div class="col flex gap-2">
                   
                     <div v-if="show_letter_head">
@@ -160,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            <div class="widht-ifame">
+            <div class="widht-ifame overflow-auto">
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>

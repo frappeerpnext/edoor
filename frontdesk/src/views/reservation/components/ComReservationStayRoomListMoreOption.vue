@@ -88,7 +88,10 @@ function onOpenDeleted(data){
                     modal: true,
                     maximizable: true,
                     closeOnEscape: false,
-                    position: "top"
+                    position: "top",
+                    pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
                 },
                 onClose: (options) => {
                     const data = options.data;

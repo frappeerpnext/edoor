@@ -264,7 +264,10 @@ function onAddFolioTransaction(account_code) {
 
                 modal: true,
                 position: "top",
-                closeOnEscape: false
+                closeOnEscape: false,
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data;
@@ -312,7 +315,10 @@ function showPrintPreview(data) {
             },
 
             modal: true,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     })
 }
@@ -335,7 +341,10 @@ function EditFolio() {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             let data = options.data;
@@ -472,7 +481,10 @@ function deleteFilio() {
             modal: true,
             maximizable: false,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -513,7 +525,10 @@ function onTransferFolioItem() {
             },
 
             modal: true,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -561,7 +576,10 @@ function onAuditTrail() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             //

@@ -212,7 +212,10 @@ function onViewCustomerDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            maximizable: true
+            maximizable: true,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
 

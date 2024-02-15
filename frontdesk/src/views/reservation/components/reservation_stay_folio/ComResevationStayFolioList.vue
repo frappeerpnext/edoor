@@ -150,7 +150,10 @@ function onAddCreatNewFolio() {
             },
             modal: true,
             position: 'top',
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;

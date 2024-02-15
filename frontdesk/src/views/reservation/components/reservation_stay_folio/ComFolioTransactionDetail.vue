@@ -2,7 +2,7 @@
   <ComDialogContent :loading="loading" :hideButtonOK="true" @onClose="onClose">
     <div class="border-round-xl h-full">
       <div class="grid">
-        <div class="col-6">
+        <div class="col-12 md:col-6">
           <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Transaction Detail</h2>
           <table class="">
             <tbody>
@@ -159,7 +159,7 @@
             </tbody>
           </table>
         </div>
-        <div class="col-6">
+        <div class="col-12 md:col-6">
           <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Creation</h2>
           <table class="">
             <tbody>
@@ -382,7 +382,10 @@ function onAuditTrail() {
       modal: true,
       maximizable: true,
       closeOnEscape: false,
-      position: "top"
+      position: "top",
+      pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
     },
     onClose: (options) => {
       //
@@ -440,6 +443,9 @@ function onPrintFolioTransaction() {
       },
       position: "top",
       modal: true,
+      pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
     },
   })
 }
@@ -465,6 +471,9 @@ function onViewSaleDetail() {
       },
       position: "top",
       modal: true,
+      pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
     },
   })
 }

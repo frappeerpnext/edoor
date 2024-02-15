@@ -1,7 +1,7 @@
 <template lang=""> 
  <ComDialogContent  hideButtonOK style="min-height:80vh;" :hideButtonClose="false"   @onClose="onClose">
   <div class="">
-      <div class="flex mt-3 justify-between filter-calen-fro  " style="z-index:1000;" id="front_desk_search_sticky"> 
+      <div class="flex mt-3 justify-between filter-calen-fro overflow-auto gap-2 lg:gap-0" style="z-index:1000;" id="front_desk_search_sticky"> 
           <div class="flex gap-2">
               <div>
                   <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
@@ -9,13 +9,13 @@
               <div>
                   <span class="p-input-icon-left w-full">
                       <i class="pi pi-search" />
-                      <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom"/>
+                      <InputText class="btn-set__h w-12rem lg:w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom"/>
                   </span>
               </div>
               <div>
                   <span class="p-input-icon-left w-full">
                       <i class="pi pi-search" />
-                      <InputText class="btn-set__h w-full"  v-model="keyword.keyword" placeholder="Search" v-debounce="onSearch"/>
+                      <InputText class="btn-set__h w-12rem lg:w-full"  v-model="keyword.keyword" placeholder="Search" v-debounce="onSearch"/>
                   </span>
               </div>
               <div>

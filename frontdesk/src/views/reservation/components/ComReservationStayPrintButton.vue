@@ -37,6 +37,9 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
         });
     }

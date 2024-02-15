@@ -198,14 +198,13 @@ function onEdit(name) {
             style: {
                 width: '60vw',
             },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -355,15 +354,14 @@ function onAddNote(name) {
             header: (name ? "Edit" : 'Add') + " Note",
             style: {
                 width: '60vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
+            }, 
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;

@@ -227,7 +227,10 @@ function onUndoCheckIn() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data 
@@ -274,7 +277,10 @@ function OnUndoCheckOut() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data 
@@ -337,7 +343,10 @@ function onUpdateReservationStatus(header="Confirm Note",data){
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
              const data = options.data;

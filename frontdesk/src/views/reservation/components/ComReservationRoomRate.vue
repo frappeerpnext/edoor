@@ -167,7 +167,10 @@ function onEditRoomRate(room_rate = null){
         },
         position: "top",
         modal: true,
-        closeOnEscape: false
+        closeOnEscape: false,
+        pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
       },
       onClose: (options) => {
         const result = options.data;
@@ -194,7 +197,10 @@ function onEditRoomRate(room_rate = null){
         },
         position: "top",
         modal: true,
-        closeOnEscape: false
+        closeOnEscape: false,
+        pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
       },
       onClose: (options) => {
         const result = options.data;
@@ -231,11 +237,10 @@ function showReservationStayDetail(selected) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position:"top",
-            breakpoints: {
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            position:"top", 
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }, 
     });
 }

@@ -74,7 +74,10 @@ function onEditFolioTransaction() {
             },
             modal: true,
             position:'top',
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -104,7 +107,10 @@ const onViewFolioDetail = () => {
             },
             modal: true,
             position:'top',
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
 
     });
@@ -125,6 +131,9 @@ function onPrintFolioTransaction() {
             },
             position: "top",
             modal: true,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     })
 }
@@ -146,7 +155,10 @@ function onOpenDelete() {
             modal: true,
             maximizable: false,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             if(options.data){

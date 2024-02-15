@@ -22,15 +22,14 @@ function onClick() {
             header: 'New Walk-In Guest',
             style: {
                 width: '80vw',
-            },
-            breakpoints: {
-                '960px': '100vw',
-                '640px': '100vw'
-            },
+            }, 
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -57,11 +56,10 @@ function onViewReservationDetail(name) {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position:"top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            position:"top", 
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
 

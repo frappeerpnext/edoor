@@ -39,13 +39,13 @@
                         <div
                             class="col-fix w-20rem ms-3 flex white-space-nowrap overflow-hidden text-overflow-ellipsis flex align-content-center">
                             <div>
-                                <ComAvatar size="xlarge" :label="slotProps.item.comment_by"
+                                <ComAvatar :size="isMobile ? 'large'  : 'xlarge' " :label="slotProps.item.comment_by"
                                     :image="slotProps.item.custom_comment_by_photo" />
                             </div>
                             <div class="border-left-1 ms-1 ps-3 line-height-2">
                                 <div class="flex gap-2 align-items-center">
                                     <div
-                                        class="text-lg font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis">
+                                        class="text-md md:text-lg font-bold white-space-nowrap overflow-hidden text-overflow-ellipsis">
                                         {{ slotProps.item.comment_by }}
                                     </div>
                                 </div>
@@ -59,12 +59,13 @@
                             </div>
                         </div>
 
-                        <div class="col-12 md:col p-0">
+                        <div class="col-12 md:col p-2 md:p-0" style="max-width:70vw;">
                             <div class="content-note-comment" v-html="slotProps.item.content">
                             </div>
                         </div>
-
-                        <div class="col-fix w-10rem" style="font-size: 12px;font-weight: 400;">
+                         <hr v-if="isMobile" class="w-full pb-3">
+                        <div class="md:col-fix text-500 w-full md:w-10rem flex justify-content-end -mb-12 md:mb-0" style="font-size: 12px;font-weight: 400;">
+                           
                             <ComTimeago :date="slotProps.item.creation"></ComTimeago>
                         </div>
                     </div>
@@ -79,6 +80,7 @@ import Timeline from 'primevue/timeline';
 import ComAvatar from '@/components/form/ComAvatar.vue';
 const working_date = ref(window.current_working_date)
 const moment = inject("$moment")
+const isMobile = ref(window.isMobile) 
 const props = defineProps({
     data: Object
 })

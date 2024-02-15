@@ -239,7 +239,10 @@ function onBlankGuestRegistration() {
             position: "top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
 }
@@ -279,7 +282,10 @@ function onOpenCashierShift() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
 
     });

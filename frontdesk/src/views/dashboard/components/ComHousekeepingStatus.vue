@@ -73,7 +73,10 @@ const onViewRoomList = (status) => {
                 position: "top",
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
         });
     } else {
@@ -94,7 +97,10 @@ const onViewRoomList = (status) => {
                 position: "top",
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
 
         });

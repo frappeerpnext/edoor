@@ -316,7 +316,10 @@ function AddTransaction(account_code) {
 
             modal: true,
             position: "top",
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -349,7 +352,10 @@ const dialogRef = dialog.open(ComIFrameModal, {
         },
 
         modal: true,
-        position: "top"
+        position: "top",
+        pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
     },
 })
 }
@@ -367,7 +373,10 @@ function onEditFolioTransaction(name) {
             },
             modal: true,
             position: 'top',
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const doc = options.data;
@@ -395,7 +404,10 @@ function onDeleteCityLedgerTransaction(name) {
             modal: true,
             maximizable: false,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             if(options.data){

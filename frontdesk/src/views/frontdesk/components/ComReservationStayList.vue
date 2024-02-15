@@ -113,15 +113,14 @@ function onViewReservationDetail(name) {
             header: 'Reservation Stay Detail',
             style: {
                 width: '80vw',
-            },
-            breakpoints: {
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            }, 
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             
@@ -142,7 +141,10 @@ function onViewCustomerDetail(name) {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             //

@@ -202,7 +202,10 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -256,7 +259,10 @@ function onGroupCheckIn() {
                     width: '450px',
                 },
                 modal: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const result = options.data;
@@ -320,7 +326,10 @@ function onGroupUndoCheckIn() {
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const result = options.data;
@@ -429,7 +438,10 @@ function onGroupUndoCheckOut() {
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data
@@ -466,7 +478,10 @@ function onGroupAssignRoom() {
             position: "top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
     });
 }
@@ -632,7 +647,10 @@ function onAuditTrail() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             //
@@ -656,7 +674,10 @@ function onGroupChangeRate() {
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 if (options.data) {
@@ -702,7 +723,10 @@ function onGroupChangeStayDate() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
 
@@ -827,7 +851,10 @@ function onTransferStay() {
             modal: true,
             maximizable: true,
             closeOnEscape: true,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;

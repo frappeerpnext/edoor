@@ -2,14 +2,16 @@
 
 <ComPlaceholder text="No Data" height="70vh" :loading="gv.loading" :is-not-empty="data.length > 0">
 				<DataTable 
-					class="res_list_scroll" 
+					class=" max-w-screen" 
 					:resizableColumns="true" 
 					columnResizeMode="fit" 
 					showGridlines
 					stateStorage="local" 
 					:reorderableColumns="true" 
 					:value="data"
-					tableStyle="min-width: 50rem" 
+					scrollable
+					tableStyle="max-width:100vw;" 
+					scrollHeight="70vh"
 					@row-dblclick="onViewReservationStayDetail">
 						<Column field="custom_posting_date" header="Audit date">
 							<template #body="slotProps">

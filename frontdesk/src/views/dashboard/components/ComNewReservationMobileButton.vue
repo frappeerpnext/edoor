@@ -35,7 +35,10 @@ if (props.is_walk_in) {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -64,7 +67,10 @@ items_add_new.value.push({
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
              

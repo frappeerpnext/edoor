@@ -762,7 +762,10 @@ function onViewFutureReservation(){
            position:"top",
            modal: true,
            maximizable: true,
-           closeOnEscape: false
+           closeOnEscape: false,
+           pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
        }
    });
 }

@@ -957,6 +957,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     .p-dialog.p-dialog-maximized .p-dialog-content .wrap-dialog .wrap-dialog-content {
         max-height: calc(100vh - 128px) !important;
     }
+    .p-dialog .p-dialog-header .p-dialog-header-icon.p-dialog-header-maximize{
+        display: none;
+    }
 }
 .p-dialog .footer-fixed{
     background-color: #FFF;
@@ -1429,6 +1432,10 @@ background-color: #6365f125 !important;
     color:var(--bg-purple-cs) !important ;
     cursor: pointer;
 }
+.content-note-comment{
+   word-wrap: break-word;
+}
+
 .room-avaiable-dailog .fc .fc-scrollgrid-section-header.fc-scrollgrid-section-sticky>* {
     top: -13px !important;
 }

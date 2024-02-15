@@ -93,14 +93,18 @@ def get_meta(doctype=None):
 
 @frappe.whitelist()
 def get_dashboard_data_by_timespan(property,timespan="today"):
-    time.sleep(5)
+    # time.sleep(3)
     working_day = get_working_day(property)
+    data = None
+    hk_status = get_house_keeping_status(property, working_day["date_working_day"])
     if timespan=="today":
-        return get_dashboard_data(property=property, date=working_day['date_working_day'])
+        data =  get_dashboard_data(property=property, date=working_day['date_working_day'])
     elif timespan=="tomorrow":
-        return get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=1))
+        data =  get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=1))
     else:
-        return get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=-1))
+        data =  get_dashboard_data(property=property, date=add_to_date(getdate(working_day['date_working_day']),days=-1))
+    data["housekeeping_status"] = hk_status
+    return  data
 
 # Get the current date
 @frappe.whitelist()

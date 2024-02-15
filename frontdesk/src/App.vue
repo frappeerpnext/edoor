@@ -49,23 +49,14 @@ import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySu
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
 
-window.isMobile= ('ontouchstart' in window || navigator.maxTouchPoints > 0);
- 
-
- 
-
+window.isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+const isMobile = ref(window.isMobile)
 const gv = inject("$gv")
 const moment= inject("$moment")
- 
-
 window.session_id = gv.generateGuid()
- 
-
 const toast = useToast();
 const dialog = useDialog();
-
 const hasProperty = ref(false)
-
 if (localStorage.getItem("edoor_property") == null) {
     const user = JSON.parse(localStorage.getItem("edoor_user"))
     if (user?.property?.length == 1) {
@@ -191,7 +182,7 @@ onUnmounted(() => {
     window.socket.off("UpdateCashierShift")
     window.socket.off("RunNightAudit")
 })
-onMounted(() => {
+onMounted(() => { 
     window.addEventListener('message', actionClickHandler, false);
     window.socket.on("UpdateCashierShift", (arg) => {
         if (window.property_name == arg.business_branch) {
@@ -257,7 +248,10 @@ function showBusinessSourceDetail(name){
             },
             modal: true,
             position:"top",
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
     });
 }
@@ -297,7 +291,10 @@ const dialogRef = dialog.open(ComVendorDetail, {
         maximizable: true,
         modal: true,
         closeOnEscape: false,
-        position: "top"
+        position: "top",
+        pt: {
+            root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+        }
     },
 
 });
@@ -316,7 +313,10 @@ const dialogRef = dialog.open(ComRoomDetail, {
         maximizable: true,
         modal: true,
         closeOnEscape: false,
-        position: "top"
+        position: "top",
+        pt: {
+            root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+        }
     },
 
 });
@@ -339,10 +339,9 @@ function showReservationDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: "top",
-            // breakpoints:{
-            //     '960px': '80vw',
-            //     '640px': '100vw'
-            // },
+            pt: {
+                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
     });
     }else {
@@ -376,7 +375,10 @@ function onEditRoomRate(name) {
                 maximizable: true,
                 modal: true,
                 position: "top",
-                closeOnEscape: false
+                closeOnEscape: false,
+                pt: {
+                    root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+                }
             }
         });
     })
@@ -399,7 +401,10 @@ function onAssignRoom(reservation_stay_name, name) {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         
     })
@@ -422,10 +427,9 @@ function showReservationStayDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints: {
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -458,7 +462,10 @@ function showFolioTransactionDetail(name) {
             },
             modal: true,
             position:"top",
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
 }
@@ -476,7 +483,10 @@ function showCityLedgerDetail(name) {
             },
             modal: true,
             position:"top",
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
 }
@@ -494,7 +504,10 @@ function showDepositLedgerDetail(name) {
             },
             modal: true,
             position:"top",
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
 }
@@ -512,7 +525,10 @@ function showFolioDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: true
+            closeOnEscape: true,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
        
     });
@@ -532,7 +548,10 @@ function showCashierShiftDetail(name,is_run_night_audit=0) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: true
+            closeOnEscape: true,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
        
     });
@@ -550,7 +569,10 @@ function showRoomBlockDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
        
     });
@@ -576,6 +598,9 @@ function onViewDailySummary(date,room_type_id, title="") {
            modal: true,
            maximizable: true,
            closeOnEscape: false,
+           pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         
        }
       
@@ -617,7 +642,10 @@ function showSaleDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
    });
 }
@@ -635,7 +663,10 @@ function showDeskFolioDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
        
     });
@@ -653,7 +684,10 @@ function showPayableLedgerDetail(name) {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         }
        
     });

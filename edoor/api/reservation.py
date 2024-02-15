@@ -1499,40 +1499,42 @@ def change_stay(data):
 
 def post_room_charge_to_folio_after_extend_stay(stays):
 
+
     for s in stays:
         stay_doc = frappe.get_doc("Reservation Stay", s)
-        working_day = get_working_day(stay_doc.property)
-        if getdate( stay_doc.departure_date) > getdate(working_day["date_working_day"]):
-            sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
-            room_rates = frappe.db.sql(sql_rate,as_dict=1)
-            if room_rates:
-                room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
+        if stay_doc.reservation_status =="In-house":
+            working_day = get_working_day(stay_doc.property)
+            if getdate( stay_doc.departure_date) > getdate(working_day["date_working_day"]):
+                sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
+                room_rates = frappe.db.sql(sql_rate,as_dict=1)
+                if room_rates:
+                    room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
 
-                # check if room chage already post to folio
-                sql="select name from `tabFolio Transaction` where reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
-                if not frappe.db.sql(sql,as_dict=1):
-                    # start add charge to filio
-                    # get folio post to master or post to self folio
-                    folio = get_stay_posting_folio(stay_doc)
-                    if folio:
-                        add_room_charge_to_folio( folio, room_rate_doc,0,"Room Extended")
-                    else:
-                        frappe.throw("Please create folio for reservation stay #{}".format(stay_doc.name))
+                    # check if room chage already post to folio
+                    sql="select name from `tabFolio Transaction` where reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
+                    if not frappe.db.sql(sql,as_dict=1):
+                        # start add charge to filio
+                        # get folio post to master or post to self folio
+                        folio = get_stay_posting_folio(stay_doc)
+                        if folio:
+                            add_room_charge_to_folio( folio, room_rate_doc,0,"Room Extended")
+                        else:
+                            frappe.throw("Please create folio for reservation stay #{}".format(stay_doc.name))
 
-        else:
-            # delete unexted room 
-            room_rates= frappe.db.sql("select name from `tabReservation Room Rate` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
-            # folio_transactions = frappe.db.sql("select name, total_amount from `tabReservation`")
-            frappe.db.sql("delete from `tabFolio Transaction` where reservation_stay=%(reservation_stay)s and reservation_room_rate not in %(reservation_room_rate)s",{
-                "reservation_stay":stay_doc.name,
-                "reservation_room_rate": set([d["name"] for d in room_rates])
-            })
-            #update folio balance
-            folio = get_stay_posting_folio(stay_doc)
-            if folio:
-                update_reservation_folio(doc=folio, run_commit=False)
+            else:
+                # delete unexted room 
+                room_rates= frappe.db.sql("select name from `tabReservation Room Rate` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
+                # folio_transactions = frappe.db.sql("select name, total_amount from `tabReservation`")
+                frappe.db.sql("delete from `tabFolio Transaction` where reservation_stay=%(reservation_stay)s and reservation_room_rate not in %(reservation_room_rate)s",{
+                    "reservation_stay":stay_doc.name,
+                    "reservation_room_rate": set([d["name"] for d in room_rates])
+                })
+                #update folio balance
+                folio = get_stay_posting_folio(stay_doc)
+                if folio:
+                    update_reservation_folio(doc=folio, run_commit=False)
 
-            #post to audit trail
+                #post to audit trail
 
 
 

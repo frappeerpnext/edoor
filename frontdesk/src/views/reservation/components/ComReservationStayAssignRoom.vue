@@ -5,7 +5,7 @@
         <ComReservationStayPanel title="Assign Room">
             <template #content> 
  
-            <div class="n__re-custom">
+            <div class="n__re-custom overflow-auto">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -225,7 +225,10 @@
             modal: true,
             maximizable: true,
             closeOnEscape: true,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
     }
@@ -239,7 +242,10 @@
             modal: true,
             maximizable: true,
             closeOnEscape: true,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
     }

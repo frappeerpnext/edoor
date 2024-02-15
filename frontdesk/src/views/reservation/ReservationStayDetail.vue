@@ -334,13 +334,13 @@ onMounted(() => {
     window.addEventListener('message', actionRefreshData, false);
 
     
-    if(window.isMobile){
-        let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
-            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
-        }
-    }
+    // if(window.isMobile){
+    //     let elem = document.querySelectorAll(".p-dialog");
+    //     if (elem){
+    //         elem = elem[elem.length-1]
+    //         elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+    //     }
+    // }
 
 });
 
@@ -381,7 +381,10 @@ const onCheckIn = () => {
                 width: '650px',
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const result = options.data;
@@ -496,7 +499,10 @@ function onAuditTrail() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: "top"
+            position: "top",
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
     });
 }

@@ -95,9 +95,12 @@
                         <div class="mt-3">
                         <Paginator  v-model:first="pageState.activePage" :rows="pageState.rows"
                             :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[ 50, 100, 500]"
-                            @page="pageChange">
+                   
+                            @page="pageChange"
+                            :pageLinkSize="isMobile ? '2' : '5'"
+                            >
                             <template #start="slotProps">
-                                <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
+                                <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
                                 }}</span></strong>
                             </template>
                         </Paginator>
@@ -116,6 +119,12 @@
             titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false"
             @onCancel="onCloseAdvanceSearch">
             <div class="grid">
+                <div class="col-12" v-if="isMobile">
+                                        <span class="p-input-icon-left w-full">
+                                            <i class="pi pi-search" />
+                                            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                        </span>
+                                    </div>
                 <div class="col-6">
                     <label> Start Date </label>
                     <Calendar class="w-full" :showButtonBar="true" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"

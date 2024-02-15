@@ -206,6 +206,9 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             // Handle dialog closure here
@@ -223,7 +226,10 @@ function onEdit() {
             },
             modal: true,
             position: 'top',
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const result = options.data;

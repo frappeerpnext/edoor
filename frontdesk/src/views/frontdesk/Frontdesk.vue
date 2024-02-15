@@ -197,6 +197,7 @@ let advanceFilter = ref({
 })
 if (isMobile) {
     showSummary.value = false
+    localStorage.setItem("edoor_show_frontdesk_summary", "0")
 }
 const isFilter = computed(() => { 
     if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {
@@ -331,7 +332,10 @@ const calendarOptions = reactive({
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data;
@@ -358,7 +362,10 @@ const calendarOptions = reactive({
                 },
                 modal: true,
                 closeOnEscape: false,
-                position: 'top'
+                position: 'top',
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
 
@@ -456,7 +463,10 @@ const calendarOptions = reactive({
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: "top"
+                position: "top",
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data;
@@ -489,7 +499,10 @@ const calendarOptions = reactive({
                 },
                 modal: true,
                 closeOnEscape: false,
-                position: 'top'
+                position: 'top',
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data;
@@ -602,7 +615,10 @@ function onSelectedDate(event) {
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
-                position: 'top'
+                position: 'top',
+                pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
             },
             onClose: (options) => {
                 const data = options.data;
@@ -848,10 +864,9 @@ function showReservationStayDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;
@@ -882,11 +897,10 @@ function showReservationDetail(name) {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position: "top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            position: "top", 
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;

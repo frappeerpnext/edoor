@@ -179,6 +179,9 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             // Handle dialog closure here

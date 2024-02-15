@@ -242,14 +242,6 @@ onMounted(() => {
     } 
     window.reservation = name.value 
     window.addEventListener('message', actionRefreshData, false);
-
-    // if(window.isMobile){
-    //     let elem = document.querySelectorAll(".p-dialog");
-    //     if (elem){
-    //         elem = elem[elem.length-1]
-    //         elem?.classList.add("p-dialog-maximized"); // adds the maximized class
-    //     }
-    // }
 });
 
 const actionRefreshData = async function (e) {
@@ -289,7 +281,10 @@ function onCheckIn() {
                 width: '450px',
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const result = options.data;
@@ -328,7 +323,10 @@ function onAddRoomMore() {
             maximizable: true,
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             const data = options.data;

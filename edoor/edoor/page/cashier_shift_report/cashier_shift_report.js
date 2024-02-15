@@ -36,6 +36,9 @@ MyPage = Class.extend({
 			fieldtype: 'Link',
 			fieldname: 'property',
 			options:"Business Branch",
+			change() {
+				this.setLinked()
+			}
 
 		});
 		this.cashier_shift = this.page.add_field({
@@ -43,6 +46,10 @@ MyPage = Class.extend({
 			fieldtype: 'Link',
 			fieldname: 'cashier_shift',
 			options: 'Cashier Shift',
+			filters:{
+				'is_edoor_shift': 1,
+				'business_branch': this.property.get_value(),
+			  },
 		});
 		
 		this.ledger_group = this.page.add_field({
@@ -55,7 +62,7 @@ MyPage = Class.extend({
 			label: 'Show Account Code',
 			fieldtype: 'Check',
 			fieldname: 'show_account_code',
-			default:1
+			default:1 
 		});
 		this.cash_float = this.page.add_field({
 			label: 'Show Cash Float',
@@ -119,5 +126,18 @@ MyPage = Class.extend({
 	onPrint: function(){
 		this.iframe.contentWindow.print()
 	},
-	
+	setLinked: function(){
+		const property = this.property.get_value();
+		if (property) {
+			const cashier_shift = this.cashier_shift.get_value();
+			cashier_shift.df.get_query = function () {
+				return {
+					filters: {
+						"property": property
+					}
+				};
+			};
+
+		}
+	}
 })
