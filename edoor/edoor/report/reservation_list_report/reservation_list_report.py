@@ -82,14 +82,15 @@ def get_chart(filters,data):
 	
 
 	group_data = sorted(set([d[group_column["data_field"]] for d  in data]))
+	
 	for d in chart_series:
 		field = [x for x in report_fields if x["label"] == d][0]
-	 
+		
 
 		dataset_values = []
 		for g in group_data: 
-
 			amount = sum([d[field["data_field"]] for d in data if d[group_column["data_field"]] == g])
+			
 			if field["fieldtype"]  =="Currency":
 				amount = round(amount,int(currency_precision))
 

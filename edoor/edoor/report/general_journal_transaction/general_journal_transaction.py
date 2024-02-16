@@ -97,6 +97,7 @@ def get_report_data(filters):
 		if len(transaction_data)> 0:
 			report_data.append({
 				"ledger":l["label"],
+				"transaction_type":l['value'],
 				"indent":0,
 				"is_group":1,
 				"debit": sum([d["debit"] for d in transaction_data]),
@@ -108,6 +109,7 @@ def get_report_data(filters):
 			#add total row
 			report_data.append({
 					"ledger":"Total",
+					"transaction_type":l['value'],
 					"indent":1,
 					"is_group":1,
 					"debit": sum([d["debit"] for d in transaction_data]),

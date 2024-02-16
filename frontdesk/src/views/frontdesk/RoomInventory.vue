@@ -204,7 +204,7 @@ const calendarOptions = reactive({
     selectable: true,
     editable: true,
     eventResizableFromStart: true,
-    resourceAreaWidth: "250px",
+    resourceAreaWidth: `${window.isMobile ? '150px' : '250px'}`,
     height: 'auto',
     slotDuration: {
         "hours": 12
@@ -340,18 +340,27 @@ function resourceColumn() {
     return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room Type'
+                headerContent: 'Room Type',
+                cellContent: function (arg) {
+                    const el = arg.resource._context.calendarApi.el
+                        if(window.isMobile){
+                            if (arg.resource._resource.extendedProps.alias){
+                                el.innerHTML = arg.resource._resource.extendedProps.alias;
+                            } else {
+                                el.innerHTML = arg.resource._resource.title;
+                            }
+                        } else {
+                            el.innerHTML = arg.resource._resource.title;
+                        } 
+                    let dom = [el.innerHTML]
+                    return { html: dom }
+                }
             },
             {
                 width: 60,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
                          el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center">${ arg.resource.extendedProps.total_room || ""}</div>`;
-                    
-                     
-                   
-               
-                    
                     let dom = [el.innerHTML]
                     return { html: dom }
                 }

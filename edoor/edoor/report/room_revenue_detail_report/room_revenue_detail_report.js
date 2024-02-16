@@ -83,6 +83,41 @@ frappe.query_reports["Room Revenue Detail Report"] = {
 		// 	hide_in_filter:1,
 		// 	"on_change": function (query_report) {},
 		// },
+		{
+			"fieldname": "chart_type",
+			"label": __("Chart Type"),
+			"fieldtype": "Select",
+			"options": "None\nbar\nline\npie", 
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "view_chart_by",
+			"label": __("View Chart By"),
+			"fieldtype": "Select",
+			"options": "\nRoom\nRoom Type",
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
+		{
+			"fieldname": "chart_series",
+			"label": __("Chart Series"),
+			"fieldtype": "MultiSelectList",
+			get_data: function(txt) {
+				return [
+					{"value":"Room Revenue","description":"Room Revenue",fieldtype:"Currency", align:"center"},
+					{"value":"Room Adj","description":"Room Adj",fieldtype:"Currency",align:"center"},
+					{"value":"Other Room Revenue","description":"Other Room Revenue",fieldtype:"Currency", align:"center"},
+					{"value":"Service Charge","description":"Service Charge",fieldtype:"Currency", align:"right"},
+					{"value":"Tax","description":"Tax",fieldtype:"Currency",align:"right"},
+					{"value":"Total Revenue","description":"Total Revenue",fieldtype:"Currency",align:"right"},
+					{"value":"Occupy","description":"Occupy",fieldtype:"Currency", align:"right"},
+					{"value":"ADR","description":"ADR",fieldtype:"Currency", align:"right"},
+				]
+			},
+			hide_in_filter:1,
+			"on_change": function (query_report) {},
+		},
 		
 	],
 	onload: function(report) {
@@ -112,7 +147,7 @@ frappe.query_reports["Room Revenue Detail Report"] = {
 
 
 
-		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+		if ((data && data.indent == 0) || (data && data.is_total_row == 1)) {
 
 			value = $(`<span>${value}</span>`);
 

@@ -13,8 +13,8 @@
                                 </div>
                                 <div class="text-sm">
                                     <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{
-                                        rs.reservationStay.note_by.split("@")[0] }} {{ gv.datetimeFormat(rs.reservationStay.note_modified)
-    }}</span>
+                                        rs.reservationStay.note_by.split("@")[0] }} {{ gv.datetimeFormat(rs.reservationStay.note_modified)}}
+                                    </span>
                                 </div>
                             </div>
                             <hr class="my-2">
@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 <template #footer-right>
-                    <div class="flex">
+                    <div class="block lg:flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="dataUpdate.is_apply_all_stays" :binary="true" inputId="checkapplyall" />
                             <label for="checkapplyall"> Apply all stays ({{ rs.reservation.total_active_reservation_stay

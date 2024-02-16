@@ -20,6 +20,16 @@
                 <Calendar showButtonBar panelClass="no-btn-clear" class="w-full" :min-date="filter.start_date" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date" dateFormat="dd-mm-yy"
                     showIcon />
             </div>
+            <div class="col"  v-if="hasFilter('reservation')">
+                <label>Reservation</label><br>
+                <ComSelect v-model="filter.reservation" placeholder="Reservation" doctype="Reservation"
+                class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
+            </div>
+            <div class="col"  v-if="hasFilter('reservation_stay')">
+                <label>Reservation Stay</label><br>
+                <ComSelect v-model="filter.reservation_stay" placeholder="Reservation Stay" doctype="Reservation Stay"
+                class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
+            </div>
             <div class="col" v-if="hasFilter('select_filter')">
                 <label>Select Filter</label><br>
                 <ComSelect class="w-full"  v-model="filter.select_filter" placeholder="Select Filter"
@@ -35,11 +45,7 @@
                 <ComSelect class="w-full"   v-model="filter.reservation_type" placeholder="Select Reservation Type" :showClear="true"
                 :options="['FIT','GIT']" />
             </div>
-            <div class="col"  v-if="hasFilter('business_source')">
-                <label>Business Source</label><br>
-                <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
-                class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
-            </div>
+            
             <div class="col"  v-if="hasFilter('reservation_status')">
                 <label>Reservation Status</label><br>
                 <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status" doctype="Reservation Status"
@@ -123,6 +129,11 @@
                     v-model="filter.departure_mode"   placeholder="Departure Mode" doctype="Transportation Mode"
                     ></ComSelect>
             </div>
+            <div class="col"  v-if="hasFilter('business_source')">
+                <label>Business Source</label><br>
+                <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
+                class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
+            </div>
             <div class="col"  v-if="hasFilter('working_day')">
                 <label>Working Day</label><br>
                 <ComAutoComplete v-model="filter.working_day" placeholder="working day" doctype="Working Day"
@@ -156,6 +167,11 @@
             </div>
         </div>
         <div class="grid w-full">
+            <div class="col" v-if="hasFilter('business_source_type')">
+                <label>Business Source Type</label><br>
+                <ComAutoComplete v-model="filter.business_source_type" placeholder="Business Source Type" doctype="Business Source Type"
+                class="auto__Com_Cus w-full" />
+            </div>
             <div class="col mt-4"  v-if="hasFilter('is_active_reservation')">
                 <div class="h-full" >
                     <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
@@ -215,6 +231,31 @@
                 extraFields="customer_name_en"
                     v-model="filter.guest"   placeholder="Guest" doctype="Customer"></ComSelect>
             </div> 
+            <div class="col" v-if="hasFilter('guest_type')">
+                <label>Guest Type</label><br>
+                <ComAutoComplete v-model="filter.guest_type" placeholder="Guest Type" doctype="Customer Group"
+                class="auto__Com_Cus w-full" />
+            </div>
+            <div class="col"  v-if="hasFilter('city_ledger')">
+                <label>City Ledger</label><br>
+                <ComAutoComplete v-model="filter.city_ledger" placeholder="City Ledger" doctype="City Ledger"
+                class="auto__Com_Cus w-full" />
+            </div>
+            <div class="col" v-if="hasFilter('account_code')">
+                <label>Account Code</label><br>
+                <ComAutoComplete v-model="filter.account_code" placeholder="Account Code" doctype="Account Code"
+                class="auto__Com_Cus w-full" />
+            </div>
+            <div class="col"  v-if="hasFilter('account_category')">
+                <label>Account Category</label><br>
+                <ComSelect v-model="filter.account_category" placeholder="Account Category" doctype="Account Category"
+                class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
+            </div>
+            <div class="col" v-if="hasFilter('ledger_type')">
+                <label>Ledger Type</label><br>
+                <ComSelect class="w-full"   v-model="filter.ledger_type" placeholder="Ledger Type" :showClear="true"
+                :options='["Reservation Folio","Desk Folio","City Ledger","Deposit Ledger","Payable Ledger","Cashier Shift"]' :isMultipleSelect="true"/>
+            </div>
             <div class="col" v-if="hasFilter('select_user')">
                 <label>Select User</label><br/>
                 <ComSelect        class="auto__Com_Cus w-full" 
@@ -253,17 +294,7 @@
                     :options="['Date', 'Month', 'Room Type' , 'Reservation Type','Business Source','Business Source Type','Guest Type','Nationality']" 
                     />
             </div>
-           
-            <div class="col" v-if="hasFilter('guest_type')">
-                <label>Guest Type</label><br>
-                <ComAutoComplete v-model="filter.guest_type" placeholder="Guest Type" doctype="Customer Group"
-                class="auto__Com_Cus w-full" />
-            </div>
-            <div class="col" v-if="hasFilter('business_source_type')">
-                <label>Business Source Type</label><br>
-                <ComAutoComplete v-model="filter.business_source_type" placeholder="Business Source Type" doctype="Business Source Type"
-                class="auto__Com_Cus w-full" />
-            </div>
+            
         </div>
         </div>
         <div class="w-full items-center flex justify-end p-3 pb-0">

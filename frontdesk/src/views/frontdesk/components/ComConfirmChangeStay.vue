@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
-        <div class="mb-3 flex">
+        <div class="mb-3 flex overflow-auto">
                 <span @click="onViewReservationDetail(doc?.reservation)">
             <ComTagReservation title="RS#:" :value="doc?.reservation" class="link_line_action w-auto"></ComTagReservation>
                 </span>
@@ -61,7 +61,7 @@
                     <ComStayInfoNoBox v-if="doc?.stays.length>1" label="Nights" :value="doc?.room_nights" />
                 </table>
             </div>
-            <div class="col-6">
+            <div class="col-12 lg:col-6">
                 <table>
                     <tr>
                         <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">Old Stay Detail</th>
@@ -90,7 +90,7 @@
                     <ComStayInfoNoBox  label="Nights" :value="moment(oldEvent?.end).diff(oldEvent?.start, 'days')" /> 
                 </table>
             </div>
-        <div class="col-6">
+        <div class="col-12 lg:col-6">
         <table>
             <tr>
                 <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">New Stay Detail</th>
@@ -141,21 +141,22 @@
         
     </div> 
         <hr class="my-4" />
-        <div class="flex justify-end gap-3 mt-3">
+        <div class="inline-block lg:flex justify-end gap-3 mt-3">
             <div class="flex align-items-center" v-if="show_keep_rate">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_keep_old_rate" name="regenerate" value="keep_current_rate" />
                 <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer">Keep current room rate</label>
             </div>
-            <div v-else class="flex align-items-center">
+            <div v-else class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate" value="stay_rate" />
                 <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from  First/Last Stay Rate</label>
             </div>
 
-            <div class="flex align-items-center">
+            <div class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate" value="rate_plan" />
                 <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate Plan</label>
             </div>
         </div>
+        <br/><br/>
         <label>Note</label><br />
         <Textarea v-model="note" rows="3" placeholder="Note" cols="30" class="w-full border-round-xl" />
         <hr class="my-4" />

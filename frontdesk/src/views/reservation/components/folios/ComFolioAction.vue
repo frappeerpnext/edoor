@@ -1,5 +1,5 @@
 <template>
-    <div class="overflow-x-auto overflow-y-auto lg:overflow-hidden">
+    <div class="overflow-x-auto overflow-y-auto lg:overflow-y-hidden">
         <div class="flex gap-1 justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio -mt-3 -mb-2 overflow-x-auto lg:overflow-x-hidden w-max lg:w-full">
             <slot name="button"></slot>
             <div>

@@ -3,7 +3,7 @@
     <div class="wp-number-cus">
         <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
             <template #content>
-            <div class="n__re-custom">
+            <div class="n__re-custom overflow-auto lg:overflow-hidden">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -30,27 +30,35 @@
                     </thead>
                     <tbody>
                         <tr v-if="lastStay">
-                            <td class="pe-2 flex"> 
-                                <span class="box-input-detail">{{gv.dateFormat(lastStay.start_date)}}</span>
+                            <td class="pe-2 w-12rem">
+                                <div class="w-full">
+                                    <span class="box-input-detail w-full flex">{{gv.dateFormat(lastStay.start_date)}}</span>
+                                </div> 
                             </td>
                             <td class="px-2 w-14rem"> 
                                 <Calendar showButtonBar panelClass="no-btn-clear" class="w-14rem" selectOtherMonths showIcon v-model="lastStay.end_date" :min-date="new Date(moment(lastStay.start_date).add(1,'days'))" :max-date="lastStayMaxEndDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2 text-left">
-                                <div class="box-input-detail flex"><span  v-tippy="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span  v-tippy="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
+                                <div class="box-input-detail flex"><span v-tippy="lastStay?.room_type ? lastStay.room_type : ''">{{ lastStay?.room_type_alias }}</span>/<span  v-tippy="lastStay?.room_number ? lastStay.room_number : ''">{{ lastStay?.room_number ? lastStay.room_number : 'Room No (Unassign)' }}</span></div>
                             </td>
-                            <td v-if="can_view_rate" class="text-right px-2">
-                                <span class="box-input-detail flex justify-end white-space-nowrap">
-                                    <CurrencyFormat :value="lastStay.rate" />
-                                </span>
+                            <td v-if="can_view_rate" class="text-right px-2 w-10rem">
+                                <div class="w-10rem lg:w-full">
+                                    <span class="box-input-detail flex justify-end white-space-nowrap">
+                                        <CurrencyFormat :value="lastStay.rate" />
+                                    </span>
+                                </div>
                             </td> 
-                            <td class="text-right px-2"> 
-                                <span class="box-input-detail flex justify-center">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
+                            <td class="text-right px-2 w-10rem">
+                                <div class="w-10rem lg:w-full">
+                                    <span class="box-input-detail flex justify-center w-full">{{moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days')}}</span>
+                                </div>
                             </td>
-                            <td v-if="can_view_rate" class="text-right ps-2">
-                                <span class="box-input-detail flex justify-end white-space-nowrap">
-                                    <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
-                                </span>
+                            <td v-if="can_view_rate" class="text-right ps-2 w-10rem">
+                                <div class="w-10rem lg:w-full">
+                                    <span class="box-input-detail flex justify-end white-space-nowrap">
+                                        <CurrencyFormat :value="Number(moment(lastStay.end_date).diff(moment(lastStay.start_date), 'days') || 0) * lastStay.rate" />
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -61,7 +69,7 @@
      
         <ComReservationStayPanel title="New Stay Room">
             <template #content> 
-            <div class="n__re-custom">
+            <div class="n__re-custom overflow-auto lg:overflow-hidden">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -92,7 +100,7 @@
                                 <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap">{{gv.dateFormat(moment(lastStay.end_date))}}</span>
                             </td>
                             <td class="px-2 w-14rem">
-                                <Calendar showButtonBar panelClass="no-btn-clear" showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
+                                <Calendar inputClass="w-10rem lg:w-full" showButtonBar panelClass="no-btn-clear" showIcon selectOtherMonths v-model="newRoom.end_date"     :min-date="new Date(moment(newRoom.start_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
                             </td>
 
                             <td class="px-2 w-16rem"> 
@@ -118,13 +126,16 @@
 
                               
                             </td>
-                            <td class="text-center px-2 w-5rem ">
+                            <td class="text-center px-2 w-5rem">
                                 <InputNumber v-model="newRoom.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/> 
                             </td>
                             <td v-if="can_view_rate" class="text-right px-2 w-10rem">
-                                <CurrencyFormat :value="(newRoom.rate || 0)" />
+                                <div class="w-10rem lg:w-full">
+                                    <span class="box-input-detail flex justify-end white-space-nowrap">
+                                        <CurrencyFormat :value="(newRoom.rate || 0)" />
+                                    </span>
+                                </div>
                             </td>
-                            
                         </tr>
                     </tbody>
                 </table>

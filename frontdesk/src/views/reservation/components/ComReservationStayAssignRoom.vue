@@ -20,7 +20,7 @@
                                 <label>Room Type</label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Name</label>
+                                <div class="w-13rem lg:w-full"><label>Room Name</label></div>
                             </th>
                             <th class="text-center px-2 w-5rem">
                                 <label class="text-center">Nights</label>
@@ -59,19 +59,24 @@
                                 
                             </td>
                             <td class="px-2 select-room-number-style">
-                                <Dropdown v-model="selectedStay.room_id"
-                                    :options="rooms.filter(r=>r.room_type_id==selectedStay.room_type_id)"
-                                    optionValue="name"   optionLabel="room_number"
-                                    placeholder="Select Room" showClear filter class="w-full" />
+                                <div class="w-13rem lg:w-full">
+                                    <Dropdown v-model="selectedStay.room_id"
+                                        :options="rooms.filter(r=>r.room_type_id==selectedStay.room_type_id)"
+                                        optionValue="name"   optionLabel="room_number"
+                                        placeholder="Select Room" showClear filter class="w-full"/>
+                                </div>
                             </td>
-                            <td class="text-center px-2 w-10rem"> 
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
+                            <td class="text-center px-2">
+                                <div class="w-10rem">
+                                    <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap text-center justify-center">{{ selectedStay.room_nights }}</span>
+                                </div> 
                             </td>
-                            <td class="px-2 w-15rem">
-                                <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap justify-end">
-                                    <CurrencyFormat :value="selectedStay.rate" />
-                                </span>
-                             
+                            <td class="px-2 w-10rem lg:w-full">
+                                <div class="w-10rem lg:w-full">
+                                    <span class="p-inputtext-pt border-1 border-white h-12 w-full flex white-space-nowrap justify-end">
+                                        <CurrencyFormat :value="selectedStay.rate" />
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

@@ -1,7 +1,7 @@
 <template >
     <ComDialogContent @onOK="onSave" @onClose="onClose" :loading="isSaving">
         <div class="grid">
-            <div class="col-6">
+            <div class="col-12 lg:col-6">
                 <div class="flex flex-wrap">
                     <div class="col-12">
                         <div class="flex items-center gap-2 ">
@@ -44,7 +44,7 @@
 
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-12 lg:col-6">
                 <div class="flex flex-wrap">
                     <div class="col-12">
                         <div class="flex items-center gap-2">

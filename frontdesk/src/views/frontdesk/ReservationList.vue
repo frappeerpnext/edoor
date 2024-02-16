@@ -4,7 +4,7 @@
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div :class="isMobile ? 'flex justify-content-between': ''">
-<div class="text-2xl">Reservation List</div>
+<div class="text-xl md:text-2xl">Reservation List</div>
                         <div class="w-50" v-if="isMobile">
 <ComNewReservationMobileButton />
                         </div>
@@ -22,7 +22,7 @@
             </ComHeader>
             <div class="mb-3 flex justify-between">
                 <div class="flex gap-2">
-                    <div>
+                    <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
                             <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -32,7 +32,7 @@
                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                     </div>
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter" />
                     </div>
                    
                 </div>
@@ -116,9 +116,9 @@
         </div>
         <div>
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
-                :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange"   :pageLinkSize="isMobile ? '2' : '5'">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -147,31 +147,37 @@
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <ComAutoComplete class="col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
+                <div class="col-12" v-if="isMobile">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        </span>
+                    </div>
+                <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source_type" optionValue="name"
                     v-model="filter.selected_business_source_type" @onSelected="onSearch" placeholder="Business Source Type"
                     doctype="Business Source Type" />
-                <ComAutoComplete class="col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
+                <ComAutoComplete class="col-6 md:col-3 input-wrp-search-autocomplete" width="100%" optionLabel="business_source" optionValue="name"
                     v-model="filter.selected_business_source" @onSelected="onSearch" placeholder="Business Source "
                     doctype="Business Source" />
-                <ComSelect class="col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
+                <ComSelect class="col-6 md:col-3" width="100%" v-model="filter.selected_reservation_type" @onSelected="onSearch"
                     placeholder="Reservation Type" :options="['GIT', 'FIT']" />
 
-                <ComSelect class="col-3" width="100%" optionLabel="reservation_status" optionValue="name"
+                <ComSelect class="col-6 md:col-3" width="100%" optionLabel="reservation_status" optionValue="name"
                     v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
                     doctype="Reservation Status" />
-                <ComSelect class="col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
+                <ComSelect class="col-6 md:col-3" width="100%" isFilter optionLabel="room_type" optionValue="name"
                     v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <ComSelect class="col-3" width="100%" isFilter groupFilterField="room_type_id"
+                <ComSelect class="col-6 md:col-3" width="100%" isFilter groupFilterField="room_type_id"
                     :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <ComSelect class="col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
+                <ComSelect class="col-6 md:col-3" width="100%" v-model="filter.search_date_type" :options="dataTypeOptions"
                     optionLabel="label" optionValue="value" placeholder="Search Date Type" :clear="false"
                     @onSelectedValue="onSelectFilterDate($event)"></ComSelect>
-                <div class="col-6" v-if="filter.search_date_type">
+                <div class="col-6 md:col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type" dateFormat="dd-MM-yy"
                         v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
                         placeholder="Select Date Range" showIcon />

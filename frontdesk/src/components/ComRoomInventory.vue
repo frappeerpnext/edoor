@@ -1,15 +1,11 @@
 <template lang=""> 
 <ComDialogContent  hideButtonOK style="min-height:80vh;" :hideButtonClose="false" @onClose="onClose" >
-    <div>
-       
+    <div> 
         <div class="flex justify-between mt-2 mb-4 filter-calen-fro overflow-auto gap-2 lg:gap-0" id="front_desk_search_sticky"> 
             <div class="flex gap-2">
                 <div>
                     <Calendar :selectOtherMonths="true" class="w-full" :modelValue="filter.date" @date-select="onFilterDate" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
-                </div>
-                
-               
-             
+                </div> 
             </div>
             <div>
                 <ComRoomChartFilter :viewType="filter.view_type" @onView="onView" @onPrevNext="onPrevNext($event)" @onToday="onFilterToday()" @onChangePeriod="onChangePeriod($event)"/>
@@ -17,14 +13,10 @@
         </div>
         <div style="max-width: 100%;">
             <div>
-                <div>
-                 
-                    <div class="relative" aria-haspopup="true" aria-controls="overlay_menu">
-                       
-
+                <div> 
+                    <div class="relative" aria-haspopup="true" aria-controls="overlay_menu"> 
                         <FullCalendar ref="fullCalendar" :options="calendarOptions" class="h-full">
-                            <template v-slot:eventContent="{event}"> 
-                              
+                            <template v-slot:eventContent="{event}">  
                                     <div class="group relative h-full p-1 event-room-type-class" :class="event.extendedProps.type" style="height: 36px">
                                         <div class="flex justify-content-center">
                                             <div :style="{color:event.extendedProps.textcolor}" class="">
@@ -33,15 +25,12 @@
                                         </div>
                                     </div>
                             </template> 
-                        </FullCalendar>
-                      
-                        
+                        </FullCalendar> 
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    </div> 
 </ComDialogContent>
     </template>
 <script setup>
@@ -110,7 +99,7 @@ const calendarOptions = reactive({
     selectable: true,
     editable: true,
     eventResizableFromStart: true,
-    resourceAreaWidth: "250px",
+    resourceAreaWidth: `${window.isMobile ? '150px' : '250px'}`,
     height: 'auto',
     slotDuration: {
         "hours": 12
@@ -231,39 +220,38 @@ function resourceColumn() {
     return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room Type'
+                headerContent: 'Room Type',
+                cellContent: function (arg) {
+                    const el = arg.resource._context.calendarApi.el
+                        if(window.isMobile){
+                            if (arg.resource._resource.extendedProps.alias){
+                                el.innerHTML = arg.resource._resource.extendedProps.alias;
+                            } else {
+                                el.innerHTML = arg.resource._resource.title;
+                            }
+                        } else {
+                            el.innerHTML = arg.resource._resource.title;
+                        } 
+                    let dom = [el.innerHTML]
+                    return { html: dom }
+                }
             },
             {
                 width: 60,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
                          el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center">${ arg.resource.extendedProps.total_room || ""}</div>`;
-                    
-                     
-                   
-               
-                    
                     let dom = [el.innerHTML]
                     return { html: dom }
                 }
             }
         ]
-    
-}
-
-
-
+} 
 function onView() {
     filter.value.view_type = filter.value.view_type == 'room_type' ? 'room' : 'room_type'
     roomChartResourceFilter.view_type = filter.value.view_type
     getEvents()
 }
-
-
-  
- 
-
- 
 function debouncer(fn, delay) {
     var timeoutID = null;
     return function () {

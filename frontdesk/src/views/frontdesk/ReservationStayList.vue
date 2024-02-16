@@ -3,16 +3,24 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Reservation Stay List</div>
+                    <div :class="isMobile ? 'flex justify-content-between': ''">
+<div class="text-xl md:text-2xl">Reservation Stay List</div>
+                        <div class="w-50" v-if="isMobile">
+<ComNewReservationMobileButton />
+                        </div>
+                    </div>
                 </template>
                 <template #end>
-                    <NewFITReservationButton />
+                    <template v-if="!isMobile">
+                        <NewFITReservationButton />
                     <NewGITReservationButton />
+                    </template>
+                    
                 </template>
             </ComHeader>
             <div class="mb-3 flex justify-between">
                 <div class="flex gap-2">
-                    <div>
+                    <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
                             <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -24,7 +32,7 @@
                 </div>
                 <div class="flex">
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash"
+                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash"
                             @click="onClearFilter" />
                     </div>
                     <div class="px-2">
@@ -101,10 +109,10 @@
             </ComPlaceholder>
         </div>
         <div>
-            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
-                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+            <Paginator class="p__paginator" v-model:first="pageState.activePage"  :rows="pageState.rows"
+                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange" :pageLinkSize="isMobile ? '2' : '5'">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -134,46 +142,52 @@
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <div class="col-3">
+                <div class="col-12" v-if="isMobile">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        </span>
+                    </div>
+                <div class="col-6 md:col-3">
                     <ComAutoComplete isFull optionLabel="business_source_type" optionValue="name"
                         v-model="filter.selected_business_source_type" @onSelected="onSearch"
                         placeholder="Business Source Type" doctype="Business Source Type" />
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComAutoComplete isFull groupFilterField="business_source_type"
                         :groupFilterValue="filter.selected_business_source_type" optionLabel="business_source"
                         optionValue="name" v-model="filter.selected_business_source" @onSelected="onSearch"
                         placeholder="Business Source" doctype="Business Source"
                         :filters="[['property', '=', property.name]]" />
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull v-model="filter.selected_reservation_type" @onSelected="onSearch"
                         placeholder="Reservation Type" :options="['GIT', 'FIT']" />
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull optionLabel="reservation_status" optionValue="name"
                         v-model="filter.selected_reservation_status" @onSelected="onSearch" placeholder="Reservation Status"
                         doctype="Reservation Status" />
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull optionLabel="building" optionValue="name" v-model="filter.selected_building"
                         @onSelected="onSearch" placeholder="Building" doctype="Building"
                         :filters="[['property', '=', property.name]]" />
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull optionLabel="room_type" optionValue="name" v-model="filter.selected_room_type"
                         @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                         :filters="[['property', '=', property.name]]">
                     </ComSelect>
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull groupFilterField="room_type_id" :groupFilterValue="filter.selected_room_type"
                         optionLabel="room_number" optionValue="name" v-model="filter.selected_room_number"
                         @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                         :filters="[['property', '=', property.name]]">
                     </ComSelect>
                 </div>
-                <div class="col-3">
+                <div class="col-6 md:col-3">
                     <ComSelect isFull v-model="filter.search_date_type" :options="dataTypeOptions" optionLabel="label"
                         optionValue="value" placeholder="Search Date Type" :clear="false"
                         @onSelectedValue="onSelectFilterDate" :filters="[['property', '=', property.name]]"></ComSelect>
@@ -197,7 +211,8 @@ import ComReservationStayAssignRoom from '@/views/reservation/components/ComRese
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
-
+import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
+const isMobile = ref(window.isMobile) 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")

@@ -54,7 +54,7 @@
                             </span>
                         </template>
                     </Column>
-                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate" headerClass="white-space-nowrap">
                         <template #body="{ data }">
                             <span class="text-end">
                             <CurrencyFormat :value="data.total_rate"/> 
@@ -112,7 +112,10 @@ function onUpgradeRoom() {
             
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => { 
             
@@ -144,7 +147,10 @@ function onAssignRoom(data){
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            pt: {
+                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            }
         },
         onClose: (options) => {
             if(options.data && options.data.message){

@@ -144,7 +144,7 @@ const calendarOptions = reactive({
   selectable: true,
   editable: true,
   eventResizableFromStart: true,
-  resourceAreaWidth: "250px",
+  resourceAreaWidth: `${window.isMobile ? '90px' : '250px'}`,
   height: 'auto',
   slotDuration: {
       "hours": 12
@@ -302,7 +302,7 @@ function resourceColumn(view_type) {
               }
           }
       ]
-  } else {
+  } else if (!window.isMobile) { 
       return [
           {
               labelText: 'xxx',

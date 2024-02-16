@@ -132,7 +132,10 @@ function onChangeStay(data){
                     
                     modal: true,
                     closeOnEscape: false,
-                    position: 'top'
+                    position: 'top',
+                    pt: {
+                        root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+                    }
                 },
                 onClose: (options) => {
                     //

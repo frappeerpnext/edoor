@@ -3,7 +3,7 @@
     <div>
         <ComReservationStayPanel title="Change Stay">
             <template #content> 
-            <div class="n__re-custom wp-number-cus">
+            <div class="n__re-custom wp-number-cus overflow-auto lg:overflow-hidden">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -27,11 +27,11 @@
                     <tbody>
                         <tr> 
                             <td class="pe-2">
-                                <Calendar showButtonBar panelClass="no-btn-clear" class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="!stay.can_change_start_date"  :min-date="minStartDate" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
+                                <Calendar inputClass="w-10rem lg:w-full" showButtonBar panelClass="no-btn-clear" class="w-full" showIcon v-model="stay.start_date" selectOtherMonths :disabled="!stay.can_change_start_date"  :min-date="minStartDate" @update:modelValue="onStartDate" dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="px-2"> 
 
-                                <Calendar panelClass="no-btn-clear" showButtonBar class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate"  :disabled="!stay.can_change_end_date"  dateFormat="dd-mm-yy"/>
+                                <Calendar inputClass="w-10rem lg:w-full" panelClass="no-btn-clear" showButtonBar class="w-full" showIcon v-model="stay.end_date" selectOtherMonths :min-date="minDate" :max-date="maxDate" @update:modelValue="onEndDate"  :disabled="!stay.can_change_end_date"  dateFormat="dd-mm-yy"/>
                             </td>
                             <td class="text-center px-2 w-5rem">
                                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight" inputId="stacked-buttons" showButtons :max="maxNight" :min="1" class="child-adults-txt w-full" />
@@ -40,7 +40,7 @@
                                 <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex white-space-nowrap">{{ stay.room_type }}</span>
                             </td>
                             <td class="ps-2">
-                                <span class="p-inputtext-pt text-start border-1 border-white h-12 w-full flex">
+                                <span class="p-inputtext-pt text-start border-1 border-white h-12 lg:w-full flex w-10rem">
                                     <span v-if="stay.room_number">{{ stay.room_number }}</span>
                                     <span v-else class="text-red-400">Unassign</span>
                                 </span>
