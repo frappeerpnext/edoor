@@ -20,6 +20,7 @@
             </Button>
         </div>
     </div>
+    <SplitButton v-else class="border-split-none w-full" label="Action" :model="items_action" />
     <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status" :style="{ width: '30vw' }"
         position="top">
         <div> 
@@ -60,6 +61,19 @@ const isMobile = ref(window.isMobile)
 const selectedHouseKeepingStatusCode = ref("")
 const selectedHousekeeper = ref("")
 const gv = inject("$gv")
+const items_action = ref([])
+items_action.value.push({
+    label: "Change Housekeeping Status",
+    command: () => {
+        onChangeHousekeepingStatus()
+    }
+})
+items_action.value.push({
+    label: "Assign Housekeeper",
+    command: () => {
+        AssingnHousekeeper()
+    }
+})
 const housekeeping_status_code = ref(window.setting.housekeeping_status_code);
 function onChangeHousekeepingStatus() {
     selectedHouseKeepingStatusCode.value = housekeeping_status_code.value[0].status

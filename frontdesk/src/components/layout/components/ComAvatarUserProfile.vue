@@ -21,7 +21,7 @@
             </button>
             <button @click="onOpenBackend"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="font-bold pi pi-refresh" />
+                <i class="font-bold pi pi-server" />
                 <span class="pl-2 pr-3">Open Backend</span>
             </button>
             <button @click="onShortCutMenu"
@@ -72,8 +72,8 @@ function onRefresh() {
 
     window.location.reload();
 }
-function onOpenBackend () {
-    alert(123)
+function onOpenBackend () { 
+    window.open(serverUrl + '/' + 'app')
 }
 function onShortCutMenu() {
     dialog.open(ComIFrameModal, {
