@@ -4,8 +4,8 @@
             <ComHeader isRefresh @onRefresh="onRefresh()">
                 <template #start>
                     <div class="flex align-items-center">
-                        <i @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-2xl ml-4">Housekeeping</div>
+                        <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
+                        <div class="text-2xl  md:ml-4">Housekeeping</div>
                     </div>
                 </template>
                 <template #end>
@@ -67,6 +67,7 @@ import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanba
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
 import { hydrate } from "vue";
 const hk = inject("$housekeeping")
+const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const showSummary = ref(true)
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
