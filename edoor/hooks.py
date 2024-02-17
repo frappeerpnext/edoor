@@ -256,8 +256,7 @@ fixtures = [
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Dashboard Arrival Guest"]]},
     # {"dt": "Print Format", "filters": [["name", "=", "eDoor Unassign Room Reservation Lis"]]}
     
-    {"dt": "Reservation Status"},
-    {"dt": "Housekeeping Status"},
+
     {"dt": "Global Search Template"},
     # {"dt": "eDoor Menu"},
     # {"dt": "System Report"},

@@ -38,7 +38,7 @@
                                 </icon>
                             </button>
                             <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage"
-                                class="rounded-lg conten-btn" link>
+                                class="rounded-lg conten-btn hidden lg:block" link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
                         </div>
@@ -49,9 +49,9 @@
             <TabView lazy v-model:activeIndex="activeTab">
                 <TabPanel header="General Information">
                     <div class="grid mt-2 ml-0 ms-0">
-                        <div class="col pl-0">
+                        <div class="col-12 lg:col pl-0">
                             <div class="grid">
-                                <div class="col-4">
+                                <div class="col-12 lg:col-4">
                                     <div class="grid">
                                         <div class="col-12">
                                             <ComReservationDetailGuestInfo />
@@ -62,12 +62,12 @@
                                     </div>
 
                                 </div>
-                                <div class="col-8 pb-0">
+                                <div class="col-12 lg:col-8 pb-0">
                                     <ComReservationInfo />
                                 </div>
                             </div>
                         </div>
-                        <div v-if="can_view_rate" class="col-4 pb-0">
+                        <div v-if="can_view_rate" class="col-12 lg:col-4 pb-0"> 
                             <div class="grid">
                                 <ComReservationDetailChargeSummary />
                             </div>

@@ -65,7 +65,7 @@
                                 </div>
                             </template>
                         </Column>
-                        <Column header="Guest Name">
+                        <Column header="Guest Name" class="white-space-nowrap">
                             <template #body="slotProps">
                                 <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest)" link>
                                    {{slotProps.data.guest_name}}
@@ -82,7 +82,7 @@
                                 <CurrencyFormat :value="slotProps.data.adr"/>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate">
+                        <Column v-if="can_view_rate"  class="text-right res__room-list-right white-space-nowrap" header="Total Rate">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_room_rate"/>
                             </template>

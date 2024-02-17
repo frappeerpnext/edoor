@@ -20,8 +20,14 @@
             </Button>
         </div>
     </div>
-    <SplitButton v-else class="border-split-none w-full" label="Action" :model="items_action" />
-    <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status" :style="{ width: '30vw' }"
+    <SplitButton v-else class="border-split-none w-full flex  justify-content-end " :model="items_action" >
+   <div class="bg-blue-500 ps-4 text-white border-round-left  flex align-items-center pe-5">
+    <Badge style="font-weight: 600 !important;" class="badge-rs bg-white text-500 me-4"
+                    :value="hk?.selectedRooms?.length" severity="warning"></Badge>
+    Action
+   </div>
+    </SplitButton>
+    <Dialog v-model:visible="visibleHousekeepingStatus" modal header="Change Housekeeping Status" :style="{ width: isMobile ? '100vw' : '30vw' }"
         position="top">
         <div> 
             <ComSelect isFilter placeholder="Housekeeping Status" class="w-full" optionLabel="status" optionValue="status"
@@ -34,7 +40,7 @@
                 autofocus :loading="submitLoading" />
         </template>
     </Dialog>
-    <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: '30vw' }"
+    <Dialog v-model:visible="visibleAssignHousekeeper" modal header="Assign Housekeeper" :style="{ width: isMobile ? '100vw' : '30vw' }"
         position="top">
         <div>
             <ComSelect isFilter v-model="selectedHousekeeper" placeholder="Assign Housekeeper" doctype="Housekeeper" />
