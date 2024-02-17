@@ -2,7 +2,7 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-xl md:text-2xl">Desk Folio</div>
                 </template>

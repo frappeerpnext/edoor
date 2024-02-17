@@ -16,15 +16,15 @@
             </div>
             <div v-if="data.reservation_type != 'FIT'" class="col-12">
                 <div class="grid">
-                    <div class="col-5">
+                    <div class="col-6 lg:col-5">
                         <label>Group Name</label><br/>
                         <InputText v-model="data.group_name" class="w-full"/>
                     </div>
-                    <div class="col-5">
+                    <div class="col-6 lg:col-5">
                         <label>Group Code</label><br/>
                         <InputText v-model="data.group_code" class="w-full"/>
                     </div>
-                    <div class="col-2">
+                    <div class="col-12 lg:col-2">
                         <label>Group Color</label>
                         <div @click="toggleColor" class="w-full border-blue-100 h-3rem border-round-xl border-1" :style="{background:data.group_color}"></div>
                     </div>

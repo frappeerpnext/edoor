@@ -1,6 +1,7 @@
-<template>
-    <ComOverlayPanelContent style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
+<template> 
+    <ComOverlayPanelContent :style="{width: isMobile ? '100%' : '40rem'}" :loading="loading" @onSave="onSave" @onCancel="onClose">
         <div :class="loading ? 'pointer-events-none opacity-90' : ''">
+            {{ isMobile }}
             <h1>Group Change Stay</h1>
             <Message>Group change stay is affect only active reservation. </Message>
             <div class="grid py-2 wp-number-cus">
@@ -55,6 +56,8 @@ const moment = inject("$moment")
 const loading = ref(false)
 const emit = defineEmits("onClose")
 const toast = useToast();
+
+isMobile = ref(window.isMobile)
 
 const workingDay = JSON.parse(localStorage.getItem("edoor_working_day"))
 const data = ref({

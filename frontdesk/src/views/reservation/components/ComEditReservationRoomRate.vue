@@ -56,7 +56,7 @@
         </div>
 
         <div class="grid justify-between" v-if="stay_reservation">
-            <div class="col-6">
+            <div class="col-12 lg:col-6">
                 <table>
                     <tbody>
                         <ComStayInfoNoBox label="Res Stay. No" :value="stay_reservation?.name" />
@@ -84,7 +84,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-6">
+            <div class="col-12 lg:col-6">
                 <table>
                     <tbody>
                         <ComStayInfoNoBox label="Guest"
@@ -100,14 +100,14 @@
         <div class="grid">
             <div class="col-12 lg:col mt-2 ">
                 <div class="grid">
-                    <div class="col-6">
+                    <div class="col-12 lg:col-6">
                         <div>
                             <label>Rate Type</label>
                             <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type"
                                 @onSelected="onSelectRateType" :clear="false" />
                         </div>
                     </div>
-                    <div class="col-6">
+                    <div class="col-12 lg:col-6">
                         <div class="relative">
                             <label>Room Rate</label>
                             <ComInputCurrency classCss="w-full"  v-model="doc.input_rate"
@@ -119,17 +119,17 @@
                         </div>
                     </div>
                     <template v-if="doc.allow_discount==1">
-                    <div class="col-4">
+                    <div class="col-12 lg:col-4">
                         <label>Discount Type</label>
                         <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']"
                             :clear="false" />
                     </div>
-                    <div class="col-4">
+                    <div class="col-12 lg:col-4">
                         <label>Discount</label>
                         <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.discount" :minFractionDigits="2"
                             :maxFractionDigits="10" />
                     </div>
-                    <div class="col-4 text-right">
+                    <div class="col-12 lg:col-4 text-right">
                         <label>Amount Discount</label>
                         <div
                             class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
@@ -141,7 +141,7 @@
                     <div class="col-12 text-right"
                         v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                         <div class="grid justify-end">
-                            <div class="col-4">
+                            <div class="col-6 lg:col-4">
                                 <label>Rate Befor Tax</label>
                                 <div
                                     class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">

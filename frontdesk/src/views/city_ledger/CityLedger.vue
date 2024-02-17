@@ -1,7 +1,7 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-2xl">City Ledger</div>
                 </template>
@@ -12,7 +12,7 @@
             <div class="flex justify-between">
                 <div>
                     <div class="flex gap-2">
-                        <div class="p-0">
+                        <div v-if="!isMobile" class="p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
                                 <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -23,7 +23,7 @@
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
 
                                 <div v-if="isFilter">
-                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter"
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' "
                                         icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
@@ -136,23 +136,29 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
 
-    <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <div class="col-4">
+                <div v-if="isMobile" class="col-12">
+                            <div class="p-input-icon-left w-full">
+                                <i class="pi pi-search" />
+                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            </div>
+                        </div>
+                <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.business_source" class="pb-2 w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.city_ledger_type" class="pb-2 w-full" placeholder="City Ledger Type"
                         doctype="City Ledger Type" @onSelected="onSearch" :filters="['property', '=', property.name]" />
                 </div>
@@ -178,6 +184,7 @@ const frappe = inject('$frappe');
 const gv = inject('$gv');
 const call = frappe.call();
 const columns = ref()
+const isMobile = ref(window.isMobile) 
 const summary = ref()
 const showAdvanceSearch = ref()
 const moment = inject("$moment")

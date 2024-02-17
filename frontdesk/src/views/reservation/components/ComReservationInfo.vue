@@ -88,11 +88,11 @@
                 <div class="flex mt-2 gap-2">
                     <ComBoxStayInformation @onClick="toggle($event, 'change_date')" :isAction="true" title="Arrival"                    
                         :value="moment(rs.reservation?.arrival_date).format('DD-MM-yyyy')"
-                        valueClass="col-4 " >
+                        valueClass="col-4" >
                     </ComBoxStayInformation>
                         <!-- time -->
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_time')" :value="gv.timeFormat(rs.reservation?.arrival_time)"
-                        valueClass="col " :isAction="true" >
+                        valueClass="col" :isAction="true" >
                     </ComBoxStayInformation>
                     <ComBoxStayInformation
                         :value="moment(rs.reservation?.arrival_date).format('dddd')"

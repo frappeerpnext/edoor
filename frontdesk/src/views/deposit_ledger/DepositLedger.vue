@@ -1,12 +1,12 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-xl md:text-2xl">Deposit Ledger</div>
                 </template>
                 <template #end>
-                    <Button class="border-none" label="Add New Deposit Ledger" icon="pi pi-plus"
+                    <Button class="border-none white-space-nowrap" :label="isMobile ? 'Add New ' : 'Add New Deposit Ledger' " icon="pi pi-plus"
                         @click="onAddDepositLedger()" />
                 </template>
             </ComHeader>

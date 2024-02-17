@@ -18,6 +18,9 @@
             <div class="flex justify-between">
                 <div>
                     <div class="flex gap-2">
+                        <template v-if="!isMobile">
+
+                        
                         <div class="p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
@@ -33,11 +36,12 @@
                             <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
                                 doctype="Reservation Status" @onSelected="onSearch" />
                         </div>
+                    </template>
                         <div>
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="isFilter">
-                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter"
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' "
                                         icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
@@ -150,11 +154,30 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" >
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <div class="col-4">
+                <template v-if="isMobile">
+
+                        
+<div class="col-12">
+    <div class="p-input-icon-left w-full">
+        <i class="pi pi-search" />
+        <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+    </div>
+    <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
+</div>
+<div class="col-6">
+    <ComSelect :options="['All Status','Open', 'Closed']" placeholder="All Status" v-model="filter.status"
+        :clear="false" @onSelected="onSearch" />
+</div>
+<div class="col-6">
+    <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
+        doctype="Reservation Status" @onSelected="onSearch" />
+</div>
+</template>
+                <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
@@ -162,23 +185,23 @@
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
                 </div> -->
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.guest" class="w-full" placeholder="Guest" doctype="Customer"
                         @onSelected="onSearch" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.reservation" class="w-full" placeholder="Reservation #"
                         doctype="Reservation" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.reservation_stay" class="w-full" placeholder="Reservation Stay #"
                         doctype="Reservation Stay" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
 
                     <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
 
@@ -214,6 +237,7 @@ const filter = ref({ status: 'All Status', start_date: moment(working_day.date_w
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({ order_by: "modified", order_type: "desc" })
 const loading = ref(false)
+const isMobile = ref(window.isMobile) 
 const selectedColumns = ref([])
 const sortOptions = ref([
     { "fieldname": "modified", label: "Last Update On" },

@@ -160,7 +160,7 @@ def change_stay(data):
        
         update_reservation_stay_room_rate_after_resize(data=data, stay_doc=doc)
         post_room_charge_to_folio_after_extend_stay([doc.name])
-        frappe.msgprint(doc.rooms)
+        # frappe.msgprint(doc.rooms)
 
        
 

@@ -1,11 +1,11 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div @click="loadData()" class="text-2xl">City ledger Transaction</div>
+                            <div @click="loadData()" class="text-xl md:text-2xl">City ledger Transaction</div>
                         </div>
                     </div>
                 </template>
@@ -16,6 +16,7 @@
             <div class="flex justify-between">
                 <div>
                     <div class="flex gap-2">
+                        <template v-if="!isMobile">
                         <div class="col-3 p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
@@ -31,7 +32,7 @@
                             <ComAutoComplete v-model="filter.account_code" class="w-full" placeholder="Account Code" doctype="Account Code"
                                 @onSelected="onSearch" />
                         </div>
-                        
+                    </template>
                         <div>
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
@@ -135,31 +136,31 @@
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
-    <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:70rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.reservation" class="w-full" placeholder="Reservation #"
                         doctype="Reservation" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.reservation_stay" class="w-full" placeholder="Reservation Stay #"
                         doctype="Reservation Stay" @onSelected="onSearch" :filters="{ property: property.name }" />
                 </div>
-                <div class="col-4">
+                <div class="col-6 md:col-4">
 
                     <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
 
@@ -188,6 +189,7 @@ const gv = inject("$gv")
 const frappe = inject('$frappe');
 const call = frappe.call();
 const columns = ref()
+const isMobile = ref(window.isMobile) 
 const summary = ref()
 const moment = inject("$moment")
 const filter = ref({ status: 'All Status', start_date: moment().startOf('month').toDate(), end_date: moment().toDate(), guest: "",keyword: "" })
