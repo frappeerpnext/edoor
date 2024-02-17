@@ -73,7 +73,7 @@ if (localStorage.getItem("edoor_property") == null) {
     hasProperty.value = true
 }
 
-alert(window.isMobile)
+ 
 
 const actionClickHandler = async function (e) {
 
