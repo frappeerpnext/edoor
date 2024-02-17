@@ -5,9 +5,11 @@
         <BlankLayout v-else />
     </template>
     <Property v-else />
-    <DynamicDialog  :pt="{
+
+    <DynamicDialog v-if="isMobile"  :pt="{
         root: { class: 'p-dialog-maximized' }
     }"/>
+    <DynamicDialog v-else/>
     
     <Toast position="top-center">
         <template #message="slotProps">
@@ -448,10 +450,10 @@ function showReservationStayDetail(name) {
             modal: true,
             closeOnEscape: false,
             position: "top",
-            breakpoints:{
-                '960px': '80vw',
-                '640px': '100vw'
-            },
+            // breakpoints:{
+            //     '960px': '80vw',
+            //     '640px': '100vw'
+            // },
         },
         onClose: (options) => {
             const data = options.data;
