@@ -1323,6 +1323,7 @@ def get_edoor_setting(property = None):
         "room_block_color":edoor_setting_doc.room_block_color,
         "show_additional_guest_name_in_room_chart_calendar":edoor_setting_doc.show_additional_guest_name_in_room_chart_calendar,
         "help_url":edoor_setting_doc.help_url,
+        "default_folio_print_format":edoor_setting_doc.default_folio_print_format,
         
         "currency":{
             "name":currency.name,

@@ -43,6 +43,8 @@
   "hk_status_rb_release_after_audit",
   "column_break_17",
   "housekeeping_status_after_undo_check_out",
+  "system_detail_tab",
+  "default_folio_print_format",
   "permission_and_role_tab",
   "role_for_back_date_transaction",
   "check_in_role",
@@ -375,12 +377,23 @@
    "fieldtype": "Data",
    "label": "Help Url",
    "length": 250
+  },
+  {
+   "fieldname": "system_detail_tab",
+   "fieldtype": "Tab Break",
+   "label": "System Default"
+  },
+  {
+   "fieldname": "default_folio_print_format",
+   "fieldtype": "Link",
+   "label": "Default Folio Print Format",
+   "options": "Print Format"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-12 11:56:15.616856",
+ "modified": "2024-02-17 14:26:43.381863",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

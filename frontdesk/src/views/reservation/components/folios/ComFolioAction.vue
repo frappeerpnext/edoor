@@ -143,6 +143,8 @@ const toggle = (event) => {
 const print_menus = ref([])
 
 function viewFolioSummaryReport() {
+    
+    const print_format = window.setting.default_folio_print_format?window.setting.default_folio_print_format :"eDoor Reservation Stay Folio Summary Report";
     let filter =  [ ["reservation_stay", "=", props.folio.reservation_stay]]
     
     if (props.parentComponent=="Reservation"){
@@ -153,13 +155,16 @@ function viewFolioSummaryReport() {
             limit:100,
             fields:["name","reservation_stay"]
         }).then((docs) => {
+
+
+            
     dialog.open(ComPrintReservationStay, {
         data: {
             doctype: "Reservation%20Stay",
             reservation_stay: selectedFolio.value.reservation_stay,
             folio: selectedFolio.value,
             folios: docs,
-            report_name: "eDoor Reservation Stay Folio Summary Report",
+            report_name:print_format,
             view: "print"
         },
         props: {

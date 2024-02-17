@@ -1,9 +1,10 @@
 <template>
     <div class="hsk-wrapper h-full">
         <ComPlaceholder text="No Data" :loading="hk.loading" :is-not-empty="data.length > 0">
-            <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer res_list_scroll" dataKey="name"
+            <DataTable v-model:selection="hk.selectedRooms" class="cursor-pointer max-w-screen" dataKey="name"
                 :value="data" stateStorage="local" stateKey="table_house_keeping_room_state" @row-click="onRowSelect"
                 tableStyle="min-width: 50rem" showGridlines paginator :rows="20"
+                scrollable
                 :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" :page="page">
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
                 <Column class="text-center" field="room_number" header="Room #"></Column>

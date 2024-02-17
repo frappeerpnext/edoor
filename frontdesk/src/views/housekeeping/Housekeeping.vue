@@ -24,11 +24,18 @@
                     <div class="flex justify-center items-center overflow-hidden rounded-lg h-full">
                         <button type="button" @click="hk.view_type = 'table'"
                             :class="(hk.view_type == 'table') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-                            <i :class="(hk.view_type == 'table') ? 'text-white' : ''" class="pi pi-list me-2" />Table
+                            <i :class="(hk.view_type == 'table') ? 'text-white' : ''" class="pi pi-list md:me-2" />
+                            <template v-if="!isMobile">
+                               Table 
+                            </template>
+                            
                         </button>
                         <button @click="hk.view_type = 'kanban'"
                             :class="(hk.view_type == 'kanban') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-                            <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''" class="pi pi-th-large me-2" />Kanban
+                            <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''" class="pi pi-th-large md:me-2" />
+                            <template v-if="!isMobile">
+                                Kanban
+                            </template>
                         </button>
                     </div>
                     <div>
@@ -76,8 +83,7 @@ if (edoorShowhousekeepingSummary) {
     showSummary.value = edoorShowhousekeepingSummary == "1";
 }
 if (isMobile) {
-    showSummary.value = 0
-    localStorage.setItem("edoor_hhowhousekeeping_summary", "0")  
+    showSummary.value = 0 
 }
 function onShowSummary() {
     showSummary.value = !showSummary.value
