@@ -206,6 +206,10 @@ function onOpenCashCount() {
             position: "top",
             modal: true,
             maximizable: true,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
 
@@ -366,6 +370,10 @@ function openPrint() {
             position: "top",
             modal: true,
             maximizable: true,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
 }
@@ -405,7 +413,13 @@ function getCashCountSetting() {
 onMounted(() => {
     getData()
     getCashCountSetting()
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
    
 
 })

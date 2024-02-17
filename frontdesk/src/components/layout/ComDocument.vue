@@ -181,16 +181,14 @@ function onModalWebcam(open) {
                     width: '80vw',
                 },
                 breakpoints: {
-                    '960px': '100vw',
+                    '960px': '80vw',
                     '640px': '100vw'
                 },
                 modal: true,
                 maximizable: true,
                 closeOnEscape: false,
                 position: "top",
-                pt: {
-                    root: `${isMobile ? 'p-dialog-maximized' : ''}`
-                }
+
             },
         });
     }
@@ -356,6 +354,13 @@ onMounted(() => {
     window.addEventListener('message', actionHandler, false);
     onLoad()
     onUrl.value = isHTTPS(serverUrl)
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 })
 
 const isHTTPS = ((serverUrl) => {

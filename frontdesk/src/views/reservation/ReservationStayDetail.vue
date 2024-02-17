@@ -315,6 +315,13 @@ function onReservedRoom() {
     });
 }
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     if (!dialogRef) {
         rs.is_page = true
         if (route.params.name) {
@@ -373,9 +380,11 @@ const onCheckIn = () => {
             },
             modal: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '650px',
+                '640px': '100vw'
+            },
+
         },
         onClose: (options) => {
             const result = options.data;
@@ -495,9 +504,7 @@ function onAuditTrail() {
                 '960px': '80vw',
                 '640px': '100vw'
             },
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+
         },
     });
 }

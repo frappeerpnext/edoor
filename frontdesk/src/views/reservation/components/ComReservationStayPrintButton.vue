@@ -37,9 +37,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -65,6 +66,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -101,7 +106,11 @@ items.value.push({
                         position:"top",
                         modal: true,
                         maximizable: true,
-                        closeOnEscape: false
+                        closeOnEscape: false,
+                        breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
                     },
                 });
             }
@@ -141,6 +150,10 @@ items.value.push({
                         position:"top",
                         modal: true,
                         maximizable: true,
+                        breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
                     },
                 });
             }
@@ -171,6 +184,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -196,6 +213,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -222,6 +243,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -252,6 +277,10 @@ items.value.push({
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -260,7 +289,13 @@ items.value.push({
 
 
 onMounted(() => {
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     if (props.reservation_stay) {
         db.getDocList('Custom Print Format', {
         fields: [
@@ -293,6 +328,10 @@ onMounted(() => {
                                 position: "top",
                                 modal: true,
                                 maximizable: true,
+                                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
                             },
                         });
                     }

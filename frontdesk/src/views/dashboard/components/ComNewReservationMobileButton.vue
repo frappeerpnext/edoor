@@ -36,9 +36,7 @@ if (props.is_walk_in) {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+
         },
         onClose: (options) => {
             const data = options.data;

@@ -64,6 +64,13 @@ const data = ref([])
 // const pageState = ref({order_by:"modified", order_type:"desc",page:0,rows:20,totalRecords:0})
 
 onMounted(() => { 
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     loadData(); 
 })
 
@@ -118,9 +125,10 @@ function onViewReservationDetail(name) {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             
@@ -142,9 +150,10 @@ function onViewCustomerDetail(name) {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             //

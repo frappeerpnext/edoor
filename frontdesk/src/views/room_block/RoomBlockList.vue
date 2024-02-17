@@ -347,6 +347,13 @@ const actionRefreshData = async function (e) {
     };
 }  
 onMounted(() => {
+  if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
   let state = localStorage.getItem("page_state_room_block")
   if (state) {
     state = JSON.parse(state)
@@ -401,7 +408,11 @@ function onAddNewRommBlock(room_block) {
       },
       modal: true,
       position: 'top',
-      closeOnEscape: false
+      closeOnEscape: false,
+      breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
     },
     onClose: (options) => {
       const result = options.data;

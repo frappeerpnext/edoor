@@ -383,9 +383,10 @@ function onAuditTrail() {
       maximizable: true,
       closeOnEscape: false,
       position: "top",
-      pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+      breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
     },
     onClose: (options) => {
       //
@@ -409,6 +410,13 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+  if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
   window.folio_transaction_number = dialogRef.value.data.folio_transaction_number
   window.addEventListener('message', actionRefreshData, false);
   onLoad()
@@ -443,9 +451,10 @@ function onPrintFolioTransaction() {
       },
       position: "top",
       modal: true,
-      pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+      breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
     },
   })
 }
@@ -471,9 +480,10 @@ function onViewSaleDetail() {
       },
       position: "top",
       modal: true,
-      pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+      breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
     },
   })
 }

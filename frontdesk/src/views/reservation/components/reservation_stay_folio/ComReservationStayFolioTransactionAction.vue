@@ -75,9 +75,10 @@ function onEditFolioTransaction() {
             modal: true,
             position:'top',
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -108,9 +109,10 @@ const onViewFolioDetail = () => {
             modal: true,
             position:'top',
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
 
     });
@@ -131,9 +133,10 @@ function onPrintFolioTransaction() {
             },
             position: "top",
             modal: true,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     })
 }
@@ -156,9 +159,10 @@ function onOpenDelete() {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             if(options.data){

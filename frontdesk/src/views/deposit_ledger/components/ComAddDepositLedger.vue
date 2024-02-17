@@ -57,7 +57,11 @@ function onAddNewGuest(name){
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose:(options) => {
             const result = options.data;
@@ -92,6 +96,13 @@ function onClose(param = false) {
     dialogRef.value.close(param)
 }
 onMounted(()=> {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     if(dialogRef.value.data.name){
         getDoc("Deposit Ledger", dialogRef.value.data.name).then(d=>{
             data.value = d

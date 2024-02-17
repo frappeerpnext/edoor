@@ -128,9 +128,10 @@ function onCheckIn() {
             },
             modal: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '450px',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const result = options.data;
@@ -240,9 +241,10 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

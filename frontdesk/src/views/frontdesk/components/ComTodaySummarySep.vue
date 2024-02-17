@@ -73,9 +73,10 @@ function onViewData(doctype, report_name, title ,extra_params,filter_options ){
            modal: true,
            maximizable: true,
            closeOnEscape: false,
-           pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+           breakpoints:{
+                '960px': '90vw',
+                '640px': '100vw'
+            },
        }
    });
 }

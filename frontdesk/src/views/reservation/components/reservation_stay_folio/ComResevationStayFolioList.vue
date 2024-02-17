@@ -146,14 +146,15 @@ function onAddCreatNewFolio() {
 
             header: 'Create New Folio',
             style: {
-                width: `${isMobile ? '90vw' : '50vw'}`,
+                width: '50vw',
             },
             modal: true,
             position: 'top',
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

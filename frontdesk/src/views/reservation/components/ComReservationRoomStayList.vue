@@ -113,9 +113,10 @@ function onUpgradeRoom() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => { 
             
@@ -148,9 +149,10 @@ function onAssignRoom(data){
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             if(options.data && options.data.message){

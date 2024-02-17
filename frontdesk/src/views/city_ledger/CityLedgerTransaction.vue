@@ -261,6 +261,10 @@ function onPrint() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             pt: {
                 root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
             }
@@ -341,7 +345,13 @@ function loadData(show_loading=true) {
 }
 
 onMounted(() => {
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     window.socket.on("GuestLedgerTransaction", (arg) => {
         if (arg.property == window.property_name) {
         setTimeout(function () {

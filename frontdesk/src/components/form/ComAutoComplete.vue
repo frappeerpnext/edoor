@@ -230,7 +230,11 @@ function onAdvancedSearch() {
             style: {
                 width: '50vw',
             },
-            modal: true
+            modal: true,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose(options) {
             value.value = (options.data)

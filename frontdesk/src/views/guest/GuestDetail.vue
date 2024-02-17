@@ -99,8 +99,9 @@ function onEditGuest() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
             },
         },
         data:{
@@ -154,6 +155,13 @@ const actionRefreshData = async function (e) {
 }
  
 onMounted(() => { 
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     if (dialogRef.value) {
         name.value = dialogRef.value.data.name;
     } 

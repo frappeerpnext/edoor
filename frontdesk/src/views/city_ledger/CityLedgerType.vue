@@ -62,7 +62,11 @@ function onEdit (selected){
         },
         modal: true,
         closeOnEscape: false,
-        position: 'top'
+        position: 'top',
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
     },
     data:selected,
     onClose:(options) => {
@@ -125,7 +129,11 @@ function onAddCityLedgerAccountType(){
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose:(options) => {
             const data = options.data;
@@ -161,6 +169,13 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     window.addEventListener('message', actionRefreshData, false)
     loadData()
 })

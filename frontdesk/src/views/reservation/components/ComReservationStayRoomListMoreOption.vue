@@ -133,9 +133,10 @@ function onChangeStay(data){
                     modal: true,
                     closeOnEscape: false,
                     position: 'top',
-                    pt: {
-                        root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-                    }
+                    breakpoints:{
+                '960px': '60vw',
+                '640px': '100vw'
+            },
                 },
                 onClose: (options) => {
                     //

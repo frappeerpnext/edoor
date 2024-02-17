@@ -239,6 +239,10 @@ function viewCityLedgerReport(){
                 position:"top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
 }
@@ -317,9 +321,10 @@ function AddTransaction(account_code) {
             modal: true,
             position: "top",
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -353,9 +358,10 @@ const dialogRef = dialog.open(ComIFrameModal, {
 
         modal: true,
         position: "top",
-        pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+        breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
     },
 })
 }
@@ -374,9 +380,10 @@ function onEditFolioTransaction(name) {
             modal: true,
             position: 'top',
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const doc = options.data;
@@ -405,9 +412,10 @@ function onDeleteCityLedgerTransaction(name) {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             if(options.data){
@@ -566,7 +574,13 @@ function debouncer(fn, delay) {
 
 
 onMounted(() => {
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     let state = localStorage.getItem("page_state_folio_transaction")
     if (state) {
         state = JSON.parse(state)

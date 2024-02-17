@@ -442,6 +442,13 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     width.value = 100
     window.addEventListener('message', actionRefreshData, false); 
     let state = localStorage.getItem("page_state_reservation_stay")
@@ -509,7 +516,11 @@ function onAssignRoom(data) {
                     },
                     modal: true,
                     closeOnEscape: false,
-                    position: 'top'
+                    position: 'top',
+                    breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
                 },
                 onClose: (options) => {
                     if (options.data && options.data.message) {

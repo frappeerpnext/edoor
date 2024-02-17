@@ -123,7 +123,11 @@ function onAdvancedSearch(guest_type) {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         data:{
             guest_type: guest_type,
@@ -156,7 +160,11 @@ function onEditGuest() {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         data:{
             name: rs.masterGuest.name,

@@ -67,7 +67,7 @@
         </template>
     </Column>
     <div class="hkpanel">
-        <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-3"
+        <Sidebar :overlay-class="'my-overlay-class'" :dismissable="false" class="top-20 slidebar-housekeeping -mt-1 w-full md:w-3"
             v-model:visible="visibleRight" position="right" @hide="SidebarClose">
             <template #header>
                 <div class="line-height-1">
@@ -183,6 +183,13 @@ function onRowSelect(r) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     let obj = JSON.parse(localStorage.getItem('table_house_keeping_room_state')); 
     if (obj){
         obj.first = 0;
@@ -213,9 +220,10 @@ function onViewCustomerDetail(name) {
             closeOnEscape: false,
             position: 'top',
             maximizable: true,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
 

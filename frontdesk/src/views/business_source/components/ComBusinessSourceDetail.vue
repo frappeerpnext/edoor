@@ -46,7 +46,11 @@ function onEdit() {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

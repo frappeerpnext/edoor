@@ -151,9 +151,10 @@ function OnSetupForm() {
       modal: true,
       closeOnEscape: false,
       position: 'top',
-      pt: {
-          root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-      }
+      breakpoints:{
+                '960px': '60vw',
+                '640px': '100vw'
+            },
     }
   });
 }
@@ -175,7 +176,11 @@ function onEditDriver(name) {
         width: '50vw',
       },
       modal: true,
-      closeOnEscape: false
+      closeOnEscape: false,
+      breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
     },
     data: {
       drivername: name

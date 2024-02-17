@@ -197,9 +197,7 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            
         },
 
     });
@@ -234,6 +232,13 @@ function onViewReservationDetail(rs) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     name.value = dialogRef.value.data.name;
     getData()
 

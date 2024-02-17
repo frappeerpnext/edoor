@@ -168,9 +168,10 @@ function onEditRoomRate(room_rate = null){
         position: "top",
         modal: true,
         closeOnEscape: false,
-        pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
       },
       onClose: (options) => {
         const result = options.data;
@@ -198,9 +199,10 @@ function onEditRoomRate(room_rate = null){
         position: "top",
         modal: true,
         closeOnEscape: false,
-        pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+        breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
       },
       onClose: (options) => {
         const result = options.data;
@@ -238,9 +240,10 @@ function showReservationStayDetail(selected) {
             modal: true,
             closeOnEscape: false,
             position:"top", 
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         }, 
     });
 }
@@ -249,7 +252,13 @@ function onViewCustomerDetail(name) {
 }
  
 onMounted(() => {
-  
+  if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
   rs.getRoomRate(rs.reservation.name, false);
  
 });

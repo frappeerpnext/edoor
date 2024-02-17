@@ -1,6 +1,7 @@
 <template>
     <div class="flex gap-2">
-        <div>
+        <template v-if="!isMobile">
+        <div >
             <Calendar :selectOtherMonths="true" class="w-full" v-model="hk.filter.selected_date" @date-select="onSearch" dateFormat="dd-mm-yy" showButtonBar showIcon panelClass="no-btn-clear"/>
         </div>
         <div class="p-0 w-15rem">
@@ -19,6 +20,7 @@
                 :maxSelectLabel="10"
                 />
         </div>
+    </template>
         <div class="">
             <div class="flex gap-2">
                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/> 
@@ -28,19 +30,19 @@
             </div>
         </div>
     </div>
-    <OverlayPanel ref="showAdvanceSearch" style="max-width:50rem">
+    <OverlayPanel ref="showAdvanceSearch" >
     <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
         <div class="grid">
-            <div class="col-4">
+            <div class="col-6 md:col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_building" @onSelected="onSearch" placeholder="Building" doctype="Building" />
             </div>
-            <div class="col-4">
+            <div class="col-6 md:col-4">
                 <ComSelect v-model="hk.filter.selected_floor" @onSelected="onSearch" placeholder="Floor" doctype="Floor" :filters="[['property', '=', hk.property.name]]" />
             </div>
-            <div class="col-4">
+            <div class="col-6 md:col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" v-model="hk.filter.selected_room_type_group" @onSelected="onSearch" placeholder="Room Type Group" doctype="Room Type Group" />
             </div>
-            <div class="col-4">
+            <div class="col-6 md:col-4">
                 <ComSelect  :filters="[['property', '=', hk.property.name]]" isFilter v-model="hk.filter.selected_housekeeper" placeholder="Housekeeper" doctype="Housekeeper"
                     @onSelected="onSearch" />
             </div> 
@@ -69,6 +71,7 @@ import { ref,inject,onMounted,computed } from '@/plugin';
 const showAdvanceSearch = ref()
 const hk = inject("$housekeeping")
 const gv = inject("$gv")
+const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
 const onSearch = debouncer(() => {

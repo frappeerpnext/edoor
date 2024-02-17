@@ -231,9 +231,10 @@
             maximizable: true,
             closeOnEscape: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
     }
@@ -248,15 +249,22 @@
             maximizable: true,
             closeOnEscape: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
     }
 
     onMounted(() => {
-
+        if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
  
         getApi("frontdesk.get_working_day", {
             property: property.name

@@ -1,7 +1,7 @@
 <template> 
     <div>
         <div class="px-2">
-            <ComHeader isRefresh @onRefresh="onRefresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="onRefresh()">
                 <template #start>
                     <div class="flex align-items-center">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
@@ -74,6 +74,10 @@ const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
 
 if (edoorShowhousekeepingSummary) {
     showSummary.value = edoorShowhousekeepingSummary == "1";
+}
+if (isMobile) {
+    showSummary.value = 0
+    localStorage.setItem("edoor_hhowhousekeeping_summary", "0")  
 }
 function onShowSummary() {
     showSummary.value = !showSummary.value

@@ -24,9 +24,10 @@ function onClick() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -61,9 +62,10 @@ function onViewReservationDetail(name) {
             maximizable: true,
             closeOnEscape: false,
             position:"top", 
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
     
@@ -86,9 +88,10 @@ function onOpenGroupAssignRoom(reservation) {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options)=>{
             if(options.data){

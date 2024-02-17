@@ -203,9 +203,10 @@ function onUpdateReservationStatus(header = "Confirm Note", data) {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -260,9 +261,10 @@ function onGroupCheckIn() {
                 },
                 modal: true,
                 closeOnEscape: false,
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '450px',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
                 const result = options.data;
@@ -327,9 +329,10 @@ function onGroupUndoCheckIn() {
                 maximizable: true,
                 closeOnEscape: false,
                 position: "top",
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
                 const result = options.data;
@@ -439,9 +442,10 @@ function onGroupUndoCheckOut() {
                 maximizable: true,
                 closeOnEscape: false,
                 position: "top",
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
                 const data = options.data
@@ -479,9 +483,10 @@ function onGroupAssignRoom() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         }
     });
 }
@@ -648,9 +653,10 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             //
@@ -675,9 +681,7 @@ function onGroupChangeRate() {
                 maximizable: true,
                 closeOnEscape: false,
                 position: "top",
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                
             },
             onClose: (options) => {
                 if (options.data) {
@@ -724,9 +728,7 @@ function onGroupChangeStayDate() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            
         },
         onClose: (options) => {
 
@@ -814,7 +816,11 @@ function onPickDrop() {
                 },
                 modal: true,
                 closeOnEscape: false,
-                position: 'top'
+                position: 'top',
+                breakpoints:{
+                '960px': '60vw',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
 
@@ -852,9 +858,10 @@ function onTransferStay() {
             maximizable: true,
             closeOnEscape: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

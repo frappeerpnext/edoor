@@ -109,6 +109,10 @@ function viewFolioSummaryReport() {
             position: "top",
             modal: true,
             maximizable: true,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
 
@@ -147,6 +151,10 @@ print_menus.value.push({
                 position: "top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
     }
@@ -186,9 +194,10 @@ function onAddFolioTransaction(account_code) {
                 modal: true,
                 position: "top",
                 closeOnEscape: false,
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '750px',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
                 const data = options.data;
@@ -252,9 +261,10 @@ function showPrintPreview(data) {
 
             modal: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     })
 }
@@ -274,9 +284,10 @@ function EditFolio() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             let data = options.data;
@@ -360,9 +371,10 @@ function onDeleteFolio() {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;

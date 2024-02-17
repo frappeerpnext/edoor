@@ -1,5 +1,5 @@
 <template>
-    <div class="flex gap-2">
+    <div v-if="!isMobile" class="flex gap-2">
         <div>
             <Button label=" Change Housekeeping Status" class="p-button h-full p-component conten-btn white-space-nowrap"
                 severity="warning" @click="onChangeHousekeepingStatus">
@@ -56,6 +56,7 @@ const call = frappe.call()
 const visibleHousekeepingStatus = ref(false)
 const visibleAssignHousekeeper = ref(false)
 const submitLoading = ref(false)
+const isMobile = ref(window.isMobile) 
 const selectedHouseKeepingStatusCode = ref("")
 const selectedHousekeeper = ref("")
 const gv = inject("$gv")

@@ -170,7 +170,11 @@ function viewFolioSummaryReport() {
             position: "top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
 
         },
     });
@@ -216,7 +220,11 @@ print_menus.value.push({
                 position: "top",
                 modal: true,
                 maximizable: true,
-                closeOnEscape: false
+                closeOnEscape: false,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
 
             },
         });
@@ -265,9 +273,10 @@ function onAddFolioTransaction(account_code) {
                 modal: true,
                 position: "top",
                 closeOnEscape: false,
-                pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+                breakpoints:{
+                '960px': '750px',
+                '640px': '100vw'
+            },
             },
             onClose: (options) => {
                 const data = options.data;
@@ -316,9 +325,10 @@ function showPrintPreview(data) {
 
             modal: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     })
 }
@@ -342,9 +352,10 @@ function EditFolio() {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             let data = options.data;
@@ -482,9 +493,10 @@ function deleteFilio() {
             maximizable: false,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -526,9 +538,10 @@ function onTransferFolioItem() {
 
             modal: true,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -577,9 +590,10 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             //
@@ -588,7 +602,13 @@ function onAuditTrail() {
 }
  
 onMounted(()=>{
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 getDocList ('Custom Print Format', {
      fields: [
          'print_format',
@@ -621,6 +641,10 @@ getDocList ('Custom Print Format', {
                              position: "top",
                              modal: true,
                              maximizable: true,
+                             breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
                          },
                      });
                  }

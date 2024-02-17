@@ -288,6 +288,13 @@ function debouncer(fn, delay) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     width.value = 100
     let state = localStorage.getItem("page_state_customer")
     if (state) {
@@ -358,7 +365,11 @@ function onAddNewGuest(){
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose:(options) => {
             const data = options.data;

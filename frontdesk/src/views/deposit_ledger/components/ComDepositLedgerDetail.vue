@@ -191,9 +191,10 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             // Handle dialog closure here
@@ -231,6 +232,13 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     name.value = dialogRef.value.data.name;
     getData()
     window.addEventListener('message', actionRefreshData, false)

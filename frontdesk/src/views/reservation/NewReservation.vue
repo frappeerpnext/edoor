@@ -798,9 +798,10 @@ function onViewFutureReservation() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '90vw',
+                '640px': '100vw'
+            },
         }
     });
 }
@@ -850,6 +851,13 @@ const onSave = () => {
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     doc.value.guest_info.expired_date = moment().toDate()
 
     getApi("frontdesk.get_working_day", {

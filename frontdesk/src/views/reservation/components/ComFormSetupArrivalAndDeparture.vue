@@ -134,7 +134,11 @@ function onAddDriver(type) {
                 width: '50vw',
             },
             modal: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -151,6 +155,13 @@ const onClose = () => {
 }
 
 onMounted(()=>{
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     stays.value = dialogRef.value.data?.stays
     postApi(
         "reservation.get_pickup_and_drop_off_data",

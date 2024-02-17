@@ -16,6 +16,13 @@ const dialog = useDialog();
 
 
 onMounted(()=>{
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 loading.value = true;
     getApi("frontdesk.check_room_config_and_over_booking",{property:window.property_name}).then(r=>{
     show_warning.value = r.message>1
@@ -44,9 +51,10 @@ function onView(){
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         }
     });
 

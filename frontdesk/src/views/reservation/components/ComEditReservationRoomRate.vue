@@ -538,6 +538,13 @@ function onSave() {
 
 }
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     stay.value = dialogRef.value.data.reservation_stay
     stay_reservation.value = dialogRef.value.data.reservation
 

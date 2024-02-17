@@ -306,6 +306,13 @@ const actionRefreshData = async function (e) {
 }
 
 onMounted(() => { 
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     window.addEventListener('message', actionRefreshData, false); 
     show_toolbar.value = dialogRef.value.data.show_toolbar || 1
   

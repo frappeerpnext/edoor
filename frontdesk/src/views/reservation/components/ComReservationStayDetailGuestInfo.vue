@@ -197,8 +197,9 @@ function onAdvancedSearch(guest_type) {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
             },
         },
         data:{
@@ -226,8 +227,9 @@ function onEditGuest(guest_type) {
             modal: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${isMobile ? 'p-dialog-maximized' : ''}`
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
             },
         },
         data:{

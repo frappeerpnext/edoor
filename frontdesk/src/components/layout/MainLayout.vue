@@ -192,7 +192,11 @@ function changeProperty() {
             },
             modal: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '50vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             const data = options.data;
@@ -214,6 +218,10 @@ function onRunNightAudit() {
             position: "top",
             modal: true,
             closeOnEscape: false,
+            breakpoints:{
+                '960px': '100vw',
+                '640px': '100vw'
+            },
         },
     });
 }
@@ -240,9 +248,10 @@ function onBlankGuestRegistration() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
 }
@@ -283,9 +292,10 @@ function onOpenCashierShift() {
             maximizable: true,
             closeOnEscape: false,
             position: 'top',
-            pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
-            }
+            breakpoints:{
+                '960px': '40vw',
+                '640px': '100vw'
+            },
         },
 
     });

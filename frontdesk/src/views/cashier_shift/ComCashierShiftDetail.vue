@@ -369,6 +369,10 @@ print_menus.value.push({
                 position: "top",
                 modal: true,
                 maximizable: true,
+                breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             },
         });
 
@@ -391,6 +395,10 @@ function onPrintFolioTransactionSummary(format_name = 'eDoor Cashier Shift Trans
             position: "top",
             modal: true,
             maximizable: true,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
 }
@@ -410,7 +418,11 @@ function onEditCashierShift() {
             modal: true,
             maximizable: true,
             closeOnEscape: false,
-            position: 'top'
+            position: 'top',
+            breakpoints:{
+                '960px': '40vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
 
@@ -441,7 +453,11 @@ function onOpenCloseShift() {
             position:"top",
             modal: true,
             maximizable: true,
-            closeOnEscape: false
+            closeOnEscape: false,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
         onClose: (options) => {
             if(options.data){
@@ -480,7 +496,13 @@ function getData() {
 onMounted(() => {
     getData()
 
-
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 
 })
 

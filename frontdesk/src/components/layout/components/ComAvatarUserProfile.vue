@@ -83,6 +83,10 @@ function onShortCutMenu() {
             position: "top",
             modal: true,
             maximizable: true,
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
         },
     });
 
