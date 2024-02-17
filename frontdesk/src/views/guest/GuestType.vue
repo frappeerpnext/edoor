@@ -1,11 +1,11 @@
 <template>
     <div>
-        <ComHeader isRefresh @onRefresh="onRefresh()">
+        <ComHeader colClass="col-6" isRefresh @onRefresh="onRefresh()">
             <template #start>
                 <div class="text-2xl">Guest Type</div>
             </template>
             <template #end>
-                <Button class="border-none" label="Add New Guest Type" icon="pi pi-plus" @click="onAddNewGuestType" />
+                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New Guest Type' " icon="pi pi-plus" @click="onAddNewGuestType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -43,6 +43,7 @@
 import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc ,onUnmounted } from '@/plugin'
 import ComAddGuestType from "@/views/guest/components/ComAddGuestType.vue"
 const gv = inject("$gv")
+const isMobile = ref(window.isMobile) 
 const dialog = useDialog()
 const data = ref([])
 const filter = ref({}) 

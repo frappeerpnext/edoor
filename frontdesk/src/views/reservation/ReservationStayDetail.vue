@@ -331,7 +331,8 @@ onMounted(() => {
         rs.is_page = false
         window.reservation_stay = dialogRef.value.data.name
     }
-    window.addEventListener('message', actionRefreshData, false); 
+    window.addEventListener('message', actionRefreshData, false);
+
 });
 
 const actionRefreshData = async function (e) {
@@ -490,6 +491,10 @@ function onAuditTrail() {
             maximizable: true,
             closeOnEscape: false,
             position: "top",
+            breakpoints:{
+                '960px': '80vw',
+                '640px': '100vw'
+            },
             pt: {
                 root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
             }

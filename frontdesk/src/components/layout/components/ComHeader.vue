@@ -1,12 +1,12 @@
 <template>
     <div :class="wrClass ? wrClass : 'py-3'" class="grid items-center justify-content-between">
-        <div class="col-12 md:col-6 lg:col-3 " >
+        <div :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col-3 " >
             <slot name="start"></slot>
         </div>
-        <div v-if="$slots.center" class="col-12 md:col-6 lg:col flex justify-content-center">
+        <div v-if="$slots.center" :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col flex justify-content-center">
             <slot name="center"></slot>
         </div>
-        <div class="col-12 md:col-6 lg:col flex gap-2 justify-content-end">
+        <div :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col flex gap-2 justify-content-end">
             <slot name="end"></slot>
             <div v-if="isRefresh" class="border-left-1 border-primary-100"></div>
             <Button v-if="isRefresh && !isMobile" @click="onRefresh()" icon="pi pi-refresh" :class="fillClass ? fillClass : 'content_btn_b'"></Button>
@@ -22,7 +22,8 @@ const props = defineProps({
         default: false
     },
     fillClass: String,
-    wrClass: String
+    wrClass: String,
+    colClass:String,
 })
 const emit = defineEmits(['onRefresh'])
 function onRefresh(){

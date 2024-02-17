@@ -1,20 +1,20 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader :colClass="'col-6'" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Guest Database</div>
+                    <div class="text-xl md:text-2xl">Guest Database</div>
                 </template>
                 <template #end>
                     <Button v-tippy="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
                         <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>
-                        Add New Guest
+                        Add  New <span v-if="!isMobile"> Guest</span> 
                     </Button>
                 </template>
             </ComHeader> 
             <div class="mb-3 flex justify-between">
                 <div class="flex flex-wrap gap-2">
-                    <div>
+                    <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
                             <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex">
                     <div v-if="gv.isNotEmpty(filter)">
-                        <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter"/>
                     </div>
                     <div class="px-2">
                         <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
@@ -87,10 +87,10 @@
             </ComPlaceholder> 
         </div>
         <div v-if="data.length > 0 && !gv.loading">
-            <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
+            <Paginator class="p__paginator" :pageLinkSize="isMobile ? '2' : '5'" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
                 @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -115,15 +115,21 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
 
-    <OverlayPanel ref="showAdvanceSearch" style="width:70rem">
+    <OverlayPanel ref="showAdvanceSearch" >
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
-                <ComSelect class="col-4" width="100%" optionLabel="customer_group_en" optionValue="name"
+                <div class="col-12" v-if="isMobile">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        </span>
+                    </div>
+                <ComSelect class="col-12 md:col-6 " width="100%" optionLabel="customer_group_en" optionValue="name"
                     v-model="filter.selected_customer_group" @onSelected="onSearch" placeholder="Guest Type"
                     doctype="Customer Group" />
-                <ComSelect class="col-4" width="100%" :options="['Not Set', 'Male', 'Female']"
+                <ComSelect class="col-12 md:col-6" width="100%" :options="['Not Set', 'Male', 'Female']"
                     v-model="filter.selected_gender" @onSelected="onSearch" placeholder="Gender"/>
-                <ComSelect class="col-4" width="100%" v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
+                <ComSelect class="col-12 md:col-6" width="100%" v-model="filter.selected_country" @onSelected="onSearch" placeholder="Country"
                         doctype="Country" isFilter />
             </div>
         </ComOverlayPanelContent>
@@ -136,7 +142,7 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
-
+const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const gv = inject("$gv")
 const dialog = useDialog()

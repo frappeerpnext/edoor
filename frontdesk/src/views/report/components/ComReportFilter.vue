@@ -248,7 +248,7 @@
             </div>
             <div class="col"  v-if="hasFilter('account_category')">
                 <label>Account Category</label><br>
-                <ComSelect v-model="filter.account_category" placeholder="Account Category" doctype="Account Category"
+                <ComAutoComplete v-model="filter.account_category" placeholder="Account Category" doctype="Account Category"
                 class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
             </div>
             <div class="col" v-if="hasFilter('ledger_type')">

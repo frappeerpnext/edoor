@@ -158,10 +158,10 @@
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
-                <div class="col-4">
+                <!-- <div class="col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
-                </div>
+                </div> -->
                 <div class="col-4">
                     <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />

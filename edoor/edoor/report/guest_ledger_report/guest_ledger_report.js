@@ -24,14 +24,14 @@ frappe.query_reports["Guest Ledger Report"] = {
 			"reqd": 1,
 			"on_change": function (query_report) {},
 		},
-		{
-			"fieldname":"end_date",
-			"label": __("End Date"),
-			"fieldtype": "Date",
-			default:frappe.datetime.get_today(),
-			"reqd": 1,
-			"on_change": function (query_report) {},
-		},
+		// {
+		// 	"fieldname":"end_date",
+		// 	"label": __("End Date"),
+		// 	"fieldtype": "Date",
+		// 	default:frappe.datetime.get_today(),
+		// 	"reqd": 1,
+		// 	"on_change": function (query_report) {},
+		// },
 
 		{
 			"fieldname": "reservation",

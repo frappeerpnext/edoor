@@ -315,7 +315,7 @@ const dialogRef = dialog.open(ComRoomDetail, {
         closeOnEscape: false,
         position: "top",
         pt: {
-            root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+            root: `${window.isMobile ? 'p-dialog-mreaximized' : ''}`
         }
     },
 
@@ -428,7 +428,7 @@ function showReservationStayDetail(name) {
             closeOnEscape: false,
             position: "top",
             pt: {
-                root: `${window.isMobile ? 'p-dialog-maximized' : ''}`
+                root: "p-dialog-maximized"
             }
         },
         onClose: (options) => {

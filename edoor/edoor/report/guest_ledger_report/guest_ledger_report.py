@@ -123,7 +123,7 @@ def get_report_data(folio_transaction_amount,filters):
 				reservation_status = if(%(reservation_status)s='',reservation_status,%(reservation_status)s)  and 
 				is_master = if(%(is_master)s=0,is_master,1) and 
 				name in %(folio_numbers)s and
-				posting_date between %(start_date)s and %(end_date)s
+				posting_date = %(start_date)s
 		""" 
 		
 		data = frappe.db.sql(sql,filters,as_dict=1)
