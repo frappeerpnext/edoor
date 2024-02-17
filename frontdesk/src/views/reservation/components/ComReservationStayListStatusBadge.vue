@@ -1,6 +1,6 @@
 <template>
-    <div class="flex  flex-wrap gap-3">
-        <div>
+    <div class="inline-block lg:flex flex-wrap gap-3">
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[6]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[2]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -24,7 +24,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[0]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -36,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[1]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -48,7 +48,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[3]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -60,7 +60,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[4]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -72,7 +72,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[5]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">
                 <div class="flex justify-between align-items-center h-full">
@@ -84,7 +84,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-primary-600">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Total Stay</span>
@@ -95,7 +95,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-yellow-400">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Total Active Stay</span>
@@ -107,7 +107,7 @@
             </div>
         </div>
 
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-cyan-500">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Pickup</span>
@@ -121,7 +121,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mb-2 lg:mb-0">
             <div class="text-white grow p-1 border-round-lg border-none cursor-pointer bg-pink-500">
                 <div class="flex justify-between align-items-center h-full">
                     <span class="ms-1">Drop Off</span>

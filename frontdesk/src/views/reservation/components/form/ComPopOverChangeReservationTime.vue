@@ -1,5 +1,5 @@
 <template>
-  <ComOverlayPanelContent style="width: 40rem;" :loading="loading" @onSave="onSave" @onCancel="onClose">
+  <ComOverlayPanelContent :style="{width: isMobile ? '100%' : '40rem'}" :loading="loading" @onSave="onSave" @onCancel="onClose">
    <div class="grid py-2 wp-number-cus">
       <div class="col-6">
         <label>Arrival Time</label>
@@ -14,6 +14,8 @@
 </template>
 <script setup>
 import { ref, inject, postApi, useToast } from "@/plugin"
+
+const isMobile = ref(window.isMobile)
 const rs = inject("$reservation")
 const moment = inject("$moment")
 const loading = ref(false)

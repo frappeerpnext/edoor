@@ -37,7 +37,7 @@
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="isFilter" >
-                                    <Button class="content_btn_b whitespace-nowrap" label="Clear Filter" icon="pi pi-filter-slash"
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash"
                                         @click="onClearFilter" />
                                 </div>
                             </div>
@@ -140,6 +140,23 @@
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
+                <template v-if="isMobile">
+                        <div class="col-12">
+                            <div class="p-input-icon-left w-full">
+                                <i class="pi pi-search" />
+                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            </div>
+                            <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
+                        </div>
+                        <div class="col-6">
+                            <ComAutoComplete v-model="filter.room_id" class="w-full" placeholder="Room" doctype="Room"
+                                @onSelected="onSearch" />
+                        </div>
+                        <div class="col-6">
+                            <ComAutoComplete v-model="filter.account_code" class="w-full" placeholder="Account Code" doctype="Account Code"
+                                @onSelected="onSearch" />
+                        </div>
+                    </template>
                 <div class="col-6 md:col-4">
                     <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />

@@ -2,7 +2,7 @@
     <ComReservationStayPanel title="Reservation Room List">
         <template #content>
             <ComPlaceholder :isNotEmpty="true">
-                <div class="flex justify-end">
+                <div class="flex justify-end sm:overflow-hidden">
                     <div>
                         <div class="card flex justify-content-center">
                             <div class="filtr-rmm-list">
