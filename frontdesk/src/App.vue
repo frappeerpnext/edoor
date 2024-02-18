@@ -1,16 +1,13 @@
 <template>
-    
     <template v-if="hasProperty">
         <main-layout v-if="$route.meta.layout!='blank_layout' && ui=='main_layout'" />
         <BlankLayout v-else />
     </template>
     <Property v-else />
-
     <DynamicDialog v-if="isMobile"  :pt="{
         root: { class: 'p-dialog-maximized' }
     }"/>
     <DynamicDialog v-else/>
-    
     <Toast position="top-center">
         <template #message="slotProps">
             <div class="flex flex-column" style="flex: 1">
@@ -20,7 +17,6 @@
         </template>
     </Toast>
     <ConfirmDialog></ConfirmDialog>
-    
 </template>
 
 
@@ -54,7 +50,8 @@ import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySu
 const urlParams = new URLSearchParams(window.location.search);
 const ui = ref(urlParams.get('layout') || "main_layout")
 
-window.isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+window.isMobile = (/mobile/i.test(navigator.userAgent));
+
 const isMobile = ref(window.isMobile)
 const gv = inject("$gv")
 const moment= inject("$moment")
