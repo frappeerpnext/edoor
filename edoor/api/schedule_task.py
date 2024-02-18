@@ -46,7 +46,8 @@ def re_run_fail_jobs():
     jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
 
     jobs = [d for d in jobs if "exc_info" in d]
-    jobs = [d for d in jobs  if  ("Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
+    job_names=["edoor.api.utils.update_reservation_stay_and_reservation"]
+    jobs = [d for d in jobs  if  ( d["job_name"] in job_names or  "Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
     job_ids = []
     for j in jobs:
         try:
