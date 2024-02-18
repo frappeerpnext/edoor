@@ -229,7 +229,14 @@ function onRunNightAudit() {
                 '960px': '100vw',
                 '640px': '100vw'
             },
+            
         },
+        onClose: (options) => {
+       
+             if(window.refresh_on_close==true){
+                window.location.reload();
+             }
+        }
     });
 }
 

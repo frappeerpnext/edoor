@@ -17,23 +17,6 @@ frappe.query_reports["Guest Ledger Report"] = {
 			},
 		},
 		{
-			"fieldname":"start_date",
-			"label": __("Start Date"),
-			"fieldtype": "Date",
-			default:frappe.datetime.get_today(),
-			"reqd": 1,
-			"on_change": function (query_report) {},
-		},
-		// {
-		// 	"fieldname":"end_date",
-		// 	"label": __("End Date"),
-		// 	"fieldtype": "Date",
-		// 	default:frappe.datetime.get_today(),
-		// 	"reqd": 1,
-		// 	"on_change": function (query_report) {},
-		// },
-
-		{
 			"fieldname": "reservation",
 			"label": __("Reservation"),
 			"fieldtype": "Link",
@@ -62,19 +45,6 @@ frappe.query_reports["Guest Ledger Report"] = {
 			"options":"Customer",
 			"on_change": function (query_report) {},
 		}, 
-		{
-			"fieldname": "reservation_status",
-			"label": __("Reservation Status"),
-			"fieldtype": "Link",
-			"options":"Reservation Status",
-			"on_change": function (query_report) {},
-		}, 
-		{
-			"fieldname": "is_master",
-			"label": __("Show Master Folio Only"),
-			"fieldtype": "Check",
-			"on_change": function (query_report) {},
-		} 
 
 	],
 	onload: function(report) {

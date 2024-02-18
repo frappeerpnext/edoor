@@ -150,6 +150,7 @@ function onFinish() {
                 window.working_day = result.message
                 gv.working_day = result.message
                 window.current_working_date = gv.working_day.date_working_day
+                window.refresh_on_close=true
             }).catch((err) => {
                 loading.value = false;
             }).finally(() => {
@@ -206,6 +207,7 @@ const refreshReport = () => {
 onMounted(() => {
     refreshReport()
     window.run_night_audit = 1
+    window.refresh_on_close=false
 
     window.socket.on("ComRunNightAudit", (arg) => {
         if (arg.property == window.property_name) { 

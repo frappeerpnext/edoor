@@ -23,7 +23,8 @@
                         </div>
                            
                         </div> 
-                    <ComBoxSummaryBalanceTransaction v-if="summary" label="Transatction Durring" :value='moment(start_date).format("DD-MM-YYYY") + "  to  " + moment(end_date).format("DD-MM-YYYY")' :class="'bg-purple-50 border-purple-300 md:mx-1 my-1'"  />
+                      
+                    <ComBoxSummaryBalanceTransaction v-if="summary" label="Audit Date" :value='moment(start_date).format("DD-MM-YYYY")' :class="'bg-purple-50 border-purple-300 md:mx-1 my-1'"  />
                 </div>
 </template>
 <script setup>

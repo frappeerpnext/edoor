@@ -1448,6 +1448,7 @@ def get_working_day(property = ''):
         if len(data)>0:
             cashier_shift = data[0]
 
+
     return {
         "date_working_day": working_day[0]["date"] if len(working_day)>0 else '',
         "name":working_day[0]["name"] if len(working_day)>0 else '',

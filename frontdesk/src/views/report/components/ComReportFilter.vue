@@ -362,8 +362,8 @@ const advanceFilter = (event) => {
 
 const filter = ref({
     _lang: user.language || "en",
-    start_date: moment().toDate(),
-    end_date: moment().toDate(),
+    start_date:moment(window.current_working_date).toDate(),
+    end_date: moment(window.current_working_date).toDate(),
     order_by:"Last Update On",
     audit_order:"Last Update On",
     is_active_reservation: "1" ,

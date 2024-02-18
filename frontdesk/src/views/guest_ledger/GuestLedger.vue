@@ -26,16 +26,8 @@
                                 <i class="pi pi-search" />
                                 <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
                             </div>
-                            <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
-                        </div>
-                        <div>
-                            <ComSelect :options="['All Status','Open', 'Closed']" placeholder="All Status" v-model="filter.status"
-                                :clear="false" @onSelected="onSearch" />
-                        </div>
-                        <div class="w-20rem">
-                            <ComSelect v-model="filter.reservation_status" placeholder="Reservation Status"
-                                doctype="Reservation Status" @onSelected="onSearch" />
-                        </div>
+                         </div>
+                       
                     </template>
                         <div>
                             <div class="flex gap-2">
@@ -59,7 +51,7 @@
                 </div>
             </div>
             <div>
-                <ComSummaryofBalence :summary="summary" :start_date="filter.start_date" :end_date="filter.end_date" />
+                <ComSummaryofBalence :summary="summary" :start_date="working_day.date_working_day" :end_date="working_day.date_working_day" />
             </div>
         </div>
         <div class="overflow-auto h-full">
@@ -177,14 +169,7 @@
         doctype="Reservation Status" @onSelected="onSearch" />
 </div>
 </template>
-                <div class="col-6 md:col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
-                        dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
-                </div>
-                <!-- <div class="col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
-                        dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
-                </div> -->
+               
                 <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
                         doctype="Business Source" @onSelected="onSearch" />
@@ -200,17 +185,6 @@
                 <div class="col-6 md:col-4">
                     <ComAutoComplete v-model="filter.reservation_stay" class="w-full" placeholder="Reservation Stay #"
                         doctype="Reservation Stay" @onSelected="onSearch" :filters="{ property: property.name }" />
-                </div>
-                <div class="col-6 md:col-4">
-
-                    <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
-
-                        <Checkbox class="me-2" inputId="show-ms" @change="onSearch" v-model="filter.is_master"
-                            :binary="true" :trueValue="1" :falseValue="0" />
-                        <label ref="show-ms">
-                            <span>Show Master Folio Only</span>
-                        </label>
-                    </div>
                 </div>
             </div>
         </ComOverlayPanelContent>
@@ -233,10 +207,10 @@ const call = frappe.call();
 const columns = ref()
 const summary = ref()
 const moment = inject("$moment")
-const filter = ref({ status: 'All Status', start_date: moment(working_day.date_working_day).toDate(), end_date: moment(working_day.date_working_day).toDate(), guest: "", keyword: "" })
+const filter = ref({ guest: "", keyword: "" })
 const defaultFilter = JSON.parse(JSON.stringify(filter.value))
 const order = ref({ order_by: "modified", order_type: "desc" })
-const loading = ref(false)
+
 const isMobile = ref(window.isMobile) 
 const selectedColumns = ref([])
 const sortOptions = ref([
@@ -258,14 +232,10 @@ const getColumns = computed(() => {
 })
 
 const isFilter = computed(() => {
-    if (moment(working_day.date_working_day).startOf('month').format('yyyy-MM-DD') != moment(filter.value.start_date).format('yyyy-MM-DD') || moment(working_day.date_working_day).format('yyyy-MM-DD') != moment(filter.value.end_date).format('yyyy-MM-DD')) {
-        return true
-
-    }
-    else {
+     
         return gv.isNotEmpty(filter.value, 'start_date,end_date,order_by,order_type', { status: 'All Status' })
 
-    }
+  
 })
 
 function onOpenLink(column, data) {

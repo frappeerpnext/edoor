@@ -9,9 +9,10 @@ from frappe.model.document import Document
 class ReservationFolio(Document):
 	def validate(self):
 		#check reservation status if allow to edit
-		total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': self.reservation_stay})
-		if total_folio > frappe.db.get_single_value("eDoor Setting","maximum_number_of_folio_in_reservation_stay"):
-			frappe.throw("You have reached the maximum number of folios allowed per reservation stay. Please contact your system administrator for assistance.")
+		if self.is_new():
+			total_folio = frappe.db.count('Reservation Folio', {'reservation_stay': self.reservation_stay})
+			if total_folio > frappe.db.get_single_value("eDoor Setting","maximum_number_of_folio_in_reservation_stay"):
+				frappe.throw("You have reached the maximum number of folios allowed per reservation stay. Please contact your system administrator for assistance.")
 
 		doc_status = frappe.get_doc("Reservation Status", self.reservation_status)
 		if doc_status.allow_user_to_edit_information==0 or  doc_status.is_active_reservation==0:

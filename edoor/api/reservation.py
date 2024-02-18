@@ -2903,7 +2903,7 @@ def get_reservation_room_rate(reservation):
 def update_mark_as_paid_by_master_room(reservation, stays, paid_by_master_room):
     if paid_by_master_room==1:
         #validate if there is master stay have active
-        data = frappe.db.sql("select name from `tabReservation Stay` where is_master=1 and reservation='{}' and reservation_status in ('In-house','Reserve','Confirmed')".format(reservation),as_dict=1)
+        data = frappe.db.sql("select name from `tabReservation Stay` where is_master=1 and reservation='{}' and reservation_status in ('In-house','Reserved','Confirmed')".format(reservation),as_dict=1)
         if len(data)==0:
             frappe.throw("There is no master room. Please assign a master room first")
 
