@@ -20,8 +20,7 @@ class FolioTransaction(Document):
 				if self.is_auto_post ==1:
 					self.is_night_audit_posting = 1
 					if not hasattr(self,"ignore_validate_auto_post"):
-						# frappe.throw("You cannot edit auto post transaction")
-						pass
+						frappe.throw("You cannot edit auto post transaction")
 		
  
 		if self.required_select_product and not self.product:
