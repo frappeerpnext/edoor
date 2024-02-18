@@ -391,7 +391,7 @@ def generate_audit_trail_from_version():
                 submit_update_audit_trail_from_version(doc)
         
         #update is converted
-        frappe.db.sql("update `tabVersion` set custom_is_converted_to_audit_trail=1 where name in %(names)s", {"names":[d.name for d in version_data]})
+        frappe.db.sql("update `tabVersion` set custom_is_converted_to_audit_trail=1 where name in %(names)s", {"names":set([d.name for d in version_data])})
         frappe.db.commit()
         return version_data
 
