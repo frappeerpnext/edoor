@@ -101,12 +101,6 @@
                         <CurrencyFormat :value="rs.reservation.total_credit" />
                     </span></span></div>
         </div>
-        <!-- <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
-            <div class="pr-3"><label>Balance</label></div>
-            <div><span><span class="white-space-nowrap font-medium">
-                        <CurrencyFormat :value="rs.reservation.balance" />
-                    </span></span></div>
-        </div> -->
         <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
     <div class="pr-3"><label>Balance</label></div>
     <div>

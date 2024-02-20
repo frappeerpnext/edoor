@@ -1,7 +1,7 @@
 <template>
     <div class="wrap-dialog iframe-modal" :class="{'full-height' : dialogRef.data.fullheight}">
         <div class="p-3 view-table-iframe-dialog" style="height: 85vh;">
-            <div class="grid mb-3 ">
+            <div class="grid mb-3 overflow-auto flex-nowrap	lg:flex-wrap">
                 <div class="col flex gap-2">
                     <div>
                         <Dropdown v-model="filters.selected_folio"  :options="dialogRef.data.folios" optionLabel="name" 

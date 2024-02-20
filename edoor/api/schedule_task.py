@@ -320,7 +320,7 @@ def validate_property_data():
     frappe.db.sql("update `tabFolio Transaction` set reservation_type=(select reservation_type from `tabReservation Stay` where name=`tabFolio Transaction`.reservation_stay ) where transaction_type='Reservation Folio' and coalesce(reservation_type,'')=''")
 
     #fix folio transaction have reservation room rate but not have source reservation stay
-    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(source_reservation_stay,'')='' ) limit 1",as_dict=1)
+    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(source_reservation_stay,'')=''  limit 1",as_dict=1)
     
     if len(data)>0:
             frappe.db.sql("""
@@ -333,7 +333,7 @@ def validate_property_data():
                 """)
 
     #fix folio transaction have reservation room rate but not have stay room_id
-    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(stay_room_id,'')='' ) limit 1",as_dict=1)
+    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(stay_room_id,'')=''   limit 1",as_dict=1)
     
     if len(data)>0:
             frappe.db.sql("""
