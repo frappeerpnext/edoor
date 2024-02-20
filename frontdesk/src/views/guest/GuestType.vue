@@ -8,7 +8,7 @@
                 <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New Guest Type' " icon="pi pi-plus" @click="onAddNewGuestType" />
             </template>
         </ComHeader>
-        <div class="mb-3 w-20rem">
+        <div class="mb-3 md:w-20rem">
             <div class="flex w-full flex-wrap gap-2 ">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />

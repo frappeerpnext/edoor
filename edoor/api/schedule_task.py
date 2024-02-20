@@ -44,7 +44,6 @@ def re_run_fail_jobs():
     ]
 
     jobs =  sorted(jobs, key=lambda j: j.modified, reverse=order_desc)
-
     jobs = [d for d in jobs if "exc_info" in d]
     job_names=["edoor.api.utils.update_reservation_stay_and_reservation"]
     jobs = [d for d in jobs  if  ( d["job_name"] in job_names or  "Deadlock found when trying"  in  d["exc_info"]  or "Lock wait timeout exceeded"  in  d["exc_info"] or "Document has been modified after you have opened it" in d["exc_info"] ) ]
@@ -319,6 +318,34 @@ def validate_property_data():
     #fix folio transaction that dont have reservation status color
     frappe.db.sql("update `tabFolio Transaction` set reservation_status_color=(select color from `tabReservation Status` where name=`tabFolio Transaction`.reservation_status ) where transaction_type='Reservation Folio' and coalesce(reservation_status_color,'')=''")
     frappe.db.sql("update `tabFolio Transaction` set reservation_type=(select reservation_type from `tabReservation Stay` where name=`tabFolio Transaction`.reservation_stay ) where transaction_type='Reservation Folio' and coalesce(reservation_type,'')=''")
+
+    #fix folio transaction have reservation room rate but not have source reservation stay
+    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(source_reservation_stay,'')='' ) limit 1",as_dict=1)
+    
+    if len(data)>0:
+            frappe.db.sql("""
+                update `tabFolio Transaction` 
+                set 
+                    source_reservation_stay = (select x.reservation_stay from `tabReservation Room Rate` x where x.name = `tabFolio Transaction`.reservation_room_rate) 
+                where
+                    coalesce(reservation_room_rate,'') !='' and 
+                    coalesce(source_reservation_stay,'') = ''
+                """)
+
+    #fix folio transaction have reservation room rate but not have stay room_id
+    data = frappe.db.sql("select name from `tabFolio Transaction` where coalesce(reservation_room_rate)!='' and coalesce(stay_room_id,'')='' ) limit 1",as_dict=1)
+    
+    if len(data)>0:
+            frappe.db.sql("""
+                update `tabFolio Transaction` 
+                set 
+                    stay_room_id = (select x.stay_room_id from `tabReservation Room Rate` x where x.name = `tabFolio Transaction`.reservation_room_rate) 
+                where
+                    coalesce(reservation_room_rate,'') !='' and 
+                    coalesce(stay_room_id,'') = ''
+                """)
+         
+         
     frappe.db.commit()
     
 

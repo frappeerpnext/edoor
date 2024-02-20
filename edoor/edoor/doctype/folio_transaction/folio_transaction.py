@@ -85,10 +85,7 @@ class FolioTransaction(Document):
 				frappe.throw("{} reservation is not allow to change information".format(self.reservation_status) )
 
 		
-		
-		
-	
-				
+			
 		#validate working day  
 		if self.is_new():
 			
@@ -300,10 +297,20 @@ class FolioTransaction(Document):
 			self.room_type_alias=""
 
 		
+
 		#udpate fetche from field
 		update_fetch_from_field(self)
 		#validate update report descript
 		update_report_description_field(self)
+
+		#check if reservation room rate is not emplty AND source reservation is emplty 
+		#then get source reservation stay from room rate
+		if self.reservation_room_rate and not self.source_reservation_stay:
+			self.source_reservation_stay = frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "reservation_stay")
+		
+		if self.reservation_room_rate and not self.stay_room_id:
+			self.stay_room_id= frappe.db.get_value("Reservation Room Rate", self.reservation_room_rate, "stay_room_id")
+
 
 
 	
@@ -337,15 +344,7 @@ class FolioTransaction(Document):
 			else:
 				content = content + f", Account: {self.account_code}-{self.account_name}, Amount: {frappe.format(self.amount,{'fieldtype':'Currency'})}"
 
-			# frappe.enqueue("edoor.api.utils.add_audit_trail",queue='short', data =[{
-			# 	"comment_type":"Created",
-			# 	"custom_audit_trail_type":"Created",
-			# 	"custom_icon":"pi pi-dollar",
-			# 	"subject":"Post " + self.account_group_name,
-			# 	"reference_doctype":"Folio Transaction",
-			# 	"reference_name":self.name,
-			# 	"content":content
-			# }])
+			 
 
 			add_audit_trail([{
 				"comment_type":"Created",
@@ -657,7 +656,9 @@ def add_sub_account_to_folio_transaction(self, account_code, amount,note):
 						"parent_reference":self.name,
 						"is_auto_post":self.is_auto_post,
 						"is_night_audit_posting":self.is_night_audit_posting,
-						"reservation_room_rate": self.reservation_room_rate
+						"reservation_room_rate": self.reservation_room_rate,
+						"source_reservation_stay": self.source_reservation_stay,
+						"stay_room_id": self.stay_room_id
 					}).insert()
 					
 

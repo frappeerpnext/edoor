@@ -7,8 +7,7 @@
                     <div class="profile bg-primary w-4rem h-4rem border-circle overflow-hidden">
                         <img class="image-profile w-full h-full" style="object-fit: cover;" :src="user.photo"/>
                     </div>
-                    <h1 class="text-2xl font-semibold pt-3">{{user.full_name}}</h1>
-                    <!-- <p>rathanachamroeun155@gmail.com</p> -->
+                    <h1 class="text-2xl font-semibold pt-3">{{user.full_name}}</h1> 
                 </div>
             </template>
             <div class="pt-3"> 

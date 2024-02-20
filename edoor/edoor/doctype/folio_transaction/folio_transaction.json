@@ -143,6 +143,8 @@
   "section_break_89",
   "bank_fee_account",
   "reservation_room_rate",
+  "source_reservation_stay",
+  "stay_room_id",
   "report_description",
   "column_break_91",
   "bank_fee_description",
@@ -969,22 +971,32 @@
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
-   "options": "Customer"
+   "options": "Vendor"
   },
   {
    "fieldname": "column_break_rqcj",
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "vendor.vendor_name",
    "fieldname": "vendor_name",
    "fieldtype": "Data",
-   "label": "Vendor Name",
-   "options": "Customer"
+   "label": "Vendor Name"
+  },
+  {
+   "fieldname": "source_reservation_stay",
+   "fieldtype": "Data",
+   "label": "Source Reservation Stay"
+  },
+  {
+   "fieldname": "stay_room_id",
+   "fieldtype": "Data",
+   "label": "Stay Room ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-26 14:17:35.674316",
+ "modified": "2024-02-20 10:40:30.293967",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

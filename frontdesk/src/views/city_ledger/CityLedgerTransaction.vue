@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-col flex" style="height: calc(100vh - 92px);">
+    <div class="flex-col flex view_sroll_mobile_table" style="height: calc(100vh - 92px);">
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>

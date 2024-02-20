@@ -74,7 +74,7 @@
         </div>
         <div class="pb-5" style="max-width: 100%;">
             <div id="fron__desk-fixed-top">
-                <div :class=" (showSummary) ? 'flex gap-2' : ''">
+                <div :class=" ( !isMobile && showSummary) ? 'flex gap-2' : ''">
                     <div v-if="(!isMobile && showSummary)" class="relative" style="width:280px">
                         <div>
                             <div class="w-full">
@@ -197,7 +197,6 @@ let advanceFilter = ref({
 })
 if (isMobile) {
     showSummary.value = false
-    localStorage.setItem("edoor_show_frontdesk_summary", "0")
 }
 const isFilter = computed(() => { 
     if (keyword.value.keyword || gv.isNotEmpty(advanceFilter.value, 'property,view_type')) {

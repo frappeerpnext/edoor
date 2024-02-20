@@ -67,10 +67,8 @@ function isNotLastForDelete(){
     }
 }
 function onOpenDeleted(data){
-    if(moment(data.start_date).isAfter(edoor_working_day.date_working_day) && props?.rooms.length > 1  ){
-        if(isNotLastForDelete()){
-            
-            const dialogRef = dialog.open(ComDialogNote, {
+ 
+    const dialogRef = dialog.open(ComDialogNote, {
                 data: {
                     api_url: "reservation.delete_stay_room",
                     method: "DELETE",
@@ -101,12 +99,6 @@ function onOpenDeleted(data){
                 }
 
     });
-
-        }
-    }else{
-        gv.toast('warn',"This room stay is disallow to delete.")
-    }
-    
     
 }
 function onSelected(room,status){

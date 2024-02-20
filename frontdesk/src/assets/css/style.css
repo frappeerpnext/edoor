@@ -1577,4 +1577,10 @@ align-items: center;
     .p-timeline-event-opposite{
         padding: 0 !important;
     }
+    .tb-cs-datatable ,.view_sroll_mobile_table{
+        height: auto !important;
+    }
+}
+.sidebar-report .p-sidebar-content{
+    padding: 0 !important;
 }

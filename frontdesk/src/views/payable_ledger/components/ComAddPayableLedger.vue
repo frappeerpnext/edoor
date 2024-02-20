@@ -66,6 +66,13 @@ function onClose(param = false) {
     dialogRef.value.close(param)
 }
 onMounted(()=> {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     // data.value.naming_series='FN.YYYY.-.####'; 
     if(dialogRef.value.data.name){
         getDoc("Payable Ledger", dialogRef.value.data.name).then(d=>{

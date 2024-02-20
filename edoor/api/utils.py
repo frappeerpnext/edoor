@@ -845,6 +845,8 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note=""):
         "is_auto_post":1,
         "valiate_input_amount": False,
         "reservation_room_rate": rate.name,
+        "source_reservation_stay": rate.reservation_stay,
+        "stay_room_id": rate.stay_room_id,
         "is_night_audit_posing":is_night_audit_posing,
         "note":note
     }

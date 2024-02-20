@@ -2,18 +2,18 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div class="text-2xl">Payable Ledger</div>
                 </template>
                 <template #end>
-                    <Button class="border-none" label="Add New Payable Ledger" icon="pi pi-plus" @click="onAddPayableLedger()" />
+                    <Button class="border-none" :label="isMobile ? 'Add New' : ' Add New Payable Ledger'" icon="pi pi-plus" @click="onAddPayableLedger()" />
                 </template>
             </ComHeader>
         </div>
         <div class="mb-3 flex justify-between">
             <div class="flex gap-2">
-                <div>
+                <div v-if="!isMobile">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
                         <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -86,9 +86,9 @@
         </div>
         <div>
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
-                :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                :totalRecords="pageState.totalRecords" :pageLinkSize="isMobile ? '2' : '5'" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile" >Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -114,9 +114,15 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
     <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
-        <ComOverlayPanelContent style="width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+        <ComOverlayPanelContent style="max-width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
+                <div class="col-12" v-if="isMobile">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-search" />
+                        <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                    </span>
+                </div>
                 <div class="col-6" >
                 <ComAutoComplete class="w-full"   width="100%" optionLabel="customer_name_en" optionValue="name"
                     v-model="filter.selected_vendor" @onSelected="onSearch" placeholder="Vendor" doctype="Vendor" />
@@ -161,6 +167,7 @@ const gv = inject("$gv")
 const toast = useToast()
 const opShowColumn = ref();
 const property = JSON.parse(localStorage.getItem("edoor_property"))
+const isMobile = ref(window.isMobile) 
 
 const columns = ref([
 

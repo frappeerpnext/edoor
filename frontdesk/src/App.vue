@@ -4,10 +4,12 @@
         <BlankLayout v-else />
     </template>
     <Property v-else />
+    
     <DynamicDialog v-if="isMobile"  :pt="{
         root: { class: 'p-dialog-maximized' }
     }"/>
     <DynamicDialog v-else/>
+
     <Toast position="top-center">
         <template #message="slotProps">
             <div class="flex flex-column" style="flex: 1">

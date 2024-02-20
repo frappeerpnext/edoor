@@ -1,17 +1,18 @@
 <template>
     <tr>
-        <td class="w-auto" :class="[titleClass, isStyle]"  :style="isBackground">
-            <label class="font-normal white-space-nowrap"  v-tippy="toolTipLabel">{{label}}</label>
+        <td class="w-auto" :class="[titleClass, isStyle]" :style="isBackground">
+            <label class="font-normal white-space-nowrap" v-tippy="toolTipLabel">{{ label }}</label>
         </td>
         <td class="w-full" :class="[valueClass, isStyle]">
-                <span v-if="isCurrency" class="font-semibold"  v-tippy="toolTipValue">
-                    <CurrencyFormat :value="value"/>
-                </span>
-                <span v-else class="font-semibold text-right"  v-tippy="toolTipValue">{{value}}</span>
-                <div class="inline-grid" :class="{'ms-3' : fill}">
-                    <slot></slot>
-                </div>
+            <span v-if="isCurrency" class="font-semibold" v-tippy="toolTipValue">
+                <CurrencyFormat :value="value" />
+            </span>
+            <span v-else class="font-semibold text-right" v-tippy="toolTipValue">{{ value }}</span>
+            <div class="inline-grid" :class="{ 'ms-3': fill }">
+                <slot></slot>
+            </div>
         </td>
+        
     </tr>
 </template>
 <script setup>
@@ -29,7 +30,7 @@ const props = defineProps({
     },
     isStyle: {
         type: String,
-        default: 'border-1 p-2'  
+        default: 'border-1 p-2'
     },
     isBackground: {
         type: String,
@@ -41,6 +42,4 @@ const props = defineProps({
     }
 })
 </script>
-<style>
-    
-</style>
+<style></style>

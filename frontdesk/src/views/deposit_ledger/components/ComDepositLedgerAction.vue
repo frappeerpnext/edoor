@@ -1,14 +1,14 @@
 <template>
-    <div class="flex justify-content-between align-items-center flex-wrap wp-btn-post-in-stay-folio mb-2">
-        <div>
+    <div class="flex pb-1 md:pb-0 overflow-auto  justify-content-between align-items-center md:flex-wrap wp-btn-post-in-stay-folio mb-2">
+        <div class="flex">
 
             <template v-for="(d, index) in accountGroups" :key="index">
-                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1">
+                <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1 white white-space-nowrap">
                     Post {{ d.account_name }}
                 </Button>
             </template>
 
-            <Button class="conten-btn" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
+            <Button class="conten-btn white-space-nowrap" icon="pi pi-chevron-down" iconPos="right" type="button" label="Folio Options"
                 @click="toggle" aria-haspopup="true" aria-controls="folio_menu" />
             <Menu ref="folio_menu" id="folio_menu" :popup="true">
                 <template #end>
@@ -39,7 +39,7 @@
                 </template>
             </Menu>
         </div>
-        <div>
+        <div class="flex ms-2 md:ms-0">
             <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp" label="Print" icon="pi pi-print"
                 :model="print_menus" />
             <Button @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b btn-size2 ml-2"></Button>

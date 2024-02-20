@@ -29,7 +29,7 @@ def execute(filters=None):
 
 	report_data = get_report_data(filters) 
 	summary = get_report_summary(filters)
-	summary.append({"label": "Audit Date", "value": working_day["date_working_day"], "datatype":"Date" })
+	summary.append({"label": "Audit Date", "value": frappe.format(working_day["date_working_day"],{"fieldtype":"Date"})})
 	return get_columns(filters), report_data, message, None, summary,skip_total_row
  
  		

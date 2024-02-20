@@ -1,14 +1,14 @@
 <template>
     <div>
-        <ComHeader isRefresh @onRefresh="Refresh()">
+        <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
             <template #start>
-                <div class="text-2xl">Business Source Type</div>
+                <div class="text-xl md:text-2xl">Business Source Type</div>
             </template>
             <template #end>
-                <Button class="border-none" label="Add New Business Source Type" icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
+                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New Business Source Type' " icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
             </template>
         </ComHeader>
-        <div class="mb-3 w-20rem">
+        <div class="mb-3 w-full md:w-20rem">
             <div class="flex w-full flex-wrap gap-2 ">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
@@ -55,6 +55,7 @@ const data = ref([])
 const filter = ref({})
 const loading = ref(false)
 const confirm = useConfirm()
+const isMobile = ref(window.isMobile) 
 function onDelete(name) {
     confirm.require({
         message: 'Are you sure you want to delete business source type?',

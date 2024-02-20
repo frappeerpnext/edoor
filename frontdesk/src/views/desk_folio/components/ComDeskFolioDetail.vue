@@ -6,7 +6,7 @@
 
                     <ComDeskFolioAction :folio="doc" :newDoc="newDoc" @onClose="onClose" />
                     <div class="grid">
-                        <div class="col">
+                        <div class="col-12 md:col">
                             <table class="mb-4">
                                 <tr>
                                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
@@ -37,7 +37,7 @@
                         <div>
 
                         </div>
-                        <div class="col">
+                        <div class="col-12 md:col">
                             <div class="flex mb-2 mt-2 gap-2 text-right">
 
                                 <div

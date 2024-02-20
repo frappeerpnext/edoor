@@ -5,7 +5,7 @@
                 <template #start>
                     <div class="flex align-items-center">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-2xl  md:ml-4">Housekeeping</div>
+                        <div class="text-xl md:text-2xl  md:ml-4">Housekeeping</div>
                     </div>
                 </template>
                 <template #end>

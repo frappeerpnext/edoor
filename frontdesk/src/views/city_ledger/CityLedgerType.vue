@@ -1,11 +1,11 @@
 <template>
  
-        <ComHeader isRefresh @onRefresh="Refresh()">
+        <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
             <template #start>
-                <div class="text-2xl">City Ledger Account Type</div>
+                <div class="text-xl md:text-2xl">City Ledger Account Type</div>
             </template>
             <template #end>
-                <Button class="border-none" label=" Add New City Ledger Account Type" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
+                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New City Ledger Account Type'" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -49,6 +49,7 @@ import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedge
 const gv = inject("$gv")
 const data = ref([])
 const filter = ref({})
+const isMobile = ref(window.isMobile) 
 const confirm = useConfirm()
 const dialog = useDialog()
  

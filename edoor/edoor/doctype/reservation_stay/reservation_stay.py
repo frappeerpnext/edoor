@@ -524,6 +524,22 @@ def update_reservation_stay_room_rate_after_move(data,stay_doc):
 
 		rate_doc.save()
 
+		if stay_doc.reservation_status =="In-house":
+			#check if room rate id have in folio transaction then	
+			# check room id if room id difference then update room id
+			check_folio_transaction_data = frappe.db.sql("select name, room_id from `tabFolio Transaction` where reservation_room_rate='{}' and room_id!='{}' and coalesce(parent_reference,'')=''".format(rate_doc.name, rate_doc.room_id),as_dict=1) 
+			
+			
+			if check_folio_transaction_data:
+				frappe.db.sql("update `tabFolio Transaction` set room_id='{0}', room_number='{1}',room_type_id='{2}', room_type='{3}' where name='{4}' or parent_reference='{4}'".format(
+					rate_doc.room_id,
+					rate_doc.room_number,
+					rate_doc.room_type_id,
+					rate_doc.room_type,
+					check_folio_transaction_data[0]["name"]
+				))
+
+
 	#update first date in reservation room is_arrival = 1
 	update_is_arrival_date_in_room_rate(stay_doc.name)
 	

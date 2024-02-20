@@ -1,9 +1,9 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Vendor</div>
+                    <div class="text-xl md:text-2xl">Vendor</div>
                 </template>
                 <template #end>
                     <Button class="border-none" label="Add New Vendor" icon="pi pi-plus" @click="onAddNewVendor" />
@@ -11,7 +11,7 @@
             </ComHeader>
             <div class="mb-3 flex justify-between">
                 <div class="flex flex-wrap gap-2">
-                    <div>
+                    <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
                             <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -105,7 +105,7 @@
         </ComOverlayPanelContent>
     </OverlayPanel>
 
-    <OverlayPanel ref="showAdvanceSearch" style="width:40rem">
+    <OverlayPanel ref="showAdvanceSearch" style="max-width:40rem">
         <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
@@ -127,7 +127,7 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
 import ComAddVendor from '@/views/vendor/ComAddVendor.vue';
-
+const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const gv = inject("$gv")
 const dialog = useDialog()

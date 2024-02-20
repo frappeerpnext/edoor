@@ -1,18 +1,23 @@
 <template>
     <div class="flex-col flex" style="height: calc(100vh - 92px);">
         <div>
-            <ComHeader isRefresh @onRefresh="Refresh()">
+            <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">City Ledger Account</div>
+                    <div class="text-xl md:text-2xl">City Ledger Account</div>
                 </template>
                 <template #end>
-                    <Button class="border-none" @click="onAddCityLedgerAccount">Add New City Ledger Account</Button>
+                    <Button class="border-none" @click="onAddCityLedgerAccount">
+                        Add New
+                        <template v-if="!isMobile">
+ City Ledger Account
+                        </template>
+                        </Button>
                 </template>
             </ComHeader>
             <div class="mb-3">
                 <div class="flex justify-between">
                     <div class="flex flex-wrap gap-2">
-                        <div class="w-20rem">
+                        <div v-if="!isMobile" class="w-20rem">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
                                 <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -28,13 +33,19 @@
                         </div>
                         <OverlayPanel ref="showAdvanceSearch">
                             <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter" icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
-                                <div class="flex gap-2">
-                                    <div class="">
+                                <div class="grid">
+                                    <div v-if="isMobile" class="col-12">
+                            <div class="p-input-icon-left w-full">
+                                <i class="pi pi-search" />
+                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            </div>
+                        </div>
+                                    <div class="col-6">
                                         <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_city_ledger_type" @onSelected="onSearch"
                                             placeholder="City Ledger Type" doctype="City Ledger Type"  class="pb-2 w-full"/> 
                                     </div>
-                                    <div class="">
+                                    <div class="col-6">
                                         <ComAutoComplete :filters="[['property', '=', property.name]]"
                                             v-model="filter.selected_business_source" @onSelected="onSearch"
                                             placeholder="Business Source" doctype="Business Source"  class="pb-2 w-full"/>
@@ -108,9 +119,9 @@
         </div>
         <div v-if="data.length > 0">
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
-                :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
+                :rowsPerPageOptions="[20, 30, 40, 50]" :pageLinkSize="isMobile ? '2' : '5'" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -155,7 +166,7 @@ const data = ref([])
 const filter = ref({})
 const pageState = ref({ order_by: "modified", order_type: "desc", page: 0, rows: 20, totalRecords: 0, activePage: 0 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-
+const isMobile = ref(window.isMobile) 
 
 
 const columns = ref([
