@@ -1584,3 +1584,9 @@ align-items: center;
 .sidebar-report .p-sidebar-content{
     padding: 0 !important;
 }
+.sidebar-folio .p-sidebar-content {
+    padding: 5px;
+}
+.p-sidebar-header-content {
+    font-size: 18px;
+}

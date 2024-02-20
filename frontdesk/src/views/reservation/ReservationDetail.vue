@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <TabView lazy v-model:activeIndex="activeTab">
+            <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom">
                 <TabPanel header="General Information">
                     <div class="grid mt-2 ml-0 ms-0">
                         <div class="col-12 lg:col pl-0">

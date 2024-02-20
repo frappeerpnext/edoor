@@ -1,7 +1,5 @@
 <template>
-    <div class="card -mt-2 border-round-lg reservatin_folio_list_box">
-        <!-- expandIcon="pi" collapseIcon="pi" -->
-
+    <div class="card mt-0 lg:-mt-2 border-round-lg reservatin_folio_list_box"> 
         <Accordion :multiple="true" :activeIndex="[0]">
             <template v-for="(s, index) in rs.reservationFolioList" :key="index">
                 <AccordionTab :headerClass="s.folios.some(d => d.selected) ? 'header_folio_active' : ''">

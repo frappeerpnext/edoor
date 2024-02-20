@@ -16,7 +16,7 @@
                                 link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
-                            <div class="ms-2" v-if="rs?.reservationStayNames.length > 1">
+                            <div class="ms-2 hidden lg:inline-block" v-if="rs?.reservationStayNames.length > 1">
                                 <Button v-if="rs?.reservationStayNames.length > 1" @click="onNavigateStay(-1)"
                                     :disabled="rs?.canNavigatePrevious(name) || rs.loading" icon="pi pi-angle-double-left"
                                     class="border-noround-right border-y-none border-left-none">

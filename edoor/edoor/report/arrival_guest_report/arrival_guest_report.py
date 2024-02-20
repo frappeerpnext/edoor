@@ -71,7 +71,7 @@ def get_data (filters,report_fields):
 	sql = "{} from `tabReservation Stay`  ".format(sql)
 	sql = "{} {}".format(sql, get_filters(filters))
 	data = frappe.db.sql(sql, filters ,as_dict=1)
-
+	frappe.throw(sql)
 	return data
 
 def get_filters(filters):

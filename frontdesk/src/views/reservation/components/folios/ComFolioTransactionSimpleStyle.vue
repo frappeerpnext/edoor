@@ -23,7 +23,7 @@
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
-            <Column field="room_number" header="Room #" headerClass="text-center" bodyClass="text-center"></Column>
+            <Column field="room_number" header="Room #" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
             <Column field="account_name" header="Account" style="min-width: 160px;">
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -

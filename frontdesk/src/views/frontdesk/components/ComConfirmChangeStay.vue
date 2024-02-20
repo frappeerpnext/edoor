@@ -41,12 +41,7 @@
                                 v-tippy="'group_name'">{{ doc?.group_name }}</span>
                         </div>
                     </ComStayInfoNoBox>
-                    <ComStayInfoNoBox label="Pax">
-                        <div class="inline -ml-3 font-semibold">
-                            <sapn v-tippy="'Adult'">{{ doc?.adult }}</sapn> / <span v-tippy="'Child'">{{ doc?.child
-                            }}</span>
-                        </div>
-                    </ComStayInfoNoBox>
+                  
 
                 </table>
             </div>
@@ -77,6 +72,12 @@
                 <ComStayInfoNoBox v-if="doc?.stays.length > 1" label="Departure"
                     :value="gv.dateFormat(doc?.departure_date)" />
                 <ComStayInfoNoBox v-if="doc?.stays.length > 1" label="Nights" :value="doc?.room_nights" />
+                    <ComStayInfoNoBox label="Pax">
+                        <div class="inline -ml-3 font-semibold">
+                            <sapn v-tippy="'Adult'">{{ doc?.adult }}</sapn> / <span v-tippy="'Child'">{{ doc?.child
+                            }}</span>
+                        </div>
+                    </ComStayInfoNoBox>
             </div>
             <div class="col-12 lg:col-6">
                 <table>

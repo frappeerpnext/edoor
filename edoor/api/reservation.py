@@ -1512,16 +1512,28 @@ def post_room_charge_to_folio_after_extend_stay(stays):
                 
                 sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
                 room_rates = frappe.db.sql(sql_rate,as_dict=1)
-                 
+                
                 if room_rates:
                     room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
 
                     # check if room chage already post to folio
-                    sql="select name,stay_room_id from `tabFolio Transaction` where source_reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
+                    sql="select name,stay_room_id,room_id from `tabFolio Transaction` where coalesce(reservation_room_rate,'')!= '' and source_reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
                     folio_transactions = frappe.db.sql(sql,as_dict=1)
                     if len(folio_transactions)>0:
-                        if folio_transactions[0]["stay_room_id"] != room_rate_doc.stay_room_id:
-                            frappe.db.sql("update `tabFolio Transaction` set stay_room_id='{}' where name='{}'".format( room_rate_doc.stay_room_id, folio_transactions[0]["name"]))
+                        for f in folio_transactions:
+                             
+                            if f["stay_room_id"] != room_rate_doc.stay_room_id or f["room_id"] != room_rate_doc.room_id:                            
+                                frappe.db.sql("update `tabFolio Transaction` set stay_room_id='{0}',room_id='{1}', room_number={2}, room_type_id='{3}', room_type='{4}' where name='{5}'".format(
+                                    room_rate_doc.stay_room_id,
+                                    room_rate_doc.room_id,
+                                    room_rate_doc.room_number,
+                                    room_rate_doc.room_type_id,
+                                    room_rate_doc.room_type,
+                                    f["name"]
+                                    
+                                ))
+
+
                     else:
                         # start add charge to filio
                         # get folio post to master or post to self folio
@@ -1592,11 +1604,11 @@ def post_room_charge_to_folio_after_extend_stay(stays):
 def get_stay_posting_folio(stay_doc):
     data=[]
     if stay_doc.paid_by_master_room==0:
-        data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1".format(stay_doc.name),as_dict=1)
+        data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1 and status='Open'".format(stay_doc.name),as_dict=1)
     else:
-        master_stay_names = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}' and is_master=1".format(stay_doc.reservation),as_dict=1)
+        master_stay_names = frappe.db.sql("select name from `tabReservation Stay` where reservation='{}' and is_master=1 ".format(stay_doc.reservation),as_dict=1)
         if master_stay_names:
-            data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1".format(master_stay_names[0]["name"]),as_dict=1)
+            data = frappe.db.sql("select name from `tabReservation Folio` where reservation_stay='{}' and is_master=1 and status='Open'".format(master_stay_names[0]["name"]),as_dict=1)
 
     if data:
         return frappe.get_doc("Reservation Folio", data[0]["name"])

@@ -17,7 +17,7 @@
                         slotProps.data?.name }}</button>
                 </template>
             </Column>
-            <Column field="room_number" header="Room #" headerClass="text-center" bodyClass="text-center"></Column>
+            <Column field="room_number" header="Room #" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
             <Column field="posting_date" header="Post Date" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data?.posting_date">{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY")

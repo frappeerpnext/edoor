@@ -1,25 +1,25 @@
 <template>
 <div v-if="rs.reservationFolioList.length>0">
     <div class="flex gap-2  w-full max-h-folio-dialgo" >
-        <div class="col-fixed mt-2 res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
+        <div v-if="!isMobile" class="col-fixed mt-2 res-stay-folio-btn-site-bg px-0 relative wrap-master-list-folio" style="width: 350px;">
             <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
         </div>
         <div class="col pl-0 pt-2 overflow-auto">
-            
             <div v-if="selectedFolio">
                 <div class="w-full p-2 border-1 border-round-lg mb-2 flex ">
                     <span v-if="selectedFolio.is_master" class="bg-purple-100 p-2 w-4rem  flex justify-content-center align-items-center border-round-lg"> <ComIcon style="height: 14px;" icon="iconCrown" /> </span>
                     <div class=" ms-2 white-space-nowrap flex justify-content-between flex-column">
                     <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? '' : 'closed'" class="line-height-2 folio-remark ms-2 " >{{ selectedFolio.status }}</span>  </div>
-
-                    <div class="font-light mt-auto">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</div>
-                 
+                        <div class="font-light mt-auto">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</div>
                     </div>
-                </div>
-                     
-                    <ComFolioAction parentComponent="Reservation" :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" />
-                    <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
-                    <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
+                </div> 
+                <ComFolioAction parentComponent="Reservation" :loading="loading" @onRefresh="onRefresh" doctype="Reservation Folio" :folio="selectedFolio" :accountGroups="accountGroups?.filter(r => r.show_in_guest_folio==1)" :accountCodeFilter="{is_guest_folio_account:1}" >
+                    <template v-if="isMobile" #button>
+                        <Button class="conten-btn mr-1" icon="pi pi-bars" @click="visible = true"></Button>
+                    </template>
+                </ComFolioAction>
+                <ComFolioTransactionCreditDebitStyle :loading="loading" v-if="showCreditDebitStyle" :folio="selectedFolio" />
+                <ComFolioTransactionSimpleStyle :loading="loading" v-else :folio="selectedFolio" />
             </div>
         </div>
     </div>
@@ -30,7 +30,9 @@
     </div>
     <div class="text-center text-600">Create a Folio to post transactions.</div>
 </div>
-   
+<Sidebar class="sidebar-folio" v-model:visible="visible" header="Folio">
+    <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
+</Sidebar>
 </template>
 <script setup>
     import {ref,inject, onMounted,onUnmounted,getApi,provide,useConfirm,createUpdateDoc,useToast} from "@/plugin"
@@ -41,12 +43,14 @@
     const toast = useToast();
     const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
     const accountGroups = ref(window.setting.account_group)
-
+    const isMobile = ref(window.isMobile)
     const rs = inject("$reservation")
     const selectedFolio = ref()
+    const visible = ref(false)
     const loading = ref(false)
     const confirm = useConfirm();
     function onSelectFolio(f){
+        visible.value = false
         selectedFolio.value=f
     }
     

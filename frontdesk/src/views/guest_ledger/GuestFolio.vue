@@ -130,12 +130,12 @@
                 <ComSelect class="col-6" width="100%" v-model="filter.selected_status" @onSelected="onSearch"
                 placeholder="Status" :options="['Open', 'Closed']" />
 
-                <ComSelect class="col-6" width="100%" isFilter optionLabel="room_type" optionValue="name"
+                <ComSelect class="col-6" width="100%" isFilter optionLabel="room_type" optionValue="room_type" extraFields="room_type"
                     v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                     :filters="{ property: property.name }"></ComSelect>
 
-                <ComSelect class="col-6" width="100%" isFilter groupFilterField="room_type_id"
-                    :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="name"
+                <ComSelect class="col-6" width="100%" isFilter groupFilterField="room_type"
+                    :groupFilterValue="filter.selected_room_type" optionLabel="room_number" optionValue="room_number" extraFields="room_number"
                     v-model="filter.selected_room_number" @onSelected="onSearch" placeholder="Room Name" doctype="Room"
                     :filters="{ property: property.name }"></ComSelect>
                                 <div class="col-12 md:col-6" >
@@ -160,7 +160,7 @@ import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getAp
 import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-import ComAddDeskFolio from '@/views/desk_folio/components/ComAddDeskFolio.vue';
+
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
@@ -170,10 +170,12 @@ const property = JSON.parse(localStorage.getItem("edoor_property"))
 const isMobile = ref(window.isMobile) 
 const columns = ref([
     { fieldname: 'name', label: 'Guest Folio #', fieldtype: "Link", post_message_action: "view_folio_detail", default: true },
+    { fieldname: 'posting_date', label: 'Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
+    { fieldname: 'reservation', label: 'Res #', fieldtype: "Link", header_class: "text-left", frozen: true, default: false,post_message_action: "view_reservation_detail" },
+    { fieldname: 'reservation_stay', label: 'Stay #', fieldtype: "Link", header_class: "text-left", frozen: true, default: false,post_message_action: "view_reservation_stay_detail" },
     { fieldname: 'rooms', label: 'Room', default: true ,header_class: "text-center"},
     { fieldname: 'room_types', label: 'Room Type', header_class: "text-left", default: true },
     { fieldname: 'guest', label: 'Guest', fieldtype: "Link", extra_field: "guest_name", extra_field_separator: "-", post_message_action: "view_guest_detail", default: true },
-    { fieldname: 'posting_date', label: 'Guest Folio. Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },
     { fieldname: 'total_debit', label: 'Debit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'total_credit', label: 'Credit', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'balance', label: 'Balance', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
@@ -276,6 +278,10 @@ function loadData(show_loading = true) {
     }
     if (filter.value?.keyword) {
         filters.push(["name", 'like', '%' + filter.value.keyword + '%'])
+        filters.push(["status", "=", filter.value.selected_status])
+        filters.push(["guest", "=", filter.value.selected_guest])
+        filters.push(["room_types", "like", '%' + filter.value.selected_room_type + '%'])
+        filters.push(["rooms", 'like', '%' + filter.value.selected_room_number + '%'])
     }
     if (filter.value?.selected_status) {
         filters.push(["status", "=", filter.value.selected_status])
@@ -283,12 +289,12 @@ function loadData(show_loading = true) {
     if (filter.value?.selected_guest) {
         filters.push(["guest", "=", filter.value.selected_guest])
     }
-    // if (filter.value?.selected_room_type) {
-    //     filters.push(["room_type_id", "=", filter.value.selected_room_type])
-    // }
-    // if (filter.value?.selected_room_number) {
-    //     filters.push(["room_id", '=', filter.value.selected_room_number])
-    // }
+    if (filter.value?.selected_room_type) {
+        filters.push(["room_types", "like", '%' + filter.value.selected_room_type + '%'])
+    }
+    if (filter.value?.selected_room_number) {
+        filters.push(["rooms", 'like', '%' + filter.value.selected_room_number + '%'])
+    }
 
     let fields = [...columns.value.map(r => r.fieldname), ...columns.value.map(r => r.extra_field)]
     fields = [...fields, ...selectedColumns.value]
