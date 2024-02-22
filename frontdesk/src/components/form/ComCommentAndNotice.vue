@@ -27,7 +27,10 @@
         <div>
      
             <Button class="dialog_btn_transform conten-btn " :loading="saving" @click="onCreate">
-                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add {{commentType}}
+                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add
+                <template v-if="!isMobile">
+                {{commentType}}
+                </template>
             </Button>
         </div>
         <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
@@ -91,6 +94,7 @@ import { ref, inject, getDocList, useConfirm, onMounted, deleteDoc, createUpdate
 import Enumerable from 'linq'
 const moment = inject("$moment");
 const gv = inject("$gv");
+const isMobile = ref(window.isMobile)
 const props = defineProps({
     doctype: String,
     docname: String,

@@ -18,8 +18,8 @@
         </div>
         <div>
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
-                <DataTable showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
-                    <Column field="city_ledger_type" header="City Ledger Type"></Column>
+                <DataTable  showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
+                    <Column :headerClass="'white-space-nowrap'" field="city_ledger_type" header="City Ledger Type" ></Column>
                     <Column header="Owner">
                         <template #body="slotProps">
                             <div v-if="slotProps?.data && slotProps?.data?.owner">

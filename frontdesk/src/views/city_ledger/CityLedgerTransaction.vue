@@ -5,7 +5,7 @@
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div @click="loadData()" class="text-xl md:text-2xl">City ledger Transaction</div>
+                            <div @click="loadData()" class="text-xl md:text-2xl white-space-nowrap">City ledger Transaction</div>
                         </div>
                     </div>
                 </template>

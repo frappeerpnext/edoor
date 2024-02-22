@@ -71,7 +71,7 @@
 </div>
                             </template>
                         </ComReservationStayPanel>
-                        <div class="mt-3">
+                        <div v-if="!isMobile" class="mt-3">
                             <ComReservationStayPanel class="bg-white">
                                 <template #content>
                                     <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
@@ -82,7 +82,7 @@
 
 
                     </div>
-                    <div v-if="doc.is_edoor_shift" class="col-6">
+                    <div v-if="doc.is_edoor_shift" class="col-12 md:col-6">
                         <ComReservationStayPanel  title="Payment Information">
                             <template #content>
                                 <div class="flex w-full gap-3">
@@ -167,9 +167,10 @@
                                 <div class="bg-slate-200 p-2 mt-3 font-medium text-center border-left-2">
                                     Closing Summary
                                 </div>
-                                <table class="w-full">
+                                <div class="w-full overflow-auto">
+                                <table >
                                     <tr class="bg-white">
-                                        <td class="w-auto border-1 p-2"> Payment Type </td>
+                                        <td class="w-auto border-1 p-2 white-space-nowrap"> Payment Type </td>
                                         <td class="w-auto border-1 p-2 text-right">Opening</td>
                                         <td class="w-auto border-1 p-2 text-right">Expected</td>
                                         <td class="w-auto border-1 p-2 text-right">Actual </td>
@@ -211,6 +212,7 @@
                                     </tr>
 
                                 </table>
+                                </div>
                             </div>
                             </template>
                         </ComReservationStayPanel>
@@ -270,7 +272,16 @@
 
                         </ComReservationStayPanel>
                     </div>
-
+<div>
+    <div v-if="isMobile" class="mt-3">
+                            <ComReservationStayPanel class="bg-white">
+                                <template #content>
+                                    <ComCommentAndNotice v-if="doc?.name" doctype="Cashier Shift" :docname="doc?.name"
+                                        :filters="['custom_cashier_shift','=', doc?.name]" />
+                                </template>
+                            </ComReservationStayPanel>
+                        </div>
+</div>
                 </div>
 
             </TabPanel>
@@ -315,7 +326,7 @@ const toast = useToast()
 const dialogRef = inject("dialogRef")
 const moment = inject("$moment")
 const mainCurrency = ref(window.setting.currency) 
-
+const isMobile = ref(window.isMobile)
 const doc = ref({})
 const dialog = useDialog();
 const loading = ref(false)

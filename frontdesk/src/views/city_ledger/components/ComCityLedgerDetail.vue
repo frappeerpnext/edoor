@@ -46,7 +46,7 @@
                         <ComStayInfoNoBox label="Address" :value="data?.address" />
                     </table>
                     <div class="grid">
-                        <div class="col-6">
+                        <div class="col-12 md:col-6">
                             <table class="mt-3">
                                 <tr>
                                     <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Bank
@@ -57,7 +57,7 @@
                                 <ComStayInfoNoBox label="Bank Account Name" :value="data?.bank_account_name" />
                             </table>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 md:col-6">
                             <table class="mt-3">
                                 <tr>
                                     <td class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center" colspan="2">Contact
@@ -76,17 +76,21 @@
                     </div>
                 </div>
                 <hr class="my-2">
-                <div class="w-full flex justify-end text-sm -mb-2">
-                    <span class="italic">Created by: </span>
-                    <span class="text-500 font-italic">
+                <div class="w-full flex justify-end flex-column md:flex-row text-sm -mb-2">
+                    <div class="flex">
+                    <span class="italic white-space-nowrap">Created by: </span>
+                    <span class="text-500 font-italic white-space-nowrap">
                         {{ data?.owner.split("@")[0] }}
                         <ComTimeago :date="data?.creation" />
                     </span>
-                    <span class="italic ms-2"> Last Modified: </span>
-                    <span class="text-500 font-italic">
+                    </div>
+                    <div class="flex">
+                    <span class="italic ms-0 md:ms-2 white-space-nowrap"> Last Modified: </span>
+                    <span class="text-500 font-italic white-space-nowrap">
                         {{ data?.modified_by.split("@")[0] }}
                         <ComTimeago :date="data?.modified" />
                     </span>
+                    </div>
                 </div>
             </TabPanel>
             <TabPanel header="City Ledger Transaction">

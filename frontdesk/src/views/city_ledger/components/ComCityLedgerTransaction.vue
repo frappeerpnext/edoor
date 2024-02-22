@@ -2,17 +2,20 @@
     <div>
         <ComHeader isRefresh @onRefresh="Refresh()">
             <template #end>
-                <Button class="conten-btn" @click="AddTransaction(d)"
+                <div class="overflow-auto w-full flex gap-2">
+                <Button class="conten-btn white-space-nowrap" @click="AddTransaction(d)"
                     v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
                     {{ d.account_name }}</Button>
                 <Button @click="viewCityLedgerReport" class="conten-btn">
                     <i class="pi pi-print mr-2"></i> Print 
                 </Button>
+                </div>
             </template>
         </ComHeader>
         <div class="flex justify-between mb-3">
             <div class="flex gap-2">
-                <div>
+                <template v-if="!isMobile">
+                <div >
                     <div class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
                         <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -22,6 +25,7 @@
                     <ComAutoComplete class="w-full" v-model="filter.selected_guest" @onSelected="onSearch"
                         placeholder="Guest" doctype="Customer" isFilter />
                 </div>
+            </template>
                 <div class="flex gap-2">
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                     <div v-if="gv.isNotEmpty(filter)">
@@ -40,7 +44,7 @@
                 </Button>
             </div>
         </div>
-        <OverlayPanel ref="showAdvanceSearch" style="width:50rem">
+        <OverlayPanel ref="showAdvanceSearch" style="max-width:50rem">
             <ComOverlayPanelContent title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
                 icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
                 <div class="grid">
@@ -85,12 +89,12 @@
             </ComOverlayPanelContent>
         </OverlayPanel>
         <div v-if="cityLedgerAmountSummary">
-            <div class="grid my-3">
-                <ComBoxSummaryBalanceTransaction label="opening Balance" :value='cityLedgerAmountSummary?.opening_balance' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
-                <ComBoxSummaryBalanceTransaction label="debit" :value='cityLedgerAmountSummary?.debit' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
-                <ComBoxSummaryBalanceTransaction label="credit" :value='cityLedgerAmountSummary?.credit' :isCurrency="true" :class="'bg-white md:mx-1 my-1'"  />
-                <ComBoxSummaryBalanceTransaction label="balance" :value='cityLedgerAmountSummary?.balance' :isCurrency="true" :class="'bg-green-50 border border-green-edoor md:mx-1 my-1'"  />
-                <ComBoxSummaryBalanceTransaction label="Transatction Durring" :value='moment().format("DD-MM-YYYY")' :class="'bg-purple-50 border-purple-300 md:mx-1 my-1'"  />
+            <div class="grid">
+                <ComBoxSummaryBalanceTransaction label="opening Balance" :value='cityLedgerAmountSummary?.opening_balance' :isCurrency="true" :class="'col-12 md:col bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="debit" :value='cityLedgerAmountSummary?.debit' :isCurrency="true" :class="'col-12 md:col bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="credit" :value='cityLedgerAmountSummary?.credit' :isCurrency="true" :class="'col-12 md:col bg-white md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="balance" :value='cityLedgerAmountSummary?.balance' :isCurrency="true" :class="'col-12 md:col bg-green-50 border border-green-edoor md:mx-1 my-1'"  />
+                <ComBoxSummaryBalanceTransaction label="Transatction Durring" :value='moment().format("DD-MM-YYYY")' :class="'col-12 md:col bg-purple-50 border-purple-300 md:mx-1 my-1'"  />
             </div>
         </div>
         <div style="min-height:42rem;">
@@ -199,6 +203,7 @@ import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTrans
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
+const isMobile = ref(window.isMobile)
 const props = defineProps({
     name: String,
     reservation_stay: String,

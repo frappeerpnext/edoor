@@ -263,7 +263,7 @@ def get_occupy_data(filters,report_config):
     if filters.parent_row_group:
         sql = "{}, {}".format(sql, get_room_occupy_group_by_field(filters)) 
  
-
+    
     data = frappe.db.sql(sql,filters,as_dict = 1)
     return data
 

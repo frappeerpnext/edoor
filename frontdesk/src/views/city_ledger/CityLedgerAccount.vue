@@ -27,7 +27,7 @@
                             <div class="flex gap-3">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="gv.isNotEmpty(filter)">
-                                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
                         </div>

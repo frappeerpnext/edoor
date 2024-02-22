@@ -1,9 +1,9 @@
 <template>
 	<ComDialogContent   hideButtonClose titleButtonOK="Ok" :hideIcon="false" :hideButtonOK="true" :loading="loading">
-		<div>
-			<div class="mb-3 flex justify-between">
+		<div class="overflow-auto">
+			<div class="md:mb-3 flex justify-between">
 				<div class="flex gap-2">
-					<div>
+					<div v-if="!isMobile">
 						<span class="p-input-icon-left">
 							<i class="pi pi-search" />
 							<InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
@@ -18,15 +18,22 @@
 				</div>
 				<div class="flex gap-2">
 					<div>
-							<div class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
+							<div class="ms-2 md:ms-0 flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
 			
 			<button type="button" @click="onToggleView"
 				:class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
-				<i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />Line
+				<i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify md:me-2" />
+				<template v-if="!isMobile">
+					Line
+				</template>
+				
 			</button>
 			<button @click="onToggleView"
 				:class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
-				<i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />Table
+				<i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table md:me-2" />
+				<template v-if="!isMobile">
+					Table
+				</template>
 			</button>
 		</div>
 					</div>
@@ -42,9 +49,9 @@
         					<i v-if="pageState.order_type == 'asc'" class="pi pi-sort-alpha-down" />  
 						</Button>
 					</div>
-					<div>
+					<div class="w-full flex">
 						<Button class="content_btn_b h-btn-cs" label="Print" icon="pi pi-print" @click="onPrint" :reservation="name" />
-						<Button   @click="Refresh()" icon="pi pi-refresh" class="content_btn_b  ml-2"></Button>
+						<Button   @click="Refresh()" icon="pi pi-refresh" class="content_btn_b  ml-2 max-h-3rem"></Button>
 					</div>
 					
 				</div>
@@ -152,7 +159,7 @@ import Paginator from 'primevue/paginator';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
 
-
+const isMobile = ref(window.isMobile)
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
@@ -291,6 +298,13 @@ function debouncer(fn, delay) {
 onMounted(() => {
 	ref_data.value = dialogRef.value.data;
 	loadData()
+	if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 })
 const advanceSearch = (event) => {
 	showAdvanceSearch.value.toggle(event);

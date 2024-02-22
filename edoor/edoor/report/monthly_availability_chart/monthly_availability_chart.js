@@ -74,7 +74,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			"fieldname": "chart_option",
 			"label": __("Chart Option"),
 			"fieldtype": "Select",
-			"options": "\nOccpancy By Month\nDate\nRoom Type\nRoom",
+			"options": "\nOccupancy by Month\nRoom Type\nRoom",
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
 		},

@@ -21,7 +21,7 @@
                     
                     </div>
                 </div>
-                <div class="col flex grap-2">
+                <div class="col flex gap-2">
                     <div>
                         <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_room_number" />
                         <label for="show_room_number" >Show/Hide Room Number</label>

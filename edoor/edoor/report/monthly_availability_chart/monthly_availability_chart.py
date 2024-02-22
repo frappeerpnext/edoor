@@ -11,10 +11,10 @@ from datetime import datetime
 import copy
 import calendar
 def execute(filters=None):
-	
-	report_data = get_report_data(filters)
-
-	return get_columns(filters),report_data,None,None, None
+	data = get_data(filters)
+	report_data = get_report_data(filters,data)
+	chart = get_chart(filters,report_data)
+	return get_columns(filters),report_data,None,chart, None
 
 
 def get_columns(filters):
@@ -43,34 +43,12 @@ def get_month(filters):
 	months = [{'month_number': dt.month, 'month_name': dt.strftime('%B'),"year": dt.year, "total_day":  calendar.monthrange(dt.year, dt.month)[1]} for dt in rrule(MONTHLY, dtstart=start_date, until=end_date)]
 
 	return months
-
-def get_report_chart(filters):
-	chart_series = filters.chart_option
-	if filters.chart_type=="None" or not chart_series or not  filters.view_chart_by:
-		return None
-	dataset = []
-	colors = []
-
-	chart = {
-		'data':{
-			'labels':  dataset,
-			'datasets':dataset
-		},
-		"type": filters.chart_type,
-		# "lineOptions": {
-		# 	"regionFill": 1,
-		# },
-		'valuesOverPoints':1,
-		"axisOptions": {"xIsSeries": 1},
-		
-	}
-	return chart
-
-def get_report_data(filters):
+def get_data(filters):
 	sql="""
 			select 
 				2 as indent,
 				name,
+				room_number as rooms,
 				room_number as row_header, 
 				room_type,
 				room_type_id,
@@ -83,11 +61,15 @@ def get_report_data(filters):
 			order by 
 				sort_order, room_number
 		""".format(get_filters(filters))
+	data =   frappe.db.sql(sql,filters,as_dict=1)
+	return data
 
+def get_report_data(filters,data):
+	
 	reservation_status = get_reservation_status()
 	months = get_month(filters)
 	
-	data =   frappe.db.sql(sql,filters,as_dict=1)
+	
 	report_data = []
 	occupy_data = get_occupy_data(filters)
  
@@ -183,12 +165,11 @@ def get_report_data(filters):
 	if calculate_room_occupancy_include_room_block ==0:
 		total_rooms = total_rooms - len( [d for d in  occupy_data if d["type"]=="Block"])
 	report_data.append({
-		"indent":0,
+		"indent":3,
 		"row_header":"Grand Total",
 		"occupancy":round(totol_room_sold / total_rooms * 100,2),
 		"is_grand_total":1
 	})
-	 
 	return report_data
 
 
@@ -208,4 +189,140 @@ def get_status(reservation_status, name):
 		return data[0]
 	else:
 		return None
+	
+def get_chart(filters,data):
+	# frappe.throw(str([obj["room_type"] for obj in data if "room_type" in obj]))
+	currency_precision = frappe.db.get_single_value("System Settings","currency_precision")
+	if filters.chart_type=="None" or not filters.chart_option:
+		return None
+
+	dataset = []
+	colors = []
+	dataset_values = []
+
+	group_column = get_field(filters)
+	if group_column["label"] == "Occupancy by Month":
+		group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['indent'] == 0]))
+	# frappe.throw(str(group_column))
+		for g in group_data: 
+
+			amount = ([d['occupancy'] for d in data if d[group_column["data_field"]] == g])
+				
+			if group_column["fieldtype"]  =="Currency":
+				amount = round(amount,int(currency_precision))
+
+
+			dataset_values.append(
+				amount
+			)
+
+
+
+		dataset.append({'name':group_column["label"],'values':dataset_values})
+		colors.append(group_column["chart_color"])
+
+	
+		chart = {
+			'data':{
+				'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
+				'datasets':dataset
+			},
+			"type": filters.chart_type,
+			# "lineOptions": {
+			# 	"regionFill": 1,
+			# },
+			'valuesOverPoints':1,
+			"axisOptions": {"xIsSeries": 1},
+			
+		}
+		return chart
+	
+	elif group_column["label"] == "Room Type":
+		group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['indent'] == 1]))
+	# frappe.throw(str(group_column))
+		for g in group_data: 
+
+			amount = sum([d['occupancy'] for d in data if d[group_column["data_field"]] == g])
+				
+			if group_column["fieldtype"]  =="Currency":
+				amount = round(amount,int(currency_precision))
+
+
+			dataset_values.append(
+				amount
+			)
+
+
+
+		dataset.append({'name':group_column["label"],'values':dataset_values})
+		colors.append(group_column["chart_color"])
+
+	
+		chart = {
+			'data':{
+				'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
+				'datasets':dataset
+			},
+			"type": filters.chart_type,
+			# "lineOptions": {
+			# 	"regionFill": 1,
+			# },
+			'valuesOverPoints':1,
+			"axisOptions": {"xIsSeries": 1},
+			
+		}
+		return chart
+	
+	elif group_column["label"] == "Room":
+		group_data = sorted(set([d[group_column["data_field"]] for d  in data if d['indent'] == 2]))
+	# frappe.throw(str(group_column))
+		for g in group_data: 
+
+			amount = sum([d['occupancy'] for d in data if d[group_column["data_field"]] == g])
+				
+			if group_column["fieldtype"]  =="Currency":
+				amount = round(amount,int(currency_precision))
+
+
+			dataset_values.append(
+				amount
+			)
+
+
+
+		dataset.append({'name':group_column["label"],'values':dataset_values})
+		colors.append(group_column["chart_color"])
+
+	
+		chart = {
+			'data':{
+				'labels': [frappe.format(d,{"fieldtype":group_column["fieldtype"]}) for d in  group_data] ,
+				'datasets':dataset
+			},
+			"type": filters.chart_type,
+			# "lineOptions": {
+			# 	"regionFill": 1,
+			# },
+			'valuesOverPoints':1,
+			"axisOptions": {"xIsSeries": 1},
+			
+		}
+		return chart
+	
+def get_field(filters):
+
+	return  [d for d in get_report_field() if d["label"] == filters.chart_option][0]
+
+def get_report_field():
+	return [
+		{"data_field":"row_header", "label":"Occupancy by Month","fieldtype":"Data","chart_color":"#dc9819"},
+		{"data_field":"row_header", "label":"Room Type" ,"fieldtype":"Data","chart_color":"#1987dc" },
+		{"data_field":"row_header", "label":"Room" ,"fieldtype":"Data" ,"chart_color":"#fd4e8a"}
+	]
+# def get_chart_series():
+# 	return [
+# 		{"data_field":"occupancy","label":"Occpancy","short_label":"Occpancy", "fieldtype":"Float", "align":"center","chart_color":"#dc9819"},
+# 		{"data_field":"occupancy","label":"Room Type", "short_label":"Room Type", "fieldtype":"Float", "align":"right","chart_color":"#1987dc"},
+# 		{"data_field":"occupancy","label":"Room", "short_label":"Room", "fieldtype":"Float", "align":"right","chart_color":"#fd4e8a"},
+# 	]
 	
