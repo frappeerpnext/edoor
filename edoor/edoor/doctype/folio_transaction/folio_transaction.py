@@ -15,13 +15,14 @@ class FolioTransaction(Document):
 		 
 		if not self.account_code:
 			frappe.throw("Please select an account code")
-
-		if not self.is_new():
-				if self.is_auto_post ==1:
-					self.is_night_audit_posting = 1
-					if not hasattr(self,"ignore_validate_auto_post"):
-						frappe.throw("You cannot edit auto post transaction")
-		
+			
+		if frappe.session.user !="Administrator":
+			if not self.is_new():
+					if self.is_auto_post ==1:
+						self.is_night_audit_posting = 1
+						if not hasattr(self,"ignore_validate_auto_post"):
+							frappe.throw("You cannot edit auto post transaction")
+			
  
 		if self.required_select_product and not self.product:
 			frappe.throw("Please select product code.")
