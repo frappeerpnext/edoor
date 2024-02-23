@@ -851,13 +851,13 @@ def get_daily_property_summary():
 
 @frappe.whitelist()
 def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None):
-    
-    data =  []
+    sql="select room_type_id,room_type,room_type_alias, count(name) as total_room from `tabRoom` where disabled = 0 group by room_type_id order by room_type_id,room_type,room_type_alias"
+
+
+    data =  frappe.db.sql(sql,as_dict=1)
     sql="""
         select 
             room_type_id,
-            room_type,
-            room_type_alias,
             sum(type='Reservation' and is_active =1 ) as total_room_sold,
             sum(if(type='Reservation' and  is_active =1 and  is_active_reservation = 1,adult,0) ) as adult,
             sum(if(type='Reservation' and is_active =1 and  is_active_reservation = 1 ,child,0) ) as child,
@@ -883,12 +883,10 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
             is_active=1 and 
             room_type_id=if('{2}'='',room_type_id,'{2}')
         group by
-            room_type,
-            room_type_id,
-            room_type_alias
+            room_type_id
     """.format(date,property, room_type_id or '') 
 
-    data = frappe.db.sql(sql, as_dict=1)
+    occupy_data = frappe.db.sql(sql, as_dict=1)
     
     #get room rate 
     sql="""
@@ -912,7 +910,23 @@ def get_daily_summary_by_room_type(property = None,date = None,room_type_id=None
     calculate_room_occupancy_include_room_block = int(frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block"))
 
     for d in data:
-        d["total_room"] = frappe.db.count('Room', {'room_type_id': d["room_type_id"]})
+        d["total_room_sold"] = sum([r["total_room_sold"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["adult"] = sum([r["adult"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["child"] = sum([r["child"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["git"] = sum([r["git"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["fit"] = sum([r["fit"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["pick_up"] = sum([r["pick_up"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["drop_off"] = sum([r["drop_off"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["arrival"] = sum([r["arrival"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["checked_in"] = sum([r["checked_in"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["stay_over"] = sum([r["stay_over"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["departure"] = sum([r["departure"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["checked_out"] = sum([r["checked_out"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["no_show"] = sum([r["no_show"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["void"] = sum([r["void"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["cancelled"] = sum([r["cancelled"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+        d["block"] = sum([r["block"] for r in occupy_data if r["room_type_id"] == d["room_type_id"]]) or 0
+
         d["total_rate"] = sum([r["total_rate"] for r in room_rate_data if r["room_type_id"] == d["room_type_id"]]) or 0
         d["adr"] = d["total_rate"] /  (d["total_room_sold"] if d["total_room_sold"] > 0 else 1) 
 
