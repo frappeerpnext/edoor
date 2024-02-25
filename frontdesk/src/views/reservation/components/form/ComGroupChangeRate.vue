@@ -37,7 +37,7 @@
         <ComReservationStayPanel title="Rate type" class="mt-3">
             <template #content>
                 <div class="grid items-center">
-                    <div class="col-5 pt-0">
+                    <div class="col-12 md:col-5 pt-0">
                         <label>Rate type</label>
                         <ComSelect v-model="data.rate_type" class="w-full" placeholder="Please Select Rate Type"
                             @onSelected="onRateTypeChange" doctype="Rate Type" />
@@ -167,26 +167,26 @@
                         <div class="col-12 -mb-2 ms-2">
                         <span class="text-lg font-medium">{{ t.name }}</span>
                         </div>
-                        <div class="col-3">
+                        <div class="col-12 md:col-3">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax" v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax" >Rate Include Tax</label>
                             </div>
                         </div>
                         
-                        <div class="col-3" v-if="t.tax_1_rate>0">
+                        <div class="col-12 md:col-3" v-if="t.tax_1_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax1" v-model="t.use_tax_1_rate" :binary="true" :trueValue="t.tax_1_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax1" >{{ t.tax_1_name }} ({{ t.tax_1_rate }}%)</label>
                         </div>
                     </div>
                         
-                        <div class="col-3" v-if="t.tax_2_rate>0">
+                        <div class="col-12 md:col-3" v-if="t.tax_2_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax2" v-model="t.use_tax_2_rate" :binary="true" :trueValue="t.tax_2_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax2" >{{ t.tax_2_name }} ({{ t.tax_2_rate }}%)</label></div>
                         </div>
-                        <div class="col-3" v-if="t.tax_3_rate>0">
+                        <div class="col-12 md:col-3" v-if="t.tax_3_rate>0">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax3" v-model="t.use_tax_3_rate" :binary="true" :trueValue="t.tax_3_rate" :falseValue = "0"  />
                             <label class="cursor-pointer" for="rateIncludeTax_change_tax3" >{{ t.tax_3_name }} ({{ t.tax_3_rate }}%)</label></div>
@@ -259,6 +259,13 @@ function clearRateTypeTax() {
 
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     stays.value = dialogRef.value.data.stays
     reservation.value = dialogRef.value.data.reservation
 

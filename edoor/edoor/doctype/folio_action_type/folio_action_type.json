@@ -1,0 +1,82 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-02-24 14:05:24.524492",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "action_type",
+  "default_filter",
+  "show_in_guest_folio",
+  "show_in_city_ledger",
+  "show_in_desk_folio",
+  "show_in_deposit_ledger",
+  "show_in_payable_ledger"
+ ],
+ "fields": [
+  {
+   "fieldname": "action_type",
+   "fieldtype": "Data",
+   "label": "Action Type"
+  },
+  {
+   "fieldname": "default_filter",
+   "fieldtype": "JSON",
+   "label": "Default Filter"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_guest_folio",
+   "fieldtype": "Check",
+   "label": "Show in Guest Folio"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_city_ledger",
+   "fieldtype": "Check",
+   "label": "Show In City Ledger"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_desk_folio",
+   "fieldtype": "Check",
+   "label": "Show In Desk Folio"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_deposit_ledger",
+   "fieldtype": "Check",
+   "label": "Show in Deposit Ledger"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_payable_ledger",
+   "fieldtype": "Check",
+   "label": "Show in Payable Ledger"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-02-24 14:07:46.242003",
+ "modified_by": "Administrator",
+ "module": "eDoor",
+ "name": "Folio Action Type",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -2,7 +2,7 @@
     <ComDialogContent hideButtonOK :hideButtonClose="true" @onClose="onClose" @onMaximize="onMaximize" :isDialog="!isPage"
         :loading="rs.loading">
         <div :class="[isPage, 'bg-white']">
-            <div class="grid">
+            <div class="grid stickyReservationStatus" style="height:40px;">
                 <div :class="isPage ? 'col py-3' : 'col pt-0'">
                     <div class="flex justify-between">
                         <div class="flex align-items-center">

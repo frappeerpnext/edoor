@@ -78,6 +78,7 @@ frappe.query_reports["Monthly Availability Chart"] = {
 			hide_in_filter: 1,
 			"on_change": function (query_report) { }
 		},
+
 	]
 	,
 	"formatter": function (value, row, column, data, default_formatter) {

@@ -1,5 +1,5 @@
 <template>
-    <div class="inline-block lg:flex flex-wrap gap-3">
+    <div class="grid gap-1 md:gap-3">
         <div class="mb-2 lg:mb-0">
             <div :style="{ background: data_status[6]?.color }"
                 class="text-white grow p-1 border-round-lg border-none cursor-pointer">

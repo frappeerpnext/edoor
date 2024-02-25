@@ -13,7 +13,8 @@
             <div class="h-6rem mb-4">
                 <Textarea class="w-full my-2 h-full" id="text--note" v-model="create.content" />
             </div>
-            <div class="flex gap-3 justify-end items-center mt-1"> 
+            <div class="flex gap-2 justify-end items-center mt-1"> 
+             <div class="flex gap-3 -mt-2">   
             <div class="flex gap-5 align-items-center">
                 <div>
                     <RadioButton v-model="create.custom_is_note"  inputId="comment" name="noteType" :value="0" />
@@ -33,7 +34,8 @@
                 </template>
             </Button>
         </div>
-        <ComHeader fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
+    </div>
+        <ComHeader wrClass="py-1" fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
     </div>
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">

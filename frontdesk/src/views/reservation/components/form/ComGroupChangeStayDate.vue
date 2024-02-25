@@ -1,7 +1,7 @@
 <template>
     <ComDialogContent :hideButtonClose="true"  @onOK="onSave" :loading="loading">
         <div class="grid bg-card-info border-round-xl p-3 add-room-reserv h-full my-2">
-        <div class="col">
+        <div class="col-12 md:col">
             <label>Arrival Date<span class="text-red-500">*</span></label><br />
             <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
             v-model="data.arrival_date"
@@ -21,7 +21,7 @@
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
         </div>    
    <div class="col-12">
-        <div class="flex flex-wrap gap-3 justify-end mt-3 ">
+        <div class="flex flex-column md:flex-wrap gap-3 justify-end mt-3 ">
             <div class="flex align-items-center ">
                 <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"  v-model="data.generate_new_stay_rate_by"/>
                 <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay Rate</label>
@@ -102,6 +102,13 @@ const onDateSelect = (date) => {
     data.value.room_night = moment(data.value.departure_date).diff(moment(data.value.arrival_date), 'days')
 }
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     stays.value = dialogRef.value.data
     data.value.arrival_date = Enumerable.from(stays.value).select(x => new Date(x.arrival_date)).min();
     data.value.departure_date = Enumerable.from(stays.value).select(x => new Date(x.departure_date)).max();

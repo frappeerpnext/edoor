@@ -111,6 +111,32 @@
                 v-model="filter.account_name"   placeholder="Account Name" doctype="Account Code"
                 :filters="{ parent_account_code: ['=','10200'] }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
         </div>
+        <div class="col-12 lg:col"  v-if="hasFilter('account')">
+            <label>Account Code</label><br>
+            
+            <ComAutoComplete        class="auto__Com_Cus w-full" 
+            optionLabel="account_name" optionValue="account_name"
+            extraFields="account_name"
+                v-model="filter.account"   placeholder="Account Code" doctype="Account Code"
+                :filters="{ account_category:['in',['Other Charge','Tip','Other Service Charge','Service Charge','Other Room Charge','Room Charge Adjustment','F&B Revenue']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+        </div>
+        <div class="col-12 lg:col"  v-if="hasFilter('pos_transfer')">
+            <label>Account Code</label><br>
+            
+            <ComAutoComplete        class="auto__Com_Cus w-full" 
+            optionLabel="account_name" optionValue="account_name"
+            extraFields="account_name"
+                v-model="filter.pos_transfer"   placeholder="Account Code" doctype="Account Code"
+                :filters="{ account_category:['in',['POS Bill to Room','POS Bill to Desk Folio','POS Bill to City Ledger']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+        </div>
+        <div class="col-12 lg:col"  v-if="hasFilter('sale')">
+            <label>Account Code</label><br>
+            
+            <ComAutoComplete        class="auto__Com_Cus w-full" 
+                v-model="filter.sale"   placeholder="Sale Number" doctype="Sale"
+                :filters="{ business_branch:property.name}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+        </div>
+
         <div class="col-12 lg:col"  v-if="hasFilter('arrival_modes')">
             <label>Arrival Mode</label><br>
             

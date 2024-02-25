@@ -1173,6 +1173,16 @@ p.text-center.small.page-number.visible-pdf {
     background: #fff;
     left: 0;
 }
+.reservation-header-fixed{
+    position: fixed;
+    z-index: 999999;
+    height: 44px;
+    left: 0;
+    padding-top: 8px !important;
+    margin-top: -7px;
+    background: white;
+    width: 100%;
+}
 .di-page {
     margin-bottom: 54px !important;
 }
@@ -1561,7 +1571,7 @@ align-items: center;
         padding-bottom: 30px !important;
     }
     .max-h-screen-newres{
-        max-height: 70vh !important;
+        max-height: 100vh !important;
     }
     
 }

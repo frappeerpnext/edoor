@@ -240,7 +240,7 @@ def get_chart(filters,data):
 
 def get_field(filters):
  
-	return  [d for d in get_report_field() if d["label"] == filters.view_chart_by][0]
+	return  [d for d in get_report_field() if d["label"] == filters.view_chart_by][0] 
 
 def get_report_field():
 	return [

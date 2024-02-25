@@ -319,10 +319,5 @@ def get_report_field():
 		{"data_field":"row_header", "label":"Room Type" ,"fieldtype":"Data","chart_color":"#1987dc" },
 		{"data_field":"row_header", "label":"Room" ,"fieldtype":"Data" ,"chart_color":"#fd4e8a"}
 	]
-# def get_chart_series():
-# 	return [
-# 		{"data_field":"occupancy","label":"Occpancy","short_label":"Occpancy", "fieldtype":"Float", "align":"center","chart_color":"#dc9819"},
-# 		{"data_field":"occupancy","label":"Room Type", "short_label":"Room Type", "fieldtype":"Float", "align":"right","chart_color":"#1987dc"},
-# 		{"data_field":"occupancy","label":"Room", "short_label":"Room", "fieldtype":"Float", "align":"right","chart_color":"#fd4e8a"},
-# 	]
+
 	

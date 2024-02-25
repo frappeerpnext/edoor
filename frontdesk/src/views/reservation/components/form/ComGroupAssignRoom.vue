@@ -3,7 +3,8 @@
     <ComReservationStayPanel title="Group Assign Room">
         <template #content> 
     <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
-    <table class="w-full " v-else>
+    <div v-else class="w-full overflow-auto">
+    <table class="w-full" >
         <tr class="font-medium">
             <td>Stay Date</td>
             <td>Guest</td>
@@ -80,6 +81,7 @@
         </template>
       
     </table>
+</div>
 </template>
 </ComReservationStayPanel>  
 
@@ -212,7 +214,13 @@ onMounted(() => {
         }).catch((err) => {
             loading.value = false
         })
-
+        if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
 })
 
 

@@ -91,7 +91,7 @@
                             <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_room_number" />
                         </div>
                         <div>
-                            <label for="show_room_number" >Show/Hide Room Number</label>
+                            <label class="white-space-nowrap" for="show_room_number" >Show/Hide Room Number</label>
                         </div>
                     </div>
                     
@@ -100,7 +100,7 @@
                         <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_account_code" />
                         </div>
                         <div>
-                        <label for="show_account_code" >Show/Hide Account Code</label>
+                        <label for="show_account_code" class="white-space-nowrap" >Show/Hide Account Code</label>
                         </div>
                     </div>
 
@@ -109,7 +109,7 @@
                             <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
                         </div>
                         <div>
-                            <label for="show_summary" >Show/Hide Summary</label>
+                            <label for="show_summary" class="white-space-nowrap" >Show/Hide Summary</label>
                         </div>
                     </div>
                     

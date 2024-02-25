@@ -3,8 +3,8 @@
     <ComDialogContent :loading="rs.loading" hideButtonOK :hideButtonClose="true" @onClose="onClose" :isDialog="!isPage">
         <div :class="(rs.loading ? 'opacity-10 bg-black' : '')">
             <div :class="[isPage, 'bg-white']">
-                <div class="overflow-auto w-full">
-                    <div class="flex mb-3 justify-between stickyReservationStatus overflow-scroll lg:overflow-hidden w-full lg:w-full">
+                <div class="overflow-auto w-full stickyReservationStatus">
+                    <div class="flex justify-between overflow-scroll lg:overflow-hidden w-full lg:w-full">
                         <ComReservationStayHeaderStatus />
                         <div class="flex gap-2">
                             <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
@@ -48,7 +48,7 @@
                 <Message v-if="rs.reservationStay.reservation_status=='Checked Out' && rs.reservationStay.departure_date != rs.reservationStay.checked_out_system_date" severity="info">
                     This guest is early checked out. Check out date is {{  moment(rs.reservationStay.checked_out_system_date).format("DD-MM-YYYY") }}
                 </Message>
-                <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom">
+                <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3">
                     <TabPanel header="General Information">
                         <div class="grid mt-2 ml-0 ms-0">
                             <div class="col-12 lg:col-8 pl-0">

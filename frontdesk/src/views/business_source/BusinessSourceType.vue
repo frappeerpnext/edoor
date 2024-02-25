@@ -20,7 +20,7 @@
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="gv.search(data, filter.keyword).length > 0">
                 <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))  -->
                 <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
-                    <Column field="business_source_type" header="Business Source Type"></Column>
+                    <Column headerClass="white-space-nowrap" field="business_source_type" header="Business Source Type"></Column>
                     <Column header="Owner">
                         <template #body="slotProps">
                             <div v-if="slotProps?.data && slotProps?.data?.owner">

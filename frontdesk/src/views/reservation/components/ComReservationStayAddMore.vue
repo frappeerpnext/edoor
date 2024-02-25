@@ -2,7 +2,7 @@
     <ComDialogContent @onOK="onSave" :loading="isSaving" hideButtonClose>
         <div class="bg-card-info border-round-xl p-3 add-room-reserv h-full">
         <div class="grid">
-            <div class="col">
+            <div class="col-12 md:col">
               <label>Arrival Date <span class="text-red-500">*</span></label>
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.arrival_date"
                 :min-date="moment(edoor_working_day.date_working_day).toDate()" @update:modelValue="onStartDate($event)"
@@ -35,9 +35,9 @@
                         </span>
                     </div>
                     <div class="">
-                        <div class="flex gap-3 flex-wrap,">
-                            <div class="flex gap-3 relative" >
-                                <label for="tax-1-rate" class="font-medium flex align-items-center h-full">{{
+                        <div class="flex gap-3 flex-column md:flex-row">
+                            <div class="flex md:gap-3 relative align-items-center" >
+                                <label for="tax-1-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
                                     room_tax.tax_1_name }} {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
@@ -49,8 +49,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex gap-10 relative,">
-                                <label for="tax-2-rate" class="font-medium flex align-items-center h-full">{{
+                            <div class="flex md:gap-10 relative align-items-center">
+                                <label for="tax-2-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
                                     room_tax.tax_2_name }} {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
@@ -62,8 +62,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex gap-10 relative">
-                                <label for="tax-3-rate" class="font-medium flex align-items-center h-full">{{
+                            <div class="flex md:gap-10 relative align-items-center">
+                                <label for="tax-3-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
                                     room_tax.tax_3_name }} {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
@@ -82,7 +82,7 @@
         </div>
         </div>
         <div class="bg-card-info border-round-xl p-3 add-room-reserv h-full mt-3">        
-            <div class="n__re-custom">
+            <div class="n__re-custom overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr>
@@ -90,16 +90,16 @@
                                 <label>Room Type<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label class="px-2">Room Name</label>
+                                <label class="px-2 white-space-nowrap">Room Name</label>
                             </th>
                             <th>
-                                <label class="text-center ">Adults</label>
+                                <label class="text-center white-space-nowrap">Adults</label>
                             </th>
                             <th>
-                                <label class="text-center">Children</label>
+                                <label class="text-center white-space-nowrap">Children</label>
                             </th>
                             <th class="text-right px-2">
-                                <label>Rate</label>
+                                <label class="white-space-nowrap">Rate</label>
                             </th>
                             <th class="text-right px-2">
                                 <label>Total Tax</label>
@@ -165,17 +165,17 @@
                                 </div>
                             </td>
                             <td class="px-2 w-15rem">
-                                <div class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12" v-if="data.rate_include_tax == 'Yes'">
+                                <div class="p-inputtext-pt w-full float-right white-space-nowrap text-end border-1 border-white h-12" v-if="data.rate_include_tax == 'Yes'">
                                     <CurrencyFormat :value="(d.rate) * (data.room_nights ?? 0)" />
                                 </div>
-                                <div class="p-inputtext-pt text-end border-1 border-white h-12" v-else>
+                                <div class="p-inputtext-pt text-end border-1 white-space-nowrap border-white h-12" v-else>
                                     <CurrencyFormat
                                         :value="(roomRateTax(d)) + (d.rate * data.room_nights ?? 0)" />
                                 </div>
                             </td>
 
                             <td v-if="data.reservation_stays.length > 1" class="pl-2 text-end">
-                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12"
+                                <Button icon="pi pi-trash" @click="onDeleteStay(index)" class="tr-h__custom text-3xl h-12 white-space-nowrap"
                                     aria-label="Filter" />
                             </td>
                         </tr>
@@ -527,6 +527,13 @@ function get_rate_type_info(){
 }
 
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     if (rs.reservation) {
         const arrival_date = ref(moment(rs.reservation.arrival_date).toDate())
 

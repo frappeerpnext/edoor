@@ -22,19 +22,19 @@
                     </div>
                 </div>
                 <div class="col flex gap-2">
-                    <div>
+                    <div >
                         <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_room_number" />
-                        <label for="show_room_number" >Show/Hide Room Number</label>
+                        <label for="show_room_number" class="white-space-nowrap" >Show/Hide Room Number</label>
                     </div>
                     
                     <div>
                         <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_account_code" />
-                        <label for="show_account_code" >Show/Hide Account Code</label>
+                        <label for="show_account_code" class="white-space-nowrap" >Show/Hide Account Code</label>
                     </div>
 
                     <div>
                         <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="refreshReport" inputId="show_summary" />
-                        <label for="show_summary" >Show/Hide Summary</label>
+                        <label for="show_summary" class="white-space-nowrap" >Show/Hide Summary</label>
                     </div>
                 </div>
                 <div class="col flex gap-2 justify-end">

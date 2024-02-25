@@ -272,6 +272,13 @@ function onSave() {
     })
 }
 onMounted(() => {
+    if(window.isMobile){
+        let elem = document.querySelectorAll(".p-dialog");
+        if (elem){
+            elem = elem[elem.length-1]
+            elem?.classList.add("p-dialog-maximized"); // adds the maximized class
+        }
+    }
     data.value = dialogRef.value.data.event;
     new_data.value = dialogRef.value.data.new_event;
     show_keep_rate.value = dialogRef.value.data.show_keep_rate;

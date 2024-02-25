@@ -1,6 +1,6 @@
 <template>
     <div :class="wrClass ? wrClass : 'py-3'" class="grid items-center justify-content-between">
-        <div :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col-3 " >
+        <div v-if="$slots.start" :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col-3 " >
             <slot name="start"></slot>
         </div>
         <div v-if="$slots.center" :class="colClass ? colClass : 'col-12'" class=" md:col-6 lg:col flex justify-content-center">
