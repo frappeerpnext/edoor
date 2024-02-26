@@ -23,6 +23,7 @@
   "default_check_out_time",
   "calculate_room_occupancy_include_room_block",
   "show_additional_guest_name_in_room_chart_calendar",
+  "room_chart_calendear_slot_duration",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -388,12 +389,19 @@
    "fieldtype": "Link",
    "label": "Default Folio Print Format",
    "options": "Print Format"
+  },
+  {
+   "default": "12",
+   "fieldname": "room_chart_calendear_slot_duration",
+   "fieldtype": "Select",
+   "label": "Room Chart Calendear Slot Duration",
+   "options": "12\n24"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-17 14:26:43.381863",
+ "modified": "2024-02-26 09:12:51.084676",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

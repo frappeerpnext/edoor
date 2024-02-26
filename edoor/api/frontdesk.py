@@ -1341,6 +1341,7 @@ def get_edoor_setting(property = None):
         "show_additional_guest_name_in_room_chart_calendar":edoor_setting_doc.show_additional_guest_name_in_room_chart_calendar,
         "help_url":edoor_setting_doc.help_url,
         "default_folio_print_format":edoor_setting_doc.default_folio_print_format,
+        "room_chart_calendear_slot_duration":edoor_setting_doc.room_chart_calendear_slot_duration,
         
         "currency":{
             "name":currency.name,
@@ -1668,6 +1669,8 @@ def get_room_inventory_resource(property = ''):
 
 @frappe.whitelist()
 def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,view_type=None,business_source="",room_type="",room_type_group=None,room_number=None,floor=None,building=None):
+    slot_duration = frappe.db.get_single_value("eDoor Setting","room_chart_calendear_slot_duration")
+    
     events = []   
     sql = """
         select 
@@ -1678,8 +1681,8 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             room_type,
             room_type_alias,
             room_number,
-            concat(start_date,'T','12:00:00') as start ,
-            concat(end_date,'T','12:00:00') as end,
+            concat(start_date,'T','{0}') as start ,
+            concat(end_date,'T','{1}') as end,
             guest_name as title,
             additional_guest_name,
             if(reservation_status in('Reserved','In-house'),if(ifnull(reservation_color,'')='',status_color,reservation_color),status_color) as color,
@@ -1736,7 +1739,10 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
 
             ) and 
             property = %(property)s 
-    """
+    """.format(
+        "12:00:00" if slot_duration=="12" else "00:00:00",
+        "12:00:00" if slot_duration=="12" else "23:59:00"
+    )
     if room_number:
         sql = sql + " and room_number like   concat('%%' ,  %(room_number)s ,'%%') "
     if keyword:

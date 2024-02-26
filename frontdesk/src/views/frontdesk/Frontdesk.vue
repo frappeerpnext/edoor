@@ -248,7 +248,7 @@ const calendarOptions = reactive({
     resourceAreaWidth: window.isMobile? "100px":"250px",
     height: 'auto',
     slotDuration: {
-        "hours": 12
+        "hours":( parseInt(setting.room_chart_calendear_slot_duration) || 24)
     },
     slotLabelInterval: {
         "hours": 24
