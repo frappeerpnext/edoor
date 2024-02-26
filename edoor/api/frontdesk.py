@@ -1741,7 +1741,7 @@ def get_room_chart_calendar_event(property, start=None,end=None, keyword=None,vi
             property = %(property)s 
     """.format(
         "12:00:00" if slot_duration=="12" else "00:00:00",
-        "12:00:00" if slot_duration=="12" else "23:59:00"
+        "12:00:00" if slot_duration=="12" else "00:00:00"
     )
     if room_number:
         sql = sql + " and room_number like   concat('%%' ,  %(room_number)s ,'%%') "
