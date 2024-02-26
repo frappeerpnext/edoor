@@ -130,7 +130,7 @@
                 :filters="{ account_category:['in',['POS Bill to Room','POS Bill to Desk Folio','POS Bill to City Ledger']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('sale')">
-            <label>Account Code</label><br>
+            <label>Sale Number</label><br>
             
             <ComAutoComplete        class="auto__Com_Cus w-full" 
                 v-model="filter.sale"   placeholder="Sale Number" doctype="Sale"
