@@ -30,7 +30,7 @@
     <div class="wrp-action-btn-in-night-audit pb-2">
         <hr class="mb-2" />
         <div class="flex items-center flex-row-reverse flex-wrap">
-            <div class="">
+            <div class="md:order-0 order-1">
                 <Button class="border-none mr-2" type="button" label="Back" icon="pi pi-arrow-left" :loading="loading"
                     :disabled="currentStep == 1" v-if="currentStep < 9" @click="onBack" />
                 <Button type="button" label="Next" icon="pi pi-arrow-right" class="border-none" :loading="loading"
@@ -38,7 +38,7 @@
                 <Button class="border-none" :loading="loading" v-if="currentStep == 8" @click="onFinish">Finish</Button>
                 <Button class="border-none" v-if="currentStep == 9" @click="onClose">Close</Button>
             </div>
-            <div class="">
+            <div class="md:order-1 order-0 flex items-center gap-2">
                 <template v-if="currentStep == 5">
                     <Checkbox inputId="verify-night-audit-data01" v-model="isConfirmRoomRate" :binary="true" />
                     <label for="verify-night-audit-data01" class="mr-3 cursor-pointer">I am verifying that all room rates

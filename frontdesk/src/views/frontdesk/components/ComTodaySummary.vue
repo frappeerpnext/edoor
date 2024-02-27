@@ -16,6 +16,7 @@
         </ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
+        <ComTodaySummarySep dialogKey="in_house" title="In-house">{{ data?.in_house }}</ComTodaySummarySep>
     <tippy :content="`Today you have ${data?.unassign_room} unassign room reservation & total all unassign room is ${data?.total_unassign_room}`">
         <ComTodaySummarySep dialogKey="unassign_room"  title="Unassign Room (Today/All)">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
     </tippy>

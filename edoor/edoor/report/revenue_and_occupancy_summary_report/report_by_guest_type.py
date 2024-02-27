@@ -32,6 +32,7 @@ def get_report_data(filters,report_config):
 
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
     data = get_occupy_data(filters,report_config)
+    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
 
     folio_transaction_data = get_folio_transaction_data(filters,report_config)
  
@@ -135,8 +136,11 @@ def get_report_data(filters,report_config):
                             #f.fildname is from report config
                             if f.fieldname=='adr':
                                 occupy = row["occupy"] or 0
-                                occupy = occupy -  row["complimentary"] or 0 
-                                occupy = occupy -  row["house_use"] or 0 
+                                if calculate_adr_include_all_room_occupied==0:
+                                    occupy = occupy -  row["complimentary"] or 0 
+                                    occupy = occupy -  row["house_use"] or 0 
+                                else:
+                                    occupy = occupy
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
@@ -190,9 +194,11 @@ def get_report_data(filters,report_config):
 
 
                 #adr
-
-                total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
-      
+                if calculate_adr_include_all_room_occupied == 0:
+                    total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+                else:
+                    total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0))
+        
        
 
                 
@@ -239,8 +245,10 @@ def get_report_data(filters,report_config):
         total_record["occupancy"] = total_record["occupancy"] * 100
 
         #adr
-        
-        total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+        if calculate_adr_include_all_room_occupied == 0:
+            total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+        else:
+            total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0))
         report_data.append(total_record)
 
         #get report summaryt

@@ -1580,6 +1580,14 @@ align-items: center;
         overflow: auto;
         width: auto;
     }
+    .wrape-step-night-audit {
+        overflow-y: hidden;
+        overflow-x: auto;
+        height: 70px;
+    }
+    .wrape-step-night-audit .step-label{
+        min-width: 110px !important;
+    }
     .grid-cs-note{
         -moz-column-count: 4 !important;
         column-count: 1 !important; 

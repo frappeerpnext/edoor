@@ -35,7 +35,7 @@ def get_report_columns(filters,report_config):
 def get_report_data(filters,report_config):
 
     calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting", "calculate_room_occupancy_include_room_block")
-    
+    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
  
     data = get_occupy_data(filters,report_config)
     
@@ -143,8 +143,11 @@ def get_report_data(filters,report_config):
                             #f.fildname is from report config
                             if f.fieldname=='adr':
                                 occupy = row["occupy"] or 0
-                                occupy = occupy -  row["complimentary"] or 0 
-                                occupy = occupy -  row["house_use"] or 0 
+                                if calculate_adr_include_all_room_occupied == 0:
+                                    occupy = occupy -  row["complimentary"] or 0 
+                                    occupy = occupy -  row["house_use"] or 0 
+                                else:
+                                    occupy = occupy
                                 if occupy<=0:
                                     occupy =1
                                 row['adr'] = (row["room_charge"] or 0) /  occupy
@@ -159,7 +162,7 @@ def get_report_data(filters,report_config):
         if parent["parent_row_group"] !="":
             if len(sub_report_data):
                 
-                total_record = get_sub_group_total_record(sub_report_data, report_config, calculate_room_occupancy_include_room_block)
+                total_record = get_sub_group_total_record(sub_report_data, report_config, calculate_room_occupancy_include_room_block,calculate_adr_include_all_room_occupied)
                 #update total to group record
                 if parent_record:
                     for f in get_report_fields(filters, report_config):
@@ -199,8 +202,10 @@ def get_report_data(filters,report_config):
         total_record["occupancy"] = total_record["occupancy"] * 100
 
         #adr
-        
-        total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+        if calculate_adr_include_all_room_occupied == 0:
+            total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+        else:
+            total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0))
         report_data.append(total_record)
 
         #get report summaryt
@@ -213,7 +218,7 @@ def get_report_data(filters,report_config):
  
     return  {"report_data":report_data, "report_summary": report_summary,"report_chart":report_chart}
 
-def get_sub_group_total_record(data,report_config,calculate_room_occupancy_include_room_block):
+def get_sub_group_total_record(data,report_config,calculate_room_occupancy_include_room_block,calculate_adr_include_all_room_occupied):
     
     total_record = {
             "is_total_row":1,
@@ -233,8 +238,10 @@ def get_sub_group_total_record(data,report_config,calculate_room_occupancy_inclu
     total_record["occupancy"] = total_record["occupancy"] * 100
 
     #adr
-
-    total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+    if calculate_adr_include_all_room_occupied == 0:
+        total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0) -(total_record["complimentary"] + total_record["house_use"] ))
+    else:
+        total_record['adr'] = (total_record["room_charge"] or 0) / (1 if  (total_record["occupy"] or 0) == 0 else (total_record["occupy"] or 0))
     return total_record
 
 

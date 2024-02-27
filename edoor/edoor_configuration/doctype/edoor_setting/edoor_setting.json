@@ -23,6 +23,7 @@
   "default_check_out_time",
   "calculate_room_occupancy_include_room_block",
   "show_additional_guest_name_in_room_chart_calendar",
+  "calculate_adr_include_all_room_occupied",
   "room_chart_calendear_slot_duration",
   "section_break_8",
   "guest_ledger_report_name",
@@ -396,12 +397,18 @@
    "fieldtype": "Select",
    "label": "Room Chart Calendear Slot Duration",
    "options": "12\n24"
+  },
+  {
+   "default": "1",
+   "fieldname": "calculate_adr_include_all_room_occupied",
+   "fieldtype": "Check",
+   "label": "Calculate ADR Include All Room Occupied"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-26 09:12:51.084676",
+ "modified": "2024-02-27 08:48:20.168095",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

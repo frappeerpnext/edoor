@@ -165,6 +165,16 @@ const filters = [
             ['keyword','room_type','reservation_status','business_source']
         )
     }
+    else if(props.dialogKey  == "in_house"){
+        onViewData(
+            'Business%20Branch',
+            // "eDoor%20Dashboard%20Stay%20Over%20Guest",
+            gv.getCustomPrintFormat("eDoor Dashboard In-house Guest"),
+            'In-house',
+            [{key:"date",value:working_day.date_working_day},{key:"is_housekeeping", value:props.isHousekeeping}],
+            ['keyword','room_type','business_source']
+        )
+    }
     else if(props.dialogKey  == "no_show"){
     
         onViewData(

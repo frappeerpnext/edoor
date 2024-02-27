@@ -304,6 +304,14 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
                             reservation_date = '{0}' and
                             property = '{1}'
                     """.format(date, property)    
+    in_house_guest = """
+                        select 
+                            count(reservation)   as total
+                        from `tabReservation Stay`
+                        where 
+                            property = '{0}' and
+                            reservation_status = 'In-house'
+                    """.format(property)    
     
     
     #count upcommintg note
@@ -377,6 +385,7 @@ def get_dashboard_data(property = None,date = None,room_type_id=None,include_res
         "desk_folio":desk_folio[0]["total"] or 0,
         "total_unassign_room":total_unassign_room,
         "total_room_block": total_room_block,
+        "in_house": frappe.db.sql(in_house_guest,as_dict=1)[0]["total"] or 0,
         "occupancy":occupancy,
         "fit_stay_arrival":stay[0]["total_fit_stay_arrival"] or 0,
         "total_git_stay":stay[0]["total_git_stay"] or 0,
