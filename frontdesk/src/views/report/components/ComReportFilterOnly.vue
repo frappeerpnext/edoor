@@ -118,7 +118,7 @@
             optionLabel="account_name" optionValue="account_name"
             extraFields="account_name"
                 v-model="filter.account"   placeholder="Account Code" doctype="Account Code"
-                :filters="{ account_category:['in',['Other Charge','Tip','Other Service Charge','Service Charge','Other Room Charge','Room Charge Adjustment','F&B Revenue']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+                :filters="{ account_category:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('pos_transfer')">
             <label>Account Code</label><br>
@@ -128,6 +128,18 @@
             extraFields="account_name"
                 v-model="filter.pos_transfer"   placeholder="Account Code" doctype="Account Code"
                 :filters="{ account_category:['in',['POS Bill to Room','POS Bill to Desk Folio','POS Bill to City Ledger']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+        </div>
+        <div class="col-12 lg:col"  v-if="hasFilter('parent_account')">
+            <label>Parent Account</label><br>
+            <ComAutoComplete v-model="filter.parent_account" placeholder="Parent Account Code" doctype="Account Code"
+            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
+            :filters="{ parent_account_code:['in',['10000','40000']]}"/>
+        </div>
+        <div class="col-12 lg:col"  v-if="hasFilter('account_categories')">
+            <label>Account Category</label><br>
+            <ComAutoComplete v-model="filter.account_categories" placeholder="Account Category" doctype="Account Category"
+            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
+            :filters="{ name:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount','Other Charge']]}"/>
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('sale')">
             <label>Sale Number</label><br>
@@ -156,6 +168,11 @@
             <ComAutoComplete v-model="filter.business_source" placeholder="Business Source" doctype="Business Source"
             class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
         </div>
+        <div class="col-12 lg:col" v-if="hasFilter('ledger_type')">
+            <label>Ledger Type</label><br>
+            <ComSelect class="w-full"   v-model="filter.ledger_type" placeholder="Ledger Type" :showClear="true"
+            :options='["Reservation Folio","Desk Folio","City Ledger","Deposit Ledger","Payable Ledger","Cashier Shift"]' :isMultipleSelect="true"/>
+        </div>
         <div class="col-12 lg:col"  v-if="hasFilter('working_day')">
             <label>Working Day</label><br>
             <ComAutoComplete v-model="filter.working_day" placeholder="working day" doctype="Working Day"
@@ -174,6 +191,7 @@
                 </div>
             </div>   
         </div>
+        
         <div class="col-12 lg:col mt-4"  v-if="hasFilter('show_account_code')">
             <div class="h-full" >
                 <div class="py-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
@@ -246,6 +264,7 @@
                 </div>
             </div>   
         </div>
+        
         <div class="col-12 lg:col" v-if="hasFilter('guest')">
             <label>Guest</label><br/>
             <ComSelect        class="auto__Com_Cus w-full" 
@@ -268,16 +287,14 @@
             <ComAutoComplete v-model="filter.account_code" placeholder="Account Code" doctype="Account Code"
             class="auto__Com_Cus w-full" />
         </div>
+        
         <div class="col-12 lg:col"  v-if="hasFilter('account_category')">
             <label>Account Category</label><br>
             <ComAutoComplete v-model="filter.account_category" placeholder="Account Category" doctype="Account Category"
             class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" />
         </div>
-        <div class="col-12 lg:col" v-if="hasFilter('ledger_type')">
-            <label>Ledger Type</label><br>
-            <ComSelect class="w-full"   v-model="filter.ledger_type" placeholder="Ledger Type" :showClear="true"
-            :options='["Reservation Folio","Desk Folio","City Ledger","Deposit Ledger","Payable Ledger","Cashier Shift"]' :isMultipleSelect="true"/>
-        </div>
+        
+        
         <div class="col-12 lg:col" v-if="hasFilter('select_user')">
             <label>Select User</label><br/>
             <ComSelect        class="auto__Com_Cus w-full" 

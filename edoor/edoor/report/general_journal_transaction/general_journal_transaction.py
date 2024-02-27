@@ -27,6 +27,8 @@ def get_columns(filters):
 		{"fieldname":"debit", "label":"Debit","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"credit", "label":"Credit","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"net_total", "label":"Net Total","fieldtype":"Currency", "width":100,"align":"right"},
+		{"fieldname":"modified_by", "label":"Modified","fieldtype":"Data", "width":150,"align":"center"},
+		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Date", "width":200,"align":"center"},
 	]
 
 def get_data(filters):
@@ -38,6 +40,8 @@ def get_data(filters):
 			concat(account_code,'-',report_description ) as account, 
 			if(type='Debit',amount,0) as debit,
 			if(type='Debit',0,amount) as credit,
+			modified,
+			SUBSTRING_INDEX(modified_by,'@',1) as modified_by,
 			1 as indent
 		from `tabFolio Transaction`
 		where
