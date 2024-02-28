@@ -118,7 +118,7 @@
             optionLabel="account_name" optionValue="account_name"
             extraFields="account_name"
                 v-model="filter.account"   placeholder="Account Code" doctype="Account Code"
-                :filters="{ account_category:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
+                :filters="{ account_category:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount','Other Charge']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('pos_transfer')">
             <label>Account Code</label><br>
@@ -275,6 +275,11 @@
         <div class="col-12 lg:col" v-if="hasFilter('guest_type')">
             <label>Guest Type</label><br>
             <ComAutoComplete v-model="filter.guest_type" placeholder="Guest Type" doctype="Customer Group"
+            class="auto__Com_Cus w-full" />
+        </div>
+        <div class="col-12 lg:col" v-if="hasFilter('nationality')">
+            <label>Nationality</label><br>
+            <ComAutoComplete v-model="filter.nationality" placeholder="Nationality" doctype="Country"
             class="auto__Com_Cus w-full" />
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('city_ledger')">
