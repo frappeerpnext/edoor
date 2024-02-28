@@ -235,6 +235,7 @@ const columns = ref([
     { fieldname: 'room_rate', label: 'Room Rate', default: false },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'guest_email', label: 'Email',  default: false },
     { fieldname: 'business_source', label: 'Business Source', default: true },
     { fieldname: 'adr', label: 'ADR', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },
     { fieldname: 'total_room_rate', label: 'Total Room Rate', fieldtype: "Currency", header_class: "text-right", default: true, can_view_rate: window.can_view_rate ? 'Yes' : 'No' },

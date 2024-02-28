@@ -218,6 +218,7 @@ const columns = ref([
     { fieldname: 'room_numbers', label: 'Rooms', fieldtype: "Room", header_class:"", default: true },
     { fieldname: 'adult', label: 'Pax(A/C)', extra_field: "child", extra_field_separator: "/", header_class: "text-center", default: true },
     { fieldname: 'guest', extra_field: "guest_name", extra_field_separator: "-", label: 'Guest', fieldtype: "Link", post_message_action: "view_guest_detail", default: true },
+    { fieldname: 'email_address',  label: 'Email',  default: false },
     { fieldname: 'guest_type', label: 'Guest Type ', default: true },
     { fieldname: 'group_code', label: 'Group Code', extra_field: "group_name", extra_field_separator: "<br/>", default: true },
     { fieldname: 'business_source', label: 'Business Source', default: true },

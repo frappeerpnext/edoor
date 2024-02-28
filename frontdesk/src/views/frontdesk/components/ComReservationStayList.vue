@@ -89,7 +89,8 @@ function loadData() {
             'arrival_date',
             'departure_date',
             'room_type_alias',
-            'rooms_data'
+            'rooms_data',
+            'guest_email'
         ],
         filters: dialogRef.value.data.filters
     }).then((doc) => {
