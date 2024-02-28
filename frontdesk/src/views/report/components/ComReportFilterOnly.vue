@@ -111,36 +111,14 @@
                 v-model="filter.account_name"   placeholder="Account Name" doctype="Account Code"
                 :filters="{ parent_account_code: ['=','10200'] }" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" ></ComSelect>
         </div>
-        <div class="col-12 lg:col"  v-if="hasFilter('account')">
-            <label>Account Code</label><br>
-            
-            <ComAutoComplete        class="auto__Com_Cus w-full" 
-            optionLabel="account_name" optionValue="account_name"
-            extraFields="account_name"
-                v-model="filter.account"   placeholder="Account Code" doctype="Account Code"
-                :filters="{ account_category:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount','Other Charge']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
-        </div>
-        <div class="col-12 lg:col"  v-if="hasFilter('pos_transfer')">
-            <label>Account Code</label><br>
-            
-            <ComAutoComplete        class="auto__Com_Cus w-full" 
-            optionLabel="account_name" optionValue="account_name"
-            extraFields="account_name"
-                v-model="filter.pos_transfer"   placeholder="Account Code" doctype="Account Code"
-                :filters="{ account_category:['in',['POS Bill to Room','POS Bill to Desk Folio','POS Bill to City Ledger']]}" :isMultipleSelect="true"  maxWidth="30rem" :maxSelectLabel="10" />
-        </div>
+       
         <div class="col-12 lg:col"  v-if="hasFilter('parent_account')">
             <label>Parent Account</label><br>
             <ComAutoComplete v-model="filter.parent_account" placeholder="Parent Account Code" doctype="Account Code"
             class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
-            :filters="{ parent_account_code:['in',['10000','40000']]}"/>
+            :filters="{ name:['!=','All Account Code']}"/>
         </div>
-        <div class="col-12 lg:col"  v-if="hasFilter('account_categories')">
-            <label>Account Category</label><br>
-            <ComAutoComplete v-model="filter.account_categories" placeholder="Account Category" doctype="Account Category"
-            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
-            :filters="{ name:['in',['Room Charge Adjustment','Other Room Charge','Other Service Charge','Tip','Service Charge','Room Discount','Other Discount','Other Charge']]}"/>
-        </div>
+
         <div class="col-12 lg:col"  v-if="hasFilter('sale')">
             <label>Sale Number</label><br>
             
@@ -172,6 +150,11 @@
             <label>Ledger Type</label><br>
             <ComSelect class="w-full"   v-model="filter.ledger_type" placeholder="Ledger Type" :showClear="true"
             :options='["Reservation Folio","Desk Folio","City Ledger","Deposit Ledger","Payable Ledger","Cashier Shift"]' :isMultipleSelect="true"/>
+        </div>
+        <div class="col-12 lg:col" v-if="hasFilter('ledger_types')">
+            <label>Ledger Type</label><br>
+            <ComSelect class="w-full"   v-model="filter.ledger_types" placeholder="Ledger Type" :showClear="true"
+            :options='["Reservation Folio","Desk Folio","City Ledger","Deposit Ledger","Payable Ledger","Cashier Shift"]' :isMultipleSelect="false"/>
         </div>
         <div class="col-12 lg:col"  v-if="hasFilter('working_day')">
             <label>Working Day</label><br>
