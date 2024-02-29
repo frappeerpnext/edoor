@@ -1,22 +1,14 @@
 <template>
-    <div class="grid-container">
-      <div v-for="(item, index) in grid" :key="item.id" class="grid-item" @drop="drop($event, item)" @dragover.prevent="allowDrop">
-        <div   :style="{ backgroundColor: item.content.color }">{{ item.content.text }}</div>
-      </div>
-    </div>
+   
   
     <div class="drag-container">
-      <div v-for="(color, index) in colors" :key="index" class="drag-item" :style="{ backgroundColor: color }" draggable="true" @dragstart="dragStart($event, { text: index + 1, color: color })">
-        {{ index + 1 }}
-      </div>
+      {{ $t('Close Shift') }}
     </div>
   </template>
   
   <script setup>
   import { ref } from 'vue';
-  
   const colors = ref(['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'pink', 'brown', 'gray']);
-  
   const grid = ref([]);
   
   for (let i = 0; i < 400; i++) {

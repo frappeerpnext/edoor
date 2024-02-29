@@ -13,7 +13,7 @@
         </div>
         </template>
         <template #center>
-            <Button label="Today" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
+            <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
             <Button label="Tomorrow" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
@@ -191,7 +191,6 @@
 import { inject, ref, onUnmounted, onMounted, computed } from '@/plugin'
 import { useToast } from "primevue/usetoast";
 import { useDialog } from 'primevue/usedialog';
-
 import ComKPI from './components/ComKPI.vue';
 import ComSystemDateKPI from './components/ComSystemDateKPI.vue';
 import ComChartStatus from './components/ComChartStatus.vue';
@@ -223,6 +222,7 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
+
 const statusColor = computed(() => {
     if (setting.reservation_status) {
         return {

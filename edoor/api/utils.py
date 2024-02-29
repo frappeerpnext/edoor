@@ -881,7 +881,7 @@ def create_folio(stay):
 
 @frappe.whitelist()
 def clear_reservation():
-    pass
+    # pass
     # frappe.db.sql("delete from `tabReservation`")
     # frappe.db.sql("delete from `tabReservation Stay`")
     # frappe.db.sql("delete from `tabReservation Stay Room`")
@@ -914,18 +914,18 @@ def clear_reservation():
 
 
 
-    room_list = frappe.db.get_all("Room")
+    # room_list = frappe.db.get_all("Room")
 
-    for r in room_list:
+    # for r in room_list:
 
-        room_doc = frappe.get_doc("Room", r.name)
-        room_doc.room_status = "Vacant"
-        room_doc.housekeeping_status_code = "Clean"
+    #     room_doc = frappe.get_doc("Room", r.name)
+    #     room_doc.room_status = "Vacant"
+    #     room_doc.housekeeping_status_code = "Clean"
         
-        room_doc.save()
+    #     room_doc.save()
     
     
-    frappe.db.commit()
+    # frappe.db.commit()
 
     
     return "done"

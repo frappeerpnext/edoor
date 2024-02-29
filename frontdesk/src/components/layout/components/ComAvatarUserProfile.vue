@@ -29,6 +29,29 @@
                 <i class="font-bold pi pi-key" />
                 <span class="pl-2 pr-3">Shortcut Menu</span>
             </button>
+
+            <!-- <button @click="onChangeLanguage('kh')"
+                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                <i class="font-bold pi pi-key" />
+                <span class="pl-2 pr-3">{{ $t("Change Language") }} Khmer</span>
+            </button>
+            
+            <button @click="onChangeLanguage('en')"
+                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                <i class="font-bold pi pi-key" />
+                <span class="pl-2 pr-3">{{ $t("Change Language") }} English</span>
+            </button>
+            
+            <button @click="onChangeLanguage('th')"
+                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
+                <i class="font-bold pi pi-key" />
+                <span class="pl-2 pr-3">{{ $t("Change Language") }} Thai</span>
+            </button>
+             -->
+             
+
+
+
             <button @click="onRoute"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-book" />
@@ -45,12 +68,16 @@
 <script setup>
 import { ref, inject, useDialog } from '@/plugin'
 import ComIFrameModal from "@/components/ComIFrameModal.vue"
+import {i18n} from '@/i18n';
 const gv = inject("$gv")
 const auth = inject("$auth")
 const show = ref()
 const dialog = useDialog()
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+
+const { t: $t } = i18n.global;
+
 const props = defineProps({
     user: Object
 })
@@ -74,6 +101,11 @@ function onRefresh() {
 }
 function onOpenBackend () { 
     window.open(serverUrl + '/' + 'app')
+}
+
+function onChangeLanguage(lang){
+    localStorage.setItem("lang",lang)
+        window.location.reload();
 }
 function onShortCutMenu() {
     dialog.open(ComIFrameModal, {

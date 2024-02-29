@@ -166,6 +166,7 @@ def get_order_field():
 	return [
 		{"label":"Created On","field":"rst.creation"},
 		{"label":"Reservation","field":"rst.reservation"},
+		{"label":"Reservation Date","field":"rst.reservation_date"},
 		{"label":"Reservation Stay","field":"rst.name"},
 		{"label":"Arrival Date","field":"rst.arrival_date"},
 		{"label":"Departure Date","field":"rst.departure_date"},

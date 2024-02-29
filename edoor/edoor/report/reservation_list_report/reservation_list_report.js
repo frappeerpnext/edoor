@@ -176,7 +176,7 @@ frappe.query_reports["Reservation List Report"] = {
 			"fieldname": "order_by",
 			"label": __("Order By"),
 			"fieldtype": "Select",
-			"options": "Last Update On\nCreated On\nReservation\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
+			"options": "Last Update On\nCreated On\nReservation\nReservation Date\nReservation Stay\nArrival Date\nDeparture Date\nBusiness Source\nRoom Type\nReservation Status",
 			default:"Last Update On",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},

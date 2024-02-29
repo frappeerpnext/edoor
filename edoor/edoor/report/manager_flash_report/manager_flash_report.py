@@ -78,12 +78,23 @@ def get_report_data(filters):
 	#room block
 	report_data.append(occupy_data["room_block"])
 
+	#arrival adult
+	report_data.append(occupy_data["arrival_adult"])
+	#arrival child
+	report_data.append(occupy_data["arrival_child"])
+	#arrival pax
+	report_data.append({
+		"title": "Total Arrival PAX",
+		"current": occupy_data["arrival_adult"]["current"] + ( occupy_data["arrival_child"]["current"]),
+		"mtd": occupy_data["arrival_adult"]["mtd"] + ( occupy_data["arrival_child"]["mtd"]),
+		"ytd": occupy_data["arrival_adult"]["ytd"] +(  occupy_data["arrival_child"]["ytd"]),
+		
+	})
+
 	#inhouse adult
 	report_data.append(occupy_data["in_house_adult"])
-
 	#inhouse child
 	report_data.append(occupy_data["in_house_child"])
-
 	#in house pax
 	report_data.append({
 		"title": "Total In-house PAX",
@@ -93,12 +104,25 @@ def get_report_data(filters):
 		
 	})
 
+	#departure adult
+	report_data.append(occupy_data["departure_adult"])
+	#departure child
+	report_data.append(occupy_data["departure_child"])
+	#departure pax
+	report_data.append({
+		"title": "Total Departure PAX",
+		"current": occupy_data["departure_adult"]["current"] + ( occupy_data["departure_child"]["current"]),
+		"mtd": occupy_data["departure_adult"]["mtd"] + ( occupy_data["departure_child"]["mtd"]),
+		"ytd": occupy_data["departure_adult"]["ytd"] +(  occupy_data["departure_child"]["ytd"]),
+		
+	})
+
 	# in-hopuse walk in adult
 	report_data.append({
 		"title": "Walk-In In-house Adult",
 		"current": occupy_data["walk_in_adult"]["current"],
-		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
 		
 	})
 	
@@ -106,16 +130,16 @@ def get_report_data(filters):
 	report_data.append({
 		"title": "Walk-In In-house Child",
 		"current": occupy_data["walk_in_child"]["current"],
-		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
 		
 	})
 	# in-hopuse walk in pax
 	report_data.append({
 		"title": "Walk-In In-house Pax",
 		"current": (occupy_data["walk_in_child"]["current"] or 0) + (occupy_data["walk_in_adult"]["current"] or 0), 
-		"mtd": 11,#occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": 22#occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
+		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
 		
 	})
 
@@ -134,6 +158,10 @@ def get_data_from_occupy_record(filters):
 			sum(type='Reservation' and is_complimentary=1)  as total_complimentary ,
 			sum(type='Reservation' and is_house_use=1)  as total_house_use,
 			sum(if(type='Reservation',adult,0))  as total_in_house_adult,
+			sum(if(type='Reservation' and is_arrival=1,adult,0))  as total_arrival_adult,
+			sum(if(type='Reservation' and is_departure=1,adult,0))  as total_departure_adult,
+			sum(if(type='Reservation' and is_arrival=1,child,0))  as total_arrival_child,
+			sum(if(type='Reservation' and is_departure=1,child,0))  as total_departure_child,
 			sum(if(type='Reservation',child,0))  as total_in_house_child,
 			sum(if(type='Reservation' and is_walk_in=1,adult,0))  as total_in_house_walk_in_adult,
 			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child
@@ -148,7 +176,11 @@ def get_data_from_occupy_record(filters):
 				"complimentary":{"title":"Complimentary Rooms", "current": data[0]["total_complimentary"] or 0},
 				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use"] or 0},
 				"in_house_adult":{"title":"In-house Adult", "current": data[0]["total_in_house_adult"] or 0},	
+				"arrival_adult":{"title":"Arrival Adult", "current": data[0]["total_arrival_adult"] or 0},	
+				"departure_adult":{"title":"Departure Adult", "current": data[0]["total_departure_adult"] or 0},	
 				"in_house_child":{"title":"In-house Child", "current": data[0]["total_in_house_child"] or 0},	
+				"arrival_child":{"title":"Arrival Child", "current": data[0]["total_arrival_child"] or 0},	
+				"departure_child":{"title":"Departure Child", "current": data[0]["total_departure_child"] or 0},	
 				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
 				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
 	}
@@ -162,7 +194,11 @@ def get_data_from_occupy_record(filters):
 	datas["complimentary"]["mtd"] = data[0]["total_complimentary"] or 0 
 	datas["house_use"]["mtd"] = data[0]["total_house_use"] or 0 
 	datas["in_house_adult"]["mtd"] = data[0]["total_in_house_adult"] or 0 
+	datas["arrival_adult"]["mtd"] = data[0]["total_arrival_adult"] or 0 
+	datas["departure_adult"]["mtd"] = data[0]["total_departure_adult"] or 0 
 	datas["in_house_child"]["mtd"] = data[0]["total_in_house_child"] or 0 
+	datas["arrival_child"]["mtd"] = data[0]["total_arrival_child"] or 0 
+	datas["departure_child"]["mtd"] = data[0]["total_departure_child"] or 0 
 
 	#ytd
 	filters.start_date = getdate(filters.date).replace(day=1, month=1)
@@ -173,7 +209,11 @@ def get_data_from_occupy_record(filters):
 	datas["complimentary"]["ytd"] = data[0]["total_complimentary"] or 0 
 	datas["house_use"]["ytd"] = data[0]["total_house_use"] or 0 
 	datas["in_house_adult"]["ytd"] = data[0]["total_in_house_adult"] or 0 
+	datas["arrival_adult"]["ytd"] = data[0]["total_arrival_adult"] or 0 
+	datas["departure_adult"]["ytd"] = data[0]["total_departure_adult"] or 0 
 	datas["in_house_child"]["ytd"] = data[0]["total_in_house_child"] or 0 
+	datas["arrival_child"]["ytd"] = data[0]["total_arrival_child"] or 0 
+	datas["departure_child"]["ytd"] = data[0]["total_departure_child"] or 0 
 
 	
 

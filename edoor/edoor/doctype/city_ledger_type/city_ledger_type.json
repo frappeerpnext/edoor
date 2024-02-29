@@ -26,7 +26,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-06-16 08:29:17.813127",
+ "modified": "2024-02-29 14:01:29.342964",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "City Ledger Type",
@@ -44,6 +44,11 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "All",
+   "select": 1
   }
  ],
  "sort_field": "modified",

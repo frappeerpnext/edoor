@@ -31,7 +31,8 @@ import NumberFormat from 'number-format.js'
 import { vue3Debounce } from 'vue-debounce'
 import shortkey from 'vue3-shortkey'
 import {getRoutes} from './router';
- 
+import { i18n } from '@/i18n';
+
 const app = createApp(App);
 
 
@@ -138,8 +139,8 @@ import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
-import { i18n } from "./i18n"; 
 
+app.config.globalProperties.$t = i18n.global.t;
 
 // use components //
 app.component('Button', Button);
@@ -236,6 +237,7 @@ app.use(PrimeVue, {
 	}
 })
 
+localStorage.setItem('lang','kh')
 app.use(i18n);
  
 app.use(ToastService);

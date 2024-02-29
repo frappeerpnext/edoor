@@ -18,7 +18,7 @@
                                     <span v-html="m.icon"></span>
                                 </template>
                                 <template #defualt>
-                                    <p>{{ m.menu_text }} <i style="font-size: 12px;" v-if="m.is_group && hasChildren(m.name)" class="pi pi-angle-down"></i></p>
+                                    <p>{{ $t(m.menu_text) }} <i style="font-size: 12px;" v-if="m.is_group && hasChildren(m.name)" class="pi pi-angle-down"></i></p>
                                 </template>
                             </ComHeaderBarItemButton>
                         </template>                     
@@ -133,6 +133,8 @@ import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const isMobile = ref(window.isMobile)
 

@@ -1480,7 +1480,7 @@ def get_working_day(property = ''):
         "date_working_day": working_day[0]["date"] if len(working_day)>0 else '',
         "name":working_day[0]["name"] if len(working_day)>0 else '',
         "cashier_shift":cashier_shift,
-        "stock_location": frappe.db.get_value("POS Profile", working_day[0]["pos_profile"],"stock_location")
+        "stock_location": frappe.db.get_value("POS Profile", working_day[0]["pos_profile"] if len(working_day)>0 else '',"stock_location")
     }
 
 
