@@ -183,84 +183,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Front Office Report",
-   "link_count": 7,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Arrival Guest",
-   "link_count": 0,
-   "link_to": "Arrival Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Stay Over Guest",
-   "link_count": 0,
-   "link_to": "Stay Over Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Departure Guest",
-   "link_count": 0,
-   "link_to": "Departure Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Arrival Stay Over Departure Guest",
-   "link_count": 0,
-   "link_to": "Arrival Stay Over Departure Guest",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Pick-up Guest Report",
-   "link_count": 0,
-   "link_to": "Pick-up Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Drop-off Guest Report",
-   "link_count": 0,
-   "link_to": "Drop-off Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Pick-up & Drop-off Guest Report",
-   "link_count": 0,
-   "link_to": "Pick-up and Drop-off Guest Report",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Revenue and Occupancy",
    "link_count": 6,
    "onboard": 0,
@@ -413,9 +335,107 @@
    "link_type": "Page",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Front Office Report",
+   "link_count": 9,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Guest",
+   "link_count": 0,
+   "link_to": "Arrival Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stay Over Guest",
+   "link_count": 0,
+   "link_to": "Stay Over Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Departure Guest",
+   "link_count": 0,
+   "link_to": "Departure Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Arrival Stay Over Departure Guest",
+   "link_count": 0,
+   "link_to": "Arrival Stay Over Departure Guest",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Pick-up Guest Report",
+   "link_count": 0,
+   "link_to": "Pick-up Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Drop-off Guest Report",
+   "link_count": 0,
+   "link_to": "Drop-off Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Pick-up & Drop-off Guest Report",
+   "link_count": 0,
+   "link_to": "Pick-up and Drop-off Guest Report",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Extra Charge List Report",
+   "link_count": 0,
+   "link_to": "Extra Charge List",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "POS Transfer List",
+   "link_count": 0,
+   "link_to": "POS Transfer List",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-02-15 15:40:11.847777",
+ "modified": "2024-02-29 08:55:36.990747",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "eDoor Report",

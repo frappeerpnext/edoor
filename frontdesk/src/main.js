@@ -138,6 +138,7 @@ import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
 import ComOpenStatus from '@/components/form/ComOpenStatus.vue';
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import VueSortable from "vue3-sortablejs";
+import { i18n } from "./i18n"; 
 
 
 // use components //
@@ -234,6 +235,8 @@ app.use(PrimeVue, {
 		}
 	}
 })
+
+app.use(i18n);
  
 app.use(ToastService);
 app.use(DialogService);

@@ -37,6 +37,7 @@ import CashierShift from "@/views/cashier_shift/CashierShift.vue";
 import PayableLedger from "@/views/payable_ledger/PayableLedger.vue";
 import Vendor from "@/views/vendor/Vendor.vue";
 import GuestFolio from "@/views/guest_ledger/GuestFolio.vue";
+import Test from "@/views/test.vue";
 
 import authRoutes from './auth';
 
@@ -85,6 +86,7 @@ let routes = [
   { path: "/frontdesk/payable-ledger", name: "PayableLedger", component:PayableLedger, meta: { layout: 'payable_ledger',title:"Payable Ledger" } },
   { path: "/frontdesk/vendor", name: "Vendor", component:Vendor, meta: { layout: 'vendor',title:"Vendor" } },
   { path: "/frontdesk/guest-folio", name: "GuestFolio", component:GuestFolio, meta: { layout: 'guest_folio',title:"Guest Folio" } },
+  { path: "/frontdesk/test", name: "Test", component:Test, meta: { layout: 'main_layout',title:"Test" } },
  
   ...authRoutes,
 
@@ -100,7 +102,7 @@ export  const  getRoutes = function  (whitelist_route,edoor_menu) {
      
       routes.push({
         path:"/frontdesk",
-        redirect: default_route[0].path 
+        redirect: default_route[0].path
       })
      
    

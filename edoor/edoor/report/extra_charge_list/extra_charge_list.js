@@ -60,6 +60,14 @@ frappe.query_reports["Extra Charge List"] = {
 			"reqd": 1
 		},
 		{
+			"fieldname": "parent_account",
+			"label": __("Parent Account"),
+			"fieldtype": "Link",
+			"options":"Account Code",
+			filters:{'parent_account_code':['in',['10000','40000']]},
+			"on_change": function (query_report) {},
+		},
+		{
 			"fieldname": "account_code",
 			"label": __("Account Code"),
 			"fieldtype": "Link",
@@ -74,18 +82,10 @@ frappe.query_reports["Extra Charge List"] = {
 			"on_change": function (query_report) {},
 		},
 		{
-			"fieldname": "parent_account",
-			"label": __("Parent Account"),
-			"fieldtype": "Link",
-			"options":"Account Code",
-			filters:{'parent_account_code':['in',['10000','40000']]},
-			"on_change": function (query_report) {},
-		},
-		{
 			"fieldname": "row_group",
 			"label": __("Row Group By"),
 			"fieldtype": "Select",
-			"options": "\nDate\nAccount Code\nAccount Category\nParent Account",
+			"options": "\nDate\nAccount Code\nAccount Category\nParent Account\nBusiness Source\nRoom Type\nRoom\nReservation Type\nGuest Type\nNationality",
 			"on_change": function (query_report) {},
 			hide_in_filter:1,
 		},
@@ -110,7 +110,7 @@ frappe.query_reports["Extra Charge List"] = {
 			"fieldname": "view_chart_by",
 			"label": __("View Chart By"),
 			"fieldtype": "Select",
-			"options": "\nDate\nAccount Code\nAccount Category\nParent Account",
+			"options": "\nDate\nAccount Code\nAccount Category\nParent Account\nBusiness Source\nRoom Type\nRoom\nReservation Type\nGuest Type\nNationality",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
@@ -178,7 +178,9 @@ frappe.query_reports["Extra Charge List"] = {
 		} 
 
 
-		
+		var parser = new DOMParser(); // create a DOMParser object
+		var doc = parser.parseFromString(value, "text/html"); // parse the string into a document object
+		var element = doc.querySelector("a"); // get the element by selector
 		if ((data && data.is_group==1) || (data && data.is_total_row==1)) {
 			
 			value = $(`<span>${value}</span>`);
@@ -187,7 +189,14 @@ frappe.query_reports["Extra Charge List"] = {
 			
 
 			value = $value.wrap("<p></p>").parent().html();
-		} 
+		} else{
+			if(column.fieldtype=="Link"){
+				
+				value = "<a target='_blank' href='" + column.url + "/" + element.getAttribute('data-value') + "'>" + element.getAttribute('data-value') + "</a>";
+
+ 
+			}
+		}
 	 
  
 		return value;

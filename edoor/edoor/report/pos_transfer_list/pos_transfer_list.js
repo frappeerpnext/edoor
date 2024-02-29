@@ -107,7 +107,7 @@ frappe.query_reports["POS Transfer List"] = {
 			"fieldname": "view_chart_by",
 			"label": __("View Chart By"),
 			"fieldtype": "Select",
-			"options": "\nDate\nAccount Code\nLedger Type",
+			"options": "\nDate\nAccount Code\nLedger Type\nGuest Type\nNationality",
 			hide_in_filter:1,
 			"on_change": function (query_report) {},
 		},
@@ -118,9 +118,6 @@ frappe.query_reports["POS Transfer List"] = {
 			get_data: function(txt) {
 				return [
 					{"value":"Amount","description":"Amount",fieldtype:"Currency","precision":2},
-					{"value":"Discount Amount","description":"Discount Amount",fieldtype:"Currency","precision":2},
-					{"value":"Total Tax","description":"Total Tax",fieldtype:"Currency","precision":2},
-					{"value":"Total Amount","description":"Total Amount",fieldtype:"Currency"},
 					{"value":"Quantity","description":"Quantity",fieldtype:"Int"},
 				]
 			},

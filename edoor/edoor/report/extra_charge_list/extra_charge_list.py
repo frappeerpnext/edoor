@@ -16,20 +16,20 @@ def execute(filters=None):
 
 def get_columns(filters):
 	return[
-		{"fieldname":"reservation_stay", "label":"Stay #","fieldtype":"Link","options":"Reservation Stay", "width":150,},
-		{"fieldname":"name", "label":"Tran #","fieldtype":"Link","options":"Folio Transaction", "width":150,},
+		{"fieldname":"reservation_stay", "label":"Stay #", "fieldtype":"Link","options":"Reservation Stay","width":150,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{"fieldname":"name", "label":"Tran #", "width":150,},
 		{"fieldname":"room", "label":"Room #","fieldtype":"Data","width":250,},
-		{"fieldname":"posting_date", "label":"Date","fieldtype":"Date","width":150,},
+		{"fieldname":"posting_date", "label":"Date","fieldtype":"Date","width":150,"align":"center"},
 		{"fieldname":"account", "label":"Account", "width":400},
-		{"fieldname":"report_quantity", "label":"QTY", "width":100},
-		{"fieldname":"guest", "label":"Guest","fieldtype":"Link","options":"Customer", "width":150,},
+		{"fieldname":"guest_name", "label":"Guest", "width":150,},
 		{"fieldname":"business_source", "label":"Source", "width":200},
+		{"fieldname":"report_quantity", "label":"QTY", "width":100,"align":"center"},
 		{"fieldname":"amount", "label":"Amount","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"discount_amount", "label":"Discount","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"total_tax", "label":"Tax","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"total_amount", "label":"Total Amount","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"modified_by", "label":"Modified","fieldtype":"Data", "width":150,"align":"center"},
-		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Date", "width":200,"align":"center"},
+		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Datetime", "width":200,"align":"center"},
 	]
 
 def get_data(filters):
@@ -43,6 +43,10 @@ def get_data(filters):
 			reservation_type,
 			concat(room_type,'/',room_number) as room,
 			room_type,
+			room_number,
+			guest_type,
+			nationality,
+			reservation_type,
 			guest_name,
 			note,
 			guest,
@@ -206,6 +210,12 @@ def group_by_columns():
 		{"data_field":"account_name", "label":"Account Code","fieldtype":"Data"},
 		{"data_field":"account_category", "label":"Account Category" ,"fieldtype":"Data" },
 		{"data_field":"parent_account_name", "label":"Parent Account" ,"fieldtype":"Data" },
+		{"data_field":"business_source", "label":"Business Source" ,"fieldtype":"Data" },
+		{"data_field":"reservation_type", "label":"Reservation Type" ,"fieldtype":"Data" },
+		{"data_field":"guest_type", "label":"Guest Type" ,"fieldtype":"Data" },
+		{"data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
+		{"data_field":"room_type", "label":"Room Type" ,"fieldtype":"Data" },
+		{"data_field":"room_number", "label":"Room" ,"fieldtype":"Data" },
 		
 	]
 

@@ -84,8 +84,8 @@ def get_report_data(filters):
 		email,
 		total_credit as credit,
 		total_debit as debit,
-		balance as balance
-
+		balance as balance,
+		1 as indent
 	from `tabReservation Folio`
 	where
 			concat(name,' ',reservation ,' ',reservation_stay , ' ' , ifnull(rooms,'') , ' ' , 'guest', ' ', guest_name, ' ',ifnull(phone_number,''), ' ' ,ifnull(email,'')) like %(keyword)s and 

@@ -16,21 +16,18 @@ def execute(filters=None):
 
 def get_columns(filters):
 	return[
-		{"fieldname":"reservation_stay", "label":"Stay #","fieldtype":"Link","options":"Reservation Stay", "width":150,},
-		{"fieldname":"name", "label":"Tran #","fieldtype":"Link","options":"Folio Transaction", "width":150,},
+		{"fieldname":"reservation_stay", "label":"Stay #", "width":150,},
+		{"fieldname":"name", "label":"Tran #", "width":150,},
 		{"fieldname":"room", "label":"Room #","fieldtype":"Data","width":250,},
-		{"fieldname":"posting_date", "label":"Date","fieldtype":"Date","width":150,},
+		{"fieldname":"posting_date", "label":"Date","fieldtype":"Date","width":150,'align':'center'},
 		{"fieldname":"account", "label":"Account", "width":200},
-		{"fieldname":"report_quantity", "label":"QTY", "width":100},
-		{"fieldname":"sale", "label":"Sale #","fieldtype":"Link","options":"Sale", "width":200},
-		{"fieldname":"guest", "label":"Guest","fieldtype":"Link","options":"Customer", "width":150,},
+		{"fieldname":"sale", "label":"Sale #", "width":200},
+		{"fieldname":"guest_name", "label":"Guest", "width":150,},
 		{"fieldname":"business_source", "label":"Source", "width":200},
-		{"fieldname":"amount", "label":"Amount","fieldtype":"Currency", "width":100,"align":"right"},
-		{"fieldname":"discount_amount", "label":"Discount","fieldtype":"Currency", "width":100,"align":"right"},
-		{"fieldname":"total_tax", "label":"Tax","fieldtype":"Currency", "width":100,"align":"right"},
+		{"fieldname":"report_quantity", "label":"QTY", "width":100,'align':'center'},
 		{"fieldname":"total_amount", "label":"Total Amount","fieldtype":"Currency", "width":100,"align":"right"},
 		{"fieldname":"modified_by", "label":"Modified","fieldtype":"Data", "width":150,"align":"center"},
-		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Date", "width":200,"align":"center"},
+		{"fieldname":"modified", "label":"Modified Date","fieldtype":"Datetime", "width":200,"align":"center"},
 	]
 
 def get_data(filters):
@@ -38,6 +35,7 @@ def get_data(filters):
 		select 
 			name,
 			transaction_type, 
+			transaction_number,
 			reservation,
 			reservation_stay,
 			business_source,
@@ -45,6 +43,8 @@ def get_data(filters):
 			concat(room_type,'/',room_number) as room,
 			room_type,
 			guest_name,
+			guest_type,
+			nationality,
 			note,
 			guest,
 			posting_date, 
@@ -131,7 +131,7 @@ def get_report_data(filters):
 				"reservation_stay":"POS Bill to City Ledger",
 				"transaction_type":[d["transaction_type"] for d in data if d['transaction_type']=='City Ledger' and d['account_category']=='POS Bill to City Ledger']
 			})
-		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['transaction_type']=='City Ledger' and d['account_category']=='POS Bill to City Ledger']
+		report_data = report_data +  [d.update({"indent":1,"reservation_stay":d['transaction_number'],}) or d for d in data if d['transaction_type']=='City Ledger' and d['account_category']=='POS Bill to City Ledger']
 		report_data.append({
 			"indent":0,
 			"is_group":1,
@@ -150,7 +150,7 @@ def get_report_data(filters):
 				"reservation_stay":"POS Bill to Desk Folio",
 				"transaction_type":[d["transaction_type"] for d in data if d['transaction_type']=='Desk Folio' and d['account_category']=='POS Bill to Desk Folio']
 			})
-		report_data = report_data +  [d.update({"indent":1}) or d for d in data if d['transaction_type']=='Desk Folio' and d['account_category']=='POS Bill to Desk Folio']
+		report_data = report_data +  [d.update({"indent":1,"reservation_stay":d['transaction_number']}) or d for d in data if d['transaction_type']=='Desk Folio' and d['account_category']=='POS Bill to Desk Folio']
 		report_data.append({
 			"indent":0,
 			"is_group":1,
@@ -179,10 +179,10 @@ def get_report_data(filters):
 def get_report_summary(filters):
 	data = get_data(filters)
 	return [
-		 {"label":"QTY",  "datatype": "Int", "value":sum([d["report_quantity"] for d in data if d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"blue"},
-		 {"label":"Amount",  "datatype": "Currency", "value":sum([d["amount"] for d in data if d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"blue"},
-		 {"label":"Discount", "datatype": "Currency", "value":sum([d["discount_amount"] for d in data  if  d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"red"},
-		 {"label":"Total Tax",  "datatype": "Currency","value":sum([d["total_tax"] for d in data if d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"green"},
+		 {"label":"Total QTY",  "datatype": "Int", "value":sum([d["report_quantity"] for d in data if d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"blue"},
+		 {"label":"Total Bill to Room",  "datatype": "Currency", "value":sum([d["amount"] for d in data if d['transaction_type']=='Reservation Folio' and d['account_category']=='POS Bill to Room']), "indicator":"blue"},
+		 {"label":"Total Bill to City Ledger", "datatype": "Currency", "value":sum([d["amount"] for d in data  if d['transaction_type']=='City Ledger' and d['account_category']=='POS Bill to City Ledger']), "indicator":"red"},
+		 {"label":"Total Bill to Desk Folio",  "datatype": "Currency","value":sum([d["amount"] for d in data if d['transaction_type']=='Desk Folio' and d['account_category']=='POS Bill to Desk Folio']), "indicator":"green"},
 		 {"label":"Total Amount",  "datatype": "Currency","value":sum([d["total_amount"] for d in data if  d['transaction_type'] in ['Desk Folio','City Ledger','Reservation Folio'] and d['account_category'] in ['POS Bill to Desk Folio','POS Bill to City Ledger','POS Bill to Room']]), "indicator":"green"}
 	]
 
@@ -218,6 +218,8 @@ def group_by_columns():
 		{"data_field":"posting_date", "label":"Date","fieldtype":"Date"},
 		{"data_field":"account_name", "label":"Account Code","fieldtype":"Data"},
 		{"data_field":"transaction_type", "label":"Ledger Type" ,"fieldtype":"Data" },
+		{"data_field":"guest_type", "label":"Guest Type" ,"fieldtype":"Data" },
+		{"data_field":"nationality", "label":"Nationality" ,"fieldtype":"Data" },
 
 	]
 
@@ -229,9 +231,6 @@ def get_chart_series():
 	return [
 		{"data_field":"report_quantity","label":"Quantity","short_label":"QTY", "fieldtype":"Int", "align":"center","chart_color":"#dc9819"},
 		{"data_field":"amount","label":"Amount", "short_label":"Amount", "fieldtype":"Currency", "align":"right","chart_color":"#1987dc"},
-		{"data_field":"discount_amount","label":"Discount Amount", "short_label":"Discount", "fieldtype":"Currency", "align":"right","chart_color":"#fd4e8a"},
-		{"data_field":"total_tax","label":"Total Tax", "short_label":"Tax", "fieldtype":"Currency", "align":"right","chart_color":"#d7e528"},
-		{"data_field":"total_amount","label":"Total Amount", "short_label":"Total Amount", "fieldtype":"Currency", "align":"right","chart_color":"#df7b5c"},
 		
 	]
 def get_chart(filters):
