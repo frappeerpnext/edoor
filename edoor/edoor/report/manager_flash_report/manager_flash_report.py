@@ -10,17 +10,21 @@ def execute(filters=None):
 
 	return get_columns(filters), data
 
-
 def get_columns(filters):
 	return [
 		{"fieldname": "title", "label": "Title", "width":500, "align":"left"},
 		{"fieldname": "current", "label": "Current", "width":100, "align":"right"},
 		{"fieldname": "mtd", "label": "MTD", "width":100, "fieldtype":"Data", "align":"right"},
 		{"fieldname": "ytd", "label": "YTD", "width":100, "align":"right"},
+		{"fieldname": "last_year_current", "label": "Current({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
+		{"fieldname": "last_year_mtd", "label": "MTD({})".format(getdate(filters.date).year - 1), "width":150, "fieldtype":"Data", "align":"right"},
+		{"fieldname": "last_year_ytd", "label": "YTD({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
+		{"fieldname": "change_percentage", "label": "% Change", "width":150, "align":"right"},
 	]
 
+
 def get_report_data(filters):
-	
+	report_config = frappe.get_last_doc("Report Configuration", filters={"property":filters.property, "report":"Manager Flash Report"} )
 	report_data =  []
 	rooms_available_record = get_current_room_in_property(filters)
 	report_data.append(rooms_available_record)
@@ -118,36 +122,44 @@ def get_report_data(filters):
 	})
 
 	# in-hopuse walk in adult
-	report_data.append({
-		"title": "Walk-In In-house Adult",
-		"current": occupy_data["walk_in_adult"]["current"],
-		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
-		
-	})
+	report_data.append(occupy_data["walk_in_adult"])
 	
 	# in-hopuse walk in child
-	report_data.append({
-		"title": "Walk-In In-house Child",
-		"current": occupy_data["walk_in_child"]["current"],
-		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
-		
-	})
+	report_data.append(occupy_data["walk_in_child"])
 	# in-hopuse walk in pax
 	report_data.append({
 		"title": "Walk-In In-house Pax",
 		"current": (occupy_data["walk_in_child"]["current"] or 0) + (occupy_data["walk_in_adult"]["current"] or 0), 
-		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		"mtd": occupy_data["walk_in_child"]["mtd"] + ( occupy_data["walk_in_adult"]["mtd"]),
+		"ytd": occupy_data["walk_in_child"]["ytd"] +(  occupy_data["walk_in_adult"]["ytd"]),
 		
 	})
+	#walk in room night
+	report_data.append(occupy_data["walk_in_room_night"])
+ 
+	
+	return_report_data = []
+	#get group list
+	groups = []
+	for g in [d.group for d in report_config.row_configs]:
+		if g not in groups:
+			groups.append(g)
+        
+	for g in groups:
+		return_report_data.append({
+			"title": g,
+			"indent":0
+		})
+		for r in [d for d in report_config.row_configs if d.group == g and d.show_in_report==1]:
+			row = [d for d in report_data if d["title"] == r.field_name]
+			if row:
+				row = row[0]
+				row["indent"] = 1
+				row["title"] = r.custom_name or r.field_name
+				return_report_data.append(row)
+    
+	return return_report_data #+ [{}] + report_data
 
-
-
-
-
-	return report_data
 
 def get_data_from_occupy_record(filters):
 	filters.start_date = getdate(filters.date)
@@ -164,7 +176,8 @@ def get_data_from_occupy_record(filters):
 			sum(if(type='Reservation' and is_departure=1,child,0))  as total_departure_child,
 			sum(if(type='Reservation',child,0))  as total_in_house_child,
 			sum(if(type='Reservation' and is_walk_in=1,adult,0))  as total_in_house_walk_in_adult,
-			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child
+			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child,
+			sum(type='Reservation' and is_walk_in=1)  as total_walk_in_room_night
 
 		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s and is_active=1"""
 	
@@ -183,6 +196,7 @@ def get_data_from_occupy_record(filters):
 				"departure_child":{"title":"Departure Child", "current": data[0]["total_departure_child"] or 0},	
 				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
 				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
+				"walk_in_room_night":{"title":"Walk-In Room Night", "current": data[0]["total_walk_in_room_night"] or 0},	
 	}
 
 	#mtd
@@ -199,6 +213,9 @@ def get_data_from_occupy_record(filters):
 	datas["in_house_child"]["mtd"] = data[0]["total_in_house_child"] or 0 
 	datas["arrival_child"]["mtd"] = data[0]["total_arrival_child"] or 0 
 	datas["departure_child"]["mtd"] = data[0]["total_departure_child"] or 0 
+	datas["walk_in_adult"]["mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
+	datas["walk_in_child"]["mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
+	datas["walk_in_room_night"]["mtd"] = data[0]["total_walk_in_room_night"] or 0 
 
 	#ytd
 	filters.start_date = getdate(filters.date).replace(day=1, month=1)
@@ -214,9 +231,33 @@ def get_data_from_occupy_record(filters):
 	datas["in_house_child"]["ytd"] = data[0]["total_in_house_child"] or 0 
 	datas["arrival_child"]["ytd"] = data[0]["total_arrival_child"] or 0 
 	datas["departure_child"]["ytd"] = data[0]["total_departure_child"] or 0 
+	datas["walk_in_adult"]["ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
+	datas["walk_in_child"]["ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
+	datas["walk_in_room_night"]["ytd"] = data[0]["total_walk_in_room_night"] or 0 
 
+	#last year current date
+	filters.start_date = getdate(filters.date).year - 1
+	data = frappe.db.sql(sql,filters,as_dict=1) 
+
+	datas["room_occupy"]["last_year_current"] = data[0]["total_occupy"] or 0 
+	datas["room_block"]["last_year_current"] = data[0]["total_block"] or 0 
+	datas["complimentary"]["last_year_current"] = data[0]["total_complimentary"] or 0 
+	datas["house_use"]["last_year_current"] = data[0]["total_house_use"] or 0 
+	datas["in_house_adult"]["last_year_current"] = data[0]["total_in_house_adult"] or 0 
+	datas["arrival_adult"]["last_year_current"] = data[0]["total_arrival_adult"] or 0 
+	datas["departure_adult"]["last_year_current"] = data[0]["total_departure_adult"] or 0 
+	datas["in_house_child"]["last_year_current"] = data[0]["total_in_house_child"] or 0 
+	datas["arrival_child"]["last_year_current"] = data[0]["total_arrival_child"] or 0 
+	datas["departure_child"]["last_year_current"] = data[0]["total_departure_child"] or 0 
+	datas["walk_in_adult"]["last_year_current"] = data[0]["total_in_house_walk_in_adult"] or 0 
+	datas["walk_in_child"]["last_year_current"] = data[0]["total_in_house_walk_in_child"] or 0 
+	datas["walk_in_room_night"]["last_year_current"] = data[0]["total_walk_in_room_night"] or 0 
 	
+	#last year mtd
+ 
+	# last year ytd
 
+		
 	return datas
 
 def get_current_room_in_property(filters):
@@ -233,9 +274,16 @@ def get_current_room_in_property(filters):
 	sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between %(ytd_start_date)s and %(date)s"
 
 	ytd_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
+
+	filters.last_current_start_date = getdate(filters.date).year - 1
+
+	sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between %(last_current_start_date)s and %(date)s"
+
+	last_year_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
 	return {
 			"title": "Total Rooms in Property",
 			"current":total_room,
 			"mtd": mtd_total_room,
-			"ytd":ytd_total_room
+			"ytd":ytd_total_room,
+			"last_year_current":last_year_total_room,
 	}

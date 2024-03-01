@@ -29,26 +29,11 @@
                 <i class="font-bold pi pi-key" />
                 <span class="pl-2 pr-3">Shortcut Menu</span>
             </button>
-
-            <!-- <button @click="onChangeLanguage('kh')"
+            <button @click="showChangeLanguage"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="font-bold pi pi-key" />
-                <span class="pl-2 pr-3">{{ $t("Change Language") }} Khmer</span>
+                <i class="pi pi-language" />
+                <span class="pl-2 pr-3">{{ $t("Change Language") }}</span>
             </button>
-            
-            <button @click="onChangeLanguage('en')"
-                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="font-bold pi pi-key" />
-                <span class="pl-2 pr-3">{{ $t("Change Language") }} English</span>
-            </button>
-            
-            <button @click="onChangeLanguage('th')"
-                class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                <i class="font-bold pi pi-key" />
-                <span class="pl-2 pr-3">{{ $t("Change Language") }} Thai</span>
-            </button>
-             -->
-             
 
 
 
@@ -69,6 +54,7 @@
 import { ref, inject, useDialog } from '@/plugin'
 import ComIFrameModal from "@/components/ComIFrameModal.vue"
 import {i18n} from '@/i18n';
+import ComChangeLanguage from '@/components/layout/components/ComChangeLanguage.vue';
 const gv = inject("$gv")
 const auth = inject("$auth")
 const show = ref()
@@ -106,6 +92,25 @@ function onOpenBackend () {
 function onChangeLanguage(lang){
     localStorage.setItem("lang",lang)
         window.location.reload();
+}
+function showChangeLanguage() {
+
+const dialogRef = dialog.open(ComChangeLanguage, {
+    props: {
+        header: 'Change Language',
+        style: {
+            width: '30vw',
+        },
+        maximizable: true,
+        modal: true,
+        closeOnEscape: false,
+        position: "top",
+        breakpoints:{
+            '960px': '80vw',
+            '640px': '100vw'
+        },
+    }
+});
 }
 function onShortCutMenu() {
     dialog.open(ComIFrameModal, {
