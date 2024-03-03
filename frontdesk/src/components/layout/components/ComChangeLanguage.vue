@@ -1,25 +1,55 @@
 <template>
     <div class="w-full">
         <div>
-              
+            <div class="p-input-icon-left w-full">
+                            <i class="pi pi-search" />
+                            <InputText  class="w-full" v-model="keyword" placeholder="Search" @input="onSearch"  />
+                        </div>
+                        <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="languages.length > 0">                
         <div class="flex w-full mt-2" v-for="(language, index) in languages" :key="index">
-            <Button class="w-full surface-50" raised >
-                <div class="bg-white p-1">
- <img style="width:30px;" :src="language.custom_flag" /> 
+            <Button class="w-full" :class="(loglang === language.name) ? 'bg-green-200' : ''" @click="onChangeLanguage(language.name)" severity="secondary" raised text >
+                <div style="padding:2px;" class="surface-ground border-round-sm">
+ <img style="width:30px;" class="border-round-sm" :src="language.custom_flag" /> 
                 </div>
-           
-            <p class="ms-3">{{ language.custom_language_name }}</p>  
+            <p class="ms-3 text-color">{{ language.custom_language_name }}</p>
             </Button>   
         </div>
+        </ComPlaceholder>
        </div>
     </div>
 </template>
 <script setup>
-import { inject, ref, getDocList, onMounted} from '@/plugin'
+import { ref, getDocList, onMounted} from '@/plugin'
 const languages = ref([])
-onMounted(() => {
+const keyword = ref()
+const loglang = ref()
+function debouncer(fn, delay) {
+    var timeoutID = null;
+    return function () {
+        clearTimeout(timeoutID);
+        var args = arguments;
+        var that = this;
+        timeoutID = setTimeout(function () {
+            fn.apply(that, args);
+        }, delay);
+    };
+}
+const onSearch = debouncer(() => {
+    loadData()
+}, 500);
+
+function onChangeLanguage(lang){
+    localStorage.setItem("lang",lang)
+        window.location.reload();
+}
+function loadData() {
+    let filters = []
+    if (keyword.value) {
+        filters.push(["custom_language_name", "like", '%' + keyword.value + '%'])
+    }
     getDocList('POS Translation', {
         fields: ['custom_language_name', 'custom_flag', 'name'],
+        filters: filters,
         limit: 10000,
     })
     .then((doc) => {
@@ -27,19 +57,10 @@ onMounted(() => {
     })
     .catch((error) => {
 
-    });
+    });    
+}
+onMounted(() => {
+    loadData()
+    loglang.value = localStorage.getItem("lang");
 })
-const selectedCountry = ref();
-const countries = ref([
-    { name: 'Australia', code: 'AU' },
-    { name: 'Brazil', code: 'BR' },
-    { name: 'China', code: 'CN' },
-    { name: 'Egypt', code: 'EG' },
-    { name: 'France', code: 'FR' },
-    { name: 'Germany', code: 'DE' },
-    { name: 'India', code: 'IN' },
-    { name: 'Japan', code: 'JP' },
-    { name: 'Spain', code: 'ES' },
-    { name: 'United States', code: 'US' }
-]);
 </script>

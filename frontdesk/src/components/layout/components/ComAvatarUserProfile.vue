@@ -17,17 +17,17 @@
             <button @click="onRefresh"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-refresh" />
-                <span class="pl-2 pr-3">Refresh</span>
+                <span class="pl-2 pr-3">{{$t("Refresh")}}</span>
             </button>
             <button @click="onOpenBackend"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-server" />
-                <span class="pl-2 pr-3">Open Backend</span>
+                <span class="pl-2 pr-3">{{$t("Open Backend")}}</span>
             </button>
             <button @click="onShortCutMenu"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-key" />
-                <span class="pl-2 pr-3">Shortcut Menu</span>
+                <span class="pl-2 pr-3">{{$t("Shortcut Menu")}}</span>
             </button>
             <button @click="showChangeLanguage"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
@@ -40,12 +40,12 @@
             <button @click="onRoute"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-book" />
-                <span class="pl-2 pr-3">Document</span>
+                <span class="pl-2 pr-3"> {{$t("Help Document")}}</span>
             </button>
             <button @click="onLogout"
                 class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                 <i class="font-bold pi pi-sign-out !text-red-500" />
-                <span class="pl-2 pr-3 !text-red-500">Log Out</span>
+                <span class="pl-2 pr-3 !text-red-500">{{$t("Log Out")}}</span>
             </button>
         </template>
     </Menu>
@@ -87,11 +87,6 @@ function onRefresh() {
 }
 function onOpenBackend () { 
     window.open(serverUrl + '/' + 'app')
-}
-
-function onChangeLanguage(lang){
-    localStorage.setItem("lang",lang)
-        window.location.reload();
 }
 function showChangeLanguage() {
 

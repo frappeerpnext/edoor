@@ -1,6 +1,8 @@
 <template>
-    <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="'New Reservataion'" @click="onClick" label="New reservation" class="d-bg-set btn-inner-set-icon border-none">
-        <img class="mr-2" :src="iconEdoorNewReservation">New Reservation
+    <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="$t('New Reservation')" @click="onClick" :label="$t('New reservation')" class="d-bg-set btn-inner-set-icon border-none">
+        <img class="mr-2" :src="iconEdoorNewReservation">
+        {{ $t('New Reservation') }}
+        
     </Button>
 </template>
 <script setup>
@@ -8,13 +10,14 @@ import iconEdoorNewReservation from '../../../assets/svg/icon-add-reservation.sv
 import { useDialog } from 'primevue/usedialog';
 import NewReservation from '@/views/reservation/NewReservation.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 function onClick() {
    
     const dialogRef = dialog.open(NewReservation, {
         props: {
-            header: 'New FIT Reservation',
+            header: $t('New FIT Reservation'),
             style: {
                 width: '80vw',
             }, 

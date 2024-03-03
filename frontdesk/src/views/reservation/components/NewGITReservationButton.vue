@@ -1,6 +1,8 @@
 <template>
-    <Button v-shortkey="['ctrl', 'g']"  @click="onClick" v-tippy="'New Group Booking'" label="New Group Booking" class="btn-date__tt btn-inner-set-icon border-none">
-        <img class="mr-2" :src="iconEdoorAddGroupBooking">New Group Booking
+    <Button v-shortkey="['ctrl', 'g']"  @click="onClick" v-tippy="$t('New Group Booking')" :label="$t('New Group Booking')" class="btn-date__tt btn-inner-set-icon border-none">
+        <img class="mr-2" :src="iconEdoorAddGroupBooking">
+        {{ $t('New Group Booking') }}
+        
     </Button>
 </template>
 <script setup>
@@ -10,13 +12,14 @@ import { useDialog } from 'primevue/usedialog';
 import NewGroupBooking from '@/views/reservation/NewGroupBooking.vue';
 import ComGroupAssignRoom from "@/views/reservation/components/form/ComGroupAssignRoom.vue"
 import ReservationDetail from "@/views/reservation/ReservationDetail.vue"
- 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const dialog = useDialog();
  
 function onClick() {
     const dialogRef = dialog.open(NewGroupBooking, {
         props: {
-            header: 'New Group Booking',
+            header: $t('New Group Booking'),
             style: {
                 width: '80vw',
             }, 

@@ -1,8 +1,8 @@
  
 <template>
     <div class="flex justify-content-end mr-5">
-        <SplitButton :model="items" @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="view_chart_by"></SplitButton>
-        <SplitButton :model="duration_types" :label="duration_type"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
+        <SplitButton :model="items" @click="save" class="p-component spl__btn_cs sp mb-0 mt-2 mr-2" :label="$t(view_chart_by)"></SplitButton>
+        <SplitButton :model="duration_types" :label="$t(duration_type)"   class="p-component spl__btn_cs sp mb-0 mt-2"></SplitButton>
     
     </div>
     <div class="card">
@@ -15,7 +15,8 @@
 import { ref, onMounted ,getApi,computed} from "@/plugin";
  
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const duration_type = ref("Daily")
 const view_chart_by = ref("Time Series")
 const show_occupancy_only = ref(0)
@@ -26,7 +27,7 @@ const loading = ref(false)
 
 const items = [
     {
-        label: 'Time Series',
+        label: $t('Time Series'),
         icon: 'pi pi-clock',
         command: () => {
             view_chart_by.value =("Time Series")
@@ -34,7 +35,7 @@ const items = [
         }
     },
     {
-        label: 'Business Source',
+        label: $t('Business Source'),
         icon: 'pi pi-briefcase',
         command: () => {
             view_chart_by.value = "Business Source"
@@ -42,7 +43,7 @@ const items = [
         }
     },
     {
-        label: 'Room Type',
+        label: $t('Room Type'),
         icon: 'pi pi-building',
         command: () => {
             view_chart_by.value = "Room Type"
@@ -54,14 +55,14 @@ const items = [
 
 const duration_types = [
     {
-        label: 'Daily',
+        label: $t('Daily'),
         command: () => {
             duration_type.value = ("Daily")
             getChartData()
         }
     },
     {
-        label: 'Monthly',
+        label: $t('Monthly'),
         command: () => {
             duration_type.value = ("Monthly")
             getChartData()

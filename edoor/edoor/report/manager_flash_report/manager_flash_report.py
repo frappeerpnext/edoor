@@ -2,7 +2,9 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils.data import getdate
+from frappe.utils import date_diff,today ,add_months, add_days,getdate
+from dateutil.rrule import rrule, MONTHLY
+from datetime import datetime, timedelta
 
 
 def execute(filters=None):
@@ -37,14 +39,20 @@ def get_report_data(filters):
 		"title": "Total Rooms in Property minus OOO Rooms",
 		"current":rooms_available_record["current"] - occupy_data["room_block"]["current"],
 		"mtd":rooms_available_record["mtd"] - occupy_data["room_block"]["mtd"],
-		"ytd":rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
+		"ytd":rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"],
+		"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_block"]["last_year_current"],
+		"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_block"]["last_year_mtd"],
+		"last_year_ytd":rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"],
 	})
 	#total available room = total room - (room_occupy + room_block)
 	report_data.append({
 		"title": "Total Available Rooms",
 		"current": rooms_available_record["current"] - ( occupy_data["room_occupy"]["current"] + occupy_data["room_block"]["current"]),
 		"mtd":rooms_available_record["mtd"] - ( occupy_data["room_occupy"]["mtd"] + occupy_data["room_block"]["mtd"]),
-		"ytd":rooms_available_record["ytd"] -( occupy_data["room_occupy"]["ytd"] + occupy_data["room_block"]["ytd"])
+		"ytd":rooms_available_record["ytd"] -( occupy_data["room_occupy"]["ytd"] + occupy_data["room_block"]["ytd"]),
+		"last_year_current":rooms_available_record["last_year_current"] -( occupy_data["room_occupy"]["last_year_current"] + occupy_data["room_block"]["last_year_current"]),
+		"last_year_mtd":rooms_available_record["last_year_mtd"] -( occupy_data["room_occupy"]["last_year_mtd"] + occupy_data["room_block"]["last_year_mtd"]),
+		"last_year_ytd":rooms_available_record["last_year_ytd"] -( occupy_data["room_occupy"]["last_year_ytd"] + occupy_data["room_block"]["last_year_ytd"]),
 	})
 
 	#complementary
@@ -59,6 +67,9 @@ def get_report_data(filters):
 		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["complimentary"]["current"] + occupy_data["house_use"]["current"]),
 		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["complimentary"]["mtd"] + occupy_data["house_use"]["mtd"]),
 		"ytd": occupy_data["room_occupy"]["ytd"] -( occupy_data["complimentary"]["ytd"] + occupy_data["house_use"]["ytd"]),
+		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["complimentary"]["last_year_current"] + occupy_data["house_use"]["last_year_current"]),
+		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["complimentary"]["last_year_mtd"] + occupy_data["house_use"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["complimentary"]["last_year_ytd"] + occupy_data["house_use"]["last_year_ytd"]),
 		
 	})
 	#Room occupied minus compliementary
@@ -67,6 +78,9 @@ def get_report_data(filters):
 		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["complimentary"]["current"]),
 		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["complimentary"]["mtd"]),
 		"ytd": occupy_data["room_occupy"]["ytd"] -( occupy_data["complimentary"]["ytd"]),
+		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["complimentary"]["last_year_current"]),
+		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["complimentary"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["complimentary"]["last_year_ytd"]),
 		
 	})
 	
@@ -76,6 +90,9 @@ def get_report_data(filters):
 		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["house_use"]["current"]),
 		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["house_use"]["mtd"]),
 		"ytd": occupy_data["room_occupy"]["ytd"] -(  occupy_data["house_use"]["ytd"]),
+		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -(  occupy_data["house_use"]["last_year_current"]),
+		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -(  occupy_data["house_use"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["room_occupy"]["last_year_ytd"] -(  occupy_data["house_use"]["last_year_ytd"]),
 		
 	})
 
@@ -92,6 +109,9 @@ def get_report_data(filters):
 		"current": occupy_data["arrival_adult"]["current"] + ( occupy_data["arrival_child"]["current"]),
 		"mtd": occupy_data["arrival_adult"]["mtd"] + ( occupy_data["arrival_child"]["mtd"]),
 		"ytd": occupy_data["arrival_adult"]["ytd"] +(  occupy_data["arrival_child"]["ytd"]),
+		"last_year_current": occupy_data["arrival_adult"]["last_year_current"] +(  occupy_data["arrival_child"]["last_year_current"]),
+		"last_year_mtd": occupy_data["arrival_adult"]["last_year_mtd"] +(  occupy_data["arrival_child"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["arrival_adult"]["last_year_ytd"] +(  occupy_data["arrival_child"]["last_year_ytd"]),
 		
 	})
 
@@ -105,6 +125,9 @@ def get_report_data(filters):
 		"current": occupy_data["in_house_adult"]["current"] + ( occupy_data["in_house_child"]["current"]),
 		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
 		"ytd": occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"]),
+		"last_year_current": occupy_data["in_house_adult"]["last_year_current"] +(  occupy_data["in_house_child"]["last_year_current"]),
+		"last_year_mtd": occupy_data["in_house_adult"]["last_year_mtd"] +(  occupy_data["in_house_child"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["in_house_adult"]["last_year_ytd"] +(  occupy_data["in_house_child"]["last_year_ytd"]),
 		
 	})
 
@@ -118,6 +141,9 @@ def get_report_data(filters):
 		"current": occupy_data["departure_adult"]["current"] + ( occupy_data["departure_child"]["current"]),
 		"mtd": occupy_data["departure_adult"]["mtd"] + ( occupy_data["departure_child"]["mtd"]),
 		"ytd": occupy_data["departure_adult"]["ytd"] +(  occupy_data["departure_child"]["ytd"]),
+		"last_year_current": occupy_data["departure_adult"]["last_year_current"] +(  occupy_data["departure_child"]["last_year_current"]),
+		"last_year_mtd": occupy_data["departure_adult"]["last_year_mtd"] +(  occupy_data["departure_child"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["departure_adult"]["last_year_ytd"] +(  occupy_data["departure_child"]["last_year_ytd"]),
 		
 	})
 
@@ -132,11 +158,19 @@ def get_report_data(filters):
 		"current": (occupy_data["walk_in_child"]["current"] or 0) + (occupy_data["walk_in_adult"]["current"] or 0), 
 		"mtd": occupy_data["walk_in_child"]["mtd"] + ( occupy_data["walk_in_adult"]["mtd"]),
 		"ytd": occupy_data["walk_in_child"]["ytd"] +(  occupy_data["walk_in_adult"]["ytd"]),
+		"last_year_current": occupy_data["walk_in_child"]["last_year_current"] +(  occupy_data["walk_in_adult"]["last_year_current"]),
+		"last_year_mtd": occupy_data["walk_in_child"]["last_year_mtd"] +(  occupy_data["walk_in_adult"]["last_year_mtd"]),
+		"last_year_ytd": occupy_data["walk_in_child"]["last_year_ytd"] +(  occupy_data["walk_in_adult"]["last_year_ytd"]),
 		
 	})
 	#walk in room night
 	report_data.append(occupy_data["walk_in_room_night"])
- 
+	#arrival room night
+	report_data.append(occupy_data["arrival_room_night"])
+	#departure room night
+	report_data.append(occupy_data["departure_room_night"])
+	#walk-in room night
+	report_data.append(occupy_data["no_show_room"])
 	
 	return_report_data = []
 	#get group list
@@ -177,10 +211,16 @@ def get_data_from_occupy_record(filters):
 			sum(if(type='Reservation',child,0))  as total_in_house_child,
 			sum(if(type='Reservation' and is_walk_in=1,adult,0))  as total_in_house_walk_in_adult,
 			sum(if(type='Reservation' and is_walk_in=1,child,0))  as total_in_house_walk_in_child,
-			sum(type='Reservation' and is_walk_in=1)  as total_walk_in_room_night
-
-		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s and is_active=1"""
-	
+			sum(type='Reservation' and is_walk_in=1)  as total_walk_in_room_night,
+			sum(type='Reservation' and is_arrival=1)  as total_arrival_room_night,
+			sum(type='Reservation' and is_departure=1)  as total_departure_room_night,
+			sum(type = 'Reservation' and reservation_status='No Show') as total_no_show_room
+		from `tabRoom Occupy` where property=%(property)s and date = %(start_date)s and %(end_date)s and is_active=1"""
+	# stay="""
+	# 		select count(room_number) from `tabReservation Stay Room`  
+	# 		where 
+	# 			parent in(select name from `tabReservation Stay` where is_active_reservation = 1 and is_walk_in = 1)
+	# 	"""
 	data = frappe.db.sql(sql,filters,as_dict=1) 
 
 	datas = {
@@ -196,7 +236,10 @@ def get_data_from_occupy_record(filters):
 				"departure_child":{"title":"Departure Child", "current": data[0]["total_departure_child"] or 0},	
 				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
 				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
-				"walk_in_room_night":{"title":"Walk-In Room Night", "current": data[0]["total_walk_in_room_night"] or 0},	
+				"walk_in_room_night":{"title":"Walk-In Room", "current": data[0]["total_walk_in_room_night"] or 0},	
+				"arrival_room_night":{"title":"Arrival Room Nights", "current": data[0]["total_arrival_room_night"] or 0},	
+				"departure_room_night":{"title":"Departure Room Nights", "current": data[0]["total_departure_room_night"] or 0},	
+				"no_show_room":{"title":"No Show Room", "current": data[0]["total_no_show_room"] or 0},	
 	}
 
 	#mtd
@@ -216,11 +259,14 @@ def get_data_from_occupy_record(filters):
 	datas["walk_in_adult"]["mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
 	datas["walk_in_child"]["mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
 	datas["walk_in_room_night"]["mtd"] = data[0]["total_walk_in_room_night"] or 0 
+	datas["arrival_room_night"]["mtd"] = data[0]["total_arrival_room_night"] or 0 
+	datas["departure_room_night"]["mtd"] = data[0]["total_departure_room_night"] or 0 
+	datas["no_show_room"]["mtd"] = data[0]["total_no_show_room"] or 0 
 
 	#ytd
 	filters.start_date = getdate(filters.date).replace(day=1, month=1)
 	data = frappe.db.sql(sql,filters,as_dict=1) 
-
+	
 	datas["room_occupy"]["ytd"] = data[0]["total_occupy"] or 0 
 	datas["room_block"]["ytd"] = data[0]["total_block"] or 0 
 	datas["complimentary"]["ytd"] = data[0]["total_complimentary"] or 0 
@@ -234,9 +280,18 @@ def get_data_from_occupy_record(filters):
 	datas["walk_in_adult"]["ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
 	datas["walk_in_child"]["ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
 	datas["walk_in_room_night"]["ytd"] = data[0]["total_walk_in_room_night"] or 0 
+	datas["arrival_room_night"]["ytd"] = data[0]["total_arrival_room_night"] or 0 
+	datas["departure_room_night"]["ytd"] = data[0]["total_departure_room_night"] or 0 
+	datas["no_show_room"]["ytd"] = data[0]["total_no_show_room"] or 0 
 
 	#last year current date
-	filters.start_date = getdate(filters.date).year - 1
+	filters_date = datetime.strptime(filters.date, '%Y-%m-%d')
+	one_year_ago_date = filters_date- timedelta(days=365) 
+	difference_one_year = (filters_date - one_year_ago_date).days
+	difference_one_year_timedelta = timedelta(days=difference_one_year)
+	formatted_date = filters_date - difference_one_year_timedelta
+	formatted_date_str = formatted_date.strftime('%Y-%m-%d')
+	filters.start_date = formatted_date_str
 	data = frappe.db.sql(sql,filters,as_dict=1) 
 
 	datas["room_occupy"]["last_year_current"] = data[0]["total_occupy"] or 0 
@@ -252,12 +307,60 @@ def get_data_from_occupy_record(filters):
 	datas["walk_in_adult"]["last_year_current"] = data[0]["total_in_house_walk_in_adult"] or 0 
 	datas["walk_in_child"]["last_year_current"] = data[0]["total_in_house_walk_in_child"] or 0 
 	datas["walk_in_room_night"]["last_year_current"] = data[0]["total_walk_in_room_night"] or 0 
+	datas["arrival_room_night"]["last_year_current"] = data[0]["total_arrival_room_night"] or 0 
+	datas["departure_room_night"]["last_year_current"] = data[0]["total_departure_room_night"] or 0 
+	datas["no_show_room"]["last_year_current"] = data[0]["total_no_show_room"] or 0 
 	
 	#last year mtd
- 
-	# last year ytd
+	filters_date = datetime.strptime(filters.date, '%Y-%m-%d')
+	current_month = filters_date.month
+	current_day = filters_date.day
+	last_year = filters_date.year - 1
+	date_last_year = datetime(last_year, current_month, current_day)
+	filters.start_date = date_last_year.strftime('%Y-%m-%d')
+	data = frappe.db.sql(sql,filters,as_dict=1) 
 
-		
+	datas["room_occupy"]["last_year_mtd"] = data[0]["total_occupy"] or 0 
+	datas["room_block"]["last_year_mtd"] = data[0]["total_block"] or 0 
+	datas["complimentary"]["last_year_mtd"] = data[0]["total_complimentary"] or 0 
+	datas["house_use"]["last_year_mtd"] = data[0]["total_house_use"] or 0 
+	datas["in_house_adult"]["last_year_mtd"] = data[0]["total_in_house_adult"] or 0 
+	datas["arrival_adult"]["last_year_mtd"] = data[0]["total_arrival_adult"] or 0 
+	datas["departure_adult"]["last_year_mtd"] = data[0]["total_departure_adult"] or 0 
+	datas["in_house_child"]["last_year_mtd"] = data[0]["total_in_house_child"] or 0 
+	datas["arrival_child"]["last_year_mtd"] = data[0]["total_arrival_child"] or 0 
+	datas["departure_child"]["last_year_mtd"] = data[0]["total_departure_child"] or 0 
+	datas["walk_in_adult"]["last_year_mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
+	datas["walk_in_child"]["last_year_mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
+	datas["walk_in_room_night"]["last_year_mtd"] = data[0]["total_walk_in_room_night"] or 0 
+	datas["arrival_room_night"]["last_year_mtd"] = data[0]["total_arrival_room_night"] or 0 
+	datas["departure_room_night"]["last_year_mtd"] = data[0]["total_departure_room_night"] or 0 
+	datas["no_show_room"]["last_year_mtd"] = data[0]["total_no_show_room"] or 0 
+
+	# last year ytd
+	filters_date = datetime.strptime(filters.date, '%Y-%m-%d')
+	last_year_start_date = filters_date.replace(year=filters_date.year - 1, month=1, day=1)
+	exception_message = last_year_start_date.strftime('%Y-%m-%d')
+	filters.start_date = exception_message
+	data = frappe.db.sql(sql,filters,as_dict=1) 
+
+	datas["room_occupy"]["last_year_ytd"] = data[0]["total_occupy"] or 0 
+	datas["room_block"]["last_year_ytd"] = data[0]["total_block"] or 0 
+	datas["complimentary"]["last_year_ytd"] = data[0]["total_complimentary"] or 0 
+	datas["house_use"]["last_year_ytd"] = data[0]["total_house_use"] or 0 
+	datas["in_house_adult"]["last_year_ytd"] = data[0]["total_in_house_adult"] or 0 
+	datas["arrival_adult"]["last_year_ytd"] = data[0]["total_arrival_adult"] or 0 
+	datas["departure_adult"]["last_year_ytd"] = data[0]["total_departure_adult"] or 0 
+	datas["in_house_child"]["last_year_ytd"] = data[0]["total_in_house_child"] or 0 
+	datas["arrival_child"]["last_year_ytd"] = data[0]["total_arrival_child"] or 0 
+	datas["departure_child"]["last_year_ytd"] = data[0]["total_departure_child"] or 0 
+	datas["walk_in_adult"]["last_year_ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
+	datas["walk_in_child"]["last_year_ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
+	datas["walk_in_room_night"]["last_year_ytd"] = data[0]["total_walk_in_room_night"] or 0 
+	datas["arrival_room_night"]["last_year_ytd"] = data[0]["total_arrival_room_night"] or 0 
+	datas["departure_room_night"]["last_year_ytd"] = data[0]["total_departure_room_night"] or 0 
+	datas["no_show_room"]["last_year_ytd"] = data[0]["total_no_show_room"] or 0 
+
 	return datas
 
 def get_current_room_in_property(filters):
@@ -275,15 +378,39 @@ def get_current_room_in_property(filters):
 
 	ytd_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
 
-	filters.last_current_start_date = getdate(filters.date).year - 1
+	filters_date = datetime.strptime(filters.date, '%Y-%m-%d')
+	one_year_ago_date = filters_date- timedelta(days=365) 
+	difference_one_year = (filters_date - one_year_ago_date).days
+	difference_one_year_timedelta = timedelta(days=difference_one_year)
+	formatted_date = filters_date - difference_one_year_timedelta
+	formatted_date_str = formatted_date.strftime('%Y-%m-%d')
+	filters.last_current_start_date = formatted_date_str
 
 	sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between %(last_current_start_date)s and %(date)s"
 
 	last_year_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
+
+	current_month = filters_date.month
+	current_day = filters_date.day
+	last_year = filters_date.year - 1
+	date_last_year = datetime(last_year, current_month, current_day)
+	filters.last_year_mtd = date_last_year.strftime('%Y-%m-%d')
+	sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between %(last_year_mtd)s and %(date)s"
+
+	last_year_mtd_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
+
+	last_year_start_date = filters_date.replace(year=filters_date.year - 1, month=1, day=1)
+	exception_message = last_year_start_date.strftime('%Y-%m-%d')
+	filters.last_year_ytd = exception_message
+	sql = "select sum(total_room) as total_room from `tabDaily Property Data` where property=%(property)s and date between %(last_year_ytd)s and %(date)s"
+
+	last_year_ytd_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
 	return {
 			"title": "Total Rooms in Property",
 			"current":total_room,
 			"mtd": mtd_total_room,
 			"ytd":ytd_total_room,
 			"last_year_current":last_year_total_room,
+			"last_year_mtd":last_year_mtd_total_room,
+			"last_year_ytd":last_year_ytd_total_room,
 	}

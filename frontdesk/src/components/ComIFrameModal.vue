@@ -160,7 +160,7 @@
                     </div>
                 </div>
             </div>
-            <div class="widht-ifame overflow-auto">
+            <div class="widht-ifame">
                 <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
       
            </ComPlaceholder>

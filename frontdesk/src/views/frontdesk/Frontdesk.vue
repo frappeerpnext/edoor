@@ -256,7 +256,6 @@ const calendarOptions = reactive({
     slotLabelFormat: function (date) {
         return " "
     },
-
     slotLabelDidMount: function (info) {
         const d = moment(info.date).format("DD")
         const day = moment(info.date).format("ddd")

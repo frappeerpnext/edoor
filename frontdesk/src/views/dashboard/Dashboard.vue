@@ -15,7 +15,7 @@
         <template #center>
             <Button :label="$t('Today')" class="w-8rem md:w-12rem btn-date__t border-noround-right border-none"
                 :class="selected_date == data.working_date ? 'active' : ''" @click="onShowTodayData()" />
-            <Button label="Tomorrow" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
+            <Button :label="$t('Tomorrow')" class="w-8rem md:w-12rem btn-date__t border-noround border-x-none border-none"
                 :class="selected_date == tomorrow ? 'active' : ''" @click="onShowTommorowData()" />
                 <Calendar v-model="date" :selectOtherMonths="true" class="w-48 das-calendar" panelClass="no-btn-clear"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
@@ -36,7 +36,7 @@
         </div>
         <div class="col-12 md:col-6 lg:col">
             <div class="bg-white h-full border-round-lg">
-                <ComPanel title="Occupancy">
+                <ComPanel :title="$t('Occupancy')">
                     <div class="grid">
                         <div class="col-12 md:col-6 flex align-items-center justify-content-center mt-3">
 
@@ -46,34 +46,34 @@
                             <Skeleton v-else shape="circle" size="18rem"></Skeleton>
                         </div>
                         <div class="col-12 md:col-5">
-                            <ComChartStatus @onClick="onViewRoomOccupy" :value="data.total_room_occupy" title="Occupied"
+                            <ComChartStatus @onClick="onViewRoomOccupy" :value="data.total_room_occupy" :title="$t('Occupied')"
                                 class="btn-green-edoor"></ComChartStatus>
 
-                            <ComChartStatus @onClick="onViewVacantRoom" :value="data.total_room_vacant" title="Vacant"
+                            <ComChartStatus @onClick="onViewVacantRoom" :value="data.total_room_vacant" :title="$t('Vacant')"
                                 class="bg-warning-edoor">
 
 
                             </ComChartStatus>
-                            <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" title="Total rooms"
+                            <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" :title="$t('Total rooms')"
                                 class="btn-sec-edoor">
                             </ComChartStatus>
                             <tippy
-                                :content="'Today No-Show ' + data.today_no_show + ' & No-Show With Reserved Room  ' + data.total_no_show">
+                                :content="$t('Today') + ' ' + $t('No-Show') + ' ' + data.today_no_show + ' & ' + $t('No-Show With Reserved Room') + ' ' + data.total_no_show">
                                 <ComChartStatus @onClick="onViewNoShowReservation"
                                     :value="!gv.loading ? (data?.today_no_show + ' / ' + data?.total_no_show) : ''"
-                                    title="No-Show" :style="{ backgroundColor: statusColor.no_show }">
+                                    :title="$t('No-Show')" :style="{ backgroundColor: statusColor.no_show }">
                                 </ComChartStatus>
                             </tippy>
                             <tippy
-                                :content="'<span> Today Cancelled ' + data.today_cancelled + ' & Cancelled ' + data.total_cancelled + '</span>'">
+                                :content="$t('Today') + ' ' + $t('Cancelled') + ' ' + data.today_cancelled + ' & ' + $t('Cancelled') + ' ' + data.total_cancelled">
                                 <ComChartStatus @onClick="onViewCancelReservation"
                                     :value="!gv.loading ? (data.today_cancelled + ' / ' + data.total_cancelled) : ''"
-                                    title="Cancelled" :style="{ backgroundColor: statusColor.cancelled }">
+                                    :title="$t('Cancelled')" :style="{ backgroundColor: statusColor.cancelled }">
                                 </ComChartStatus>
                             </tippy>
-                            <ComChartStatus v-tippy="'Today Void ' + data.today_void + ' & Void ' + data.total_void"
+                            <ComChartStatus v-tippy="$t('Today') + ' ' + $t('Void') + ' ' + data.today_void + ' & ' + $t('Void') + data.total_void"
                                 @onClick="onViewVoidReservation"
-                                :value="!gv.loading ? (data.today_void + ' / ' + data.total_void) : ''" title="Void"
+                                :value="!gv.loading ? (data.today_void + ' / ' + data.total_void) : ''" :title="$t('Void')"
                                 :style="{ backgroundColor: statusColor.void }">
                             </ComChartStatus>
                         </div>
@@ -83,35 +83,35 @@
         </div>
         <div class="col-12  md:col-6 lg:col">
             <div class="bg-white h-full border-round-lg">
-                <ComPanel title="Summary">
+                <ComPanel :title="$t('Summary')">
                     <div class="grid grid-cols-4 pt-3 px-2 pb-0 text-white">
 
-                        <ComKPI v-tippy="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in ' + ' & ' +  ' Total Arrival ' + (data?.arrival|| 0) " @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  ((data.arrival || 0) -(data.arrival_remaining || 0)) + '/' + data?.arrival ||0)) :''" title="Arrival"
+                        <ComKPI v-tippy="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' ' + $t('Checked-in') + ' & ' +  $t('Total Arrival') + ' ' + (data?.arrival|| 0) " @onClick="viewSummary('Arrival')" :value="!gv.loading ? ( (  ((data.arrival || 0) -(data.arrival_remaining || 0)) + '/' + data?.arrival ||0)) :''" :title="$t('Arrival')"
                             class="primary-btn-edoor cursor-pointer border-round-lg"> </ComKPI>
-                        <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" title="Stay Over"
+                        <ComKPI @onClick="viewSummary('Stay Over')" :value="data.stay_over" :title="$t('Stay Over')"
                             class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out' + ' & '+ 'Total Departure ' +  (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" title="Departure"
+                        <ComKPI v-tippy="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' ' + $t('Checked-out') + ' & '+ $t('Total Departure') + ' ' + (data?.departure ||0)   " @onClick="viewSummary('Departure')" :value="!gv.loading ? ( (data.departure - data?.departure_remaining)  +'/'+  data?.departure ||0) : ''" :title="$t('Departure')"
                             class="primary-btn-edoor border-round-lg cursor-pointer">
                         </ComKPI>
-                        <ComKPI @onClick="viewSummary('Daily Reservation')" v-tippy="'Total Reservation ' + data.daily_reservation + ' & Total Reservation Stay ' +  data?.daily_reservation_stay" :value="!gv.loading ? data.daily_reservation + '/' + data?.daily_reservation_stay : ''"
-                            title="Daily Reservation" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI @onClick="viewSummary('Daily Reservation')" v-tippy=" $t('Total Reservation') + ' ' + data.daily_reservation + ' & ' + $t('Total Reservation Stay') + ' ' +  data?.daily_reservation_stay" :value="!gv.loading ? data.daily_reservation + '/' + data?.daily_reservation_stay : ''"
+                            :title="$t('Daily Reservation')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
                         
                             <ComKPI
-                            v-tippy="'FIT (free independent traveler) Total ' + data.fit_reservation_arrival + ' & Total Stay ' + data.fit_stay_arrival"
+                            v-tippy="$t('FIT (Free Independent Traveler) Total') + ' ' + data.fit_reservation_arrival + ' & ' + $t('Total Stay') + ' '  + data.fit_stay_arrival"
                             @onClick="viewSummary('FIT Arrival')"
                             :value="!gv.loading ? (data.fit_reservation_arrival + '/' + data.fit_stay_arrival) : ''"
-                            title="FIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                            :title="$t('FIT Arrival')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
 
                         <ComKPI
-                            v-tippy="' GIT (Group Inclusive Tour) Total ' + data.git_reservation_arrival + ' & Total Stay ' + data.git_stay_arrival"
+                            v-tippy="$t('GIT (Group Inclusive Tour) Total') + ' ' + data.git_reservation_arrival + ' & ' +$t('Total Stay') + ' ' + data.git_stay_arrival"
                             @onClick="viewSummary('GIT Arrival')"
                             :value="!gv.loading ? (data.git_reservation_arrival + '/' + data.git_stay_arrival) : ''"
-                            title="GIT Arrival" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI v-tippy="'Today ' + (data?.unassign_room || 0) + ' unassign room & Total unassign ' + (data?.total_unassign_room || 0)"
- @onClick="viewSummary('Unassign Room')" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" title="Unassign Room"
+                            :title="$t('GIT Arrival')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
+                        <ComKPI v-tippy="$t('Today') + ' ' + (data?.unassign_room || 0) + ' ' + $t('Unassign Room') + ' & ' + $t('Total unassign') + ' ' + (data?.total_unassign_room || 0)"
+ @onClick="viewSummary('Unassign Room')" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" :title="$t('Unassign Room')"
                             class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI @onClick="viewSummary('Pickup and Drop Off')"
-                            :value="!gv.loading ? (data.pick_up + '/' + data.drop_off) : ''" title="Pickup/Drop Off"
+                            :value="!gv.loading ? (data.pick_up + '/' + data.drop_off) : ''" :title="$t('Pickup') + '/' + $t('Drop Off')"
                             class="bg-warning-edoor border-round-lg cursor-pointer"> </ComKPI>
 
                     </div>
@@ -125,7 +125,7 @@
         </div>
     </div>
     <div class="my-3">
-        <ComPanel :title="'Monthly Occupancy (' + moment(working_day.date_working_day).format('MMM/YYYY') + ')'">
+        <ComPanel :title="$t('Monthly Occupancy') + ' (' + moment(working_day.date_working_day).format('MMM/YYYY') + ')'">
             <OccupancyChart />
         </ComPanel>
     </div>
@@ -133,7 +133,7 @@
         <TabView class="tabview-custom" lazy>
             <TabPanel>
                 <template #header>
-                    <span class="white-space-nowrap">Arrival Remaining </span>
+                    <span class="white-space-nowrap">{{ $t('Arrival Remaining') }}  </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.arrival_remaining
                     }}</span>
                 </template>
@@ -144,7 +144,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span class="white-space-nowrap" >Departure Remaining</span>
+                    <span class="white-space-nowrap" >{{ $t('Departure Remaining') }}</span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.departure_remaining
                     }}</span>
                 </template>
@@ -155,7 +155,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span class="white-space-nowrap" >Stay Over</span>
+                    <span class="white-space-nowrap" > {{ $t('Stay Over') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -165,7 +165,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span class="white-space-nowrap" >Upcoming note</span>
+                    <span class="white-space-nowrap" > {{ $t('Upcoming note') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -175,7 +175,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span class="white-space-nowrap" >Desk Folio</span>
+                    <span class="white-space-nowrap" > {{ $t('Desk Folio') }} </span>
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.desk_folio }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
@@ -222,7 +222,8 @@ const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
 const tomorrow = ref('')
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const statusColor = computed(() => {
     if (setting.reservation_status) {
         return {
@@ -233,8 +234,6 @@ const statusColor = computed(() => {
     }
 
 })
-
-
 
 
 function getArrivalUrl() {

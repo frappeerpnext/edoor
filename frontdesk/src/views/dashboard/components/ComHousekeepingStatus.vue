@@ -7,7 +7,7 @@
                     v-tippy="slotProps.option.is_block_room ? 'Today Room Block  ' + slotProps.option.total + ' & Total Room Block ' + slotProps.option.total_block_room : ''"
                     :is_room_block="slotProps.option.is_block_room" :value_room_block="slotProps.option.total_block_room"
                     :value="`${slotProps.option.total}`" :badgeColor="slotProps.option.color" :icon="slotProps.option.icon">
-                    <template #content>{{ slotProps.option.status }}
+                    <template #content>{{ $t(slotProps.option.status) }}
                     </template>
                 </ComDashboardRowStatus>
             </template>
@@ -23,7 +23,8 @@ const data = ref([])
 const working_day = JSON.parse(localStorage.getItem('edoor_working_day'))
 const dialog = useDialog();
 const loading = ref(false)
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 function loadData(showLoading = true) {
     loading.value = showLoading

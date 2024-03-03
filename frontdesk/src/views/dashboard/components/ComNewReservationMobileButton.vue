@@ -8,6 +8,8 @@ import NewGroupBooking from '@/views/reservation/NewGroupBooking.vue';
 import { useDialog } from 'primevue/usedialog';
 const items_add_new = ref([])
 const dialog = useDialog();
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     is_walk_in: {
         type: Boolean,
@@ -16,7 +18,7 @@ const props = defineProps({
 })
 if (props.is_walk_in) {
     items_add_new.value.push({
-    label: "New Walk-In Guest",
+    label: $t("New Walk-In Guest"),
     icon: 'pi pi-user',
     command: () => {
         const dialogRef = dialog.open(NewReservation, {
@@ -24,7 +26,7 @@ if (props.is_walk_in) {
             is_walk_in:1
         },
         props: {
-            header: 'New Walk-In Guest',
+            header: $t('New Walk-In Guest'),
             style: {
                 width: '80vw',
             },
@@ -49,12 +51,12 @@ if (props.is_walk_in) {
 })
 }
 items_add_new.value.push({
-    label: "New FIT Reservation",
+    label: $t("New FIT Reservation"),
     icon: 'pi pi-user',
     command: () => {
         const dialogRef = dialog.open(NewReservation, {
         props: {
-            header: 'New FIT Reservation',
+            header: $t('New FIT Reservation'),
             style: {
                 width: '80vw',
             },
@@ -85,12 +87,12 @@ items_add_new.value.push({
 
 //Confirmattion Voucher
 items_add_new.value.push({
-    label: "New GIT Reservation",
+    label: $t("New GIT Reservation"),
     icon: 'pi pi-users',
     command: () => {
         dialog.open(NewGroupBooking, {
         props: {
-            header: 'New Group Booking',
+            header: $t('New Group Booking'),
             style: {
                 width: '80vw',
             },

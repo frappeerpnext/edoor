@@ -30,6 +30,7 @@ def get_columns(filters):
 	columns =   [
 		{"fieldname":"reservation", "label":"Res #",'align':'left', "fieldtype":"Link","options":"Reservation","width":130,"show_in_report":1,"post_message_action": "view_reservation_detail","url":"/frontdesk/reservation-detail"},
 		{"fieldname":"name", "label":"Stay #",'align':'left', "fieldtype":"Link","options":"Reservation Stay","width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
+		{"fieldname":"reference_number", "label":"Ref #",'align':'left',"width":115,"show_in_report":1,"url":"/frontdesk/stay-detail","post_message_action": "view_reservation_stay_detail"},
 		{'fieldname':'reservation_type','align':'center','label':'Type',"width":60 ,"show_in_report":1},
 		{"fieldname":"reservation_date",'align':'center', "label":"Res. Date", "fieldtype":"Date","width":95,"show_in_report":1},
 		{'fieldname':'rooms','label':'Room','align':'center',"width":40,"show_in_report":1},
@@ -224,6 +225,7 @@ def get_get_reservation_stay(filters):
 	sql="""
 			select 
 				name,
+				reference_number
 				reservation_date,
 				arrival_date,
 				departure_date,

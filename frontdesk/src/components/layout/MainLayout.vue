@@ -133,6 +133,7 @@ import iconChangeProperty from '@/assets/svg/icon-change-property.svg'
 import iconBlankGuestRegisteration from '@/assets/svg/icon-blank-registration.svg'
 import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComCheckRoomConfligAndOverBooking.vue'
 import ComHeaderBarItemButton from './components/ComHeaderBarItemButton.vue'
+
 import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 
