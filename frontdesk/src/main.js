@@ -237,7 +237,6 @@ app.use(PrimeVue, {
 	}
 })
 
-localStorage.setItem('lang','kh')
 app.use(i18n);
  
 app.use(ToastService);

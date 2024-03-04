@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div>
+		<div>  
 			<div class="flex justify-end items-center gap-2">
 				<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
 					<i class="pi pi-search" />
@@ -13,6 +13,10 @@
 						<i class="pi pi-plus text-lg  me-2"></i>
 						Add Note
 					</Button>
+				</div>
+				<div class="flex items-center mt-3 mb-1">
+					<Button style="border-color: #4338ca;color:#4338ca" @click="onRefreshNote()" icon="pi pi-refresh"
+                            :class="BtnClass ? BtnClass:''" class="conten-btn white-space-nowrap"></Button>
 				</div>
 			</div>
 			<ComAutoComplete class="search-note-cs w-full" inputId="reference_documnent_autocomplete" v-model="referenceDocument"
@@ -141,6 +145,10 @@ function onEdit(name) {
 	
 }
 
+const onRefreshNote = () => {
+	onLoadData()
+}
+
 function onPin(i) {
 	if(!gv.cashier_shift?.name){
         toast.add({ severity: 'warn', summary: "There is no cashier open. Please open your cashier shift", life: 3000 })
@@ -195,8 +203,8 @@ function onLoadData() {
 			"reference_name", "content", "owner", "comment_by", "modified", "comment_type", "custom_icon", 'custom_is_note'],
 		filters: filters,
 		orderBy: {
-			field: 'creation',
-			order: 'DESC',
+			field: 'custom_note_date',
+			order: 'ASC',
 		}
 	}).then((docs) => {
 		notes.value = Enumerable.from(docs).orderByDescending("$.custom_is_pin").toArray();

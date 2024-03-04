@@ -93,6 +93,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
     if doc.comment_type=="Deleted":
         return
     if doc.comment_type == "Workflow": return
+   
     #if doc have property field then update property, audit_date and is audit trail to true
     update_files = ["comment_by='{}'".format(frappe.db.get_value("User",doc.owner, "full_name"))]
     update_files.append("custom_comment_by_photo='{}'".format(frappe.db.get_value("User",doc.owner, "user_image") or ""))
@@ -105,48 +106,48 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
 
         update_files.append("custom_icon='{}'".format(icon))
     
-    ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
-    if doc.reference_name and not doc.custom_property:
+    if doc.reference_name:
+        ref_doc = frappe.get_doc(doc.reference_doctype,doc.reference_name )
+        if doc.reference_name and not doc.custom_property:
+            if hasattr(ref_doc, "property"):
+                working_day = get_working_day(ref_doc.property)
+                update_files.append("custom_property='{}'".format(ref_doc.property))
+                update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"]))
+                update_files.append("custom_is_audit_trail=1")
+                
+                if doc.comment_type=="Attachment":
+                    
+                    link = doc.content
+                    file_name = re.search(r'<a href="([^"]+)"', link).group(1) # extract the text between the quotes
+                    file_name = file_name.split('/')[-1] # get the last part 
+                    file_name = urllib.parse.unquote(file_name)
+                    
+
+                    file_data = frappe.db.get_list("File", filters={"file_url":"/files/" + file_name})
+
+                    if len(file_data)>0:
+                        file_doc = frappe.get_doc("File", file_data[0]["name"])
+                        if file_doc.custom_show_in_edoor==0:
+                            update_files.append("custom_is_audit_trail=0")
+        else:
+            if not doc.custom_cashier_shift:
+                working_day = get_working_day( doc.custom_property)
+                update_files.append("custom_cashier_shift='{}'".format("" if not working_day["cashier_shift"] else working_day["cashier_shift"]["name"]))
+                
+
+        # get field for relate document for easy get data in report
         
-        if hasattr(ref_doc, "property"):
-            working_day = get_working_day(ref_doc.property)
-            update_files.append("custom_property='{}'".format(ref_doc.property))
-            update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"]))
-            update_files.append("custom_is_audit_trail=1")
-            
-            if doc.comment_type=="Attachment":
-                
-                link = doc.content
-                file_name = re.search(r'<a href="([^"]+)"', link).group(1) # extract the text between the quotes
-                file_name = file_name.split('/')[-1] # get the last part 
-                file_name = urllib.parse.unquote(file_name)
-                
-
-                file_data = frappe.db.get_list("File", filters={"file_url":"/files/" + file_name})
-
-                if len(file_data)>0:
-                    file_doc = frappe.get_doc("File", file_data[0]["name"])
-                    if file_doc.custom_show_in_edoor==0:
-                        update_files.append("custom_is_audit_trail=0")
-    else:
-        if not doc.custom_cashier_shift:
-            working_day = get_working_day( doc.custom_property)
-            update_files.append("custom_cashier_shift='{}'".format("" if not working_day["cashier_shift"] else working_day["cashier_shift"]["name"]))
-            
-
-    # get field for relate document for easy get data in report
+        if hasattr(ref_doc,"reservation"):
+            update_files.append("custom_reservation='{}'".format(ref_doc.reservation or ""))
+        if hasattr(ref_doc,"reservation_stay"):
+            update_files.append("custom_reservation_stay='{}'".format(ref_doc.reservation_stay or ""))
+        
+        if hasattr(ref_doc,"transaction_type"):
+            update_files.append("custom_folio_transaction_type='{}'".format(ref_doc.transaction_type or ""))
+            update_files.append("custom_folio_number='{}'".format(ref_doc.transaction_number or ""))
     
-    if hasattr(ref_doc,"reservation"):
-        update_files.append("custom_reservation='{}'".format(ref_doc.reservation or ""))
-    if hasattr(ref_doc,"reservation_stay"):
-        update_files.append("custom_reservation_stay='{}'".format(ref_doc.reservation_stay or ""))
-    
-    if hasattr(ref_doc,"transaction_type"):
-        update_files.append("custom_folio_transaction_type='{}'".format(ref_doc.transaction_type or ""))
-        update_files.append("custom_folio_number='{}'".format(ref_doc.transaction_number or ""))
-  
-    if hasattr(ref_doc,"guest"):
-        update_files.append("custom_guest='{}'".format(ref_doc.guest or ""))
+        if hasattr(ref_doc,"guest"):
+            update_files.append("custom_guest='{}'".format(ref_doc.guest or ""))
 
     
 

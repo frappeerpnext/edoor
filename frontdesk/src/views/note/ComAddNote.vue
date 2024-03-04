@@ -68,6 +68,8 @@ function onSave(){
   loading.value = true
   let dataSave = JSON.parse(JSON.stringify(data.value))
   dataSave.custom_note_date = gv.dateApiFormat(dataSave.custom_note_date)
+  dataSave.custom_audit_trail_type ="Note"
+
   createUpdateDoc("Comment", dataSave)
   .then((r)=>{
     loading.value = false
@@ -82,6 +84,7 @@ onMounted(() => {
   if(dialogRef.value.data.name){
     getDoc("Comment", dialogRef.value.data.name).then((r)=>{
       data.value = r
+      data.value.custom_note_date = moment(data.value.custom_note_date ).toDate()
       window.postMessage({"action":"RoomBlockList"},"*")
     })
   }else{

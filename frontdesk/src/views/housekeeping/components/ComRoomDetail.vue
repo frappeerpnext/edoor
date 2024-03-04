@@ -20,38 +20,7 @@
                 </ComStayInfoNoBox>
                 <ComStayInfoNoBox label="Housekeeper" :value="data?.housekeeper" />
             </table>
-          
-            <hr class="my-3">
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium flex justify-content-center">
-                <div class="flex align-items-center">
-                    Reservation
-                </div>
-            </div>
-            <table>
-                <ComStayInfoNoBox label="Res Stay No">
-                    <Button v-if="data?.reservation_stay" @click="onViewReservationStayDetail(data?.reservation_stay)" class="-ml-2 link_line_action1"
-                        text>{{ data?.reservation_stay }}</Button>
-                    <span v-else></span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Status">
-                    <span class="-ms-2 font-semibold">{{data?.reservation_status }}</span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Guest">
-                    <Button v-if="data?.guest && data?.guest_name" @click="onViewCustomerDetail(data?.guest)" class="-ml-2 link_line_action1"
-                        text>{{ data?.guest }} - {{ data?.guest_name }}</Button>
-                    <span v-else></span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Arrival">
-                    <span class="-ms-2 font-semibold">
-                        {{ gv.dateFormat(data?.arrival) }} 
-                    </span>
-                </ComStayInfoNoBox>
-                <ComStayInfoNoBox label="Departure">
-                    <span class="-ms-2 font-semibold">
-                        {{ gv.dateFormat(data?.departure) }}
-                    </span>
-                </ComStayInfoNoBox>
-            </table>
+           
             <hr class="my-3">
             <div class="my-3 line-height-2 ">
             <div class="mt-auto text-sm flex justify-content-end">

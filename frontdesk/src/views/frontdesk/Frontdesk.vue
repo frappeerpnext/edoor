@@ -4,7 +4,7 @@
             <template #start>
                 <div class="flex">
                     <div class="flex align-items-center justify-content-between w-full">
-                        <div @click="onRefresh()" class="text-xl md:text-2xl white-space-nowrap">Front Desk</div> 
+                        <div @click="onRefresh()" class="text-xl md:text-2xl white-space-nowrap">{{$t('Front Desk')}}</div> 
                         <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                         <div class="ml-8 header-title text-xl md:text-2xl white-space-nowrap" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                     </div>
@@ -17,7 +17,7 @@
                     <Button :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
                        
                         <ComIcon icon="iconNoteWhite" class="me-2" height="18px" />
-                        <span>Uncomming Note</span>
+                        <span>{{$t('Upcoming Note')}}</span>
                         <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
@@ -103,8 +103,8 @@
                             <template #header>
                                 <div class="flex justify-between items-center me-2">
                                     <div class="absolute left-5 line-height-1">
-                                        <div class="text-sm">Uncomming</div>    
-                                        <div class="text-xl">Notes</div>
+                                        <div class="text-sm">{{$t('Upcoming')}}</div>    
+                                        <div class="text-xl">{{$t('Notes')}}</div> 
                                     </div>
                                 </div>
                             </template>
@@ -154,6 +154,8 @@ import ComWalkInReservation from '@/views/reservation/components/ComWalkInReserv
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import FullCalendar from '@fullcalendar/vue3'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const confirm = useConfirm()
 const resources = ref([])
@@ -188,6 +190,7 @@ const loading = ref(false)
 const totalNotes = ref(0)
 const conflictRooms = ref()
 const isMobile = ref(window.isMobile) 
+
 let advanceFilter = ref({
     room_type: "",
     room_number: "",

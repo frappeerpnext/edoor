@@ -725,7 +725,8 @@ def update_inventory(self):
 			'portion':"",
 			'unit':self.unit,
 			'stock_location':working_day["stock_location"],
-			'out_quantity': self.quantity if self.type=='Debit' else self.quantity * -1,
+			'out_quantity': self.quantity if self.type=='Debit' else 0,
+			'in_quantity': self.quantity if self.type=='Credit' else 0,
 			"uom_conversion":1,
 			'note': f'Item charge adding to folio. Account Code: {self.account_code}-{self.account_name}',
 			'action': 'Submit'
