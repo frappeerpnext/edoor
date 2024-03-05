@@ -171,15 +171,6 @@
   "sort_order": 200
  },
  {
-  "account_category": "Room Discount",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-11-23 09:12:28.091900",
-  "name": "Room Discount",
-  "note": null,
-  "sort_order": 1000
- },
- {
   "account_category": "Other Charge",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -187,6 +178,15 @@
   "name": "Other Charge",
   "note": null,
   "sort_order": 400
+ },
+ {
+  "account_category": "Room Discount",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-11-23 09:12:28.091900",
+  "name": "Room Discount",
+  "note": null,
+  "sort_order": 1000
  },
  {
   "account_category": "Room Charge Adjustment",

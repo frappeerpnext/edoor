@@ -108,12 +108,16 @@ let selected = ref('')
 let selectedObj = ref({})
 const toast = useToast()
 const dialog = useDialog();
+
 if (props.suggestions){
     options.value = props.suggestions
 }
 
+ 
+
 
 const search = (event) => {
+    
     keyword.value = event.query
     if(props.fieldFilter){
         getDataByFilter(event.query)
@@ -144,6 +148,7 @@ const onSelected = (event) => {
     }
 }
 async function getData(keyword) {
+    
     let apiParams = { doctype: props.doctype, txt: keyword }
     if (apiParams.txt){
         apiParams.txt = apiParams.txt.replaceAll('(','')

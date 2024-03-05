@@ -87,7 +87,8 @@ def get_room_charge_data(filters):
 			sum(if(account_category='Room Tax',a.amount, 0)) as tax
 		from `tabFolio Transaction` a
 		where 
-			property=%(property)s
+			property=%(property)s and 
+			posting_date between %(start_date)s and %(end_date)s
 
 		"""
 	if filters.business_source:

@@ -22,7 +22,11 @@
                         <Button v-if="slotProps.data.reference_name" class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>{{ slotProps.data.reference_name }}</Button>
                     </template>
                 </Column>  
-                <Column field="content" header="Note"></Column>     
+                <Column field="content" header="Note">
+                    <template #body="slotProps">
+                        <span class="mt-3 mb-6 whitespace-pre-wrap break-words overflow-auto pb-5 line-height-2">{{ slotProps.data.content }}</span>                        
+                    </template>
+                </Column>     
                 <Column field="comment_by" header="By"></Column>  
                 <Column header="Date">
                     <template #body="slotProps">
