@@ -5,7 +5,10 @@ import frappe
 from frappe.utils import date_diff,today ,add_months, add_days,getdate
 from dateutil.rrule import rrule, MONTHLY
 from datetime import datetime, timedelta
+
+
 def execute(filters=None):
+	
 	data = get_report_data(filters)
 
 	return get_columns(filters), data
@@ -30,10 +33,21 @@ def get_report_data(filters):
 	report_data =  []
 	rooms_available_record = get_current_room_in_property(filters)
 	report_data.append(rooms_available_record)
-	
+	frappe.throw(str(rooms_available_record))
 	occupy_data = get_data_from_occupy_record(filters)
 	report_data.append(occupy_data["room_occupy"])
-
+	# ytd_room = rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
+	# last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"]
+	# report_data.append({
+	# 	"title": "Total Vacant Rooms",
+	# 	"current":rooms_available_record["current"] - occupy_data["room_block"]["current"],
+	# 	"mtd":rooms_available_record["mtd"] - occupy_data["room_block"]["mtd"],
+	# 	"ytd":ytd_room,
+	# 	"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_block"]["last_year_current"],
+	# 	"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_block"]["last_year_mtd"],
+	# 	"last_year_ytd":last_year_ytd_room,
+	# 	"change_percentage":f"{((ytd_room - last_year_ytd_room) / (1 if ytd_room==0 else ytd_room or 0)) * 100:.2f}%",
+	# })
 	#total room - ooo room
 	ytd_room = rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
 	last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"]
@@ -481,8 +495,8 @@ def get_data_from_occupy_record(filters):
 				sum(if(parent_account_code in ('20300'),amount,0) * if(type='Debit',1,-1) )  as total_spa_massage_tax,
 				sum(if(parent_account_code in ('20400'),amount,0) * if(type='Debit',1,-1) )  as total_tour_and_ticket_tax,
 				sum(if(parent_account_code in ('20500'),amount,0) * if(type='Debit',1,-1) )  as total_fb_tax,
-				sum(if(parent_account_code in ('30100'),amount,0))  as total_cash_payment,
-				sum(if(parent_account_code in ('30200'),amount,0))  as total_bank_payment,
+				sum(if(parent_account_code in ('30100'),amount,0) * if(type='Debit',1,-1) )  as total_cash_payment,
+				sum(if(parent_account_code in ('30200'),amount,0) * if(type='Debit',1,-1) )  as total_bank_payment,
 				sum(if(parent_account_code in ('40100'),amount,0) * if(type='Debit',1,-1) )  as total_room_charge_discount,
 				sum(if(parent_account_code in ('40200'),amount,0) * if(type='Debit',1,-1) )  as total_housekeeping_discount,
 				sum(if(parent_account_code in ('40300'),amount,0) * if(type='Debit',1,-1) )  as total_spa_massage_discount,
@@ -498,7 +512,7 @@ def get_data_from_occupy_record(filters):
 				sum(if(parent_account_code in ('60200'),amount,0) * if(type='Debit',1,-1) )  as total_city_ledger_payment,
 				sum(if(account_group in ('10000'),amount,0) * if(type='Debit',1,-1) )  as total_charge,
 				sum(if(account_group in ('20000'),amount,0) * if(type='Debit',1,-1) )  as total_tax,
-				sum(if(account_group in ('30000'),amount,0))  as total_payment_and_refund,
+				sum(if(account_group in ('30000'),amount,0) * if(type='Debit',1,-1) )  as total_payment_and_refund,
 				sum(if(account_group in ('40000'),amount,0) * if(type='Debit',1,-1) )  as total_discount,
 				sum(if(account_group in ('50000'),amount,0) * if(type='Debit',1,-1) )  as total_system_transfer,
 				sum(if(transaction_type = 'Reservation Folio',amount,0) * if(type='Debit',1,-1) )  as total_guest_ledger,

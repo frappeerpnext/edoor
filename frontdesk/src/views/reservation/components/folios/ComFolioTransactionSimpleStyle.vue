@@ -12,18 +12,18 @@
            
             :rowClass="onRowClass">
             <Column selectionMode="multiple" headerStyle="width: 3rem"  v-if="showCheckbox"/>
-            <Column field="name" header="Folio Transaction" headerClass="text-center" bodyClass="text-center">
+            <Column field="name" :header="$t('Folio Transaction')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')" >
                         {{slotProps.data?.name}}</button>
                 </template>
             </Column>
-            <Column field="posting_date" header="Date" headerClass="text-center" bodyClass="text-center">
+            <Column field="posting_date" :header="$t('Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span>{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY") }}</span>
                 </template>
             </Column>
-            <Column field="room_number" header="Room #" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
+            <Column field="room_number" :header="$t('Room') + '#' " headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
             <Column field="account_name" header="Account" style="min-width: 160px;">
                 <template #body="slotProps">
                     <span v-if="setting?.show_account_code_in_folio_transaction == 1">{{ slotProps.data.account_code }} -
@@ -32,41 +32,41 @@
                     
                 </template>
             </Column>
-            <Column header="Qty" class="text-center">
+            <Column :header="$t('Qty')" class="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps?.data.allow_enter_quantity==1">{{slotProps.data.quantity}}</span>
 
                 </template>
             </Column>
-            <Column frozen  field="price" header="Amount/Rate" class="text-right" style="min-width: 70px;"  >
+            <Column frozen  field="price" :header="$t('Amount/Rate')" class="text-right" style="min-width: 70px;"  >
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.price" :class="slotProps.data.price<0?'white-space-nowrap text-green-700':'white-space-nowrap'" />
                 </template>
             </Column>
-            <Column field="discount_amount" header="Discount" class="text-right">
+            <Column field="discount_amount" :header="$t('Discount')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.discount_amount" class="white-space-nowrap" />
                 </template>
             </Column>
-            <Column field="total_tax" header="Tax" class="text-right" v-if="getTotal('total_tax')!=0">
+            <Column field="total_tax" :header="$t('Tax')" class="text-right" v-if="getTotal('total_tax')!=0">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.total_tax" class="white-space-nowrap" />
                 </template>
             </Column>
-            <Column field="bank_fee_amount" header="Bank Fee" class="text-right" v-if="getTotal('bank_fee_amount')!=0">
+            <Column field="bank_fee_amount" :header="$t('Bank Fee')" class="text-right" v-if="getTotal('bank_fee_amount')!=0">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.bank_fee_amount" class="white-space-nowrap" />
                 </template>
             </Column>
 
-            <Column field="total_amount" header="Total Amount" class="text-right">
+            <Column field="total_amount" :header="$t('Total Amount')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.total_amount" :class="slotProps.data.total_amount< 0?'white-space-nowrap text-green-700':'white-space-nowrap'" />
                 </template>
             </Column>
 
             
-            <Column header="Owner">
+            <Column :header="$t('Owner')">
                 <template #body="slotProps">
                     <div v-if="slotProps?.data && slotProps?.data?.owner">
                         <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
@@ -75,14 +75,14 @@
                     </div>  
                 </template>
                     </Column>
-            <Column field="creation" header="Created">
+            <Column field="creation" :header="$t('Created')">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.creation">
                         <ComTimeago :date="slotProps.data.creation" />
                     </span>
                 </template>
             </Column>
-            <Column field="note" header="Note" style="min-width: 160px;">
+            <Column field="note" :header="$t('Note')" style="min-width: 160px;">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.note"  v-tippy="slotProps.data.note">
                         {{ slotProps.data.note.slice(0, 20) + (slotProps.data.note.length > 20 ? '...' : '') }}
@@ -98,7 +98,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Total:" :colspan="showCheckbox?5:4" footerStyle="text-align:right" />
+                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox?5:4" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
 
@@ -185,6 +185,8 @@ import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInfo
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
 
 import Enumerable from 'linq'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     folio:Object, 
     doctype:{
