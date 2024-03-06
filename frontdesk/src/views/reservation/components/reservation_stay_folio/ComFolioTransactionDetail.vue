@@ -3,7 +3,9 @@
     <div class="border-round-xl h-full">
       <div class="grid">
         <div class="col-12 md:col-6">
-          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Transaction Detail</h2>
+          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">
+          {{ $t('Transaction Detail') }}
+            </h2>
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Room Number" v-if="doc?.room_number" :value="doc.room_number" />
@@ -160,7 +162,9 @@
           </table>
         </div>
         <div class="col-12 md:col-6">
-          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">Creation</h2>
+          <h2 data-v-c02f7a3a="" class="font-semibold h-title mb-2">
+            {{ $t('Creation') }}
+            </h2>
           <table class="">
             <tbody>
               <ComStayInfoNoBox label="Folio Transaction No" :value="doc?.name" />
@@ -223,9 +227,9 @@
     <template #footer-left>
 
 
-      <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print"
+      <Button class="border-none" @click="onPrintFolioTransaction" :label="$t('Print')" icon="pi pi-print"
         v-if="doc.print_format" />
-      <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
+      <Button class="border-none" @click="onAuditTrail" :label="$t('Audit Trail')" icon="pi pi-history" />
     </template>
     <OverlayPanel ref="openNote">
       <ComOverlayPanelContent width="350px" :loading="saving" @onSave="onSaveNote" @onCancel="onCloseNote">
@@ -256,7 +260,8 @@ import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
   doctype: String
 })
@@ -375,7 +380,7 @@ function onAuditTrail() {
       filter_key: "custom_folio_transaction"
     },
     props: {
-      header: 'Audit Trail for Folio Transaction',
+      header: $t('Audit Trail for Folio Transaction'),
       style: {
         width: '80vw',
       },

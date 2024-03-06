@@ -33,21 +33,21 @@ def get_report_data(filters):
 	report_data =  []
 	rooms_available_record = get_current_room_in_property(filters)
 	report_data.append(rooms_available_record)
-	frappe.throw(str(rooms_available_record))
+	
 	occupy_data = get_data_from_occupy_record(filters)
 	report_data.append(occupy_data["room_occupy"])
-	# ytd_room = rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
-	# last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"]
-	# report_data.append({
-	# 	"title": "Total Vacant Rooms",
-	# 	"current":rooms_available_record["current"] - occupy_data["room_block"]["current"],
-	# 	"mtd":rooms_available_record["mtd"] - occupy_data["room_block"]["mtd"],
-	# 	"ytd":ytd_room,
-	# 	"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_block"]["last_year_current"],
-	# 	"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_block"]["last_year_mtd"],
-	# 	"last_year_ytd":last_year_ytd_room,
-	# 	"change_percentage":f"{((ytd_room - last_year_ytd_room) / (1 if ytd_room==0 else ytd_room or 0)) * 100:.2f}%",
-	# })
+	ytd_room = rooms_available_record["ytd"] - occupy_data["room_occupy"]["ytd"]
+	last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_occupy"]["last_year_ytd"]
+	report_data.append({
+		"title": "Total Vacant Rooms",
+		"current":rooms_available_record["current"] - occupy_data["room_occupy"]["current"],
+		"mtd":rooms_available_record["mtd"] - occupy_data["room_occupy"]["mtd"],
+		"ytd":ytd_room,
+		"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_occupy"]["last_year_current"],
+		"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_occupy"]["last_year_mtd"],
+		"last_year_ytd":last_year_ytd_room,
+		"change_percentage":f"{((ytd_room - last_year_ytd_room) / (1 if ytd_room==0 else ytd_room or 0)) * 100:.2f}%",
+	})
 	#total room - ooo room
 	ytd_room = rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
 	last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"]
@@ -527,83 +527,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 	datas = {
-				"room_occupy":{"title":"Rooms Occupy", "current": data[0]["total_occupy"] or 0},
-				"room_block":{"title":"Out of Order Rooms", "current": data[0]["total_block"] or 0},
-				"complimentary":{"title":"Complimentary Rooms", "current": data[0]["total_complimentary"] or 0},
-				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use"] or 0},
-				"in_house_adult":{"title":"In-house Adult", "current": data[0]["total_in_house_adult"] or 0},	
-				"arrival_adult":{"title":"Arrival Adult", "current": data[0]["total_arrival_adult"] or 0},	
-				"departure_adult":{"title":"Departure Adult", "current": data[0]["total_departure_adult"] or 0},	
-				"in_house_child":{"title":"In-house Child", "current": data[0]["total_in_house_child"] or 0},	
-				"arrival_child":{"title":"Arrival Child", "current": data[0]["total_arrival_child"] or 0},	
-				"departure_child":{"title":"Departure Child", "current": data[0]["total_departure_child"] or 0},	
-				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
-				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
-				"walk_in_room_night":{"title":"Walk-In Room", "current": data[0]["total_walk_in_room_night"] or 0},	
-				"arrival_room_night":{"title":"Arrival Room Nights", "current": data[0]["total_arrival_room_night"] or 0},	
-				"departure_room_night":{"title":"Departure Room Nights", "current": data[0]["total_departure_room_night"] or 0},	
-				"no_show_room":{"title":"No Show Room", "current": data[0]["total_no_show_room"] or 0},	
-				"no_show_adult":{"title":"No Show Adult", "current": data[0]["total_no_show_adult"] or 0},	
-				"no_show_child":{"title":"No Show Child", "current": data[0]["total_no_show_child"] or 0},	
-				"early_checked_out_adult":{"title":"Early Checked Out Adult", "current": data[0]["total_early_checked_out_adult"] or 0},	
-				"early_checked_out_child":{"title":"Early Checked Out Child", "current": data[0]["total_early_checked_out_child"] or 0},	
-				"early_checked_out":{"title":"Early Checked Out Rooms", "current": data[0]["total_early_checked_out"] or 0},	
-				"fit_room":{"title":"FIT Rooms", "current": data[0]["total_fit_room"] or 0},	
-				"git_room":{"title":"GIT Rooms", "current": data[0]["total_git_room"] or 0},	
-				"fit_adult":{"title":"FIT Adult", "current": data[0]["total_fit_adult"] or 0},	
-				"fit_child":{"title":"FIT Child", "current": data[0]["total_fit_child"] or 0},	
-				"git_adult":{"title":"GIT Adult", "current": data[0]["total_git_adult"] or 0},	
-				"git_child":{"title":"GIT Child", "current": data[0]["total_git_child"] or 0},	
-				"vip_guest":{"title":"VIP Guest", "current": data[0]["total_vip_guest"] or 0},	
-				"cancel_room":{"title":"Cancelled Rooms", "current": data_stay[0]["total_cancel_room"] or 0},	
-				"cancel_adult":{"title":"Cancelled Adult", "current": data_stay[0]["total_cancel_adult"] or 0},	
-				"cancel_child":{"title":"Cancelled Child", "current": data_stay[0]["total_cancel_child"] or 0},	
-				"room_charge":{"title":"Room Charge", "current": trans[0]["total_room_charge"] or 0,"datatype":"Currency"},	
-				"housekeeping":{"title":"Housekeeping", "current": trans[0]["total_housekeeping"] or 0},	
-				"spa_massage":{"title":"Spa & Massage", "current": trans[0]["total_spa_massage"] or 0},	
-				"tour_ticket":{"title":"Tour Desk & Tickets", "current": trans[0]["total_tour_and_ticket"] or 0},	
-				"service_charge":{"title":"Service Charge", "current": trans[0]["total_service_charge"] or 0},	
-				"tip":{"title":"Tip", "current": trans[0]["total_tip"] or 0},	
-				"non_revenue":{"title":"Non Revenue", "current": trans[0]["total_non_revenue"] or 0},	
-				"food_and_beverage":{"title":"Food & Beverage", "current": trans[0]["total_fb"] or 0},	
-				"other_charge":{"title":"Other Charge", "current": trans[0]["total_other_charge"] or 0},	
-				"merchindise":{"title":"Merchindise", "current": trans[0]["total_merchandise"] or 0},	
-				"room_charge_tax":{"title":"Room Charge Tax", "current": trans[0]["total_room_charge_tax"] or 0},	
-				"housekeeping_tax":{"title":"Housekeeping Tax", "current": trans[0]["total_housekeeping_tax"] or 0},	
-				"spa_massage_tax":{"title":"Spa & Massage Tax", "current": trans[0]["total_spa_massage_tax"] or 0},	
-				"tour_ticket_tax":{"title":"Tour Desk & Tickets Tax", "current": trans[0]["total_tour_and_ticket_tax"] or 0},	
-				"food_and_beverage_tax":{"title":"Food & Beverage Tax", "current": trans[0]["total_fb_tax"] or 0},	
-				"guest_ledger":{"title":"Guest Ledger", "current": trans[0]["total_guest_ledger"] or 0},	
-				"city_ledger":{"title":"City Ledger", "current": trans[0]["total_city_ledger"] or 0},	
-				"desk_folio":{"title":"Desk Folio", "current": trans[0]["total_desk_folio"] or 0},	
-				"deposit_ledger":{"title":"Deposit Ledger", "current": trans[0]["total_deposit_ledger"] or 0},
-				"pos":{"title":"POS", "current": trans[0]["total_pos"] or 0},	
-				"cash":{"title":"Payment Cash", "current": trans[0]["total_cash_payment"] or 0},	
-				"bank":{"title":"Payment Bank", "current": trans[0]["total_bank_payment"] or 0},	
-				"room_charge_discount":{"title":"Room Charge Discount", "current": trans[0]["total_room_charge_discount"] or 0},	
-				"housekeeping_discount":{"title":"Housekeeping Discount", "current": trans[0]["total_housekeeping_discount"] or 0},	
-				"spa_massage_discount":{"title":"Spa & Massage Discount", "current": trans[0]["total_spa_massage_discount"] or 0},	
-				"tour_ticket_discount":{"title":"Tour Desk & Ticket Discount", "current": trans[0]["total_tour_and_ticket_discount"] or 0},	
-				"fb_discount":{"title":"Food & Beverage Discount", "current": trans[0]["total_fb_discount"] or 0},	
-				"other_charge_discount":{"title":"Other Charge Discount", "current": trans[0]["total_other_charge_discount"] or 0},	
-				"folio_transfer":{"title":"Folio Transfer", "current": trans[0]["total_folio_transfer"] or 0},	
-				"deposit_transfer":{"title":"Deposit Ledger Transfer", "current": trans[0]["total_deposit_ledger_transfer"] or 0},	
-				"city_ledger_transfer":{"title":"City Ledger Transfer", "current": trans[0]["total_city_ledger_transfer"] or 0},	
-				"desk_folio_transfer":{"title":"Desk Folio Transfer", "current": trans[0]["total_desk_folio_transfer"] or 0},	
-				"pos_transfer":{"title":"POS Transfer", "current": trans[0]["total_pos_transfer"] or 0},	
-				"city_ledger_charge":{"title":"City Ledger Charge", "current": trans[0]["total_city_ledger_charge"] or 0},	
-				"city_ledger_payment":{"title":"City Ledger Payment", "current": trans[0]["total_city_ledger_payment"] or 0},	
-				"total_charge":{"title":"Total Charge", "current": trans[0]["total_charge"] or 0},	
-				"total_tax":{"title":"Total Tax", "current": trans[0]["total_tax"] or 0},	
-				"total_discount":{"title":"Total Discount", "current": trans[0]["total_discount"] or 0},	
-				"total_system_transfer":{"title":"Total System Transfer", "current": trans[0]["total_system_transfer"] or 0},	
-				"total_payment":{"title":"Total Payment", "current": trans[0]["total_payment_and_refund"] or 0},	
-				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use_room"] or 0},	
-				"complimentary":{"title":"Complimentary Rooms", "current": data[0]["total_complimentary_room"] or 0},	
-				"house_use_adult":{"title":"House Use Adult", "current": data[0]["total_house_use_adult"] or 0},	
-				"house_use_child":{"title":"House Use Child", "current": data[0]["total_house_use_child"] or 0},	
-				"complimentary_adult":{"title":"Complimentary Adult", "current": data[0]["total_complimentary_adult"] or 0},	
-				"complimentary_child":{"title":"Complimentary Child", "current": data[0]["total_complimentary_child"] or 0},	
+				"room_occupy":{"title":"Rooms Occupy", "current": float(data[0]["total_occupy"] or 0)},
+				"room_block":{"title":"Out of Order Rooms", "current": float(data[0]["total_block"] or 0)},
+				"complimentary":{"title":"Complimentary Rooms", "current": float(data[0]["total_complimentary"] or 0)},
+				"house_use":{"title":"House Use Rooms", "current": float(data[0]["total_house_use"] or 0)},
+				"in_house_adult":{"title":"In-house Adult", "current": float(data[0]["total_in_house_adult"] or 0)},	
+				"arrival_adult":{"title":"Arrival Adult", "current": float(data[0]["total_arrival_adult"] or 0)},	
+				"departure_adult":{"title":"Departure Adult", "current": float(data[0]["total_departure_adult"] or 0)},	
+				"in_house_child":{"title":"In-house Child", "current": float(data[0]["total_in_house_child"] or 0)},	
+				"arrival_child":{"title":"Arrival Child", "current": float(data[0]["total_arrival_child"] or 0)},	
+				"departure_child":{"title":"Departure Child", "current": float(data[0]["total_departure_child"] or 0)},	
+				"walk_in_adult":{"title":"Walk-In Adult", "current": float(data[0]["total_in_house_walk_in_adult"] or 0)},	
+				"walk_in_child":{"title":"Walk-In Child", "current": float(data[0]["total_in_house_walk_in_child"] or 0)},	
+				"walk_in_room_night":{"title":"Walk-In Room", "current": float(data[0]["total_walk_in_room_night"] or 0)},	
+				"arrival_room_night":{"title":"Arrival Room Nights", "current": float(data[0]["total_arrival_room_night"] or 0)},	
+				"departure_room_night":{"title":"Departure Room Nights", "current": float(data[0]["total_departure_room_night"] or 0)},	
+				"no_show_room":{"title":"No Show Room", "current": float(data[0]["total_no_show_room"] or 0)},	
+				"no_show_adult":{"title":"No Show Adult", "current": float(data[0]["total_no_show_adult"] or 0)},	
+				"no_show_child":{"title":"No Show Child", "current": float(data[0]["total_no_show_child"] or 0)},	
+				"early_checked_out_adult":{"title":"Early Checked Out Adult", "current": float(data[0]["total_early_checked_out_adult"] or 0)},	
+				"early_checked_out_child":{"title":"Early Checked Out Child", "current": float(data[0]["total_early_checked_out_child"] or 0)},	
+				"early_checked_out":{"title":"Early Checked Out Rooms", "current": float(data[0]["total_early_checked_out"] or 0)},	
+				"fit_room":{"title":"FIT Rooms", "current": float(data[0]["total_fit_room"] or 0)},	
+				"git_room":{"title":"GIT Rooms", "current": float(data[0]["total_git_room"] or 0)},	
+				"fit_adult":{"title":"FIT Adult", "current": float(data[0]["total_fit_adult"] or 0)},	
+				"fit_child":{"title":"FIT Child", "current": float(data[0]["total_fit_child"] or 0)},	
+				"git_adult":{"title":"GIT Adult", "current": float(data[0]["total_git_adult"] or 0)},	
+				"git_child":{"title":"GIT Child", "current": float(data[0]["total_git_child"] or 0)},	
+				"vip_guest":{"title":"VIP Guest", "current": float(data[0]["total_vip_guest"] or 0)},	
+				"cancel_room":{"title":"Cancelled Rooms", "current": float(data_stay[0]["total_cancel_room"] or 0)},	
+				"cancel_adult":{"title":"Cancelled Adult", "current": float(data_stay[0]["total_cancel_adult"] or 0)},	
+				"cancel_child":{"title":"Cancelled Child", "current": float(data_stay[0]["total_cancel_child"] or 0)},	
+				"room_charge":{"title":"Room Charge", "current": float(trans[0]["total_room_charge"] or 0),"datatype":"Currency"},	
+				"housekeeping":{"title":"Housekeeping", "current": float(trans[0]["total_housekeeping"] or 0)},	
+				"spa_massage":{"title":"Spa & Massage", "current": float(trans[0]["total_spa_massage"] or 0)},	
+				"tour_ticket":{"title":"Tour Desk & Tickets", "current": float(trans[0]["total_tour_and_ticket"] or 0)},	
+				"service_charge":{"title":"Service Charge", "current": float(trans[0]["total_service_charge"] or 0)},	
+				"tip":{"title":"Tip", "current": float(trans[0]["total_tip"] or 0)},	
+				"non_revenue":{"title":"Non Revenue", "current": float(trans[0]["total_non_revenue"] or 0)},	
+				"food_and_beverage":{"title":"Food & Beverage", "current": float(trans[0]["total_fb"] or 0)},	
+				"other_charge":{"title":"Other Charge", "current": float(trans[0]["total_other_charge"] or 0)},	
+				"merchindise":{"title":"Merchindise", "current": float(trans[0]["total_merchandise"] or 0)},	
+				"room_charge_tax":{"title":"Room Charge Tax", "current": float(trans[0]["total_room_charge_tax"] or 0)},	
+				"housekeeping_tax":{"title":"Housekeeping Tax", "current": float(trans[0]["total_housekeeping_tax"] or 0)},	
+				"spa_massage_tax":{"title":"Spa & Massage Tax", "current": float(trans[0]["total_spa_massage_tax"] or 0)},	
+				"tour_ticket_tax":{"title":"Tour Desk & Tickets Tax", "current": float(trans[0]["total_tour_and_ticket_tax"] or 0)},	
+				"food_and_beverage_tax":{"title":"Food & Beverage Tax", "current": float(trans[0]["total_fb_tax"] or 0)},	
+				"guest_ledger":{"title":"Guest Ledger", "current": float(trans[0]["total_guest_ledger"] or 0)},	
+				"city_ledger":{"title":"City Ledger", "current": float(trans[0]["total_city_ledger"] or 0)},	
+				"desk_folio":{"title":"Desk Folio", "current": float(trans[0]["total_desk_folio"] or 0)},	
+				"deposit_ledger":{"title":"Deposit Ledger", "current": float(trans[0]["total_deposit_ledger"] or 0)},
+				"pos":{"title":"POS", "current": float(trans[0]["total_pos"] or 0)},	
+				"cash":{"title":"Payment Cash", "current": float(trans[0]["total_cash_payment"] or 0)},	
+				"bank":{"title":"Payment Bank", "current": float(trans[0]["total_bank_payment"] or 0)},	
+				"room_charge_discount":{"title":"Room Charge Discount", "current": float(trans[0]["total_room_charge_discount"] or 0)},	
+				"housekeeping_discount":{"title":"Housekeeping Discount", "current": float(trans[0]["total_housekeeping_discount"] or 0)},	
+				"spa_massage_discount":{"title":"Spa & Massage Discount", "current": float(trans[0]["total_spa_massage_discount"] or 0)},	
+				"tour_ticket_discount":{"title":"Tour Desk & Ticket Discount", "current": float(trans[0]["total_tour_and_ticket_discount"] or 0)},	
+				"fb_discount":{"title":"Food & Beverage Discount", "current": float(trans[0]["total_fb_discount"] or 0)},	
+				"other_charge_discount":{"title":"Other Charge Discount", "current": float(trans[0]["total_other_charge_discount"] or 0)},	
+				"folio_transfer":{"title":"Folio Transfer", "current": float(trans[0]["total_folio_transfer"] or 0)},	
+				"deposit_transfer":{"title":"Deposit Ledger Transfer", "current": float(trans[0]["total_deposit_ledger_transfer"] or 0)},	
+				"city_ledger_transfer":{"title":"City Ledger Transfer", "current": float(trans[0]["total_city_ledger_transfer"] or 0)},	
+				"desk_folio_transfer":{"title":"Desk Folio Transfer", "current": float(trans[0]["total_desk_folio_transfer"] or 0)},	
+				"pos_transfer":{"title":"POS Transfer", "current": float(trans[0]["total_pos_transfer"] or 0)},	
+				"city_ledger_charge":{"title":"City Ledger Charge", "current": float(trans[0]["total_city_ledger_charge"] or 0)},	
+				"city_ledger_payment":{"title":"City Ledger Payment", "current": float(trans[0]["total_city_ledger_payment"] or 0)},	
+				"total_charge":{"title":"Total Charge", "current": float(trans[0]["total_charge"] or 0)},	
+				"total_tax":{"title":"Total Tax", "current": float(trans[0]["total_tax"] or 0)},	
+				"total_discount":{"title":"Total Discount", "current": float(trans[0]["total_discount"] or 0)},	
+				"total_system_transfer":{"title":"Total System Transfer", "current": float(trans[0]["total_system_transfer"] or 0)},	
+				"total_payment":{"title":"Total Payment", "current": float(trans[0]["total_payment_and_refund"] or 0)},	
+				"house_use":{"title":"House Use Rooms", "current": float(data[0]["total_house_use_room"] or 0)},	
+				"complimentary":{"title":"Complimentary Rooms", "current": float(data[0]["total_complimentary_room"] or 0)},	
+				"house_use_adult":{"title":"House Use Adult", "current": float(data[0]["total_house_use_adult"] or 0)},	
+				"house_use_child":{"title":"House Use Child", "current": float(data[0]["total_house_use_child"] or 0)},	
+				"complimentary_adult":{"title":"Complimentary Adult", "current": float(data[0]["total_complimentary_adult"] or 0)},	
+				"complimentary_child":{"title":"Complimentary Child", "current": float(data[0]["total_complimentary_child"] or 0)},	
 					
 				
 	}
@@ -614,83 +614,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 
-	datas["room_occupy"]["mtd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["mtd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["mtd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["mtd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["mtd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["mtd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["mtd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["mtd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["mtd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["mtd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["mtd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["mtd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["mtd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["mtd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["mtd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["mtd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out"]["mtd"] = data[0]["total_early_checked_out"] or 0 
-	datas["early_checked_out_adult"]["mtd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["mtd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["fit_room"]["mtd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["mtd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["mtd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["mtd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["mtd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["mtd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["mtd"] = data[0]["total_vip_guest"] or 0 
-	datas["house_use"]["mtd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["mtd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["mtd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["mtd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["mtd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["mtd"] = data[0]["total_complimentary_child"] or 0 
-	datas["cancel_room"]["mtd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["mtd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["mtd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["room_charge"]["mtd"] = trans[0]["total_room_charge"] or 0 
-	datas["housekeeping"]["mtd"] = trans[0]["total_housekeeping"] or 0 
-	datas["spa_massage"]["mtd"] = trans[0]["total_spa_massage"] or 0 
-	datas["tour_ticket"]["mtd"] = trans[ 0]["total_tour_and_ticket"] or 0 
-	datas["service_charge"]["mtd"] = trans[ 0]["total_service_charge"] or 0 
-	datas["tip"]["mtd"] = trans[ 0]["total_tip"] or 0 
-	datas["non_revenue"]["mtd"] = trans[ 0]["total_non_revenue"] or 0 
-	datas["food_and_beverage"]["mtd"] = trans[ 0]["total_fb"] or 0 
-	datas["other_charge"]["mtd"] = trans[ 0]["total_other_charge"] or 0 
-	datas["merchindise"]["mtd"] = trans[ 0]["total_merchandise"] or 0 
-	datas["guest_ledger"]["mtd"] = trans[ 0]["total_guest_ledger"] or 0 
-	datas["city_ledger"]["mtd"] = trans[ 0]["total_city_ledger"] or 0 
-	datas["desk_folio"]["mtd"] = trans[ 0]["total_desk_folio"] or 0 
-	datas["deposit_ledger"]["mtd"] = trans[ 0]["total_deposit_ledger"] or 0 
-	datas["pos"]["mtd"] = trans[ 0]["total_pos"] or 0 
-	datas["room_charge_tax"]["mtd"] = trans[ 0]["total_room_charge_tax"] or 0 
-	datas["housekeeping_tax"]["mtd"] = trans[ 0]["total_housekeeping_tax"] or 0 
-	datas["spa_massage_tax"]["mtd"] = trans[ 0]["total_spa_massage_tax"] or 0 
-	datas["tour_ticket_tax"]["mtd"] = trans[ 0]["total_tour_and_ticket_tax"] or 0 
-	datas["food_and_beverage_tax"]["mtd"] = trans[ 0]["total_fb_tax"] or 0 
-	datas["room_charge_discount"]["mtd"] = trans[ 0]["total_room_charge_discount"] or 0 
-	datas["housekeeping_discount"]["mtd"] = trans[ 0]["total_housekeeping_discount"] or 0 
-	datas["spa_massage_discount"]["mtd"] = trans[ 0]["total_spa_massage_discount"] or 0 
-	datas["tour_ticket_discount"]["mtd"] = trans[ 0]["total_tour_and_ticket_discount"] or 0 
-	datas["other_charge_discount"]["mtd"] = trans[ 0]["total_other_charge_discount"] or 0 
-	datas["folio_transfer"]["mtd"] = trans[ 0]["total_folio_transfer"] or 0 
-	datas["city_ledger_transfer"]["mtd"] = trans[ 0]["total_city_ledger_transfer"] or 0 
-	datas["deposit_transfer"]["mtd"] = trans[ 0]["total_deposit_ledger_transfer"] or 0 
-	datas["desk_folio_transfer"]["mtd"] = trans[ 0]["total_desk_folio_transfer"] or 0 
-	datas["fb_discount"]["mtd"] = trans[ 0]["total_fb_discount"] or 0 
-	datas["pos_transfer"]["mtd"] = trans[ 0]["total_pos_transfer"] or 0 
-	datas["city_ledger_charge"]["mtd"] = trans[ 0]["total_city_ledger_charge"] or 0 
-	datas["city_ledger_payment"]["mtd"] = trans[ 0]["total_city_ledger_payment"] or 0 
-	datas["cash"]["mtd"] = trans[ 0]["total_cash_payment"] or 0 
-	datas["bank"]["mtd"] = trans[ 0]["total_bank_payment"] or 0 
-	datas["total_charge"]["mtd"] = trans[ 0]["total_charge"] or 0 
-	datas["total_tax"]["mtd"] = trans[ 0]["total_tax"] or 0 
-	datas["total_payment"]["mtd"] = trans[ 0]["total_payment_and_refund"] or 0 
-	datas["total_system_transfer"]["mtd"] = trans[ 0]["total_system_transfer"] or 0 
-	datas["total_discount"]["mtd"] = trans[ 0]["total_discount"] or 0 
+	datas["room_occupy"]["mtd"] = float(data[0]["total_occupy"] or 0) 
+	datas["room_block"]["mtd"] = float(data[0]["total_block"] or 0) 
+	datas["complimentary"]["mtd"] = float(data[0]["total_complimentary"] or 0) 
+	datas["house_use"]["mtd"] = float(data[0]["total_house_use"] or 0) 
+	datas["in_house_adult"]["mtd"] = float(data[0]["total_in_house_adult"] or 0) 
+	datas["arrival_adult"]["mtd"] = float(data[0]["total_arrival_adult"] or 0) 
+	datas["departure_adult"]["mtd"] = float(data[0]["total_departure_adult"] or 0) 
+	datas["in_house_child"]["mtd"] = float(data[0]["total_in_house_child"] or 0) 
+	datas["arrival_child"]["mtd"] = float(data[0]["total_arrival_child"] or 0) 
+	datas["departure_child"]["mtd"] = float(data[0]["total_departure_child"] or 0) 
+	datas["walk_in_adult"]["mtd"] = float(data[0]["total_in_house_walk_in_adult"] or 0) 
+	datas["walk_in_child"]["mtd"] = float(data[0]["total_in_house_walk_in_child"] or 0) 
+	datas["walk_in_room_night"]["mtd"] = float(data[0]["total_walk_in_room_night"] or 0) 
+	datas["arrival_room_night"]["mtd"] = float(data[0]["total_arrival_room_night"] or 0) 
+	datas["departure_room_night"]["mtd"] = float(data[0]["total_departure_room_night"] or 0) 
+	datas["no_show_room"]["mtd"] = float(data[0]["total_no_show_room"] or 0) 
+	datas["no_show_adult"]["mtd"] = float(data[0]["total_no_show_adult"] or 0) 
+	datas["no_show_child"]["mtd"] = float(data[0]["total_no_show_child"] or 0) 
+	datas["early_checked_out"]["mtd"] = float(data[0]["total_early_checked_out"] or 0) 
+	datas["early_checked_out_adult"]["mtd"] = float(data[0]["total_early_checked_out_adult"] or 0) 
+	datas["early_checked_out_child"]["mtd"] = float(data[0]["total_early_checked_out_child"] or 0) 
+	datas["fit_room"]["mtd"] = float(data[0]["total_fit_room"] or 0) 
+	datas["git_room"]["mtd"] = float(data[0]["total_git_room"] or 0) 
+	datas["fit_adult"]["mtd"] = float(data[0]["total_fit_adult"] or 0) 
+	datas["fit_child"]["mtd"] = float(data[0]["total_fit_child"] or 0) 
+	datas["git_adult"]["mtd"] = float(data[0]["total_git_adult"] or 0) 
+	datas["git_child"]["mtd"] = float(data[0]["total_git_child"] or 0) 
+	datas["vip_guest"]["mtd"] = float(data[0]["total_vip_guest"] or 0) 
+	datas["house_use"]["mtd"] = float(data[0]["total_house_use_room"] or 0) 
+	datas["complimentary"]["mtd"] = float(data[0]["total_complimentary_room"] or 0) 
+	datas["house_use_adult"]["mtd"] = float(data[0]["total_house_use_adult"] or 0) 
+	datas["house_use_child"]["mtd"] = float(data[0]["total_house_use_child"] or 0) 
+	datas["complimentary_adult"]["mtd"] = float(data[0]["total_complimentary_adult"] or 0) 
+	datas["complimentary_child"]["mtd"] = float(data[0]["total_complimentary_child"] or 0) 
+	datas["cancel_room"]["mtd"] = float(data_stay[0]["total_cancel_room"] or 0) 
+	datas["cancel_adult"]["mtd"] = float(data_stay[0]["total_cancel_adult"] or 0) 
+	datas["cancel_child"]["mtd"] = float(data_stay[0]["total_cancel_child"] or 0) 
+	datas["room_charge"]["mtd"] = float(trans[0]["total_room_charge"] or 0) 
+	datas["housekeeping"]["mtd"] = float(trans[0]["total_housekeeping"] or 0) 
+	datas["spa_massage"]["mtd"] = float(trans[0]["total_spa_massage"] or 0) 
+	datas["tour_ticket"]["mtd"] = float(trans[ 0]["total_tour_and_ticket"] or 0) 
+	datas["service_charge"]["mtd"] = float(trans[ 0]["total_service_charge"] or 0) 
+	datas["tip"]["mtd"] = float(trans[ 0]["total_tip"] or 0) 
+	datas["non_revenue"]["mtd"] = float(trans[ 0]["total_non_revenue"] or 0) 
+	datas["food_and_beverage"]["mtd"] = float(trans[ 0]["total_fb"] or 0) 
+	datas["other_charge"]["mtd"] = float(trans[ 0]["total_other_charge"] or 0) 
+	datas["merchindise"]["mtd"] = float(trans[ 0]["total_merchandise"] or 0) 
+	datas["guest_ledger"]["mtd"] = float(trans[ 0]["total_guest_ledger"] or 0) 
+	datas["city_ledger"]["mtd"] = float(trans[ 0]["total_city_ledger"] or 0) 
+	datas["desk_folio"]["mtd"] = float(trans[ 0]["total_desk_folio"] or 0) 
+	datas["deposit_ledger"]["mtd"] = float(trans[ 0]["total_deposit_ledger"] or 0) 
+	datas["pos"]["mtd"] = float(trans[ 0]["total_pos"] or 0) 
+	datas["room_charge_tax"]["mtd"] = float(trans[ 0]["total_room_charge_tax"] or 0) 
+	datas["housekeeping_tax"]["mtd"] = float(trans[ 0]["total_housekeeping_tax"] or 0) 
+	datas["spa_massage_tax"]["mtd"] = float(trans[ 0]["total_spa_massage_tax"] or 0) 
+	datas["tour_ticket_tax"]["mtd"] = float(trans[ 0]["total_tour_and_ticket_tax"] or 0) 
+	datas["food_and_beverage_tax"]["mtd"] = float(trans[ 0]["total_fb_tax"] or 0) 
+	datas["room_charge_discount"]["mtd"] = float(trans[ 0]["total_room_charge_discount"] or 0) 
+	datas["housekeeping_discount"]["mtd"] = float(trans[ 0]["total_housekeeping_discount"] or 0) 
+	datas["spa_massage_discount"]["mtd"] = float(trans[ 0]["total_spa_massage_discount"] or 0) 
+	datas["tour_ticket_discount"]["mtd"] = float(trans[ 0]["total_tour_and_ticket_discount"] or 0) 
+	datas["other_charge_discount"]["mtd"] = float(trans[ 0]["total_other_charge_discount"] or 0) 
+	datas["folio_transfer"]["mtd"] = float(trans[ 0]["total_folio_transfer"] or 0) 
+	datas["city_ledger_transfer"]["mtd"] = float(trans[ 0]["total_city_ledger_transfer"] or 0) 
+	datas["deposit_transfer"]["mtd"] = float(trans[ 0]["total_deposit_ledger_transfer"] or 0) 
+	datas["desk_folio_transfer"]["mtd"] = float(trans[ 0]["total_desk_folio_transfer"] or 0) 
+	datas["fb_discount"]["mtd"] = float(trans[ 0]["total_fb_discount"] or 0) 
+	datas["pos_transfer"]["mtd"] = float(trans[ 0]["total_pos_transfer"] or 0) 
+	datas["city_ledger_charge"]["mtd"] = float(trans[ 0]["total_city_ledger_charge"] or 0) 
+	datas["city_ledger_payment"]["mtd"] = float(trans[ 0]["total_city_ledger_payment"] or 0) 
+	datas["cash"]["mtd"] = float(trans[ 0]["total_cash_payment"] or 0) 
+	datas["bank"]["mtd"] = float(trans[ 0]["total_bank_payment"] or 0) 
+	datas["total_charge"]["mtd"] = float(trans[ 0]["total_charge"] or 0) 
+	datas["total_tax"]["mtd"] = float(trans[ 0]["total_tax"] or 0) 
+	datas["total_payment"]["mtd"] = float(trans[ 0]["total_payment_and_refund"] or 0) 
+	datas["total_system_transfer"]["mtd"] = float(trans[ 0]["total_system_transfer"] or 0) 
+	datas["total_discount"]["mtd"] = float(trans[ 0]["total_discount"] or 0) 
 	
 
 	#ytd
@@ -699,83 +699,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 
-	datas["room_occupy"]["ytd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["ytd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["ytd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["ytd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["ytd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["ytd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["ytd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["ytd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["ytd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["ytd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["ytd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["ytd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["ytd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["ytd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["ytd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["ytd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["ytd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["ytd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["ytd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["ytd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["ytd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["ytd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["ytd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["ytd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["ytd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["ytd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["ytd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["ytd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["ytd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["room_charge"]["ytd"] = trans[0]["total_room_charge"] or 0 
-	datas["housekeeping"]["ytd"] = trans[0]["total_housekeeping"] or 0 
-	datas["spa_massage"]["ytd"] = trans[0]["total_spa_massage"] or 0 
-	datas["tour_ticket"]["ytd"] = trans[ 0]["total_tour_and_ticket"] or 0 
-	datas["service_charge"]["ytd"] = trans[ 0]["total_service_charge"] or 0 
-	datas["tip"]["ytd"] = trans[ 0]["total_tip"] or 0 
-	datas["non_revenue"]["ytd"] = trans[ 0]["total_non_revenue"] or 0 
-	datas["food_and_beverage"]["ytd"] = trans[ 0]["total_fb"] or 0 
-	datas["other_charge"]["ytd"] = trans[ 0]["total_other_charge"] or 0 
-	datas["merchindise"]["ytd"] = trans[ 0]["total_merchandise"] or 0
-	datas["guest_ledger"]["ytd"] = trans[ 0]["total_guest_ledger"] or 0 
-	datas["city_ledger"]["ytd"] = trans[ 0]["total_city_ledger"] or 0 
-	datas["desk_folio"]["ytd"] = trans[ 0]["total_desk_folio"] or 0 
-	datas["deposit_ledger"]["ytd"] = trans[ 0]["total_deposit_ledger"] or 0 
-	datas["pos"]["ytd"] = trans[ 0]["total_pos"] or 0 
-	datas["house_use"]["ytd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["ytd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["ytd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["ytd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["ytd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["ytd"] = data[0]["total_complimentary_child"] or 0 
-	datas["room_charge_tax"]["ytd"] = trans[ 0]["total_room_charge_tax"] or 0 
-	datas["housekeeping_tax"]["ytd"] = trans[ 0]["total_housekeeping_tax"] or 0 
-	datas["spa_massage_tax"]["ytd"] = trans[ 0]["total_spa_massage_tax"] or 0 
-	datas["tour_ticket_tax"]["ytd"] = trans[ 0]["total_tour_and_ticket_tax"] or 0 
-	datas["food_and_beverage_tax"]["ytd"] = trans[ 0]["total_fb_tax"] or 0 
-	datas["room_charge_discount"]["ytd"] = trans[ 0]["total_room_charge_discount"] or 0 
-	datas["housekeeping_discount"]["ytd"] = trans[ 0]["total_housekeeping_discount"] or 0 
-	datas["spa_massage_discount"]["ytd"] = trans[ 0]["total_spa_massage_discount"] or 0 
-	datas["tour_ticket_discount"]["ytd"] = trans[ 0]["total_tour_and_ticket_discount"] or 0 
-	datas["other_charge_discount"]["ytd"] = trans[ 0]["total_other_charge_discount"] or 0 
-	datas["folio_transfer"]["ytd"] = trans[ 0]["total_folio_transfer"] or 0 
-	datas["city_ledger_transfer"]["ytd"] = trans[ 0]["total_city_ledger_transfer"] or 0 
-	datas["deposit_transfer"]["ytd"] = trans[ 0]["total_deposit_ledger_transfer"] or 0 
-	datas["desk_folio_transfer"]["ytd"] = trans[ 0]["total_desk_folio_transfer"] or 0 
-	datas["fb_discount"]["ytd"] = trans[ 0]["total_fb_discount"] or 0 
-	datas["pos_transfer"]["ytd"] = trans[ 0]["total_pos_transfer"] or 0 
-	datas["city_ledger_charge"]["ytd"] = trans[ 0]["total_city_ledger_charge"] or 0 
-	datas["city_ledger_payment"]["ytd"] = trans[ 0]["total_city_ledger_payment"] or 0 
-	datas["cash"]["ytd"] = trans[ 0]["total_cash_payment"] or 0 
-	datas["bank"]["ytd"] = trans[ 0]["total_bank_payment"] or 0 
-	datas["total_charge"]["ytd"] = trans[ 0]["total_charge"] or 0 
-	datas["total_tax"]["ytd"] = trans[ 0]["total_tax"] or 0 
-	datas["total_payment"]["ytd"] = trans[ 0]["total_payment_and_refund"] or 0 
-	datas["total_system_transfer"]["ytd"] = trans[ 0]["total_system_transfer"] or 0 
-	datas["total_discount"]["ytd"] = trans[ 0]["total_discount"] or 0 
+	datas["room_occupy"]["ytd"] = float(data[0]["total_occupy"] or 0) 
+	datas["room_block"]["ytd"] = float(data[0]["total_block"] or 0) 
+	datas["complimentary"]["ytd"] = float(data[0]["total_complimentary"] or 0) 
+	datas["house_use"]["ytd"] = float(data[0]["total_house_use"] or 0) 
+	datas["in_house_adult"]["ytd"] = float(data[0]["total_in_house_adult"] or 0) 
+	datas["arrival_adult"]["ytd"] = float(data[0]["total_arrival_adult"] or 0) 
+	datas["departure_adult"]["ytd"] = float(data[0]["total_departure_adult"] or 0) 
+	datas["in_house_child"]["ytd"] = float(data[0]["total_in_house_child"] or 0) 
+	datas["arrival_child"]["ytd"] = float(data[0]["total_arrival_child"] or 0) 
+	datas["departure_child"]["ytd"] = float(data[0]["total_departure_child"] or 0) 
+	datas["walk_in_adult"]["ytd"] = float(data[0]["total_in_house_walk_in_adult"] or 0) 
+	datas["walk_in_child"]["ytd"] = float(data[0]["total_in_house_walk_in_child"] or 0) 
+	datas["walk_in_room_night"]["ytd"] = float(data[0]["total_walk_in_room_night"] or 0) 
+	datas["arrival_room_night"]["ytd"] = float(data[0]["total_arrival_room_night"] or 0) 
+	datas["departure_room_night"]["ytd"] = float(data[0]["total_departure_room_night"] or 0) 
+	datas["no_show_room"]["ytd"] = float(data[0]["total_no_show_room"] or 0) 
+	datas["no_show_adult"]["ytd"] = float(data[0]["total_no_show_adult"] or 0) 
+	datas["no_show_child"]["ytd"] = float(data[0]["total_no_show_child"] or 0) 
+	datas["early_checked_out_adult"]["ytd"] = float(data[0]["total_early_checked_out_adult"] or 0) 
+	datas["early_checked_out_child"]["ytd"] = float(data[0]["total_early_checked_out_child"] or 0) 
+	datas["early_checked_out"]["ytd"] = float(data[0]["total_early_checked_out"] or 0) 
+	datas["fit_room"]["ytd"] = float(data[0]["total_fit_room"] or 0) 
+	datas["git_room"]["ytd"] = float(data[0]["total_git_room"] or 0) 
+	datas["fit_adult"]["ytd"] = float(data[0]["total_fit_adult"] or 0) 
+	datas["fit_child"]["ytd"] = float(data[0]["total_fit_child"] or 0) 
+	datas["git_adult"]["ytd"] = float(data[0]["total_git_adult"] or 0) 
+	datas["git_child"]["ytd"] = float(data[0]["total_git_child"] or 0) 
+	datas["vip_guest"]["ytd"] = float(data[0]["total_vip_guest"] or 0) 
+	datas["cancel_room"]["ytd"] = float(data_stay[0]["total_cancel_room"] or 0) 
+	datas["cancel_adult"]["ytd"] = float(data_stay[0]["total_cancel_adult"] or 0) 
+	datas["cancel_child"]["ytd"] = float(data_stay[0]["total_cancel_child"] or 0) 
+	datas["room_charge"]["ytd"] = float(trans[0]["total_room_charge"] or 0) 
+	datas["housekeeping"]["ytd"] = float(trans[0]["total_housekeeping"] or 0) 
+	datas["spa_massage"]["ytd"] = float(trans[0]["total_spa_massage"] or 0) 
+	datas["tour_ticket"]["ytd"] = float(trans[ 0]["total_tour_and_ticket"] or 0) 
+	datas["service_charge"]["ytd"] = float(trans[ 0]["total_service_charge"] or 0) 
+	datas["tip"]["ytd"] = float(trans[ 0]["total_tip"] or 0) 
+	datas["non_revenue"]["ytd"] = float(trans[ 0]["total_non_revenue"] or 0) 
+	datas["food_and_beverage"]["ytd"] = float(trans[ 0]["total_fb"] or 0) 
+	datas["other_charge"]["ytd"] = float(trans[ 0]["total_other_charge"] or 0) 
+	datas["merchindise"]["ytd"] = float(trans[ 0]["total_merchandise"] or 0)
+	datas["guest_ledger"]["ytd"] = float(trans[ 0]["total_guest_ledger"] or 0) 
+	datas["city_ledger"]["ytd"] = float(trans[ 0]["total_city_ledger"] or 0) 
+	datas["desk_folio"]["ytd"] = float(trans[ 0]["total_desk_folio"] or 0) 
+	datas["deposit_ledger"]["ytd"] = float(trans[ 0]["total_deposit_ledger"] or 0) 
+	datas["pos"]["ytd"] = float(trans[ 0]["total_pos"] or 0) 
+	datas["house_use"]["ytd"] = float(data[0]["total_house_use_room"] or 0) 
+	datas["complimentary"]["ytd"] = float(data[0]["total_complimentary_room"] or 0) 
+	datas["house_use_adult"]["ytd"] = float(data[0]["total_house_use_adult"] or 0) 
+	datas["house_use_child"]["ytd"] = float(data[0]["total_house_use_child"] or 0) 
+	datas["complimentary_adult"]["ytd"] = float(data[0]["total_complimentary_adult"] or 0) 
+	datas["complimentary_child"]["ytd"] = float(data[0]["total_complimentary_child"] or 0) 
+	datas["room_charge_tax"]["ytd"] = float(trans[ 0]["total_room_charge_tax"] or 0) 
+	datas["housekeeping_tax"]["ytd"] = float(trans[ 0]["total_housekeeping_tax"] or 0) 
+	datas["spa_massage_tax"]["ytd"] = float(trans[ 0]["total_spa_massage_tax"] or 0) 
+	datas["tour_ticket_tax"]["ytd"] = float(trans[ 0]["total_tour_and_ticket_tax"] or 0) 
+	datas["food_and_beverage_tax"]["ytd"] = float(trans[ 0]["total_fb_tax"] or 0) 
+	datas["room_charge_discount"]["ytd"] = float(trans[ 0]["total_room_charge_discount"] or 0) 
+	datas["housekeeping_discount"]["ytd"] = float(trans[ 0]["total_housekeeping_discount"] or 0) 
+	datas["spa_massage_discount"]["ytd"] = float(trans[ 0]["total_spa_massage_discount"] or 0) 
+	datas["tour_ticket_discount"]["ytd"] = float(trans[ 0]["total_tour_and_ticket_discount"] or 0) 
+	datas["other_charge_discount"]["ytd"] = float(trans[ 0]["total_other_charge_discount"] or 0) 
+	datas["folio_transfer"]["ytd"] = float(trans[ 0]["total_folio_transfer"] or 0) 
+	datas["city_ledger_transfer"]["ytd"] = float(trans[ 0]["total_city_ledger_transfer"] or 0) 
+	datas["deposit_transfer"]["ytd"] = float(trans[ 0]["total_deposit_ledger_transfer"] or 0) 
+	datas["desk_folio_transfer"]["ytd"] = float(trans[ 0]["total_desk_folio_transfer"] or 0) 
+	datas["fb_discount"]["ytd"] = float(trans[ 0]["total_fb_discount"] or 0) 
+	datas["pos_transfer"]["ytd"] = float(trans[ 0]["total_pos_transfer"] or 0) 
+	datas["city_ledger_charge"]["ytd"] = float(trans[ 0]["total_city_ledger_charge"] or 0) 
+	datas["city_ledger_payment"]["ytd"] = float(trans[ 0]["total_city_ledger_payment"] or 0) 
+	datas["cash"]["ytd"] = float(trans[ 0]["total_cash_payment"] or 0) 
+	datas["bank"]["ytd"] = float(trans[ 0]["total_bank_payment"] or 0) 
+	datas["total_charge"]["ytd"] = float(trans[ 0]["total_charge"] or 0) 
+	datas["total_tax"]["ytd"] = float(trans[ 0]["total_tax"] or 0) 
+	datas["total_payment"]["ytd"] = float(trans[ 0]["total_payment_and_refund"] or 0) 
+	datas["total_system_transfer"]["ytd"] = float(trans[ 0]["total_system_transfer"] or 0) 
+	datas["total_discount"]["ytd"] = float(trans[ 0]["total_discount"] or 0) 
 
 	#last year current date
 	
@@ -790,83 +790,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 	
-	datas["room_occupy"]["last_year_current"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_current"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_current"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_current"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_current"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_current"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_current"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_current"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_current"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_current"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_current"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_current"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_current"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_current"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_current"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_current"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_current"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_current"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_current"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_current"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_current"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_current"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_current"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_current"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_current"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_current"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_current"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_current"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_current"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_current"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_current"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["room_charge"]["last_year_current"] = trans[0]["total_room_charge"] or 0 
-	datas["housekeeping"]["last_year_current"] = trans[0]["total_housekeeping"] or 0 
-	datas["spa_massage"]["last_year_current"] = trans[0]["total_spa_massage"] or 0 
-	datas["tour_ticket"]["last_year_current"] = trans[ 0]["total_tour_and_ticket"] or 0 
-	datas["service_charge"]["last_year_current"] = trans[ 0]["total_service_charge"] or 0 
-	datas["tip"]["last_year_current"] = trans[ 0]["total_tip"] or 0 
-	datas["non_revenue"]["last_year_current"] = trans[ 0]["total_non_revenue"] or 0 
-	datas["food_and_beverage"]["last_year_current"] = trans[ 0]["total_fb"] or 0 
-	datas["other_charge"]["last_year_current"] = trans[ 0]["total_other_charge"] or 0 
-	datas["merchindise"]["last_year_current"] = trans[ 0]["total_merchandise"] or 0 
-	datas["guest_ledger"]["last_year_current"] = trans[ 0]["total_guest_ledger"] or 0 
-	datas["city_ledger"]["last_year_current"] = trans[ 0]["total_city_ledger"] or 0 
-	datas["desk_folio"]["last_year_current"] = trans[ 0]["total_desk_folio"] or 0 
-	datas["deposit_ledger"]["last_year_current"] = trans[ 0]["total_deposit_ledger"] or 0 
-	datas["pos"]["last_year_current"] = trans[ 0]["total_pos"] or 0 
-	datas["house_use"]["last_year_current"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_current"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_current"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_current"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_current"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_current"] = data[0]["total_complimentary_child"] or 0 
-	datas["room_charge_tax"]["last_year_current"] = trans[ 0]["total_room_charge_tax"] or 0 
-	datas["housekeeping_tax"]["last_year_current"] = trans[ 0]["total_housekeeping_tax"] or 0 
-	datas["spa_massage_tax"]["last_year_current"] = trans[ 0]["total_spa_massage_tax"] or 0 
-	datas["tour_ticket_tax"]["last_year_current"] = trans[ 0]["total_tour_and_ticket_tax"] or 0 
-	datas["food_and_beverage_tax"]["last_year_current"] = trans[ 0]["total_fb_tax"] or 0 
-	datas["room_charge_discount"]["last_year_current"] = trans[ 0]["total_room_charge_discount"] or 0 
-	datas["housekeeping_discount"]["last_year_current"] = trans[ 0]["total_housekeeping_discount"] or 0 
-	datas["spa_massage_discount"]["last_year_current"] = trans[ 0]["total_spa_massage_discount"] or 0 
-	datas["tour_ticket_discount"]["last_year_current"] = trans[ 0]["total_tour_and_ticket_discount"] or 0 
-	datas["other_charge_discount"]["last_year_current"] = trans[ 0]["total_other_charge_discount"] or 0 
-	datas["folio_transfer"]["last_year_current"] = trans[ 0]["total_folio_transfer"] or 0 
-	datas["city_ledger_transfer"]["last_year_current"] = trans[ 0]["total_city_ledger_transfer"] or 0 
-	datas["deposit_transfer"]["last_year_current"] = trans[ 0]["total_deposit_ledger_transfer"] or 0 
-	datas["desk_folio_transfer"]["last_year_current"] = trans[ 0]["total_desk_folio_transfer"] or 0 
-	datas["fb_discount"]["last_year_current"] = trans[ 0]["total_fb_discount"] or 0 
-	datas["pos_transfer"]["last_year_current"] = trans[ 0]["total_pos_transfer"] or 0 
-	datas["city_ledger_charge"]["last_year_current"] = trans[ 0]["total_city_ledger_charge"] or 0 
-	datas["city_ledger_payment"]["last_year_current"] = trans[ 0]["total_city_ledger_payment"] or 0 
-	datas["cash"]["last_year_current"] = trans[ 0]["total_cash_payment"] or 0 
-	datas["bank"]["last_year_current"] = trans[ 0]["total_bank_payment"] or 0 
-	datas["total_charge"]["last_year_current"] = trans[ 0]["total_charge"] or 0 
-	datas["total_tax"]["last_year_current"] = trans[ 0]["total_tax"] or 0 
-	datas["total_payment"]["last_year_current"] = trans[ 0]["total_payment_and_refund"] or 0 
-	datas["total_system_transfer"]["last_year_current"] = trans[ 0]["total_system_transfer"] or 0 
-	datas["total_discount"]["last_year_current"] = trans[ 0]["total_discount"] or 0 
+	datas["room_occupy"]["last_year_current"] = float(data[0]["total_occupy"] or 0) 
+	datas["room_block"]["last_year_current"] = float(data[0]["total_block"] or 0) 
+	datas["complimentary"]["last_year_current"] = float(data[0]["total_complimentary"] or 0) 
+	datas["house_use"]["last_year_current"] = float(data[0]["total_house_use"] or 0) 
+	datas["in_house_adult"]["last_year_current"] = float(data[0]["total_in_house_adult"] or 0) 
+	datas["arrival_adult"]["last_year_current"] = float(data[0]["total_arrival_adult"] or 0) 
+	datas["departure_adult"]["last_year_current"] = float(data[0]["total_departure_adult"] or 0) 
+	datas["in_house_child"]["last_year_current"] = float(data[0]["total_in_house_child"] or 0) 
+	datas["arrival_child"]["last_year_current"] = float(data[0]["total_arrival_child"] or 0) 
+	datas["departure_child"]["last_year_current"] = float(data[0]["total_departure_child"] or 0) 
+	datas["walk_in_adult"]["last_year_current"] = float(data[0]["total_in_house_walk_in_adult"] or 0) 
+	datas["walk_in_child"]["last_year_current"] = float(data[0]["total_in_house_walk_in_child"] or 0) 
+	datas["walk_in_room_night"]["last_year_current"] = float(data[0]["total_walk_in_room_night"] or 0) 
+	datas["arrival_room_night"]["last_year_current"] = float(data[0]["total_arrival_room_night"] or 0) 
+	datas["departure_room_night"]["last_year_current"] = float(data[0]["total_departure_room_night"] or 0) 
+	datas["no_show_room"]["last_year_current"] = float(data[0]["total_no_show_room"] or 0) 
+	datas["no_show_adult"]["last_year_current"] = float(data[0]["total_no_show_adult"] or 0) 
+	datas["no_show_child"]["last_year_current"] = float(data[0]["total_no_show_child"] or 0) 
+	datas["early_checked_out_adult"]["last_year_current"] = float(data[0]["total_early_checked_out_adult"] or 0) 
+	datas["early_checked_out_child"]["last_year_current"] = float(data[0]["total_early_checked_out_child"] or 0) 
+	datas["early_checked_out"]["last_year_current"] = float(data[0]["total_early_checked_out"] or 0) 
+	datas["fit_room"]["last_year_current"] = float(data[0]["total_fit_room"] or 0) 
+	datas["git_room"]["last_year_current"] = float(data[0]["total_git_room"] or 0) 
+	datas["fit_adult"]["last_year_current"] = float(data[0]["total_fit_adult"] or 0) 
+	datas["fit_child"]["last_year_current"] = float(data[0]["total_fit_child"] or 0) 
+	datas["git_adult"]["last_year_current"] = float(data[0]["total_git_adult"] or 0) 
+	datas["git_child"]["last_year_current"] = float(data[0]["total_git_child"] or 0) 
+	datas["vip_guest"]["last_year_current"] = float(data[0]["total_vip_guest"] or 0) 
+	datas["cancel_room"]["last_year_current"] = float(data_stay[0]["total_cancel_room"] or 0) 
+	datas["cancel_adult"]["last_year_current"] = float(data_stay[0]["total_cancel_adult"] or 0) 
+	datas["cancel_child"]["last_year_current"] = float(data_stay[0]["total_cancel_child"] or 0) 
+	datas["room_charge"]["last_year_current"] = float(trans[0]["total_room_charge"] or 0) 
+	datas["housekeeping"]["last_year_current"] = float(trans[0]["total_housekeeping"] or 0) 
+	datas["spa_massage"]["last_year_current"] = float(trans[0]["total_spa_massage"] or 0) 
+	datas["tour_ticket"]["last_year_current"] = float(trans[ 0]["total_tour_and_ticket"] or 0) 
+	datas["service_charge"]["last_year_current"] = float(trans[ 0]["total_service_charge"] or 0) 
+	datas["tip"]["last_year_current"] = float(trans[ 0]["total_tip"] or 0) 
+	datas["non_revenue"]["last_year_current"] = float(trans[ 0]["total_non_revenue"] or 0) 
+	datas["food_and_beverage"]["last_year_current"] = float(trans[ 0]["total_fb"] or 0) 
+	datas["other_charge"]["last_year_current"] = float(trans[ 0]["total_other_charge"] or 0) 
+	datas["merchindise"]["last_year_current"] = float(trans[ 0]["total_merchandise"] or 0) 
+	datas["guest_ledger"]["last_year_current"] = float(trans[ 0]["total_guest_ledger"] or 0) 
+	datas["city_ledger"]["last_year_current"] = float(trans[ 0]["total_city_ledger"] or 0) 
+	datas["desk_folio"]["last_year_current"] = float(trans[ 0]["total_desk_folio"] or 0) 
+	datas["deposit_ledger"]["last_year_current"] = float(trans[ 0]["total_deposit_ledger"] or 0) 
+	datas["pos"]["last_year_current"] = float(trans[ 0]["total_pos"] or 0) 
+	datas["house_use"]["last_year_current"] = float(data[0]["total_house_use_room"] or 0) 
+	datas["complimentary"]["last_year_current"] = float(data[0]["total_complimentary_room"] or 0) 
+	datas["house_use_adult"]["last_year_current"] = float(data[0]["total_house_use_adult"] or 0) 
+	datas["house_use_child"]["last_year_current"] = float(data[0]["total_house_use_child"] or 0) 
+	datas["complimentary_adult"]["last_year_current"] = float(data[0]["total_complimentary_adult"] or 0) 
+	datas["complimentary_child"]["last_year_current"] = float(data[0]["total_complimentary_child"] or 0) 
+	datas["room_charge_tax"]["last_year_current"] = float(trans[ 0]["total_room_charge_tax"] or 0) 
+	datas["housekeeping_tax"]["last_year_current"] = float(trans[ 0]["total_housekeeping_tax"] or 0) 
+	datas["spa_massage_tax"]["last_year_current"] = float(trans[ 0]["total_spa_massage_tax"] or 0) 
+	datas["tour_ticket_tax"]["last_year_current"] = float(trans[ 0]["total_tour_and_ticket_tax"] or 0) 
+	datas["food_and_beverage_tax"]["last_year_current"] = float(trans[ 0]["total_fb_tax"] or 0) 
+	datas["room_charge_discount"]["last_year_current"] = float(trans[ 0]["total_room_charge_discount"] or 0) 
+	datas["housekeeping_discount"]["last_year_current"] = float(trans[ 0]["total_housekeeping_discount"] or 0) 
+	datas["spa_massage_discount"]["last_year_current"] = float(trans[ 0]["total_spa_massage_discount"] or 0) 
+	datas["tour_ticket_discount"]["last_year_current"] = float(trans[ 0]["total_tour_and_ticket_discount"] or 0) 
+	datas["other_charge_discount"]["last_year_current"] = float(trans[ 0]["total_other_charge_discount"] or 0) 
+	datas["folio_transfer"]["last_year_current"] = float(trans[ 0]["total_folio_transfer"] or 0) 
+	datas["city_ledger_transfer"]["last_year_current"] = float(trans[ 0]["total_city_ledger_transfer"] or 0) 
+	datas["deposit_transfer"]["last_year_current"] = float(trans[ 0]["total_deposit_ledger_transfer"] or 0) 
+	datas["desk_folio_transfer"]["last_year_current"] = float(trans[ 0]["total_desk_folio_transfer"] or 0) 
+	datas["fb_discount"]["last_year_current"] = float(trans[ 0]["total_fb_discount"] or 0) 
+	datas["pos_transfer"]["last_year_current"] = float(trans[ 0]["total_pos_transfer"] or 0) 
+	datas["city_ledger_charge"]["last_year_current"] = float(trans[ 0]["total_city_ledger_charge"] or 0) 
+	datas["city_ledger_payment"]["last_year_current"] = float(trans[ 0]["total_city_ledger_payment"] or 0) 
+	datas["cash"]["last_year_current"] = float(trans[ 0]["total_cash_payment"] or 0) 
+	datas["bank"]["last_year_current"] = float(trans[ 0]["total_bank_payment"] or 0) 
+	datas["total_charge"]["last_year_current"] = float(trans[ 0]["total_charge"] or 0) 
+	datas["total_tax"]["last_year_current"] = float(trans[ 0]["total_tax"] or 0) 
+	datas["total_payment"]["last_year_current"] = float(trans[ 0]["total_payment_and_refund"] or 0) 
+	datas["total_system_transfer"]["last_year_current"] = float(trans[ 0]["total_system_transfer"] or 0) 
+	datas["total_discount"]["last_year_current"] = float(trans[ 0]["total_discount"] or 0) 
 	
 	#last year mtd
 	current_month = filters_date.month
@@ -878,83 +878,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1)  
 
-	datas["room_occupy"]["last_year_mtd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_mtd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_mtd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_mtd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_mtd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_mtd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_mtd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_mtd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_mtd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_mtd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_mtd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_mtd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_mtd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_mtd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_mtd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_mtd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_mtd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_mtd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_mtd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_mtd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_mtd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_mtd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_mtd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_mtd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_mtd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_mtd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_mtd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_mtd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_mtd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["room_charge"]["last_year_mtd"] = trans[0]["total_room_charge"] or 0 
-	datas["housekeeping"]["last_year_mtd"] = trans[0]["total_housekeeping"] or 0 
-	datas["spa_massage"]["last_year_mtd"] = trans[0]["total_spa_massage"] or 0 
-	datas["tour_ticket"]["last_year_mtd"] = trans[ 0]["total_tour_and_ticket"] or 0 
-	datas["service_charge"]["last_year_mtd"] = trans[ 0]["total_service_charge"] or 0 
-	datas["tip"]["last_year_mtd"] = trans[ 0]["total_tip"] or 0 
-	datas["non_revenue"]["last_year_mtd"] = trans[ 0]["total_non_revenue"] or 0 
-	datas["food_and_beverage"]["last_year_mtd"] = trans[ 0]["total_fb"] or 0 
-	datas["other_charge"]["last_year_mtd"] = trans[ 0]["total_other_charge"] or 0 
-	datas["merchindise"]["last_year_mtd"] = trans[ 0]["total_merchandise"] or 0 
-	datas["guest_ledger"]["last_year_mtd"] = trans[ 0]["total_guest_ledger"] or 0 
-	datas["city_ledger"]["last_year_mtd"] = trans[ 0]["total_city_ledger"] or 0 
-	datas["desk_folio"]["last_year_mtd"] = trans[ 0]["total_desk_folio"] or 0 
-	datas["deposit_ledger"]["last_year_mtd"] = trans[ 0]["total_deposit_ledger"] or 0 
-	datas["pos"]["last_year_mtd"] = trans[ 0]["total_pos"] or 0 
-	datas["house_use"]["last_year_mtd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_mtd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_mtd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_mtd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_mtd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_mtd"] = data[0]["total_complimentary_child"] or 0 
-	datas["room_charge_tax"]["last_year_mtd"] = trans[ 0]["total_room_charge_tax"] or 0 
-	datas["housekeeping_tax"]["last_year_mtd"] = trans[ 0]["total_housekeeping_tax"] or 0 
-	datas["spa_massage_tax"]["last_year_mtd"] = trans[ 0]["total_spa_massage_tax"] or 0 
-	datas["tour_ticket_tax"]["last_year_mtd"] = trans[ 0]["total_tour_and_ticket_tax"] or 0 
-	datas["food_and_beverage_tax"]["last_year_mtd"] = trans[ 0]["total_fb_tax"] or 0 
-	datas["room_charge_discount"]["last_year_mtd"] = trans[ 0]["total_room_charge_discount"] or 0 
-	datas["housekeeping_discount"]["last_year_mtd"] = trans[ 0]["total_housekeeping_discount"] or 0 
-	datas["spa_massage_discount"]["last_year_mtd"] = trans[ 0]["total_spa_massage_discount"] or 0 
-	datas["tour_ticket_discount"]["last_year_mtd"] = trans[ 0]["total_tour_and_ticket_discount"] or 0 
-	datas["other_charge_discount"]["last_year_mtd"] = trans[ 0]["total_other_charge_discount"] or 0 
-	datas["folio_transfer"]["last_year_mtd"] = trans[ 0]["total_folio_transfer"] or 0 
-	datas["city_ledger_transfer"]["last_year_mtd"] = trans[ 0]["total_city_ledger_transfer"] or 0 
-	datas["deposit_transfer"]["last_year_mtd"] = trans[ 0]["total_deposit_ledger_transfer"] or 0 
-	datas["desk_folio_transfer"]["last_year_mtd"] = trans[ 0]["total_desk_folio_transfer"] or 0 
-	datas["fb_discount"]["last_year_mtd"] = trans[ 0]["total_fb_discount"] or 0 
-	datas["pos_transfer"]["last_year_mtd"] = trans[ 0]["total_pos_transfer"] or 0 
-	datas["city_ledger_charge"]["last_year_mtd"] = trans[ 0]["total_city_ledger_charge"] or 0 
-	datas["city_ledger_payment"]["last_year_mtd"] = trans[ 0]["total_city_ledger_payment"] or 0 
-	datas["cash"]["last_year_mtd"] = trans[ 0]["total_cash_payment"] or 0 
-	datas["bank"]["last_year_mtd"] = trans[ 0]["total_bank_payment"] or 0 
-	datas["total_charge"]["last_year_mtd"] = trans[ 0]["total_charge"] or 0 
-	datas["total_tax"]["last_year_mtd"] = trans[ 0]["total_tax"] or 0 
-	datas["total_payment"]["last_year_mtd"] = trans[ 0]["total_payment_and_refund"] or 0 
-	datas["total_system_transfer"]["last_year_mtd"] = trans[ 0]["total_system_transfer"] or 0 
-	datas["total_discount"]["last_year_mtd"] = trans[ 0]["total_discount"] or 0 
+	datas["room_occupy"]["last_year_mtd"] = float(data[0]["total_occupy"] or 0) 
+	datas["room_block"]["last_year_mtd"] = float(data[0]["total_block"] or 0) 
+	datas["complimentary"]["last_year_mtd"] = float(data[0]["total_complimentary"] or 0) 
+	datas["house_use"]["last_year_mtd"] = float(data[0]["total_house_use"] or 0) 
+	datas["in_house_adult"]["last_year_mtd"] = float(data[0]["total_in_house_adult"] or 0) 
+	datas["arrival_adult"]["last_year_mtd"] = float(data[0]["total_arrival_adult"] or 0) 
+	datas["departure_adult"]["last_year_mtd"] = float(data[0]["total_departure_adult"] or 0) 
+	datas["in_house_child"]["last_year_mtd"] = float(data[0]["total_in_house_child"] or 0) 
+	datas["arrival_child"]["last_year_mtd"] = float(data[0]["total_arrival_child"] or 0) 
+	datas["departure_child"]["last_year_mtd"] = float(data[0]["total_departure_child"] or 0) 
+	datas["walk_in_adult"]["last_year_mtd"] = float(data[0]["total_in_house_walk_in_adult"] or 0) 
+	datas["walk_in_child"]["last_year_mtd"] = float(data[0]["total_in_house_walk_in_child"] or 0) 
+	datas["walk_in_room_night"]["last_year_mtd"] = float(data[0]["total_walk_in_room_night"] or 0) 
+	datas["arrival_room_night"]["last_year_mtd"] = float(data[0]["total_arrival_room_night"] or 0) 
+	datas["departure_room_night"]["last_year_mtd"] = float(data[0]["total_departure_room_night"] or 0) 
+	datas["no_show_room"]["last_year_mtd"] = float(data[0]["total_no_show_room"] or 0) 
+	datas["no_show_adult"]["last_year_mtd"] = float(data[0]["total_no_show_adult"] or 0) 
+	datas["no_show_child"]["last_year_mtd"] = float(data[0]["total_no_show_child"] or 0) 
+	datas["early_checked_out_adult"]["last_year_mtd"] = float(data[0]["total_early_checked_out_adult"] or 0) 
+	datas["early_checked_out_child"]["last_year_mtd"] = float(data[0]["total_early_checked_out_child"] or 0) 
+	datas["early_checked_out"]["last_year_mtd"] = float(data[0]["total_early_checked_out"] or 0) 
+	datas["fit_room"]["last_year_mtd"] = float(data[0]["total_fit_room"] or 0) 
+	datas["git_room"]["last_year_mtd"] = float(data[0]["total_git_room"] or 0) 
+	datas["fit_adult"]["last_year_mtd"] = float(data[0]["total_fit_adult"] or 0) 
+	datas["fit_child"]["last_year_mtd"] = float(data[0]["total_fit_child"] or 0) 
+	datas["git_adult"]["last_year_mtd"] = float(data[0]["total_git_adult"] or 0) 
+	datas["git_child"]["last_year_mtd"] = float(data[0]["total_git_child"] or 0) 
+	datas["vip_guest"]["last_year_mtd"] = float(data[0]["total_vip_guest"] or 0) 
+	datas["cancel_room"]["last_year_mtd"] = float(data_stay[0]["total_cancel_room"] or 0) 
+	datas["cancel_adult"]["last_year_mtd"] = float(data_stay[0]["total_cancel_adult"] or 0) 
+	datas["cancel_child"]["last_year_mtd"] = float(data_stay[0]["total_cancel_child"] or 0) 
+	datas["room_charge"]["last_year_mtd"] = float(trans[0]["total_room_charge"] or 0) 
+	datas["housekeeping"]["last_year_mtd"] = float(trans[0]["total_housekeeping"] or 0) 
+	datas["spa_massage"]["last_year_mtd"] = float(trans[0]["total_spa_massage"] or 0) 
+	datas["tour_ticket"]["last_year_mtd"] = float(trans[ 0]["total_tour_and_ticket"] or 0) 
+	datas["service_charge"]["last_year_mtd"] = float(trans[ 0]["total_service_charge"] or 0) 
+	datas["tip"]["last_year_mtd"] = float(trans[ 0]["total_tip"] or 0) 
+	datas["non_revenue"]["last_year_mtd"] = float(trans[ 0]["total_non_revenue"] or 0) 
+	datas["food_and_beverage"]["last_year_mtd"] = float(trans[ 0]["total_fb"] or 0) 
+	datas["other_charge"]["last_year_mtd"] = float(trans[ 0]["total_other_charge"] or 0) 
+	datas["merchindise"]["last_year_mtd"] = float(trans[ 0]["total_merchandise"] or 0) 
+	datas["guest_ledger"]["last_year_mtd"] = float(trans[ 0]["total_guest_ledger"] or 0) 
+	datas["city_ledger"]["last_year_mtd"] = float(trans[ 0]["total_city_ledger"] or 0) 
+	datas["desk_folio"]["last_year_mtd"] = float(trans[ 0]["total_desk_folio"] or 0) 
+	datas["deposit_ledger"]["last_year_mtd"] = float(trans[ 0]["total_deposit_ledger"] or 0) 
+	datas["pos"]["last_year_mtd"] = float(trans[ 0]["total_pos"] or 0) 
+	datas["house_use"]["last_year_mtd"] = float(data[0]["total_house_use_room"] or 0) 
+	datas["complimentary"]["last_year_mtd"] = float(data[0]["total_complimentary_room"] or 0) 
+	datas["house_use_adult"]["last_year_mtd"] = float(data[0]["total_house_use_adult"] or 0) 
+	datas["house_use_child"]["last_year_mtd"] = float(data[0]["total_house_use_child"] or 0) 
+	datas["complimentary_adult"]["last_year_mtd"] = float(data[0]["total_complimentary_adult"] or 0) 
+	datas["complimentary_child"]["last_year_mtd"] = float(data[0]["total_complimentary_child"] or 0) 
+	datas["room_charge_tax"]["last_year_mtd"] = float(trans[ 0]["total_room_charge_tax"] or 0) 
+	datas["housekeeping_tax"]["last_year_mtd"] = float(trans[ 0]["total_housekeeping_tax"] or 0) 
+	datas["spa_massage_tax"]["last_year_mtd"] = float(trans[ 0]["total_spa_massage_tax"] or 0) 
+	datas["tour_ticket_tax"]["last_year_mtd"] = float(trans[ 0]["total_tour_and_ticket_tax"] or 0) 
+	datas["food_and_beverage_tax"]["last_year_mtd"] = float(trans[ 0]["total_fb_tax"] or 0) 
+	datas["room_charge_discount"]["last_year_mtd"] = float(trans[ 0]["total_room_charge_discount"] or 0) 
+	datas["housekeeping_discount"]["last_year_mtd"] = float(trans[ 0]["total_housekeeping_discount"] or 0) 
+	datas["spa_massage_discount"]["last_year_mtd"] = float(trans[ 0]["total_spa_massage_discount"] or 0) 
+	datas["tour_ticket_discount"]["last_year_mtd"] = float(trans[ 0]["total_tour_and_ticket_discount"] or 0) 
+	datas["other_charge_discount"]["last_year_mtd"] = float(trans[ 0]["total_other_charge_discount"] or 0) 
+	datas["folio_transfer"]["last_year_mtd"] = float(trans[ 0]["total_folio_transfer"] or 0) 
+	datas["city_ledger_transfer"]["last_year_mtd"] = float(trans[ 0]["total_city_ledger_transfer"] or 0) 
+	datas["deposit_transfer"]["last_year_mtd"] = float(trans[ 0]["total_deposit_ledger_transfer"] or 0) 
+	datas["desk_folio_transfer"]["last_year_mtd"] = float(trans[ 0]["total_desk_folio_transfer"] or 0) 
+	datas["fb_discount"]["last_year_mtd"] = float(trans[ 0]["total_fb_discount"] or 0) 
+	datas["pos_transfer"]["last_year_mtd"] = float(trans[ 0]["total_pos_transfer"] or 0) 
+	datas["city_ledger_charge"]["last_year_mtd"] = float(trans[ 0]["total_city_ledger_charge"] or 0) 
+	datas["city_ledger_payment"]["last_year_mtd"] = float(trans[ 0]["total_city_ledger_payment"] or 0) 
+	datas["cash"]["last_year_mtd"] = float(trans[ 0]["total_cash_payment"] or 0) 
+	datas["bank"]["last_year_mtd"] = float(trans[ 0]["total_bank_payment"] or 0) 
+	datas["total_charge"]["last_year_mtd"] = float(trans[ 0]["total_charge"] or 0) 
+	datas["total_tax"]["last_year_mtd"] = float(trans[ 0]["total_tax"] or 0) 
+	datas["total_payment"]["last_year_mtd"] = float(trans[ 0]["total_payment_and_refund"] or 0) 
+	datas["total_system_transfer"]["last_year_mtd"] = float(trans[ 0]["total_system_transfer"] or 0) 
+	datas["total_discount"]["last_year_mtd"] = float(trans[ 0]["total_discount"] or 0) 
 
 	# last year ytd
 	last_year_start_date = filters_date.replace(year=filters_date.year - 1, month=1, day=1)
@@ -964,83 +964,83 @@ def get_data_from_occupy_record(filters):
 	trans = frappe.db.sql(tran,filters,as_dict=1)
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 
-	datas["room_occupy"]["last_year_ytd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_ytd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_ytd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_ytd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_ytd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_ytd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_ytd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_ytd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_ytd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_ytd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_ytd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_ytd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_ytd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_ytd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_ytd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_ytd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_ytd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_ytd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_ytd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_ytd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_ytd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_ytd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_ytd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_ytd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_ytd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_ytd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_ytd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_ytd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_ytd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["room_charge"]["last_year_ytd"] = trans[0]["total_room_charge"] or 0 
-	datas["housekeeping"]["last_year_ytd"] = trans[0]["total_housekeeping"] or 0 
-	datas["spa_massage"]["last_year_ytd"] = trans[0]["total_spa_massage"] or 0 
-	datas["tour_ticket"]["last_year_ytd"] = trans[ 0]["total_tour_and_ticket"] or 0 
-	datas["service_charge"]["last_year_ytd"] = trans[ 0]["total_service_charge"] or 0 
-	datas["tip"]["last_year_ytd"] = trans[ 0]["total_tip"] or 0 
-	datas["non_revenue"]["last_year_ytd"] = trans[ 0]["total_non_revenue"] or 0 
-	datas["food_and_beverage"]["last_year_ytd"] = trans[ 0]["total_fb"] or 0 
-	datas["other_charge"]["last_year_ytd"] = trans[ 0]["total_other_charge"] or 0 
-	datas["merchindise"]["last_year_ytd"] = trans[ 0]["total_merchandise"] or 0 
-	datas["guest_ledger"]["last_year_ytd"] = trans[ 0]["total_guest_ledger"] or 0 
-	datas["city_ledger"]["last_year_ytd"] = trans[ 0]["total_city_ledger"] or 0 
-	datas["desk_folio"]["last_year_ytd"] = trans[ 0]["total_desk_folio"] or 0 
-	datas["deposit_ledger"]["last_year_ytd"] = trans[ 0]["total_deposit_ledger"] or 0 
-	datas["pos"]["last_year_ytd"] = trans[ 0]["total_pos"] or 0
-	datas["house_use"]["last_year_ytd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_ytd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_ytd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_ytd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_ytd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_ytd"] = data[0]["total_complimentary_child"] or 0  
-	datas["room_charge_tax"]["last_year_ytd"] = trans[ 0]["total_room_charge_tax"] or 0 
-	datas["housekeeping_tax"]["last_year_ytd"] = trans[ 0]["total_housekeeping_tax"] or 0 
-	datas["spa_massage_tax"]["last_year_ytd"] = trans[ 0]["total_spa_massage_tax"] or 0 
-	datas["tour_ticket_tax"]["last_year_ytd"] = trans[ 0]["total_tour_and_ticket_tax"] or 0 
-	datas["food_and_beverage_tax"]["last_year_ytd"] = trans[ 0]["total_fb_tax"] or 0 
-	datas["room_charge_discount"]["last_year_ytd"] = trans[ 0]["total_room_charge_discount"] or 0 
-	datas["housekeeping_discount"]["last_year_ytd"] = trans[ 0]["total_housekeeping_discount"] or 0 
-	datas["spa_massage_discount"]["last_year_ytd"] = trans[ 0]["total_spa_massage_discount"] or 0 
-	datas["tour_ticket_discount"]["last_year_ytd"] = trans[ 0]["total_tour_and_ticket_discount"] or 0 
-	datas["other_charge_discount"]["last_year_ytd"] = trans[ 0]["total_other_charge_discount"] or 0 
-	datas["folio_transfer"]["last_year_ytd"] = trans[ 0]["total_folio_transfer"] or 0 
-	datas["city_ledger_transfer"]["last_year_ytd"] = trans[ 0]["total_city_ledger_transfer"] or 0 
-	datas["deposit_transfer"]["last_year_ytd"] = trans[ 0]["total_deposit_ledger_transfer"] or 0 
-	datas["desk_folio_transfer"]["last_year_ytd"] = trans[ 0]["total_desk_folio_transfer"] or 0 
-	datas["fb_discount"]["last_year_ytd"] = trans[ 0]["total_fb_discount"] or 0 
-	datas["pos_transfer"]["last_year_ytd"] = trans[ 0]["total_pos_transfer"] or 0 
-	datas["city_ledger_charge"]["last_year_ytd"] = trans[ 0]["total_city_ledger_charge"] or 0 
-	datas["city_ledger_payment"]["last_year_ytd"] = trans[ 0]["total_city_ledger_payment"] or 0 
-	datas["cash"]["last_year_ytd"] = trans[ 0]["total_cash_payment"] or 0 
-	datas["bank"]["last_year_ytd"] = trans[ 0]["total_bank_payment"] or 0 
-	datas["total_charge"]["last_year_ytd"] = trans[ 0]["total_charge"] or 0 
-	datas["total_tax"]["last_year_ytd"] = trans[ 0]["total_tax"] or 0 
-	datas["total_payment"]["last_year_ytd"] = trans[ 0]["total_payment_and_refund"] or 0 
-	datas["total_system_transfer"]["last_year_ytd"] = trans[ 0]["total_system_transfer"] or 0 
-	datas["total_discount"]["last_year_ytd"] = trans[ 0]["total_discount"] or 0 
+	datas["room_occupy"]["last_year_ytd"] = float(data[0]["total_occupy"] or 0) 
+	datas["room_block"]["last_year_ytd"] = float(data[0]["total_block"] or 0) 
+	datas["complimentary"]["last_year_ytd"] = float(data[0]["total_complimentary"] or 0) 
+	datas["house_use"]["last_year_ytd"] = float(data[0]["total_house_use"] or 0) 
+	datas["in_house_adult"]["last_year_ytd"] = float(data[0]["total_in_house_adult"] or 0) 
+	datas["arrival_adult"]["last_year_ytd"] = float(data[0]["total_arrival_adult"] or 0) 
+	datas["departure_adult"]["last_year_ytd"] = float(data[0]["total_departure_adult"] or 0) 
+	datas["in_house_child"]["last_year_ytd"] = float(data[0]["total_in_house_child"] or 0) 
+	datas["arrival_child"]["last_year_ytd"] = float(data[0]["total_arrival_child"] or 0) 
+	datas["departure_child"]["last_year_ytd"] = float(data[0]["total_departure_child"] or 0) 
+	datas["walk_in_adult"]["last_year_ytd"] = float(data[0]["total_in_house_walk_in_adult"] or 0) 
+	datas["walk_in_child"]["last_year_ytd"] = float(data[0]["total_in_house_walk_in_child"] or 0) 
+	datas["walk_in_room_night"]["last_year_ytd"] = float(data[0]["total_walk_in_room_night"] or 0) 
+	datas["arrival_room_night"]["last_year_ytd"] = float(data[0]["total_arrival_room_night"] or 0) 
+	datas["departure_room_night"]["last_year_ytd"] = float(data[0]["total_departure_room_night"] or 0) 
+	datas["no_show_room"]["last_year_ytd"] = float(data[0]["total_no_show_room"] or 0) 
+	datas["no_show_adult"]["last_year_ytd"] = float(data[0]["total_no_show_adult"] or 0) 
+	datas["no_show_child"]["last_year_ytd"] = float(data[0]["total_no_show_child"] or 0) 
+	datas["early_checked_out_adult"]["last_year_ytd"] = float(data[0]["total_early_checked_out_adult"] or 0) 
+	datas["early_checked_out_child"]["last_year_ytd"] = float(data[0]["total_early_checked_out_child"] or 0) 
+	datas["early_checked_out"]["last_year_ytd"] = float(data[0]["total_early_checked_out"] or 0) 
+	datas["fit_room"]["last_year_ytd"] = float(data[0]["total_fit_room"] or 0) 
+	datas["git_room"]["last_year_ytd"] = float(data[0]["total_git_room"] or 0) 
+	datas["fit_adult"]["last_year_ytd"] = float(data[0]["total_fit_adult"] or 0) 
+	datas["fit_child"]["last_year_ytd"] = float(data[0]["total_fit_child"] or 0) 
+	datas["git_adult"]["last_year_ytd"] = float(data[0]["total_git_adult"] or 0) 
+	datas["git_child"]["last_year_ytd"] = float(data[0]["total_git_child"] or 0) 
+	datas["vip_guest"]["last_year_ytd"] = float(data[0]["total_vip_guest"] or 0) 
+	datas["cancel_room"]["last_year_ytd"] = float(data_stay[0]["total_cancel_room"] or 0) 
+	datas["cancel_adult"]["last_year_ytd"] = float(data_stay[0]["total_cancel_adult"] or 0) 
+	datas["cancel_child"]["last_year_ytd"] = float(data_stay[0]["total_cancel_child"] or 0) 
+	datas["room_charge"]["last_year_ytd"] = float(trans[0]["total_room_charge"] or 0) 
+	datas["housekeeping"]["last_year_ytd"] = float(trans[0]["total_housekeeping"] or 0) 
+	datas["spa_massage"]["last_year_ytd"] = float(trans[0]["total_spa_massage"] or 0) 
+	datas["tour_ticket"]["last_year_ytd"] = float(trans[ 0]["total_tour_and_ticket"] or 0) 
+	datas["service_charge"]["last_year_ytd"] = float(trans[ 0]["total_service_charge"] or 0) 
+	datas["tip"]["last_year_ytd"] = float(trans[ 0]["total_tip"] or 0) 
+	datas["non_revenue"]["last_year_ytd"] = float(trans[ 0]["total_non_revenue"] or 0) 
+	datas["food_and_beverage"]["last_year_ytd"] = float(trans[ 0]["total_fb"] or 0) 
+	datas["other_charge"]["last_year_ytd"] = float(trans[ 0]["total_other_charge"] or 0) 
+	datas["merchindise"]["last_year_ytd"] = float(trans[ 0]["total_merchandise"] or 0) 
+	datas["guest_ledger"]["last_year_ytd"] = float(trans[ 0]["total_guest_ledger"] or 0) 
+	datas["city_ledger"]["last_year_ytd"] = float(trans[ 0]["total_city_ledger"] or 0) 
+	datas["desk_folio"]["last_year_ytd"] = float(trans[ 0]["total_desk_folio"] or 0) 
+	datas["deposit_ledger"]["last_year_ytd"] = float(trans[ 0]["total_deposit_ledger"] or 0) 
+	datas["pos"]["last_year_ytd"] = float(trans[ 0]["total_pos"] or 0)
+	datas["house_use"]["last_year_ytd"] = float(data[0]["total_house_use_room"] or 0) 
+	datas["complimentary"]["last_year_ytd"] = float(data[0]["total_complimentary_room"] or 0) 
+	datas["house_use_adult"]["last_year_ytd"] = float(data[0]["total_house_use_adult"] or 0) 
+	datas["house_use_child"]["last_year_ytd"] = float(data[0]["total_house_use_child"] or 0) 
+	datas["complimentary_adult"]["last_year_ytd"] = float(data[0]["total_complimentary_adult"] or 0) 
+	datas["complimentary_child"]["last_year_ytd"] = float(data[0]["total_complimentary_child"] or 0)  
+	datas["room_charge_tax"]["last_year_ytd"] = float(trans[ 0]["total_room_charge_tax"] or 0) 
+	datas["housekeeping_tax"]["last_year_ytd"] = float(trans[ 0]["total_housekeeping_tax"] or 0) 
+	datas["spa_massage_tax"]["last_year_ytd"] = float(trans[ 0]["total_spa_massage_tax"] or 0) 
+	datas["tour_ticket_tax"]["last_year_ytd"] = float(trans[ 0]["total_tour_and_ticket_tax"] or 0) 
+	datas["food_and_beverage_tax"]["last_year_ytd"] = float(trans[ 0]["total_fb_tax"] or 0) 
+	datas["room_charge_discount"]["last_year_ytd"] = float(trans[ 0]["total_room_charge_discount"] or 0) 
+	datas["housekeeping_discount"]["last_year_ytd"] = float(trans[ 0]["total_housekeeping_discount"] or 0) 
+	datas["spa_massage_discount"]["last_year_ytd"] = float(trans[ 0]["total_spa_massage_discount"] or 0) 
+	datas["tour_ticket_discount"]["last_year_ytd"] = float(trans[ 0]["total_tour_and_ticket_discount"] or 0) 
+	datas["other_charge_discount"]["last_year_ytd"] = float(trans[ 0]["total_other_charge_discount"] or 0) 
+	datas["folio_transfer"]["last_year_ytd"] = float(trans[ 0]["total_folio_transfer"] or 0) 
+	datas["city_ledger_transfer"]["last_year_ytd"] = float(trans[ 0]["total_city_ledger_transfer"] or 0) 
+	datas["deposit_transfer"]["last_year_ytd"] = float(trans[ 0]["total_deposit_ledger_transfer"] or 0) 
+	datas["desk_folio_transfer"]["last_year_ytd"] = float(trans[ 0]["total_desk_folio_transfer"] or 0) 
+	datas["fb_discount"]["last_year_ytd"] = float(trans[ 0]["total_fb_discount"] or 0) 
+	datas["pos_transfer"]["last_year_ytd"] = float(trans[ 0]["total_pos_transfer"] or 0) 
+	datas["city_ledger_charge"]["last_year_ytd"] = float(trans[ 0]["total_city_ledger_charge"] or 0) 
+	datas["city_ledger_payment"]["last_year_ytd"] = float(trans[ 0]["total_city_ledger_payment"] or 0) 
+	datas["cash"]["last_year_ytd"] = float(trans[ 0]["total_cash_payment"] or 0) 
+	datas["bank"]["last_year_ytd"] = float(trans[ 0]["total_bank_payment"] or 0) 
+	datas["total_charge"]["last_year_ytd"] = float(trans[ 0]["total_charge"] or 0) 
+	datas["total_tax"]["last_year_ytd"] = float(trans[ 0]["total_tax"] or 0) 
+	datas["total_payment"]["last_year_ytd"] = float(trans[ 0]["total_payment_and_refund"] or 0) 
+	datas["total_system_transfer"]["last_year_ytd"] = float(trans[ 0]["total_system_transfer"] or 0) 
+	datas["total_discount"]["last_year_ytd"] = float(trans[ 0]["total_discount"] or 0) 
 
 	datas["room_occupy"]["change_percentage"] = f'{((datas["room_occupy"]["ytd"]-datas["room_occupy"]["last_year_ytd"])/(1 if datas["room_occupy"]["ytd"]==0 else datas["room_occupy"]["ytd"] or 0))*100:.2f}%'
 	datas["room_block"]["change_percentage"] = f'{((datas["room_block"]["ytd"]-datas["room_block"]["last_year_ytd"])/(1 if datas["room_block"]["ytd"]==0 else datas["room_block"]["ytd"] or 0))*100:.2f}%'

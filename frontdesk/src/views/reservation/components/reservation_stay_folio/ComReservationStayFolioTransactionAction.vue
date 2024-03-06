@@ -10,24 +10,25 @@
             <template #end>
                 <button v-if="data.print_format" @click="onPrintFolioTransaction"
                     class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                    Print
+                    {{$t('Print')}}
+                    
                 </button>
                 <button v-if="data.name" @click="onViewFolioDetail"
                     class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                    View Detail
+                    {{$t('View Detail')}}
                 </button>
                 <template v-if="isEdit">
                     <button @click="onEditFolioTransaction()"
                         v-if="!data.parent_reference"
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                        Edit
+                        {{$t('Edit')}}
                     </button>
                 </template>
                 <template v-if="isDelete">
                     <button @click="onOpenDelete"
                         v-if="!data.parent_reference"
                         class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                        Delete
+                        {{$t('Delete')}} 
                     </button>
                 </template>
             </template>
@@ -42,6 +43,8 @@ import ComAddFolioTransaction from "@/views/reservation/components/ComAddFolioTr
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
+import Enumerable from 'linq'
+import {i18n} from '@/i18n';
 const props = defineProps({
     data: Object,
     isEdit: {

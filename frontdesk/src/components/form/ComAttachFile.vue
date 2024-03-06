@@ -34,7 +34,7 @@
             <template #empty>
                 <div class="flex align-items-center justify-content-center flex-column">
                     <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-400 border-400" />
-                    <p class="mt-4 mb-0">Drag and drop files to here to upload.</p>
+                    <p class="mt-4 mb-0">{{ $t('Drag and drop files to here to upload') }}</p>
                 </div>
             </template>
         </FileUpload>
@@ -42,12 +42,13 @@
             <div>
                 <div class="flex justify-end items-center">
                     <div class="flex gap-2">
+                         <Button class="border-none bg-og-edoor" @click="onClose()" :label="titleButtonClose" :disabled="loading" >
+                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{ $t('Close') }} 
+                        </Button>
                         <Button class="border-none" @click="onUpload()" :label="titleButtonOK" :loading="loading">
-                            <img class="mr-2" style="height: 14px;"  :src="BtnOkIcon"/> Save
+                            <img class="mr-2" style="height: 14px;"  :src="BtnOkIcon"/> {{ $t('Save') }} 
                         </Button>
-                        <Button class="border-none bg-og-edoor" @click="onClose()" :label="titleButtonClose" :disabled="loading" >
-                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> Close
-                        </Button>
+                       
                     </div>
                 </div>
             </div>
@@ -60,6 +61,8 @@ import { ref, inject, uploadFiles } from "@/plugin";
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import BtnOkIcon from '@/assets/svg/icon-save.svg' 
 import FileUpload from 'primevue/fileupload';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const emit = defineEmits(['onSuccess','onClose'])
 const dialogRef = inject("dialogRef");
 const gv = inject('$gv')

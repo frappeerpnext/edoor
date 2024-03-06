@@ -23,7 +23,7 @@
 
                         <div class="wrap-file-list">
                             <DataTable :value="data">
-                                <Column field="file_url" header="File" headerStyle="width: 25px">
+                                <Column field="file_url" :header="$t('File')" headerStyle="width: 25px">
                                     <template #body="slotProps">
                                         <div class="doc_image_avatar">
                                             <ComAvatar :isDisplayImage="true" size="xlarge" :image="slotProps.data.file_url"
@@ -31,7 +31,7 @@
                                         </div>
                                     </template>
                                 </Column>
-                                <Column field="title" header="Title"></Column>
+                                <Column field="title" :header="$t('Title')"></Column>
                                 <Column v-if="showAttach" field="attached_to_name" header="Attach Name" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <Button v-if="doctype != slotProps.data.attached_to_doctype"
@@ -39,19 +39,19 @@
                                             size="small" />
                                     </template>
                                 </Column>
-                                <Column field="description" header="Description" headerStyle="max-width: 80%">
+                                <Column field="description" :header="$t('Description')" headerStyle="max-width: 80%">
                                     <template #body="slotProps">
                                         <div class="break-words whitespace-break-spaces">
                                             {{ slotProps.data.custom_description }}
                                         </div>
                                     </template>
                                 </Column>
-                                <Column field="modified_by" header="By">
+                                <Column field="modified_by" :header="$t('By')">
                                     <template #body="slotProps">
                                         {{ slotProps.data.modified_by?.split("@")[0] }}
                                     </template>
                                 </Column>
-                                <Column field="modified" header="Last Modified" headerClass="white-space-nowrap">
+                                <Column field="modified" :header="$t('Last Modified')" headerClass="white-space-nowrap">
                                     <template #body="slotProps">
                                         <ComTimeago :date='slotProps.data.modified' />
                                     </template>
@@ -105,6 +105,8 @@ import { deleteDoc, getDocList, updateDoc, ref, onMounted, useConfirm, inject, u
 import ComDocumentButtonAction from './components/ComDocumentButtonAction.vue';
 import Paginator from 'primevue/paginator';
 import ComAttachWebcam from '@/components/form/ComAttachWebcam.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 
 const isMobile = ref(window.isMobile)
 

@@ -73,7 +73,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="Total:" :colspan="showCheckbox ? 5 : 4" footerStyle="text-align:right" />
+                    <Column :footer="$t('Total') + ':'" :colspan="showCheckbox ? 5 : 4" footerStyle="text-align:right" />
                     <Column footerStyle="text-align:center">
                         <template #footer>
                             {{ totalQuantity }}

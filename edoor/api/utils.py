@@ -384,7 +384,10 @@ def update_reservation(name=None,doc=None, run_commit = True):
         doc.room_nights= data[0]["room_nights"]
         doc.total_room_rate= data[0]["total_room_rate"]
         doc.room_rate= data[0]["room_rate"]
-        doc.adr= data[0]["adr"]
+        if (data[0]["room_nights"] or 0)>0:
+            doc.adr= data[0]["total_room_rate"] / data[0]["room_nights"]
+        else:
+            doc.adr = 0
         doc.room_rate_discount= data[0]["room_rate_discount"]
         doc.room_rate_tax_1_amount= data[0]["room_rate_tax_1_amount"]
         doc.room_rate_tax_2_amount= data[0]["room_rate_tax_2_amount"]

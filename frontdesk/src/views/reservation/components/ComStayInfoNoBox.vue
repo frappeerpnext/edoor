@@ -1,7 +1,7 @@
 <template>
     <tr>
         <td class="w-auto" :class="[titleClass, isStyle]" :style="isBackground">
-            <label class="font-normal white-space-nowrap" v-tippy="toolTipLabel">{{ label }}</label>
+            <label class="font-normal white-space-nowrap" v-tippy="toolTipLabel">{{ $t(label ?? '') }}</label>
         </td>
         <td class="w-full" :class="[valueClass, isStyle]">
             <span v-if="isCurrency" class="font-semibold" v-tippy="toolTipValue">
@@ -16,7 +16,8 @@
     </tr>
 </template>
 <script setup>
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     label: String,
     value: [String, Number],
