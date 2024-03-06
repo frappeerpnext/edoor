@@ -7,13 +7,15 @@
             <Menu ref="show" :model="menus" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #end>
                         <button @click="onChangeStay(data)"  class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Change Stay
+                            {{ $t('Change Stay') }}
+                            
                         </button> 
                         <button  v-if="data?.room_id"  @click="onUnassignRoom(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Unassign room
+                           {{ $t('Unassign room') }} 
                         </button>
                         <button @click="onOpenDeleted(data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                            Delete
+                           {{ $t('Delete') }}
+                            
                         </button>
                         
                 </template>
@@ -26,7 +28,8 @@
 import {ref,inject, useDialog, useConfirm, postApi} from '@/plugin'
 import ComReservationStayChangeStay from './ComReservationStayChangeStay.vue';
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const rs = inject('$reservation_stay')
 const gv = inject('$gv')
 const moment = inject('$moment')

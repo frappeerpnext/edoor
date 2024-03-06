@@ -1,11 +1,11 @@
 <template>
     <DataTable :value="data" paginator :rows="20" tableStyle="min-width: 50rem" :rowsPerPageOptions="[5, 10, 20, 50]">
-        <Column header="No" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('No')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column header="Reservation #" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Reservation') + ' #' " headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_detail', slotProps.data.reservation)" link>
@@ -13,7 +13,7 @@
                 </Button>
             </template>
         </Column>
-        <Column field="name" header="Stay #" headerClass="text-center" bodyClass="text-center">
+        <Column field="name" :header="$t('Stay') + ' #' " headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_stay_detail', slotProps.data.name)" link>
@@ -21,29 +21,29 @@
                 </Button>
             </template>
         </Column>
-        <Column field="reference_number" header="Ref. #"></Column>
-        <Column field="business_source" header="Source"></Column>
-        <Column field="name" header="PAX(A/C)" headerClass="text-center" bodyClass="text-center">
+        <Column field="reference_number" :header="$t('Ref') + '. #' "></Column>
+        <Column field="business_source" :header="$t('Source')"></Column>
+        <Column field="name" :header="$t('PAX(A/C)')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps?.data.adult }} / {{ slotProps?.data.child }}
             </template>
         </Column>
-        <Column field="reservation_type" header="Type"></Column>
-        <Column header="Res. Date">
+        <Column field="reservation_type" :header="$t('Type')"></Column>
+        <Column :header="$t('Res. Date')">
             <template #body="slotProps">
 
                 {{ moment(slotProps?.data.reservation_date).format("DD-MM-YYYY") }}
             </template>
 
         </Column>
-        <Column field="name" header="Stay Date">
+        <Column field="name" :header="$t('Stay Date')">
             <template #body="slotProps">
                 {{ moment(slotProps.data.arrival_date).format("DD-MM-YYYY") }} &#8594; {{
                     moment(slotProps.data.departure_date).format("DD-MM-YYYY") }}
 
             </template>
         </Column>
-        <Column field="room_nights" headerClass="text-center" header="Room Nights">
+        <Column field="room_nights" headerClass="text-center" :header="$t('Room Nights')">
             <template #body="slotProps">
                 <div class="text-center">
                     {{ slotProps?.data.room_nights }}
@@ -51,7 +51,7 @@
 
             </template>
         </Column>
-        <Column header="Room(s)">
+        <Column :header="$t('Room(s)')">
             <template #body="slotProps">
                 <div>
                     <span v-tippy="slotProps?.data.room_type">
@@ -66,7 +66,7 @@
                 </div>
             </template>
         </Column>
-        <Column header="Guest">
+        <Column :header="$t('Guest')">
             <template #body="slotProps">
                 <div>
                     <Button class="p-0 link_line_action1" @click="onViewDetail('view_guest_detail', slotProps.data.guest)"
@@ -77,33 +77,33 @@
 
             </template>
         </Column>
-        <Column headerClass="text-right" bodyClass="text-right" header="ADR">
+        <Column headerClass="text-right" bodyClass="text-right" :header="$t('ADR')">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.adr" />
             </template>
         </Column>
-        <Column headerClass="text-right" bodyClass="text-right" header="Discount">
+        <Column headerClass="text-right" bodyClass="text-right" :header="$t('Discount')">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.room_rate_discount" />
             </template>
 
         </Column>
-        <Column headerClass="text-right" bodyClass="text-right" header="Total Room Rate">
+        <Column headerClass="text-right" bodyClass="text-right" :header="$t('Total Room Rate')">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.total_room_rate" />
             </template>
 
         </Column>
-        <Column headerClass="text-center" bodyClass="text-center" header="Status">
+        <Column headerClass="text-center" bodyClass="text-center" :header="$t('Status')">
             <template #body="slotProps">
                 <span class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                    :style="{ backgroundColor: slotProps?.data.status_color }">{{
-                        slotProps?.data.reservation_status }}</span>
+                    :style="{ backgroundColor: slotProps?.data.status_color }">{{ $t(slotProps?.data.reservation_status)
+                        }}</span>
             </template>
         </Column>
         <ColumnGroup type="footer">
             <Row>
-                <Column footer="Total:" :colspan="2" footerStyle="text-align:right" />
+                <Column :footer="$t('Total') + ':'" :colspan="2" footerStyle="text-align:right" />
                 <Column :colspan="3" footerStyle="text-align:right" />
                 <Column footerStyle="text-align:center">
                     <template #footer>
@@ -145,7 +145,8 @@ const moment = inject("$moment")
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 
 import { useDialog } from 'primevue/usedialog';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 const props = defineProps({
     data: Object

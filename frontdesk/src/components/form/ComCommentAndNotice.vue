@@ -1,7 +1,7 @@
 <template lang=""> 
     <div> 
         <div class="mb-4">
-            <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.custom_is_note==0?'Comment':'Note'}}</label><br/>
+            <label for="text--note" class="text-lg line-height-1 font-semibold">{{create.custom_is_note==0? $t('Comment'):$t('Note')}}</label><br/>
             <div v-if="create.custom_is_note==1">
             <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr  w-full border-round-xl"
                                  placeholder="Note Date"
@@ -18,24 +18,22 @@
             <div class="flex gap-5 align-items-center">
                 <div>
                     <RadioButton v-model="create.custom_is_note"  inputId="comment" name="noteType" :value="0" />
-                    <label for="comment" class="cursor-pointer ml-1"> Comment </label>
+                    <label for="comment" class="cursor-pointer ml-1"> {{$t('Comment')}}  </label>
                 </div>
             <div>
                 <RadioButton v-model="create.custom_is_note" inputId="note" name="noteType" :value="1" />
-                <label for="note" class="cursor-pointer ml-1"> Notice </label>
+                <label for="note" class="cursor-pointer ml-1"> {{$t('Notice')}} </label>
             </div>
         </div>
         <div>
      
             <Button class="dialog_btn_transform conten-btn " :loading="saving" @click="onCreate">
-                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">Add
-                <template v-if="!isMobile">
-                {{commentType}}
-                </template>
+                <img class="btn-add_comNote__icon me-1" :src="iconPlusSign">
+                {{$t('Add ' + ((!isMobile) ? commentType : ''))}}
             </Button>
         </div>
     </div>
-        <ComHeader wrClass="py-1" fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
+        <ComHeader v-tippy="$t('Refresh')" wrClass="py-1" fillClass="dialog_btn_transform conten-btn" isRefresh @onRefresh="onRefresh()"/>
     </div>
     </div>
         <ComPlaceholder text="No Comment or Notice yet" :loading="loading" :is-not-empty="list.length > 0">
@@ -43,17 +41,16 @@
  
         <div class="flex justify-between">
         <div class="flex items-center">
-            <!-- <i :class="(i.comment_type == 'Notice') ? 'pi pi-bookmark' : 'pi pi-comment'"></i> -->
             <span class="">
             <i :class="i.custom_icon" style="font-size:14px" class="me-2"></i>
             </span>
             <div class="ms-1 text-sm ">
                 
-                <span class="font-italic">{{i.subject}}</span> <span class="text-500 font-italic"> by: {{(currentUser.name==i.owner?"You ": i.comment_by).split("@")[0]}}    
+                <span class="font-italic">{{ $t(i.subject)}}</span> <span class="text-500 font-italic"> {{$t('by')}}: {{(currentUser.name==i.owner? $t("You") + ' ': i.comment_by).split("@")[0]}}    
                     <ComTimeago  :date="i.creation"/> 
                                  </span>
                                  <div class="inline" v-if="i.custom_is_note == 1">
-                <span class="font-italic" > | Last Modified : </span> <span class="text-500 font-italic" v-if="i.modified_by">{{(currentUser.name==i.modified_by?"You ": i.modified_by).split("@")[0]}}  <ComTimeago  :date="i.modified"/> </span>
+                <span class="font-italic" > | {{$t('Last Modified')}} : </span> <span class="text-500 font-italic" v-if="i.modified_by">{{(currentUser.name==i.modified_by?"You ": i.modified_by).split("@")[0]}}  <ComTimeago  :date="i.modified"/> </span>
                                  </div>
             </div> 
            
@@ -70,14 +67,14 @@
         <!-- <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-if="i.subject">{{currentUser.name==i.owner?"You ": i.comment_by }} </div> -->
         <div class="whitespace-pre-wrap break-words content-note-comment py-1" v-html="i.content"></div>
         <div class="text-500 font-italic  text-sm" v-if="i.custom_note_date && i.custom_is_note">
-        Note Date: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
+            {{$t('Note Date')}}: {{moment(i.custom_note_date).format("DD-MM-YYYY")}} 
         </div>
     </div>
     </ComPlaceholder>
     <OverlayPanel ref="op">
     <ComOverlayPanelContent width="35rem" :loading="saving" @onSave="onSave" @onCancel="onClose">
     <div>
-    <span class="font-semibold text-lg mb-3" for="textnote">{{edit.custom_is_note==0?'Comment':"Note"}}</span>
+    <span class="font-semibold text-lg mb-3" for="textnote">{{edit.custom_is_note==0? $t('Comment'):$t("Note")}}</span>
     <div class="mb-2" v-if="edit.custom_is_note==1">
 
     <Calendar  :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl" panelClass="no-btn-clear" placeholder="Note Date" v-model="edit.custom_note_date" dateFormat="dd-mm-yy" showIcon showButtonBar />
@@ -94,6 +91,8 @@
 import iconPlusSign from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import { ref, inject, getDocList, useConfirm, onMounted, deleteDoc, createUpdateDoc, onUnmounted,computed } from '@/plugin'
 import Enumerable from 'linq'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const moment = inject("$moment");
 const gv = inject("$gv");
 const isMobile = ref(window.isMobile)

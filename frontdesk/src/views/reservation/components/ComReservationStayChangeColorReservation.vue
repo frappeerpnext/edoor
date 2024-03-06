@@ -2,7 +2,7 @@
     <ComOverlayPanelContent title="Change Color" :loading="loading" @onSave="onSave" @onCancel="emit('onClose')">
         <div class="card flex justify-content-center">
             <Dropdown v-model="reservation_color_code" :options="items" optionLabel="name" showClear
-                placeholder="Select Reservation Color Code" class="w-full md:w-21rem">
+                :placeholder="$t('Select Reservation Color Code')" class="w-full md:w-21rem">
                 <template #value="slotProps">
                     <div v-if="slotProps.value" class="flex align-items-center">
                         <div
@@ -41,7 +41,8 @@ const gv = inject('$gv');
 const loading = ref(false)
 const checked = ref(0);
 const items = ref([]);
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const reservation_color_code = ref()
 
 function onSave() {

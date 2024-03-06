@@ -2,7 +2,7 @@
     <ComReservationStayPanel title="Stay Information" panelClass="block">
         <template #btn>
             <div class="flex items-center justify-content-end">
-                <span>{{ stay?.reservationStay?.reservation_color_code || "Select Reservation Color Code" }}</span> 
+                <span>{{ $t(stay?.reservationStay?.reservation_color_code || "Select Reservation Color Code") }}</span> 
                 <button :style="{background:stay?.reservationStay?.reservation_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>
                 <span>
                 </span>
@@ -36,20 +36,20 @@
                 <div v-if="!(stay.reservationStay.reservation_type == 'FIT')" class="flex mt-2 gap-2">
                     <ComBoxStayInformation  @onClick="toggle($event, 'change_reservation_information')"   titleTooltip="Group Name & Group Code" title="Group"  valueClass="grow">
                         <div class="flex align-items-center">
-                        <div v-tippy="'Group Color'" class=" px-3 h-1rem py-2 me-3 border-round-lg inline-block group_color_reservation" :style="{background:stay.reservationStay?.group_color}">
+                        <div v-tippy="$t('Group Color')" class=" px-3 h-1rem py-2 me-3 border-round-lg inline-block group_color_reservation" :style="{background:stay.reservationStay?.group_color}">
                         </div>
                         <button v-tippy="'Group Name & Group Code'" class="link_line_action text-left" v-if="!stay.reservationStay?.group_name && !stay.reservationStay?.group_code" link>
                             <i class="pi pi-pencil"></i>
                             ...
                         </button>
                         <div v-else class="flex gap-2 w-full">
-                            <a v-tippy="'Group Name'" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left overflow-hidden" >{{ stay.reservationStay?.group_name }}</a>
+                            <a v-tippy="$t('Group Name')" v-if="stay.reservationStay?.group_name" class="link_line_action grow text-left overflow-hidden" >{{ stay.reservationStay?.group_name }}</a>
                             <button v-else class="link_line_action grow text-left" >
                                 <i class="pi pi-pencil"></i>
                                 ...
                             </button>
                             <span>/</span>
-                            <a v-tippy="'Group Code'" v-if="stay.reservationStay?.group_code" class="link_line_action grow text-left overflow-hidden" >
+                            <a v-tippy="$t('Group Code')" v-if="stay.reservationStay?.group_code" class="link_line_action grow text-left overflow-hidden" >
                                 {{ stay.reservationStay?.group_code }}
                             </a>
                             <button v-else class="link_line_action grow text-left" >
@@ -147,6 +147,8 @@ const stay = inject('$reservation_stay');
 const gv = inject('$gv');
 const overLayName = ref("")
 const op = ref();
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 // const color = ref()
 const toggle = ($event, name) => {
     overLayName.value = name

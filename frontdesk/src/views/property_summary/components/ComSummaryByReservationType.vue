@@ -1,64 +1,64 @@
 <template>
     <DataTable :value="data">
-        <Column header="No" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('No')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column field="reservation_type" header="Reservation Type" headerClass="text-center" bodyClass="text-center" />
+        <Column field="reservation_type" :header="$t('Reservation Type')" headerClass="text-center" bodyClass="text-center" />
 
-        <Column field="total_room" header="Total Room(s)" headerClass="text-center" bodyClass="text-center" />
-        <Column field="total_room_sold" header="Room Sold" headerClass="text-center" bodyClass="text-center" />
-        <Column field="block" header="Room Block" headerClass="text-center" bodyClass="text-center" />
-        <Column header="PAX(A/C)" headerClass="text-center" bodyClass="text-center">
+        <Column field="total_room" :header="$t('Total Room(s)')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="total_room_sold" :header="$t('Room Sold')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="block" :header="$t('Room Block')" headerClass="text-center" bodyClass="text-center" />
+        <Column :header="$t('PAX(A/C)')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.adult }} / {{ slotProps.data.child }}
             </template>
         </Column>
-        <Column header="FIT/GIT" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('FIT/GIT')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.fit }} / {{ slotProps.data.git }}
             </template>
         </Column>
-        <Column header="Pickup/Drop Off" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Pickup/Drop Off')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.pick_up }} / {{ slotProps.data.drop_off }}
             </template>
         </Column>
-        <Column header="Checked In/Arrival" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Checked In') + ' / ' + $t('Arrival')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.checked_in }} / {{ slotProps.data.arrival }}
             </template>
         </Column>
-        <Column header="Stay Over" field="stay_over" headerClass="text-center" bodyClass="text-center" />
-        <Column header="Checked Out/Departure" headerClass="text-center" bodyClass="text-center">
+        <Column :header=" $t('Stay Over') " field="stay_over" headerClass="text-center" bodyClass="text-center" />
+        <Column :header="$t('Checked Out') / $t('Departure')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.checked_out }} / {{ slotProps.data.departure }}
             </template>
         </Column>
-        <Column field="no_show" header="No Show" headerClass="text-center" bodyClass="text-center" />
+        <Column field="no_show" :header="$t('No Show')" headerClass="text-center" bodyClass="text-center" />
 
 
-        <Column headerClass="text-right" bodyClass="text-right" header="ADR">
+        <Column headerClass="text-right" bodyClass="text-right" :header="$t('ADR')">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.adr" />
             </template>
         </Column>
-        <Column headerClass="text-right" bodyClass="text-right" header="Total Room Rate">
+        <Column headerClass="text-right" bodyClass="text-right" :header="$t('Total Room Rate')">
             <template #body="slotProps">
                 <CurrencyFormat :value="slotProps?.data.total_rate" />
             </template>
 
         </Column>
-        <Column headerClass="text-center" bodyClass="text-center" header="Occupancy">
+        <Column headerClass="text-center" bodyClass="text-center" :header="$t('Occupancy')">
             <template #body="slotProps">
-                {{ slotProps?.data.occupancy }}%
+                {{ (slotProps?.data.occupancy).toFixed(2) }}%
             </template>
 
         </Column>
         <ColumnGroup type="footer">
             <Row>
-                <Column footer="Total:" :colspan="2" footerStyle="text-align:right" />
+                <Column :footer="$t('Total') + ':'" :colspan="2" footerStyle="text-align:right" />
                 <Column footerStyle="text-align:center">
                     <template #footer>
                         {{ data?.length > 0 ? data[0]["total_room"] : 0 }}
@@ -141,7 +141,8 @@
 </template>
 <script setup>
 import { ref, onMounted, getApi, inject } from '@/plugin';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const data = ref()
 const loading = ref(false)
 

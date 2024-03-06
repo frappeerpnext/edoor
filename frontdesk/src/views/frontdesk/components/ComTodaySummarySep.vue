@@ -1,7 +1,7 @@
 <template lang="">
     <div class="pt-2 pb-1 border-b border-color-edoor g_-todies" @click="onOpenDetail">
         <div class="flex justify-between align-items-center mb-1">
-            <div class="flex align-items-center h-full font-medium">{{title}}</div>
+            <div class="flex align-items-center h-full font-medium">{{$t(title)}}</div>
             <div class="flex-grow px-1">  </div>
             <div class="px-2 py-1 font-medium border-round-lg text-white badge-td-guest"><slot></slot></div>
         </div>
@@ -20,7 +20,8 @@ const moment = inject('$moment')
 const dialog = useDialog()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const gv = inject("$gv")
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     title: String,
     value: {

@@ -7,12 +7,12 @@
                     <div class="flex justify-between overflow-scroll lg:overflow-hidden w-full lg:w-full">
                         <ComReservationStayHeaderStatus />
                         <div class="flex gap-2">
-                            <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
+                            <button @click="onRefresh" v-tippy=" $t('Refresh')" :loading="rs?.loading"
                                 class="rounded-lg conten-btn flex" link>
                                 <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                                 </icon>
                             </button>
-                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage" class="rounded-lg conten-btn hidden lg:inline-block"
+                            <button @click="onRoute" v-tippy="$t('Open New Window')" v-if="!isPage" class="rounded-lg conten-btn hidden lg:inline-block"
                                 link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
@@ -35,21 +35,24 @@
                     <div class="flex items-center gap-3"
                         v-if="rs.reservationStay?.stays?.filter(r => r.show_in_room_chart == 1).length > 0 && rs.reservationStay?.reservation_status == 'No Show'">
                         <span>
-                            We reserved room for this reservation.
+                            {{ $t('We reserved room for this reservation.') }}
+                            
                         </span>
-                        <Button @click="onUnreservedRoom" class="conten-btn border-1" serverity="waring">Unreserve
-                            Room</Button>
+                        <Button @click="onUnreservedRoom" class="conten-btn border-1" serverity="waring">
+                            {{ $t('Unreserve Room') }}
+                            </Button>
                     </div>
                     <div class="flex items-center gap-3" v-else>
-                        <span>We do not reserved room for this reservation.</span>
-                        <Button @click="onReservedRoom" class="conten-btn border-1" serverity="waring">Reserve Room</Button>
+                        <span>{{$t('We do not reserved room for this reservation.')}}</span>
+                        <Button @click="onReservedRoom" class="conten-btn border-1" serverity="waring">{{$t('Reserve Room')}}</Button>
                     </div>
                 </Message>
                 <Message v-if="rs.reservationStay.reservation_status=='Checked Out' && rs.reservationStay.departure_date != rs.reservationStay.checked_out_system_date" severity="info">
-                    This guest is early checked out. Check out date is {{  moment(rs.reservationStay.checked_out_system_date).format("DD-MM-YYYY") }}
+                    {{ $t('This guest is early checked out. Check out date is') }}
+                     {{  moment(rs.reservationStay.checked_out_system_date).format("DD-MM-YYYY") }}
                 </Message>
                 <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom mt-3">
-                    <TabPanel header="General Information">
+                    <TabPanel :header="$t('General Information')">
                         <div class="grid mt-2 ml-0 ms-0">
                             <div class="col-12 lg:col-8 pl-0">
                                 <div class="grid">
@@ -100,19 +103,19 @@
                             </div>
                         </div>
                     </TabPanel>
-                    <TabPanel header="Room Rate" v-if="can_view_rate">
+                    <TabPanel :header="$t('Room Rate')" v-if="can_view_rate">
                         <ComReservationStayRoomRate />
                     </TabPanel>
                     <TabPanel>
                         <template #header>
-                            <span class="me-2">Folio</span>
+                            <span class="me-2">{{ $t('Folio') }} </span>
                             <Badge :value="rs.totalFolio"></Badge>
                         </template>
                         <ComReservationStayFolio />
                     </TabPanel>
                     <TabPanel>
                         <template #header>
-                            <span class="me-2">Document</span>
+                            <span class="me-2"> {{ $t('Document') }} </span>
                             <ComDocumentBadge doctype="Reservation Stay"
                                 :doctypes="['Reservation Stay', 'Reservation Folio', 'Folio Transaction']" :docname="name"
                                 :attacheds="rs.attacheds" v-if="name && rs.attacheds.length > 0" />
@@ -129,14 +132,14 @@
             <div
                 class="line-height-1 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                 <div>
-                    <span class="italic">Created by: </span>
+                    <span class="italic">{{ $t('Created by') }} : </span>
                     <span class="text-500 font-italic">
                         {{ rs.reservationStay?.owner?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.creation"/>  
                     </span>
                 </div>
                 <div>
-                    <span class="italic"> Last Modified: </span>
+                    <span class="italic"> {{ $t('Last Modified') }} :</span>
                     <span class="text-500 font-italic">
                         {{ rs.reservationStay?.modified_by?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.modified"/>  
@@ -144,7 +147,7 @@
                 </div>
                 <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
                     <div v-if="rs.reservationStay.checked_in_by || rs.reservationStay.checked_in_date" class="inline">
-                        <span class="italic">Checked-in by: </span>
+                        <span class="italic">{{ $t('Checked-in by') }} : </span>
                         <span class="text-500 font-italic">
                             {{ rs.reservationStay.checked_in_by?.split("@")[0] }}
                         <ComTimeago :date="rs.reservationStay?.checked_in_date"/>  
@@ -155,7 +158,7 @@
                 <div v-if="rs.reservationStay?.checked_in_by || rs.reservationStay?.checked_out_by">
                     
                     <div v-if="rs.reservationStay?.checked_out_by || rs.reservation?.checked_out_date" class="inline">
-                        <span class="italic">Checked-out by: </span>
+                        <span class="italic">{{ $t('Checked-out by') }} : </span>
                         <span class="text-500 font-italic">
                             {{ rs.reservationStay?.checked_out_by?.split("@")[0] }} 
                         <ComTimeago :date="rs.reservationStay?.checked_out_date"/>  
@@ -170,7 +173,7 @@
             <ComReservationStayMoreOptionsButton @onAuditTrail="onAuditTrail()" @onRefresh="onRefresh(false)" />
             <ComReservationStayPrintButton :reservation_stay="name" :folio_number="rs.selectedFolio?.name" v-if="name" />
             <Button class="border-none" @click="OnViewReservation">
-                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> View Reservation <Badge
+                <ComIcon icon="ViewDetailIcon" style="height: 13px;" class="me-2" /> {{ $t('View Reservation') }}  <Badge
                     style="font-weight: 600 !important;" class="badge-rs" :value="rs?.reservationStayNames.length"
                     severity="warning">
                 </Badge>
@@ -179,12 +182,15 @@
         <template #footer-right>
             <Button v-if="rs.canCheckIn() && rs.reservationStay?.reservation_status != 'In-house'" @click="onCheckIn"
                 class="bg-green-500 border-none">
-                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />Check In
+                <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
+                {{ $t('Check In') }}
+                
             </Button>
             <Button
                 v-if="rs.reservationStay?.reservation_status === 'In-house' && (moment(working_day.date_working_day) >= moment(rs.reservationStay.departure_date).add(-1, 'day'))"
                 @click="onCheckOut" class="bg-red-400 border-none">
-                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />Check Out
+                <ComIcon icon="checkout" style="height: 18px;" class="me-2" />
+                {{ $t('Check Out') }}
             </Button>
         </template>
     </ComDialogContent>
@@ -209,7 +215,8 @@ import ComReservationStayHeaderStatus from '@/views/reservation/components/ComRe
 import ComReservationStayMoreOptionsButton from '@/views/reservation/components/ComReservationStayMoreOptionsButton.vue'
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import Message from 'primevue/message';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 
 const rs = inject('$reservation_stay');

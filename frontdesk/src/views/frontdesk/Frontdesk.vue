@@ -49,13 +49,13 @@
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" placeholder="Search Rooms" v-debounce="onSearchRoom" />
+                        <InputText class="btn-set__h w-full" v-model="keyword.room_number" :placeholder="$t('Search Rooms')" v-debounce="onSearchRoom" />
                     </span>
                 </div>
                 <div>
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="btn-set__h w-full"  v-model="keyword.keyword" placeholder="Search" v-debounce="onSearch"/>
+                        <InputText class="btn-set__h w-full"  v-model="keyword.keyword" :placeholder="$t('Search')" v-debounce="onSearch"/>
                     </span>
                 </div>
             </template>
@@ -64,7 +64,7 @@
                 </div> 
           
                 <div v-if="isFilter">
-                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
             </div>
        
@@ -673,7 +673,7 @@ function resourceColumn(view_type) {
             return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room'
+                headerContent: $t('Room')
             },
             
         ]
@@ -681,11 +681,11 @@ function resourceColumn(view_type) {
             return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room'
+                headerContent: $t('Room')
             },
             {
                 field: 'room_type_alias',
-                headerContent: 'Room Type',
+                headerContent: $t('Room Type'),
                 cellContent: function (arg) {
                     if(arg.fieldValue){ 
                     const el = arg.resource._context.calendarApi.el

@@ -1,6 +1,6 @@
 
 <template>
-  <span v-tippy="titleTooltip" v-if="title !== null" class=" text-right white-space-nowrap overflow-hidden text-overflow-ellipsis" :class="titleClass">{{ title }}</span>
+  <span v-tippy="$t(titleTooltip ?? '')" v-if="title !== null" class=" text-right white-space-nowrap overflow-hidden text-overflow-ellipsis" :class="titleClass">{{ $t(title ?? '') }}</span>
   <div class="box-input py-2 px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white" style="background-color: #fff;" :class="valueClass">
     <span v-tippy="(value) ? '' : valueTooltip " :class="(isAction) ? 'link_line_action overflow-hidden':''" @click="onClick" >
  
@@ -9,13 +9,15 @@
           {{ value || value == 0 ? value : '...' }}
         </span>
         <span v-else-if="isCurrency"><CurrencyFormat :value="value" /></span>
-        <span v-else >{{ value }} </span>
+        <span v-else >{{ $t(value ?? '') }} </span>
         <slot></slot>
     </span>
   </div>
 </template>
 <script setup>
 const emit = defineEmits(['onClick'])
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
   titleClass:{type: String , default: 'col-2 mr-0'},
   valueTooltip:{type: String , default: null  },

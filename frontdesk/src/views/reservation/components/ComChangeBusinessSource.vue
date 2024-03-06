@@ -6,16 +6,19 @@
         </div>
         <div class="flex gap-2 my-2">
             <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true" />
-            <label for="apply-all-stay" class="cursor-pointer">Regenerate New Rate</label>
+            <label for="apply-all-stay" class="cursor-pointer">
+                {{ $t('Regenerate New Rate') }}
+                </label>
         </div>
-        <Message severity="warn" v-if="regenerateNewRate">Generate new rate will be affect only active reservation,<br> future stay and room that use rate plan</Message> 
+        <Message severity="warn" v-if="regenerateNewRate">{{$t('Generate new rate will be affect only active reservation, future stay and room that use rate plan')}}</Message> 
 
     </ComOverlayPanelContent>
 </template>     
 <script setup>
 import { ref, inject,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const rs = inject('$reservation_stay')
 

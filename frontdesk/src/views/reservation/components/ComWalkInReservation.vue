@@ -2,7 +2,8 @@
     <Button  v-shortkey="['ctrl', 'f']" @shortkey="onClick()"  v-tippy="'Walk-in Reservataion'" @click="onClick" label="Walk-In Guest" class="d-bg-set btn-inner-set-icon border-none">
         <!-- <img class="mr-2" :src="iconEdoorNewReservation"> -->
         <ComIcon icon="iconWalkIn" style="width:30px;" height="20px"></ComIcon>
-        Walk-In Guest
+{{ $t('Walk-In Guest') }}
+        
     </Button>
 </template>
 <script setup>
@@ -10,7 +11,8 @@ import iconEdoorNewReservation from '../../../assets/svg/icon-add-reservation.sv
 import { useDialog } from 'primevue/usedialog';
 import NewReservation from '@/views/reservation/NewReservation.vue';
 import ReservationDetail from '@/views/reservation/ReservationDetail.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 function onClick() {
    

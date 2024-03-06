@@ -25,15 +25,15 @@
                         <slot name="footer-right"></slot>
                         
                         <Button class="border-none bg-og-edoor" v-if="!hideButtonClose" @click="close()" :label="titleButtonClose" :disabled="loading" >
-                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{titleButtonClose}}
+                            <img class="btn-si__icon mr-2" :src="BtnCloseIcon"/> {{ $t(titleButtonClose ?? '')}}
                         </Button>
                         <Button class="border-none btn-ok_ss" v-if="!hideButtonOK" @click="onOK()" :label="titleButtonOK" :loading="loading">
                             <span v-if="!loading" class="flex align-items-center">
                                 <i class="pi pi-check-circle mr-2" v-if="!loading && !hideIcon && titleButtonOK == 'Ok'"></i>
                                 <img class="pi pi-check-circle mr-2" v-else-if="!loading && !hideIcon && titleButtonOK == 'Save'" :src="BtnOkIcon" style="height: 13px;"/>
-                                {{titleButtonOK}}
+                                {{ $t(titleButtonOK ?? '') }}
                             </span>
-                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> {{titleButtonOK}}</span>
+                            <span v-else><i class="pi pi-spin pi-spinner mr-2"></i> {{ $t(titleButtonOK ?? '') }}</span>
                         </Button>
                     </div>
                 </div>
@@ -44,6 +44,8 @@
 <script setup>
 import BtnCloseIcon from '@/assets/svg/icon-close.svg' 
 import BtnOkIcon from '@/assets/svg/icon-save.svg' 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const emit = defineEmits(['onOK', 'onClose', 'onMaximize'])
 const props = defineProps({

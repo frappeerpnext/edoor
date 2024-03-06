@@ -13,15 +13,19 @@
             </div>
             <div v-else>
                 <div class="p-6 text-center text-gray-500">
-                    <p>Please select a folio</p>
+                    <p>
+                        {{ $t('Please select a folio') }}
+                        </p>
                 </div>
             </div>
         </div>
         <div v-else class="min-h-folio-cus flex flex-column justify-content-center">
             <div class="text-center mb-3">
-                <Button class="conten-btn" label="Create Folio" icon="pi pi-folder-open" @click="onAddCreatNewFolio()"></Button>
+                <Button class="conten-btn" :label="$t('Create Folio')" icon="pi pi-folder-open" @click="onAddCreatNewFolio()"></Button>
             </div>
-            <div class="text-center text-600">Create a Folio to post transactions.</div>
+            <div class="text-center text-600"> 
+                {{ $t('Create a Folio to post transactions') }}
+                </div>
         </div>
     </div>
     <Sidebar v-model:visible="visible" :showCloseIcon="false">
@@ -41,7 +45,8 @@ import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction
 
 import ComNewReservationStayFolio from "@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue"
 import { useDialog } from 'primevue/usedialog';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const isMobile = ref(window.isMobile)
 const visible = ref(false)
 const dialog = useDialog();
@@ -113,7 +118,7 @@ function onAddCreatNewFolio() {
             property: window.property_name
         },
         props: {
-            header: 'Create New Folio ',
+            header: $t('Create New Folio'),
             style: {
                 width: '50vw',
             },

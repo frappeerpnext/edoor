@@ -3,7 +3,7 @@
         <div class="grid w-full" >
             <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Reservation</h3>
+                    <h3 class="text-lg font-medium"> {{ $t('Reservation') }} </h3>
                     <div  class="w-full " >
                     <ComChartByReservation :param="data"/>
                     </div>
@@ -11,7 +11,7 @@
             </div>
             <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium"> Stay by Business Source</h3>
+                    <h3 class="text-lg font-medium">{{ $t('Stay by Business Source') }} </h3>
                     <div  class="w-full " >
                         <ComChartByBusinessSource :param="data.reservation_by_business_source"/>
                     </div>
@@ -19,7 +19,7 @@
             </div>
             <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Stay by Room Type</h3>
+                    <h3 class="text-lg font-medium">{{ $t('Stay by Room Type') }}</h3>
                     <div  class="w-full " >
                         <ComChartByRoomType :param="data.reservation_by_room_type"/>
                     </div>
@@ -27,7 +27,7 @@
             </div>
             <div class="col-12 md:col-6 lg:col-3">
                 <div class="shadow-2 p-3 surface-50 rounded">
-                    <h3 class="text-lg font-medium">Stay by Reservation Type</h3>
+                    <h3 class="text-lg font-medium">{{ $t('Stay by Reservation Type') }}</h3>
                     <div  class="w-full " >
                         <ComChartByReservationType :param="data"/>
                     </div>
@@ -49,7 +49,8 @@ import ComChartByReservationType from '@/views/property_summary/components/ComCh
 import ComChartByBusinessSource from '@/views/property_summary/components/ComChartByBusinessSource.vue'; 
 import ComChartByRoomType from '@/views/property_summary/components/ComChartByRoomType.vue'; 
 import ComBarChartSummary from '@/views/property_summary/components/ComBarChartSummary.vue'; 
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const data = ref()
 const loading = ref(false)
 

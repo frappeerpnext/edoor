@@ -2545,7 +2545,6 @@ def get_day_end_summary_report(property, date):
 @frappe.whitelist()
 def get_recent_audit_trail():
     property = frappe.defaults.get_user_default("business_branch")
-    
     if not property:
         data = frappe.db.get_list("Business Branch")
         if len(data)>0:

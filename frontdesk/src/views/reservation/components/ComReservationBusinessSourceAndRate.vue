@@ -3,7 +3,7 @@
     <template #content>
     <div class="grid">
             <div class="col-12">
-                    <div class="">Business Sources</div>
+                    <div class="">{{$t('Business Sources')}}</div>
                     <div class="py-2 px-3 bg-white border-round-lg">
                         <div class="flex justify-content-between align-items-center">
                             <span class="link_line_action" @click="onOpenChangeBusinessSource">{{ rs?.reservationStay?.business_source }}</span>
@@ -11,7 +11,7 @@
                     </div>
             </div>
             <div class="col-12">
-                    <div class="">Rate Type</div>
+                    <div class="">{{$t('Rate Type')}}</div>
                     <div class="py-2 px-3 bg-white border-round-lg">
                         <div class="flex justify-content-between align-items-center">
                             <span class="link_line_action" @click="onOpenChangeRateType">{{ rs?.reservationStay?.rate_type }}</span>
@@ -35,7 +35,8 @@ import { inject, ref } from "@/plugin"
 import ComReservationStayPanel from './ComReservationStayPanel.vue';
 import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
 import ComChangeRateType from "./ComChangeRateType.vue";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const rs = inject("$reservation_stay")
 const opBusinessSource = ref();
 const opRateType = ref();

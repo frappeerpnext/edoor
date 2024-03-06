@@ -1,7 +1,7 @@
 <template>
     <div>
  
-          <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" label="Mores" @click="toggle"
+          <Button class="border-none" icon="pi pi-chevron-down" iconPos="right" type="button" :label="$t('Mores')" @click="toggle"
             aria-haspopup="true" aria-controls="folio_menu" />
         <Menu ref="folio_menu" id="folio_menu" :popup="true">
             <template #end>
@@ -9,26 +9,26 @@
                     v-if="rs.reservationStay.is_master == 0 && (rs.reservationStay.reservation_status == 'Reserved' || rs.reservationStay.reservation_status == 'In-house')"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconCrownBlack" style="height: 12px;" />
-                    <span class="ml-2">Mark as Master Room </span>
+                    <span class="ml-2"> {{ $t('Mark as Master Room') }}  </span>
                 </button>
                 <button @click="onUndoCheckIn()"
                     v-if="canUndoCheckIn"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
-                    <span class="ml-2">Undo Check-In</span>
+                    <span class="ml-2">{{ $t('Undo Check-In') }}</span>
                 </button>
                 <button @click="OnUndoCheckOut()"
                     v-if="canUndoCheckOut"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
-                    <span class="ml-2">Undo Check Out</span>
+                    <span class="ml-2">{{ $t('Undo Check Out') }}</span>
                 </button>
                 
                 <button @click="onNoShowReservationStay()"
                     v-if="(rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved') && rs.reservationStay?.arrival_date == working_day?.date_working_day"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-eye-slash" />
-                    <span class="ml-2">No Show</span>
+                    <span class="ml-2">{{ $t('No Show') }}</span>
                 </button>
               
                 <button @click="onReservedRoom()"
@@ -38,7 +38,7 @@
                             "
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-calendar-plus" />
-                    <span class="ml-2">Reserve Room</span>
+                    <span class="ml-2">{{ $t('Reserve Room') }}</span>
                 </button>
                 <button @click="onUnReservedRoom()"
                 v-if="rs.reservationStay?.reservation_status=='No Show' && 
@@ -47,59 +47,59 @@
                         "
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-calendar-times" />
-                    <span class="ml-2">Unreserve Room</span>
+                    <span class="ml-2">{{ $t('Unreserve Room') }}</span>
                 </button>
                 
                 <button @click="onCancelReservationStay()"
                     v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-user-minus" />
-                    <span class="ml-2">Cancel Reservation Stay</span>
+                    <span class="ml-2">{{ $t('Cancel Reservation Stay') }}</span>
                 </button>
                 <button @click="onVoidReservationStay()"
                     v-if="rs.reservationStay?.reservation_status=='Confirmed' || rs.reservationStay?.reservation_status=='Reserved'"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-excel" />
-                    <span class="ml-2">Void Reservation Stay </span>
+                    <span class="ml-2">{{ $t('Void Reservation Stay') }} </span>
                 </button>
                     <button v-if="rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master" @click="onUnmarkasPaidbyMasterRoom()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-                        <span class="ml-2"> Unmark as Paid by Master Room </span>
+                        <span class="ml-2">{{ $t('Unmark as Paid by Master Room') }}  </span>
                     </button>
                     <button @click="onMarkasPaidbyMasterRoom()" v-else-if="!rs.reservationStay.paid_by_master_room && !rs.reservationStay.is_master"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <ComIcon  icon="BilltoMasterRoom"  style="height:15px;" ></ComIcon>
-                        <span class="ml-2">  Mark as Paid by Master Room </span>
+                        <span class="ml-2"> {{ $t('Mark as Paid by Master Room') }}  </span>
                     </button>
                     <div>
                     <button v-if="rs.reservationStay.allow_post_to_city_ledger" @click="onDisallowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
-                    <span> Disallow Post to City Ledger </span>
+                    <span> {{ $t('Disallow Post to City Ledger') }} </span>
                     </button>
                     <button v-else @click="onAllowPosttoCityLedger()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon  icon="IconBillToCompany" class="me-2" style="height:15px;" ></ComIcon>
-                    <span> Allow Post to City Ledger </span>
+                    <span>{{ $t('Allow Post to City Ledger') }} </span>
                     </button>
                     </div>
                 <button v-if="rs.reservationStay.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">                   
                     <ComIcon icon="userGif" style="height: 15px;" />
-                    <span class="ml-2">Mark as GIT Reservation</span>
+                    <span class="ml-2">{{ $t('Mark as GIT Reservation') }}</span>
                 </button>
 
                 <button v-else @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     
                     <ComIcon  icon="userProfile"  style="height:15px;" ></ComIcon>
-                    <span class="ml-2">Mark as FIT Reservation </span>
+                    <span class="ml-2">{{ $t('Mark as FIT Reservation') }} </span>
                 </button>
                 <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />
-                    <span class="ml-2">Audit Trail</span>
+                    <span class="ml-2">{{ $t('Audit Trail') }}</span>
                 </button>
             </template>
         </Menu>
@@ -109,7 +109,8 @@
 <script setup>
 import { inject, ref, useConfirm, useToast, postApi,useDialog,computed,updateDoc } from "@/plugin";
 import ComDialogNote from "@/components/form/ComDialogNote.vue";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const dialog = useDialog();
 const moment = inject("$moment")

@@ -50,16 +50,18 @@ const dialog = useDialog()
 const dialogConfirm = useConfirm()
 const menuMasterGuest = ref()
 const selectGuestName = ref()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const menuMasterGuestList = ref([
     {
-        label: 'Change Guest',
+        label: $t('Change Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('master_guest')
         }
     },
     {
-        label: 'Edit Guest',
+        label: $t('Edit Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onEditGuest('master_guest')
@@ -71,21 +73,21 @@ const menuMasterGuestList = ref([
 const menuStayGuest = ref()
 const menuStayGuestList = ref([
     {
-        label: 'Add Additional Guest',
+        label: $t('Add Additional Guest'),
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
     },
     {
-        label: 'Change Guest',
+        label: $t('Change Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
-        label: 'Edit Guest',
+        label: $t('Edit Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onEditGuest('stay_guest')
@@ -95,21 +97,21 @@ const menuStayGuestList = ref([
 const menuStayOneGuest = ref([
     
     {
-        label: 'Add Stay Guest',
+        label: $t('Add Stay Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onAdvancedSearch('stay_guest')
         }
     },
     {
-        label: 'Add Additional Guest',
+        label: $t('Add Additional Guest'),
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
     },
     {
-        label: 'Edit Guest',
+        label: $t('Edit Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onEditGuest('stay_guest')
@@ -120,21 +122,21 @@ const menuStayOneGuest = ref([
 const menuAdditionalGuest = ref()
 const menuAdditionalGuestList = ref([
     {
-        label: 'Add Additional Guest',
+        label: $t('Add Additional Guest'),
         icon:'pi pi-fw pi-user-plus',
         command: () =>{
             onAdvancedSearch('additional_guest')
         }
     },
     {
-        label: 'Edit Guest',
+        label: $t('Edit Guest'),
         icon:'pi pi-fw pi-user-edit',
         command: () =>{
             onEditGuest()
         }
     },
     {
-        label: 'Delete',
+        label: $t('Delete'),
         icon:'pi pi-fw  pi-trash',
         class:'delete-text-color',
         command: () =>{

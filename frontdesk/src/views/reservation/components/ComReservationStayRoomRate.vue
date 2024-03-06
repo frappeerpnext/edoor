@@ -3,7 +3,8 @@
 
     <Button class="conten-btn mr-1 mb-3" serverity="waring" @click="onEditRoomRate()">
       <i class="pi pi-file-edit me-2" style="font-size: 1rem"></i>
-      Edit Rate
+      {{$t('Edit Rate') }}
+     
       <template v-if="rs.selectedRoomRates.length>0">
         ({{ rs.selectedRoomRates.length  }})
       </template>
@@ -12,58 +13,59 @@
     <DataTable v-model:selection="rs.selectedRoomRates" :value="rs?.room_rates" tableStyle="min-width: 80rem" paginator :rows="20"
       :rowsPerPageOptions="[20, 50, 100]">
       <div class="absolute bottom-6 left-10">
-        <strong>Total Records: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
+        <strong> {{$t('Total Records') }}: <span class="ttl-column_re">{{ rs?.room_rates?.length }}</span></strong>
       </div>
       <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
       
-      <Column field="date" header="Date" bodyClass="text-center" headerClass="text-center">
+      <Column field="date" :header="$t('Date')" bodyClass="text-center" headerClass="text-center">
         <template #body="slotProps">
           <span>{{ gv.dateFormat(slotProps.data?.date) }}</span>
         </template>
       </Column>
 
-      <Column field="room_number" header="Room">
+      <Column field="room_number" :header="$t('Room')">
         <template #body="slotProps">
           <div> 
             <span  v-tippy="slotProps.data.room_type">
               {{ slotProps.data.room_type_alias }}</span>/
               <span v-if="slotProps.data.room_number">{{ slotProps.data.room_number }}</span>     
               <span v-else>
-                Room No (Unassign)
+                {{ $t('Room No (Unassign)') }}
+                
               </span>                          
           </div>
         </template>
       </Column>
-      <Column field="rate_type" header="Rate Type">
+      <Column field="rate_type" :header="$t('Rate Type')">
         <template #body="{ data }">
           <span @click="onEditRoomRate(data)" class="p-0 link_line_action1">{{ data.rate_type }}</span>
         </template>
       </Column>
-      <Column field="rate" header="Rate" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="rate" :header="$t('Rate')" bodyStyle="text-align:right" headerStyle="text-align:right">
           <template #body="{ data }">
             <button @click="onEditRoomRate(data)" class="link_line_action1 w-12rem">
               <div class="flex justify-between w-full items-center">
-              <span class="text-sm" v-if="data.is_manual_rate"> (Manual) </span>
-                                  <span class="text-sm" v-else>(Plan)</span>
+              <span class="text-sm" v-if="data.is_manual_rate"> ({{ $t('Manual') }}) </span>
+                                  <span class="text-sm" v-else>({{$t('Plan')}})</span>
               <CurrencyFormat  :value="data.rate" class="p-0 "/>
             </div>
             </button>
           </template>
       </Column>
 
-      <Column field="discount_amount" header="Disount Amount" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="discount_amount" :header="$t('Disount Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
           <CurrencyFormat @click="onEditRoomRate(data)" :value="data.discount_amount" class="p-0 link_line_action1"/>
         </template>
       </Column>
 
-      <Column field="total_tax" header="Total Tax" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="total_tax" :header="$t('Total Tax')" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
           <CurrencyFormat @click="onEditRoomRate(data)" :value="data.total_tax" class="p-0 link_line_action1"/>
         </template>
       </Column>
 
-      <Column field="total_amount" header="Total Amount" bodyStyle="text-align:right" headerStyle="text-align:right">
+      <Column field="total_amount" :header="$t('Total Amount')" bodyStyle="text-align:right" headerStyle="text-align:right">
         <template #body="{ data }">
             <CurrencyFormat :value="data.total_rate" />
         </template>
@@ -73,7 +75,9 @@
           <Column footer="Total:" :colspan="3" footerStyle="text-align:right" />
           <Column >
             <template #footer>
-              {{ rs?.room_rates?.length }} Room Night(s)
+              {{ rs?.room_rates?.length }} 
+              {{ $t('Room Night(s)') }}
+              
             </template>
           </Column>
           <Column footerStyle="text-align:right">
@@ -105,7 +109,8 @@
 import { inject, ref, useDialog,onMounted,useToast } from '@/plugin';
 import ComEditReservationRoomRate from './ComEditReservationRoomRate.vue';
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
-
+import Message from 'primevue/message';
+import {i18n} from '@/i18n';
 const isMobile = ref(window.isMobile)
 
 const rs = inject('$reservation_stay')

@@ -9,7 +9,7 @@
       <template #content>
         <div class="mt-2 Arrival-bg">
           <TabView :activeIndex="(rs.reservationStay.reservation_status == 'In-house' ? 1 : 0)">
-            <TabPanel header="Arrival">
+            <TabPanel :header="$t('Arrival')">
               <div v-if="rs.reservationStay.require_pickup" class="">
                 <div class="flex mt-4 gap-2">
                   <ComBoxStayInformation title="Arrival Mode" :value="rs.reservationStay?.arrival_mode"
@@ -49,10 +49,12 @@
               <div v-else class="flex justify-center mt-3">
                 <span @click="OnSetupForm()"
                   class="link_line_action text-xl line-height-3 px-3 py-2 text-center bg-white"><i
-                    class="pi pi-car text-lg me-2"></i>Setup Arrival Mode</span>
+                    class="pi pi-car text-lg me-2"></i>
+                    {{ $t('Setup Arrival Mode') }}
+                    </span>
               </div>
             </TabPanel>
-            <TabPanel header="Departure">
+            <TabPanel :header="$t('Departure')">
               <div v-if="rs.reservationStay.require_drop_off">
                 <div class="flex mt-4 gap-2">
                   <ComBoxStayInformation title="Departure Mode" :value="rs.reservationStay?.departure_mode"
@@ -83,7 +85,7 @@
                     valueClass="col-7" titleClass="col"></ComBoxStayInformation>
                 </div>
                 <div class="flex flex-col mt-2 gap-2">
-                  <div>Note</div>
+                  <div> {{ $t('Note') }} </div>
                   <div class="w-full overflow-y-auto h-min-note bg-white rounded-xl p-3 break-words whitespace-break-spaces">
                     {{ rs.reservationStay?.drop_off_note }}
                   </div>
@@ -127,6 +129,8 @@ import { inject } from 'vue'
 const rs = inject('$reservation_stay');
 const moment = inject('$moment')
 const ManuArriavalDeparture = ref()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
   reservationStay: {
     type: Object,
@@ -161,7 +165,7 @@ function OnSetupForm() {
 const items = ref([
   {
     label:
-      'Edit'
+      $t('Edit')
     , icon: 'pi pi-fw pi-pencil'
     , command: () => {
       OnSetupForm()
@@ -171,7 +175,7 @@ const items = ref([
 function onEditDriver(name) {
   dialog.open(ComAddDriver, {
     props: {
-      header: `Edit Driver`,
+      header: $t(`Edit Driver`),
       style: {
         width: '50vw',
       },

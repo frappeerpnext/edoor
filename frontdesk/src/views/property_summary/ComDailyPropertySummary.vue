@@ -10,52 +10,52 @@
 
 
             <TabView>
-                <TabPanel header="Arrival/Stay Over/Departure">
+                <TabPanel :header="$t('TabPanelArrival/Stay Over/Departure') ">
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
-                        <AccordionTab :header="'Arrival Guests (' + data?.arrival.length + ')'">
+                        <AccordionTab :header="$t('Arrival Guests') + ' (' + data?.arrival.length + ')'">
                             <ComArrivalGuest :data="data?.arrival" />
                         </AccordionTab>
-                        <AccordionTab :header="'Stay Over Guest (' + data?.stay_over.length + ')'">
+                        <AccordionTab :header="$t('Stay Over Guest') + ' (' + data?.stay_over.length + ')'">
                             <ComArrivalGuest :data="data?.stay_over" />
                         </AccordionTab>
-                        <AccordionTab :header="'Departure Guest (' + data?.departure.length + ')'">
+                        <AccordionTab :header="$t('Departure Guest') + ' (' + data?.departure.length + ')'">
                             <ComArrivalGuest :data="data?.departure" />
                         </AccordionTab>
 
                     </Accordion>
                 </TabPanel>
-                <TabPanel :header="'Unassign room (' + data?.unassign_room.length + ')'">
+                <TabPanel :header="$t('Unassign room') + ' (' + data?.unassign_room.length + ')'">
                     <ComArrivalGuest :data="data?.unassign_room" />
                 </TabPanel>
-                <TabPanel header="Pickup & Drop Off Guest">
+                <TabPanel :header="$t('Pickup & Drop Off Guest')">
                     <ComPickUpandDropOff :data="data?.pickup_drop_off" />
                 </TabPanel>
-                <TabPanel header="No Show, Cancelled & Void"> 
+                <TabPanel :header="$t('No Show, Cancelled & Void')"> 
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
                         <AccordionTab :header="'No Show Reserved Room (' + data?.inactive_reservation.length + ')'">
                             <ComInactiveReservation :data="data?.inactive_reservation" />
                         </AccordionTab> 
-                        <AccordionTab :header="'Today No Show, Cancelled & Void  (' + data?.cancelled_void_and_no_show.length + ')'">
+                        <AccordionTab :header="$t('Today No Show, Cancelled & Void') + ' (' + data?.cancelled_void_and_no_show.length + ')'">
                             <ComInactiveReservation :data="data?.cancelled_void_and_no_show" />
                         </AccordionTab> 
                     </Accordion>
                 </TabPanel>
-                <TabPanel :header="'Room Block (' + data?.room_block.length + ')'">
+                <TabPanel :header="$t('Room Block') + ' (' + data?.room_block.length + ')'">
                     <ComRoomBlock :data="data?.room_block" />
                 </TabPanel>
-                <TabPanel header="Summary">
+                <TabPanel :header="$t('Summary')">
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
-                        <AccordionTab header="Summary by Business Source">
+                        <AccordionTab :header="$t('Summary by Business Source')">
                             <ComSummaryByBusinessSource :property="dialogRef.data.property" :date="dialogRef.data.date"
                                 :room_type_id="dialogRef.data.room_type_id" />
                         </AccordionTab>
 
-                        <AccordionTab header="Summary by Reservation Type">
+                        <AccordionTab :header=" $t('Summary by Reservation Type') ">
                             <ComSummaryByReservationType :property="dialogRef.data.property" :date="dialogRef.data.date"
                                 :room_type_id="dialogRef.data.room_type_id" />
                         </AccordionTab>
 
-                        <AccordionTab header="Summary by Room Type">
+                        <AccordionTab :header="$t('Summary by Room Type')">
                             <ComSummaryByRoomType :property="dialogRef.data.property" :date="dialogRef.data.date"
                                 :room_type_id="dialogRef.data.room_type_id" />
                         </AccordionTab> 
@@ -70,7 +70,8 @@ import { ref, onMounted, getApi, inject } from '@/plugin';
 const data = ref()
 const loading = ref(false)
 const dialogRef = inject("dialogRef");
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 

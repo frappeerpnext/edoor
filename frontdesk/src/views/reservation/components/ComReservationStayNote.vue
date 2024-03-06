@@ -7,12 +7,12 @@
                         <div class="pt-2 pb-3 text-color-black">
                             <div class="">
                                 <div class="flex justify-content-between flex-wrap">
-                                    <span class="text-lg font-semibold line-height-4">Reseravation Note</span>
+                                    <span class="text-lg font-semibold line-height-4">{{$t('Reseravation Note')}}</span>
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem"
                                         @click="onReseravationNote($event, 'note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{
+                                    <span class="font-italic">{{$t('Last Modified')}}: </span><span class="text-500 font-italic"> {{
                                         rs.reservationStay.note_by.split("@")[0] }} {{ gv.datetimeFormat(rs.reservationStay.note_modified)}}
                                     </span>
                                 </div>
@@ -24,7 +24,7 @@
                     <div v-else class="link_line_action px-3" @click="onReseravationNote($event, 'note')">
                         <div class="flex justify-center items-center my-3">
                             <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
-                            <span class="text-xl">Add Reseravation Note</span>
+                            <span class="text-xl">{{$t('Add Reseravation Note')}}</span>
                         </div>
                     </div>
                 </div>
@@ -35,12 +35,12 @@
                         <div class="pt-2 pb-3 text-color-black">
                             <div class="">
                                 <div class="flex justify-content-between flex-wrap">
-                                    <span class="text-lg font-semibold line-height-4">Housekeeping Note</span>
+                                    <span class="text-lg font-semibold line-height-4">{{$t('Housekeeping Note')}}</span>
                                     <Button text icon="pi pi-file-edit" class="w-1rem h-1rem"
                                         @click="onReseravationNote($event, 'housekeeping_note')"></Button>
                                 </div>
                                 <div class="text-sm">
-                                    <span class="font-italic">Last Modified: </span><span class="text-500 font-italic"> {{
+                                    <span class="font-italic">{{$t('Last Modified')}}: </span><span class="text-500 font-italic"> {{
                                         rs.reservationStay.housekeeping_note_by.split("@")[0]  }} {{
         gv.datetimeFormat(rs.reservationStay.housekeeping_note_modified) }}</span>
                                 </div>
@@ -52,7 +52,7 @@
                     <div v-else class="link_line_action px-3" @click="onReseravationNote($event, 'housekeeping_note')">
                         <div class="flex justify-center items-center my-3">
                             <ComIcon icon="iconNoteBlue" class="me-2" style="height: 16px;" />
-                            <span class="text-xl">Add Housekeeping Note</span>
+                            <span class="text-xl">{{$t('Add Housekeeping Note')}}</span>
                         </div>
                     </div>
                 </div>
@@ -62,11 +62,11 @@
             <ComOverlayPanelContent width="100%" :loading="saving" @onSave="onSave" @onCancel="onClose">
                 <div>
                     <div v-if="dataUpdate.updating == 'note'">
-                        <label for="textnote" class="text-lg font-semibold line-height-4">Reservation Note</label><br />
+                        <label for="textnote" class="text-lg font-semibold line-height-4">{{$t('Reservation Note')}}</label><br />
                         <Textarea class="w-full my-2" id="textnote" v-model="dataUpdate.note" rows="5" />
                     </div>
                     <div v-else>
-                        <label for="textnote" class="text-lg font-semibold line-height-4">Housekeeping Note</label><br />
+                        <label for="textnote" class="text-lg font-semibold line-height-4">{{$t('Housekeeping Note')}}</label><br />
                         <Textarea class="w-full my-2" id="textnote" v-model="dataUpdate.housekeeping_note" rows="5" />
                     </div>
                 </div>
@@ -74,12 +74,12 @@
                     <div class="block lg:flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="dataUpdate.is_apply_all_stays" :binary="true" inputId="checkapplyall" />
-                            <label for="checkapplyall"> Apply all stays ({{ rs.reservation.total_active_reservation_stay
+                            <label for="checkapplyall"> {{$t('Apply all stays')}}  ({{ rs.reservation.total_active_reservation_stay
                             }})</label>
                         </div>
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="dataUpdate.is_apply_reseration" :binary="true" inputId="checkmasterguest" />
-                            <label for="checkmasterguest"> Apply Reservation</label>
+                            <label for="checkmasterguest">{{$t('Apply Reservation')}} </label>
                         </div>
                     </div>
                 </template>
@@ -89,10 +89,13 @@
 </template>
 <script setup>
 import { ref, postApi, inject } from '@/plugin'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const rs = inject('$reservation_stay')
 const gv = inject('$gv')
 const saving = ref(false)
 const op = ref()
+
 
 const dataUpdate = ref({
     doctype: "Reservation Stay",

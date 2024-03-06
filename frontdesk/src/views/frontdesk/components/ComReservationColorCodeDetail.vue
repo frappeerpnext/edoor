@@ -1,7 +1,7 @@
 <template>
     <div class="mt-1 grid px-1">
         <div class="col-12 flex border-b justify-content-between" v-for="(i, index) in doc.slice(0, limitview)" :key="index">
-    <div>{{ i.name }}</div>
+    <div>{{ $t(i.name) }}</div>
     <span class="px-3 me-2 border-round-lg" :style="{ background: i.color }"></span>
 </div>
 <div @click="toggleShowAll" v-if="doc.length > 5" class="flex justify-content-end w-full">
@@ -14,6 +14,8 @@
 import { ref, inject,getDocList, onMounted  } from "@/plugin"
 const doc = ref([]);
 let limitview = 5;
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 onMounted(()=>{
     getDocList("Reservation Color Code", {
         fields: ["name","color"],

@@ -1,5 +1,5 @@
 <template>
-    <SplitButton class="border-split-none" label="Print" icon="pi pi-print" :model="items" />
+    <SplitButton class="border-split-none" :label="$t('Print')" icon="pi pi-print" :model="items" />
 </template>
 <script setup>
 import { useToast } from "primevue/usetoast";
@@ -7,6 +7,8 @@ import { ref, inject, useDialog, onMounted } from "@/plugin";
 import ComPrintGuestRegistrationCard from "./ComPrintGuestRegistrationCard.vue";
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 const gv = inject("$gv")
 const toast = useToast();
@@ -49,7 +51,7 @@ items.value.push({
 
 //Confirmattion Voucher
 items.value.push({
-    label: "Confirmation Voucher",
+    label: $t("Confirmation Voucher"),
     icon: 'pi pi-check-circle',
     command: () => {
         dialog.open(ComIFrameModal, {
@@ -59,7 +61,7 @@ items.value.push({
                 report_name:"eDoor Reservation Stay Confirmation Voucher",
             },
             props: {
-                header: "Confirmation Voucher",
+                header: $t("Confirmation Voucher"),
                 style: {
                     width: '80vw',
                 },
@@ -76,7 +78,7 @@ items.value.push({
 })
 //Folio Summary Report
 items.value.push({
-    label: "Folio Summary Report",
+    label: $t("Folio Summary Report"),
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
@@ -99,7 +101,7 @@ items.value.push({
                         view: "print"
                     },
                     props: {
-                        header: "Folio Summary Report",
+                        header: $t("Folio Summary Report"),
                         style: {
                             width: '80vw',
                         },
@@ -120,7 +122,7 @@ items.value.push({
 })
 //folio detail report
 items.value.push({
-    label: "Folio Detail Report",
+    label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
         db.getDocList("Reservation Folio", {
@@ -143,7 +145,7 @@ items.value.push({
                         view: "print"
                     },
                     props: {
-                        header: "Folio Detail Report",
+                        header: $t("Folio Detail Report"),
                         style: {
                             width: '80vw',
                         },
@@ -166,7 +168,7 @@ items.value.push({
 
 //Folio transaction summary by reservation stay
 items.value.push({
-    label: "Folio Summary by Reservation Stay",
+    label: $t("Folio Summary by Reservation Stay"),
     icon: 'pi pi-print',
     command: () => {
         dialog.open(ComIFrameModal, {
@@ -177,7 +179,7 @@ items.value.push({
                 filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
             },
             props: {
-                header: "Folio Summary by Reservation Stay",
+                header: $t("Folio Summary by Reservation Stay"),
                 style: {
                     width: '80vw',
                 },
@@ -195,7 +197,7 @@ items.value.push({
 
 //Folio transaction Detaiil by reservation Stay
 items.value.push({
-    label: "Folio Detail by Reservation Stay",
+    label: $t("Folio Detail by Reservation Stay"),
     icon: 'pi pi-print',
     command: () => {
         dialog.open(ComIFrameModal, {
@@ -206,7 +208,7 @@ items.value.push({
                 filter_options:["invoice_style","show_account_code","show_room_number","show_summary"],
             },
             props: {
-                header: "Folio Detail by Reservation Stay",
+                header: $t("Folio Detail by Reservation Stay"),
                 style: {
                     width: '80vw',
                 },
@@ -226,7 +228,7 @@ items.value.push({
 //Folio List by reservation stay
 
 items.value.push({
-    label: "Folio List by Reservation Stay",
+    label: $t("Folio List by Reservation Stay"),
     icon: 'pi pi-print',
     command: () => {
         dialog.open(ComIFrameModal, {
@@ -236,7 +238,7 @@ items.value.push({
                 report_name:  "eDoor Folio List by Reservation Stay",
             },
             props: {
-                header: "Folio List by Reservation Stay",
+                header: $t("Folio List by Reservation Stay"),
                 style: {
                     width: '80vw',
                 },
@@ -256,7 +258,7 @@ items.value.push({
 
 //reservation stay detail
 items.value.push({
-    label: "Reservation Stay Detail",
+    label: $t("Reservation Stay Detail"),
     icon: 'pi pi-check-circle',
     acceptClass: 'border-none crfm-dialog',
     rejectClass: 'hidden',
@@ -270,7 +272,7 @@ items.value.push({
                 report_name:  gv.getCustomPrintFormat("Reservation Stay Detail"),
             },
             props: {
-                header: "Reservation Stay Detail",
+                header: $t("Reservation Stay Detail"),
                 style: {
                     width: '80vw',
                 },

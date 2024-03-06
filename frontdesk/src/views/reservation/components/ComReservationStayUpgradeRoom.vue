@@ -1,29 +1,29 @@
 <template>
     <ComDialogContent @onClose="onClose" @onOK="onSave" :loading="loading">
     <div class="wp-number-cus">
-        <ComReservationStayPanel class="mb-4" :title="'Last Stay in' + ' ' + lastStay?.room_type">
+        <ComReservationStayPanel class="mb-4" :title="$t('Last Stay in') + ' ' + lastStay?.room_type">
             <template #content>
             <div class="n__re-custom overflow-auto lg:overflow-hidden">
                 <table class="w-full">
                     <thead>
                         <tr>
                             <th class="text-left pe-2 w-14rem">
-                                <label>Start Date</label>
+                                <label>{{ $t('Start Date') }} </label>
                             </th>
                             <th class="text-left px-2">
-                                <label>End Date</label>
+                                <label>{{ $t('End Date') }}</label>
                             </th> 
                             <th class="text-left px-2">
-                                <label>Room</label>
+                                <label>{{ $t('Room') }}</label>
                             </th>
                             <th v-if="can_view_rate" class="text-right px-2">
-                                <label>Rate</label>
+                                <label>{{ $t('Rate') }}</label>
                             </th> 
                             <th class="px-2 w-8rem text-center">
-                                <label>Nights</label>
+                                <label>{{ $t('Nights') }}</label>
                             </th>
                             <th v-if="can_view_rate" class="text-right ps-2">
-                                <label>Amount</label>
+                                <label>{{ $t('Amount') }}</label>
                             </th>
 
                         </tr>
@@ -74,22 +74,22 @@
                     <thead>
                         <tr>
                             <th class="text-left pe-2 w-12rem">
-                                <label>Start Date<span class="text-red-500">*</span></label>
+                                <label>{{$t('Start Date')}}<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2 w-14rem">
-                                <label>End Date<span class="text-red-500">*</span></label>
+                                <label>{{$t('End Date')}}<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Type<span class="text-red-500">*</span></label>
+                                <label>{{$t('Room Type')}}<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label>Room Name</label>
+                                <label>{{$t('Room Name')}}</label>
                             </th>
                             <th class="text-center px-2 w-5rem">
-                                <label class="text-center">Nights</label>
+                                <label class="text-center">{{$t('Nights')}}</label>
                             </th>
                             <th v-if="can_view_rate" class="text-right px-2">
-                                <label>Rate<span class="text-red-500">*</span></label>
+                                <label>{{$t('Rate')}}<span class="text-red-500">*</span></label>
                             </th>
                              
                         </tr>
@@ -157,9 +157,9 @@
 <script setup>
     import {inject,ref, getApi, onMounted,postApi,watch} from '@/plugin'
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
- 
-    
     import Enumerable from 'linq'
+    import {i18n} from '@/i18n';
+    const { t: $t } = i18n.global;
     const rs = inject('$reservation_stay')
     const moment = inject('$moment')
     const gv = inject('$gv')

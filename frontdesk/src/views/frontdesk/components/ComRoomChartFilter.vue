@@ -12,7 +12,7 @@
                         <button
                             :class="active == data.item.key ? 'bg-gray-300' : 'bg-white'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
-                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 16px;" /> {{data.item.label}} </div>
+                            <div class="flex items-center gap-2"> <ComIcon :icon="data.item.icon" style="height: 16px;" />  {{$t(data.item.label)}} </div>
                         </button>
                     </template>
                 </Menu>
@@ -36,9 +36,9 @@
             </div>
         </template>
         
-        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'View Previous Day'" class="border-noround-right border-y-none border-left-none"></Button>
-        <Button @click="onToday('today')"  v-tippy ="'View Today'"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
-        <Button @click="onPrevNext('next')"  v-tippy ="'View Next Day'" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
+        <Button  @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="$t('View Previous Day')" class="border-noround-right border-y-none border-left-none"></Button>
+        <Button @click="onToday('today')"  v-tippy ="$t('View Today')"  class="border-noround border-none"><img class="icon-set-svg" :src="iconTodayCalendar"/></Button>
+        <Button @click="onPrevNext('next')"  v-tippy ="$t('View Next Day')" class="border-noround-left border-y-none border-right-none" icon="pi pi-angle-double-right"></Button>
 
         <div class="border-left-1 border-primary-100 m-2"></div>
         <Button v-if="!hideRefresh" @click="onRefresh()" icon="pi pi-refresh" class="content_btn_b adjBtnRefresh"></Button>
@@ -50,7 +50,8 @@ import { ref, useRoute,computed } from '@/plugin'
 import iconChangeRoom from '@/assets/svg/change-room-icon.svg'
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
 import iconChangeRoomOrderlist from '@/assets/svg/icon-bed.svg'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const route = useRoute()
 
 const reservation_chart = ref(JSON.parse(sessionStorage.getItem('reservation_chart')))

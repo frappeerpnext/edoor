@@ -2,30 +2,30 @@
     <ComOverlayPanelContent title="Update Reservation Information" :width="isMobile ? '100%' : '50rem'" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
         <div class="py-2 grid">
             <div class="col-12">
-                <label>Res. Date</label><br/>
+                <label>{{ $t('Res. Date') }} </label><br/>
                 <Calendar class="p-inputtext-sm w-full" :selectOtherMonths="true" v-model="data.reservation_date"
                 placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar panelClass="no-btn-clear"/>
             </div>
             <div class="col-6">
-                <label>Ref. No</label><br/>
+                <label>{{ $t('Ref. No') }} </label><br/>
                 <InputText v-model="data.reference_number" class="w-full"/>
             </div>
             <div class="col-6">
-                <label>Int. No</label><br/>
+                <label>{{$t('Int. No')}}</label><br/>
                 <InputText v-model="data.internal_reference_number" class="w-full"/>
             </div>
             <div v-if="data.reservation_type != 'FIT'" class="col-12">
                 <div class="grid">
                     <div class="col-6 lg:col-5">
-                        <label>Group Name</label><br/>
+                        <label>{{$t('Group Name')}}</label><br/>
                         <InputText v-model="data.group_name" class="w-full"/>
                     </div>
                     <div class="col-6 lg:col-5">
-                        <label>Group Code</label><br/>
+                        <label>{{$t('Group Code')}}</label><br/>
                         <InputText v-model="data.group_code" class="w-full"/>
                     </div>
                     <div class="col-12 lg:col-2">
-                        <label>Group Color</label>
+                        <label>{{$t('Group Color')}}</label>
                         <div @click="toggleColor" class="w-full border-blue-100 h-3rem border-round-xl border-1" :style="{background:data.group_color}"></div>
                     </div>
                 </div>
@@ -35,12 +35,16 @@
                 <div class="flex items-center">
                     <template v-if="data.doctype=='Reservation Stay'">
                         <Checkbox inputId="update_to_reservation" v-model="update_to_reservation" :binary="true" />
-                        <label for="update_to_reservation" class="cursor-pointer m-auto ps-2">Apply change to reservation</label>
+                        <label for="update_to_reservation" class="cursor-pointer m-auto ps-2">
+                            {{$t('Apply change to reservation')}}
+                            </label>
                     </template>
                 </div>
                 <div class="flex items-center">
                     <Checkbox inputId="apply-all-stay" v-model="apply_all_stay" :binary="true" />
-                    <label for="apply-all-stay" class="cursor-pointer m-auto ps-2">Apply to all active stays</label>
+                    <label for="apply-all-stay" class="cursor-pointer m-auto ps-2">
+                        {{$t(' Apply to all active stays')}}
+                       </label>
                 </div>
             </div>
         </div>
@@ -53,7 +57,8 @@
 
 import { ref, inject, onMounted,postApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 
 const moment = inject("$moment")

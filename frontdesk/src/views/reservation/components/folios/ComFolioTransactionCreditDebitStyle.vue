@@ -5,57 +5,57 @@
             :stateKey="'folo_transaction_table_state_' + selectedFolio.name" :rows="10"
             :rowsPerPageOptions="[5, 10, 20, 50]" @row-select="onRowSelection" @row-unselect="onRowUnSelection">
             <div class="absolute bottom-6 left-4">
-                <strong>Total Records: <span class="ttl-column_re">{{ folioTransactions.length }}</span></strong>
+                <strong> {{ $t('Total Records') }}: <span class="ttl-column_re">{{ folioTransactions.length }}</span></strong>
             </div>
 
             <Column selectionMode="multiple" headerStyle="width: 3rem" v-if="showCheckbox">
 
             </Column>
-            <Column field="name" header="Name" headerClass="text-center" bodyClass="text-center">
+            <Column field="name" :header="$t('Name')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <button @click="onViewFolioDetail(slotProps)" v-if="slotProps.data?.name" :class="'link_line_action1 ' + (slotProps.data?.is_auto_post==1?'auto_post':'')" >{{
                         slotProps.data?.name }}</button>
                 </template>
             </Column>
-            <Column field="room_number" header="Room #" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
-            <Column field="posting_date" header="Post Date" headerClass="text-center" bodyClass="text-center">
+            <Column field="room_number" :header="$t('Room') + ' #'" headerClass="text-center white-space-nowrap" bodyClass="text-center"></Column>
+            <Column field="posting_date" :header="$t('Post Date')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data?.posting_date">{{ moment(slotProps.data?.posting_date).format("DD-MM-YYYY")
                     }}</span>
                 </template>
             </Column>
 
-            <Column field="account_name" header="Account Name " style="min-width: 160px;" />
-            <Column field="quantity" header="QTY" headerClass="text-center" bodyClass="text-center">
+            <Column field="account_name" :header="$t('Account Name')" style="min-width: 160px;" />
+            <Column field="quantity" :header="$t('QTY')" headerClass="text-center" bodyClass="text-center">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.quantity > 0">{{ slotProps.data.quantity }}</span>
                 </template>
             </Column>
 
-            <Column field="debit" header="Debit(Charges)" class="text-right">
+            <Column field="debit" :header="$t('Debit(Charges)')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat v-if="slotProps.data.debit > 0" :value="slotProps.data.debit"
                         class="white-space-nowrap" />
                 </template>
             </Column>
-            <Column field="credit" header="Credit(Payments)" class="text-right" style="min-width: 70px;">
+            <Column field="credit" :header="$t('Credit(Payments)')" class="text-right" style="min-width: 70px;">
                 <template #body="slotProps">
                     <CurrencyFormat v-if="slotProps.data.credit > 0" class="text-green-700 white-space-nowrap"
                         :value="slotProps.data.credit" />
                 </template>
             </Column>
-            <Column field="balance" header="Balance" class="text-right">
+            <Column field="balance" :header="$t('Balance')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.balance" class="white-space-nowrap" />
                 </template>
             </Column>
 
-            <Column field="owner" header="Made By">
+            <Column field="owner" :header="$t('Made By')">
                 <template #body="slotProps">
                     {{ slotProps.data.owner?.split("@")[0] }}
                 </template>
             </Column>
-            <Column field="creation" header="Created">
+            <Column field="creation" :header="$t('Created')">
                 <template #body="slotProps">
                     <span v-if="slotProps.data.creation">
                         <ComTimeago :date="slotProps.data.creation" />
@@ -131,6 +131,8 @@ import ComBoxStayInformation from '@/views/reservation/components/ComBoxStayInfo
 import ComReservationStayFolioTransactionAction from '@/views/reservation/components/reservation_stay_folio/ComReservationStayFolioTransactionAction.vue';
 
 import Enumerable from 'linq'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     folio: Object, doctype: {
         type: String,

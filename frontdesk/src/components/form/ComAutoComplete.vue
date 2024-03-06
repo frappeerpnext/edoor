@@ -3,7 +3,7 @@
         <AutoComplete :label="label"  :disabled="disabled" :class="[isFull ? 'autocomplete-full-with' : '', isIconSearch ? 'icon-search' : '']" :data-value="value"
             v-model="selected" :suggestions="options" optionLabel="label" removeTokenIcon="pi-check" completeOnFocus
             @complete="search" @item-select="onSelected" @clear="onClear" @blur="onBlur" @focus="onFocus"
-            :placeholder="placeholder">
+            :placeholder="$t(placeholder ?? '')">
             <template #option="slotProps">
                 <template v-if="slotProps.option.description == addNewKey || slotProps.option.description == AdvancedSearchKey">
                     <div v-if="slotProps.option.description == addNewKey">
@@ -28,6 +28,8 @@
 <script setup>
 import { ref, inject, computed, useToast, useDialog, getDoc,watch,getDocList } from '@/plugin'
 import Search from './ComAdvancedSearch.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     doctype: String,
     modelValue: [String, Number],

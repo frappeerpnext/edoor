@@ -5,23 +5,23 @@
     </div>
     <div class="td_guest_cs px-1 mt-3 cursor-pointer">
         <ComTodaySummarySep dialogKey="all_rooms"  title="All Rooms">{{ data?.total_room }}</ComTodaySummarySep>
-        <tippy :content="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' Checked-in ' + ' & ' +  ' Total Arrival ' + (data?.arrival|| 0)  ">
+        <tippy :content="((data?.arrival || 0) - (data?.arrival_remaining || 0)) + ' ' + $t('Checked-in') + ' ' + ' & ' +  $t('Total Arrival') + (data?.arrival|| 0)  ">
         <ComTodaySummarySep dialogKey="arrival" title="Arrival" :totalValue="data.arrival" :value="((data.arrival || 0) -(data.arrival_remaining || 0))">
             <span>{{ (data?.arrival || 0) -(data?.arrival_remaining || 0) }}</span> / <span>{{ (data?.arrival || 0) }}</span>
         </ComTodaySummarySep>
         </tippy>
-        <tippy :content="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' Checked-out' + ' & '+ 'Total Departure ' +  (data?.departure ||0)   ">
+        <tippy :content="((data?.departure ||0) - (data?.departure_remaining ||0)) + ' ' + $t('Checked-out') + ' & '+ $t('Total Departure') + ' ' +  (data?.departure ||0)   ">
         <ComTodaySummarySep dialogKey="departure" title="Departure" :totalValue="data.departure" :value="data.departure - data?.departure_remaining">
         <span title="Departure">{{ (data?.departure ||0) - (data?.departure_remaining ||0) }}</span> / <span titel="Departure Remain">{{ data?.departure || 0 }}</span>
         </ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep dialogKey="stay_over" title="Stay Over">{{ data?.stay_over }}</ComTodaySummarySep>
         <ComTodaySummarySep dialogKey="in_house" title="In-house">{{ data?.in_house }}</ComTodaySummarySep>
-    <tippy :content="`Today you have ${data?.unassign_room} unassign room reservation & total all unassign room is ${data?.total_unassign_room}`">
+    <tippy :content="`${$t('Today you have')} ${data?.unassign_room} ${$t('unassign room reservation')} & ${$t('total all unassign room')} is ${data?.total_unassign_room}`">
         <ComTodaySummarySep dialogKey="unassign_room"  title="Unassign Room (Today/All)">{{ data?.unassign_room }} / {{ data?.total_unassign_room || 0 }}</ComTodaySummarySep>
     </tippy>
-        <tippy :content="'FIT (free independent traveler) Total ' + data.fit_reservation_arrival + ' & Total Stay ' + data.fit_stay_arrival">
-            <ComTodaySummarySep   dialogKey="fit_arrival" title="Fit Arrival">{{(data.fit_reservation_arrival + ' / ' + data.fit_stay_arrival)}}</ComTodaySummarySep>
+        <tippy :content="$t('FIT (Free Independent Traveler) Total') + ' ' + data.fit_reservation_arrival + ' & ' + $t('Total Stay') + data.fit_stay_arrival">
+            <ComTodaySummarySep   dialogKey="fit_arrival" title="FIT Arrival">{{(data.fit_reservation_arrival + ' / ' + data.fit_stay_arrival)}}</ComTodaySummarySep>
         </tippy>
         <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) & ' + data?.git_stay_arrival + ' Stay(s)'">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + ' / ' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
@@ -36,7 +36,8 @@
 <script setup>
 import { ref, getApi, inject,onMounted,onUnmounted } from "@/plugin"
 import ComTodaySummarySep from '@/views/frontdesk/components/ComTodaySummarySep.vue';
- 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const props = defineProps({date:""})
 const gv = inject("$gv")

@@ -7,12 +7,12 @@
         <table class="tip_description_stay_table m-1 pt-4">
             <tbody>
                 <tr class="table-rs-de">
-                    <td>Res. No</td>
+                    <td> {{ $t('Res. No') }} </td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.reservation || '' }}</td>
                 </tr>
                 <tr class="table-rs-de" v-if="event.extendedProps.reservation_color">
-                    <td>Res Special Color</td>
+                    <td>{{ $t('Res Special Color') }}</td>
                     <td class="px-2">:</td>
                     <div class="flex mt-1 align-items-center">
                         <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2"
@@ -21,33 +21,33 @@
                     </div>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Res Stay Status</td>
+                    <td>{{ $t('Res Stay Status') }}</td>
                     <td class="px-2">:</td>
-                    <td>{{ event.extendedProps?.reservation_status || '' }}</td>
+                    <td>{{ $t(event.extendedProps?.reservation_status || '') }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Res Stay. No</td>
+                    <td>{{ $t('Res Stay. No') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.reservation_stay || '' }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Ref. No</td>
+                    <td>{{ $t('Ref. No') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.reference_number || '' }} </td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Int. No</td>
+                    <td>{{ $t('Int. No') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.internal_reference_number ?? '' }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Ref. type</td>
+                    <td> {{ $t('Ref. type') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.reservation_type || '' }} </td>
                 </tr>
                 <tr class="table-rs-de"
                     v-if="event.extendedProps?.group_name || event.extendedProps?.group_code || event.extendedProps?.group_color">
-                    <td>Group</td>
+                    <td>{{ $t('Group') }}</td>
                     <td class="px-2">:</td>
                     <td>
                         <div style="height:14px !important;" class="px-4 inline-block border-1 border-white me-2"
@@ -57,62 +57,62 @@
                     </td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Arrival</td>
+                    <td>{{ $t('Arrival') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ moment(event.extendedProps?.arrival_date).format('DD-MM-YYYY') }} -
                         {{ moment(event.extendedProps?.start_time, "HH:mm:ss").format("h:mm A") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Departure</td>
+                    <td>{{ $t('Departure') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ moment(event.extendedProps?.departure_date).format('DD-MM-YYYY') }} -
                         {{ moment(event.extendedProps?.end_time, "HH:mm:ss").format("h:mm A") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Nights</td>
+                    <td>{{ $t('Nights') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ moment(event.extendedProps?.departure_date).diff(event.extendedProps?.arrival_date, 'days') }}
                     </td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Room</td>
+                    <td>{{ $t('Room') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps.stay_rooms || event.extendedProps?.room_number }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Pax</td>
+                    <td>{{ $t('Pax') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.adult }} / {{ event.extendedProps?.child }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Source</td>
+                    <td>{{ $t('Source') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.business_source || '' }}</td>
                 </tr>
                 <template v-if="can_view_rate">
                     <tr class="table-rs-de">
-                        <td>ADR</td>
+                        <td>{{ $t('ADR') }}</td>
                         <td class="px-2">:</td>
                         <td>
                             <CurrencyFormat :value="event.extendedProps?.reservation_stay_adr" />
                         </td>
                     </tr>
                     <tr class="table-rs-de">
-                        <td>Total Room Rate</td>
+                        <td>{{ $t('Total Room Rate') }}</td>
                         <td class="px-2">:</td>
                         <td>
                             <CurrencyFormat :value="event.extendedProps?.total_room_rate" />
                         </td>
                     </tr>
                     <tr class="table-rs-de">
-                        <td>Total Debit</td>
+                        <td>{{ $t('Total Debit') }}</td>
                         <td class="px-2">:</td>
                         <td>
                             <CurrencyFormat :value="event.extendedProps?.total_debit" />
                         </td>
                     </tr>
                     <tr class="table-rs-de">
-                        <td>Total Credit</td>
+                        <td>{{ $t('Total Credit') }}</td>
                         <td class="px-2">:</td>
                         <td>
                             <CurrencyFormat :value="event.extendedProps?.total_credit" />
@@ -120,7 +120,7 @@
                         </td>
                     </tr>
                     <tr class="table-rs-de">
-                        <td>Balance</td>
+                        <td>{{ $t('Balance') }}</td>
                         <td class="px-2">:</td>
                         <td>
                             <CurrencyFormat :value="event.extendedProps?.balance" />
@@ -128,7 +128,7 @@
                     </tr>
                 </template>
                 <tr v-if="event.extendedProps?.note != 'null' && event.extendedProps?.note">
-                    <td><span class="mt-2">Note</span></td>
+                    <td><span class="mt-2">{{ $t('Note') }}</span></td>
                 </tr>
                 <tr v-if="event.extendedProps?.note != 'null' && event.extendedProps?.note">
                     <td colspan="3">
@@ -146,32 +146,32 @@
             <tbody>
 
                 <tr class="table-rs-de">
-                    <td>Block Number</td>
+                    <td>{{ $t('Block Number') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.publicId || '' }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Start Date</td>
+                    <td>{{ $t('Start Date') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ moment(event?.start_date).format('DD-MM-YYYY') }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Release Date</td>
+                    <td>{{ $t('Release Date') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ moment(event?.end_date).format('DD-MM-YYYY') }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Night Of Block</td>
+                    <td>{{ $t('Night Of Block') }}</td>
                     <td class="px-3">:</td>
                     <td>{{ moment(event?.end_date).diff(event?.start_date, 'days') }} Nights </td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Blocked by</td>
+                    <td>{{ $t('Blocked by') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps?.block_by || '' }}</td>
                 </tr>
                 <tr>
-                    <td><span class="mt-2">Reason</span></td>
+                    <td><span class="mt-2">{{ $t('Reason') }}</span></td>
                 </tr>
                 <tr>
                     <td colspan="3">
@@ -184,68 +184,68 @@
 
     <div v-else-if="event.extendedProps.type == 'room_type_event'" class="w-full p-2">
 
-        <div class="text-center border-1 p-2 border-round-lg">Available Room <span class="mx-3"
-                :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }} of {{
+        <div class="text-center border-1 p-2 border-round-lg"> {{$t('Available Room')}} <span class="mx-3"
+                :style="{ color: event.ui.backgroundColor }"> {{ event.extendedProps.room_available }} {{ $t('of') }}  {{
                     event.extendedProps.total_room || 0 }}</span> </div>
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
                 <tr class="table-rs-de">
-                    <td>Room Type</td>
+                    <td>{{ $t('Room Type') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.room_type }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Date</td>
+                    <td>{{ $t('Date') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Total Room</td>
+                    <td> {{ $t('Total Room') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Total Room Sold</td>
+                    <td> {{ $t('Total Room Sold') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room_sold || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Occupacy</td>
+                    <td> {{ $t('Occupacy') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ occupancy || 0 }}%</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Unassign Room</td>
+                    <td> {{ $t('Unassign Room') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.unassign_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Arrival</td>
+                    <td> {{ $t('Arrival') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.arrival }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Stay Over</td>
+                    <td> {{ $t('Stay Over') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.stay_over }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Departure</td>
+                    <td>{{ $t('Departure') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.departure }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Room Block</td>
+                    <td>{{ $t('Room Block') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.room_block }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Adult</td>
+                    <td>{{ $t('Adult') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.adult }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Child</td>
+                    <td>{{ $t('Child') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps?.child }}</td>
                 </tr>
@@ -253,63 +253,63 @@
         </table>
     </div>
     <div v-else-if="event.extendedProps.type == 'property_summary'">
-        <div class="text-center border-1 p-2 border-round-lg">Available Room <span class="mx-3"> {{
+        <div class="text-center border-1 p-2 border-round-lg">{{ $t('Available Room') }} <span class="mx-3"> {{
             event.extendedProps.room_available }} of {{ event.extendedProps.total_room || 0 }}</span> </div>
 
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
                 <tr class="table-rs-de">
-                    <td>Date</td>
+                    <td>{{ $t('Date') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Total Room</td>
+                    <td>{{ $t('Total Room') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Total Room Sold</td>
+                    <td>{{ $t('Total Room Sold') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room_sold || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Occupacy</td>
+                    <td>{{ $t('Occupacy') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ occupancy || 0 }}%</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Unassign Room</td>
+                    <td>{{ $t('Unassign Room') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.unassign_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Arrival</td>
+                    <td>{{ $t('Arrival') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.arrival }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Stay Over</td>
+                    <td>{{ $t('Stay Over') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.stay_over }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Deprture</td>
+                    <td>{{ $t('Departure') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.departure }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Room Block</td>
+                    <td>{{ $t('Room Block') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.room_block }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Adult</td>
+                    <td>{{ $t('Adult') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.adult }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Child</td>
+                    <td>{{ $t('Child') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps?.child }}</td>
                 </tr>
@@ -321,22 +321,22 @@
         <table class="tip_description_stay_table mx-1 my-2 pt-3 ">
             <tbody>
                 <tr class="table-rs-de">
-                    <td>Room Type</td>
+                    <td>{{ $t('Room Type') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.room_type }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Date</td>
+                    <td>{{ $t('Date') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Vacant Room</td>
+                    <td>{{ $t('Vacant Room') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.room_available || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>Unassign Room</td>
+                    <td>{{ $t('Unassign Room') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.unassign_room || 0 }}</td>
                 </tr>
@@ -348,6 +348,8 @@
 import { computed } from "vue"
 import CurrencyFormat from "@/components/CurrencyFormat.vue"
 import moment from "@/utils/moment.js";
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     event: Object
 })

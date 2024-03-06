@@ -18,7 +18,7 @@ frappe.query_reports["Manager Flash Report"] = {
 			"fieldname": "date",
 			"label": __("Date"),
 			"fieldtype": "Date",
-			default: new Date((new Date()).getFullYear(), (new Date()).getMonth(), 1),
+			default:frappe.datetime.get_today(),
 			"reqd": 1,
 			"on_change": function (query_report) { },
 		}        

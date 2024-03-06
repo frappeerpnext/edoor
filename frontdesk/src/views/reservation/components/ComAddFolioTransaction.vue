@@ -4,23 +4,23 @@
             <div class="col pb-0">
                 <div class="flex gap-2">
                     <div class="col-6 pl-0" v-if="(dialog_data?.show_room || false)">
-                        <label for="room">Room (Optional)</label>
+                        <label for="room">{{ $t('Room (Optional)') }}</label>
                         <ComAutoComplete :disabled="!canEdit" v-model="doc.room_id" placeholder="Select Room" doctype="Room"
                             class="auto__Com_Cus w-full" :filters="{ 'property': doc.property }" />
                     </div>
                     <div class="col-6 pl-0" v-if="doc.reservation">
-                        <label for="room">Guest (Optional)</label>
+                        <label for="room">{{ $t('Guest (Optional)') }}</label>
                         <ComAutoComplete v-model="doc.guest" placeholder="Select Guest" doctype="Customer"
                             class="auto__Com_Cus w-full" :filters="{ 'name': ['in', guests] }" />
                     </div>
                 </div>
                 <div class="grid">
                     <div class="col-6">
-                        <label for="ref">Ref. No</label>
+                        <label for="ref">{{ $t('Ref. No') }}</label>
                         <InputText id="ref" class="w-full" type="text" v-model="doc.reference_number" />
                     </div>
                     <div class="col-6">
-                        <label for="posting_date">Posting Date</label>
+                        <label for="posting_date">{{ $t('Posting Date') }}</label>
 
                         <Calendar :selectOtherMonths="true" :disabled="!canEdit" inputId="posting_date"
                             v-model="doc.posting_date" :minDate="min_date"
@@ -28,14 +28,14 @@
                             showIcon showButtonBar selectOtherMonths panelClass="no-btn-clear" />
                     </div>
                     <div class="col-6">
-                        <label for="account_code">Account Code</label>
+                        <label for="account_code">{{ $t('Account Code') }}</label>
                         <ComAutoComplete :disabled="!canEdit" v-model="doc.account_code" placeholder="Select Account Code"
                             doctype="Account Code" class="auto__Com_Cus w-full" @onSelected="onSelectAccountCode"
                             :filters="accountCodeFilter" />
 
                     </div>
                     <div class="col-6">
-                        <label for="input_amount">Amount</label>
+                        <label for="input_amount">{{ $t('Amount') }}</label>
                         <ComInputCurrency classCss="w-full" :disabled="!canEdit" v-model="doc.input_amount"
                             id="input_amount" />
                             
@@ -43,7 +43,7 @@
 
                     <div v-if="doc.account_name" class="col-12 ">
                         <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                            <span class="text-500 font-italic">You Selected Account Code </span>
+                            <span class="text-500 font-italic">{{ $t('You Selected Account Code') }} </span>
                             {{ doc.account_name }}
                         </div>
                     </div>
@@ -53,31 +53,31 @@
                         </div>
                         <div class="grid">
                             <div class="col-6">
-                                <label>Payment By</label>
+                                <label>{{ $t('Payment By') }}</label>
                                 <InputText class="w-full" type="text" v-model="doc.payment_by" placeholder="Name"/>
                             </div>
                             <div class="col-6">
-                                <label>Phone Number</label>
+                                <label>{{ $t('Phone Number') }}</label>
                                 <InputText  class="w-full" type="text" v-model="doc.payment_by_phone_number" placeholder="phone number"/>
                             </div>
                         </div>
                     </div>  
                     <!-- Quantity -->
                     <div v-if="account_code.allow_enter_quantity && doc?.account_code" class="col-6">
-                        <label for="quantity">Quantity</label>
+                        <label for="quantity">{{ $t('Quantity') }}</label>
                         <InputNumber class="w-full" v-model="doc.quantity" :minFractionDigits="0" :maxFractionDigits="2" />
                     </div>
                     <!-- /Quantity -->
 
                     <!-- Select Product -->
                     <div class="col-6" v-if="doc.required_select_product==1">
-                        <label >Product</label>
+                        <label >{{ $t('Product') }}</label>
                         <ComAutoComplete class="auto__Com_Cus w-full" doctype="Product" v-model="doc.product" @onSelected="onSelectProduct" />
                         
                     </div>
                     <div class="col-12">
                         <div v-if="doc.product" class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                            <span class="text-500 font-italic">You Selected Product Code </span>
+                            <span class="text-500 font-italic">{{ $t('You Selected Product Code') }} </span>
                             {{ doc.product_description }} x {{ doc.quantity }}
                         </div>
                     
@@ -87,14 +87,14 @@
                     <div v-if="account_code.allow_discount && doc?.account_code" class="col-12">
                         <div class="grid gap-0">
                             <div class="col-12 md:col-6 lg:col-4">
-                                <label for="dis_type">Discount Type</label>
+                                <label for="dis_type">{{ $t('Discount Type') }}</label>
                                 <div class="w-full">
                                     <ComSelect class="w-full min-w-full" id="dis_type" :disabled="!canEdit"
                                         v-model="doc.discount_type" :options="['Percent', 'Amount']" :clear="false" />
                                 </div>
                             </div>
                             <div class="col-12 md:col-6 lg:col-4">
-                                <label for="minmaxfraction">Discount</label>
+                                <label for="minmaxfraction">{{ $t('Discount') }}</label>
                                 <div class="w-full">
                                     <InputNumber class="w-full" inputClass="w-full" :disabled="!canEdit"
                                         v-model="doc.discount" inputId="minmaxfraction" id="discount" :minFractionDigits="2"
@@ -102,7 +102,7 @@
                                 </div>
                             </div>
                             <div class="col-12 md:col-6 lg:col-4">
-                                <label for="minmaxfraction">Total Discount</label>
+                                <label for="minmaxfraction">{{ $t('Total Discount') }}</label>
                                 <div class="w-full">
                                     <div
                                         class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
@@ -120,7 +120,7 @@
                             <div class="col-12">
 
                       
-                                <label>Transfer to {{ doc.target_transaction_type }}</label>
+                                <label>{{ $t('Transfer to' + doc.target_transaction_type) }}</label>
                                
                                 <ComAutoComplete :disabled="!canEdit" v-model="doc.target_transaction_number"
                                     :placeholder="'Select ' + doc.target_transaction_type" :doctype="doc.target_transaction_type" class="auto__Com_Cus w-full"
@@ -131,7 +131,7 @@
  
                             <div v-if="doc.target_transaction_number" class="col-12 -mt-2">
                                 <div class="bg-yellow-100 border-l-4 border-yellow-400 p-2">
-                                    <span class="text-500 font-italic">You Selected</span> {{ doc.target_transaction_number }}  
+                                    <span class="text-500 font-italic">{{$t('You Selected')}}</span> {{ doc.target_transaction_number }}  
                                     <!-- <span v-if="doc.selected_target_transaction_data?.description != doc.target_transaction_number">
                                         {{ doc.selected_target_transaction_data?.description }}
                                      
@@ -142,7 +142,7 @@
                             </div>
                             
                             <div class=" p-2"  v-if="filterTargetTransactionNumberType.length>0">
-                                <label>Filter {{ doc.target_transaction_type }} by</label>
+                                <label>{{ $t('Filter' + doc.target_transaction_type + 'by') }}</label>
                                  
                                     <Dropdown   class="auto__Com_Cus w-full" :placeholder="'Select Filter Option'" :options="filterTargetTransactionNumberType" optionValue="fieldname" optionLabel="label" v-model="doc.filter_target_transaction_number_by" :showClear="true" />
                 
@@ -252,19 +252,19 @@
                     <div v-if="account_code.show_payment_information" class="col-12">
                         <div class="grid">
                             <div class="col-6">
-                                <label for="credit_card_number">Credit Card Number</label>
+                                <label for="credit_card_number">{{ $t('Credit Card Number') }}</label>
                                 <InputText class="w-full" type="text" v-model="doc.credit_card_number" />
                             </div>
                             <div class="col-6">
-                                <label for="bank_name">Bank Name</label>
+                                <label for="bank_name"> {{ $t('Bank Name') }} </label>
                                 <InputText class="w-full" type="text" v-model="doc.bank_name" />
                             </div>
                             <div class="col-6">
-                                <label for="card_holder_name">Card Holder Name</label>
+                                <label for="card_holder_name">{{ $t('Card Holder Name') }}</label>
                                 <InputText class="w-full" type="text" v-model="doc.card_holder_name" />
                             </div>
                             <div class="col-6">
-                                <label for="credit_expired_date">Credit Expired Date</label>
+                                <label for="credit_expired_date">{{ $t('Credit Expired Date') }}</label>
                               
                                 <Calendar class="w-full" v-model="doc.credit_expired_date" view="month" dateFormat="mm/yy"
                                     showIcon showButtonBar  />
@@ -276,12 +276,12 @@
                     <div v-if="account_code.allow_bank_fee" class="col-12">
                         <div class="grid">
                             <div class="col-6">
-                                <label>Bank Fee</label>
+                                <label>{{ $t('Bank Fee') }}</label>
                                 <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.bank_fee" suffix="%"
                                     :maxFractionDigits="2" :readonly="!account_code.allow_user_to_change_bank_fee" />
                             </div>
                             <div class="col-6">
-                                <label>Bank Fee Amount</label>
+                                <label>{{ $t('Bank Fee Amount') }}</label>
                                 <div style="height: 36.5px;"
                                     class="w-full rounded-lg max-h-3rem leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
                                     <CurrencyFormat :value="bank_fee_amount" />
@@ -303,7 +303,7 @@
                         <div class="flex justify-end">
                             <div
                                 class="flex flex-column grow p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                                <span class="text-500 uppercase text-sm text-end">Rate Before Tax</span>
+                                <span class="text-500 uppercase text-sm text-end">{{ $t('Rate Before Tax') }}</span>
                                 <span class="text-xl line-height-2 font-semibold text-end">
                                     <CurrencyFormat :value="amount" />
                                 </span>
@@ -314,7 +314,7 @@
                         <div class="flex justify-end">
                             <div
                                 class="flex flex-column grow p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
-                                <span class="text-500 uppercase text-sm text-end">Total</span>
+                                <span class="text-500 uppercase text-sm text-end">{{ $t('Total') }}</span>
                                 <span class="text-xl line-height-2 font-semibold text-end">
                                     <CurrencyFormat :value="total_amount" />
                                 </span>
@@ -327,7 +327,7 @@
             <!-- note -->
             <div class="col-12">
                 <div class="grid justify-center px-2 mt-2">
-                    <Textarea class="w-full" placeholder="Note" v-model="doc.note" autoResize rows="2" />
+                    <Textarea class="w-full" :placeholder="$t('Note')" v-model="doc.note" autoResize rows="2" />
                 </div>
             </div>
             <!-- /note -->
@@ -343,6 +343,8 @@ import InputNumber from 'primevue/inputnumber';
 import Textarea from 'primevue/textarea';
 import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const gv = inject("$gv")
 const frappe = inject('$frappe');
 const db = frappe.db();

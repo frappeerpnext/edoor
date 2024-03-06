@@ -3,39 +3,39 @@
         <div class="col-12 lg:col-6">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
-                    <h3 class="text-lg font-medium">Summary</h3>
-                    <div>Reservation : {{ data.daily_reservation }}</div>
+                    <h3 class="text-lg font-medium"> {{ $t('Summary') }}  </h3>
+                    <div> {{ $t('Daily Reservation') }}   : {{ data.daily_reservation }}</div>
                 </div>
                 <div class="grid mb-2">
                     <div class="col-4 md:col line-height-1 border-right-1" style="color: rgb(236, 134, 75);">
                         <h3 class="text-2xl font-medium">{{ data.arrival }}</h3>
-                        <span>Arrival</span>
+                        <span> {{ $t('Arrival') }} </span>
                     </div>
                     <div class="col-4 md:col line-height-1 border-right-1" style="color: #50ac58;">
                         <h3 class="text-2xl font-medium">{{ data.total_in_house }}</h3>
-                        <span>In House</span>
+                        <span>{{ $t('In House') }}</span>
                     </div>
                     <div class="col-4 md:col line-height-1 border-right-1" style="color:rgb(79, 79, 79);">
                         <h3 class="text-2xl font-medium">{{ data.departure - data.departure_remaining }}</h3>
-                        <span>Checked Out</span>
+                        <span>{{ $t('Checked Out') }}</span>
                     </div>
                     <div v-tippy="'Today Reserved Room'" class="col-4 md:col line-height-1 border-right-1"
                         style="color: rgb(130, 130, 5);">
                         <h3 class="text-2xl font-medium">{{ data.today_no_show }}</h3>
-                        <span>Today N/S</span>
+                        <span>{{ $t('Today N/S') }}</span>
                     </div>
                     <div v-tippy="'No Show Reserved Room'" class="col-4 md:col line-height-1 border-right-1"
                         style="color: rgb(130, 130, 5);">
                         <h3 class="text-2xl font-medium">{{ data.total_no_show }}</h3>
-                        <span>N/S Reserved Room</span>
+                        <span>{{ $t('N/S Reserved Room') }}</span>
                     </div>
                     <div class="col-4 md:col line-height-1 border-right-1" style="color:rgb(237, 99, 150);">
                         <h3 class="text-2xl font-medium">{{ data.total_cancelled }}</h3>
-                        <span>Cancelled</span>
+                        <span>{{ $t('Cancelled') }}</span>
                     </div>
                     <div class="col-4 md:col line-height-1" style="color:rgb(255, 0, 0);">
                         <h3 class="text-2xl font-medium">{{ data.total_void }}</h3>
-                        <span>Void</span>
+                        <span>{{ $t('Void') }}</span>
                     </div>
                 </div>
                 <div class="w-full ">
@@ -59,23 +59,23 @@
         <div class="col-12 lg:col-4">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
-                    <h3 class="text-lg font-medium">Occupancy</h3>
-                    <div>Total Room : {{ data.total_room }}</div>
+                    <h3 class="text-lg font-medium">{{ $t('Occupancy') }} </h3>
+                    <div>{{ $t('Total Room') }} : {{ data.total_room }}</div>
                 </div>
                 <div class="flex mb-2 color-text">
                     <div class="col-4 line-height-1 border-right-1 occupy">
                         <h3 class="text-2xl font-medium">{{ data.total_room_occupy }}</h3>
                         <div class="flex">
-                            <span>Occupy - {{ data.occupancy }}%</span>
+                            <span>{{ $t('Occupy') }} - {{ data.occupancy }}%</span>
                         </div>
                     </div>
                     <div class="col-4 line-height-1 border-right-1 vacant">
                         <h3 class="text-2xl font-medium">{{ data.total_room_vacant }}</h3>
-                        <span>Vacant Room</span>
+                        <span>{{ $t('Vacant Room') }}</span>
                     </div>
                     <div class="col-4 line-height-1 block">
                         <h3 class="text-2xl font-medium">{{ data.total_room_block }}</h3>
-                        <span>Room Block</span>
+                        <span>{{ $t('Room Block') }}</span>
                     </div>
 
                 </div>
@@ -93,19 +93,19 @@
         <div class="col-12 lg:col-2">
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
-                    <h3 class="text-lg font-medium">Transportation</h3>
-                    <div>Total : {{ data.pick_up + data.drop_off }}</div>
+                    <h3 class="text-lg font-medium">{{ $t('Transportation') }}</h3>
+                    <div>{{ $t('Total') }} : {{ data.pick_up + data.drop_off }}</div>
                 </div>
                 <div class="flex mb-2 color-text">
                     <div class="col-6 line-height-1 border-right-1 pick_up">
                         <h3 class="text-2xl font-medium">{{ data.pick_up }}</h3>
                         <div class="flex">
-                            <span>Pickup </span>
+                            <span>{{ $t('Pickup') }} </span>
                         </div>
                     </div>
                     <div class="col-6 line-height-1 drop_off">
                         <h3 class="text-2xl font-medium">{{ data.drop_off }}</h3>
-                        <span>Drop Off</span>
+                        <span>{{ $t('Drop Off') }}</span>
                     </div>
                 </div>
                 <div class="w-full background-color">
@@ -121,6 +121,8 @@
 <script setup>
 import { inject } from '@/plugin';
 const moment = inject("$moment")
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     data: Object
 })

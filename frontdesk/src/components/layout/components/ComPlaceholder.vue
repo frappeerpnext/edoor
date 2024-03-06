@@ -16,7 +16,7 @@
             <div v-else>
                 <div class="p-6 text-center" :class="classColor" :style="{ height: height, maxHeight: MaxHeight }">
                     <div><img :src="iconNoData" style="width: 130px; margin: 0 auto;"></div>
-                    <div class="mt-2 text-sm italic">{{ text }}</div>
+                    <div class="mt-2 text-sm italic">{{ $t(text ?? '') }}</div>
                 </div>
             </div>
         </template>
@@ -24,6 +24,8 @@
 </template>
 <script setup>
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     isNotEmpty: Boolean,
     isPlaceholder: Boolean,

@@ -3,7 +3,7 @@
         <tippy :content="tooltip || doctype">
         <MultiSelect :class="mClass" display="chip" v-if="isMultipleSelect" :showClear="clear" :style="{ 'min-width': width , 'max-width':maxWidth }" v-model="selected"
             :filter="isFilter" :options="dataOptions" :optionLabel="option.label" :optionValue="option.value"
-            @update:modelValue="onUpdate" :placeholder="placeholder" :maxSelectedLabels="maxSelectedLabels"/>
+            @update:modelValue="onUpdate" :placeholder="$t(placeholder ?? '')" :maxSelectedLabels="maxSelectedLabels"/>
 
             <Dropdown 
             class="w-full" v-else 
@@ -14,7 +14,7 @@
             :optionLabel="option.label" 
             :optionValue="option.value" 
             @update:modelValue="onUpdate"
-            :placeholder="placeholder"
+            :placeholder="$t(placeholder ?? '')"
         >
         </Dropdown>
        
@@ -23,6 +23,8 @@
 </template>
 <script setup>
 import { useToast, ref, inject, reactive, computed, watch, onMounted,getDocList } from '@/plugin'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const emit = defineEmits(['update:modelValue', 'onSelected', 'onSelectedValue'])
 const props = defineProps({
     doctype: String,

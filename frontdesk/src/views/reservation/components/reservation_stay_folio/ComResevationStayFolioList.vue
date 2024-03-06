@@ -4,8 +4,8 @@
         <div class="flex flex-column justify-content-between h-full res-stay-folio-btn-site-bg">
             <div :style="rs.is_page == true ? 'margin-bottom: 1px;' : 'margin-bottom: 60px;'">
                 <div class="flex justify-content-between align-items-center p-2">
-                    <span>Room Folio</span>
-                    <Button class="btn-add-folio" @click="onAddCreatNewFolio"  v-tippy="'Create Folio'">
+                    <span>{{ $t('Room Folio') }} </span>
+                    <Button class="btn-add-folio" @click="onAddCreatNewFolio"  v-tippy="$t('Create Folio')">
                         <img :src="plus_svg" style="height: 13px;">
                     </Button>
                 </div>
@@ -32,10 +32,10 @@
                                     </span>
                                     <span style="display:inline-block;"
                                         class="text-sm folio-remark closed me-1"
-                                        v-if="item.status == 'Closed'">Closed</span>
+                                        v-if="item.status == 'Closed'"> {{ $t('Closed') }} </span>
                                     <span style="display:inline-block;"
                                         class="text-sm folio-remark me-1"
-                                        v-else>Open</span>
+                                        v-else> {{$t('Open')}} </span>
                                 </span>
                                 <span class="flex align-items-end h-full">
                                     <span class="text-xs">
@@ -50,14 +50,14 @@
 
             <div v-if="can_view_rate" :class="rs.is_page == true ? 'flex flex-column bg-white mt-3 page_total_foliolist' : 'flex flex-column bg-white mt-3 relative lg:fixed total_foliolist'" :style="`width: ${panelWidth ? panelWidth : '250px'};bottom:0px;z-index: 1;`">
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
-                    <div class="pr-3"><label>Total Debit</label></div>
+                    <div class="pr-3"><label> {{ $t('Total Debit') }} </label></div>
                     <div><span>
                             <CurrencyFormat :value="totalDebit" class="white-space-nowrap font-medium" />
                         </span></div>
                 </div>
                 
                 <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2">
-                    <div class="pr-3"><label>Total Credit</label></div>
+                    <div class="pr-3"><label>{{ $t('Total Credit') }}</label></div>
                     <div><span>
                             <CurrencyFormat :value="totalCredit" class="white-space-nowrap font-medium" />
                         </span></div>
@@ -65,7 +65,7 @@
 
 
                 <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
-                    <div class="pr-3"><label>Balance</label></div>
+                    <div class="pr-3"><label>{{ $t('Balance') }}</label></div>
                     <div><span>
                             <CurrencyFormat :value="balance" class="white-space-nowrap font-medium" />
                         </span></div>
@@ -89,7 +89,8 @@ import plus_svg from '@/assets/svg/icon-add-plus-sign-purple.svg'
 import guest_svg from '@/assets/svg/icon-user-use-sytem.svg'
 import { useDialog } from 'primevue/usedialog';
 import ComNewReservationStayFolio from './ComNewReservationStayFolio.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     panelWidth: [String, Number]
 })

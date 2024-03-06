@@ -8,7 +8,7 @@
                     :key="index">
                     <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1"
                         v-if="showAccountGroup(d)">
-                        Post {{ d.account_name }}
+             {{ $t('Post ' + d.account_name)  }}
                     </Button>
                 </template>
 
@@ -24,47 +24,47 @@
                                 @click="onAddFolioTransaction(d)"
                                 class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                                 <i :class="d.icon" />
-                                <span class="ml-2 ">Post {{ d.account_name }}</span>
+                                <span class="ml-2 ">{{ $t('Post ' + d.account_name) }}</span>
                             </button>
                         </template>
                         <button v-if="!selectedFolio.is_master" @click="MarkasMasterFolio"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-verified" />
-                            <span class="ml-2"> Mark as Master Folio</span>
+                            <span class="ml-2"> {{ $t('Mark as Master Folio') }} </span>
                         </button>
 
                         <button @click="onTransferFolioItem"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-arrow-right-arrow-left" />
-                            <span class="ml-2">Transfer Items</span>
+                            <span class="ml-2"> {{ $t('Transfer Items') }} </span>
                         </button>
 
                         <button @click="closeFolio(`${isMobile ? 'top' : 'center'}`)" v-if="selectedFolio?.status == 'Open'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-ban" />
-                            <span class="ml-2">Close Folio</span>
+                            <span class="ml-2">{{$t('Close Folio')}}</span>
                         </button>
                         <button @click="EditFolio(true)"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-file-edit" />
-                            <span class="ml-2">Edit Folio </span>
+                            <span class="ml-2">{{ $t('Edit Folio') }}  </span>
                         </button>
 
                         <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-check-circle" />
-                            <span class="ml-2">Open Folio</span>
+                            <span class="ml-2"> {{ $t('Open Folio') }} </span>
                         </button>
 
                         <button @click="deleteFilio"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-times-circle" />
-                            <span class="ml-2">Delete Folio</span>
+                            <span class="ml-2"> {{ $t('Delete Folio') }} </span>
                         </button>
                         <button @click="onAuditTrail"
                             class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                             <i class="pi pi-history" />
-                            <span class="ml-2">Audit Trail</span>
+                            <span class="ml-2"> {{ $t('Audit Trail') }} </span>
                         </button>
 
                     </template>
@@ -72,9 +72,9 @@
             </div>
             <div class="flex items-center">
                 <span>
-                    <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp p-3" label="Print" icon="pi pi-print"
+                    <SplitButton @click="viewFolioSummaryReport" class="spl__btn_cs sp p-3" :label="$t('Print')" icon="pi pi-print"
                         :model="print_menus" />    
-                    <Button @click="onRefresh()" icon="pi pi-refresh" style="font-size: .98rem !important;" class="content_btn_b ml-2 m-3 p-2" :loading="loading"></Button>
+                    <Button @click="onRefresh()" v-tippy="$t('Refresh')" icon="pi pi-refresh" style="font-size: .98rem !important;" class="content_btn_b ml-2 m-3 p-2" :loading="loading"></Button>
                 </span>
             </div>
             
@@ -95,6 +95,8 @@ import ComPrintReservationStay from "@/views/reservation/components/ComPrintRese
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     doctype:String,
     folio:Object,
@@ -168,7 +170,7 @@ function viewFolioSummaryReport() {
             view: "print"
         },
         props: {
-            header: "Folio Summary Report",
+            header: $t("Folio Summary Report"),
             style: {
                 width: '80vw',
             },
@@ -188,7 +190,7 @@ function viewFolioSummaryReport() {
 
 //Folio Summary Report
 print_menus.value.push({
-    label: "Folio Summary Report",
+    label: $t("Folio Summary Report"),
     icon: 'pi pi-print',
     command: () => {
 
@@ -200,7 +202,7 @@ print_menus.value.push({
 //folio detail report
 
 print_menus.value.push({
-    label: "Folio Detail Report",
+    label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => { getDocList("Reservation Folio", {
             filters: [ ["reservation_stay", "=", props.reservation_stay]],
@@ -218,7 +220,7 @@ print_menus.value.push({
                 view: "print"
             },
             props: {
-                header: "Folio Detail Report",
+                header: $t("Folio Detail Report"),
                 style: {
                     width: '80vw',
                 },
@@ -270,7 +272,7 @@ function onAddFolioTransaction(account_code) {
                     show_room:true
             },
             props: {
-                header: 'Post ' + account_code.account_name + ' to Folio ' + props.folio.name,
+                header: $t('Post ' + account_code.account_name + ' to Folio') + ' ' + props.folio.name,
                 style: {
                     width: '750px',
                 },

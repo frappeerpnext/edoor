@@ -2,9 +2,9 @@
     <div class="">
         <div :style="[{minWidth: width ? width : ''}, {maxWidth: width ? width : ''}]">
             <slot name="top"></slot>
-            <h1 class="font-semibold text-lg" :class="ttl_header">{{ title }}</h1>
+            <h1 class="font-semibold text-lg" :class="ttl_header">{{ $t(title ?? '') }}</h1>
             <slot name="default"></slot>
-            <ComOverlayPanelFooter :titleButtonCancel="titleButtonCancel" :icon="icon" :hideButtonOK="hideButtonOK" :titleButtonSave="titleButtonSave" :hideButtonClose="hideButtonClose" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
+            <ComOverlayPanelFooter :titleButtonCancel="$t(titleButtonCancel ?? '')" :icon="icon" :hideButtonOK="hideButtonOK" :titleButtonSave="$t(titleButtonSave ?? '')" :hideButtonClose="hideButtonClose" v-if="!hideFooter" :loading="loading" @onSave="onClickSave" @onClose="onClickCancel">
                 <template #footer-left>
                     <slot name="footer-left"></slot>
                 </template>
@@ -20,6 +20,8 @@
 </template>
 <script setup>
     const emit = defineEmits(['onSave', 'onCancel'])
+    import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
     const props = defineProps({
         ttl_header: String,
         hideFooter: {

@@ -14,7 +14,7 @@
                             </span> 
                         </template>
                     </Column> 
-                    <Column class="text-center w-10rem" field="room_nights" header="Nights"></Column>
+                    <Column class="text-center w-10rem" field="room_nights" :header="$t('Nights')"></Column>
                     <Column field="room_type_alias" header="Room">
                         <template #body="{ data }">
                         <div> 
@@ -25,12 +25,13 @@
                             </span>
                             <span @click="onAssignRoom(data)" class="link_line_action w-auto" v-else>
                                 <i class="pi pi-pencil"></i>
-                                Assign Room
+                                {{$t('Assign Room')}}
+                                
                             </span>
                         </div>
                         </template>
                     </Column>
-                    <Column v-if="can_view_rate" class="text-right res__room-list-right" header="ADR">
+                    <Column v-if="can_view_rate" class="text-right res__room-list-right" :header="$t('ADR')">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.adr" /> 
@@ -39,7 +40,7 @@
                         </template>
                     </Column>
 
-                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Discount">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" :header="$t('Discount')">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.discount_amount" /> 
@@ -47,14 +48,14 @@
                         </template>
                     </Column>
 
-                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Tax">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" :header="$t('Tax')">
                         <template #body="{data}">
                             <span class="text-end">
                                 <CurrencyFormat :value="data.total_tax" /> 
                             </span>
                         </template>
                     </Column>
-                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Total Rate" headerClass="white-space-nowrap">
+                    <Column v-if="can_view_rate"  class="text-right res__room-list-right" :header="$t('Total Rate')" headerClass="white-space-nowrap">
                         <template #body="{ data }">
                             <span class="text-end">
                             <CurrencyFormat :value="data.total_rate"/> 
@@ -74,7 +75,7 @@
             </DataTable>
             </div>
             <div class="flex justify-end mt-3" v-if="canNotUpgradeRoom">
-                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon icon="iconBedPurple" class="me-2" /> Upgrade Room</Button>
+                <Button class="conten-btn" @click="onUpgradeRoom"><ComIcon icon="iconBedPurple" class="me-2" /> {{$t('Upgrade Room')}} </Button>
             </div>
         </template>
     </ComReservationStayPanel>
@@ -86,6 +87,8 @@ import ComReservationStayUpgradeRoom from '@/views/reservation/components/ComRes
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import {inject,ref,useDialog,computed   } from '@/plugin'
 import Enumerable from 'linq';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const gv = inject('$gv');
 const rs = inject("$reservation_stay")
 const dialog = useDialog() 
