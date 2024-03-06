@@ -7,13 +7,14 @@
             <Menu ref="show" :id="data.name.replaceAll(' ', '')" :popup="true" style="min-width: 180px;">
                 <template #start>
                     <button @click="$emit('onDownload', data)" icon="pi pi-check" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                        Download
+                        {{ $t('Download') }}
+                        
                     </button>
                     <button @click="$emit('onEdit',$event, data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                        Edit
+                       {{ $t('Edit') }} 
                     </button>
                     <button @click="$emit('onDelete', data)" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
-                        Delete
+                       {{ $t('Delete') }} 
                     </button>
                 </template>
             </Menu>
@@ -22,6 +23,8 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     data: {
         type: Object

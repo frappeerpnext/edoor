@@ -1883,13 +1883,14 @@ def get_occupy_data(view_type, filter):
 
 @frappe.whitelist()
 def get_room_block_event(start,end,property):
+    slot_duration = frappe.db.get_single_value("eDoor Setting","room_chart_calendear_slot_duration")
     sql = """
         select 
             name as id, 
             room_id as resourceId,
             room_number,
-            concat(start_date,'T12:00:00') as start ,
-            concat(end_date,'T12:00:00') as end,
+            concat(start_date,'T','{0}') as start ,
+            concat(end_date,'T','{1}') as end,
             'Room Block' as title,
             status_color as color,
             reason,
@@ -1902,16 +1903,19 @@ def get_room_block_event(start,end,property):
             docstatus = 1   and 
             is_unblock = 0 and
             name in (
-                select distinct stay_room_id from `tabRoom Occupy` where date between '{}' and '{}' 
+                select distinct stay_room_id from `tabRoom Occupy` where date between '{2}' and '{3}' 
             ) and 
-            property = '{}'
+            property = '{4}'
 
     """
     sql = sql.format(
+            "12:00:00" if slot_duration=="12" else "00:00:00",
+            "12:00:00" if slot_duration=="12" else "00:00:00",
             getdate(start), 
             getdate(end)
             ,property)
-  
+    
+        
     data = frappe.db.sql(sql, as_dict=1)
     
     for d in data:

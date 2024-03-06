@@ -9,9 +9,9 @@
                     </div>
                     <div class="flex items-center">
                         <span class="pr-2">
-                            <Button class="conten-btn -mt-2" label="Upload" icon="pi pi-upload" @click="onModal"></Button>
+                            <Button class="conten-btn -mt-2" :label="$t('Upload')" icon="pi pi-upload" @click="onModal"></Button>
                         </span>
-                        <ComHeader wrClass="noClass" fillClass="dialog_btn_transform conten-btn" isRefresh
+                        <ComHeader v-tippy="$t('Refresh')" wrClass="noClass" fillClass="dialog_btn_transform conten-btn" isRefresh
                             @onRefresh="onRefresh()" />
                     </div>
 
