@@ -15,23 +15,23 @@
                 <div class="room-stay-list ress__list text-center mt-3 isMaster-guest"> 
                     <DataTable :rowClass="rowClass" class="p-datatable-sm" v-model:selection="rs.selecteds" sortField="name" :sortOrder="1" :value="rs.roomList" @row-dblclick="showReservationStayDetail" tableStyle="min-width: 50rem">
                         <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                        <Column field="name" header="Res Stay#">
+                        <Column field="name" :header="$t('Res Stay') + '#'">
                         <template #body="slotProps">
                             <button @click="showReservationStayDetail(slotProps.data.name)" class="link_line_action w-auto">
                                 {{slotProps.data.name}}
                             </button>
                         </template>
                         </column>
-                        <Column header="Stay Date" headerClass="text-center" bodyClass="text-center">
+                        <Column :header="$t('Stay Date')" headerClass="text-center" bodyClass="text-center">
                             <template #body="slotProps">
                                 <div>
-                                    <span v-tippy="'Arrival Date'">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
+                                    <span v-tippy="$t('Arrival Date')">{{gv.dateFormat(slotProps.data.arrival_date)}}</span>
                                     &#8594;
-                                    <span v-tippy="'Departure Date'">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
+                                    <span v-tippy="$t('Departure Date')">{{gv.dateFormat(slotProps.data.departure_date)}}</span>
                                 </div>                               
                             </template>
                         </Column>
-                        <Column header="Nights" headerClass="text-center" bodyClass="text-center">
+                        <Column :header="$t('Nights')" headerClass="text-center" bodyClass="text-center">
                         <template #body="slotProps">
                             <div>
                                 <span>
@@ -39,7 +39,7 @@
                                 </span>
                             </div>
                         </template></Column>
-                        <Column header="Room">
+                        <Column :header="$t('Room')">
                             <template #body="slotProps">
                                 <div> 
                                     <span v-for="(i, index) in JSON.parse(slotProps.data.rooms_data)" :key="index">
@@ -49,10 +49,10 @@
                                             <span v-if="i.room_number">
                                                 {{ i.room_number }}  
                                             </span>
-                                            <button v-tippy="'Assign Room'" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
+                                            <button v-tippy="$t('Assign Room')" @click="onAssignRoom(i.name,slotProps.data.name)" class="link_line_action w-auto" v-else>
                                                 <!-- <i class="pi pi-pencil"></i> -->
                                                 <span>
-                                                    Assign {{i.reservation_stay}}
+                                                   {{$t('Assign')}}  {{i.reservation_stay}}
                                                 </span> 
                                             </button>
                                         </span>
@@ -60,34 +60,34 @@
                                     <span v-if="JSON.parse(slotProps.data.rooms_data).length > 3"
                                         v-tippy="{ value: getTooltip(slotProps.data) , escape: true, class: 'max-w-30rem' }"
                                         class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer">
-                                        {{JSON.parse(slotProps.data.rooms_data).length - 3}} Mores
+                                        {{JSON.parse(slotProps.data.rooms_data).length - 3}} {{$t('Mores')}} 
                                     </span>
                                 </div>
                             </template>
                         </Column>
-                        <Column header="Guest Name" class="white-space-nowrap">
+                        <Column :header="$t('Guest Name')" class="white-space-nowrap">
                             <template #body="slotProps">
                                 <Button  class="p-0 link_line_action1 overflow-hidden text-overflow-ellipsis whitespace-nowrap max-w-12rem"  @click="onViewCustomerDetail(slotProps.data.guest)" link>
                                    {{slotProps.data.guest_name}}
                                 </Button>
                             </template>
                         </Column>
-                        <Column header="Pax">
+                        <Column :header="$t('Pax')">
                             <template #body="slotProps">
-                                <span v-tippy="'Adults'">{{slotProps.data.adult}}</span>/<span v-tippy ="'Children'">{{slotProps.data.child}}</span>
+                                <span v-tippy="$t('Adults')">{{slotProps.data.adult}}</span>/<span v-tippy ="$t('Children')">{{slotProps.data.child}}</span>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate" class="text-right res__room-list-right" header="ADR">
+                        <Column v-if="can_view_rate" class="text-right res__room-list-right" :header="$t('ADR')">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.adr"/>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate"  class="text-right res__room-list-right white-space-nowrap" header="Total Rate">
+                        <Column v-if="can_view_rate"  class="text-right res__room-list-right white-space-nowrap" :header="$t('Total Rate')">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_room_rate"/>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate" class="text-right res__room-list-right" header="Debit">
+                        <Column v-if="can_view_rate" class="text-right res__room-list-right" :header="$t('Debit')">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_debit"/>
                             </template>
@@ -97,21 +97,21 @@
                                 <CurrencyFormat :value="slotProps.data.total_credit"/>
                             </template>
                         </Column>
-                        <Column v-if="can_view_rate"  class="text-right res__room-list-right" header="Balance">
+                        <Column v-if="can_view_rate"  class="text-right res__room-list-right" :header="$t('Balance')">
                             <template #body="slotProps">
                                 <CurrencyFormat :value="slotProps.data.total_debit - slotProps.data.total_credit "/>
                             </template>
                         </Column>
-                        <Column field="reservation_status" class="res__state__center text-center" header="Status">
+                        <Column field="reservation_status" class="res__state__center text-center" :header="$t('Status')">
                             <template #body="slotProps">
                                 <ComReservationStatus :class="`data-${slotProps.data.reservation_status}`" class="border-round-3xl " :status-name="slotProps.data.reservation_status">
-                                    <div v-tippy="'Paid by Master Room'" v-if="slotProps.data.paid_by_master_room && slotProps.data.is_active_reservation && !(slotProps.data.is_master)" class="px-1 border-circle bg-tran-black  inline">
+                                    <div v-tippy="$t('Paid by Master Room')" v-if="slotProps.data.paid_by_master_room && slotProps.data.is_active_reservation && !(slotProps.data.is_master)" class="px-1 border-circle bg-tran-black  inline">
                                         <ComIcon class="inline" icon="BilltoMasterRoomWhite" style="height:12px;" ></ComIcon>
                                     </div>
-                                    <div v-tippy="'Allow Post To City Ledger'" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                    <div v-tippy="$t('Allow Post To City Ledger')" v-if="slotProps.data.allow_post_to_city_ledger && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <ComIcon class="inline" icon="IconBillToCompanywhite" style="height:12px;" ></ComIcon>
                                     </div>
-                                    <div v-tippy="( slotProps.data.require_drop_off ? 'Require Drop Off' : '' ) + (slotProps.data.require_pickup ? ' Require Pickup ' : '' )" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
+                                    <div v-tippy="( slotProps.data.require_drop_off ? $t('Require Drop Off') : '' ) + (slotProps.data.require_pickup ? $t(' Require Pickup ') : '' )" v-if="(slotProps.data.require_drop_off || slotProps.data.require_pickup) && slotProps.data.is_active_reservation" style="width:19.31px;" class="px-1 border-circle bg-tran-black ms-1 inline-block">
                                         <i class="pi pi-car text-white" style="font-size: 10px;" />
                                     </div>
                                 </ComReservationStatus>
@@ -125,7 +125,7 @@
                         <template #empty>
                             <div class="p-4 text-center">
                                 <div><img :src="iconNoData" style="width: 80px; margin: 0 auto;"></div>
-                                <div class="mt-2 text-sm italic text-gray-400">Data Empty</div>
+                                <div class="mt-2 text-sm italic text-gray-400">{{$t('Data Empty')}}</div>
                             </div>
                         </template>
                     </DataTable>
@@ -148,6 +148,8 @@ import ComReservationStayMoreButton from '../components/ComReservationStayMoreBu
 import ComReservationStayListStatusBadge from '@/views/reservation/components/ComReservationStayListStatusBadge.vue'
 import ReservationStayDetail from "@/views/reservation/ReservationStayDetail.vue"
 import iconNoData from '@/assets/svg/icon-no-notic-r-comment.svg'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const rs = inject("$reservation")
 const gv = inject("$gv")
 const dialog = useDialog()

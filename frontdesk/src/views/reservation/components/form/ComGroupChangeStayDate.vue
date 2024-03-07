@@ -2,21 +2,21 @@
     <ComDialogContent :hideButtonClose="true"  @onOK="onSave" :loading="loading">
         <div class="grid bg-card-info border-round-xl p-3 add-room-reserv h-full my-2">
         <div class="col-12 md:col">
-            <label>Arrival Date<span class="text-red-500">*</span></label><br />
+            <label> {{ $t('Arrival') }} <span class="text-red-500">*</span></label><br />
             <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full border-round-xl"
             v-model="data.arrival_date"
-                placeholder="Arrival Date" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
+                :placeholder="$t('Arrival Date')" @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar />
         </div>
         <div class="night__wfit col-fixed px-0" style="width: 150px;">
             <div>
-                <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
+                <label class="hidden"> {{ $t('Room Night') }} <span class="text-red-500">*</span></label><br />
             </div>
             <ComReservationInputNight v-model="data.room_night"
                 @onUpdate="onRoomNightChanged" />
         </div>
         <div class="arr_wfit col">
-            <label>Departure<span class="text-red-500">*</span></label><br />
-            <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" placeholder="Departure Date"
+            <label> {{ $t('Departure') }} <span class="text-red-500">*</span></label><br />
+            <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" class="p-inputtext-sm depart-arr w-full" :placeholder="$t('Departure Date')"
             v-model="data.departure_date"
                 @date-select="onDateSelect" dateFormat="dd-mm-yy" :minDate="departureMinDate" showIcon showButtonBar />
         </div>    
@@ -24,11 +24,11 @@
         <div class="flex flex-column md:flex-wrap gap-3 justify-end mt-3 ">
             <div class="flex align-items-center ">
                 <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"  v-model="data.generate_new_stay_rate_by"/>
-                <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay Rate</label>
+                <label for="stay_rate" class="ml-2"> {{ $t('Generate New Stay Rate from Last First/Last Stay Rate') }} </label>
             </div>
             <div class="flex align-items-center">
                 <RadioButton inputId="rate_plan" name="generate_new_stay_rate_by" value="rate_plan"  v-model="data.generate_new_stay_rate_by"/>
-                <label for="rate_plan" class="ml-2">Generate New Stay Rate from Rate Type</label>
+                <label for="rate_plan" class="ml-2"> {{ $t('Generate New Stay Rate from Rate Type') }} </label>
             </div>
             
         </div>
@@ -36,7 +36,7 @@
      </div>
         <div class="mt-3">
             <div>
-                <label>Note</label><br />
+                <label>{{$t('Note')}} </label><br />
                 <Textarea rows="5" placeholder="Note" cols="30" class="w-full border-round-xl"  v-model="data.note"/>
                 
             </div>
@@ -46,6 +46,8 @@
 <script setup>
 import { inject, ref, onMounted ,postApi,computed,useToast} from '@/plugin'
 import ComReservationInputNight from '../ComReservationInputNight.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const toast = useToast();
 const dialogRef = inject("dialogRef");
 const stays = ref([])

@@ -12,14 +12,14 @@
                                         {{ rs.reservationStays.length }}
                                     </span>
                                 </ComTagReservation>
-                                <div v-tippy="rs.reservation?.reservation_type + '(Free Independent Travelers)'"
+                                <div v-tippy="$t(rs.reservation?.reservation_type + ' (Free Independent Travelers)')"
                                     v-if="rs.reservation?.reservation_type == 'FIT'"
                                     class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-teal-500">
                                     <span class="">
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userFitWhite" />
                                     </span>
                                 </div>
-                                <div v-tippy="rs.reservation?.reservation_type + '(Group Inclusive Tour)'" v-else
+                                <div v-tippy="$t(rs.reservation?.reservation_type + '(Group Inclusive Tour)')" v-else
                                     class="flex items-center justify-center px-2 rounded-lg me-2 text-white p-1px bg-yellow-500">
                                     <span>
                                         <ComIcon style="height: 15px;" class="m-auto" icon="userGroupWhite" />
@@ -32,12 +32,12 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button @click="onRefresh" v-tippy="'Refresh'" :loading="rs?.loading"
+                            <button @click="onRefresh" v-tippy="$t('Refresh')" :loading="rs?.loading"
                                 class="rounded-lg conten-btn flex" link>
                                 <icon class="pi pi-refresh font-semibold text-lg m-auto" style="color:var(--bg-purple-cs);">
                                 </icon>
                             </button>
-                            <button @click="onRoute" v-tippy="'Open New Window'" v-if="!isPage"
+                            <button @click="onRoute" v-tippy="$t('Open New Window')" v-if="!isPage"
                                 class="rounded-lg conten-btn hidden lg:block" link>
                                 <ComIcon icon="iconOpenBrower" style="height:18px;"></ComIcon>
                             </button>
@@ -47,7 +47,7 @@
             </div>
 
             <TabView lazy v-model:activeIndex="activeTab" class="tabview-custom">
-                <TabPanel header="General Information">
+                <TabPanel :header="$t('General Information')">
                     <div class="grid mt-2 ml-0 ms-0">
                         <div class="col-12 lg:col pl-0">
                             <div class="grid">
@@ -92,20 +92,20 @@
                     </div>
                 </TabPanel>
 
-                <TabPanel v-if="can_view_rate" header="Room Rate">
+                <TabPanel v-if="can_view_rate" :header="$t('Room Rate')">
                     <ComReservationRoomRate />
                 </TabPanel>
 
                 <TabPanel v-if="can_view_rate">
                     <template #header>
-                        <span class="me-2">Folio</span>
+                        <span class="me-2">{{ $t('Folio') }} </span>
                         <Badge :value="rs.totalFolio"></Badge>
                     </template>
                     <ComReservationFolio />
                 </TabPanel>
                 <TabPanel>
                     <template #header>
-                            <span class="me-2">Document</span>
+                            <span class="me-2">{{ $t('Document') }} </span>
                             <Badge :value="totalDocument"></Badge>
                     </template>
 
@@ -120,7 +120,7 @@
             <div class="flex justify-end gap-2">
                 <ComReservationMoreOptionsButton />
                 <ReservationPrintButton :reservation="name" />
-                <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" label="Add More Room" />
+                <Button class="border-none" @click="onAddRoomMore" icon="pi pi-plus" :label="$t('Add More Room')" />
             </div>
 
         </template>
@@ -128,8 +128,7 @@
 
             <Button v-if="canCheckIn.length > 0" class="border-none bg-green-500" @click="onCheckIn">
                 <ComIcon icon="checkin" style="height: 18px;" class="me-2" />
-
-                Check In
+{{ $t('Check In') }}
             </Button>
         </template>
     </ComDialogContent>
@@ -153,6 +152,8 @@ import ReservationPrintButton from '@/views/reservation/components/ReservationPr
 import ComReservationStayAddMore from './components/ComReservationStayAddMore.vue'
 
 import ComReservationMoreOptionsButton from './components/ComReservationMoreOptionsButton.vue'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const moment = inject('$moment');
 const can_view_rate = window.can_view_rate
 const activeTab = ref(0)

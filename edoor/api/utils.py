@@ -1235,6 +1235,12 @@ def update_account_code_to_folio_transaction():
         update `tabFolio Transaction` f set report_quantity = if((select show_quantity_in_report from `tabAccount Code` t where t.name = f.account_code )=1,f.quantity,0)
     """
     frappe.db.sql(sql)
+   
+    #Update flash report revenue group
+    sql="""
+         update `tabFolio Transaction` f set flash_report_revenue_group = (select flash_report_revenue_group from `tabAccount Code` t where t.name = f.account_code )
+    """
+    frappe.db.sql(sql)
 
 
     frappe.db.commit()

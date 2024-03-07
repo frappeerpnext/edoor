@@ -3,20 +3,20 @@
         <div class="bg-card-info border-round-xl p-3 add-room-reserv h-full">
         <div class="grid">
             <div class="col-12 md:col">
-              <label>Arrival Date <span class="text-red-500">*</span></label>
+              <label>{{ $t('Arrival Date') }}  <span class="text-red-500">*</span></label>
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.arrival_date"
                 :min-date="moment(edoor_working_day.date_working_day).toDate()" @update:modelValue="onStartDate($event)"
                 dateFormat="dd-mm-yy" />  
             </div>
             <div class="col-fixed px-0" style="width: 150px;">
                 <div>
-                    <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
+                    <label class="hidden">{{ $t('Room Night') }}<span class="text-red-500">*</span></label><br />
                 </div>
                     <ComReservationInputNight v-model="data.room_nights"
                                     @onUpdate="onNight($event)" />  
             </div>
             <div class="col">
-            <label>Departure Date<span class="text-red-500">*</span></label>
+            <label>{{ $t('Departure Date') }}<span class="text-red-500">*</span></label>
             <Calendar :selectOtherMonths="true" class="w-full" inputClass="w-full" showIcon v-model="data.departure_date"
                 :min-date="new Date(moment(data.arrival_date).add(1, 'days'))" @update:modelValue="onEndDate($event)"
                 dateFormat="dd-mm-yy" />    
@@ -28,7 +28,7 @@
             <div class="col">
                 <div class="bg-card-info border-round-xl  h-full">
                     <div class="flex gap-2 align-items-center relative my-3 " style="width: 12.7rem;">
-                        <label for="include-tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <label for="include-tax" class="font-medium cursor-pointer">{{ $t('Rate Include Tax') }}</label>
                         <span class="absolute right-0 w-full">
                             <Checkbox input-id="rate_tax" class="w-full flex justify-end "
                                 v-model="data.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
@@ -37,8 +37,8 @@
                     <div class="">
                         <div class="flex gap-3 flex-column md:flex-row">
                             <div class="flex md:gap-3 relative align-items-center" >
-                                <label for="tax-1-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_1_name }} {{ room_tax.tax_1_rate }}%</label>
+                                <label for="tax-1-rate" class="col-6 md:col font-medium flex align-items-center h-full">
+                                    {{ $t(room_tax.tax_1_name ?? '') }} - {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-1-rate" class="w-full" v-model="useTax.use_tax_1"
@@ -50,8 +50,8 @@
                                 </div>
                             </div>
                             <div class="flex md:gap-10 relative align-items-center">
-                                <label for="tax-2-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_2_name }} {{ room_tax.tax_2_rate }}%</label>
+                                <label for="tax-2-rate" class="col-6 md:col font-medium flex align-items-center h-full">
+                                    {{$t(room_tax.tax_2_name ?? '') }} - {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-2-rate" class="w-full" v-model="useTax.use_tax_2"
@@ -63,8 +63,8 @@
                                 </div>
                             </div>
                             <div class="flex md:gap-10 relative align-items-center">
-                                <label for="tax-3-rate" class="col-6 md:col font-medium flex align-items-center h-full">{{
-                                    room_tax.tax_3_name }} {{ room_tax.tax_3_rate }}%</label>
+                                <label for="tax-3-rate" class="col-6 md:col font-medium flex align-items-center h-full">
+                                    {{ $t(room_tax.tax_3_name ?? '') }} - {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem border-round-lg">
                                     <span class="w-full">
                                         <Checkbox input-id="tax-3-rate" class="w-full" v-model="useTax.use_tax_3"
@@ -87,25 +87,25 @@
                     <thead>
                         <tr>
                             <th class="text-left px-2">
-                                <label>Room Type<span class="text-red-500">*</span></label>
+                                <label>{{ $t('Room Type') }}<span class="text-red-500">*</span></label>
                             </th>
                             <th class="text-left px-2">
-                                <label class="px-2 white-space-nowrap">Room Name</label>
+                                <label class="px-2 white-space-nowrap">{{ $t('Room Name') }}</label>
                             </th>
                             <th>
-                                <label class="text-center white-space-nowrap">Adults</label>
+                                <label class="text-center white-space-nowrap">{{ $t('Adults') }}</label>
                             </th>
                             <th>
-                                <label class="text-center white-space-nowrap">Children</label>
+                                <label class="text-center white-space-nowrap">{{ $t('Children') }}</label>
                             </th>
                             <th class="text-right px-2">
-                                <label class="white-space-nowrap">Rate</label>
+                                <label class="white-space-nowrap">{{ $t('Rate') }}</label>
                             </th>
                             <th class="text-right px-2">
-                                <label>Total Tax</label>
+                                <label>{{ $t('Total Tax') }}</label>
                             </th>
                             <th class="text-right px-2">
-                                <label>Amount</label>
+                                <label>{{ $t('Amount') }}</label>
                             </th>
                             <th class="w-0"></th>
                         </tr>
@@ -116,7 +116,7 @@
                             <td class="px-2 w-15rem">
                                 <Dropdown v-model="d.room_type_id" :options="room_types" optionValue="name"
                                 @change="onSelectRoomType(d)" 
-                                    optionLabel="room_type" placeholder="Select Room Type"
+                                    optionLabel="room_type" :placeholder="$t('Select Room Type')"
                                     class="w-full" >
                                     <template #option="slotProps">
                                         <div class="flex align-items-center">
@@ -129,7 +129,7 @@
                                 <Dropdown v-model="d.room_id"
                                     :options="rooms.filter((r) => (r.room_type_id == d.room_type_id && (r.selected ?? 0) == 0) || (r.room_type_id == d.room_type_id && r.name == d.room_id))"
                                     optionValue="name" @change="OnSelectRoom" optionLabel="room_number"
-                                    placeholder="Select Room" showClear filter class="w-full" />
+                                    :placeholder="$t('Select Room')" showClear filter class="w-full" />
                             </td>
 
                             <td class="px-2 w-3rem">
@@ -141,15 +141,15 @@
                                     inputId="stacked-buttons" showButtons :min="0" :max="100" />
                             </td>
                             <td class="p-2 text-right w-15rem">
-                                <div v-tippy="!data?.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' " class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
-                                    <div :class="!data.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" v-tippy ="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
+                                <div v-tippy="!data?.allow_user_to_edit_rate ? $t('This Rate Type Not Allow to Change Rate'):'' " class="p-inputtext-pt w-full float-right text-end border-1 border-white h-12 inline">
+                                    <div :class="!data.allow_user_to_edit_rate ? $t('pointer-events-none opacity-90') : ''" v-tippy ="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'">
 
                                         <button  @click="onOpenChangeRate($event, d)"
                                             class="text-right w-full color-purple-edoor text-md font-italic ">
                                             <div class="flex justify-between link_line_action">
                                                 <div>
-                                                    <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
-                                                    <span class="text-sm" v-else>(Plan)</span>
+                                                    <span class="text-sm" v-if="d.is_manual_rate">( {{ $t('Manual') }} ) </span>
+                                                    <span class="text-sm" v-else>( {{ $t('Plan') }} )</span>
                                                 </div>
                                                 <span>
                                                     <CurrencyFormat :value="d.rate" />
@@ -185,7 +185,8 @@
             <div class="mt-3 flex justify-end">
                 <Button @click="onAddRoom" class="dialog_btn_transform conten-btn py-4">
                     <img :src="IconAddRoom" class="btn-add_comNote__icon me-1" />
-                    Add Room
+                    {{ $t('Add Room') }}
+                   
                 </Button>
             </div>
         </div>
@@ -204,7 +205,8 @@ import ComReservationStayChangeRate from "./ComReservationStayChangeRate.vue"
 import IconAddRoom from '@/assets/svg/icon-add-plus-sign-purple.svg';
 import { ref, inject, postApi, onMounted, getApi, computed} from "@/plugin"
 import ComReservationInputNight from '@/views/reservation/components/ComReservationInputNight.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialogRef = inject("dialogRef");
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 

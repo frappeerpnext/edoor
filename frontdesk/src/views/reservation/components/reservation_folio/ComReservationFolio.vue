@@ -9,7 +9,7 @@
                 <div class="w-full p-2 border-1 border-round-lg mb-2 flex ">
                     <span v-if="selectedFolio.is_master" class="bg-purple-100 p-2 w-4rem  flex justify-content-center align-items-center border-round-lg"> <ComIcon style="height: 14px;" icon="iconCrown" /> </span>
                     <div class=" ms-2 white-space-nowrap flex justify-content-between flex-column">
-                    <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? '' : 'closed'" class="line-height-2 folio-remark ms-2 " >{{ selectedFolio.status }}</span>  </div>
+                    <div class="font-bold flex align-items-center">{{ selectedFolio.name }}  <span :class="selectedFolio.status == 'Open' ? '' : 'closed'" class="line-height-2 folio-remark ms-2 " >{{ $t(selectedFolio.status)  }}</span>  </div>
                         <div class="font-light mt-auto">{{ selectedFolio.reservation_stay }} - {{ selectedFolio.guest_name }}</div>
                     </div>
                 </div> 
@@ -28,7 +28,7 @@
     <div class="text-center mb-3">
         <Button class="conten-btn" label="Create a Master Folio" icon="pi pi-folder-open"  @click="onCreateMasterFolio"></Button>
     </div>
-    <div class="text-center text-600">Create a Folio to post transactions.</div>
+    <div class="text-center text-600">{{ $t('Create a Folio to post transactions.') }} </div>
 </div>
 <Sidebar class="sidebar-folio" v-model:visible="visible" header="Folio">
     <ComReservationFolioList @onSelectFolio="onSelectFolio"/>
@@ -40,6 +40,8 @@
     import ComFolioTransactionCreditDebitStyle from "@/views/reservation/components/folios/ComFolioTransactionCreditDebitStyle.vue"
     import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folios/ComFolioTransactionSimpleStyle.vue"
     import ComFolioAction from "@/views/reservation/components/folios/ComFolioAction.vue"
+    import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
     const toast = useToast();
     const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)
     const accountGroups = ref(window.setting.account_group)

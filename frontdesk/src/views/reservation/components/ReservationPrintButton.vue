@@ -1,21 +1,23 @@
 <template>
-    <SplitButton label="Print" icon="pi pi-print" :model="items" />
+    <SplitButton :label="$t('Print')" icon="pi pi-print" :model="items" />
 </template>
 <script setup>
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 
 import ComPrintReservationStay from "@/views/reservation/components/ComPrintReservationStay.vue";
 import { ref, inject, useDialog, onMounted,getDocList,useToast } from "@/plugin";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const toast = useToast()
 const dialog = useDialog();
+
 const props = defineProps({
     reservation: String,
 })
 const gv = inject("$gv")
 const items = ref([
     {
-        label: "Confirmation Voucher",
+        label: $t("Confirmation Voucher"),
         icon: 'pi pi-check-circle',
 
         command: () => {
@@ -30,7 +32,7 @@ const items = ref([
         },
     },
     {
-    label: "Folio Summary Report",
+    label: $t("Folio Summary Report"),
     icon: 'pi pi-print',
     command: () => {
         getDocList("Reservation Folio", {
@@ -52,7 +54,7 @@ const items = ref([
                         view: "print"
                     },
                     props: {
-                        header: "Folio Summary Report",
+                        header: $t("Folio Summary Report"),
                         style: {
                             width: '80vw',
                         },
@@ -72,7 +74,7 @@ const items = ref([
     }
 },
     {
-    label: "Folio Detail Report",
+    label: $t("Folio Detail Report"),
     icon: 'pi pi-print',
     command: () => {
         getDocList("Reservation Folio", {
@@ -94,7 +96,7 @@ const items = ref([
                         view: "print"
                     },
                     props: {
-                        header: "Folio Detail Report",
+                        header: $t("Folio Detail Report"),
                         style: {
                             width: '80vw',
                         },
@@ -114,7 +116,7 @@ const items = ref([
     }
 },
     {
-        label: "Folio Summary by Reservation",
+        label: $t("Folio Summary by Reservation"),
         icon: 'pi pi-print',
         command: () => {
             openReport("Folio Summary by Reservation",
@@ -128,7 +130,7 @@ const items = ref([
         },
     },
     {
-        label: "Folio Detail by Reservation",
+        label: $t("Folio Detail by Reservation"),
         icon: 'pi pi-print',
         command: () => {
 
@@ -143,7 +145,7 @@ const items = ref([
         },
     },
     {
-        label: "Folio List by Reservation",
+        label: $t("Folio List by Reservation"),
         icon: 'pi pi-print',
         command: () => {
 
@@ -158,7 +160,7 @@ const items = ref([
     },
     {
 
-        label: "Reservation Detail",
+        label: $t("Reservation Detail"),
         icon: 'pi pi-check-circle',
         command: () => {
 
@@ -175,7 +177,7 @@ function openReport(title, data) {
     dialog.open(ComIFrameModal, {
         data: data,
         props: {
-            header: title,
+            header: $t(title),
             style: {
                 width: '80vw',
             },

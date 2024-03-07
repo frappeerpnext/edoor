@@ -3,7 +3,7 @@
         <Message v-if="hasFutureResertion" >
             {{ checkFutureReservationInfo.message }} <br/>
         
-            <Button class="border-none" @click="onViewFutureReservation">View Reservation</Button>
+            <Button class="border-none" @click="onViewFutureReservation"> {{ $t('View Reservation') }} </Button>
         </Message>
         <div class="n__re-custom grid">
             <div class="col-12 md:col">
@@ -11,9 +11,9 @@
                     <div class="">
                         <div class="grid">
                             <div class="col-12 md:col">
-                                <label>Reservation Date<span class="text-red-500">*</span></label><br />
+                                <label>{{ $t('Reservation Date') }}<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm w-full" v-model="doc.reservation.reservation_date"
-                                    placeholder="Reservation Date" dateFormat="dd-mm-yy" showIcon showButtonBar
+                                    :placeholder="$t('Reservation Date')" dateFormat="dd-mm-yy" showIcon showButtonBar
                                     :maxDate="moment(working_day.date_working_day).toDate()"
                                     :selectOtherMonths="true" panelClass="no-btn-clear"/>
                             </div>
@@ -21,35 +21,35 @@
                         </div>
                         <div class="grid pt-2">
                             <div class="col-6">
-                                <label>Reference No</label><br />
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Reference Number"
+                                <label>{{ $t('Reference No') }}</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Reference Number')"
                                     v-model="doc.reservation.reference_number" :maxlength="50" v-debounce="onChangeReference"/>
                             </div>
                             <div class="col-6">
-                                <label>Internal Ref. No</label><br />
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Internal Ref. Number"
+                                <label>{{ $t('Internal Ref. No') }}</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Internal Ref. Number')"
                                     v-model="doc.reservation.internal_reference_number" :maxlength="50" />
                             </div>
                         </div>
                         <div class="grid">
                             <div class="col-12 lg:col-5">
                                 <div class="pt-2">
-                                    <label>Group Code</label><br />
-                                    <InputText v-model="doc.reservation.group_code" placeholder="Group Code"
+                                    <label>{{ $t('Group Code') }}</label><br />
+                                    <InputText v-model="doc.reservation.group_code" :placeholder="$t('Group Code')"
                                         class="w-full" />
                                 </div>
                             </div>
                             <div class="col-8 lg:col-5">
                                 <div class="pt-2">
-                                    <label>Group Name</label><br />
-                                    <InputText v-model="doc.reservation.group_name" placeholder="Group Name"
+                                    <label>{{ $t('Group Name') }}</label><br />
+                                    <InputText v-model="doc.reservation.group_name" :placeholder="$t('Group Name') "
                                         class="w-full" />
 
                                 </div>
                             </div>
                             <div class="col-4 lg:col-2">
                                 <div class="pt-2 rounded-lg cursor-pointer" style="height: 44px;">
-                                    <label class="white-space-nowrap overflow-hidden">Group Color</label>
+                                    <label class="white-space-nowrap overflow-hidden">{{ $t('Group Color') }}</label>
                                     <div class="w-full h-full rounded-lg border-1" style="border-color: #a0bde0;"
                                         @click="toggleColor" :style="{ background: doc.reservation.group_color }"></div>
                                 </div>
@@ -60,23 +60,23 @@
                         </div>
                         <div class="grid m-0">
                             <div class="col-12 md:col px-0">
-                                <label>Arrival<span class="text-red-500">*</span></label><br />
+                                <label>{{ $t('Arrival') }}<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full border-round-xl"
-                                    v-model="doc.reservation.arrival_date" placeholder="Arrival Date"
+                                    v-model="doc.reservation.arrival_date" :placeholder=" $t('Arrival Date') "
                                     @date-select="onDateSelect" dateFormat="dd-mm-yy" showIcon showButtonBar
                                     :selectOtherMonths="true" :minDate="minDate" panelClass="no-btn-clear" />
                             </div>
                             <div class="night__wfit col-fixed px-0" style="width: 150px;">
                                 <div>
-                                    <label class="hidden">Room Night<span class="text-red-500">*</span></label><br />
+                                    <label class="hidden">{{ $t('Room Night') }}<span class="text-red-500">*</span></label><br />
                                 </div>
                                 <ComReservationInputNight v-model="doc.reservation.room_night"
                                     @onUpdate="onRoomNightChanged" />
                             </div>
                             <div class="col px-0">
-                                <label>Departure<span class="text-red-500">*</span></label><br />
+                                <label>{{ $t('Departure') }}<span class="text-red-500">*</span></label><br />
                                 <Calendar class="p-inputtext-sm depart-arr w-full" v-model="doc.reservation.departure_date"
-                                    placeholder="Departure Date" @date-select="onDateSelect" dateFormat="dd-mm-yy"
+                                    :placeholder=" $t('Departure Date') " @date-select="onDateSelect" dateFormat="dd-mm-yy"
                                     :minDate="departureMinDate" showButtonBar showIcon :selectOtherMonths="true" panelClass="no-btn-clear"/>
                             </div>
                         </div>
@@ -86,17 +86,17 @@
                         <div class="grid">
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2">
-                                    <label>Business Source<span class="text-red-500">*</span></label><br />
-                                    <ComAutoComplete v-model="doc.reservation.business_source" placeholder="Business Source"
+                                    <label>{{ $t('Business Source') }}<span class="text-red-500">*</span></label><br />
+                                    <ComAutoComplete v-model="doc.reservation.business_source" :placeholder=" $t('Business Source') "
                                         @onSelected="onBusinessSourceChange" doctype="Business Source"
                                         class="auto__Com_Cus w-full" :filters="{ property: property.name }" />
                                 </div>
                             </div>
                             <div class="col-12 lg:col-6">
                                 <div class="pt-2">
-                                    <label>Rate Type<span class="text-red-500">*</span></label><br />
+                                    <label>{{ $t('Rate Type') }}<span class="text-red-500">*</span></label><br />
                                     <ComSelect :clear="false" v-model="doc.reservation.rate_type" :default="true"
-                                        @onSelected="onRateTypeChange" placeholder="Rate Type" doctype="Rate Type"
+                                        @onSelected="onRateTypeChange" :placeholder=" $t('Rate Type') " doctype="Rate Type"
                                         class="auto__Com_Cus w-full" />
 
                                 </div>
@@ -107,19 +107,19 @@
                             <div class="flex justify-end gap-3 pt-2">
                                 <div>
                                     <div class="text-center">
-                                        <label class="text-center">Adult (Per Room)</label><br>
+                                        <label class="text-center">{{ $t('Adult (Per Room)') }}</label><br>
                                     </div>
                                     <InputNumber
-                                        v-tippy="'Please enter number of adult per room here. Total adult will be calculate  from each reservation stay room in this reservation. You can update number of adult later in Reservation Stay Detail'"
+                                        v-tippy="$t('Please enter number of adult per room here. Total adult will be calculate  from each reservation stay room in this reservation. You can update number of adult later in Reservation Stay Detail')"
                                         v-model="doc.reservation.adult" inputId="stacked-buttons" showButtons :min="1"
                                         :max="100" class="child-adults-txt" />
                                 </div>
                                 <div>
                                     <div class="text-center">
-                                        <label class="text-center">Child (Per Room)</label><br>
+                                        <label class="text-center">{{ $t('Child (Per Room)') }}</label><br>
                                     </div>
                                     <InputNumber
-                                        v-tippy="'Please enter number of child per room here. Total child will be calculate  from each reservation stay room in this reservation. You can update number of child later in Reservation Stay Detail'"
+                                        v-tippy="$t('Please enter number of child per room here. Total child will be calculate  from each reservation stay room in this reservation. You can update number of child later in Reservation Stay Detail')"
                                         v-model="doc.reservation.child" inputId="stacked-buttons" showButtons :min="0"
                                         :max="100" class="child-adults-txt" />
                                 </div>
@@ -128,19 +128,19 @@
                         <div class="w-full grid justify-end mt-4 gap-3">
                             <div class="flex align-items-center">
                                 <label
-                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
-                                    for="paidby" class="font-medium cursor-pointer me-2">Paid by Master Room</label>
+                                    v-tippy="$t('If you tick this check box, room charge will post to master folio of master room when check in and run night audit')"
+                                    for="paidby" class="font-medium cursor-pointer me-2">{{ $t('Paid by Master Room') }}</label>
                                 <Checkbox
-                                    v-tippy="'If you tick this check box, room charge will post to master folio of master room when check in and run night audit'"
+                                    v-tippy="$t('If you tick this check box, room charge will post to master folio of master room when check in and run night audit')"
                                     class="" inputId="paidby" v-model="doc.reservation.paid_by_master_room" :binary="true"
                                     :trueValue="1" :falseValue="0" />
                             </div>
                             <div class="flex align-items-center">
                                 <label
-                                    v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
-                                    for="paidcity" class="font-medium cursor-pointer me-2">Allow Post to City Ledger</label>
+                                    v-tippy="$t('If you tick this check box, transaction folio can post to city ledger when check in and run night audit')"
+                                    for="paidcity" class="font-medium cursor-pointer me-2">{{ $t('Allow Post to City Ledger') }}</label>
                                 <Checkbox
-                                    v-tippy="'If you tick this check box, transaction folio can post to city ledger when check in and run night audit'"
+                                    v-tippy="$t('If you tick this check box, transaction folio can post to city ledger when check in and run night audit')"
                                     class="" inputId="paidcity" v-model="doc.reservation.allow_post_to_city_ledger"
                                     :binary="true" :trueValue="1" :falseValue="0" />
                             </div>
@@ -150,62 +150,62 @@
             </div>
             <div class="col-12 md:col">
                 <div class="bg-card-info border-round-xl p-3 h-full">
-                    <h1 class="text-lg line-height-4 font-bold mb-2">Guest Information</h1>
+                    <h1 class="text-lg line-height-4 font-bold mb-2">{{ $t('Guest Information') }}</h1>
                     <div>
                         <div class="w-full n__re-custom">
 
-                            <label>Return Guest</label>
+                            <label>{{ $t('Return Guest') }}</label>
                             <ComAutoComplete isIconSearch v-model="doc.reservation.guest" class="pb-2"
                                 placeholder="Return Guest" doctype="Customer" @onSelected="onSelectedCustomer" />
                             <hr class="my-3" />
                             <div class="grid">
                                 <div class="col-12 pt-2">
-                                    <label>New Guest Name<span class="text-red-500">*</span></label><br />
-                                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="New Guest Name"
+                                    <label>{{ $t('New Guest Name') }}<span class="text-red-500">*</span></label><br />
+                                    <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('New Guest Name')"
                                         v-model="doc.guest_info.customer_name_en" :maxlength="50" v-debounce="onNewGuestName"/>
                                     <Message v-if="doc?.guest_info?.customerExist">
-                                        <span>This guest is already exist. View guest detail | <a class="p-0 link_line_action1" @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{ doc.guest_info.existingGuest }}</a></span>
+                                        <span>{{ $t('This guest is already exist. View guest detail') }} | <a class="p-0 link_line_action1" @click="onViewGuestDetail(doc.guest_info.existingGuest)">{{ doc.guest_info.existingGuest }}</a></span>
                                     </Message>
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                    <label>Guest Type<span class="text-red-500">*</span></label><br />
+                                    <label>{{ $t('Guest Type') }}<span class="text-red-500">*</span></label><br />
                                     <ComAutoComplete v-model="doc.guest_info.customer_group" class="w-full"
                                         placeholder="Guest Type" doctype="Customer Group" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                    <label>Gender</label><br />
+                                    <label>{{ $t('Gender') }}</label><br />
                                     <Dropdown v-model="doc.guest_info.gender" :options="gender_list" placeholder="Gender"
                                         class="w-full" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                    <label>Country</label><br />
+                                    <label>{{ $t('Country') }}</label><br />
                                     <ComAutoComplete v-model="doc.guest_info.country" class="w-full" placeholder="Country"
                                         doctype="Country" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                    <label>Phone Number</label><br />
-                                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                                    <label>{{ $t('Phone Number') }}</label><br />
+                                    <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Phone Number')"
                                         v-model="doc.guest_info.phone_number" :maxlength="50" v-debounce="onChangeGuestPhoneNumber"/>
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-8 pt-1">
-                                    <label>Email Address</label><br />
-                                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email Address"
+                                    <label>{{ $t('Email Address') }}</label><br />
+                                    <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Email Address')"
                                         v-model="doc.guest_info.email_address" :maxlength="50" v-debounce="onChangeGuestEmail"/>
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                    <label>Identity Type</label><br />
+                                    <label>{{ $t('Identity Type') }}</label><br />
                                     <ComAutoComplete v-model="doc.guest_info.identity_type" class="w-full"
-                                        placeholder="Identity Type" doctype="Identity Type" />
+                                        :placeholder="$t('Identity Type')" doctype="Identity Type" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                    <label class="white-space-nowrap">ID/Passport Number</label><br />
-                                    <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                                    <label class="white-space-nowrap">{{ $t('ID/Passport Number') }}</label><br />
+                                    <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('ID/Passport Number')"
                                         v-model="doc.guest_info.id_card_number" :maxlength="50" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                    <label>Expire Date</label><br />
+                                    <label>{{ $t('Expire Date') }}</label><br />
                                     <Calendar class="p-inputtext-sm w-full" v-model="doc.guest_info.expired_date"
-                                        placeholder="ID Expire Date" dateFormat="dd-mm-yy" showIcon
+                                        :placeholder="$t('ID Expire Date')" dateFormat="dd-mm-yy" showIcon
                                         :selectOtherMonths="true" />
                                 </div>
                             </div>
@@ -218,7 +218,7 @@
             <div class="col">
                 <div class="bg-card-info border-round-xl p-3 h-full overflow-auto">
                     <div class="flex gap-2 align-items-center relative my-3" style="width: 12.7rem;">
-                        <label for="rate_tax" class="font-medium cursor-pointer">Rate Include Tax</label>
+                        <label for="rate_tax" class="font-medium cursor-pointer">{{ $t('Rate Include Tax') }}</label>
                         <span class="absolute right-0 w-full">
                             <Checkbox input-id="rate_tax" class="w-full flex justify-end"
                                 v-model="doc.tax_rule.rate_include_tax" :binary="true" trueValue="Yes" falseValue="No" />
@@ -229,7 +229,8 @@
                         <div class="flex gap-3 flex-wrap">
                             <div class="flex gap-3 relative">
                                 <label for="tax-1-rate"
-                                    class="font-medium flex align-items-center h-full">{{ room_tax.tax_1_name }}
+                                    class="font-medium flex align-items-center h-full">
+                                    {{ $t(room_tax.tax_1_name ?? '') }}
                                     {{ room_tax.tax_1_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
@@ -245,7 +246,7 @@
                             </div>
                             <div class="flex gap-3 relative">
                                 <label for="tax-2-rate"
-                                    class="font-medium flex align-items-center h-full">{{ room_tax.tax_2_name }}
+                                    class="font-medium flex align-items-center h-full">{{ $t(room_tax.tax_2_name ?? '') }}
                                     {{ room_tax.tax_2_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
@@ -259,7 +260,7 @@
                             </div>
                             <div class="flex gap-3 relative">
                                 <label for="tax-3-rate"
-                                    class="font-medium flex align-items-center h-full">{{ room_tax.tax_3_name }}
+                                    class="font-medium flex align-items-center h-full">{{ $t(room_tax.tax_3_name) ?? '' }}
                                     {{ room_tax.tax_3_rate }}%</label>
                                 <div class="p-inputtext-pt text-center border-1 border-white flex w-16rem">
                                     <span class="w-full">
@@ -281,10 +282,10 @@
             <div class="n__re-custom">
                 <div class="w-full flex justify-end mt-2">
                 <label for="auto_assign_room" class="mr-3 cursor-pointer"
-                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'">Automatically
-                    assign room</label>
+                    v-tippy="$t('When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.')">Automatically
+                    {{ $t('assign room') }}</label>
                 <Checkbox
-                    v-tippy="'When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.'"
+                    v-tippy="$t('When the checkbox is checked, the system will automatically assign a room to the reservation. The room that is automatically assigned will be one that is available for the entire stay.')"
                     inputId="auto_assign_room" v-model="doc.auto_assign_room" :binary="true" />
 
             </div>
@@ -294,26 +295,26 @@
                     <thead>
                         <tr>
                             <th class="text-left pb-1">
-                                <label class="white-space-nowrap">Room Type</label>
+                                <label class="white-space-nowrap">{{ $t('Room Type') }}</label>
                             </th>
                             <th class="text-center pb-1">
-                                <label class="px-2 white-space-nowrap">Total Rooms</label>
+                                <label class="px-2 white-space-nowrap">{{ $t('Total Rooms') }}</label>
                             </th>
                             <th class="text-center pb-1">
-                                <label class="text-center px-2 white-space-nowrap">Total Room Available</label>
+                                <label class="text-center px-2 white-space-nowrap">{{ $t('Total Room Available') }}</label>
                             </th>
                             <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
-                                <label class="text-right px-2">Rate</label>
+                                <label class="text-right px-2">{{ $t('Rate') }}</label>
                             </th>
 
                             <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
-                                <label class="text-right px-2">Tax</label>
+                                <label class="text-right px-2">{{ $t('Tax') }}</label>
                             </th>
                             <th v-if=" can_view_rate" class="text-right w-15rem pb-1">
-                                <label class="text-right px-2">Amount</label>
+                                <label class="text-right px-2">{{ $t('Amount') }}</label>
                             </th>
                             <th class="pb-1">
-                                <label class="text-center px-2">No. of Room</label>
+                                <label class="text-center px-2">{{ $t('No. of Room') }}</label>
                             </th>
                         </tr>
                     </thead>
@@ -341,15 +342,15 @@
                                 </div>
                             </td>
                             <td v-if=" can_view_rate" class="padding-list-booking-group w-12rem text-center">
-                                <div v-tippy="!doc.allow_user_to_edit_rate ? 'This Rate Type Not Allow to Change Rate':'' "
+                                <div v-tippy="!doc.allow_user_to_edit_rate ? $t('This Rate Type Not Allow to Change Rate'):'' "
                                     class="w-full box-input px-3 border-round-lg overflow-hidden text-overflow-ellipsis whitespace-nowrap border border-white p-inputtext-pt">
                                     <span :class="!doc.allow_user_to_edit_rate ? 'pointer-events-none opacity-90' : ''" @click="onOpenChangeRate($event, d)"
                                         class="text-right w-full color-purple-edoor text-md font-italic ">
-                                        <div  v-tippy.top="(d.is_manual_rate) ? 'Manual Rate' : 'Rate Plan'"
+                                        <div  v-tippy.top="(d.is_manual_rate) ? $t('Manual Rate') : $t('Rate Plan')"
                                             class="link_line_action flex justify-between">
                                             <div class="text-left inline">
-                                                <span class="text-sm" v-if="d.is_manual_rate"> (Manual) </span>
-                                                <span class="text-sm" v-else>(Plan)</span>
+                                                <span class="text-sm" v-if="d.is_manual_rate"> ( {{ $t('Manual') }} ) </span>
+                                                <span class="text-sm" v-else>({{ $t('Plan') }})</span>
                                             </div>
                                             <CurrencyFormat :value="d.new_rate" />
                                         </div>
@@ -381,7 +382,7 @@
                             </td>
                             <td class="padding-list-booking-group w-12rem text-center">
                                 <div class="relative ">
-                                    <div :class="d.total_selected_room > d.total_vacant_room ? 'tip-over-booking' : 'hidden'" v-tippy="d.room_type+' OverBooking'">Overbooking</div>
+                                    <div :class="d.total_selected_room > d.total_vacant_room ? 'tip-over-booking' : 'hidden'" v-tippy="d.room_type +' '+ $t('OverBooking')">{{ $t('Overbooking') }}</div>
                                 <InputNumber :class="d.total_selected_room > d.total_vacant_room ? 'over-booking-box' : ''" v-model="d.total_selected_room" inputId="stacked-buttons" showButtons :min="0"
                                     :max="d.total_vacant_room + (setting.enable_over_booking==1?1000:0)" class="child-adults-txt" />
                                 </div>
@@ -394,12 +395,12 @@
         
         </div>
         <div>
-            <strong>Total Rows: <span class="ttl-column_re">{{ room_types.length }}</span></strong>
+            <strong>{{ $t('Total Rows') }}: <span class="ttl-column_re">{{ room_types.length }}</span></strong>
            </div>
         <div class="mt-3">
             <div>
-                <label>Note</label><br />
-                <Textarea v-model="doc.reservation.note" rows="5" placeholder="Note" cols="30"
+                <label>{{ $t('Note') }}</label><br />
+                <Textarea v-model="doc.reservation.note" rows="5" :placeholder="$t('Note')" cols="30"
                     class="w-full border-round-xl" />
             </div>
         </div>
@@ -409,11 +410,9 @@
                 @onChangeRate="onChangeRate" />
         </OverlayPanel>
         <template #footer-right>
-
-
-
-            <Button class="border-none" @click="onSave(true)" v-if="!doc.auto_assign_room">Create Reservation & Assign
-                Room</Button>
+            <Button class="border-none" @click="onSave(true)" v-if="!doc.auto_assign_room">
+                {{ $t('Create Reservation & Assign Room') }}
+                </Button>
         </template>
     </ComDialogContent>
 </template>
@@ -422,7 +421,8 @@ import { ref, inject, computed, onMounted, postApi, getApi, getDoc, getDocList,u
 import ComReservationInputNight from './components/ComReservationInputNight.vue';
 import ComReservationStayChangeRate from "./components/ComReservationStayChangeRate.vue"
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 
 import { useToast } from "primevue/usetoast";

@@ -2,7 +2,7 @@
     <ComReservationStayPanel title="Stay Information" >
         <template #btn>
             <div class="flex items-center">
-                <span> Res {{ rs.reservation?.reservation_type }} Color </span> 
+                <span> {{ $t('Res ' + rs.reservation?.reservation_type + ' Color') }}</span> 
                 <button :style="{background:rs?.reservation?.group_color}"  @click="toggle($event, 'Change_color')" class="w-2rem ms-2 h-2rem rounded-lg border-2 border-gray-500"></button>   
             </div>
         </template>
@@ -149,6 +149,8 @@ import ComEditReservationInformation from './ComEditReservationInformation.vue';
 import ComReservationChangeColorReservation from './ComReservationChangeColorReservation.vue';
 import ComPopOverChangeReservationDate from './form/ComPopOverChangeReservationDate.vue';
 import ComPopOverChangeReservationTime from './form/ComPopOverChangeReservationTime.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const moment = inject('$moment')
 const rs = inject('$reservation');
 const gv = inject('$gv');

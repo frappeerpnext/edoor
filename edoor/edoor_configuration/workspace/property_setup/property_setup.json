@@ -150,44 +150,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "eDoor Setting",
-   "link_count": 3,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "eDoor Setting",
-   "link_count": 0,
-   "link_to": "eDoor Setting",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Reservation Status",
-   "link_count": 0,
-   "link_to": "Reservation Status",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Reservation Color Code",
-   "link_count": 0,
-   "link_to": "Reservation Color Code",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Account Code Setup",
    "link_count": 4,
    "onboard": 0,
@@ -232,9 +194,57 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eDoor Setting",
+   "link_count": 4,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "eDoor Setting",
+   "link_count": 0,
+   "link_to": "eDoor Setting",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reservation Status",
+   "link_count": 0,
+   "link_to": "Reservation Status",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reservation Color Code",
+   "link_count": 0,
+   "link_to": "Reservation Color Code",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "User Permission",
+   "link_count": 0,
+   "link_to": "Predefine User Permission",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2024-01-20 09:16:52.795244",
+ "modified": "2024-03-06 16:47:15.033320",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "Property Setup",

@@ -1,17 +1,17 @@
 <template> 
     <ComOverlayPanelContent :style="{width: isMobile ? '100%' : '40rem'}" :loading="loading" @onSave="onSave" @onCancel="onClose">
         <div :class="loading ? 'pointer-events-none opacity-90' : ''">
-            <h1>Group Change Stay</h1>
-            <Message>Group change stay is affect only active reservation. </Message>
+            <h1> {{ $t('Group Change Stay') }} </h1>
+            <Message>{{ $t('Group change stay is affect only active reservation.') }} </Message>
             <div class="grid py-2 wp-number-cus">
                 <div class="col-6">
-                    <label>Arrival Date</label>
+                    <label>{{ $t('Arrival') }}</label>
                     <Calendar panelClass="no-btn-clear" :selectOtherMonths="true" showIcon v-model="data.arrival_date"
                         showButtonBar :min-date="new Date(moment(data.min_date))" @update:modelValue="onStartDate"
                         dateFormat="dd-mm-yy" class="w-full" />
                 </div>
                 <div class="col-6">
-                    <label>Departure Date</label>
+                    <label>{{ $t('Departure') }}</label>
                     <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths showIcon
                         v-model="data.departure_date" :selectOtherMonths="true"
                         :min-date="new Date(moment(data.arrival_date).add(1, 'days'))" @update:modelValue="onEndDate"
@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="col-6">
-                    <label>Nights</label>
+                    <label>{{ $t('Nights') }}</label>
                     <InputNumber v-model="data.room_nights" @update:modelValue="onNight($event)" inputId="stacked-buttons"
                         showButtons :min="1" class="w-full nig_in-put" />
                 </div>
@@ -28,19 +28,20 @@
                         <div class="flex align-items-center ">
                             <RadioButton inputId="stay_rate" name="generate_new_stay_rate_by" value="stay_rate"
                                 v-model="data.generate_new_stay_rate_by" />
-                            <label for="stay_rate" class="ml-2">Generate New Stay Rate from Last First/Last Stay
-                                Rate</label>
+                            <label for="stay_rate" class="ml-2">
+                                {{ $t('Generate New Stay Rate from Last First/Last Stay Rate') }}
+                                </label>
                         </div>
                         <div class="flex align-items-center">
                             <RadioButton inputId="rate_plan" name="generate_new_stay_rate_by" value="rate_plan"
                                 v-model="data.generate_new_stay_rate_by" />
-                            <label for="rate_plan" class="ml-2">Generate New Stay Rate from Rate Type</label>
+                            <label for="rate_plan" class="ml-2">{{ $t('Generate New Stay Rate from Rate Type') }}</label>
                         </div>
                     </div>
                 </div>
             </div>
             <div>
-                <label>Note</label><br />
+                <label>{{ $t('Note') }}</label><br />
                 <Textarea rows="2" autoResize placeholder="Note" cols="30" class="w-full border-round-xl"
                     v-model="data.note" />
             </div>
@@ -49,7 +50,8 @@
 </template>
 <script setup>
 import { ref, inject, postApi, useToast } from "@/plugin"
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const rs = inject("$reservation")
 const moment = inject("$moment")
 const loading = ref(false)

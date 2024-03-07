@@ -3,7 +3,7 @@
         <template #content>
         <div class="grid">
                 <div class="col-12">
-                    <div class="">Business Sources</div>
+                    <div class=""> {{ $t('Business Sources') }} </div>
                     <div class="grow py-2 px-3 bg-white border-round-lg">
                         <div class="flex justify-content-between align-items-center"> 
                             <span class="link_line_action" @click="onOpenChangeBusinessSource">{{ rs?.reservation?.business_source }}</span>
@@ -11,15 +11,15 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <div class="">Rate Type</div>
+                    <div class=""> {{ $t('Rate Type') }} </div>
                     <div class="py-2 px-3 bg-white border-round-lg">
                         <div class="flex justify-content-between align-items-center">
                             <span class="link_line_action" @click="onOpenChangeRateType">{{ rs?.reservation?.rate_type }}</span>
                         </div>
                     </div> 
                     <Message v-if="isMultipleStayRate > 1" severity="info" :closable="false">
-                        <p>This reservation has different reservation stay's rate types.</p>
-                        <p><b>Note:</b> if you change this. It will override all reservation stays.</p>
+                        <p>{{$t(`This reservation has different reservation stay's rate types.`)}}</p>
+                        <p><b>{{ $t('Note') }}:</b> {{ $t('if you change this. It will override all reservation stays.') }} </p>
                     </Message>
                 </div>
         </div>
@@ -40,7 +40,8 @@
     import ComReservationStayPanel from './ComReservationStayPanel.vue';
     import ComChangeBusinessSource from "./ComChangeBusinessSource.vue";
     import ComChangeRateType from "./ComChangeRateType.vue";
-    
+    import {i18n} from '@/i18n';
+    const { t: $t } = i18n.global; 
     const rs = inject("$reservation")
     const opBusinessSource = ref();
     const opRateType = ref();

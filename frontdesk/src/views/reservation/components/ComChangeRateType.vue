@@ -6,25 +6,25 @@
             <div class="flex gap-2 flex-col mt-3">
                 <div class="flex gap-2" v-if="!hideApplyAll">
                     <Checkbox inputId="apply-all" v-model="applyToAllStay" :binary="true" />
-                    <label for="apply-all" class="cursor-pointer">Apply to All Stay 
+                    <label for="apply-all" class="cursor-pointer">{{ $t('Apply to All Stay') }}  
                         <span>
                         ({{ rs.reservation.total_active_reservation_stay - rs.reservation.total_checked_out }})
                     </span>
                     </label>
                 </div>
-                <Message severity="warn" v-if="rate_type_data?.allow_user_to_edit_rate==0">This rate this is not allow to change rate. Room rate will be set to <CurrencyFormat :value="0" /> </Message>
+                <Message severity="warn" v-if="rate_type_data?.allow_user_to_edit_rate==0">{{ $t('This rate this is not allow to change rate. Room rate will be set to') }}  <CurrencyFormat :value="0" /> </Message>
 
                 <div class="flex gap-2" v-if="rate_type_data?.allow_user_to_edit_rate==1">
                     <Checkbox inputId="apply-all-stay" v-model="regenerateNewRate" :binary="true" />
-                    <label for="apply-all-stay" class="cursor-pointer">Regenerate New Rate</label>
+                    <label for="apply-all-stay" class="cursor-pointer"> {{ $t('Regenerate New Rate') }} </label>
                 </div>
-                <Message severity="warn" v-if="regenerateNewRate">Generate new rate will be affect only active reservation and future stay</Message>
+                <Message severity="warn" v-if="regenerateNewRate">{{ $t('Generate new rate will be affect only active reservation and future stay') }} </Message>
             </div>
             <div class="flex gap-2 flex-col mt-2" v-if="rate_type_data?.tax_rule">
                     <div>
                         <Checkbox v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
                             :falseValue="0" />
-                        <label> Is rate include tax</label>
+                        <label> {{ $t('Is rate include tax') }} </label>
                     </div>
                     <div v-if="rate_type_data.tax_rule.tax_1_rate">
                         <Checkbox v-model="rate_type_data.tax_1_rate" :binary="true"
@@ -54,6 +54,8 @@ import { ref, inject, postApi,getApi } from "@/plugin"
 import ComOverlayPanelContent from '@/components/form/ComOverlayPanelContent.vue';
 import Checkbox from 'primevue/checkbox';
 import Message from 'primevue/message';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const rs = inject('$reservation_stay');
 const emit = defineEmits(['onClose', 'onSave'])
 const rate_type_data = ref()

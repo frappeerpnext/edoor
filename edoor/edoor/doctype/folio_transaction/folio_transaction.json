@@ -124,6 +124,7 @@
   "print_format",
   "is_night_audit_posting",
   "sale",
+  "flash_report_revenue_group",
   "descriptions_tab",
   "discount_account",
   "check_75",
@@ -992,11 +993,17 @@
    "fieldname": "stay_room_id",
    "fieldtype": "Data",
    "label": "Stay Room ID"
+  },
+  {
+   "fetch_from": "account_code.flash_report_revenue_group",
+   "fieldname": "flash_report_revenue_group",
+   "fieldtype": "Data",
+   "label": "Flash Report Revenue Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-20 10:40:30.293967",
+ "modified": "2024-03-07 10:09:33.728793",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Folio Transaction",

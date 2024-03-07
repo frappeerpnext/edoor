@@ -13,14 +13,14 @@
                                                 @click="onViewReservationStayDetail(s.name); $event.stopPropagation()">{{
                                                     s.name }}</span>
                                             <div class="px-2 rounded-lg text-white font-light w-status-reservation-folio"
-                                                v-tippy="s.reservation_status" :style="{ backgroundColor: s.status_color }">
+                                                v-tippy="$t(s.reservation_status)" :style="{ backgroundColor: s.status_color }">
                                             </div>
 
-                                            <span v-tippy="'Folio'"
+                                            <span v-tippy="$t('Folio')"
                                                 class="px-2 bg-gray-400 rounded-lg text-white font-light">
                                                 {{ s.folios.length }}
                                             </span>
-                                            <span v-tippy="'Balance'"
+                                            <span v-tippy="$t('Balance')"
                                                 class="ms-auto me-2 px-2 bg-white rounded-lg  white-space-nowrap">
                                                 <CurrencyFormat :value="s.balance" />
                                             </span>
@@ -30,7 +30,7 @@
                                                     style="display:inline-block; width: 10px; margin:-2px -2px 0 0;"> {{
                                                         s.guest_name }} </div>
                                             <spna class="font-light ">|</spna>
-                                            <div class="font-light  max-width-name-text"> Room: {{ s.rooms }}</div>
+                                            <div class="font-light  max-width-name-text"> {{ $t('Room') }} : {{ s.rooms }}</div>
                                         </div>
 
                                     </div>
@@ -40,7 +40,7 @@
                                 </spna>
 
                                 <Button @click="onAddNewFolio(s); $event.stopPropagation()"
-                                    v-tippy="'Add New Folio To ' + s.name"
+                                    v-tippy="$t('Add New Folio To ') + s.name"
                                     class="py-2 px-3 ml-auto btn-add-folio w-2rem h-2rem font-bold" style="color:#4338ca;"
                                     icon="pi pi-plus" />
                             </div>
@@ -90,19 +90,19 @@
     <div :class="is_page == true ? 'page_total_foliolist' : 'total_foliolist'"
         class="flex flex-column bg-white mt-3 fixed total_folio_fix " style="width: 350px; bottom: 0px; z-index: 1;">
         <div class="flex justify-content-end align-items-cente border-1 border-red-100 p-2">
-            <div class="pr-3"><label>Total Debit</label></div>
+            <div class="pr-3"><label> {{ $t('Total Debit') }} </label></div>
             <div><span><span class="white-space-nowrap font-medium">
                         <CurrencyFormat :value="rs.reservation.total_debit" />
                     </span></span></div>
         </div>
         <div class="flex justify-content-end align-items-cente border-1 border-red-100 border-top-none p-2">
-            <div class="pr-3"><label>Total Credit</label></div>
+            <div class="pr-3"><label> {{ $t('Total Credit') }}</label></div>
             <div><span><span class="white-space-nowrap font-medium">
                         <CurrencyFormat :value="rs.reservation.total_credit" />
                     </span></span></div>
         </div>
         <div class="flex justify-content-end align-items-center border-1 border-red-100 border-top-none p-2">
-    <div class="pr-3"><label>Balance</label></div>
+    <div class="pr-3"><label> {{ $t('Balance') }} </label></div>
     <div>
         <span class="white-space-nowrap font-medium">
             <CurrencyFormat :value="rs.reservation.total_debit - rs.reservation.total_credit" />
@@ -120,6 +120,8 @@ import { inject, useDialog, onMounted } from '@/plugin';
 import Accordion from 'primevue/accordion';
 import AccordionTab from 'primevue/accordiontab';
 import ComNewReservationStayFolio from '@/views/reservation/components/reservation_stay_folio/ComNewReservationStayFolio.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const gv = inject('$gv');
 const dialogRef = inject("dialogRef");
 const dialog = useDialog();

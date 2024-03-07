@@ -8,67 +8,67 @@
                 <button @click="onGroupAssignRoom"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-edit" />
-                    <span class="ml-2">Group Assign Room</span>
+                    <span class="ml-2">{{$t('Group Assign Room')}}</span>
                 </button>
                 <button @click="onGroupChangeRate"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="roomRate" style="height: 14px;" />
-                    <span class="ml-2">Group Change Rate</span>
+                    <span class="ml-2">{{$t('Group Change Rate')}}</span>
                 </button>
 
                 <button @click="onGroupChangeStayDate"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="iconChangeStay" style="height: 14px;" />
-                    <span class="ml-2">Group Change Stay Date</span>
+                    <span class="ml-2">{{$t('Group Change Stay Date')}}</span>
                 </button>
                 <button @click="onChangeStatus('No Show')"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-eye-slash" />
-                    <span class="ml-2">Group No Show</span>
+                    <span class="ml-2">{{$t('Group No Show')}}</span>
                 </button>
 
                 <button @click="onChangeStatus('Cancelled')"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-user-minus" />
-                    <span class="ml-2">Group Cancel</span>
+                    <span class="ml-2">{{$t('Group Cancel')}}</span>
                 </button>
                 <button @click=" onChangeStatus('Void')"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-file-excel" />
-                    <span class="ml-2">Group Void</span>
+                    <span class="ml-2">{{$t('Group Void')}}</span>
                 </button>
                 <button @click=" onGroupCheckIn(true)"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="checkin-black" style="height: 14px;" />
-                    <span class="ml-2">Group Check-In</span>
+                    <span class="ml-2">{{$t('Group Check-In')}}</span>
                 </button>
                 <button @click="onGroupUndoCheckIn()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
-                    <span class="ml-2">Group Undo Check-In</span>
+                    <span class="ml-2">{{$t('Group Undo Check-In')}}</span>
                 </button>
                 <button @click=" onGroupCheckOut(true)"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="checkoutBlack" style="height: 14px;" />
-                    <span class="ml-2">Group Check Out</span>
+                    <span class="ml-2">{{$t('Group Check Out')}}</span>
                 </button>
                 <button @click="onGroupUndoCheckOut"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-undo" />
-                    <span class="ml-2">Group Undo Check Out</span>
+                    <span class="ml-2">{{$t('Group Undo Check Out')}}</span>
                 </button>
                 <span>
 
                     <button @click="onMarkAsPaidbyMasterroom()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <ComIcon icon="BilltoMasterRoom" style="height:13px;"></ComIcon>
-                        <span class="ml-2">Mark as Paid by Master Room {{ }}</span>
+                        <span class="ml-2">{{$t('Mark as Paid by Master Room ')}}</span>
                     </button>
 
                     <button @click="onUnMarkAsPaidbyMasterroom()"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <ComIcon icon="BilltoMasterRoom" style="height:13px;"></ComIcon>
-                        <span class="ml-2">Unmark as Paid by Master Room </span>
+                        <span class="ml-2">{{$t('Unmark as Paid by Master Room')}} </span>
                     </button>
                 </span>
 
@@ -76,43 +76,43 @@
                 <button @click="onAllowPostToCityLedger"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="IconBillToCompany" style="height:15px;"></ComIcon>
-                    <span class="ml-2">Allow Post to City Ledger</span>
+                    <span class="ml-2">{{$t('Allow Post to City Ledger')}}</span>
                 </button>
                 <button @click="onUnAllowPostToCityLedger"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="IconBillToCompany" style="height:15px;"></ComIcon>
-                    <span class="ml-2">Disallow Post to City Ledger</span>
+                    <span class="ml-2">{{$t('Disallow Post to City Ledger')}}</span>
                 </button>
                 <button class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround"
                     @click="onTransferStay">
                     <ComIcon icon="iconMoveStay" style="height: 14px;" />
-                    <span class="ml-2">Transfer Stay to Other Reservation</span>
+                    <span class="ml-2">{{$t('Transfer Stay to Other Reservation')}}</span>
                 </button>
                 <button v-if="rs.reservation.reservation_type == 'FIT'" @click="onMarkasGITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <ComIcon icon="userGif" style="height: 15px;" />
-                    <span class="ml-2">Mark as GIT Reservation</span>
+                    <span class="ml-2">{{$t('Mark as GIT Reservation')}}</span>
                 </button>
                 <button v-else @click="onMarkasFITReservation()"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
 
                     <ComIcon icon="userProfile" style="height:15px;"></ComIcon>
-                    <span class="ml-2">Mark as FIT Reservation </span>
+                    <span class="ml-2">{{$t('Mark as FIT Reservation')}} </span>
                 </button>
                 <button v-if="rs.selecteds == 1" @click="click_me"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-car" />
-                    <span class="ml-2">click_me</span>
+                    <span class="ml-2">{{$t('click_me')}}</span>
                 </button>
                 <button v-else @click="onPickDrop"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-car" />
-                    <span class="ml-2">Pickup / Drop Off</span>
+                    <span class="ml-2">{{$t('Pickup / Drop Off')}}</span>
                 </button>
                 <button @click="onAuditTrail"
                     class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                     <i class="pi pi-history" />
-                    <span class="ml-2">Audit Trail</span>
+                    <span class="ml-2">{{$t('Audit Trail')}}</span>
                 </button>
 
             </template>
@@ -130,7 +130,8 @@ import ComFormSetupArrivalAndDeparture from '@/views/reservation/components/ComF
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
 import ComConfirmTransferStay from '@/views/reservation/components/ComConfirmTransferStay.vue'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 
 

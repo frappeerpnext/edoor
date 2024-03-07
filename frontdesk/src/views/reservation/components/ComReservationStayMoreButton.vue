@@ -11,65 +11,65 @@
                         v-if="props.data.is_master == 0 && (props.data.reservation_status == 'Reserved' || props.data.reservation_status == 'In-house' || props.data.reservation_status == 'Confirmed')"
                         class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                         <ComIcon icon="iconCrownBlack" style="height: 12px;" />
-                        <span class="ml-2">Mark as Master Room</span>
+                        <span class="ml-2">{{ $t('Mark as Master Room') }} </span>
                     </button>
                     <button @click="onClickDetail"
                         class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                         <i class="pi pi-eye me-2" />
-                        View Reservation Stay
+                        {{ $t('View Reservation Stay') }}
                     </button>
                     <template v-if="data.reservation_status == 'Reserved' || data.reservation_status == 'Confirmed'">
                         <button @click="onChangeStatus('No Show')" v-if="data.reservation_status == 'Reserved'"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <i class="pi pi-eye-slash me-2" />
-                            No Show
+                            {{ $t('No Show') }} 
                         </button>
                         <button @click="onChangeStatus('Cancelled')" v-if="data.reservation_status != 'Cancelled'"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <i class="pi pi-user-minus me-2" />
-                            Cancel
+                            {{ $t('Cancel') }}
                         </button>
                         <button @click="onChangeStatus('Void')" v-if="data.reservation_status != 'Void'"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <i class="pi pi-file-excel me-2" />
-                            Void
+                            {{ $t('Void') }}
                         </button>
                         <button @click="onCheckIn()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="checkin-black" class="me-2" style="height: 14px;" />
-                            Check-In
+                            {{ $t('Check-In') }}
                         </button>
                     </template>
                     <button @click="onCheckOut()"
                         v-if="data.reservation_status == 'Checked In' || data.reservation_status == 'In-house'"
                         class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                         <ComIcon icon="checkoutBlack" class="me-2" style="height: 12px;" />
-                        Check Out
+                        {{ $t('Check Out') }}
                     </button>
                     <div v-if="props.data.is_active_reservation" >
                         <button v-if="props.data.paid_by_master_room && !props.data.is_master "
                             @click="onUnmarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
-                            Unmark as Paid by Master Room
+                            {{ $t('nmark as Paid by Master Room') }} U
                         </button>
                         <button v-else-if="!props.data.paid_by_master_room && !props.data.is_master "
                             @click="onMarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
-                            Mark as Paid by Master Room
+                            {{ $t('Mark as Paid by Master Room') }}
                         </button>
                     </div>
                     <div v-if="props.data.is_active_reservation">
                         <button v-if="!props.data.allow_post_to_city_ledger" @click="onAllowPosttoCityLedger()"
                             class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
                             <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
-                            Allow Post to City Ledger
+                            {{ $t('Allow Post to City Ledger') }}
                         </button>
                         <button v-else @click="onUnallowPosttoCityLedger()"
                             class="w-full p-link flex align-items-center p-2 text-color hover:surface-200 border-noround">
                             <ComIcon icon="IconBillToCompany" class="me-2" style="height:15px;"></ComIcon>
-                            Disallow Post to City Ledger
+                            {{ $t('Disallow Post to City Ledger') }}
                         </button>
                     </div>
                 </template>
@@ -81,7 +81,8 @@
 import { ref, useDialog, postApi, inject, useConfirm, useToast, computed } from '@/plugin'
 import ComDialogNote from '@/components/form/ComDialogNote.vue';
 import ComConfirmCheckIn from '@/views/reservation/components/confirm/ComConfirmCheckIn.vue'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const moment = inject("$moment")
 const props = defineProps({
     data: Object,

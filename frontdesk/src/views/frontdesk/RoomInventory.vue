@@ -324,13 +324,14 @@ function onPrevNext(key) {
     } else {
         visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days, "days").toDate() };
     }
+
     removeDOM()
     calendarOptions.visibleRange = visible_date;
     filter.value.date = visible_date.start
     filter.value.end_date = visible_date.end
 
 
-    getEvents()
+    getEvents(visible_date)
 
  
 }
@@ -420,14 +421,15 @@ function getResources() {
     })
 }
 
-function getEvents() {
-   
-    gv.loading = true
+function getEvents(date_range=null) {
+    const start= date_range?moment(date_range.start).format("YYYY-MM-DD"):moment(cal.view.currentStart).format("YYYY-MM-DD")
+    const end= date_range?moment(date_range.end).add(-1,"days").format("YYYY-MM-DD"):moment(cal.view.currentEnd).add(-1,"days").format("YYYY-MM-DD")
+    
     const cal = fullCalendar.value.getApi()
     
     getApi('frontdesk.get_room_inventory_calendar_event', {
-        start: moment(cal.view.currentStart).format("YYYY-MM-DD"),
-        end: moment(cal.view.currentEnd).add(-1,"days").format("YYYY-MM-DD"),
+        start: start,
+        end: end,
         property: window.property_name
     }).then((result) => {
         removeDOM()

@@ -20,8 +20,9 @@
             <div class="col-6">
                 <table>
                     <tr>
-                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">Reservation Stay
-                            Detail</th>
+                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">
+                            {{ $t('Reservation Stay Detail') }}
+                            </th>
                     </tr>
                     <ComStayInfoNoBox label="Guest name">
                         <div class="inline -ml-3">
@@ -82,7 +83,9 @@
             <div class="col-12 lg:col-6">
                 <table>
                     <tr>
-                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">Old Stay Detail</th>
+                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">
+                            {{ $t('Old Stay Detail') }}
+                            </th>
                     </tr>
                     <ComStayInfoNoBox label="Rooms">
                         <div v-if="doc && doc?.stays">
@@ -112,7 +115,7 @@
             <div class="col-12 lg:col-6">
                 <table>
                     <tr>
-                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center">New Stay Detail</th>
+                        <th colspan="2" class="py-2 mt-1 border-1 bg-slate-200 font-medium text-center"> {{ $t('New Stay Detail') }} </th>
                     </tr>
                     <ComStayInfoNoBox label="Rooms">
                         <div class="inline -ml-3 ">
@@ -123,7 +126,7 @@
     }}</span>
                                 </div>
                                 <span class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-yellow-400 ">
-                                    <span style="font-weight: 700 !important;">Move</span>
+                                    <span style="font-weight: 700 !important;">{{$t('Move')}}</span>
                                 </span>
                             </template>
                             <template v-else>
@@ -144,14 +147,14 @@
                         <div class="inline -ml-3 font-semibold">
                             <sapn>{{ gv.dateFormat(data?.start) }}</sapn>
                             <span v-if="gv.dateFormat(oldEvent?.start) != gv.dateFormat(data?.start)"
-                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">New</span>
+                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$t('New')}}</span>
                         </div>
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox titleClass="" label="Departure">
                         <div class="inline -ml-3 font-semibold">
                             <sapn>{{ gv.dateFormat(data?.end) }}</sapn>
                             <span v-if="gv.dateFormat(doc?.departure_date) != gv.dateFormat(data?.end)"
-                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">New</span>
+                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{ $t('New') }}</span>
                         </div>
                     </ComStayInfoNoBox>
                     <ComStayInfoNoBox titleClass="" label="Nights">
@@ -159,7 +162,7 @@
                             <sapn> {{ moment(data?.end).diff(data?.start, 'days') }} </sapn>
                             <span
                                 v-if="moment(data?.end).diff(data?.start, 'days') != moment(oldEvent?.end).diff(oldEvent?.start, 'days')"
-                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">New</span>
+                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$Newt('')}}</span>
                         </div>
                     </ComStayInfoNoBox>
                 </table>
@@ -172,20 +175,18 @@
             <div class="flex align-items-center" v-if="show_keep_rate">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_keep_old_rate" name="regenerate"
                     value="keep_current_rate" />
-                <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer">Keep current room rate</label>
+                <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer"></label>
             </div>
             <div v-else class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate"
                     value="stay_rate" />
-                <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">Generate New Stay Rate from First/Last
-                    Stay Rate</label>
+                <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer"> {{ $t('Generate New Stay Rate from First/Last Stay Rate') }} </label>
             </div>
 
             <div class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate"
                     value="rate_plan" />
-                <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">Generate New Stay Rate using Rate
-                    Plan</label>
+                <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">{{ $t('Generate New Stay Rate using Rate Plan') }}</label>
             </div>
         </div>
         <br /><br />
@@ -215,6 +216,8 @@
 <script setup>
 import { ref, onMounted, inject, getDoc, postApi } from "@/plugin"
 import ComTagReservation from '@/views/reservation/components/ComTagReservation.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialogRef = inject("dialogRef");
 const data = ref({})
 const new_data = ref({})

@@ -44,7 +44,7 @@
                         :value="slotProps.data.credit" />
                 </template>
             </Column>
-            <Column field="balance" :header="$t('Balance')" class="text-right">
+            <Column headerClass="white-space-nowrap" field="balance" :header="$t('Balance')" class="text-right">
                 <template #body="slotProps">
                     <CurrencyFormat :value="slotProps.data.balance" class="white-space-nowrap" />
                 </template>

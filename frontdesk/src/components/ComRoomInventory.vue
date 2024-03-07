@@ -192,8 +192,10 @@ function onFilterDate(event) {
     calendarOptions.visibleRange = { start: date, end: getEndDate(date, filter.value.period) };
     getEvents()
 }
+ 
 
 function onPrevNext(key) {
+    alert(cal.view.currentStart)
     if (loading.value) {
         return
     }
@@ -203,7 +205,9 @@ function onPrevNext(key) {
         visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days * -1, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days * -1, "days").toDate() }
     } else {
         visible_date = { start: moment(cal.view.currentStart).add(calendarOptions.dateIncrement.days, "days").toDate(), end: moment(cal.view.currentEnd).add(calendarOptions.dateIncrement.days, "days").toDate() };
+
     }
+   
     removeDOM()
     calendarOptions.visibleRange = visible_date;
     filter.value.date = visible_date.start

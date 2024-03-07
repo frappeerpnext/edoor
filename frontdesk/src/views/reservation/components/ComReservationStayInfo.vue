@@ -1,5 +1,5 @@
 <template>
-    <ComReservationStayPanel title="Stay Information" panelClass="block">
+    <ComReservationStayPanel title="Stay Information" panelClass="block md:flex">
         <template #btn>
             <div class="flex items-center justify-content-end">
                 <span>{{ $t(stay?.reservationStay?.reservation_color_code || "Select Reservation Color Code") }}</span> 
