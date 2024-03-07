@@ -562,9 +562,9 @@ def get_data_from_occupy_record(filters):
 	
 
 	#last year current date
-	last_year_date = filters_date.replace(year=filters_date.year-1)
+	last_year_date = add_years(filters_date,-1)
 	filters.start_date = add_days(last_year_date,1)
-	filters.end_date = add_days(last_year_date,-1)
+	filters.end_date = add_days(last_year_date,1)
 	data = frappe.db.sql(sql,filters,as_dict=1) 
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 	
@@ -659,7 +659,7 @@ def get_data_from_occupy_record(filters):
 	last_year_end_date = filters_date.replace(year=filters_date.year - 1, day=1)
 	filters.start_date = last_year_start_date
 	filters.end_date = add_days(add_months(last_year_end_date,1),-1)
-	frappe.throw(str(filters.end_date))
+	# frappe.throw(str(filters.end_date))
 	data = frappe.db.sql(sql,filters,as_dict=1) 
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 
@@ -758,7 +758,7 @@ def get_current_room_in_property(filters):
 
 	ytd_total_room= frappe.db.sql(sql,filters,as_dict=1)[0]["total_room"] or 0
 
-	last_year_date = getdate(filters.date).replace(year=getdate(filters.date).year-1)
+	last_year_date = add_years(getdate(filters.date),-1)
 	filters.last_current_start_date = add_days(last_year_date,1)
 	filters.end_date = add_days(last_year_date,1)
 

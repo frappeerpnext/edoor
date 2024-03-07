@@ -162,7 +162,7 @@
                             <sapn> {{ moment(data?.end).diff(data?.start, 'days') }} </sapn>
                             <span
                                 v-if="moment(data?.end).diff(data?.start, 'days') != moment(oldEvent?.end).diff(oldEvent?.start, 'days')"
-                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$Newt('')}}</span>
+                                class="ms-2 px-2 rounded-lg me-2 text-white p-1px bg-green-500">{{$t('New')}}</span>
                         </div>
                     </ComStayInfoNoBox>
                 </table>
@@ -175,36 +175,39 @@
             <div class="flex align-items-center" v-if="show_keep_rate">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_keep_old_rate" name="regenerate"
                     value="keep_current_rate" />
-                <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer"></label>
+                <label for="regenerate_using_keep_old_rate" class="ml-2 cursor-pointer"> {{ $t('Keep current room rate') }} </label>
             </div>
             <div v-else class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_using_last_rate" name="regenerate"
                     value="stay_rate" />
-                <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer"> {{ $t('Generate New Stay Rate from First/Last Stay Rate') }} </label>
+                <label for="regenerate_using_last_rate" class="ml-2 cursor-pointer">
+                    {{ $t('Generate New Stay Rate from First/Last Stay Rate') }} </label>
             </div>
 
             <div class="flex align-items-center mt-2 lg:mt-0">
                 <RadioButton v-model="generate_rate_type" inputId="regenerate_rate_use_rate_plan" name="regenerate"
                     value="rate_plan" />
-                <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">{{ $t('Generate New Stay Rate using Rate Plan') }}</label>
+                <label for="regenerate_rate_use_rate_plan" class="ml-2 cursor-pointer">
+                    {{ $t('Generate New Stay Rate using Rate Plan') }}
+                    </label>
             </div>
         </div>
         <br /><br />
-        <label>Note</label><br />
-        <Textarea v-model="note" rows="3" placeholder="Note" cols="30" class="w-full border-round-xl" />
+        <label> {{ $t('Note') }} </label><br />
+        <Textarea v-model="note" rows="3" :placeholder="$t('Note')" cols="30" class="w-full border-round-xl" />
         <hr class="my-4" />
         <div class="col-12">
             <div
                 class="line-height-1 text-right mt-3 flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                 <div>
-                    <span class="italic">Created by: </span>
+                    <span class="italic"> {{ $t('Created by') }} : </span>
                     <span class="text-500 font-italic"> {{ doc?.owner.split("@")[0] }}
                         <ComTimeago :date="doc?.creation" />
                     </span>
 
                 </div>
                 <div>
-                    <span class="italic ms-2"> Last Modified: </span>
+                    <span class="italic ms-2"> {{$t('Last Modified')}} : </span>
                     <span class="text-500 font-italic"> {{ doc?.modified_by.split("@")[0] }}
                         <ComTimeago :date="doc?.modified" />
                     </span>

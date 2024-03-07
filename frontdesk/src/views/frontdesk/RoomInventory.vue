@@ -422,10 +422,11 @@ function getResources() {
 }
 
 function getEvents(date_range=null) {
+    const cal = fullCalendar.value.getApi()
     const start= date_range?moment(date_range.start).format("YYYY-MM-DD"):moment(cal.view.currentStart).format("YYYY-MM-DD")
     const end= date_range?moment(date_range.end).add(-1,"days").format("YYYY-MM-DD"):moment(cal.view.currentEnd).add(-1,"days").format("YYYY-MM-DD")
     
-    const cal = fullCalendar.value.getApi()
+
     
     getApi('frontdesk.get_room_inventory_calendar_event', {
         start: start,
