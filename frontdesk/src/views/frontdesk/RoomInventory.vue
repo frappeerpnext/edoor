@@ -310,7 +310,7 @@ function onFilterDate(event) {
     const date = moment.utc(moment(event).format("YYYY-MM-DD")).toDate()
     filter.value.date = date
     calendarOptions.visibleRange = { start: date, end: getEndDate(date, filter.value.period) };
-    getEvents()
+    getEvents(calendarOptions.visibleRange)
 }
 
 function onPrevNext(key) {

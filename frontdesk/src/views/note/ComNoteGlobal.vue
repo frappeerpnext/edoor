@@ -4,18 +4,19 @@
 			<div class="flex justify-end items-center gap-2">
 				<div class="p-input-icon-left search-note-cs w-full mt-2 pt-1">
 					<i class="pi pi-search" />
-					<InputText v-model="keyword" class="w-full" placeholder="Search" @input="onSearch" />
+					<InputText v-model="keyword" class="w-full" :placeholder=" $t('Search') " @input="onSearch" />
 				</div>
 				<div class="flex items-center mt-3 mb-1">
 					<!-- <ComAddNote :name="name"></ComAddNote> -->
 					<Button @click="onEdit('')"
 						class="conten-btn bg-yellow-50 white-space-nowrap text-yellow-500 border-yellow-500">
 						<i class="pi pi-plus text-lg  me-2"></i>
-						Add Note
+						{{ $t('Add Note') }}
+						
 					</Button>
 				</div>
 				<div class="flex items-center mt-3 mb-1">
-					<Button style="border-color: #4338ca;color:#4338ca" @click="onRefreshNote()" icon="pi pi-refresh"
+					<Button v-tippy="$t('Refresh')" style="border-color: #4338ca;color:#4338ca" @click="onRefreshNote()" icon="pi pi-refresh"
                             :class="BtnClass ? BtnClass:''" class="conten-btn white-space-nowrap"></Button>
 				</div>
 			</div>
@@ -32,7 +33,7 @@
 								<div class="text-overflow-ellipsis white-space-nowrap overflow-hidden"
 									v-if="i.reference_doctype">
 									<span class="text-lg">
-										{{ i.reference_doctype }}
+										{{ $t(i.reference_doctype) }}
 									</span>
 									-
 									<div @click="onViewDetail(i)"
@@ -42,13 +43,13 @@
 								</div>
 								<div v-else>
 									<span class="text-lg">
-										General Note
+										{{ $t('General Note') }}
 									</span>
 
 								</div>
 								<div>
 									<span v-if="i.custom_note_date" class="font-italic text-500 text-sm">
-										Note Date: {{ gv.dateFormat(i.custom_note_date) }}
+									  {{ $t('Note Date') }}	: {{ gv.dateFormat(i.custom_note_date) }}
 									</span>
 								</div>
 							</div>
@@ -93,7 +94,8 @@ import ComAddNote from './ComAddNote.vue';
 import ComNoteGlobalButtonMore from "@/views/note/ComNoteGlobalButtonMore.vue"
 import ComFolioTransactionDetail from '@/views/reservation/components/reservation_stay_folio/ComFolioTransactionDetail.vue';
 import Enumerable from 'linq'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const confirm = useConfirm()
 const frappe = inject('$frappe');
 const { getTotalNote } = inject('get_count_note')
