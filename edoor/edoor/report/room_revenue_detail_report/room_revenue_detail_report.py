@@ -113,8 +113,6 @@ def get_occupy_data(filters):
 			type='Reservation' and
 			property=%(property)s and 
    			date between %(start_date)s and %(end_date)s
-	
-
 		"""
 	if filters.business_source:
 		sql=sql +" and a.business_source=%(business_source)s "
