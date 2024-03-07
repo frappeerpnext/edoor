@@ -193,7 +193,6 @@ const calendarOptions = reactive({
     nowIndicator: false,
     stickyHeaderDates: false,
     headerToolbar: false,
-    nowIndicator: true,
     resourceAreaColumns: resourceColumn(),
     now: working_day.date_working_day + " 12:00:00",
     resources: resources,

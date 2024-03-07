@@ -428,8 +428,10 @@ def get_data_from_occupy_record(filters):
        			sum(reservation_status='Cancelled') as total_cancel_room
 			from `tabReservation Stay` where property=%(property)s and working_date between %(start_date)s and %(end_date)s
 			"""
-	
+	ledger = "select transaction_type, sum(amount * if(type='Credit',-1,1)) as total_amount from `tabFolio Transaction` where property=%(property)s and posting_date between %(start_date)s and %(end_date)s group by transaction_type"
 	data = frappe.db.sql(sql,filters,as_dict=1) 
+	ledger_balance = frappe.db.sql(ledger,filters,as_dict=1) 
+	frappe.throw(str(ledger_balance))
 	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
 	datas = {
 				"room_occupy":{"title":"Rooms Occupy", "current": data[0]["total_occupy"] or 0},
