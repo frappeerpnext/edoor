@@ -6,11 +6,15 @@
                 <template #end>
                     <button @click="onEdit()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround" >
                         <i class="pi pi-pencil me-1"></i>
-                        <span class="ml-2">Edit</span>
+                        <span class="ml-2">
+                            {{ $t('Edit') }}
+                            </span>
                     </button>
                     <button @click="onDelete()" class="w-full p-link flex align-items-center p-2 pl-4 text-color hover:surface-200 border-noround">
                         <i class="pi pi-trash  me-1"></i>
-                        <span class="ml-2">Delete</span>
+                        <span class="ml-2">
+                            {{ $t('Delete') }}
+                            </span>
                     </button>
                 </template>
             </Menu>
@@ -19,6 +23,8 @@
 </template>
 <script setup>
     import {ref, useConfirm,deleteDoc,inject,useToast } from "@/plugin";
+    import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
     const gv = inject('$gv');
     const confirm = useConfirm()
     const toast = useToast()

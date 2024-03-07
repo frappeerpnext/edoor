@@ -60,9 +60,9 @@
 							</span>
 							<Button :class="i.custom_is_pin ? '' : 'hidden'"
 								class="w-2rem h-2rem px-1 pb-1 pt-0 btn-in-note " text rounded @click="onPin(i)">
-								<ComIcon v-tippy="'Unpin Note'" v-if="i.custom_is_pin" icon="pushPined"
+								<ComIcon v-tippy="$t('Unpin Note')" v-if="i.custom_is_pin" icon="pushPined"
 									style="height:20px;"></ComIcon>
-								<ComIcon v-tippy="'Pin Note'" v-else icon="pushPin" style="height:20px;"></ComIcon>
+								<ComIcon v-tippy="$t('Pin Note')" v-else icon="pushPin" style="height:20px;"></ComIcon>
 							</Button>
 						</div>
 					</div>
@@ -72,12 +72,12 @@
 					<div class="w-full bg-slate-200 mb-2" style="height: 1px;"></div>
 					<div class="flex flex-col my-1 font-italic  line-height-2 py-1" style="font-size: 10px;">
 						<div>
-							Noted by : <span class=" text-500 "> {{ i.comment_by }} -
+							 {{ $t('Noted by') }}  : <span class=" text-500 "> {{ i.comment_by }} -
 								<ComTimeago :date="i.creation" />
 							</span>
 						</div>
 						<div v-if="i.modified">
-							Last Modified by : <span class=" text-500 ">{{ i.modified_by.split("@")[0] }} -
+							{{ $t('Last Modified by') }} : <span class=" text-500 ">{{ i.modified_by.split("@")[0] }} -
 								<ComTimeago :date="i.modified" />
 							</span>
 						</div>
