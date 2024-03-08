@@ -3,32 +3,34 @@
         
         <div class="iframe-view guest-detail">
             <TabView lazy class="tabview-custom">
-                <TabPanel header="General Information">
-                    <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
+                <TabPanel :header="$t('General Information')">
+                    <!-- <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
                         :src="generalInfoUrl">
-                    </iframe>
+                    </iframe> -->
+                    HII
+                    <div v-html="html" id="general" class="view_table_style"></div>
                 </TabPanel>
-                <TabPanel header="Stay History">
+                <TabPanel :header="$t('Stay History')">
                     <iframe @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
                         :src="stayHistoryUrl">
                     </iframe>
                 </TabPanel>
-                <TabPanel header="POS/Misc. Sale">
+                <TabPanel :header=" $t('POS/Misc. Sale')">
                     <div style="margin-right:-1rem;">
                     <iframe @load="onIframeLoaded('pos_misc_sale')" id="pos_misc_sale" style="height:500px; width: 100%;"
                         :src="posMiscSaleUrl">
                     </iframe>
                     </div>
                 </TabPanel>
-                <TabPanel header="Note">
+                <TabPanel :header="$t('Note')">
                     <iframe @load="onIframeLoaded('note')" id="note" style="width: 100%;" :src="noteUrl"></iframe>
                 </TabPanel>
-                <TabPanel header="Folio">
+                <TabPanel :header=" $t('Folio') ">
                     <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;" :src="folioUrl"></iframe>
                 </TabPanel>
                 <TabPanel>
                     <template #header>
-                        <span class="me-2">Document</span>
+                        <span class="me-2">{{ $t('Document') }}</span>
                         <ComDocumentBadge :docname="name" :doctypes="['Customer']" :attacheds="[name]" v-if="name"/>
                     </template>
                         <ComDocument doctype="Customer" :docname="name" :fill="false" :attacheds="[name]"/>
@@ -36,24 +38,27 @@
             </TabView>
         </div>
         <template #footer-left>
-            <Button class="border-none" label="Edit Guest" icon="pi pi-user-edit" @click="onEditGuest"/>
-            <Button class="border-none bg-red-500" label="Delete Guest" icon="pi pi-trash" @click="onDeleteGuest(name)"/>
+            <Button class="border-none" :label=" $t('Edit Guest') " icon="pi pi-user-edit" @click="onEditGuest"/>
+            <Button class="border-none bg-red-500" :label=" $t('Delete Guest') " icon="pi pi-trash" @click="onDeleteGuest(name)"/>
         </template>
     </ComDialogContent>
 </template>
 <script setup>
 import { inject, ref, onMounted,computed,useDialog,deleteDoc,useConfirm,onUnmounted } from '@/plugin'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
-
+const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)
 const gv = inject("$gv")
-
+const html = ref()
+const frappe = inject("$frappe")
+const call = frappe.call()
 function onIframeLoaded(id){ 
     const iframe = document.getElementById(id);
     if (iframe){
@@ -176,7 +181,24 @@ const onClose = () => {
 
 function loadIframe() {
     if(document.getElementById("general")){
-        document.getElementById("general").contentWindow.location.replace(generalInfoUrl.value + "&refresh=" + (Math.random() * 16))
+        let param = {
+        doc:"Business Branch",
+        name:setting?.property?.name,
+        format:"eDoor Run Night Audit Step",
+        no_letterhead:1,
+        letterhead:"No Letterhead",
+        _lang:localStorage.getItem("lang") || "en",
+        show_toolbar:0,
+        view:"ui",
+        date:working_day.date_working_day,
+        step:currentStep.value
+    }
+    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param).then(result => {
+        html.value = result.message.html
+        loading.value = false
+    }).catch(err=>{
+        loading.value = false
+    })  
     }
     else if(document.getElementById("stay_history")){
         document.getElementById("stay_history").contentWindow.location.replace(stayHistoryUrl.value + "&refresh=" + (Math.random() * 16))

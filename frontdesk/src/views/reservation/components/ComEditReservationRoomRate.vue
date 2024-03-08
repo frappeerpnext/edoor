@@ -1,14 +1,16 @@
 <template>
     <ComDialogContent @onOK="onSave" v-model:visible="visible" modal header="Edit Rate" :loading="isSaving" hideButtonClose>
         <div v-if="current_date >= moment(stay?.arrival_date).toDate() && stay?.reservation_status == 'In-house'">
-            <Message severity="info">Changes to room rates made to past or current dates will not
-                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            <Message severity="info">
+                {{ $t('Changes to room rates made to past or current dates will not automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.') }}
+                
             </Message>
         </div>
         <div
             v-if="current_date >= moment(stay_reservation?.arrival_date).toDate() && stay_reservation?.reservation_status == 'In-house'">
-            <Message severity="info">Changes to room rates made to past or current dates will not
-                automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.
+            <Message severity="info">
+                {{ $t('Changes to room rates made to past or current dates will not automatically update guest folios. Please manually review room charges in guest folios to ensure accuracy.') }}
+                
             </Message>
         </div>
         <div class="grid justify-between" v-if="stay">
@@ -21,7 +23,7 @@
                         <ComStayInfoNoBox label="Business Source" :value="stay?.business_source" />
                         <tr>
                             <th class="w-auto border-1 p-2 text-start" style="background: rgb(243, 243, 243);">
-                                <label class="font-normal white-space-nowrap">Room</label>
+                                <label class="font-normal white-space-nowrap"> {{ $t('Room') }} </label>
                             </th>
                             <td class="w-full border-1 p-2">
                                 <span v-for="(i, index) in roomData" :key="index">
@@ -36,7 +38,9 @@
                                 <span v-if="roomData.length > 3"
                                     v-tippy="getTooltip()"
                                     class="inline rounded-xl px-2 bg-purple-cs w-auto ms-1 cursor-pointer whitespace-nowrap">
-                                    {{ roomData.length - 3 }} Mores
+                                    {{ roomData.length - 3 }} 
+                                    {{ $t('Mores') }}
+                                    
                                 </span>
                             </td>
                         </tr>
@@ -102,17 +106,17 @@
                 <div class="grid">
                     <div class="col-12 lg:col-6">
                         <div>
-                            <label>Rate Type</label>
+                            <label> {{ $t('Rate Type') }} </label>
                             <ComSelect class="w-full" v-model="doc.rate_type" doctype="Rate Type"
                                 @onSelected="onSelectRateType" :clear="false" />
                         </div>
                     </div>
                     <div class="col-12 lg:col-6">
                         <div class="relative">
-                            <label>Room Rate</label>
+                            <label>{{ $t('Room Rate') }}</label>
                             <ComInputCurrency classCss="w-full"  v-model="doc.input_rate"
                                 :disabled="doc.is_manual_rate == 0" />
-                            <div v-tippy="'Use Manually Update Rate'" class="absolute right-2 top-2/4 mb-2">                                
+                            <div v-tippy="$t('Use Manually Update Rate')" class="absolute right-2 top-2/4 mb-2">                                
                                 <Checkbox :disabled="!doc.allow_user_to_edit_rate"  input-id="manual_rate" v-model="doc.is_manual_rate" :trueValue="1"
                                     :falseValue="0" :binary="true" @input="onUseManualRate" />
                             </div>
@@ -120,17 +124,17 @@
                     </div>
                     <template v-if="doc.allow_discount==1">
                     <div class="col-12 lg:col-4">
-                        <label>Discount Type</label>
+                        <label>{{ $t('Discount Type') }}</label>
                         <ComSelect class="w-full min-w-full" v-model="doc.discount_type" :options="['Percent', 'Amount']"
                             :clear="false" />
                     </div>
                     <div class="col-12 lg:col-4">
-                        <label>Discount</label>
+                        <label>{{ $t('Discount') }}</label>
                         <InputNumber class="w-full" :input-class="'w-full'" v-model="doc.discount" :minFractionDigits="2"
                             :maxFractionDigits="10" />
                     </div>
                     <div class="col-12 lg:col-4 text-right">
-                        <label>Amount Discount</label>
+                        <label>{{ $t('Amount Discount') }}</label>
                         <div
                             class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
                             <CurrencyFormat :value="discount_amount" />
@@ -142,7 +146,7 @@
                         v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
                         <div class="grid justify-end">
                             <div class="col-6 lg:col-4">
-                                <label>Rate Befor Tax</label>
+                                <label>{{ $t('Rate Befor Tax') }}</label>
                                 <div
                                     class="w-full rounded-lg max-h-3rem h-edoor-35 leading-8 bg-gray-edoor-10 justify-end flex items-center px-3">
                                     <CurrencyFormat :value="rate" />
@@ -151,11 +155,12 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <Textarea placeholder="Note" class="w-full" v-model="doc.note" />
+                        <Textarea :placeholder="$t('Note')" class="w-full" v-model="doc.note" />
                     </div>
                     <div class="col-12" v-if="showCheckUpdateFutureStayRoomRate">
                         <Checkbox class="" v-model="updateFutureRoomRate" :binary="true" />
-                        Update room rate to the future stay room rate ({{ futureRoomRates?.length - 1 }} Room Night(s))
+                        {{ $t('Update room rate to the future stay room rate') }}
+                         ({{ futureRoomRates?.length - 1 }} {{ $t('Room Night(s)') }})
                     </div>
                 </div>
             </div>
@@ -164,7 +169,9 @@
                     <div class="col-12">
                         <div class="flex justify-end text-end"
                             v-if="tax_rule && tax_rule.tax_1_rate > 0 && tax_rule.tax_2_rate > 0 && tax_rule.tax_3_rate > 0">
-                            <label for="rate_tax" class="col-6 font-medium cursor-pointer">Rate Include Tax</label>
+                            <label for="rate_tax" class="col-6 font-medium cursor-pointer">
+                                {{ $t('Rate Include Tax') }}
+                                </label>
                           
                             <div class="inline col-6 text-left px-3">
                                 <Checkbox input-id="rate_tax" class="" v-model="doc.rate_include_tax" :binary="true"
@@ -173,7 +180,7 @@
                         </div>
                         <div class="flex mt-2" v-if="tax_rule && tax_rule.tax_1_rate > 0">
                             <ComBoxBetwenConten inputIdFor="tax-1" is-currency="true" title-class="col-6 font-medium"
-                                :title="(tax_rule.tax_1_name || '') + ' ' + (tax_rule.tax_1_rate || 0) + '%'"
+                                :title="($t(tax_rule.tax_1_name ?? '') || '') + ' ' + (tax_rule.tax_1_rate || 0) + '%'"
                                 :value="(tax_1_amount || 0)">
                                 <template #prefix>
                                     <div>
@@ -261,7 +268,8 @@ import ComBoxStayInformation from './ComBoxStayInformation.vue';
 import ComBoxBetwenConten from './ComBoxBetwenConten.vue';
 
 import Message from "primevue/message";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 // const socket = inject("$socket")
 const gv = inject("$gv")
 const visible = ref(false)

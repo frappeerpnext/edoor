@@ -264,13 +264,13 @@ const calendarOptions = reactive({
         const day = moment(info.date).format("ddd")
 
         if (moment(info.date).format("yyyy-MM-DD") == working_day.date_working_day) {
-            info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+            info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" + $t(moment(info.date).format("MMM")) + "</span></div>"
         } else {
             if (day == "Sat" || day == "Sun") {
-                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" + $t(moment(info.date).format("MMM")) + "</span></div>"
             }
             else {
-                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" + $t(moment(info.date).format("MMM")) + "</span></div>"
             }
         }
         info.el.addEventListener('click', function () {

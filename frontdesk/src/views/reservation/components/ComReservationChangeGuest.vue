@@ -10,11 +10,11 @@
                     <div class="flex">
                         <div class="flex align-items-center px-2">
                             <Checkbox v-model="isApplyAllStays" :binary="true" inputId="checkapplyall" />
-                            <label for="checkapplyall"> Apply all stays ({{ rs.reservationStayNames.length}})</label>
+                            <label for="checkapplyall"> {{ $t('Apply all stays') }}  ({{ rs.reservationStayNames.length}})</label>
                         </div>
                         <div class="flex align-items-center px-2" v-if="dialogRef.data.is_change_stay_guest">
                             <Checkbox v-model="isApplyMasterGuest" :binary="true" inputId="checkmasterguest" />
-                            <label for="checkmasterguest"> Apply Master Guest</label>
+                            <label for="checkmasterguest"> {{ $t('Apply Master Guest') }}</label>
                         </div>
                     </div>
                 </div>
@@ -24,48 +24,48 @@
                     <template #content>
                         <div class="grid">
                             <div class="col-12 pt-2">
-                                <label>New Guest Name<span class="text-red-500">*</span></label><br />
-                                <InputText type="text" class="p-inputtext-sm h-12 w-full" placeholder="New Guest Name"
+                                <label>{{ $t('New Guest Name') }}<span class="text-red-500">*</span></label><br />
+                                <InputText type="text" class="p-inputtext-sm h-12 w-full" :placeholder="$t('New Guest Name')"
                                     v-model="guest.customer_name_en" :maxlength="50" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                <label>Guest Type<span class="text-red-500">*</span></label><br />
+                                <label>{{ $t('Guest Type') }}<span class="text-red-500">*</span></label><br />
                                 <ComAutoComplete v-model="guest.customer_group" class="w-full" placeholder="Guest Type"
                                     doctype="Customer Group" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                <label>Gender</label><br />
-                                <Dropdown v-model="guest.gender" :options="genderList" placeholder="Gender" class="w-full" />
+                                <label>{{ $t('Gender') }}</label><br />
+                                <Dropdown v-model="guest.gender" :options="genderList" :placeholder="$t('Gender')" class="w-full" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-2">
-                                <label>Country</label><br />
+                                <label>{{ $t('Country') }}</label><br />
                                 <ComAutoComplete v-model="guest.country" class="w-full" placeholder="Country"
                                     doctype="Country" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                <label>Phone Number</label><br />
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Phone Number"
+                                <label>{{ $t('Phone Number') }}</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Phone Number')"
                                     v-model="guest.phone_number" :maxlength="50" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-8 pt-1">
-                                <label>Email Address</label><br />
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="Email Address"
+                                <label>{{ $t('Email Address') }}</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('Email Address')"
                                     v-model="guest.email_address" :maxlength="50" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                <label>Identity Type</label><br />
+                                <label>{{ $t('Identity Type') }}</label><br />
                                 <ComAutoComplete v-model="guest.identity_type" class="w-full" placeholder="Identity Type"
                                     doctype="Identity Type" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                <label class="white-space-nowrap">ID/Passport Number</label><br />
-                                <InputText type="text" class="p-inputtext-sm w-full" placeholder="ID/Passport Number"
+                                <label class="white-space-nowrap">{{ $t('ID/Passport Number') }}</label><br />
+                                <InputText type="text" class="p-inputtext-sm w-full" :placeholder="$t('ID/Passport Number') "
                                     v-model="guest.id_card_number" :maxlength="50" />
                             </div>
                             <div class="col-12 lg:col-6 xl:col-4 pt-1">
-                                <label>ID Expire Date</label><br />
+                                <label>{{ $t('ID Expire Date') }}</label><br />
                                 <Calendar :selectOtherMonths="true" class="p-inputtext-sm w-full" v-model="guest.expired_date"
-                                    placeholder="ID Expire Date" dateFormat="dd-mm-yy" />
+                                    :placeholder="$t('ID Expire Date')" dateFormat="dd-mm-yy" />
                             </div>
                         </div>
                     </template>
@@ -78,6 +78,8 @@
 import { ref, inject, onMounted, getApi,getDoc } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
 import ComDialogContent from '@/components/form/ComDialogContent.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const dialogRef = inject('dialogRef')
 const rs = inject('$reservation_stay');
 const gv = inject('$gv');

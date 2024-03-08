@@ -16,15 +16,15 @@
             </span>
         </template>
     </div>
-    <Button @click="refreshReport" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
+    <Button @click="LoadData" class="btn-refresh-in-night-audit"><i class="pi pi-refresh"></i></Button>
     <div v-if="currentStep == 9" style="height: 100vh;">
         <ComNightAuditReport />
     </div>
     <div v-else class="wrp-night-audit-content w-full view-table-iframe" style="overflow: auto;
     max-width: 100%;
     max-height: 70vh;">
-        <iframe @load="onIframeLoaded()" id="iframe_run_night_audit"
-            style="min-height:70vh; width: 100%;" :src="url"></iframe>
+    <div v-html="html" class="view_table_style"></div>
+       
     </div>
 
     <div class="wrp-action-btn-in-night-audit pb-2">
@@ -58,18 +58,18 @@ import { ref, onMounted, postApi, useToast, onUnmounted, inject, useConfirm } fr
 import ComNightAuditReport from './components/ComNightAuditReport.vue'
 const toast = useToast();
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
-const url = ref("")
+ 
 const confirm = useConfirm()
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
-const property = JSON.parse(localStorage.getItem("edoor_property"))
+
 const gv = inject("$gv")
 const isConfirmRoomRate = ref(false)
 const isConfirmFolioPosting = ref(false)
 const dialogRef = inject("dialogRef");
 const currentStep = ref(1)
 const loading = ref(false)
-
+const frappe = inject("$frappe")
+const call = frappe.call()
 const steps = ref([
     { step: 1, label: "Welcome", is_selected: true },
     { step: 2, label: "Today<br>Arrival", is_selected: false },
@@ -82,7 +82,7 @@ const steps = ref([
     { step: 9, label: "Thank You!", is_selected: false },
 ])
 
-
+const html = ref()
 
 function onNext() {
     //set selected
@@ -113,7 +113,7 @@ function onNext() {
                     }
                 }
                 currentStep.value = currentStep.value + 1
-                refreshReport()
+                LoadData()
 
                 loading.value = false
             }).catch((err) => {
@@ -121,7 +121,7 @@ function onNext() {
             })
         } else {
             currentStep.value = currentStep.value + 1
-            refreshReport()
+            LoadData()
         }
     }
 }
@@ -142,7 +142,7 @@ function onFinish() {
                 working_day: working_day.name
             }, "", false).then((result) => {
                 currentStep.value = 9
-                refreshReport()
+                LoadData()
                 loading.value = false;
                 window.socket.emit("RunNightAudit", { property: window.property_name, action: "reload_page", session_id: window.session_id })
                 gv.cashier_shift = result.message.cashier_shift
@@ -172,36 +172,35 @@ function onBack() {
     if (currentStep.value > 1) {
         loading.value = true
         currentStep.value = currentStep.value - 1
-        refreshReport()
+        LoadData()
     }
 }
 
 function onClose() {
     dialogRef.value.close()
 }
-
-function onIframeLoaded() {
-    loading.value = false
-    const iframe = document.getElementById("iframe_run_night_audit");
-    if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
-        iframe.style.overflowX = 'hidden';
-    } else {
-        iframe.style.overflowX = 'auto';
+ 
+const LoadData = () => {
+    let param = {
+        doc:"Business Branch",
+        name:setting?.property?.name,
+        format:"eDoor Run Night Audit Step",
+        no_letterhead:1,
+        letterhead:"No Letterhead",
+        _lang:localStorage.getItem("lang") || "en",
+        show_toolbar:0,
+        view:"ui",
+        date:working_day.date_working_day,
+        step:currentStep.value
     }
-    iframe.style.minWidth = "0px"
-    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-    iframe.style.height = '0px';
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-}
-
-const refreshReport = () => {
     loading.value = true
-    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + setting?.property?.name + "&format=" + gv.getCustomPrintFormat("eDoor Run Night Audit Step") + "&no_letterhead=0&letterhead=No Letterhead&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&date=" + working_day.date_working_day
-    url.value = url.value + "&step=" + currentStep.value
-    const el = document.getElementById("iframe_run_night_audit")
-    if (el) {
-        el.contentWindow.location.replace(url.value)
-    }
+    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param).then(result => {
+        html.value = result.message.html
+        loading.value = false
+    }).catch(err=>{
+        loading.value = false
+    })
+    
 }
 
 onMounted(() => {
@@ -212,14 +211,14 @@ onMounted(() => {
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
-    refreshReport()
+    LoadData()
     window.run_night_audit = 1
     window.refresh_on_close=false
 
     window.socket.on("ComRunNightAudit", (arg) => {
         if (arg.property == window.property_name) { 
             setTimeout(function () {
-                refreshReport()
+                LoadData()
             }, 3000)
         }
     })

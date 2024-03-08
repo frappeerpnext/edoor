@@ -144,7 +144,7 @@
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
                                     <label>{{ $t('Gender') }}</label><br />
-                                    <Dropdown v-model="doc.guest_info.gender" :options="gender_list" placeholder="Gender"
+                                    <Dropdown v-model="doc.guest_info.gender" optionLabel="label" optionValue="value" :options="gender_list" placeholder="Gender"
                                         class="w-full" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
@@ -463,8 +463,11 @@ if (doc.value.reservation.is_walk_in==1){
 
 }
 
-
-const gender_list = ["Not Set", "Male", "Female"]
+const gender_list = ref([
+    { label: $t('Not Set'), value: 'Not Set' },
+    { label: $t('Male'), value: 'Male' },
+    { label: $t('Female'), value: 'Female' },
+]);
 
 const useTax = computed(() => {
     return {

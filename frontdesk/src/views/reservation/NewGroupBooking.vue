@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
                                     <label>{{ $t('Gender') }}</label><br />
-                                    <Dropdown v-model="doc.guest_info.gender" :options="gender_list" placeholder="Gender"
+                                    <Dropdown v-model="doc.guest_info.gender" :options="gender_list" optionLabel="label" optionValue="value" placeholder="Gender"
                                         class="w-full" />
                                 </div>
                                 <div class="col-12 lg:col-6 xl:col-4 pt-2">
@@ -492,7 +492,11 @@ const doc = ref({
     }
 })
 
-const gender_list = ["Not Set", "Male", "Female"]
+const gender_list = ref([
+    { label: $t('Not Set'), value: 'Not Set' },
+    { label: $t('Male'), value: 'Male' },
+    { label: $t('Female'), value: 'Female' },
+]);
 
 const useTax = ref( {use_tax_1: (room_tax.value?.tax_1_rate || 0) > 0,
         use_tax_2: (room_tax.value?.tax_2_rate || 0) > 0,

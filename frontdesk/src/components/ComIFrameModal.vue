@@ -1,20 +1,21 @@
 <template>
-    <div class="wrap-dialog iframe-modal " style="overflow: auto;" :class="{ 'full-height': dialogRef.data.fullheight }">
-        <div class="p-3 " >
+    <div class="wrap-dialog iframe-modal " style="overflow: auto;"
+        :class="{ 'full-height': dialogRef.data.fullheight }">
+        <div class="p-3 ">
             <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
                 <div class="col flex gap-2">
-                  
+
                     <div v-if="show_letter_head">
                         <ComLetterHead v-model="letter_head" @onSelect="onSelectLetterHead" />
                     </div>
                     <div v-if="hasFilter('keyword')">
-                        <InputText type="text" class="p-inputtext-sm w-full w-16rem"
-                            @input="reloadIframe" placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
+                        <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
+                            placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
                     </div>
                     <div v-if="hasFilter('start_date')">
-                        <Calendar :selectOtherMonths="true" panelClass="no-btn-clear" 
+                        <Calendar :selectOtherMonths="true" panelClass="no-btn-clear"
                             class="p-inputtext-sm w-full w-12rem" v-model="filters.start_date" placeholder="Start Date"
-                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon/>
+                            @date-select="loadIframe" showButtonBar dateFormat="dd-mm-yy" showIcon />
                     </div>
                     <div v-if="hasFilter('end_date')">
                         <Calendar :selectOtherMonths="true" :min-date="filters.start_date"
@@ -24,8 +25,8 @@
                     </div>
                     <!-- invoice style for print invoice document credsit debit styoe or simple style -->
                     <div v-if="hasFilter('invoice_style')">
-                        <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false" placeholder="Invoice Style"
-                            :options="['Simple Style','Debit/Credit Style']">
+                        <ComSelect v-model="filters.invoice_style" @onSelected="reloadIframe" :clear="false"
+                            placeholder="Invoice Style" :options="['Simple Style', 'Debit/Credit Style']">
                         </ComSelect>
                     </div>
                     <div v-if="hasFilter('business_source')" class="w-16rem">
@@ -42,7 +43,8 @@
                         </ComSelect>
                     </div>
                     <div v-if="hasFilter('floor')">
-                        <ComSelect v-model="filters.floor" @onSelected="reloadIframe" placeholder="Floor" doctype="Floor">
+                        <ComSelect v-model="filters.floor" @onSelected="reloadIframe" placeholder="Floor"
+                            doctype="Floor">
                         </ComSelect>
                     </div>
                     <div v-if="hasFilter('room_type_group')">
@@ -51,8 +53,8 @@
                     </div>
                     <div v-if="hasFilter('room_type')">
                         <ComSelect v-model="filters.room_type" extraFields="room_type" optionLabel="room_type"
-                            optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type" doctype="Room Type"
-                            :filters="[['property', '=', property_name]]"></ComSelect>
+                            optionValue="room_type" @onSelected="reloadIframe" placeholder="Room Type"
+                            doctype="Room Type" :filters="[['property', '=', property_name]]"></ComSelect>
                     </div>
                     <div v-if="hasFilter('reservation_status')">
                         <ComSelect v-model="filters.reservation_status" placeholder="Reservation Status"
@@ -70,103 +72,117 @@
                         <ComSelect v-model="filters.transportation_mode" placeholder="Pickup Location"
                             @onSelected="reloadIframe" doctype="Transportation Company" />
                     </div>
-                    <div v-if="hasFilter('customer')"> 
-                        <ComAutoComplete v-model="filters.customer" placeholder="Customer"
-                            @onSelected="reloadIframe" doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                    <div v-if="hasFilter('customer')">
+                        <ComAutoComplete v-model="filters.customer" placeholder="Customer" @onSelected="reloadIframe"
+                            doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
                     </div>
-                    <div v-if="hasFilter('guest')"> 
-                        <ComAutoComplete v-model="filters.guest" placeholder="Guest"
-                            @onSelected="reloadIframe" doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
+                    <div v-if="hasFilter('guest')">
+                        <ComAutoComplete v-model="filters.guest" placeholder="Guest" @onSelected="reloadIframe"
+                            doctype="Customer" class="auto__Com_Cus w-full min-w-max" />
                     </div>
                     <div v-if="hasFilter('reservation')">
                         <ComAutoComplete v-model="filters.reservation" placeholder="Reservation"
                             @onSelected="reloadIframe" doctype="Reservation" class="auto__Com_Cus w-full min-w-max" />
                     </div>
-                    <div v-if="hasFilter('reservation_stay')"> 
+                    <div v-if="hasFilter('reservation_stay')">
                         <ComAutoComplete v-model="filters.reservation_stay" placeholder="Reservation Stay"
-                            @onSelected="reloadIframe" doctype="Reservation Stay" class="auto__Com_Cus w-full min-w-max" />
+                            @onSelected="reloadIframe" doctype="Reservation Stay"
+                            class="auto__Com_Cus w-full min-w-max" />
                     </div>
                     <div v-if="hasFilter('show_room_number')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_room_number" />
+                            <Checkbox v-model="filters.show_room_number" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_room_number" />
                         </div>
                         <div>
-                            <label class="white-space-nowrap" for="show_room_number" >Show/Hide Room Number</label>
+                            <label class="white-space-nowrap" for="show_room_number">Show/Hide Room Number</label>
                         </div>
                     </div>
-                    
+
                     <div v-if="hasFilter('show_account_code')" class="flex ml-2">
                         <div>
-                        <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_account_code" />
+                            <Checkbox v-model="filters.show_account_code" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_account_code" />
                         </div>
                         <div>
-                        <label for="show_account_code" class="white-space-nowrap" >Show/Hide Account Code</label>
+                            <label for="show_account_code" class="white-space-nowrap">Show/Hide Account Code</label>
                         </div>
                     </div>
 
                     <div v-if="hasFilter('show_summary')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                            <Checkbox v-model="filters.show_summary" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_summary" />
                         </div>
                         <div>
-                            <label for="show_summary" class="white-space-nowrap" >Show/Hide Summary</label>
+                            <label for="show_summary" class="white-space-nowrap">Show/Hide Summary</label>
                         </div>
                     </div>
-                    
+
                     <div v-if="hasFilter('group_by_ledger_type')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                            <Checkbox v-model="filters.group_by_ledger_type" :binary="true" :trueValue="1"
+                                :falseValue="0" @input="reloadIframe" inputId="show_summary" />
                         </div>
                         <div>
-                            <label for="group_by_ledger_type" >Group by Ledger Type</label>
+                            <label for="group_by_ledger_type">Group by Ledger Type</label>
                         </div>
                     </div>
-                    
+
                     <div v-if="hasFilter('show_cash_float')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                            <Checkbox v-model="filters.show_cash_float" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_summary" />
                         </div>
                         <div>
-                            <label for="show_cash_float" >Show/Hide Cash Float</label>
+                            <label for="show_cash_float">Show/Hide Cash Float</label>
                         </div>
                     </div>
-                   
+
                     <div v-if="hasFilter('show_cash_count')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_summary" />
+                            <Checkbox v-model="filters.show_cash_count" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_summary" />
                         </div>
                         <div>
-                            <label for="show_cash_count" >Show/Hide Cash Count</label>
+                            <label for="show_cash_count">Show/Hide Cash Count</label>
                         </div>
                     </div>
 
                     <div v-if="hasFilter('is_master')" class="flex ml-2">
                         <div>
-                            <Checkbox v-model="filters.is_master" :binary="true" :trueValue="1" :falseValue="0" @input="reloadIframe" inputId="show_master_folio_only" />
+                            <Checkbox v-model="filters.is_master" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="reloadIframe" inputId="show_master_folio_only" />
                         </div>
                         <div>
-                            <label for="show_master_folio_only" >Show Master Folio Only</label>
+                            <label for="show_master_folio_only">Show Master Folio Only</label>
                         </div>
                     </div>
 
                 </div>
                 <div class="col flex gap-2 justify-end">
                     <div v-if="(view || '') != 'ui'">
-                        <ComPrintButton :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''" :url="url" @click="onPrint" />
+                        <ComPrintButton
+                            :BtnClassPrinter="dialogRef.data.BtnClassPrinter ? dialogRef.data.BtnClassPrinter : ''"
+                            :url="url" @click="onPrint" />
                     </div>
                     <div>
-                        <Button @click="loadIframe" icon="pi pi-refresh"
-                            :class="BtnClass ? BtnClass:''" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
+                        <Button @click="loadIframe" icon="pi pi-refresh" :class="BtnClass ? BtnClass : ''"
+                            class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
             </div>
-            <div class="widht-ifame">
-                <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true">
-      
-           </ComPlaceholder>
-                <iframe :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;':''"  @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
-            </div>
-           
+            <div class="widht-ifame ">
+                <ComPlaceholder text="No Data"   :loading="loading" :is-not-empty="true" />
+                <template v-if="!loading">
+
+                    <div v-html="html" class="view_table_style" v-if="view"></div>
+                <iframe v-else :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;' : ''"
+                    @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+   
+                </template>
+                        </div>
+
 
         </div>
     </div>
@@ -180,16 +196,18 @@ const show_letter_head = ref(false)
 const letter_head = ref("");
 const iframe_id = "iframe_" + Math.random().toString().replace(".", "_")
 const moment = inject("$moment")
+const frappe = inject("$frappe")
+const call = frappe.call()
 const filters = ref({
-    invoice_style: window.setting.folio_transaction_style_credit_debit ==1?"Debit/Credit Style":"Simple Style",
-    show_room_number:1,
+    invoice_style: window.setting.folio_transaction_style_credit_debit == 1 ? "Debit/Credit Style" : "Simple Style",
+    show_room_number: 1,
     start_date: moment().toDate(),
     end_date: moment().toDate(),
-    show_account_code:window.setting.show_account_code_in_folio_transaction,
-    show_cash_count:1,
-    show_cash_float:1,
-    show_master_folio_only:1
-    
+    show_account_code: window.setting.show_account_code_in_folio_transaction,
+    show_cash_count: 1,
+    show_cash_float: 1,
+    show_master_folio_only: 1
+
 })
 const show_toolbar = ref(0)
 const view = ref("")
@@ -203,6 +221,9 @@ const props = defineProps({
     BtnClass: String,
 })
 const loading = ref(false)
+
+const html = ref()
+
 function onSelectLetterHead(l) {
     letter_head.value = l
     loadIframe()
@@ -215,7 +236,7 @@ const hasFilter = ref((f) => {
 
 });
 function onIframeLoaded() {
-    
+
     const iframe = document.getElementById(iframe_id);
     var contentWidth = iframe.contentWindow.document.body.scrollWidth;
     var windowWidth = window.innerWidth;
@@ -226,17 +247,30 @@ function onIframeLoaded() {
     }
     iframe.style.minWidth = "0px"
     iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-loading.value = true;
+    loading.value = true;
     iframe.style.height = '0px';
     iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-    iframe.onload = function() {
+    iframe.onload = function () {
         loading.value = false;
     }
 
 
 }
+
+const param = ref({
+
+})
 const loadIframe = () => {
     loading.value = true;
+    param.value.doc = decodeURIComponent(dialogRef.value.data.doctype)
+    param.value.name = decodeURIComponent(dialogRef.value.data.name)
+    param.value.format = decodeURIComponent(dialogRef.value.data.report_name)
+    param.value._lang = "en"
+    param.value.letterhead = "No Letterhead"
+    param.value.show_toolbar = 0
+    param.value.view = "ui"
+    param.value.settings = decodeURIComponent("%7B%7D")
+
     if (view.value) {
         url.value = serverUrl + "/printview?doctype=" + dialogRef.value.data.doctype + "&name=" + dialogRef.value.data.name + "&format=" + gv.getCustomPrintFormat(decodeURI(dialogRef.value.data.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=No Letterhead&show_toolbar=0&view=ui"
 
@@ -246,11 +280,13 @@ const loadIframe = () => {
     if (extra_params.value) {
         extra_params.value.forEach(p => {
             url.value = url.value + "&" + p.key + "=" + p.value
+            param.value[p.key] = p.value
+
         });
     }
     let start_date = moment().add(-50, "years").format("YYYY-MM-DD")
-    let end_date = moment().add(50, "years").format("YYYY-MM-DD") 
-    if (Object.keys(filters.value)) { 
+    let end_date = moment().add(50, "years").format("YYYY-MM-DD")
+    if (Object.keys(filters.value)) {
         Object.keys(filters.value).forEach(p => {
             if (filters.value[p]) {
                 if (p == "start_date") {
@@ -259,21 +295,39 @@ const loadIframe = () => {
                     end_date = moment(filters.value[p]).format("YYYY-MM-DD")
                 } else {
                     url.value = url.value + "&" + p + "=" + filters.value[p]
-                } 
-            } 
+                    param.value[p] = filters.value[p]
+                }
+            }
         });
-    } 
+    }
 
     if (moment(filters.value.start_date).isSame(moment(filters.value.end_date).format("yyyy-MM-DD")) || moment(filters.value.start_date).isAfter(filters.value.end_date)) {
         filters.value.end_date = moment(filters.value.start_date).add(0, 'days').toDate();
     }
     url.value = url.value + "&start_date=" + moment(filters.value.start_date).format("yyyy-MM-DD") + "&end_date=" + moment(filters.value.end_date).format("yyyy-MM-DD")
+    param.value.start_date = moment(filters.value.start_date).format("yyyy-MM-DD")
+    param.value.end_date = moment(filters.value.end_date).format("yyyy-MM-DD")
+
     url.value = url.value + "&refresh=" + (Math.random() * 16)
     if (extra_params.value?.filter(r => r.key == 'date').length == 0) {
 
         url.value = url.value + "&date=" + window.current_working_date
+        param.value.date = window.current_working_date
     }
-    document.getElementById(iframe_id).contentWindow.location.replace(url.value)  
+ 
+    if (view.value){
+        call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
+            html.value = result.message.html
+            loading.value = false
+        }).catch(err => {
+            loading.value = false
+        })
+    }else {
+        document.getElementById(iframe_id).contentWindow.location.replace(url.value) 
+    }
+    
+
+   
 }
 function onPrint() {
     document.getElementById(iframe_id).contentWindow.print()
@@ -296,43 +350,43 @@ function debouncer(fn, delay) {
 
 const actionRefreshData = async function (e) {
     if (e.isTrusted && typeof (e.data) != 'string') {
-        if(e.data.action=="ComIframeModal"){
-            setTimeout(()=>{
+        if (e.data.action == "ComIframeModal") {
+            setTimeout(() => {
                 loadIframe()
-            },1000)
-            
+            }, 1000)
+
         }
     };
 }
 
-onMounted(() => { 
-    if(window.isMobile){
+onMounted(() => {
+    if (window.isMobile) {
         let elem = document.querySelectorAll(".p-dialog");
-        if (elem){
-            elem = elem[elem.length-1]
+        if (elem) {
+            elem = elem[elem.length - 1]
             elem?.classList.add("p-dialog-maximized"); // adds the maximized class
         }
     }
-    window.addEventListener('message', actionRefreshData, false); 
+    window.addEventListener('message', actionRefreshData, false);
     show_toolbar.value = dialogRef.value.data.show_toolbar || 1
-  
-    show_letter_head.value = dialogRef.value.data.show_letter_head ==undefined?true:dialogRef.value.data.show_letter_head 
+
+    show_letter_head.value = dialogRef.value.data.show_letter_head == undefined ? true : dialogRef.value.data.show_letter_head
     view.value = dialogRef.value.data.view
-    if (dialogRef.value.data.view=="ui"){
+    if (dialogRef.value.data.view == "ui") {
         show_letter_head.value = false
     }
-    extra_params.value = dialogRef.value.data.extra_params 
+    extra_params.value = dialogRef.value.data.extra_params
     filter_options.value = dialogRef.value.data.filter_options
-    
+
     loadIframe()
 });
 
-onUnmounted(() => { 
+onUnmounted(() => {
     loading.value = false;
     window.removeEventListener('message', actionRefreshData, false);
 })
 
-</script> 
+</script>
 <style scoped>
 .full-height {
     height: 85vh;

@@ -5,7 +5,9 @@
                 <div class="flex">
                     <div class="flex align-items-center">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div @click="onRefresh()" class="text-xl md:text-2xl md:ml-4  white-space-nowrap">Room Inventory</div> 
+                        <div @click="onRefresh()" class="text-xl md:text-2xl md:ml-4  white-space-nowrap">
+                            {{$t('Room Inventory')}}
+                            </div> 
                       
                         <div class="ml-8 text-xl md:text-2xl white-space-nowrap" v-if="moment.utc(filter.date).format('yyyy') != moment.utc(filter.end_date).format('yyyy')">{{moment.utc(filter.date).format('DD MMM, yyyy')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
                         <div class="ml-8 text-xl md:text-2xl white-space-nowrap" v-else>{{moment.utc(filter.date).format('DD MMM')}} - {{moment.utc(filter.end_date).add(-1,"days").format('DD MMM, yyyy')}}</div>
@@ -15,7 +17,9 @@
             <template #end> 
                 <div class="flex gap-2 w-full justify-content-end">
                     <Button label='Uncomming Note' :badge="totalNotes" badgeClass="bg-white text-600 badge-rs" class="w-full md:w-auto bg-yellow-500 border-none" @click="showNote=!showNote">
-                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" /> Uncomming Note <Badge
+                      <ComIcon icon="iconNoteWhite" class="me-2" height="18px" /> 
+                      {{$t('Uncomming Note')}}
+                       <Badge
                       style="font-weight: 600 !important;" class="badge-rs bg-white text-500" :value="totalNotes"
                       severity="warning">
                     </Badge>
@@ -122,7 +126,8 @@ import ComCheckRoomConfligAndOverBooking from '@/views/frontdesk/components/ComC
 import RoomInventoryChart from '@/views/frontdesk/components/RoomInventoryChart.vue'
 import FullCalendar from '@fullcalendar/vue3'
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const resources = ref([])
 const events = ref([])
 const moment = inject('$moment')
@@ -220,13 +225,13 @@ const calendarOptions = reactive({
         const d = moment(info.date).format("DD")
         const day = moment(info.date).format("ddd")
         if (moment(info.date).format("yyyy-MM-DD") == working_day.date_working_day) {
-            info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+            info.el.getElementsByTagName("a")[0].innerHTML = "<div class='current_day line-height-15 border-round-lg px-3 py-2'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" + $t(moment(info.date).format("MMM")) + "</span></div>"
         } else {
             if (day == "Sat" || day == "Sun") {
-                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2' style='color:red;'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" +$t(moment(info.date).format("MMM")) + "</span></div>"
             }
             else {
-                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + day + "</span><br/>" + d + "<br/><span class='font-light'>" + moment(info.date).format("MMM") + "</span></div>"
+                info.el.getElementsByTagName("a")[0].innerHTML = "<div class='line-height-15  border-round-lg px-3 py-2'><span class='font-light'>" + $t(day) + "</span><br/>" + d + "<br/><span class='font-light'>" + $t(moment(info.date).format("MMM")) + "</span></div>"
             }
         }
         info.el.addEventListener('click', function () {
@@ -340,17 +345,17 @@ function resourceColumn() {
     return [
             {
                 labelText: 'xxx',
-                headerContent: 'Room Type',
+                headerContent: $t('Room Type'),
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
                         if(window.isMobile){
                             if (arg.resource._resource.extendedProps.alias){
                                 el.innerHTML = arg.resource._resource.extendedProps.alias;
                             } else {
-                                el.innerHTML = arg.resource._resource.title;
+                                el.innerHTML = $t(arg.resource._resource.title);
                             }
                         } else {
-                            el.innerHTML = arg.resource._resource.title;
+                            el.innerHTML = $t(arg.resource._resource.title);
                         } 
                     let dom = [el.innerHTML]
                     return { html: dom }
@@ -360,7 +365,7 @@ function resourceColumn() {
                 width: 60,
                 cellContent: function (arg) {
                     const el = arg.resource._context.calendarApi.el
-                         el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center">${ arg.resource.extendedProps.total_room || ""}</div>`;
+                         el.innerHTML = `<div id='resource_total_${arg.resource._resource.id}' class="cell-status text-center"> ${ arg.resource.extendedProps.total_room || ""}</div>`;
                     let dom = [el.innerHTML]
                     return { html: dom }
                 }
@@ -559,7 +564,7 @@ function getEvents(date_range=null) {
 
         //show summary to resource
         setTimeout(() => {
-            document.querySelector("#resource_total_vacant_room").textContent =events.value.reduce((n, d) => n + (d.room_available || 0), 0)
+            document.querySelector("#resource_total_vacant_room").textContent =  events.value.reduce((n, d) => n + (d.room_available || 0), 0)
             document.querySelector("#resource_total_arrival").textContent = result.message.room_occupy.reduce((n, d) => n + (d.arrival || 0), 0)
             document.querySelector("#resource_total_stay_over").textContent = result.message.room_occupy.reduce((n, d) => n + (d.stay_over || 0), 0)
             document.querySelector("#resource_total_departure").textContent = result.message.room_occupy.reduce((n, d) => n + (d.departure || 0), 0)

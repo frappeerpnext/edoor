@@ -1608,3 +1608,65 @@ align-items: center;
 .p-sidebar-header-content {
     font-size: 18px;
 }
+.view_table_style .report-list tr td , .view_table_style .report-list tr th{
+    padding: 6px;
+    white-space: nowrap;
+}
+.view_table_style .rounded-pill{
+    border-radius: 20px;
+}
+.view_table_style .rounded-pill svg{
+   margin-right: 5px;
+   display: inline;
+}
+.view_table_style .text-emty {
+    font-size: 0.875rem !important;
+    font-style: italic !important;
+    color: #BDBDBD;
+}
+.view_table_style h1{
+  font-size: 2.5rem;  
+}
+
+.view_table_style .bg-header-table{
+    background-color: rgb(226 232 240) !important;
+    font-weight: 500;
+    color: #364963 !important;
+}
+.view_table_style .text-center img{
+    margin: auto;
+}
+.view_table_style .report-list tbody tr:nth-child(even) {
+    background-color: var(--bg-tb-sec-color);
+}
+.view_table_style .report-list tbody tr:first-child {
+    text-align: left;
+    border: 1px solid #dee2e6;
+    border-width: 0 0 1px 0;
+    color: #343a40;
+    background: #f8f9fa;
+    transition: box-shadow 0.2s;
+}
+.view_table_style .isemtyIcon{
+    width: 120px;
+    height: 70px;
+    background: url('/src/assets/svg/icon-no-notic-r-comment.svg') center / contain no-repeat;
+    margin: auto;
+}
+.view_table_style  .table-print-format tr td:first-child {
+    background: rgb(243, 243, 243);
+
+}
+.view_table_style  .table-print-format tr td:last-child {
+   min-width: 100px;
+}
+.view_table_style  .table-print-format tr td{
+    padding: 5px;
+    border: 1px solid;
+}
+.view_table_style h3 {
+    font-size: 1.75rem;
+}
+.view_table_style .wrp-night-audit-content h3 {
+    font-size: 1.75rem;
+}

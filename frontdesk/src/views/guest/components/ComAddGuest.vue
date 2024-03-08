@@ -1,6 +1,4 @@
 <template>
-    <!-- {{ rs }} -->
-    <!-- {{ guest }} -->
     <ComDialogContent @onClose="onClose" @onOK="onOK" :loading="loading">
 
         <div class="mb-3">

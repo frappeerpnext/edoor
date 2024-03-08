@@ -5,7 +5,7 @@
         <div class="d-flex w-full">
             <span class="p-input-icon-left  w-full">
                 <i class="pi pi-search" />
-                <InputText class="w-full unrounded__box_cus bg-transparent" v-model="keyword" placeholder="Search"
+                <InputText class="w-full unrounded__box_cus bg-transparent" v-model="keyword" :placeholder="$t('Search')"
                     @input="onSearch" autofocus />
                 <Button @click="onShowFilter()" icon="pi pi-sliders-h" class="absolute right-2" :class="ShowFilterSearch ? 'text-blue-400' :''" aria-label="Filter" link />
             </span>
@@ -15,7 +15,9 @@
 <div v-if="ShowFilterSearch" class="col-12 ">
 
 <div class="grid gap-2">
-  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search white-space-nowrap" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">{{ d.title }}
+  <Button class="border-1 bg-transparent border-round-3xl text-md box-shadow-box-search white-space-nowrap" :class="d.selected ? 'text-blue-400':'border-500 text-color'" v-for="(d, index) in search_table" :key="index" @click="onSelectTable(d)">
+    
+    {{ $t(d.title ?? '') }}
 <i v-if="d.selected" class="pi pi-check ms-3"></i>    
 
 </Button>
@@ -29,18 +31,19 @@
             <i class="pi pi-search text-yellow-200 text-2xl mx-2" />
             "
             <span class="text-md ms-4">
-            Please enter few keyword to search data from database   
+                {{ $t('Please enter few keyword to search data from database') }}
+             
             </span>
         </div>
         <template v-else>
             <div>
-                <ComPlaceholder :text="'No Data With  `  ' + keyword + '  `  Keyword'" :loading="loading" :is-not-empty="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype) ).length > 0">
+                <ComPlaceholder :text=" $t('No Data With')  + '  `  ' + keyword + '  `  '  +  $t('Keyword')" :loading="loading" :is-not-empty="results.filter(r=>r.doctype ==(selectedDoctype?.doctype || r.doctype) ).length > 0">
                <div class="grid pt-2">
                 <div class="md:col-2 hidden md:block col-12 bg-card-info p-0">
                 <Listbox filtericon="HI" v-model="selectedDoctype" :options="resultDoctypes" class="w-full bg-transparent p-2">
                     <template  #option="slotProps">
                         <div class="flex align-items-center justify-between">
-                            <div>{{ search_table.find(r => r.doctype == slotProps.option.doctype).title }}
+                            <div>{{ $t((search_table.find(r => r.doctype == slotProps.option.doctype).title) ?? '')  }}
                             </div>
                             <Badge class="surface-200 text-color" :value="results.filter(r => r.doctype == slotProps.option.doctype).length"></Badge>
                         </div>
@@ -82,6 +85,8 @@ import Mustache from 'mustache';
 
 import ComDialogContent from '@/components/form/ComDialogContent.vue';
 import DataView from 'primevue/dataview';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const ShowFilterSearch = ref(true)
 function onShowFilter() {
     ShowFilterSearch.value = !ShowFilterSearch.value

@@ -180,15 +180,6 @@
   "sort_order": 1200
  },
  {
-  "account_category": "Other Charge",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2023-08-27 15:49:48.489650",
-  "name": "Other Charge",
-  "note": null,
-  "sort_order": 400
- },
- {
   "account_category": "POS Bill to Room",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -207,15 +198,6 @@
   "sort_order": 1700
  },
  {
-  "account_category": "Room Charge Adjustment",
-  "docstatus": 0,
-  "doctype": "Account Category",
-  "modified": "2024-02-10 15:35:49.302241",
-  "name": "Room Charge Adjustment",
-  "note": null,
-  "sort_order": 300
- },
- {
   "account_category": "Folio Transfer",
   "docstatus": 0,
   "doctype": "Account Category",
@@ -223,6 +205,15 @@
   "name": "Folio Transfer",
   "note": null,
   "sort_order": 2700
+ },
+ {
+  "account_category": "Room Charge Adjustment",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2024-02-10 15:35:49.302241",
+  "name": "Room Charge Adjustment",
+  "note": null,
+  "sort_order": 300
  },
  {
   "account_category": "POS Bill to City Ledger",
@@ -241,6 +232,15 @@
   "name": "Payment",
   "note": "a",
   "sort_order": 1600
+ },
+ {
+  "account_category": "Other Charge",
+  "docstatus": 0,
+  "doctype": "Account Category",
+  "modified": "2023-08-27 15:49:48.489650",
+  "name": "Other Charge",
+  "note": null,
+  "sort_order": 400
  },
  {
   "account_category": "Room Charge",
