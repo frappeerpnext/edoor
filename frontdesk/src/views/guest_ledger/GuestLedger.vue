@@ -6,25 +6,19 @@
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div class="text-2xl">Guest ledger</div>
+                            <div class="text-2xl">{{ $t('Guest ledger') }} </div>
                         </div>
                     </div>
                 </template>
-                <!-- <template #end>
-                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i> Print</Button>
-                </template>
-                 -->
             </ComHeader>
             <div class="flex justify-between">
                 <div>
                     <div class="flex gap-2">
                         <template v-if="!isMobile">
-
-                        
                         <div class="p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                          </div>
                        
@@ -33,7 +27,7 @@
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="isFilter">
-                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' "
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? $t('Clear') : $t('Clear Filter') "
                                         icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
@@ -62,10 +56,10 @@
                     scrollable :value="data" paginator :rows="20" :rowsPerPageOptions="[20, 30, 40, 50]"
                     tableStyle="min-width: 50rem">
                     <div class="absolute bottom-6 left-4">
-                        <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                        <strong>{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                     </div>
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label) " :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
                             <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
@@ -196,6 +190,8 @@ import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))

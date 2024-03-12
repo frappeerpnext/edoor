@@ -171,7 +171,7 @@ if (housekeeping_status_code.value.length > 0) {
     housekeeping_status_code.value.forEach(h => {
 
         items.value.push({
-            label: h.status,
+            label: $t(h.status),
             style:{minWidth:'185px'},
             command: () => {
 

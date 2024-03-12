@@ -7,13 +7,13 @@
 
                             <span  class="text-500  text-sm text-end">
                                 <span class="white-space-nowrap" v-if="s.label == 'Opening Balance'">
-                                    Balance From {{ moment(start_date).subtract(1, 'days').format("DD-MM-YYYY") }}    
+                                    {{ $t('Balance From') }}  {{ moment(start_date).subtract(1, 'days').format("DD-MM-YYYY") }}    
                                 </span>
                                 <span class="white-space-nowrap" v-if="s.label == 'Ending Balance'">
-                                    Balance of {{ moment(end_date).format("DD-MM-YYYY") }}    
+                                    {{ $t('Balance of') }}  {{ moment(end_date).format("DD-MM-YYYY") }}    
                                 </span>
                                </span>
-                             <span class="text-600 uppercase text-sm text-end white-space-nowrap">{{ s.label }}</span>
+                             <span class="text-600 uppercase text-sm text-end white-space-nowrap">{{ $t(s.label) }}</span>
                        
                         </div>
                         <div class="flex justify-end">
@@ -30,7 +30,9 @@
 <script setup>
 import { inject, getDoc, ref } from '@/plugin';
 const moment = inject("$moment")
-import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue' 
+import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const props = defineProps({
     summary: Object,
     start_date:Date,

@@ -180,7 +180,7 @@
 
                 <template v-if="!view">
 
-                    <iframe :style="loading ? 'visibility: hidden;' : ''" @load="onIframeLoaded()"
+                    <iframe class="iframe_max_height" :style="loading ? 'visibility: hidden;' : ''" @load="onIframeLoaded()"
                         style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
 
                 </template>
@@ -195,7 +195,8 @@
 <script setup>
 import { ref, onMounted, inject, onUnmounted } from "@/plugin"
 const dialogRef = inject("dialogRef");
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"http://" + window.location.hostname;
+
 const url = ref("")
 const show_letter_head = ref(false)
 const letter_head = ref("");
