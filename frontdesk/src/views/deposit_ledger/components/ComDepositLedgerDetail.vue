@@ -10,7 +10,7 @@
                             <table class="mb-4">
                                 <tr>
                                     <th class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3" colspan="2">
-                                        Deposit Ledger
+                                        {{ $t('Deposit Ledger') }}
                                     </th>
                                 </tr>
                                 <ComStayInfoNoBox label="Posting Date">
@@ -39,20 +39,26 @@
 
                                 <div
                                     class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100">
-                                    <div class="text-500 uppercase text-sm">Total Debit</div>
+                                    <div class="text-500 uppercase text-sm">
+                                        {{ $t('Total Debit') }}
+                                        </div>
                                     <div class="text-xl line-height-2 font-semibold">
                                         <CurrencyFormat :value="doc?.total_debit" isCurrency></CurrencyFormat>
                                     </div>
                                 </div>
                                 <div
                                     class="col p-2 bg-gray-edoor-10 rounded-lg shadow-charge-total border border-gray-edoor-100 h-full">
-                                    <div class="text-500 uppercase text-sm">Total Credit</div>
+                                    <div class="text-500 uppercase text-sm">
+                                        {{ $t('Total Credit') }}
+                                       </div>
                                     <div class="text-xl line-height-2 font-semibold">
                                         <CurrencyFormat :value="doc?.total_credit" isCurrency></CurrencyFormat>
                                     </div>
                                 </div>
                                 <div class="col p-2 bg-green-50 rounded-lg shadow-charge-total border border-green-edoor">
-                                    <div class="text-500 uppercase text-sm">Balance</div>
+                                    <div class="text-500 uppercase text-sm">
+                                        {{ $t('Balance') }}
+                                        </div>
 
 
                                     <div class="text-xl line-height-2 font-semibold">
@@ -69,7 +75,7 @@
                         <div
                             class="line-height-1 -mt-2 text-right flex p-0 flex-col justify-center gap-2 w-full text-sm white-space-nowrap overflow-hidden text-overflow-ellipsis">
                             <div>
-                                <span class="italic">Created by: </span>
+                                <span class="italic"> {{ $t('Created by') }}: </span>
                                 <span class="text-500 font-italic">
                                     {{ doc?.owner?.split("@")[0] }}
                                     <ComTimeago :date="doc?.creation" />
@@ -77,7 +83,7 @@
                                 </span>
                             </div>
                             <div>
-                                <span class="italic ms-2"> Last Modified: </span>
+                                <span class="italic ms-2"> {{ $t('Last Modified') }} : </span>
                                 <span class="text-500 font-italic">
                                     {{ doc?.modified_by?.split("@")[0] }}
                                     <ComTimeago :date="doc?.modified" />
@@ -89,7 +95,7 @@
                     </div>
                     <div class="py-2 mt-1 border-1 bg-slate-200 font-medium text-start ps-3 w-full">
                         <div class="flex gap-2 align-items-center">
-                            Deposit Ledger Detail - {{ doc.name }}
+                            {{ $t('Deposit Ledger Detail') }}  - {{ doc.name }}
                             <ComOpenStatus :status="doc.status" />
                             <div v-tippy="'Master Folio'" v-if="doc.is_master"
                                 class="flex justify-center items-center p-2 rounded-lg text-white p-1px bg-purple-100 ">
@@ -108,7 +114,7 @@
             </TabPanel>
             <TabPanel>
                 <template #header>
-                    <span class="me-2">Document</span>
+                    <span class="me-2"> {{ $t('Document') }} </span>
                     <Badge :value="totalDocument"></Badge>
                 </template>
                 <ComDocument v-if="doc" @updateCount="onUpdateFileCount" doctype="Deposit Ledger"
@@ -133,7 +139,8 @@ import ComFolioTransactionSimpleStyle from "@/views/reservation/components/folio
 import ComDepositLedgerAction from "@/views/deposit_ledger/components/ComDepositLedgerAction.vue"
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const dialog = useDialog()
 const showCreditDebitStyle = ref(window.setting.folio_transaction_style_credit_debit)

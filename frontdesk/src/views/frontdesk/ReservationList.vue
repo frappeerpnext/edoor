@@ -4,7 +4,7 @@
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div :class="isMobile ? 'flex justify-content-between': ''">
-<div class="text-xl md:text-2xl">Reservation List</div>
+<div class="text-xl md:text-2xl"> {{ $t('Reservation List') }} </div>
                         <div class="w-50" v-if="isMobile">
 <ComNewReservationMobileButton />
                         </div>
@@ -25,14 +25,14 @@
                     <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
-                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                         </span>
                     </div>
                     <div>
                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                     </div>
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter" />
+                        <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter" />
                     </div>
                    
                 </div>
@@ -61,7 +61,7 @@
                 :tableStyle="`min-width: ${width}%`" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column  v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes')=='Yes')" :key="c.fieldname"
-                        :field="c.fieldname" :header="c.label"
+                        :field="c.fieldname" :header="$t(c.label) "
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen"
                         >
@@ -97,8 +97,7 @@
                             </template>
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'Status'" class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
-                                }}
+                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ $t(slotProps.data[c.fieldname] ?? '')}}
                             </span>
                             <span v-else-if="c.fieldname == 'reservation_type'" v-tippy="slotProps.data[c.fieldname]=='FIT'?'Free Independent Traveler':'Group Inclusive Tour'">
                                     {{ slotProps.data[c.fieldname] }}
@@ -118,7 +117,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                 :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange"   :pageLinkSize="isMobile ? '2' : '5'">
                 <template #start="slotProps">
-                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -129,17 +128,17 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder="$t('Search')" class="w-full" />
                 </span>
             </template>
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label) }}</label>
                 </li>
             </ul>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label="$t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -196,6 +195,8 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 import { Timeago } from 'vue2-timeago'
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile) 
 const showAdvanceSearch = ref()
 const moment = inject("$moment")

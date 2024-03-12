@@ -2,17 +2,17 @@
     <div>
         <ComHeader colClass="col-6" isRefresh @onRefresh="onRefresh()">
             <template #start>
-                <div class="text-2xl">Guest Type</div>
+                <div class="text-xl md:text-2xl"> Guest Type</div>
             </template>
             <template #end>
-                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New Guest Type' " icon="pi pi-plus" @click="onAddNewGuestType" />
+                <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New Guest Type') " icon="pi pi-plus" @click="onAddNewGuestType" />
             </template>
         </ComHeader>
         <div class="mb-3 md:w-20rem">
             <div class="flex w-full flex-wrap gap-2 ">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                    <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                 </div>
             </div>
         </div>
@@ -23,14 +23,14 @@
                 showGridlines
                 :value="data?.filter((r) => r.customer_group_en.toLowerCase().includes((filter.keyword || '').toLowerCase()))"
                 tableStyle="min-width: 50rem">
-                    <Column headerClass="white-space-nowrap" field="customer_group_en" header="Guest type"></Column>
-                    <Column field="owner" header="Owner"></Column>
-                    <Column field="note" class="w-6" header="Note"></Column>
-                    <Column header="Action" headerClass="text-center w-10rem">
+                    <Column headerClass="white-space-nowrap" field="customer_group_en" :header="$t('Guest type') "></Column>
+                    <Column field="owner" :header="$t('Owner')"></Column>
+                    <Column field="note" class="w-6" :header="$t('Note')"></Column>
+                    <Column :header="$t('Action') " headerClass="text-center w-10rem">
                         <template #body="slotProps">
                             <div class="flex gap-2 justify-center">
-                                <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
-                                <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
+                                <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" :label=" $t('Edit')" rounded />
+                                <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" :label="$t('Delete') " rounded />
                             </div>
                         </template>
                     </Column>
@@ -49,10 +49,12 @@ const data = ref([])
 const filter = ref({}) 
 const loading = ref(false)
 const confirm = useConfirm()
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 function onDelete(name) {
     confirm.require({
-        message: 'Are you sure you want to delete guest type?',
-        header: 'Confirmation',
+        message: $t('Are you sure you want to delete guest type?'),
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',

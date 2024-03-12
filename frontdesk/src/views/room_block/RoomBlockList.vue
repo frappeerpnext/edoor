@@ -3,10 +3,10 @@
     <div>
       <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
         <template #start>
-          <div class="text-xl md:text-2xl">Block Room</div>
+          <div class="text-xl md:text-2xl"> {{ $t('Block Room') }} </div>
         </template>
         <template #end>
-          <Button class="border-none" @click="onAddNewRommBlock()">Add New Room Block</Button>
+          <Button class="border-none" @click="onAddNewRommBlock()"> {{ $t('Add New Room Block') }} </Button>
         </template>
       </ComHeader>
       <div class="mb-3 flex justify-between">
@@ -14,14 +14,14 @@
           <div v-if="!isMobile" class="w-20rem">
             <div class="w-full p-input-icon-left">
               <i class="pi pi-search" />
-              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+              <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
             </div>
           </div>
           <div>
             <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
           </div>
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-            <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
+            <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
         </div>
         
@@ -41,7 +41,7 @@
           stateStorage="local" scrollable stateKey="table_room_block_list_state" :reorderableColumns="true" :value="data"
           tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
           <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)" :key="c.fieldname"
-            :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
+            :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''"
             :frozen="c.frozen">
             <template #body="slotProps">
               <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1" @click="onOpenLink(c, slotProps.data)"
@@ -97,17 +97,17 @@
       <template #top>
         <span class="p-input-icon-left w-full mb-3">
           <i class="pi pi-search" />
-          <InputText class="w-full flex-nowrap" v-model="filter.search_field" placeholder="Search" />
+          <InputText class="w-full flex-nowrap" v-model="filter.search_field" :placeholder=" $t('Search') " />
         </span>
       </template>
       <div class="grid">
         <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
           <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-          <label :for="c.fieldname">{{ c.label }}</label>
+          <label :for="c.fieldname">{{ $t(c.label) }}</label>
         </div>
       </div>
       <template #footer-left>
-        <Button class="border-none" label="Reset List" @click="onResetTable" />
+        <Button class="border-none" :label=" $t('Reset List') " @click="onResetTable" />
       </template>
     </ComOverlayPanelContent>
   </OverlayPanel>
@@ -118,7 +118,7 @@
         <div v-if="isMobile" class="col-12">
             <div class="w-full p-input-icon-left">
               <i class="pi pi-search" />
-              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+              <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
             </div>
           </div>
         <ComSelect class="col-6" width="100%" :options="['Draft','Blocked','Unblocked']" v-model="filter.block_status" @onSelected="onSearch" placeholder="Block Status" />
@@ -136,7 +136,7 @@
         <div class="col-6" v-if="filter.search_date_type">
           <Calendar selectOtherMonths class="w-full" hideOnRangeSelection dateFormat="dd-mm-yy"
             v-model="filter.date_range" selectionMode="range" :manualInput="false" @date-select="onDateSelect"
-            placeholder="Select Date Range" />
+            :placeholder=" $t('Select Date Range') " />
         </div>
       </div>
     </ComOverlayPanelContent>
@@ -148,6 +148,8 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
 import ComEditRoomBlock from "@/views/room_block/components/ComEditRoomBlock.vue";
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const moment = inject("$moment")
 const gv = inject("$gv")
 const dialog = useDialog()

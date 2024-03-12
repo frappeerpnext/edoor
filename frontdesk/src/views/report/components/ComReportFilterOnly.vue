@@ -5,7 +5,12 @@
             <ComSelect class="auto__Com_Cus w-full" v-model="filter.filter_date_by" placeholder="Filter By Date"
                                 :options="['Arrival Date', 'Departure Date', 'Reservation', 'Stay']" :clear="false" />
         </div> 
-
+        <div class="col-12 lg:col"  v-if="hasFilter('cashier_shift')">
+            <label>Cashier Shift</label><br>
+            <ComAutoComplete v-model="filter.cashier_shift" placeholder="Cashier Shift" doctype="Cashier Shift"
+            class="auto__Com_Cus w-full" :isMultipleSelect="false" maxWidth="30rem" :maxSelectLabel="10" 
+            :filters="{ is_edoor_shift:['=',1]}"/>
+        </div>
         <div class="col-12 lg:col-3" v-if="hasFilter('start_date')">
             <label>Start Date</label><br/>
             <Calendar showButtonBar panelClass="no-btn-clear" @date-select="onSelectStartDate" class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date" dateFormat="dd-mm-yy"
@@ -31,11 +36,7 @@
             <ComSelect class="w-full"  v-model="filter.select_filter" placeholder="Select Filter"
             :options="['Reservation','Reservation Stay','Reservation Room Rate','Guest','Reservation Folio','Folio Transaction']" />
         </div>
-        <div class="col-12 lg:col" v-if="hasFilter('cashier_shift')">
-            <label>Cashier Shift</label><br>
-            <ComAutoComplete v-model="filter.cashier_shift" placeholder="Cashier Shift" doctype="Cashier Shift"
-            class="auto__Com_Cus w-full" :filters="{ business_branch: property.name,is_edoor_shift: 1 }" />
-        </div>
+        
         <div class="col-12 lg:col" v-if="hasFilter('reservation_type')">
             <label>Reservation Type</label><br>
             <ComSelect class="w-full"   v-model="filter.reservation_type" placeholder="Select Reservation Type" :showClear="true"
@@ -327,6 +328,7 @@
 <script setup> 
 import { ref } from "@/plugin"
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+const window = JSON.parse(localStorage.getItem("edoor_working_day"))
 const property = setting.property
 const props = defineProps({
     selectedReport: Object,

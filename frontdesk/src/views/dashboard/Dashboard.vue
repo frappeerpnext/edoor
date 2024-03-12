@@ -138,8 +138,7 @@
                     }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeArrival')" frameborder="0" scrolling="no" id="iframeArrival"
-                        width="100%" :src="arrivalUrl"></iframe>
+                        <div v-html="arrival_remaining_html" class="view_table_style min_table_ui_height "></div>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -149,8 +148,8 @@
                     }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeDeparture')" id="iframeDeparture" width="100%"
-                        :src="departureUrl"></iframe>
+                    <div v-html="departure_remaining_html" class="view_table_style min_table_ui_height"></div>
+                    
                 </div>
             </TabPanel>
             <TabPanel>
@@ -159,8 +158,7 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.stay_over }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeInhouse')" id="iframeInhouse" width="100%"
-                        :src="inhouseUrl"></iframe>
+                    <div v-html="stay_over_html" class="view_table_style min_table_ui_height"></div>
                 </div>
             </TabPanel>
             <TabPanel>
@@ -169,8 +167,8 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.upcoming_note }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeNote')" id="iframeNote" width="100%"
-                        :src="upCommingNoteUrl"></iframe>
+                    <div v-html="upcoming_note_html" class="view_table_style min_table_ui_height"></div>
+                        
                 </div>
             </TabPanel>
             <TabPanel>
@@ -179,7 +177,7 @@
                     <span class="py-1 px-2 text-white ml-2 bg-amount__guest border-round">{{ data.desk_folio }}</span>
                 </template>
                 <div class="mt-2 view-table-iframe" v-if="!gv.loading">
-                    <iframe @load="onIframeLoaded('iframeDeskFolio')" id="iframeDeskFolio" width="100%" :src="deskFolioUrl"></iframe>
+                    <div v-html="desk_folio_html" class="view_table_style min_table_ui_height"></div>
                 </div>
             </TabPanel>
         </TabView>
@@ -234,14 +232,37 @@ const statusColor = computed(() => {
     }
 
 })
-
-
-function getArrivalUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&doctype=Business Branch&format=" + gv.getCustomPrintFormat("eDoor Dashboard Arrival Guest") + "&no_letterhead=0&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0&action=view_arrival_remaining"
-    url = url + "&date=" + selected_date.value
-    url = url + "&can_view_rate=" + window.can_view_rate
-    url = url + "&refresh=" + (Math.random() * 16)
-    return url;
+const frappe = inject("$frappe")
+const call = frappe.call()
+const param = ref({})
+const arrival_remaining_html = ref()
+const departure_remaining_html = ref()
+const stay_over_html = ref()
+const upcoming_note_html = ref()
+const desk_folio_html = ref()
+const getframeui = (format, action, html) =>  {
+    param.value.doc = decodeURIComponent("Business Branch")
+    param.value.name = decodeURIComponent(property.name)
+    param.value.format = decodeURIComponent(gv.getCustomPrintFormat(format))
+    param.value._lang = localStorage.getItem("lang") || "en"
+    param.value.letterhead = decodeURIComponent("No Letterhead")
+    param.value.no_letterhead = 1
+    param.value.show_toolbar = 0
+    param.value.can_view_rate = window.can_view_rate
+    param.value.view = "ui"
+    param.value.date = selected_date.value
+    param.value.settings = decodeURIComponent("%7B%7D")
+    param.value.refresh = (Math.random() * 16)
+    if(action)(
+      param.value.action = action  
+    )
+    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
+        html.value = result.message.html
+        gv.loading = loading;    
+        }).catch(err => {
+            
+        })
+        
 }
 
 function onViewData(doctype, report_name, title, extra_params, filter_options) {
@@ -390,47 +411,10 @@ function onViewVoidReservation() {
     });
 }
 
-function getDepartureUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Departure Guest") + "&no_letterhead=1&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui&action=view_departure_remaining"
-    url = url + "&date=" + selected_date.value
-    url = url + "&refresh=" + (Math.random() * 16)
-    return url;
-}
-
-function getInhouseGuestUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&format=" + gv.getCustomPrintFormat("eDoor Dashboard Stay Over Guest") + "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
-    url = url + "&date=" + selected_date.value
-    url = url + "&refresh=" + (Math.random() * 16)
-    return url;
-}
-
-function getUpCommingNoteUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&working_date=" + selected_date.value + "&format="
-        + gv.getCustomPrintFormat("eDoor Up Coming Note") +
-        "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
-    url = url + "&date=" + selected_date.value
-    url = url + "&refresh=" + (Math.random() * 16)
-    return url;
-}
-
-
-function getDeskFolioUrl() {
-    let url = serverUrl + "/printview?doctype=Business%20Branch&name=" + property.name + "&working_date=" + selected_date.value + "&format="
-        + gv.getCustomPrintFormat("eDoor Desk Folio") +
-        "&no_letterhead=0&letterhead=No%20Letter%20Head&settings=%7B%7D&_lang=en&show_toolbar=0&view=ui"
-    url = url + "&date=" + selected_date.value
-    url = url + "&refresh=" + (Math.random() * 16)
-    return url;
-}
-
 function onShowTodayData() {
     selected_date.value = data.value.working_date
     date.value = moment(data.value.working_date).format("DD-MM-YYYY")
-    arrivalUrl.value = getArrivalUrl();
-    departureUrl.value = getDepartureUrl();
-    inhouseUrl.value = getInhouseGuestUrl();
-    upCommingNoteUrl.value = getUpCommingNoteUrl();
-    deskFolioUrl.value = getDeskFolioUrl()
+    onRefreshIframe();
     getData()
     // this.classList.add("active");
 }
@@ -442,11 +426,7 @@ function onShowTommorowData() {
     tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = tomorrow.value
     date.value = moment(tomorrow.value).format("DD-MM-YYYY")
-    arrivalUrl.value = getArrivalUrl();
-    departureUrl.value = getDepartureUrl();
-    inhouseUrl.value = getInhouseGuestUrl();
-    upCommingNoteUrl.value = getUpCommingNoteUrl();
-    deskFolioUrl.value = getDeskFolioUrl();
+    onRefreshIframe()
     getData()
 }
 
@@ -455,11 +435,7 @@ function onDateSelect(event) {
     tomorrow.value = today.add(1, 'days');
     tomorrow.value = moment(tomorrow.value).format("YYYY-MM-DD")
     selected_date.value = moment(event).format("YYYY-MM-DD")
-    arrivalUrl.value = getArrivalUrl();
-    departureUrl.value = getDepartureUrl();
-    inhouseUrl.value = getInhouseGuestUrl();
-    upCommingNoteUrl.value = getUpCommingNoteUrl();
-    deskFolioUrl.value = getDeskFolioUrl();
+    onRefreshIframe();
     getData();
 }
 
@@ -493,11 +469,7 @@ function getData(loading = true) {
                 tomorrow.value = moment(data.value.working_date).add(1, "days").format("YYYY-MM-DD")
                 selected_date.value = data.value.working_date;
             }
-            arrivalUrl.value = getArrivalUrl();
-            departureUrl.value = getDepartureUrl();
-            inhouseUrl.value = getInhouseGuestUrl();
-            upCommingNoteUrl.value = getUpCommingNoteUrl();
-            deskFolioUrl.value = getDeskFolioUrl()
+            onRefreshIframe()
             gv.loading = false;
         })
         .catch((error) => {
@@ -507,25 +479,12 @@ function getData(loading = true) {
         });
 }
 
-function onIframeLoaded(id) {
-    const iframe = document.getElementById(id);
-    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
-    var windowWidth = window.innerWidth;
-    if (windowWidth >= 1920) {
-        iframe.style.minWidth = 100 + '%'
-    }
-    else {
-        iframe.style.width = contentWidth + 'px';
-    }
-    iframe.height = iframe.contentWindow.document.body.scrollHeight;
-}
-
 function onRefreshIframe() {
-    document.getElementById("iframeArrival").contentWindow.location.replace(getArrivalUrl)
-    document.getElementById("iframeDeparture").contentWindow.location.replace(getDepartureUrl)
-    document.getElementById("iframeInhouse").contentWindow.location.replace(getInhouseGuestUrl)
-    document.getElementById("iframeNote").contentWindow.location.replace(getUpCommingNoteUrl)
-    document.getElementById("iframeDeskFolio").contentWindow.location.replace(getDeskFolioUrl)
+    getframeui("eDoor Dashboard Arrival Guest","view_arrival_remaining",arrival_remaining_html)
+    getframeui("eDoor Dashboard Departure Guest","view_departure_remaining",departure_remaining_html)
+    getframeui("eDoor Dashboard Stay Over Guest",false,stay_over_html)
+    getframeui("eDoor Up Coming Note",false,upcoming_note_html)
+    getframeui("eDoor Desk Folio",false,desk_folio_html)
 }
 
 const viewSummary = (name) => {

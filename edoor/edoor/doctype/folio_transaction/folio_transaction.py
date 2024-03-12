@@ -133,10 +133,11 @@ class FolioTransaction(Document):
 				check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
 
 			
-
-			self.working_day = working_day["name"]
-			self.working_date = working_day["date_working_day"]
-			if not self.transaction_type =='Cashier Shift':
+			if not self.working_day:
+				self.working_day = working_day["name"]
+				self.working_date = working_day["date_working_day"]
+    
+			if not self.transaction_type =='Cashier Shift' and not self.cashier_shift:
 				self.cashier_shift = working_day["cashier_shift"]["name"]
 
 			#check if not guest selected then add reservation folio guest to this folio transaction

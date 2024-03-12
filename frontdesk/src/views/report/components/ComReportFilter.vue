@@ -52,6 +52,7 @@ const emit = defineEmits(['onFilter', 'onGetHeight'])
 
 const isMobile = ref(window.isMobile)
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))
 const user = JSON.parse(localStorage.getItem("edoor_user"))
 const property = setting.property
 const moment = inject("$moment")
@@ -100,7 +101,8 @@ const filter = ref({
     group_by_ledger_type: "0",
     show_cash_count: "1",
     show_cash_float: "1",
-    row_group: "Date"
+    row_group: "Date",
+    cashier_shift:working_day.cashier_shift.name
 
 })
 function onSelectLetterHead(l) {

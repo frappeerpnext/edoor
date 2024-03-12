@@ -5,19 +5,19 @@
                 <template #start>
                     <div class="flex align-items-center" :class="isMobile ? 'justify-content-between' : ''">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-xl md:text-2xl  md:ms-4">Activity</div>
+                        <div class="text-xl md:text-2xl  md:ms-4"> {{ $t('Activity') }} </div>
                         <div v-if="isMobile" class="flex h-btn-cs justify-end items-end overflow-hidden rounded-lg mb-3">
                         <button type="button" @click="onToggleView"
                             :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
                             <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify me-2" />
-                        
-                               Line 
+                        {{ $t('Line') }}
+                                
                         </button>
                         <button @click="onToggleView"
                             :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
                             <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table me-2" />
-                          
-                            Table
+                        {{ $t('Table') }}  
+                            
                         </button>
                     </div>
                     </div>
@@ -36,14 +36,14 @@
                                     <div v-if="!isMobile">
                                         <span class="p-input-icon-left">
                                             <i class="pi pi-search" />
-                                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                            <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                                         </span>
                                     </div>
                                     <div>
                                         <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                                     </div>
                                     <div v-if="isFilter">
-                                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash"
+                                        <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash"
                                             @click="onClearFilter" />
                                     </div>
                                 </div>
@@ -54,14 +54,14 @@
                             :class="toggleView ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
                             <i :class="toggleView ? 'text-white' : ''" class="pi pi-align-justify md:me-2" />
                             <template v-if="!isMobile">
-                               Line 
+                            {{ $t('Line') }}     
                             </template>
                         </button>
                         <button @click="onToggleView"
                             :class=" !(toggleView) ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
                             <i :class="!(toggleView) ? 'text-white' : ''" class="pi pi-table md:me-2" />
                             <template v-if="!isMobile">
-                            Table
+                            {{ $t('Table') }} 
                             </template>
                         </button>
                     </div>
@@ -100,7 +100,7 @@
                             :pageLinkSize="isMobile ? '2' : '5'"
                             >
                             <template #start="slotProps">
-                                <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords
+                                <strong v-if="!isMobile"> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords
                                 }}</span></strong>
                             </template>
                         </Paginator>
@@ -126,12 +126,12 @@
                                         </span>
                                     </div>
                 <div class="col-6">
-                    <label> Start Date </label>
+                    <label> {{ $t('Start Date') }}  </label>
                     <Calendar class="w-full" :showButtonBar="true" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
                         dateFormat="dd-mm-yy" @date-select="loadData(false, $event)" showIcon />
                 </div>
                 <div class="col-6">
-                    <label> End Date </label>
+                    <label> {{ $T('End Date') }}  </label>
                     <Calendar class="w-full" :selectOtherMonths="true" :minDate="filter.start_date" v-model="filter.end_date" placeholder="End Date"
                         dateFormat="dd-mm-yy" showIcon @date-select="loadData(false, $event)"  />
                 </div>
@@ -151,6 +151,8 @@ import Paginator from 'primevue/paginator';
 import ComHousekeepingStatistic from "@/views/housekeeping/components/ComHousekeepingStatistic.vue";
 import ComActivityTimeLine from "@/views/activities/components/ComActivityTimeLine.vue";
 import ComActivityTable from "@/views/activities/components/ComActivityTable.vue";
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile) 
 const edoor_activity_show_summary = localStorage.getItem("edoor_activity_show_summary")
 const gv = inject("$gv")

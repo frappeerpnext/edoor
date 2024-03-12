@@ -71,7 +71,11 @@ const props = defineProps({
     },
     placeholder: String,
     addNewTitle: String,
-    disabled:Boolean
+    disabled:Boolean,
+    pageLength:{
+        type:String,
+        default:10
+    }
 })
 let value = computed({
     get() {
@@ -158,6 +162,8 @@ async function getData(keyword) {
     if (props.filters) {
         apiParams.filters = JSON.parse(JSON.stringify(props.filters))
     } 
+    apiParams.page_length = props.pageLength || 10
+    
     await call.get('frappe.desk.search.search_link', apiParams).then((result) => {
  
         options.value = result.message

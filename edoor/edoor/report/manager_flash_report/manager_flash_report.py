@@ -5,6 +5,8 @@ import frappe
 from frappe.utils import date_diff,today ,add_months, add_days,getdate,add_years
 from dateutil.rrule import rrule, MONTHLY
 from datetime import datetime, timedelta
+import re
+import copy
 
 
 def execute(filters=None):
@@ -62,13 +64,13 @@ def get_columns(filters):
 	
 	return [
 		{"fieldname": "title", "label": "Title", "width":500, "align":"left"},
-		{"fieldname": "current", "label": "Current", "width":100, "align":"right"},
-		{"fieldname": "mtd", "label": "MTD", "width":100, "fieldtype":"Data", "align":"right"},
-		{"fieldname": "ytd", "label": "YTD", "width":100, "align":"right"},
-		{"fieldname": "last_year_current", "label": "Current({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
-		{"fieldname": "last_year_mtd", "label": "MTD({})".format(getdate(filters.date).year - 1), "width":150, "fieldtype":"Data", "align":"right"},
-		{"fieldname": "last_year_ytd", "label": "YTD({})".format(getdate(filters.date).year - 1), "width":150, "align":"right"},
-		{"fieldname": "change_percentage", "label": "% Change", "width":150, "align":"right","fieldtype":"Percent"},
+		{"fieldname": "current", "label": "Current", "width":100, "align":"center"},
+		{"fieldname": "mtd", "label": "MTD", "width":100, "fieldtype":"Data", "align":"center"},
+		{"fieldname": "ytd", "label": "YTD", "width":100, "align":"center"},
+		{"fieldname": "last_year_current", "label": "Current({})".format(getdate(filters.date).year - 1), "width":150, "align":"center"},
+		{"fieldname": "last_year_mtd", "label": "MTD({})".format(getdate(filters.date).year - 1), "width":150, "fieldtype":"Data", "align":"center"},
+		{"fieldname": "last_year_ytd", "label": "YTD({})".format(getdate(filters.date).year - 1), "width":150, "align":"center"},
+		{"fieldname": "change_percentage", "label": "% Change", "width":150, "align":"center","fieldtype":"Percent"},
 	]
 
 
@@ -80,352 +82,218 @@ def get_report_data(filters):
 	report_data.append(rooms_available_record)
 	
 	occupy_data = get_data_from_occupy_record(filters)
-	
-	report_data.append(occupy_data["room_occupy"])
-	ytd_room = rooms_available_record["ytd"] - occupy_data["room_occupy"]["ytd"]
-	last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_occupy"]["last_year_ytd"]
-	report_data.append({
-		"title": "Total Vacant Rooms",
-		"current":rooms_available_record["current"] - occupy_data["room_occupy"]["current"],
-		"mtd":rooms_available_record["mtd"] - occupy_data["room_occupy"]["mtd"],
-		"ytd":ytd_room,
-		"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_occupy"]["last_year_current"],
-		"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_occupy"]["last_year_mtd"],
-		"last_year_ytd":last_year_ytd_room,
-		"change_percentage":f"{((ytd_room - last_year_ytd_room) / (1 if ytd_room==0 else ytd_room or 0)) * 100:.2f}%",
-	})
-	#total room - ooo room
-	ytd_room = rooms_available_record["ytd"] - occupy_data["room_block"]["ytd"]
-	last_year_ytd_room = rooms_available_record["last_year_ytd"] - occupy_data["room_block"]["last_year_ytd"]
-	report_data.append({
-		"title": "Total Rooms in Property minus OOO Rooms",
-		"current":rooms_available_record["current"] - occupy_data["room_block"]["current"],
-		"mtd":rooms_available_record["mtd"] - occupy_data["room_block"]["mtd"],
-		"ytd":ytd_room,
-		"last_year_current":rooms_available_record["last_year_current"] - occupy_data["room_block"]["last_year_current"],
-		"last_year_mtd":rooms_available_record["last_year_mtd"] - occupy_data["room_block"]["last_year_mtd"],
-		"last_year_ytd":last_year_ytd_room,
-		"change_percentage":f"{((ytd_room - last_year_ytd_room) / (1 if ytd_room==0 else ytd_room or 0)) * 100:.2f}%",
-	})
-	#total available room = total room - (room_occupy + room_block)
-	ytd_rooms = rooms_available_record["ytd"] -( occupy_data["room_occupy"]["ytd"] + occupy_data["room_block"]["ytd"])
-	last_ytd_rooms = rooms_available_record["last_year_ytd"] -( occupy_data["room_occupy"]["last_year_ytd"] + occupy_data["room_block"]["last_year_ytd"])
-	report_data.append({
-		"title": "Total Available Rooms",
-		"current": rooms_available_record["current"] - ( occupy_data["room_occupy"]["current"] + occupy_data["room_block"]["current"]),
-		"mtd":rooms_available_record["mtd"] - ( occupy_data["room_occupy"]["mtd"] + occupy_data["room_block"]["mtd"]),
-		"ytd":ytd_rooms,
-		"last_year_current":rooms_available_record["last_year_current"] -( occupy_data["room_occupy"]["last_year_current"] + occupy_data["room_block"]["last_year_current"]),
-		"last_year_mtd":rooms_available_record["last_year_mtd"] -( occupy_data["room_occupy"]["last_year_mtd"] + occupy_data["room_block"]["last_year_mtd"]),
-		"last_year_ytd":last_ytd_rooms,
-		"change_percentage":f"{((ytd_rooms - last_ytd_rooms) / (1 if ytd_rooms==0 else ytd_rooms or 0)) * 100:.2f}%",
-	})
-
-	#complementary
-	report_data.append(occupy_data["complimentary"])
-
-	#houe use room
-	report_data.append(occupy_data["house_use"])
-
-	#Room occupied minus com and  house use
-	ytd = occupy_data["room_occupy"]["ytd"] -( occupy_data["complimentary"]["ytd"] + occupy_data["house_use"]["ytd"])
-	last_ytd = occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["complimentary"]["last_year_ytd"] + occupy_data["house_use"]["last_year_ytd"])
-	report_data.append({
-		"title": "Rooms Occupied minus Complimentary and House Use",
-		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["complimentary"]["current"] + occupy_data["house_use"]["current"]),
-		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["complimentary"]["mtd"] + occupy_data["house_use"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["complimentary"]["last_year_current"] + occupy_data["house_use"]["last_year_current"]),
-		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["complimentary"]["last_year_mtd"] + occupy_data["house_use"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-	#Room occupied minus com and  ooo
-	ytd = occupy_data["room_occupy"]["ytd"] -( occupy_data["complimentary"]["ytd"] + occupy_data["room_block"]["ytd"])
-	last_ytd = occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["complimentary"]["last_year_ytd"] + occupy_data["room_block"]["last_year_ytd"])
-	report_data.append({
-		"title": "Rooms Occupied minus OOO and Complimentary Rooms",
-		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["complimentary"]["current"] + occupy_data["room_block"]["current"]),
-		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["complimentary"]["mtd"] + occupy_data["room_block"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["complimentary"]["last_year_current"] + occupy_data["room_block"]["last_year_current"]),
-		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["complimentary"]["last_year_mtd"] + occupy_data["room_block"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-	#Room occupied minus ooo and  house use
-	ytd = occupy_data["room_occupy"]["ytd"] -( occupy_data["room_block"]["ytd"] + occupy_data["house_use"]["ytd"])
-	last_ytd = occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["room_block"]["last_year_ytd"] + occupy_data["house_use"]["last_year_ytd"])
-	report_data.append({
-		"title": "Rooms Occupied minus OOO and House Use Rooms",
-		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["room_block"]["current"] + occupy_data["house_use"]["current"]),
-		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["room_block"]["mtd"] + occupy_data["house_use"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["room_block"]["last_year_current"] + occupy_data["house_use"]["last_year_current"]),
-		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["room_block"]["last_year_mtd"] + occupy_data["house_use"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-	#Room occupied minus compliementary
-	ytd = occupy_data["room_occupy"]["ytd"] -( occupy_data["complimentary"]["ytd"])
-	last_ytd = occupy_data["room_occupy"]["last_year_ytd"] -( occupy_data["complimentary"]["last_year_ytd"])
-	report_data.append({
-		"title": "Rooms Occupied minus Complimentary",
-		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["complimentary"]["current"]),
-		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["complimentary"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -( occupy_data["complimentary"]["last_year_current"]),
-		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -( occupy_data["complimentary"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-	
-	#Room occupied minus  house use
-	ytd = occupy_data["room_occupy"]["ytd"] -(  occupy_data["house_use"]["ytd"])
-	last_ytd = occupy_data["room_occupy"]["last_year_ytd"] -(  occupy_data["house_use"]["last_year_ytd"])
-	report_data.append({
-		"title": "Rooms Occupied minus House Use",
-		"current": occupy_data["room_occupy"]["current"] - ( occupy_data["house_use"]["current"]),
-		"mtd": occupy_data["room_occupy"]["mtd"] - ( occupy_data["house_use"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["room_occupy"]["last_year_current"] -(  occupy_data["house_use"]["last_year_current"]),
-		"last_year_mtd": occupy_data["room_occupy"]["last_year_mtd"] -(  occupy_data["house_use"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-
-	#room block
-	report_data.append(occupy_data["room_block"])
-
-	#arrival adult
-	report_data.append(occupy_data["arrival_adult"])
-	#arrival child
-	report_data.append(occupy_data["arrival_child"])
-	#arrival pax
-	ytd = occupy_data["arrival_adult"]["ytd"] +(  occupy_data["arrival_child"]["ytd"])
-	last_ytd = occupy_data["arrival_adult"]["last_year_ytd"] + (occupy_data["arrival_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Total Arrival PAX",
-		"current": occupy_data["arrival_adult"]["current"] + ( occupy_data["arrival_child"]["current"]),
-		"mtd": occupy_data["arrival_adult"]["mtd"] + ( occupy_data["arrival_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["arrival_adult"]["last_year_current"] +(  occupy_data["arrival_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["arrival_adult"]["last_year_mtd"] +(  occupy_data["arrival_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-
-	#inhouse adult
-	report_data.append(occupy_data["in_house_adult"])
-	#inhouse child
-	report_data.append(occupy_data["in_house_child"])
-	#in house pax
-	ytd = occupy_data["in_house_adult"]["ytd"] +(  occupy_data["in_house_child"]["ytd"])
-	last_ytd = occupy_data["in_house_adult"]["last_year_ytd"] +(  occupy_data["in_house_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Total In-house PAX",
-		"current": occupy_data["in_house_adult"]["current"] + ( occupy_data["in_house_child"]["current"]),
-		"mtd": occupy_data["in_house_adult"]["mtd"] + ( occupy_data["in_house_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["in_house_adult"]["last_year_current"] +(  occupy_data["in_house_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["in_house_adult"]["last_year_mtd"] +(  occupy_data["in_house_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-		
-	})
-
-	#departure adult
-	report_data.append(occupy_data["departure_adult"])
-	#departure child
-	report_data.append(occupy_data["departure_child"])
-	#departure pax
-	ytd = occupy_data["departure_adult"]["ytd"] +(  occupy_data["departure_child"]["ytd"])
-	last_ytd = occupy_data["departure_adult"]["last_year_ytd"] +(  occupy_data["departure_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Total Departure PAX",
-		"current": occupy_data["departure_adult"]["current"] + ( occupy_data["departure_child"]["current"]),
-		"mtd": occupy_data["departure_adult"]["mtd"] + ( occupy_data["departure_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["departure_adult"]["last_year_current"] +(  occupy_data["departure_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["departure_adult"]["last_year_mtd"] +(  occupy_data["departure_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-
-	# in-hopuse walk in adult
-	report_data.append(occupy_data["walk_in_adult"])
-	
-	# in-hopuse walk in child
-	report_data.append(occupy_data["walk_in_child"])
-	# in-hopuse walk in pax
-	ytd =  occupy_data["walk_in_child"]["ytd"] +(  occupy_data["walk_in_adult"]["ytd"])
-	last_ytd = occupy_data["walk_in_child"]["last_year_ytd"] +(  occupy_data["walk_in_adult"]["last_year_ytd"])
-	report_data.append({
-		"title": "Walk-In In-house Pax",
-		"current": (occupy_data["walk_in_child"]["current"] or 0) + (occupy_data["walk_in_adult"]["current"] or 0), 
-		"mtd": occupy_data["walk_in_child"]["mtd"] + ( occupy_data["walk_in_adult"]["mtd"]),
-		"ytd":ytd,
-		"last_year_current": occupy_data["walk_in_child"]["last_year_current"] +(  occupy_data["walk_in_adult"]["last_year_current"]),
-		"last_year_mtd": occupy_data["walk_in_child"]["last_year_mtd"] +(  occupy_data["walk_in_adult"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	#walk in room night
-	report_data.append(occupy_data["walk_in_room_night"])
-	#arrival room night
-	report_data.append(occupy_data["arrival_room_night"])
-	#departure room night
-	report_data.append(occupy_data["departure_room_night"])
-	ytd =  occupy_data["arrival_room_night"]["ytd"] +(  occupy_data["departure_room_night"]["ytd"])
-	last_ytd = occupy_data["arrival_room_night"]["last_year_ytd"] +(  occupy_data["departure_room_night"]["last_year_ytd"])
-	report_data.append({
-		"title": "Total Room Nights",
-		"current": occupy_data["arrival_room_night"]["current"] + ( occupy_data["departure_room_night"]["current"]),
-		"mtd": occupy_data["arrival_room_night"]["mtd"] + ( occupy_data["departure_room_night"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["arrival_room_night"]["last_year_current"] +(  occupy_data["departure_room_night"]["last_year_current"]),
-		"last_year_mtd": occupy_data["arrival_room_night"]["last_year_mtd"] +(  occupy_data["departure_room_night"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	#walk-in room night
-	report_data.append(occupy_data["no_show_room"])
-	report_data.append(occupy_data["no_show_adult"])
-	report_data.append(occupy_data["no_show_child"])
-	ytd =  occupy_data["no_show_adult"]["ytd"] +(  occupy_data["no_show_child"]["ytd"])
-	last_ytd = occupy_data["no_show_adult"]["last_year_ytd"] +(  occupy_data["no_show_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "No Show PAX",
-		"current": occupy_data["no_show_adult"]["current"] + ( occupy_data["no_show_child"]["current"]),
-		"mtd": occupy_data["no_show_adult"]["mtd"] + ( occupy_data["no_show_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["no_show_adult"]["last_year_current"] +(  occupy_data["no_show_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["no_show_adult"]["last_year_mtd"] +(  occupy_data["no_show_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	report_data.append(occupy_data["early_checked_out_adult"])
-	report_data.append(occupy_data["early_checked_out_child"])
-	ytd =  occupy_data["early_checked_out_adult"]["ytd"] +(  occupy_data["early_checked_out_child"]["ytd"])
-	last_ytd = occupy_data["early_checked_out_adult"]["last_year_ytd"] +(  occupy_data["early_checked_out_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Early Checked Out PAX",
-		"current": occupy_data["early_checked_out_adult"]["current"] + ( occupy_data["early_checked_out_child"]["current"]),
-		"mtd": occupy_data["early_checked_out_adult"]["mtd"] + ( occupy_data["early_checked_out_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["early_checked_out_adult"]["last_year_current"] +(  occupy_data["early_checked_out_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["early_checked_out_adult"]["last_year_mtd"] +(  occupy_data["early_checked_out_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	report_data.append(occupy_data["early_checked_out"])
-	report_data.append(occupy_data["fit_room"])
-	report_data.append(occupy_data["git_room"])
-	report_data.append(occupy_data["fit_adult"])
-	report_data.append(occupy_data["fit_child"])
-	ytd =  occupy_data["fit_adult"]["ytd"] +(  occupy_data["fit_child"]["ytd"])
-	last_ytd =  occupy_data["fit_adult"]["last_year_ytd"] +(  occupy_data["fit_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "FIT PAX",
-		"current": occupy_data["fit_adult"]["current"] + ( occupy_data["fit_child"]["current"]),
-		"mtd": occupy_data["fit_adult"]["mtd"] + ( occupy_data["fit_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["fit_adult"]["last_year_current"] +(  occupy_data["fit_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["fit_adult"]["last_year_mtd"] +(  occupy_data["fit_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	report_data.append(occupy_data["git_adult"])
-	report_data.append(occupy_data["git_child"])
-	ytd =  occupy_data["git_adult"]["ytd"] +(  occupy_data["git_child"]["ytd"])
-	last_ytd =  occupy_data["git_adult"]["last_year_ytd"] +(  occupy_data["git_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "GIT PAX",
-		"current": occupy_data["git_adult"]["current"] + ( occupy_data["git_child"]["current"]),
-		"mtd": occupy_data["git_adult"]["mtd"] + ( occupy_data["git_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["git_adult"]["last_year_current"] +(  occupy_data["git_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["git_adult"]["last_year_mtd"] +(  occupy_data["git_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	report_data.append(occupy_data["cancel_room"])
-	report_data.append(occupy_data["cancel_adult"])
-	report_data.append(occupy_data["cancel_child"])
-	ytd =  occupy_data["cancel_adult"]["ytd"] +(  occupy_data["cancel_child"]["ytd"])
-	last_ytd =  occupy_data["cancel_adult"]["last_year_ytd"] +(  occupy_data["cancel_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Cancelled PAX",
-		"current": occupy_data["cancel_adult"]["current"] + ( occupy_data["cancel_child"]["current"]),
-		"mtd": occupy_data["cancel_adult"]["mtd"] + ( occupy_data["cancel_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["cancel_adult"]["last_year_current"] +(  occupy_data["cancel_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["cancel_adult"]["last_year_mtd"] +(  occupy_data["cancel_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	keys = ["vip_guest","house_use","complimentary","house_use_adult","house_use_child"]
-	for k in keys:
-		report_data.append(occupy_data[k])
-		 
- 
-	ytd =  occupy_data["house_use_adult"]["ytd"] +(  occupy_data["house_use_child"]["ytd"])
-	last_ytd =  occupy_data["house_use_adult"]["last_year_ytd"] +(  occupy_data["house_use_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "House Use PAX",
-		"current": occupy_data["house_use_adult"]["current"] + ( occupy_data["house_use_child"]["current"]),
-		"mtd": occupy_data["house_use_adult"]["mtd"] + ( occupy_data["house_use_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["house_use_adult"]["last_year_current"] +(  occupy_data["house_use_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["house_use_adult"]["last_year_mtd"] +(  occupy_data["house_use_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd,
-		"change_percentage": f"{((ytd - last_ytd) / (1 if ytd==0 else ytd or 0)) * 100:.2f}%",
-	})
-	report_data.append(occupy_data["complimentary_adult"])
-	report_data.append(occupy_data["complimentary_child"])
-	ytd =  occupy_data["complimentary_adult"]["ytd"] +(  occupy_data["complimentary_child"]["ytd"])
-	last_ytd =  occupy_data["complimentary_adult"]["last_year_ytd"] +(  occupy_data["complimentary_child"]["last_year_ytd"])
-	report_data.append({
-		"title": "Complimentary PAX",
-		"current": occupy_data["complimentary_adult"]["current"] + ( occupy_data["complimentary_child"]["current"]),
-		"mtd": occupy_data["complimentary_adult"]["mtd"] + ( occupy_data["complimentary_child"]["mtd"]),
-		"ytd": ytd,
-		"last_year_current": occupy_data["complimentary_adult"]["last_year_current"] +(  occupy_data["complimentary_child"]["last_year_current"]),
-		"last_year_mtd": occupy_data["complimentary_adult"]["last_year_mtd"] +(  occupy_data["complimentary_child"]["last_year_mtd"]),
-		"last_year_ytd": last_ytd 
-	})
-
-	
+	report_data.append(occupy_data[0]['room_occupy'])
+	report_data.append(occupy_data[0]["complimentary"])
+	report_data.append(occupy_data[0]["house_use"])
+	report_data.append(occupy_data[0]["room_block"])
+	report_data.append(occupy_data[0]["arrival_adult"])
+	report_data.append(occupy_data[0]["arrival_child"])
+	report_data.append(occupy_data[0]["in_house_adult"])
+	report_data.append(occupy_data[0]["in_house_child"])
+	report_data.append(occupy_data[0]["departure_adult"])
+	report_data.append(occupy_data[0]["departure_child"])
+	report_data.append(occupy_data[0]["walk_in_adult"])
+	report_data.append(occupy_data[0]["walk_in_child"])
+	report_data.append(occupy_data[0]["walk_in_room_night"])
+	report_data.append(occupy_data[0]["arrival_room_night"])
+	report_data.append(occupy_data[0]["no_show_room"])
+	report_data.append(occupy_data[0]["no_show_adult"])
+	report_data.append(occupy_data[0]["no_show_child"])
+	report_data.append(occupy_data[0]["early_checked_out_adult"])
+	report_data.append(occupy_data[0]["early_checked_out_child"])
+	report_data.append(occupy_data[0]["early_checked_out"])
+	report_data.append(occupy_data[0]["fit_room"])
+	report_data.append(occupy_data[0]["git_room"])
+	report_data.append(occupy_data[0]["fit_adult"])
+	report_data.append(occupy_data[0]["fit_child"])
+	report_data.append(occupy_data[0]["git_adult"])
+	report_data.append(occupy_data[0]["git_child"])
+	# report_data.append(occupy_data[0]["cancel_room"])
+	# report_data.append(occupy_data[0]["cancel_adult"])
+	# report_data.append(occupy_data[0]["cancel_child"])
+	report_data.append(occupy_data[0]["complimentary_adult"])
+	report_data.append(occupy_data[0]["complimentary_child"])
+	report_data.append(occupy_data[0]["vip_guest"])
+	report_data.append(occupy_data[0]["house_use_adult"])
+	report_data.append(occupy_data[0]["house_use_child"])
 	
 	# revenue
 	report_data+= get_revenue(filters)
-	
+
 	#ledger balance 
 	report_data+= get_ledger_balance(filters)
 
-	#forcasting 
-	report_data+= get_forecasting(filters)
-     
+	#forecasting for tomorrow
+	forecasting= get_forecasting(filters)
+	report_data.append(forecasting[0]['tmr_room_occupy'])
+	report_data.append(forecasting[0]['tmr_arrival_adult'])
+	report_data.append(forecasting[0]['tmr_arrival_child'])
+	report_data.append(forecasting[0]['tmr_departure_adult'])
+	report_data.append(forecasting[0]['tmr_departure_child'])
+	report_data.append(forecasting[0]['tmr_arrival'])
+	report_data.append(forecasting[0]['tmr_departure'])
+
+	#forecating for the next 7 days
+	next_seven_day = get_forecasting_next_seven_day(filters)
+	report_data.append(next_seven_day[0]['seven_day_room_occupy'])
+	report_data.append(next_seven_day[0]['seven_day_arrival_adult'])
+	report_data.append(next_seven_day[0]['seven_day_arrival_child'])
+	report_data.append(next_seven_day[0]['seven_day_departure_adult'])
+	report_data.append(next_seven_day[0]['seven_day_departure_child'])
+	report_data.append(next_seven_day[0]['seven_day_arrival'])
+	report_data.append(next_seven_day[0]['seven_day_departure'])
 
 	#calculate room occupy
 	#calculate room occupancy
 	occpancy = {"title":"Occupancy"}
+	revpar = {"title":"RevPAR"}
+	adr = {"title":"ADR"}
+	arrival_pax = {"title":"Arrival PAX for Tomorrow"}
+	departure_pax = {"title":"Departure PAX for Tomorrow"}
+	vacant_rooms = {"title":"Total Vacant Rooms"}
+	room_minus_ooo_rooms = {"title":"Total Rooms in Property minus OOO Rooms"}
+	room_minus_ooo_and_hous_use = {"title":"Rooms Occupied minus OOO and House Use Rooms"}
+	room_minus_ooo_and_complimentary = {"title":"Rooms Occupied minus OOO and Complimentary Rooms"}
+	room_minus_house_use_and_complimentary = {"title":"Rooms Occupied minus Complimentary and House Use"}
+	room_minus_complimentary = {"title":"Rooms Occupied minus Complimentary"}
+	room_minus_house_use = {"title":"Rooms Occupied minus House Use"}
+	available_room = {"title":"Total Available Rooms"}
+	room_night = {"title":"Total Room Nights"}
+	total_arrival_pax = {"title":"Total Arrival PAX"}
+	total_inhoue_pax = {"title":"Total In-house PAX"}
+	total_departure_pax = {"title":"Total Departure PAX"}
+	walkin_inhouse_pax = {"title":"Walk-In In-house Pax"}
+	noshow_pax = {"title":"No Show PAX"}
+	early_checkout_pax = {"title":"Early Checked Out PAX"}
+	fit_pax = {"title":"FIT PAX"}
+	git_pax = {"title":"GIT PAX"}
+	cancalled_pax = {"title":"Cancelled PAX"}
+	house_use_pax = {"title":"House Use PAX"}
+	complimentary_pax = {"title":"Complimentary PAX"}
+	arrival_pax_for_seven_day = {"title":"Arrival PAX for the Next 7 Days"}
+	departure_pax_for_seven_day = {"title":"Departure PAX for the Next 7 Days"}
 	calculate_room_occupancy_include_room_block = frappe.db.get_single_value("eDoor Setting","calculate_room_occupancy_include_room_block")
-	 
+	calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
+
 	for f in ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]:
+		total_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Total Rooms in Property']) or 0
+		room_occupy = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Rooms Occupy']) or 0
+		room_block = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Out of Order Rooms']) or 0
+		house_use_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'House Use Rooms']) or 0
+		complimentary_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Complimentary Rooms']) or 0
+		arrival_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Room Nights']) or 0
+		departure_room = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Room Nights']) or 0
+		adult_arrival = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Adult']) or 0
+		child_arrival = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Child']) or 0
+		adult_departure = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Adult']) or 0
+		child_departure = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Child']) or 0
+		inhouse_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'In-house Adult']) or 0
+		inhouse_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'In-house Child']) or 0
+		walkin_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Walk-In Adult']) or 0
+		walkin_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Walk-In Child']) or 0
+		noshow_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Adult']) or 0
+		noshow_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'No Show Child']) or 0
+		early_checkout_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Early Checked Out Adult']) or 0
+		early_checkout_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Early Checked Out Child']) or 0
+		cancalled_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Adult']) or 0
+		cancalled_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Cancelled Child']) or 0
+		house_use_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'House Use Adult']) or 0
+		house_use_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'House Use Child']) or 0
+		complimentary_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Complimentary Adult']) or 0
+		complimentary_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Complimentary Child']) or 0
+		git_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'GIT Adult']) or 0
+		git_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'GIT Child']) or 0
+		fit_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'FIT Adult']) or 0
+		fit_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'FIT Child']) or 0
+		room_charge = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Room Charge']) or 0
+		
+		room_minus_ooo_rooms[f] =  total_room - room_block
+		available_room[f] =  total_room - (room_occupy + room_block)
 		if calculate_room_occupancy_include_room_block==1:
-			total_room = sum([d[f] for d in report_data if d["title"]=='Total Rooms in Property']) or 0
-			room_occupy = sum([d[f] for d in report_data if d["title"]=='Rooms Occupy']) or 0
 			occpancy[f] =  room_occupy / (1 if total_room == 0 else total_room)
 		else:
-			occpancy[f] = 50
+			room_occupy = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Total Rooms in Property minus OOO Rooms']) or 0
+			occpancy[f] = room_occupy / (1 if total_room == 0 else total_room)
+
+		if calculate_adr_include_all_room_occupied==1:
+			adr[f] =  room_charge / (1 if room_occupy == 0 else room_occupy)
+		else:
+			room_occupy = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Rooms Occupied minus Complimentary and House Use']) or 0
+			adr[f] = room_charge / (1 if room_occupy == 0 else room_occupy)
+
+		arrival_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Adult for Tomorrow']) or 0
+		arrival_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Child for Tomorrow']) or 0
+		arrival_pax[f] =  arrival_adult + arrival_child
+		departure_adult = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Adult for Tomorrow']) or 0
+		departure_child = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Child for Tomorrow']) or 0
+		departure_pax[f] =  departure_adult + departure_child	
+
+		arrival_adult_for_seven_day = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Adult for the Next 7 Days ']) or 0
+		arrival_child_for_seven_day = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Arrival Child for the Next 7 Days']) or 0
+		arrival_pax_for_seven_day[f] =  arrival_adult_for_seven_day + arrival_child_for_seven_day
+		departure_adult_for_seven_day = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Adult for the Next 7 Days']) or 0
+		departure_child_for_seven_day = sum([d.get(f, 0) for d in report_data if d.get('title', 'No Title') == 'Departure Child for the Next 7 Days']) or 0
+		departure_pax_for_seven_day[f] =  departure_adult_for_seven_day + departure_child_for_seven_day	
+
+		vacant_rooms[f] =  total_room - room_occupy
+		
+		room_minus_ooo_and_hous_use[f] =  room_occupy - (house_use_room + room_block)
+	
+		room_minus_ooo_and_complimentary[f] =  room_occupy - (complimentary_room + room_block)
+	
+		room_minus_house_use_and_complimentary[f] =   room_occupy - (complimentary_room + house_use_room)
+		
+		room_minus_complimentary[f] =  total_room - complimentary_room
+		
+		room_minus_house_use[f] =  total_room - house_use_room
+		
+		room_night[f] =  arrival_room + departure_room
+		
+		total_arrival_pax[f] =  adult_arrival + child_arrival
+		
+		total_inhoue_pax[f] =  inhouse_adult + inhouse_child
+		
+		total_departure_pax[f] =  adult_departure + child_departure
+		
+		walkin_inhouse_pax[f] =  walkin_adult + walkin_child
+		
+		noshow_pax[f] =  noshow_adult + noshow_child
+		
+		early_checkout_pax[f] =  early_checkout_adult + early_checkout_child
+		fit_pax[f] =  fit_adult + fit_child
+		git_pax[f] =  git_adult + git_child
+		cancalled_pax[f] =  cancalled_adult + cancalled_child
+		house_use_pax[f] =  house_use_adult + house_use_child
+		complimentary_pax[f] =  complimentary_adult + complimentary_child
+		revpar[f] =  room_charge / (1 if available_room[f] == 0 else available_room[f])
+		
 	report_data.append(occpancy)
+	report_data.append(arrival_pax)
+	report_data.append(departure_pax)
+	report_data.append(vacant_rooms)
+	report_data.append(available_room)
+	report_data.append(room_minus_ooo_rooms)
+	report_data.append(room_minus_ooo_and_hous_use)
+	report_data.append(room_minus_ooo_and_complimentary)
+	report_data.append(room_minus_house_use_and_complimentary)
+	report_data.append(room_minus_complimentary)
+	report_data.append(room_minus_house_use)
+	report_data.append(room_night)
+	report_data.append(total_arrival_pax)
+	report_data.append(total_inhoue_pax)
+	report_data.append(total_departure_pax)
+	report_data.append(walkin_inhouse_pax)
+	report_data.append(noshow_pax)
+	report_data.append(early_checkout_pax)
+	report_data.append(fit_pax)
+	report_data.append(git_pax)
+	report_data.append(cancalled_pax)
+	report_data.append(house_use_pax)
+	report_data.append(arrival_pax_for_seven_day)
+	report_data.append(departure_pax_for_seven_day)
+	report_data.append(complimentary_pax)
+	report_data.append(adr)
+	report_data.append(revpar)
         
 	return_report_data = []
 	#get group list
@@ -440,18 +308,26 @@ def get_report_data(filters):
 			"indent":0
 		})
 		for r in [d for d in report_config.row_configs if d.group == g and d.show_in_report==1]:
-			row = [d for d in report_data if d["title"] == r.field_name]
+			row = [d for d in report_data if d.get('title', 'No Title') == r.field_name]
+			if r.formula:
+				row=[get_row_calculate_filed(r,report_data)]
+			
+
 			if row:
 				row = row[0]
 				row["indent"] = 1
+				row["is_bold"] = r.is_bold
+    
 				row["title"] = r.custom_name or r.field_name
-
+				
 				if (  "last_year_ytd" in row and row["last_year_ytd"] or 0) ==0:
 					row["change_percentage"] = 100
 				else:
 					row["change_percentage"] = ((row["ytd"] or 0 ) - (row["last_year_ytd"] or 0 )) / (row["last_year_ytd"] or 0 )
-     			
+				
 				return_report_data.append(row)
+				row["fieldtype"] = r.fieldtype
+			 
 			else:
 				return_report_data.append({
 					"indent": 1,
@@ -459,16 +335,104 @@ def get_report_data(filters):
 				})
     
     
-			
+		
     
-	return return_report_data #+ [{}] + report_data
+	return format_result(return_report_data)
 
-
+def format_result(data):
+	for d in [x for x in data if 'fieldtype' in x and x["fieldtype"]]:
+		for f in   ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]:
+			if(d["fieldtype"]=="Percent"):
+				d[f] = frappe.format(d[f]*100,{"fieldtype":d["fieldtype"]})
+			else:
+				d[f] = frappe.format(d[f],{"fieldtype":d["fieldtype"]})
+	return data
+            
 def get_data_from_occupy_record(filters):
+	data = []
 	
-	filters.start_date = filters.current["start_date"]
-	filters.end_date = filters.current["end_date"]
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_data_fieldname({ "fieldname":f,"property":filters.property,"start_date":filters.get(f)["start_date"],"end_date":filters.get(f)["end_date"]})
+	# frappe.throw(str(data))
+	row = {
+				"room_occupy":{"title":"Rooms Occupy"},
+				"room_block":{"title":"Out of Order Rooms"},
+				"complimentary":{"title":"Complimentary Rooms"},
+				"house_use":{"title":"House Use Rooms"},
+				"in_house_adult":{"title":"In-house Adult"},	
+				"arrival_adult":{"title":"Arrival Adult"},	
+				"departure_adult":{"title":"Departure Adult"},	
+				"in_house_child":{"title":"In-house Child"},	
+				"arrival_child":{"title":"Arrival Child"},	
+				"departure_child":{"title":"Departure Child"},	
+				"walk_in_adult":{"title":"Walk-In Adult"},	
+				"walk_in_child":{"title":"Walk-In Child"},	
+				"walk_in_room_night":{"title":"Walk-In Room"},	
+				"arrival_room_night":{"title":"Arrival Room Nights",},	
+				"departure_room_night":{"title":"Departure Room Nights"},	
+				"no_show_room":{"title":"No Show Room"},	
+				"no_show_adult":{"title":"No Show Adult"},	
+				"no_show_child":{"title":"No Show Child"},	
+				"early_checked_out_adult":{"title":"Early Checked Out Adult"},	
+				"early_checked_out_child":{"title":"Early Checked Out Child"},	
+				"early_checked_out":{"title":"Early Checked Out Rooms"},	
+				"fit_room":{"title":"FIT Rooms"},	
+				"git_room":{"title":"GIT Rooms"},	
+				"fit_adult":{"title":"FIT Adult"},	
+				"fit_child":{"title":"FIT Child"},	
+				"git_adult":{"title":"GIT Adult"},	
+				"git_child":{"title":"GIT Child"},	
+				"vip_guest":{"title":"VIP Guest"},			
+				"house_use_adult":{"title":"House Use Adult"},	
+				"house_use_child":{"title":"House Use Child"},	
+				"complimentary_adult":{"title":"Complimentary Adult"},	
+				"complimentary_child":{"title":"Complimentary Child"},	
+				
+	}
+	occupy_data = []
+	for f in fields:
+		row['room_occupy'][f] = sum([y["total_occupy"] for y in data if y["fieldname"]==f and y["total_occupy"] is not None]) or 0
+		row['room_block'][f] = sum([y["total_block"] for y in data if y["fieldname"]==f and y["total_block"] is not None]) or 0
+		row['complimentary'][f] = sum([y["total_complimentary"] for y in data if y["fieldname"]==f and y["total_complimentary"] is not None]) or 0
+		row['house_use'][f] = sum([y["total_house_use"] for y in data if y["fieldname"]==f and y["total_house_use"] is not None]) or 0
+		row['in_house_adult'][f] = sum([y["total_in_house_adult"] for y in data if y["fieldname"]==f and y["total_in_house_adult"] is not None]) or 0
+		row['arrival_adult'][f] = sum([y["total_arrival_adult"] for y in data if y["fieldname"]==f and y["total_arrival_adult"] is not None]) or 0
+		row['departure_adult'][f] = sum([y["total_departure_adult"] for y in data if y["fieldname"]==f and y["total_departure_adult"] is not None]) or 0
+		row['in_house_child'][f] = sum([y["total_in_house_child"] for y in data if y["fieldname"]==f and y["total_in_house_child"] is not None]) or 0
+		row['arrival_child'][f] = sum([y["total_arrival_child"] for y in data if y["fieldname"]==f and y["total_arrival_child"] is not None]) or 0
+		row['departure_child'][f] = sum([y["total_departure_child"] for y in data if y["fieldname"]==f and y["total_departure_child"] is not None]) or 0
+		row['walk_in_adult'][f] = sum([y["total_in_house_walk_in_adult"] for y in data if y["fieldname"]==f and y["total_in_house_walk_in_adult"] is not None]) or 0
+		row['walk_in_child'][f] = sum([y["total_in_house_walk_in_child"] for y in data if y["fieldname"]==f and y["total_in_house_walk_in_child"] is not None]) or 0
+		row['walk_in_room_night'][f] = sum([y["total_walk_in_room_night"] for y in data if y["fieldname"]==f and y["total_walk_in_room_night"] is not None]) or 0
+		row['arrival_room_night'][f] = sum([y["total_arrival_room_night"] for y in data if y["fieldname"]==f and y["total_arrival_room_night"] is not None]) or 0
+		row['departure_room_night'][f] = sum([y["total_departure_room_night"] for y in data if y["fieldname"]==f and y["total_departure_room_night"] is not None]) or 0
+		row['no_show_room'][f] = sum([y["total_no_show_room"] for y in data if y["fieldname"]==f and y["total_no_show_room"] is not None]) or 0
+		row['no_show_adult'][f] = sum([y["total_no_show_adult"] for y in data if y["fieldname"]==f and y["total_no_show_adult"] is not None]) or 0
+		row['no_show_child'][f] = sum([y["total_no_show_child"] for y in data if y["fieldname"]==f and y["total_no_show_child"] is not None]) or 0
+		row['early_checked_out_adult'][f] = sum([y["total_early_checked_out_adult"] for y in data if y["fieldname"]==f and y["total_early_checked_out_adult"] is not None]) or 0
+		row['early_checked_out_child'][f] = sum([y["total_early_checked_out_child"] for y in data if y["fieldname"]==f and y["total_early_checked_out_child"] is not None]) or 0
+		row['early_checked_out'][f] = sum([y["total_early_checked_out"] for y in data if y["fieldname"]==f and y["total_early_checked_out"] is not None]) or 0
+		row['fit_room'][f] = sum([y["total_fit_room"] for y in data if y["fieldname"]==f and y["total_fit_room"] is not None]) or 0
+		row['git_room'][f] = sum([y["total_git_room"] for y in data if y["fieldname"]==f and y["total_git_room"] is not None]) or 0
+		row['fit_adult'][f] = sum([y["total_fit_adult"] for y in data if y["fieldname"]==f and y["total_fit_adult"] is not None]) or 0
+		row['fit_child'][f] = sum([y["total_fit_child"] for y in data if y["fieldname"]==f and y["total_fit_child"] is not None]) or 0
+		row['git_adult'][f] = sum([y["total_git_adult"] for y in data if y["fieldname"]==f and y["total_git_adult"] is not None]) or 0
+		row['git_child'][f] = sum([y["total_git_child"] for y in data if y["fieldname"]==f and y["total_git_child"] is not None]) or 0
+		row['vip_guest'][f] = sum([y["total_vip_guest"] for y in data if y["fieldname"]==f and y["total_vip_guest"] is not None]) or 0
+		row['house_use_adult'][f] = sum([y["total_house_use_adult"] for y in data if y["fieldname"]==f and y["total_house_use_adult"] is not None]) or 0
+		row['house_use_child'][f] = sum([y["total_house_use_child"] for y in data if y["fieldname"]==f and y["total_house_use_child"] is not None]) or 0
+		row['complimentary_adult'][f] = sum([y["total_complimentary_adult"] for y in data if y["fieldname"]==f and y["total_complimentary_adult"] is not None]) or 0
+		row['complimentary_child'][f] = sum([y["total_complimentary_child"] for y in data if y["fieldname"]==f and y["total_complimentary_child"] is not None]) or 0
+
+	occupy_data.append(row)
+
+	return occupy_data
+
+def get_data_fieldname(filters):
+	
 	sql="""select 
+			%(fieldname)s as fieldname,
 			sum(type='Reservation') as total_occupy,
 			sum(type='Block') as total_block, 
 			sum(type='Reservation' and is_complimentary=1)  as total_complimentary ,
@@ -497,295 +461,14 @@ def get_data_from_occupy_record(filters):
 			sum(if(type='Reservation' and reservation_type='FIT',child,0)) as total_fit_child,
 			sum(if(type='Reservation' and reservation_type='GIT',adult,0)) as total_git_adult,
 			sum(if(type='Reservation' and reservation_type='GIT',child,0)) as total_git_child,
-			sum(is_house_use=1 and type='Reservation') as total_house_use_room,
-			sum(is_complimentary=1 and type='Reservation') as total_complimentary_room,
 			sum(if(type='Reservation' and  is_house_use=1,adult,0)) as total_house_use_adult,
 			sum(if(type='Reservation' and is_house_use=1,child,0)) as total_house_use_child,
 			sum(if(type='Reservation' and is_complimentary=1 ,adult,0)) as total_complimentary_adult,
 			sum(if(type='Reservation' and is_complimentary=1 ,child,0)) as total_complimentary_child
 		from `tabRoom Occupy` where property=%(property)s and date between %(start_date)s and %(end_date)s and is_active=1"""
-	stay = """
-			select sum(if(reservation_status='Cancelled',adult,0)) as total_cancel_adult,
-       			sum(if(reservation_status='Cancelled',child,0)) as total_cancel_child,
-       			sum(reservation_status='Cancelled') as total_cancel_room
-			from `tabReservation Stay` where property=%(property)s and working_date between %(start_date)s and %(end_date)s
-			"""
-	data = frappe.db.sql(sql,filters,as_dict=1) 
-	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
-	datas = {
-				"room_occupy":{"title":"Rooms Occupy", "current": data[0]["total_occupy"] or 0},
-				"room_block":{"title":"Out of Order Rooms", "current": data[0]["total_block"] or 0},
-				"complimentary":{"title":"Complimentary Rooms", "current": data[0]["total_complimentary"] or 0},
-				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use"] or 0},
-				"in_house_adult":{"title":"In-house Adult", "current": data[0]["total_in_house_adult"] or 0},	
-				"arrival_adult":{"title":"Arrival Adult", "current": data[0]["total_arrival_adult"] or 0},	
-				"departure_adult":{"title":"Departure Adult", "current": data[0]["total_departure_adult"] or 0},	
-				"in_house_child":{"title":"In-house Child", "current": data[0]["total_in_house_child"] or 0},	
-				"arrival_child":{"title":"Arrival Child", "current": data[0]["total_arrival_child"] or 0},	
-				"departure_child":{"title":"Departure Child", "current": data[0]["total_departure_child"] or 0},	
-				"walk_in_adult":{"title":"Walk-In Adult", "current": data[0]["total_in_house_walk_in_adult"] or 0},	
-				"walk_in_child":{"title":"Walk-In Child", "current": data[0]["total_in_house_walk_in_child"] or 0},	
-				"walk_in_room_night":{"title":"Walk-In Room", "current": data[0]["total_walk_in_room_night"] or 0},	
-				"arrival_room_night":{"title":"Arrival Room Nights", "current": data[0]["total_arrival_room_night"] or 0},	
-				"departure_room_night":{"title":"Departure Room Nights", "current": data[0]["total_departure_room_night"] or 0},	
-				"no_show_room":{"title":"No Show Room", "current": data[0]["total_no_show_room"] or 0},	
-				"no_show_adult":{"title":"No Show Adult", "current": data[0]["total_no_show_adult"] or 0},	
-				"no_show_child":{"title":"No Show Child", "current": data[0]["total_no_show_child"] or 0},	
-				"early_checked_out_adult":{"title":"Early Checked Out Adult", "current": data[0]["total_early_checked_out_adult"] or 0},	
-				"early_checked_out_child":{"title":"Early Checked Out Child", "current": data[0]["total_early_checked_out_child"] or 0},	
-				"early_checked_out":{"title":"Early Checked Out Rooms", "current": data[0]["total_early_checked_out"] or 0},	
-				"fit_room":{"title":"FIT Rooms", "current": data[0]["total_fit_room"] or 0},	
-				"git_room":{"title":"GIT Rooms", "current": data[0]["total_git_room"] or 0},	
-				"fit_adult":{"title":"FIT Adult", "current": data[0]["total_fit_adult"] or 0},	
-				"fit_child":{"title":"FIT Child", "current": data[0]["total_fit_child"] or 0},	
-				"git_adult":{"title":"GIT Adult", "current": data[0]["total_git_adult"] or 0},	
-				"git_child":{"title":"GIT Child", "current": data[0]["total_git_child"] or 0},	
-				"vip_guest":{"title":"VIP Guest", "current": data[0]["total_vip_guest"] or 0},	
-				"cancel_room":{"title":"Cancelled Rooms", "current": data_stay[0]["total_cancel_room"] or 0},	
-				"cancel_adult":{"title":"Cancelled Adult", "current": data_stay[0]["total_cancel_adult"] or 0},	
-				"cancel_child":{"title":"Cancelled Child", "current": data_stay[0]["total_cancel_child"] or 0},		
-				"house_use":{"title":"House Use Rooms", "current": data[0]["total_house_use_room"] or 0},	
-				"complimentary":{"title":"Complimentary Rooms", "current": data[0]["total_complimentary_room"] or 0},	
-				"house_use_adult":{"title":"House Use Adult", "current": data[0]["total_house_use_adult"] or 0},	
-				"house_use_child":{"title":"House Use Child", "current": data[0]["total_house_use_child"] or 0},	
-				"complimentary_adult":{"title":"Complimentary Adult", "current": data[0]["total_complimentary_adult"] or 0},	
-				"complimentary_child":{"title":"Complimentary Child", "current": data[0]["total_complimentary_child"] or 0},	
-				
-	}
 
-	filters.start_date = filters.mtd["start_date"]
-	data = frappe.db.sql(sql,filters,as_dict=1) 
-	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
+	return frappe.db.sql(sql,filters,as_dict=1)
 
-	datas["room_occupy"]["mtd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["mtd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["mtd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["mtd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["mtd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["mtd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["mtd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["mtd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["mtd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["mtd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["mtd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["mtd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["mtd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["mtd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["mtd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["mtd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out"]["mtd"] = data[0]["total_early_checked_out"] or 0 
-	datas["early_checked_out_adult"]["mtd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["mtd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["fit_room"]["mtd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["mtd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["mtd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["mtd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["mtd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["mtd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["mtd"] = data[0]["total_vip_guest"] or 0 
-	datas["house_use"]["mtd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["mtd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["mtd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["mtd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["mtd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["mtd"] = data[0]["total_complimentary_child"] or 0 
-	datas["cancel_room"]["mtd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["mtd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["mtd"] = data_stay[0]["total_cancel_child"] or 0 
-
-	
-
-	#ytd
-	filters.start_date = filters.ytd["start_date"]
-	data = frappe.db.sql(sql,filters,as_dict=1) 
-	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
-
-	datas["room_occupy"]["ytd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["ytd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["ytd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["ytd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["ytd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["ytd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["ytd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["ytd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["ytd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["ytd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["ytd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["ytd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["ytd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["ytd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["ytd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["ytd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["ytd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["ytd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["ytd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["ytd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["ytd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["ytd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["ytd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["ytd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["ytd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["ytd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["ytd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["ytd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["ytd"] = data_stay[0]["total_cancel_child"] or 0  
-	datas["house_use"]["ytd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["ytd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["ytd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["ytd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["ytd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["ytd"] = data[0]["total_complimentary_child"] or 0 
-
-	
-
-	#last year current date
-	filters.start_date = filters.last_year_current["start_date"]	
-	filters.end_date = filters.last_year_current["end_date"]
-	data = frappe.db.sql(sql,filters,as_dict=1) 
-	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
-
-	
-	datas["room_occupy"]["last_year_current"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_current"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_current"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_current"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_current"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_current"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_current"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_current"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_current"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_current"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_current"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_current"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_current"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_current"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_current"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_current"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_current"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_current"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_current"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_current"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_current"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_current"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_current"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_current"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_current"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_current"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_current"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_current"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_current"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_current"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_current"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["house_use"]["last_year_current"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_current"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_current"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_current"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_current"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_current"] = data[0]["total_complimentary_child"] or 0 
-
- 
-	
-	#last year mtd
-	
-	filters.start_date = filters.last_year_mtd["start_date"]	
-	filters.end_date = filters.last_year_mtd["end_date"]
-	data = frappe.db.sql(sql,filters,as_dict=1)
-	data_stay = frappe.db.sql(stay,filters,as_dict=1)  
-	
-
-	datas["room_occupy"]["last_year_mtd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_mtd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_mtd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_mtd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_mtd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_mtd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_mtd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_mtd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_mtd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_mtd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_mtd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_mtd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_mtd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_mtd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_mtd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_mtd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_mtd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_mtd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_mtd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_mtd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_mtd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_mtd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_mtd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_mtd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_mtd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_mtd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_mtd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_mtd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_mtd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_mtd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_mtd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["house_use"]["last_year_mtd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_mtd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_mtd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_mtd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_mtd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_mtd"] = data[0]["total_complimentary_child"] or 0 
-
-	
-
-	# last year ytd
-	filters.start_date = filters.last_year_ytd["start_date"]	
-	filters.end_date= filters.last_year_ytd["end_date"]	
-	# frappe.throw(str(filters.end_date))
-	data = frappe.db.sql(sql,filters,as_dict=1) 
-	data_stay = frappe.db.sql(stay,filters,as_dict=1) 
-
-	datas["room_occupy"]["last_year_ytd"] = data[0]["total_occupy"] or 0 
-	datas["room_block"]["last_year_ytd"] = data[0]["total_block"] or 0 
-	datas["complimentary"]["last_year_ytd"] = data[0]["total_complimentary"] or 0 
-	datas["house_use"]["last_year_ytd"] = data[0]["total_house_use"] or 0 
-	datas["in_house_adult"]["last_year_ytd"] = data[0]["total_in_house_adult"] or 0 
-	datas["arrival_adult"]["last_year_ytd"] = data[0]["total_arrival_adult"] or 0 
-	datas["departure_adult"]["last_year_ytd"] = data[0]["total_departure_adult"] or 0 
-	datas["in_house_child"]["last_year_ytd"] = data[0]["total_in_house_child"] or 0 
-	datas["arrival_child"]["last_year_ytd"] = data[0]["total_arrival_child"] or 0 
-	datas["departure_child"]["last_year_ytd"] = data[0]["total_departure_child"] or 0 
-	datas["walk_in_adult"]["last_year_ytd"] = data[0]["total_in_house_walk_in_adult"] or 0 
-	datas["walk_in_child"]["last_year_ytd"] = data[0]["total_in_house_walk_in_child"] or 0 
-	datas["walk_in_room_night"]["last_year_ytd"] = data[0]["total_walk_in_room_night"] or 0 
-	datas["arrival_room_night"]["last_year_ytd"] = data[0]["total_arrival_room_night"] or 0 
-	datas["departure_room_night"]["last_year_ytd"] = data[0]["total_departure_room_night"] or 0 
-	datas["no_show_room"]["last_year_ytd"] = data[0]["total_no_show_room"] or 0 
-	datas["no_show_adult"]["last_year_ytd"] = data[0]["total_no_show_adult"] or 0 
-	datas["no_show_child"]["last_year_ytd"] = data[0]["total_no_show_child"] or 0 
-	datas["early_checked_out_adult"]["last_year_ytd"] = data[0]["total_early_checked_out_adult"] or 0 
-	datas["early_checked_out_child"]["last_year_ytd"] = data[0]["total_early_checked_out_child"] or 0 
-	datas["early_checked_out"]["last_year_ytd"] = data[0]["total_early_checked_out"] or 0 
-	datas["fit_room"]["last_year_ytd"] = data[0]["total_fit_room"] or 0 
-	datas["git_room"]["last_year_ytd"] = data[0]["total_git_room"] or 0 
-	datas["fit_adult"]["last_year_ytd"] = data[0]["total_fit_adult"] or 0 
-	datas["fit_child"]["last_year_ytd"] = data[0]["total_fit_child"] or 0 
-	datas["git_adult"]["last_year_ytd"] = data[0]["total_git_adult"] or 0 
-	datas["git_child"]["last_year_ytd"] = data[0]["total_git_child"] or 0 
-	datas["vip_guest"]["last_year_ytd"] = data[0]["total_vip_guest"] or 0 
-	datas["cancel_room"]["last_year_ytd"] = data_stay[0]["total_cancel_room"] or 0 
-	datas["cancel_adult"]["last_year_ytd"] = data_stay[0]["total_cancel_adult"] or 0 
-	datas["cancel_child"]["last_year_ytd"] = data_stay[0]["total_cancel_child"] or 0 
-	datas["house_use"]["last_year_ytd"] = data[0]["total_house_use_room"] or 0 
-	datas["complimentary"]["last_year_ytd"] = data[0]["total_complimentary_room"] or 0 
-	datas["house_use_adult"]["last_year_ytd"] = data[0]["total_house_use_adult"] or 0 
-	datas["house_use_child"]["last_year_ytd"] = data[0]["total_house_use_child"] or 0 
-	datas["complimentary_adult"]["last_year_ytd"] = data[0]["total_complimentary_adult"] or 0 
-	datas["complimentary_child"]["last_year_ytd"] = data[0]["total_complimentary_child"] or 0  
-
-
-
-	# frappe.throw(str(filters.end_date))
-	return datas
 
 def get_current_room_in_property(filters):
 	sql = "select count(name) as total_room from `tabRoom` where property=%(property)s"
@@ -928,22 +611,65 @@ def get_forecasting(filters):
 			"tmr_room_occupy":{"title":"Room Occupy for Tomorrow"}, 
 			"tmr_arrival_adult":{"title":"Arrival Adult for Tomorrow"},
 			"tmr_arrival_child":{"title":"Arrival Child for Tomorrow"},
-			"tmr_arrival_pax":{"title":"Arrival PAX for Tomorrow"},
+			
 			"tmr_departure_adult":{"title":"Departure Adult for Tomorrow"},
 			"tmr_departure_child":{"title":"Departure Child for Tomorrow"},
-			"tmr_departure_pax":{"title":"Departure PAX for Tomorrow"},
+			
 			"tmr_arrival":{"title":"Arrival Room Nights for Tomorrow"},
 			"tmr_departure":{"title":"Departure Room Nights for Tomorrow"},
 		}
 	
 	forecasting_data = []
 	for f in fields:
+		# frappe.throw(str(sum([y["total_occupy"] for y in data if y["fieldname"]==f ]) or 0))
+		row['tmr_room_occupy'][f] = sum([y["total_occupy"] for y in data if y["fieldname"]==f and y["total_occupy"] is not None]) or 0
+		row['tmr_arrival_adult'][f] = sum([y["total_arrival_adult"] for y in data if y["fieldname"]==f and y["total_arrival_adult"] is not None]) or 0
+		row['tmr_arrival_child'][f] = sum([y["total_arrival_child"] for y in data if y["fieldname"]==f and y["total_arrival_child"] is not None]) or 0
 		
-		row['tmr_room_occupy'][f] = [y["total_occupy"] for y in data if y["fieldname"]==f ] or 0
+		row['tmr_departure_adult'][f] = sum([y["total_departure_adult"] for y in data if y["fieldname"]==f and y["total_departure_adult"] is not None]) or 0
+		row['tmr_departure_child'][f] = sum([y["total_departure_child"] for y in data if y["fieldname"]==f and y["total_departure_child"] is not None]) or 0
+		
+		row['tmr_arrival'][f] = sum([y["total_arrival_room_night"] for y in data if y["fieldname"]==f and y["total_arrival_room_night"] is not None]) or 0
+		row['tmr_departure'][f] = sum([y["total_departure_room_night"] for y in data if y["fieldname"]==f and y["total_departure_room_night"] is not None]) or 0
 		
 	forecasting_data.append(row)
-	frappe.throw(str(forecasting_data))
+	
 	return forecasting_data
+
+def get_forecasting_next_seven_day(filters):
+	
+	data = []
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+	for f in fields:
+		data+=get_forecasting_fieldname({ "fieldname":f,"property":filters.property,"start_date":add_days(filters.get(f)["start_date"],7),"end_date":add_days(filters.get(f)["end_date"],7)})
+	row = {
+			"seven_day_room_occupy":{"title":"Room Occupy for the Next 7 Days"}, 
+			"seven_day_arrival_adult":{"title":"Arrival Adult for the Next 7 Days"},
+			"seven_day_arrival_child":{"title":"Arrival Child for the Next 7 Days"},
+			
+			"seven_day_departure_adult":{"title":"Departure Adult for the Next 7 Days"},
+			"seven_day_departure_child":{"title":"Departure Child for the Next 7 Days"},
+			
+			"seven_day_arrival":{"title":"Arrival Room Nights for the Next 7 Days"},
+			"seven_day_departure":{"title":"Departure Room Nights for the Next 7 Days"},
+		}
+	
+	forecasting_data_next_seven_day = []
+	for f in fields:
+		# frappe.throw(str(sum([y["total_occupy"] for y in data if y["fieldname"]==f ]) or 0))
+		row['seven_day_room_occupy'][f] = sum([y["total_occupy"] for y in data if y["fieldname"]==f and y["total_occupy"] is not None]) or 0
+		row['seven_day_arrival_adult'][f] = sum([y["total_arrival_adult"] for y in data if y["fieldname"]==f and y["total_arrival_adult"] is not None]) or 0
+		row['seven_day_arrival_child'][f] = sum([y["total_arrival_child"] for y in data if y["fieldname"]==f and y["total_arrival_child"] is not None]) or 0
+		
+		row['seven_day_departure_adult'][f] = sum([y["total_departure_adult"] for y in data if y["fieldname"]==f and y["total_departure_adult"] is not None]) or 0
+		row['seven_day_departure_child'][f] = sum([y["total_departure_child"] for y in data if y["fieldname"]==f and y["total_departure_child"] is not None]) or 0
+		
+		row['seven_day_arrival'][f] = sum([y["total_arrival_room_night"] for y in data if y["fieldname"]==f and y["total_arrival_room_night"] is not None]) or 0
+		row['seven_day_departure'][f] = sum([y["total_departure_room_night"] for y in data if y["fieldname"]==f and y["total_departure_room_night"] is not None]) or 0
+		
+	forecasting_data_next_seven_day.append(row)
+	
+	return forecasting_data_next_seven_day
 
 def get_forecasting_fieldname(filters):
 
@@ -961,3 +687,23 @@ def get_forecasting_fieldname(filters):
     """
     return frappe.db.sql(sql,filters, as_dict=1)
     
+    
+def get_row_calculate_filed(row,data):
+	formula = row.formula
+	 
+	titles = re.findall(r"'([^']+)'", formula)
+	fields = ["current","mtd","ytd","last_year_current","last_year_mtd","last_year_ytd"]
+ 
+	result = {"title":row.field_name}
+	for f in fields:
+		formula_copy = copy.deepcopy(formula)
+		for t in titles:
+			n = get_value_field_title(data, t, f)
+			formula_copy=formula_copy.replace("'{}'".format(t),str(n))
+   
+		result[f] =  eval(formula_copy)
+  
+	return result
+
+def get_value_field_title(report_data, title,field):
+	return sum([d[field] for d in report_data if d["title"] == title]) or 0

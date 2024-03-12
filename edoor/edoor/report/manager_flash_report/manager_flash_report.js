@@ -36,9 +36,6 @@ frappe.query_reports["Manager Flash Report"] = {
 	"formatter": function (value, row, column, data, default_formatter) {
 		const origninal_value = value || 0
 		value = default_formatter(value, row, column, data);
-
-
-
 		value = value.toString().replace("style='text-align: right'", "style='text-align: " + column.align + "'");
 
 
@@ -54,7 +51,7 @@ frappe.query_reports["Manager Flash Report"] = {
 
 
 
-		if ((data && data.is_group == 1) || (data && data.is_total_row == 1)) {
+		if ((data && data.indent == 0) || (data && data.is_bold == 1)) {
 
 			value = $(`<span>${value}</span>`);
 
@@ -95,15 +92,12 @@ function setLinkField() {
 
 		//set option for show fields
 
-
-
-
 		frappe.call({
 			method: "edoor.api.utils.get_report_config",
 
 			args: {
 				property: property,
-				report: "Revenue and Occupancy Summary Report"
+				report: "Manager Flash Report"
 			},
 			callback: function (r) {
 				const show_columns = frappe.query_report.get_filter('show_columns');
@@ -135,6 +129,5 @@ function setLinkField() {
 			},
 		});
 
-	}
-
+}
 }

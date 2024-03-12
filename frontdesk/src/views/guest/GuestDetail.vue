@@ -4,16 +4,10 @@
         <div class="iframe-view guest-detail">
             <TabView lazy class="tabview-custom">
                 <TabPanel :header="$t('General Information')">
-                    <!-- <iframe @load="onIframeLoaded('general')" id="general" style="width: 100%;"
-                        :src="generalInfoUrl">
-                    </iframe> -->
-                    HII
-                    <div v-html="html" id="general" class="view_table_style"></div>
+                    <div v-html="General_information_html" class="view_table_style min_table_ui_height "></div>
                 </TabPanel>
                 <TabPanel :header="$t('Stay History')">
-                    <iframe @load="onIframeLoaded('stay_history')" id="stay_history" style="width: 100%;"
-                        :src="stayHistoryUrl">
-                    </iframe>
+                    <div v-html="stay_history_html" class="view_table_style min_table_ui_height "></div>
                 </TabPanel>
                 <TabPanel :header=" $t('POS/Misc. Sale')">
                     <div style="margin-right:-1rem;">
@@ -23,10 +17,10 @@
                     </div>
                 </TabPanel>
                 <TabPanel :header="$t('Note')">
-                    <iframe @load="onIframeLoaded('note')" id="note" style="width: 100%;" :src="noteUrl"></iframe>
+                    <div v-html="note_html" class="view_table_style min_table_ui_height "></div>
                 </TabPanel>
                 <TabPanel :header=" $t('Folio') ">
-                    <iframe @load="onIframeLoaded('Folio')" id="Folio" style="width: 100%;" :src="folioUrl"></iframe>
+                    <div v-html="folio_html" class="view_table_style min_table_ui_height "></div>
                 </TabPanel>
                 <TabPanel>
                     <template #header>
@@ -50,15 +44,13 @@ import {i18n} from '@/i18n';
 const { t: $t } = i18n.global;
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
-const setting = JSON.parse(localStorage.getItem("edoor_setting"))
+
 const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
 const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)
 const gv = inject("$gv")
-const html = ref()
-const frappe = inject("$frappe")
-const call = frappe.call()
+
 function onIframeLoaded(id){ 
     const iframe = document.getElementById(id);
     if (iframe){
@@ -68,11 +60,32 @@ function onIframeLoaded(id){
     }
 }
 
-
-const generalInfoUrl =  computed(() => {
-    let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Detail General Information") +  "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
-    return url
-})
+const frappe = inject("$frappe")
+const call = frappe.call()
+const param = ref({})
+const General_information_html = ref()
+const stay_history_html = ref()
+const pos_mis_html = ref()
+const note_html = ref()
+const folio_html = ref()
+const getframeui = (format, html) =>  {
+    param.value.doc = decodeURIComponent("Customer")
+    param.value.name = decodeURIComponent(name.value)
+    param.value.format = decodeURIComponent(gv.getCustomPrintFormat(format))
+    param.value._lang = localStorage.getItem("lang") || "en"
+    param.value.letterhead = decodeURIComponent("No Letter Head")
+    param.value.no_letterhead = 0
+    param.value.show_toolbar = 0
+    param.value.can_view_rate = window.can_view_rate
+    param.value.view = "ui"
+    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
+        html.value = result.message.html
+        gv.loading = loading;    
+        }).catch(err => {
+            
+        })
+        
+}
 const stayHistoryUrl =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Customer&name=" + name.value + "&format="  + gv.getCustomPrintFormat("eDoor Guest Stay History") + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
@@ -173,6 +186,7 @@ onMounted(() => {
     if (document.querySelectorAll('.guest-detail').length == 1){
         window.addEventListener('message', actionRefreshData, false);
     }
+    loadIframe()
 });
 
 const onClose = () => {
@@ -180,38 +194,13 @@ const onClose = () => {
 }
 
 function loadIframe() {
-    if(document.getElementById("general")){
-        let param = {
-        doc:"Business Branch",
-        name:setting?.property?.name,
-        format:"eDoor Run Night Audit Step",
-        no_letterhead:1,
-        letterhead:"No Letterhead",
-        _lang:localStorage.getItem("lang") || "en",
-        show_toolbar:0,
-        view:"ui",
-        date:working_day.date_working_day,
-        step:currentStep.value
-    }
-    call.get("epos_restaurant_2023.www.printview.get_html_and_style", param).then(result => {
-        html.value = result.message.html
-        loading.value = false
-    }).catch(err=>{
-        loading.value = false
-    })  
-    }
-    else if(document.getElementById("stay_history")){
-        document.getElementById("stay_history").contentWindow.location.replace(stayHistoryUrl.value + "&refresh=" + (Math.random() * 16))
-    }
-    else if(document.getElementById("pos_misc_sale")){
+    getframeui("eDoor Guest Detail General Information",General_information_html)
+    getframeui("eDoor Guest Stay History",stay_history_html)
+    getframeui("eDoor Guest Note",note_html)
+    getframeui("eDoor Guest Detail Folio List",folio_html)
+    if(document.getElementById("pos_misc_sale")){
         document.getElementById("pos_misc_sale").contentWindow.location.replace(posMiscSaleUrl.value + "&refresh=" + (Math.random() * 16))
     }
-    else if(document.getElementById("note")){
-        document.getElementById("note").contentWindow.location.replace(noteUrl.value + "&refresh=" + (Math.random() * 16))
-    }
-    else if(document.getElementById("Folio")){
-        document.getElementById("Folio").contentWindow.location.replace(folioUrl.value + "&refresh=" + (Math.random() * 16))
-    }   
 }
 
 onUnmounted(() => {
@@ -222,11 +211,3 @@ onUnmounted(() => {
 
 
 </script>
-<style scoped>
-.iframe-view{
-    overflow: auto !important;
-    min-height: 550px !important;
-    margin-right: -1rem;
-    padding-right: 1rem !important;
-}
-</style>

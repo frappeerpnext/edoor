@@ -3,10 +3,12 @@
     <div class="pb-20">
         <div class="">
             <hr class="mb-3">
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room</div>
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">
+                {{ $t('Room') }}
+                </div>
             <table>
                 <ComStayInfoNoBox label="Room Number" :value="hk.selectedRow?.room_number" />
-                <ComStayInfoNoBox label="Status" :value="hk.selectedRow?.housekeeping_status" />
+                <ComStayInfoNoBox label="Status" :value="$t(hk.selectedRow?.housekeeping_status)" />
                 <ComStayInfoNoBox label="Housekeeper" :value="hk.selectedRow?.housekeeper" />
             </table>
         </div>
@@ -14,13 +16,13 @@
             <div class="col-6" v-if="!hk.room_block">
                 <SplitButton :disabled="hk.selectedRow.room_status == 'Room Block'" class="w-full"
                     :buttonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
-                    :label="hk.selectedRow?.housekeeping_status_code" :model="items" :color="hk.selectedRow?.status_color"
+                    :label="$t(hk.selectedRow?.housekeeping_status_code)" :model="items" :color="hk.selectedRow?.status_color"
                     :menuButtonProps="{ style: { backgroundColor: hk.selectedRow?.status_color } }"
                     :class="{ 'active-button': true } ">
                 </SplitButton>
             </div>
             <div class="col-6">
-                <Button class="w-full" label="Assign Housekeeper" severity="warning"
+                <Button class="w-full" :label="$t('Assign Housekeeper')" severity="warning"
                     @click="onAssignHousekeeper($event)"></Button>
                 <OverlayPanel ref="opHousekeeper">
                     <ComOverlayPanelContent :loading="loading" @onCancel="onAssignHousekeeper($event, {})"
@@ -32,7 +34,7 @@
             </div>
         </div>
         <div v-if="hk && hk.reservationStay && Object.keys(hk.reservationStay).length > 0">
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Reservation</div>
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center"> {{ $t('Reservation') }} </div>
             <table>
                 <ComStayInfoNoBox label="Res No">
                     <Button @click="onViewReservationDetail(hk?.reservationStay?.reservation)"
@@ -94,14 +96,14 @@
             <div class="py-2 my-3 mb-10 border-1  bg-slate-200 font-medium wrap__sp_not">{{ hk.reservationStay.housekeeping_note }}</div>
             <div class="mb-5 leading-5 text-sm ">
                 <div class="mt-auto">
-                    <span class="italic">Created by: </span>
+                    <span class="italic">{{ $t('Created by') }} : </span>
                     <span class="text-500 font-italic">
                         {{ hk.reservationStay?.owner.split("@")[0] }}
                         <ComTimeago :date="hk.reservationStay?.creation" />
                     </span>
                 </div>
                 <div class="mt-auto">
-                    <span class="italic"> Last Modified: </span>
+                    <span class="italic">   {{$t('Last Modified')}} : </span>
                     <span class="text-500 font-italic">
                         {{ hk.reservationStay?.modified_by.split("@")[0] }}
                         <ComTimeago :date="hk.reservationStay?.modified" />
@@ -111,14 +113,14 @@
                 <div>
                     <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_out_by">
                         <div v-if="hk.reservationStay?.checked_in_by || hk.reservationStay?.checked_in_date">
-                            <span class="italic">Checked-in by: </span>
+                            <span class="italic">{{ $t('Checked-in by') }} : </span>
                             <span class="text-500 font-italic">
                                 {{ hk.reservationStay?.checked_in_by.split("@")[0] }}
                                 <ComTimeago :date="hk.reservationStay?.checked_in_date" />
                             </span>
                         </div>
                         <div v-if="hk.reservationStay?.checked_out_by || hk.reservationStay?.checked_out_date">
-                            <span class="italic"> Checked-out by: </span>
+                            <span class="italic"> {{ $t('Checked-out by') }} : </span>
                             <span class="text-500 font-italic">
                                 {{ hk.reservationStay?.checked_out_by.split("@")[0] }}
                                 <ComTimeago :date="hk.reservationStay?.checked_out_date" />
@@ -130,7 +132,7 @@
         </div>
 
         <div v-if="hk.room_block">
-            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center">Room Block</div>
+            <div class="py-2 mt-1 border-1  bg-slate-200 font-medium text-center"> {{ $t('Room Block') }} </div>
             <table>
                 <ComStayInfoNoBox label="Block Name">
                     <Button @click="onOpenLink(hk.room_block.name)" class="-ml-3 link_line_action1" text>{{
@@ -163,7 +165,8 @@ const show = ref()
 const frappe = inject("$frappe")
 const db = frappe.db()
 const gv = inject('$gv');
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 if (housekeeping_status_code.value.length > 0) {
     housekeeping_status_code.value.forEach(h => {
 

@@ -4,7 +4,7 @@
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
                     <div :class="isMobile ? 'flex justify-content-between': ''">
-<div class="text-xl md:text-2xl">Reservation Stay List</div>
+<div class="text-xl md:text-2xl"> {{ $t('Reservation Stay List') }} </div>
                         <div class="w-50" v-if="isMobile">
 <ComNewReservationMobileButton />
                         </div>
@@ -23,7 +23,7 @@
                     <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
-                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            <InputText v-model="filter.keyword" :placeholder="$t('Search') " @input="onSearch" />
                         </span>
                     </div>
                     <div>
@@ -32,7 +32,7 @@
                 </div>
                 <div class="flex">
                     <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash"
+                        <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter')" icon="pi pi-filter-slash"
                             @click="onClearFilter" />
                     </div>
                     <div class="px-2">
@@ -60,7 +60,7 @@
                     @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
                             <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
@@ -82,7 +82,8 @@
                                 </div>
                                 <div @click="onAssignRoom(slotProps.data)" class="link_line_action w-auto" v-else>
                                     <i class="pi pi-pencil"></i>
-                                    Assign Room
+                                    {{ $t('Assign Room') }}
+                                    
                                 </div>
                             </template>
                             <template v-else-if="c.fieldname == 'owner' || c.fieldname == 'modified_by'">
@@ -91,7 +92,7 @@
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'Status'"
                                 class="px-2 rounded-lg text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ slotProps.data[c.fieldname]
+                                :style="{ backgroundColor: slotProps.data['status_color'] }">{{ $t(slotProps.data[c.fieldname]) 
                                 }}
                             </span>
                             <span v-else-if="c.fieldname == 'reservation_type'"
@@ -112,7 +113,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage"  :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange" :pageLinkSize="isMobile ? '2' : '5'">
                 <template #start="slotProps">
-                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -124,13 +125,13 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder="$t('Search')" class="w-full" />
                 </span>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label) }}</label>
                 </div>
             </div>
             <template #footer-left>
@@ -210,6 +211,8 @@ import NewGITReservationButton from "@/views/reservation/components/NewGITReserv
 import ComReservationStayAssignRoom from '@/views/reservation/components/ComReservationStayAssignRoom.vue';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 import { Timeago } from 'vue2-timeago'
 import ComNewReservationMobileButton from "@/views/dashboard/components/ComNewReservationMobileButton.vue"
 const isMobile = ref(window.isMobile) 

@@ -7,7 +7,7 @@
         <div class="p-0 w-15rem">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
-                <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
+                <InputText class="w-full" v-model="hk.filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
             </div>
         </div>
         <div class="w-30rem">
@@ -25,7 +25,7 @@
             <div class="flex gap-2">
                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter"/> 
                 <div v-if="isFilter">
-                    <Button class="content_btn_b white-space-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter"/>
+                    <Button class="content_btn_b white-space-nowrap" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter"/>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="col-12">
             <div class="p-input-icon-left w-full">
                 <i class="pi pi-search" />
-                <InputText class="w-full" v-model="hk.filter.keyword" placeholder="Search" @input="onSearch" />
+                <InputText class="w-full" v-model="hk.filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
             </div>
         </div>
         <div class="col-12">
@@ -95,6 +95,8 @@ const gv = inject("$gv")
 const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const working_date = JSON.parse(localStorage.getItem("edoor_working_day"))
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const onSearch = debouncer(() => {
     hk.loadData();
 }, 500);

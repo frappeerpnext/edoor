@@ -2,13 +2,13 @@
     <ComDialogContent @onClose="onClose" :loading="loading" hideButtonOK>
         <div v-if="doc?.docstatus == 0"
             class="  bg-orange-200 border-orange-500 p-2 font-medium border-left-3 mb-3 w-full flex align-items-center"> <i
-                class="pi pi-file-edit me-2 text-lg" /> Draft</div>
+                class="pi pi-file-edit me-2 text-lg" /> {{ $t('Draft') }} </div>
         <div v-if="doc?.is_unblock != 0"
             class="surface-200 border-left-3 border-400 p-1px px-2  p-2 flex align-items-center"> <i
-                class="pi pi-lock-open me-2 text-lg" /> Unblock </div>
+                class="pi pi-lock-open me-2 text-lg" /> {{ $t('Unblock') }}  </div>
         <div v-if="doc?.docstatus == 1 && doc?.is_unblock == 0"
             class="surface-200 border-left-3 border-black-alpha-90 p-2 p-1px px-2 flex align-items-center"> <i
-                class="pi pi-lock me-2 text-lg" /> Block </div>
+                class="pi pi-lock me-2 text-lg" /> {{ $t('Block') }}  </div>
         <div class="ms_message_cs_edoor">
             <Message class="w-full" :closable="false" v-if="doc?.docstatus == 0">
                 <div class="grid">
@@ -18,25 +18,26 @@
                 </div>
                 <Button class="border-none me-3 ml-auto col" @click="onSubmitRoomBlock">
                     <i class="pi pi-send me-3" />
-                    Submit Room Block</Button>
+                   {{ $t('Submit Room Block') }} </Button>
                 </div>
             </Message>
             <Message class="w-full" :closable="false" v-if="doc?.docstatus == 1 && doc?.is_unblock == 0">
 <div class="grid w-full">
                 <div class="col-12 md:col-8">
-                    This room number <strong>{{ doc?.room_number }}</strong> is blocked now. To unblock this room, please on
-                    button <strong>Unblock</strong>
+                    {{ $t('This room number') }}  <strong>{{ doc?.room_number }}</strong> {{ $t('is blocked now. To unblock this room, please on button') }} <strong>Unblock</strong>
                 </div>
                 <div class="col-12 md:col flex justify-content-end">
-                <Button class="border-none me-3 ml-auto" @click="onUnblock"> <i class="pi pi-lock-open me-3" /> Unblock this
-                    Room</Button>
+                <Button class="border-none me-3 ml-auto" @click="onUnblock"> <i class="pi pi-lock-open me-3" />
+                    {{ $t('Unblock this Room') }}
+                    
+                    </Button>
                     </div>
 </div>
             </Message>
         </div>
         <div v-if="doc && doc?.is_unblock != 0">
             <div class="bg-slate-200 p-2 mt-4 font-medium text-center border-left-2">
-                UnBlock
+               {{  $t('UnBlock') }} 
             </div>
             <table>
                 <ComStayInfoNoBox label="Unblock Date" v-if="doc.unblock_date" :value="gv.dateFormat(doc.unblock_date)" />
@@ -44,7 +45,7 @@
                     :value="doc.unblock_housekeeping_status_code" />
             </table>
             <div class="w-full h-10rem mb-4 mt-2">
-                <label>Reason</label>
+                <label> {{ $t('Reason') }} </label>
                 <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200"
                     v-html="doc.unblock_note"></div>
             </div>
@@ -52,7 +53,7 @@
         </div>
 
         <div class="bg-slate-200 p-2 font-medium text-center border-left-2 mt-4">
-            Room Block
+          {{ $t('Room Block') }}  
         </div>
         <table>
             <ComStayInfoNoBox label="Block Number" v-if="doc?.name" :value="doc?.name" />
@@ -65,7 +66,7 @@
             <ComStayInfoNoBox label="Blocked by" v-if="doc?.modified_by" :value="doc?.modified_by?.split('@')[0]" />
         </table>
         <div class="w-full h-10rem mb-4 mt-2">
-            <label>Reason</label>
+            <label> {{ $t('Reason') }} </label>
             <div class="w-full p-3 h-10rem rounded-lg whitespace-pre-wrap break-words bg-slate-200" v-html="doc?.reason">
             </div>
         </div>
@@ -75,31 +76,31 @@
         </div>
         <template #footer-right>
             <Button v-if="doc?.docstatus == 0" @click="onSubmitRoomBlock" class="border-0"> <i class="pi pi-send me-3" />
-                Submit Room Block</Button>
-            <Button v-if="!doc?.is_unblock" class="border-none" icon="pi pi-pencil text-sm" label="Edit" @click="onEdit" />
+                {{ $t('Submit Room Block') }} </Button>
+            <Button v-if="!doc?.is_unblock" class="border-none" icon="pi pi-pencil text-sm" :label=" $t('Edit') " @click="onEdit" />
             <Button v-if="!doc?.is_unblock && doc?.docstatus == 1" class="border-none" icon="pi pi-lock-open text-sm"
-                label="Unblock" @click="onUnblock" />
+                :label=" $t('Unblock') " @click="onUnblock" />
             <Button v-if="!doc?.is_unblock && doc?.docstatus == 0" class="border-none" icon="pi pi-trash text-sm"
-                label="Delete" severity="danger" @click="onDelete" />
+                :label=" $t('Delete') " severity="danger" @click="onDelete" />
         </template>
         <template #footer-left>
-            <Button class="border-none" @click="onAuditTrail" label="Audit Trail" icon="pi pi-history" />
+            <Button class="border-none" @click="onAuditTrail" :label=" $t('Audit Trail') " icon="pi pi-history" />
             <!-- <Button class="border-none" @click="onPrintFolioTransaction" label="Print" icon="pi pi-print" /> -->
         </template>
     </ComDialogContent>
-    <Dialog v-model:visible="unblockvisible" modal header="Edit Room Block Detail" :style="{ width: '50vw' }"
+    <Dialog v-model:visible="unblockvisible" modal :header="$t('Edit Room Block Detail')" :style="{ width: '50vw' }"
         position="top">
         <ComDialogContent @onClose="unblockvisible = false" @onOK="onSave()" :loading="unblock_loading">
             <div class="grid">
                 <div class="col-12 lg:col-6">
-                    <label>Unblock Date </label>
+                    <label> {{ $t('Unblock Date') }}  </label>
                     <div class="card flex justify-content-left">
                         <Calendar selectOtherMonths class="w-full" showIcon v-model="data.unblock_date"
                             dateFormat="dd-mm-yy" />
                     </div>
                 </div>
                 <div class="col-12 lg:col-6">
-                    <label>Housekeeping Status</label>
+                    <label> {{ $t('Housekeeping Status') }} </label>
                     <div class="w-full">
                         <ComSelect placeholder="Housekeeping Status" class="w-full" optionLabel="status"
                             optionValue="status" v-model="data.unblock_housekeeping_status_code"
@@ -107,7 +108,7 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <label>Unblock Note</label>
+                    <label> {{ $t('Unblock Note') }} </label>
                     <div class="w-full card flex justify-content-left">
                         <Textarea class="w-full" v-model="data.unblock_note" autoResize />
                     </div>
@@ -121,6 +122,8 @@ import { ref, getDoc, onMounted, inject, useDialog, updateDoc, useConfirm, delet
 import ComEditRoomBlock from "./components/ComEditRoomBlock.vue";
 import ComCommentAndNotice from '@/components/form/ComCommentAndNotice.vue';
 import ComAuditTrail from '@/components/layout/components/ComAuditTrail.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const confirm = useConfirm()
 const unblockvisible = ref(false);
 const unblock_loading = ref(false);

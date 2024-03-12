@@ -3,12 +3,13 @@
         <div>
             <ComHeader :colClass="'col-6'" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">Guest Database</div>
+                    <div class="text-xl md:text-2xl">{{ $t('Guest Database') }} </div>
                 </template>
                 <template #end>
                     <Button v-tippy="'Add New Guest'" @click="onAddNewGuest" label="Add New Guest" class="d-bg-set btn-inner-set-icon border-none">
                         <ComIcon class="mr-2" icon="iconAddNewGuest"></ComIcon>
-                        Add  New <span v-if="!isMobile"> Guest</span> 
+                         <span v-if="!isMobile">{{ $t('Add New Guest') }} </span> 
+                         <span v-else> {{ $t('Add New') }} </span>
                     </Button>
                 </template>
             </ComHeader> 
@@ -17,7 +18,7 @@
                     <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
-                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            <InputText v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                         </span>
                     </div>
                     <div>
@@ -27,7 +28,7 @@
                 </div>
                 <div class="flex">
                     <div v-if="gv.isNotEmpty(filter)">
-                        <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter"/>
+                        <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter"/>
                     </div>
                     <div class="px-2">
                         <ComOrderBy doctype="Customer" @onOrderBy="onOrderBy" />
@@ -52,7 +53,7 @@
                 :value="data" 
                 :tableStyle="`min-width: ${width}%`" 
                 @row-dblclick="onViewReservationStayDetail">
-                    <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label && !skip_columns.includes(r.fieldname))" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label" :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
+                    <Column v-for="c of columns.filter(r=>selectedColumns.includes(r.fieldname) && r.label && !skip_columns.includes(r.fieldname))" :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="$t(c.label) " :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" 
                     :frozen="c.frozen">
                         <template #body="slotProps" >
                             <span  :class="slotProps.data['is_disabled'] ? 'row-disabled':''">
@@ -90,7 +91,7 @@
             <Paginator class="p__paginator" :pageLinkSize="isMobile ? '2' : '5'" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]"
                 @page="pageChange">
                 <template #start="slotProps">
-                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -100,13 +101,13 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full"/>
+                    <InputText v-model="filter.search_field" :placeholder="$t('Search')" class="w-full"/>
                 </span>
             </template>
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r=>r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname"   />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </li>
             </ul>
             <template #footer-left>
@@ -121,7 +122,7 @@
                 <div class="col-12" v-if="isMobile">
                         <span class="p-input-icon-left w-full">
                             <i class="pi pi-search" />
-                            <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                         </span>
                     </div>
                 <ComSelect class="col-12 md:col-6 " width="100%" optionLabel="customer_group_en" optionValue="name"
@@ -143,6 +144,8 @@ import ComOrderBy from '@/components/ComOrderBy.vue';
 import {Timeago} from 'vue2-timeago'
 import ComAddGuest from '@/views/guest/components/ComAddGuest.vue';
 const isMobile = ref(window.isMobile) 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const moment = inject("$moment")
 const gv = inject("$gv")
 const dialog = useDialog()

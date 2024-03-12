@@ -4,8 +4,8 @@
             <template v-if="slotProps.item.date">
                 <div class="flex bg-white border-none font-normal mt-3 border-round-xl py-2 px-6 white-space-nowrap"
                     style="font-weight: 400;">
-                    <h1 v-if="slotProps.item.date == 'Today' || slotProps.item.date == 'Yesterday'"><strong>{{
-                        slotProps.item.date }}</strong></h1>
+                    <h1 v-if="slotProps.item.date == 'Today' || slotProps.item.date == 'Yesterday'"><strong>
+                        {{ $t(slotProps.item.date) }}</strong></h1>
                     <h1 v-else><strong>
                             <ComTimeago :date="slotProps.item.date" />
                         </strong></h1>
@@ -23,12 +23,12 @@
             <Card class="mt-3" v-if="!slotProps.item.date">
                 <template #title>
                     <div class="line-height-1">
-                        <span class="text-lg md:text-xl">{{ slotProps.item.subject }}</span>
+                        <span class="text-lg md:text-xl">{{ $t(slotProps.item.subject) }}</span>
 
                         <div class="font-italic text-500 text-sm inline"
                             v-if="slotProps.item.custom_note_date && slotProps.item.custom_is_note"
                             style="font-size: 12px;font-weight: 500;">
-                            | Note Date: <span class="ms-1 font-italic text-500 text-sm">{{ slotProps.item.custom_note_date
+                            | {{ $t('Note Date') }} : <span class="ms-1 font-italic text-500 text-sm">{{ slotProps.item.custom_note_date
                             }}</span>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                                 </div>
 
                                 <div>
-                                    {{ slotProps.item.reference_doctype }}
+                                    {{ $t(slotProps.item.reference_doctype)  }}
                                 </div>
                                 <div class="cursor-pointer" style="color:#4338ca;" @click="onViewDetail(slotProps.item)">
                                     {{ slotProps.item.reference_name }}
@@ -78,6 +78,8 @@
 import { ref, computed, inject, onMounted, onUnmounted } from "@/plugin"
 import Timeline from 'primevue/timeline';
 import ComAvatar from '@/components/form/ComAvatar.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const working_date = ref(window.current_working_date)
 const moment = inject("$moment")
 const isMobile = ref(window.isMobile) 

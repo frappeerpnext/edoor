@@ -1,6 +1,5 @@
 <template>
-    <div class="wrap-dialog iframe-modal " style="overflow: auto;"
-        :class="{ 'full-height': dialogRef.data.fullheight }">
+    <div class="wrap-dialog iframe-modal " :class="{ 'full-height': dialogRef.data.fullheight }">
         <div class="p-3 ">
             <div class="grid mb-3 overflow-auto lg:overflow-hidden flex-nowrap lg:flex-wrap">
                 <div class="col flex gap-2">
@@ -173,15 +172,21 @@
                 </div>
             </div>
             <div class="widht-ifame ">
-                <ComPlaceholder text="No Data"   :loading="loading" :is-not-empty="true" />
+                <ComPlaceholder text="No Data" :loading="loading" :is-not-empty="true" />
                 <template v-if="!loading">
-
-                    <div v-html="html" class="view_table_style" v-if="view"></div>
-                <iframe v-else :class="dialogRef?.data?.iframe_class" :style="loading ? 'visibility: hidden;' : ''"
-                    @load="onIframeLoaded()" style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
-   
+                    <div v-html="html" class="view_table_style view_srolling_table" v-if="view"></div>
                 </template>
-                        </div>
+
+
+                <template v-if="!view">
+
+                    <iframe :style="loading ? 'visibility: hidden;' : ''" @load="onIframeLoaded()"
+                        style="min-height:30vh;" :id="iframe_id" width="100%" :src="url"></iframe>
+
+                </template>
+
+
+            </div>
 
 
         </div>
@@ -235,32 +240,38 @@ const hasFilter = ref((f) => {
     return false
 
 });
+
 function onIframeLoaded() {
 
-    const iframe = document.getElementById(iframe_id);
-    var contentWidth = iframe.contentWindow.document.body.scrollWidth;
-    var windowWidth = window.innerWidth;
-    if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
-        iframe.style.overflowX = 'hidden';
-    } else {
-        iframe.style.overflowX = 'auto';
-    }
-    iframe.style.minWidth = "0px"
-    iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
-    loading.value = true;
-    iframe.style.height = '0px';
-    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-    iframe.onload = function () {
-        loading.value = false;
-    }
+    if (!dialogRef.value.data.view) {
 
+        const iframe = document.getElementById(iframe_id);
 
+        var contentWidth = iframe.contentWindow.document.body.scrollWidth;
+        var windowWidth = window.innerWidth;
+        if (iframe.contentWindow.document.body.scrollWidth < iframe.offsetWidth) {
+            iframe.style.overflowX = 'hidden';
+        } else {
+            iframe.style.overflowX = 'auto';
+        }
+        iframe.style.minWidth = "0px"
+        iframe.style.minWidth = iframe.contentWindow.document.body.scrollWidth + 'px';
+        loading.value = true;
+        iframe.style.height = '0px';
+        iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+
+        iframe.onload = function () {
+            loading.value = false;
+        }
+
+    }
 }
 
 const param = ref({
 
 })
 const loadIframe = () => {
+
     loading.value = true;
     param.value.doc = decodeURIComponent(dialogRef.value.data.doctype)
     param.value.name = decodeURIComponent(dialogRef.value.data.name)
@@ -280,12 +291,13 @@ const loadIframe = () => {
     if (extra_params.value) {
         extra_params.value.forEach(p => {
             url.value = url.value + "&" + p.key + "=" + p.value
-            param.value[p.key] = p.value
-
+            param.value[p.key] = decodeURIComponent(p.value)
         });
     }
+
     let start_date = moment().add(-50, "years").format("YYYY-MM-DD")
     let end_date = moment().add(50, "years").format("YYYY-MM-DD")
+
     if (Object.keys(filters.value)) {
         Object.keys(filters.value).forEach(p => {
             if (filters.value[p]) {
@@ -314,20 +326,21 @@ const loadIframe = () => {
         url.value = url.value + "&date=" + window.current_working_date
         param.value.date = window.current_working_date
     }
- 
-    if (view.value){
+
+    if (view.value) {
         call.get("epos_restaurant_2023.www.printview.get_html_and_style", param.value).then(result => {
             html.value = result.message.html
             loading.value = false
         }).catch(err => {
             loading.value = false
         })
-    }else {
-        document.getElementById(iframe_id).contentWindow.location.replace(url.value) 
-    }
-    
+    } else {
+        document.getElementById(iframe_id).contentWindow.location.replace(url.value)
 
-   
+    }
+
+
+
 }
 function onPrint() {
     document.getElementById(iframe_id).contentWindow.print()
@@ -387,8 +400,3 @@ onUnmounted(() => {
 })
 
 </script>
-<style scoped>
-.full-height {
-    height: 85vh;
-}
-</style>

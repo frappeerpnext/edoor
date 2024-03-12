@@ -5,10 +5,10 @@
         <ComAvatar :image="user.photo">
             <div :title="user.full_name"
                 :style="(user.full_name.length > 12) ? { fontSize: 12.90 - (user.full_name.length - 14) * 0.10 + 'px' } : ''"
-                class="hidden md:block font-lg font-bold text-white white-space-nowrap overflow-hidden text-overflow-ellipsis w-8rem">{{
+                class="hidden md:block font-lg font-bold text-white white-space-nowrap overflow-hidden text-overflow-ellipsis w-8rem ms-3">{{
                     user.full_name
                 }}</div>
-            <div :title="user.role" class="hidden md:block text-ms text-white white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
+            <div :title="user.role" class="hidden md:block text-ms text-white white-space-nowrap overflow-hidden text-overflow-ellipsis ms-3">{{
                 user.role }}</div>
         </ComAvatar>
     </div>

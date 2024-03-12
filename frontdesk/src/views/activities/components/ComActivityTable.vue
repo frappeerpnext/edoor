@@ -13,13 +13,17 @@
 					tableStyle="max-width:100vw;" 
 					scrollHeight="70vh"
 					@row-dblclick="onViewReservationStayDetail">
-						<Column field="custom_posting_date" header="Audit date">
+						<Column field="custom_posting_date" :header="$t('Audit date')">
 							<template #body="slotProps">
 								{{ moment(slotProps.data.custom_posting_date).format("DD-MM-YYYY") }}
 							</template>
 						</Column>
-						<Column field="reference_doctype" header="Reference Type"></Column>
-						<Column field="reference_name" header="Reference Name">
+						<Column :header=" $t('Reference Type') ">
+							<template #body="slotProps">
+								{{ $t(slotProps.data.reference_doctype) }}
+							</template>
+						</Column>
+						<Column field="reference_name" :header="$t('Reference Name')">
 							<template #body="slotProps">
 								<Button class="p-0 link_line_action1" @click="onOpenLink(slotProps.data)" link>
 									{{ slotProps.data.reference_name }}
@@ -28,8 +32,12 @@
 							</template>
 
 						</Column>
-						<Column field="subject" header="Subject"></Column>
-						<Column field="content" header="Description">
+						<Column :header="$t('Subject') ">
+							<template #body="slotProps">
+								{{ $t(slotProps.data.subject) }}
+							</template>
+						</Column>
+						<Column field="content" :header="$t('Description') ">
 							<template #body="slotProps">
 								<div class="white-space-nowrap overflow-hidden text-overflow-ellipsis content-note-comment" style="width:500px" v-html="slotProps.data.content" v-tippy="slotProps.data.content"></div>
 							</template>
@@ -46,6 +54,8 @@
 
 <script setup>
 import { inject } from '@/plugin';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     data:{
         type:  Object ,

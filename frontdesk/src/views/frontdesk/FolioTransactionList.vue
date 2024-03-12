@@ -3,7 +3,7 @@
     <div>
       <ComHeader isRefresh @onRefresh="Refresh()">
         <template #start>
-          <div class="text-xl md:text-2xl">Folio Transaction</div>
+          <div class="text-xl md:text-2xl"> {{ $t('Folio Transaction')}} </div>
         </template>
 
       </ComHeader>
@@ -12,7 +12,7 @@
           <div v-if="!isMobile" >
             <div class="p-input-icon-left">
               <i class="pi pi-search" />
-              <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+              <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
             </div>
           </div>
           <div>
@@ -22,7 +22,7 @@
         </div>
         <div class="flex">
           <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-            <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
+            <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter" />
           </div>
           <div class="px-2">
             <ComOrderBy doctype="Folio Transaction" @onOrderBy="onOrderBy" />
@@ -40,7 +40,7 @@
           tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail" scrollHeight="70vh">
           <Column
             v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-            :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+            :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
             :bodyClass="c.header_class || ''" :frozen="c.frozen">
             <template #body="slotProps">
               <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
@@ -88,7 +88,7 @@
       <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
         :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
         <template #start="slotProps">
-          <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+          <strong> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
         </template>
       </Paginator>
     </div>
@@ -99,13 +99,13 @@
       <template #top>
         <span class="p-input-icon-left w-full mb-3">
           <i class="pi pi-search" />
-          <InputText class="w-full flex-nowrap" v-model="filter.search_field" placeholder="Search" />
+          <InputText class="w-full flex-nowrap" v-model="filter.search_field" :placeholder="$t('Search')" />
         </span>
       </template>
       <div class="grid">
         <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
           <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-          <label :for="c.fieldname">{{ c.label }}</label>
+          <label :for="c.fieldname">{{ $t(c.label)  }}</label>
         </div>
       </div>
       <template #footer-left>
@@ -149,7 +149,8 @@ import { inject, ref, getCount, getDocList, onMounted, getApi, computed, onUnmou
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const moment = inject("$moment")
 const gv = inject("$gv")
 const opShowColumn = ref();

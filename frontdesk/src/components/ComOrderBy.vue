@@ -15,7 +15,8 @@ import {getApi,ref, onMounted} from "@/plugin"
 const loading = ref(false)
 const data= ref({order_by:"modified", order_type:"desc"})
 const emit = defineEmits(['onOrderBy'])
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     doctype:String,
     
@@ -27,9 +28,9 @@ if(state){
 }
 
 const sortOptions = ref([
-    {"fieldname":"modified", label:"Last Update On"},
-    {"fieldname":"creation", label:"Created On"},
-    {"fieldname":"name", label:"ID"}
+    {"fieldname":"modified", label:$t("Last Update On")},
+    {"fieldname":"creation", label:$t("Created On")},
+    {"fieldname":"name", label:$t("ID")}
 ])
 
 function onSelectOrderBy(d){
@@ -41,7 +42,7 @@ onMounted(()=>{
     loading.value = true
     getApi("frontdesk.get_meta",{doctype:props.doctype}).then((result)=>{
         result.message.fields.filter(x=>x.in_list_view==1  || x.bold==1).forEach(r=>{
-            sortOptions.value.push({fieldname:r.fieldname, label:r.label})
+            sortOptions.value.push({fieldname:r.fieldname, label:$t(r.label)})
         })
     })
 })

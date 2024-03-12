@@ -1,4 +1,4 @@
-<template>
+    <template>
     <div class="wrape-step-night-audit flex justify-between aj relative mb-5">
         <span class="step-life-time"><!--NA--></span>
         <template v-for="(step, index) in steps" :key="index">
@@ -23,7 +23,7 @@
     <div v-else class="wrp-night-audit-content w-full view-table-iframe" style="overflow: auto;
     max-width: 100%;
     max-height: 70vh;">
-    <div v-html="html" class="view_table_style"></div>
+    <div v-html="html" class="view_table_style run_night_ui_frame"></div>
        
     </div>
 

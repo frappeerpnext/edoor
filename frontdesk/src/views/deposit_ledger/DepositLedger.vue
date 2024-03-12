@@ -3,10 +3,10 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">Deposit Ledger</div>
+                    <div class="text-xl md:text-2xl"> {{ $t('Deposit Ledger') }} </div>
                 </template>
                 <template #end>
-                    <Button class="border-none white-space-nowrap" :label="isMobile ? 'Add New ' : 'Add New Deposit Ledger' " icon="pi pi-plus"
+                    <Button class="border-none white-space-nowrap" :label="isMobile ? 'Add New ' : $t('Add New Deposit Ledger') " icon="pi pi-plus"
                         @click="onAddDepositLedger()" />
                 </template>
             </ComHeader>
@@ -16,7 +16,7 @@
                 <div v-if="!isMobile" >
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                     </span>
                 </div>
                 <div>
@@ -46,7 +46,7 @@
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)"
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
@@ -89,7 +89,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong>{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -100,17 +100,17 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder="$t('Search')" class="w-full" />
                 </span>
             </template>
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname"> {{ $t(c.label) }}</label>
                 </li>
             </ul>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label="$t('Reset List')" />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -121,7 +121,7 @@
                 <div class="col-12" v-if="isMobile" >
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" class="w-full" placeholder="Search" @input="onSearch" />
+                        <InputText v-model="filter.keyword" class="w-full" :placeholder="$t('Search')" @input="onSearch" />
                     </span>
                 </div>
                     <ComAutoComplete class="col-6 input-wrp-search-autocomplete" width="100%" optionLabel="customer_name_en" optionValue="name"
@@ -141,7 +141,7 @@
                 
                 <div class="col-6">
                     <Checkbox inputId="filter_date" @change="onFilterDate" v-model="filter.filter_date" :binary="true"/>
-                    <lable class="ml-1" for="filter_date">Filter Date</lable>
+                    <lable class="ml-1" for="filter_date">{{ $t('Filter Date') }} </lable>
                 </div>
                 <div class="col-6">
                     <Calendar class="w-full" v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true" panelClass="no-btn-clear"
@@ -163,6 +163,8 @@ import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComAddDepositLedger from '@/views/deposit_ledger/components/ComAddDepositLedger.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
@@ -453,7 +455,7 @@ function onAddDepositLedger(data) {
     dialog.open(ComAddDepositLedger, {
         data: { data },
         props: {
-            header: `Add New Deposit Ledger`,
+            header: $t(`Add New Deposit Ledger`),
             style: {
                 width: '50vw',
             },

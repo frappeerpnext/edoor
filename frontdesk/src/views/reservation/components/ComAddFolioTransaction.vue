@@ -29,8 +29,12 @@
                     </div>
                     <div class="col-6">
                         <label for="account_code">{{ $t('Account Code') }}</label>
-                        <ComAutoComplete :disabled="!canEdit" v-model="doc.account_code" placeholder="Select Account Code"
-                            doctype="Account Code" class="auto__Com_Cus w-full" @onSelected="onSelectAccountCode"
+                        <ComAutoComplete :disabled="!canEdit" v-model="doc.account_code" 
+                            placeholder="Select Account Code"
+                            doctype="Account Code"
+                            class="auto__Com_Cus w-full" 
+                            @onSelected="onSelectAccountCode"
+                            :pageLength="20"
                             :filters="accountCodeFilter" />
 
                     </div>

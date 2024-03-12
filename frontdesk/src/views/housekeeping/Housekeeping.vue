@@ -5,7 +5,7 @@
                 <template #start>
                     <div class="flex align-items-center">
                         <i v-if="!isMobile" @click="onShowSummary" class="pi pi-bars text-3xl cursor-pointer"></i>
-                        <div class="text-xl md:text-2xl  md:ml-4">Housekeeping</div>
+                        <div class="text-xl md:text-2xl  md:ml-4">{{ $t('Housekeeping') }} </div>
                     </div>
                 </template>
                 <template #end>
@@ -26,7 +26,7 @@
                             :class="(hk.view_type == 'table') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-right-none border border-noround-right' : 'p-button h-full p-component conten-btn border-noround-right'">
                             <i :class="(hk.view_type == 'table') ? 'text-white' : ''" class="pi pi-list md:me-2" />
                             <template v-if="!isMobile">
-                               Table 
+                             {{ $t('Table') }}   
                             </template>
                             
                         </button>
@@ -34,16 +34,16 @@
                             :class="(hk.view_type == 'kanban') ? 'bg-blue-500 p-button h-full p-component text-white conten-btn border-left-none border border-noround-left' : 'p-button h-full p-component conten-btn border-noround-left'">
                             <i :class="(hk.view_type == 'kanban') ? 'text-white' : ''" class="pi pi-th-large md:me-2" />
                             <template v-if="!isMobile">
-                                Kanban
+                              {{ $t('Kanban') }}  
                             </template>
                         </button>
                     </div>
                     <div>
-                        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="'Back day'"
+                        <Button @click="onPrevNext('prev')" icon="pi pi-angle-double-left" v-tippy="$t('Back day')"
                             class="border-noround-right border-y-none border-left-none h-full"></Button>
-                        <Button @click="onToday()" v-tippy="'Today'" class="border-noround border-none h-full"><img
+                        <Button @click="onToday()" v-tippy="$t('Today')" class="border-noround border-none h-full"><img
                                 class="icon-set-svg" :src="iconTodayCalendar" /></Button>
-                        <Button @click="onPrevNext('next')" v-tippy="'Next day'"
+                        <Button @click="onPrevNext('next')" v-tippy="$t('Next day')"
                             class="border-noround-left border-y-none border-right-none h-full"
                             icon="pi pi-angle-double-right"></Button>
                     </div>
@@ -73,6 +73,8 @@ import ComHousekeepingRoomList from "./components/ComHousekeepingRoomList.vue";
 import ComHousekeepingRoomKanbanView from "./components/ComHousekeepingRoomKanbanView.vue";
 import iconTodayCalendar from '@/assets/svg/calendar-today-icon.svg'
 import { hydrate } from "vue";
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const hk = inject("$housekeeping")
 const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")

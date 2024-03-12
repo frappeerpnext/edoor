@@ -25,6 +25,7 @@
   "show_additional_guest_name_in_room_chart_calendar",
   "calculate_adr_include_all_room_occupied",
   "room_chart_calendear_slot_duration",
+  "auto_post_room_charge_folio_on_current_audit_date",
   "section_break_8",
   "guest_ledger_report_name",
   "guest_ledger_transaction_report",
@@ -403,12 +404,19 @@
    "fieldname": "calculate_adr_include_all_room_occupied",
    "fieldtype": "Check",
    "label": "Calculate ADR Include All Room Occupied"
+  },
+  {
+   "default": "1",
+   "description": "If we tick this option, room charge auto post will post on current audit date, otherwise it will post room charge from next audit date",
+   "fieldname": "auto_post_room_charge_folio_on_current_audit_date",
+   "fieldtype": "Check",
+   "label": "Auto Post Room Charge Folio on Current Audit Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-27 08:48:20.168095",
+ "modified": "2024-03-11 09:38:39.794842",
  "modified_by": "Administrator",
  "module": "eDoor Configuration",
  "name": "eDoor Setting",

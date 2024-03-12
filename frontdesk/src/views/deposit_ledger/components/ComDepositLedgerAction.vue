@@ -4,7 +4,7 @@
 
             <template v-for="(d, index) in accountGroups" :key="index">
                 <Button @click="onAddFolioTransaction(d)" class="conten-btn mr-1 white white-space-nowrap">
-                    Post {{ d.account_name }}
+                    {{ $t('Post ' + d.account_name) }}
                 </Button>
             </template>
 
@@ -16,24 +16,24 @@
                     <button @click="closeFolio" v-if="selectedFolio?.status == 'Open'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-ban" />
-                        <span class="ml-2">Close Folio</span>
+                        <span class="ml-2"> {{ $t('Close Folio') }} </span>
                     </button>
                     <button @click="EditFolio(true)"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-file-edit" />
-                        <span class="ml-2">Edit Folio </span>
+                        <span class="ml-2"> {{ $t('Edit Folio') }} </span>
                     </button>
 
                     <button @click="openFolio" v-if="selectedFolio?.status == 'Closed'"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-check-circle" />
-                        <span class="ml-2">Open Folio</span>
+                        <span class="ml-2">{{ $t('Open Folio') }} </span>
                     </button>
 
                     <button @click="onDeleteFolio"
                         class="w-full p-link flex align-items-center py-2 px-3 text-color hover:surface-200 border-noround">
                         <i class="pi pi-times-circle" />
-                        <span class="ml-2">Delete Folio</span>
+                        <span class="ml-2">{{ $t('Delete Folio') }} </span>
                     </button>
 
                 </template>
@@ -61,7 +61,8 @@ import Menu from 'primevue/menu';
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComFolioTransfer from "@/views/reservation/components/reservation_stay_folio/ComFolioTransfer.vue";
 import ComAddDepositLedger from "@/views/deposit_ledger/components/ComAddDepositLedger.vue";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({
     folio: Object,
 })

@@ -8,6 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "html_general_information",
+  "section_break_wfqt",
   "reference_number",
   "property",
   "working_day",
@@ -64,6 +66,8 @@
   "stays",
   "keyword",
   "room_rate_section",
+  "html_room_rate",
+  "section_break_phst",
   "rate_type",
   "room_rate",
   "room_rate_discount",
@@ -870,6 +874,23 @@
    "fieldname": "is_walk_in",
    "fieldtype": "Check",
    "label": "Is Walk-In"
+  },
+  {
+   "fieldname": "section_break_wfqt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "html_room_rate",
+   "fieldtype": "HTML",
+   "options": "room rate"
+  },
+  {
+   "fieldname": "section_break_phst",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "html_general_information",
+   "fieldtype": "HTML"
   }
  ],
  "image_field": "guest_photo",
@@ -881,7 +902,7 @@
    "link_fieldname": "reservation_stay"
   }
  ],
- "modified": "2024-02-13 08:43:28.003946",
+ "modified": "2024-03-10 13:58:13.972796",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

@@ -112,7 +112,7 @@ def update_comment_after_insert(doc, method=None, *args, **kwargs):
             if hasattr(ref_doc, "property"):
                 working_day = get_working_day(ref_doc.property)
                 update_files.append("custom_property='{}'".format(ref_doc.property))
-                update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"]))
+                update_files.append("custom_posting_date='{}'".format(working_day["date_working_day"] or frappe.utils.now()))
                 update_files.append("custom_is_audit_trail=1")
                 
                 if doc.comment_type=="Attachment":
@@ -826,41 +826,48 @@ def remove_temp_room_occupy(reservation):
                   """.format(reservation))
     frappe.db.commit()
 
-def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note=""):
-    frappe.db.sql("delete from `tabFolio Transaction` where reservation_room_rate='{}'".format(rate.name))
-    rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
-    doc = {
-        "doctype":"Folio Transaction",
-        "transaction_type":"Reservation Folio",
-        "posting_date":rate.date,
-        "transaction_number":folio.name,
-        "room_type_id":rate.room_type_id,
-        "room_id":rate.room_id,
-        "room_id":rate.room_id,
-        "input_amount":rate.input_rate,
-        "account_code":rate_type_doc.account_code,
-        "tax_rule":rate.tax_rule,
-        "discount_type":rate.discount_type,
-        "discount":rate.discount,
-        "tax_1_rate":rate.tax_1_rate,
-        "tax_2_rate":rate.tax_2_rate,
-        "tax_3_rate":rate.tax_3_rate,
-        "rate_include_tax":rate.rate_include_tax,
-        "is_auto_post":1,
-        "valiate_input_amount": False,
-        "reservation_room_rate": rate.name,
-        "source_reservation_stay": rate.reservation_stay,
-        "stay_room_id": rate.stay_room_id,
-        "is_night_audit_posing":is_night_audit_posing,
-        "note":note
-    }
-    doc = frappe.get_doc(doc)
-    doc.flags.ignore_update_reservation = True
-    doc.flags.ignore_validate_close_folio = True
-    # doc.flags.ignore_update_reservation_folio = True
- 
-    doc.insert()
-    return doc
+def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None):
+    data = frappe.db.sql("select name from  `tabFolio Transaction` where reservation_room_rate='{}'".format(rate.name),as_dict=1)
+    if not data :
+        rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
+        doc = {
+            "doctype":"Folio Transaction",
+            "transaction_type":"Reservation Folio",
+            "working_day":working_day,
+            "cashier_shift":cashier_shift,
+            "posting_date":rate.date,
+            "transaction_number":folio.name,
+            "room_type_id":rate.room_type_id,
+            "room_id":rate.room_id,
+            "room_id":rate.room_id,
+            "input_amount":rate.input_rate,
+            "account_code":rate_type_doc.account_code,
+            "tax_rule":rate.tax_rule,
+            "discount_type":rate.discount_type,
+            "discount":rate.discount,
+            "tax_1_rate":rate.tax_1_rate,
+            "tax_2_rate":rate.tax_2_rate,
+            "tax_3_rate":rate.tax_3_rate,
+            "rate_include_tax":rate.rate_include_tax,
+            "is_auto_post":1,
+            "valiate_input_amount": False,
+            "reservation_room_rate": rate.name,
+            "source_reservation_stay": rate.reservation_stay,
+            "stay_room_id": rate.stay_room_id,
+            "is_night_audit_posing":is_night_audit_posing,
+            "note":note
+        }
+        
+        doc = frappe.get_doc(doc)
+        doc.flags.ignore_update_reservation = True
+        doc.flags.ignore_validate_close_folio = True
+        
+        # doc.flags.ignore_update_reservation_folio = True
+    
+        doc.insert()
+        return doc
+    
+    return None
     
 
 

@@ -7,18 +7,18 @@
                 scrollable
                 :rowsPerPageOptions="[20, 30, 40, 50, 100, 500]" :page="page">
                 <Column selectionMode="multiple" headerStyle="width: 3rem"></Column>
-                <Column class="text-center" field="room_number" header="Room #"></Column>
-                <Column header="Status" headerClass="text-center" bodyClass="text-center">
+                <Column class="text-center" field="room_number" :header="$t('Room') + '#'"></Column>
+                <Column :header="$t('Status')" headerClass="text-center" bodyClass="text-center">
                     <template #body="{ data }">
                         <span v-if="data?.housekeeping_status"
                             class="rounded-pill py-1 px-2 text-white border-round-3xl border-round-3xl white-space-nowrap "
                             :style="{ background: data.status_color }">
-                            {{ data.housekeeping_status }}
+                            {{ $t(data.housekeeping_status)  }}
                         </span>
                     </template>
                 </Column>
-                <Column field="room_type" header="Room Type"></Column>
-                <Column field="reservation_stay" header="Reservation Stay" headerClass="text-center"
+                <Column field="room_type" :header="$t('Room Type') "></Column>
+                <Column field="reservation_stay" :header="$t('Reservation Stay')" headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
                         <Button v-if="slotProps.data.reservation_stay"
@@ -27,7 +27,7 @@
                             class="link_line_action1 no-underline"></Button>
                     </template>
                 </Column>
-                <Column field="guest_name" header="Guest Name">
+                <Column field="guest_name" :header="$t('Guest Name')">
                     <template #body="slotProps">
                         <Button v-if="slotProps.data.guest" class="color-purple-edoor p-0 no-underline"
                             @click="onViewCustomerDetail(slotProps.data.guest)" link>
@@ -36,14 +36,14 @@
                         </Button>
                     </template>
                 </Column>
-                <Column field="reservation_status" header="Reservation Status" headerClass="text-center"
+                <Column field="reservation_status" :header="$t('Reservation Status') " headerClass="text-center"
                     bodyClass="text-center">
                     <template #body="slotProps">
 
                         <ComHkReservationStatus :statusName="slotProps.data.reservation_status" />
                     </template>
                 </Column>
-                <Column field="housekeeper" header="Housekeeper">
+                <Column field="housekeeper" :header="$t('Housekeeper')">
                     <template #body="slotProps">
                         <Button v-if="slotProps.data.housekeeper" @click="onAssignHousekeeper($event, slotProps.data)" link
                             size="small" class="link_line_action1 no-underline">
@@ -72,7 +72,7 @@
             v-model:visible="visibleRight" position="right" @hide="SidebarClose">
             <template #header>
                 <div class="line-height-1">
-                    <div class="text-2xl">Detail OF</div>
+                    <div class="text-2xl">{{ $t('Detail OF') }} </div>
                     <div class="text-sm">{{ hk.selectedRow?.room_type }} # {{ hk.selectedRow?.room_number }}</div>
                 </div>
             </template>
@@ -90,6 +90,8 @@ import ComHkReservationStatus from '@/views/housekeeping/components/ComHkReserva
 import { useDialog } from 'primevue/usedialog';
 import GuestDetail from "@/views/guest/GuestDetail.vue"
 import Paginator from 'primevue/paginator';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialog = useDialog();
 const loading = ref(false)
 const page = ref(0)

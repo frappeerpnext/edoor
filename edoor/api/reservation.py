@@ -1504,92 +1504,93 @@ def change_stay(data):
     
 
 def post_room_charge_to_folio_after_extend_stay(stays):
-    for s in stays:
-        stay_doc = frappe.get_doc("Reservation Stay", s)
-        if stay_doc.reservation_status =="In-house":
-            working_day = get_working_day(stay_doc.property)
-            if getdate( stay_doc.departure_date) > getdate(working_day["date_working_day"]):
-                
-                sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
-                room_rates = frappe.db.sql(sql_rate,as_dict=1)
-                
-                if room_rates:
-                    room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
+    if frappe.db.get_single_value("eDoor Setting","auto_post_room_charge_folio_on_current_audit_date")==0:
+        for s in stays:
+            stay_doc = frappe.get_doc("Reservation Stay", s)
+            if stay_doc.reservation_status =="In-house":
+                working_day = get_working_day(stay_doc.property)
+                if getdate( stay_doc.departure_date) > getdate(working_day["date_working_day"]):
+                    
+                    sql_rate = "select name from `tabReservation Room Rate` where reservation_stay='{}' and date='{}'".format(stay_doc.name, working_day["date_working_day"])
+                    room_rates = frappe.db.sql(sql_rate,as_dict=1)
+                    
+                    if room_rates:
+                        room_rate_doc = frappe.get_doc("Reservation Room Rate", room_rates[0]["name"])
 
-                    # check if room chage already post to folio
-                    sql="select name,stay_room_id,room_id from `tabFolio Transaction` where coalesce(reservation_room_rate,'')!= '' and source_reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
-                    folio_transactions = frappe.db.sql(sql,as_dict=1)
-                    if len(folio_transactions)>0:
-                        for f in folio_transactions:
-                             
-                            if f["stay_room_id"] != room_rate_doc.stay_room_id or f["room_id"] != room_rate_doc.room_id:                            
-                                frappe.db.sql("update `tabFolio Transaction` set stay_room_id='{0}',room_id='{1}', room_number={2}, room_type_id='{3}', room_type='{4}' where name='{5}'".format(
-                                    room_rate_doc.stay_room_id,
-                                    room_rate_doc.room_id,
-                                    room_rate_doc.room_number,
-                                    room_rate_doc.room_type_id,
-                                    room_rate_doc.room_type,
-                                    f["name"]
-                                    
-                                ))
+                        # check if room chage already post to folio
+                        sql="select name,stay_room_id,room_id from `tabFolio Transaction` where coalesce(reservation_room_rate,'')!= '' and source_reservation_stay='{}' and posting_date='{}' and is_auto_post=1".format(stay_doc.name, working_day["date_working_day"])
+                        folio_transactions = frappe.db.sql(sql,as_dict=1)
+                        if len(folio_transactions)>0:
+                            for f in folio_transactions:
+                                
+                                if f["stay_room_id"] != room_rate_doc.stay_room_id or f["room_id"] != room_rate_doc.room_id:                            
+                                    frappe.db.sql("update `tabFolio Transaction` set stay_room_id='{0}',room_id='{1}', room_number={2}, room_type_id='{3}', room_type='{4}' where name='{5}'".format(
+                                        room_rate_doc.stay_room_id,
+                                        room_rate_doc.room_id,
+                                        room_rate_doc.room_number,
+                                        room_rate_doc.room_type_id,
+                                        room_rate_doc.room_type,
+                                        f["name"]
+                                        
+                                    ))
 
 
-                    else:
-                        # start add charge to filio
-                        # get folio post to master or post to self folio
-                        folio = get_stay_posting_folio(stay_doc)
-                        
-                        if folio:
-                            add_room_charge_to_folio( folio, room_rate_doc,0,"Room Extended")
                         else:
-                            frappe.throw("Please create folio for reservation stay #{}".format(stay_doc.name))
+                            # start add charge to filio
+                            # get folio post to master or post to self folio
+                            folio = get_stay_posting_folio(stay_doc)
+                            
+                            if folio:
+                                add_room_charge_to_folio( folio, room_rate_doc,0,"Room Extended")
+                            else:
+                                frappe.throw("Please create folio for reservation stay #{}".format(stay_doc.name))
 
-            else:
-                # delete extended room 
-                room_rates= frappe.db.sql("select name from `tabReservation Room Rate` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
-               
-
-
-                # get folio data before delete 
-                sql = """
-                        select name,transaction_number,posting_date,account_code, account_name, total_amount from `tabFolio Transaction` 
-                        where
-                            coalesce(parent_reference,'') = '' and  
-                            reservation_room_rate not in %(reservation_room_rate)s and 
-                            source_reservation_stay = %(source_reservation_stay)s
-                        """
+                else:
+                    # delete extended room 
+                    room_rates= frappe.db.sql("select name from `tabReservation Room Rate` where reservation_stay='{}'".format(stay_doc.name),as_dict=1)
                 
-                delete_folios = frappe.db.sql(sql,
-                                    {
-                                        "source_reservation_stay":stay_doc.name,
-                                        "reservation_room_rate": set([d["name"] for d in room_rates])
-                                    }
-                                    ,as_dict=1)
-                
-                if delete_folios:
 
-                    folio_names = set([d["name"] for d in delete_folios])
-                    frappe.db.sql("delete from `tabFolio Transaction` where  name in %(names)s or parent_reference in %(names)s",{
-                        "names": folio_names
-                    })
+
+                    # get folio data before delete 
+                    sql = """
+                            select name,transaction_number,posting_date,account_code, account_name, total_amount from `tabFolio Transaction` 
+                            where
+                                coalesce(parent_reference,'') = '' and  
+                                reservation_room_rate not in %(reservation_room_rate)s and 
+                                source_reservation_stay = %(source_reservation_stay)s
+                            """
                     
+                    delete_folios = frappe.db.sql(sql,
+                                        {
+                                            "source_reservation_stay":stay_doc.name,
+                                            "reservation_room_rate": set([d["name"] for d in room_rates])
+                                        }
+                                        ,as_dict=1)
                     
-                    #update folio balance
-                    for d in set([x["transaction_number"] for x in delete_folios]):
-                        update_reservation_folio(doc=frappe.get_doc("Reservation Folio",d), run_commit=False)
+                    if delete_folios:
 
-                    #post to audit trail
-                    for f in delete_folios:
-                        content = f"""Folio Transaction Deleted when change departure date to the back date. Folio #: {f["transaction_number"] }, Folio Tran. #: {f["name"]}, Date: {frappe.format_value(f["posting_date"],{"fieldtype":"Date"} )}, Account Code: {f["account_code"]} - {f["account_name"]}, Amount: {frappe.format_value(f["total_amount"],{"fieldtype":"Currency"} )}"""
+                        folio_names = set([d["name"] for d in delete_folios])
+                        frappe.db.sql("delete from `tabFolio Transaction` where  name in %(names)s or parent_reference in %(names)s",{
+                            "names": folio_names
+                        })
+                        
+                        
+                        #update folio balance
+                        for d in set([x["transaction_number"] for x in delete_folios]):
+                            update_reservation_folio(doc=frappe.get_doc("Reservation Folio",d), run_commit=False)
 
-                        frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
-                                "comment_type":"Deleted",
-                                "subject":"Delete Folio Transaction",
-                                "reference_doctype":"Reservation Stay",
-                                "reference_name":stay_doc.name,
-                                "custom_audit_trail_type":"Deleted",
-                                "content":content.strip()
-                            }])
+                        #post to audit trail
+                        for f in delete_folios:
+                            content = f"""Folio Transaction Deleted when change departure date to the back date. Folio #: {f["transaction_number"] }, Folio Tran. #: {f["name"]}, Date: {frappe.format_value(f["posting_date"],{"fieldtype":"Date"} )}, Account Code: {f["account_code"]} - {f["account_name"]}, Amount: {frappe.format_value(f["total_amount"],{"fieldtype":"Currency"} )}"""
+
+                            frappe.enqueue("edoor.api.utils.add_audit_trail",queue='long', data =[{
+                                    "comment_type":"Deleted",
+                                    "subject":"Delete Folio Transaction",
+                                    "reference_doctype":"Reservation Stay",
+                                    "reference_name":stay_doc.name,
+                                    "custom_audit_trail_type":"Deleted",
+                                    "content":content.strip()
+                                }])
 
                     
                 
