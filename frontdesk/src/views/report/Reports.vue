@@ -59,7 +59,7 @@ import SplitterPanel from 'primevue/splitterpanel';
 
 const isMobile = ref(window.isMobile) 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
 const url = ref("")
 const gv = inject("$gv")
 

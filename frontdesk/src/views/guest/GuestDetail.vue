@@ -45,7 +45,7 @@ const { t: $t } = i18n.global;
 const confirm = useConfirm()
 const dialogRef = inject("dialogRef");
 
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
 const dialog = useDialog()
 const name = ref("")
 const loading = ref(false)

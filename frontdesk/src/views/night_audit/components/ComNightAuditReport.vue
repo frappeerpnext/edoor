@@ -78,13 +78,14 @@ function closeMessage () {
 }
 
 function showReport() {
-    const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+    const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
     let date = window.current_working_date
+    let cashier_shift = working_day.cashier_shift.name
     if (selectedReport.value.default_audit_date == 'Previous Audit Date') {
         date = moment(date).add(-1, 'Days').format("YYYY-MM-DD")
     }
 
-    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + window.property_name + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+working_day.cashier_shift.name + "&end_date=" + date + "&" + selectedReport.value.default_filter
+    url.value = serverUrl + "/printview?doctype=Business%20Branch&name=" + window.property_name + "&format=" + gv.getCustomPrintFormat(decodeURI(selectedReport.value.report_name)) + "&&settings=%7B%7D&_lang=en&letterhead=" + letter_head.value + "&show_toolbar=0&start_date="+ date +"&cashier_shift="+ cashier_shift + "&end_date=" + date + "&" + selectedReport.value.default_filter
 
     const el = document.getElementById("iframe_night_audit_report")
 

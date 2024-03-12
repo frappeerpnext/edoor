@@ -147,7 +147,8 @@ const props = defineProps({
     }
 })
 const property = JSON.parse(localStorage.getItem("edoor_property"))
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+
 const visible = ref(false)
 const visibleWebcam = ref(false)
 const loading = ref(false)

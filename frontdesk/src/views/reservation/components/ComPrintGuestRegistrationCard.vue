@@ -43,7 +43,7 @@ const gv = inject("$gv")
 
 
 
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + setting.backend_port;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
 const url = ref("")
 const guests = ref([]);
 const selected_guest = ref({})

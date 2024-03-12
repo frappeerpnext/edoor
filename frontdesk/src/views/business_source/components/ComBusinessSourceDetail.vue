@@ -21,7 +21,7 @@ const loading = ref(false)
 const confirm = useConfirm()
 const name = ref()
 
-const serverUrl = window.location.protocol + "//" + window.location.hostname + ":" + window.setting.backend_port;
+const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
 const url =  computed(() => {
     let url = serverUrl +  "/printview?doctype=Business%20Source&name="+ name.value +"&format=" + gv.getCustomPrintFormat("eDoor Business Source Detail")  + "&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang=en&view=ui&show_toolbar=0"
     return url
