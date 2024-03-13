@@ -895,14 +895,8 @@
  ],
  "image_field": "guest_photo",
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "group": "Folio",
-   "link_doctype": "Reservation Folio",
-   "link_fieldname": "reservation_stay"
-  }
- ],
- "modified": "2024-03-10 13:58:13.972796",
+ "links": [],
+ "modified": "2024-03-13 11:15:46.749897",
  "modified_by": "Administrator",
  "module": "eDoor",
  "name": "Reservation Stay",

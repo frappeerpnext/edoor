@@ -2,11 +2,11 @@
   <ComDialogContent :loading="loading" @onClose="onClose" @onOK="onSave()">
     <div class="grid">
       <div class="col-12">
-          <label>City Ledger Type</label>
+          <label>{{ $t('City Ledger Type') }}</label>
           <InputText class="w-full" type="text" v-model="accountType.city_ledger_type" />
       </div>
       <div class="col-12">
-        <label>Note</label>
+        <label> {{ $t('Note') }} </label>
         <Textarea class="w-full" v-model="accountType.note" rows="5" cols="50" />
       </div>
     </div>
@@ -15,6 +15,8 @@
 
 <script setup>
 import { onMounted,ref,inject,createUpdateDoc  } from '@/plugin';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const accountType = ref({})

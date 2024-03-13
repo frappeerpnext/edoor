@@ -2,10 +2,10 @@
  
         <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
             <template #start>
-                <div class="text-xl md:text-2xl">City Ledger Account Type</div>
+                <div class="text-xl md:text-2xl">{{ $t('City Ledger Account Type') }} </div>
             </template>
             <template #end>
-                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New City Ledger Account Type'" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
+                <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New City Ledger Account Type')" icon="pi pi-plus"  @click="onAddCityLedgerAccountType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-20rem">
@@ -19,8 +19,8 @@
         <div>
             <ComPlaceholder text="No Data" :loading="gv.loading"  :is-not-empty="(data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))).length > 0">
                 <DataTable  showGridlines :value="data?.filter((r)=>r.city_ledger_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))" tableStyle="min-width: 50rem" @row-click=" ">
-                    <Column :headerClass="'white-space-nowrap'" field="city_ledger_type" header="City Ledger Type" ></Column>
-                    <Column header="Owner">
+                    <Column :headerClass="'white-space-nowrap'" field="city_ledger_type" :header="$t('City Ledger Type') " ></Column>
+                    <Column :header="$t('Owner')">
                         <template #body="slotProps">
                             <div v-if="slotProps?.data && slotProps?.data?.owner">
                                 <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
@@ -29,12 +29,12 @@
                             </div>  
                         </template>
                     </Column>
-                    <Column field="note" class="w-6" header="Note"></Column>
-                    <Column header="Action" class="text-center w-10rem">
+                    <Column field="note" class="w-6" :header=" $t('Note') "></Column>
+                    <Column :header="$t('Action')" class="text-center w-10rem">
                         <template #body="slotProps">
                             <div class="flex gap-2 justify-center">
-                            <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" label="Edit" rounded />
-                            <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" label="Delete" rounded />
+                            <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right" class="h-2rem border-none" :label="$t('Edit')" rounded />
+                            <Button @click="onDelete(slotProps.data.name)"  severity="danger"  icon="pi pi-trash text-sm" iconPos="right" class="h-2rem border-none" :label="$t('Delete') " rounded />
                             </div>
                         </template>
                     </Column>
@@ -46,6 +46,8 @@
 <script setup>
 import { inject, ref, getDocList, onMounted,deleteDoc,useConfirm,useDialog,onUnmounted } from '@/plugin'
 import ComAddCityLedgerType from "@/views/city_ledger/components/ComAddCityLedgerType.vue"
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const gv = inject("$gv")
 const data = ref([])
 const filter = ref({})
@@ -57,7 +59,7 @@ const dialog = useDialog()
 function onEdit (selected){ 
  dialog.open(ComAddCityLedgerType, {
     props: {
-        header: `Edit City Ledger Type`,
+        header: $t(`Edit City Ledger Type`),
         style: {
             width: '50vw',
         },
@@ -82,7 +84,7 @@ function onEdit (selected){
 function onDelete (name){ 
         confirm.require({
         message: 'Are you sure you want to delete guest?',
-        header: 'Confirmation',
+        header: $t('Confirmation'),
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
         rejectClass: 'hidden',
@@ -124,7 +126,7 @@ function onAddCityLedgerAccountType(){
     }
     dialog.open(ComAddCityLedgerType, {
         props: {
-            header: `Add New City Ledger Account Type`,
+            header: $t(`Add New City Ledger Account Type`),
             style: {
                 width: '50vw',
             },
