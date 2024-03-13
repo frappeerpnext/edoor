@@ -51,7 +51,7 @@
                             @click="onUnmarkasPaidbyMasterRoom()"
                             class="w-full p-link flex align-items-center p-2  text-color hover:surface-200 border-noround">
                             <ComIcon icon="BilltoMasterRoom" class="me-2" style="height:15px;"></ComIcon>
-                            {{ $t('nmark as Paid by Master Room') }} U
+                            {{ $t('nmark as Paid by Master Room') }}
                         </button>
                         <button v-else-if="!props.data.paid_by_master_room && !props.data.is_master "
                             @click="onMarkasPaidbyMasterRoom()"

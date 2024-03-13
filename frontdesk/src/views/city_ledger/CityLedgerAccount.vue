@@ -7,9 +7,13 @@
                 </template>
                 <template #end>
                     <Button class="border-none" @click="onAddCityLedgerAccount">
-                        Add New
+                        
                         <template v-if="!isMobile">
- City Ledger Account
+                            {{ $t('Add New City Ledger Account') }}
+
+                        </template>
+                        <template v-else>
+                            {{ $t('Add New') }}                             
                         </template>
                         </Button>
                 </template>
@@ -20,14 +24,14 @@
                         <div v-if="!isMobile" class="w-20rem">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                         </div>
                         <div>
                             <div class="flex gap-3">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="gv.isNotEmpty(filter)">
-                                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter'" icon="pi pi-filter-slash" @click="onClearFilter" />
+                                    <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
                         </div>
@@ -37,7 +41,7 @@
                                     <div v-if="isMobile" class="col-12">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                             </div>
                         </div>
                                     <div class="col-6">
@@ -82,7 +86,7 @@
                     @row-dblclick="onViewReservationStayDetail" 
                     :rows="20">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
 
                         <template #body="slotProps">
@@ -121,7 +125,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                 :rowsPerPageOptions="[20, 30, 40, 50]" :pageLinkSize="isMobile ? '2' : '5'" @page="pageChange">
                 <template #start="slotProps">
-                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile">{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -133,18 +137,18 @@
             <template #top>
                 <div class="p-input-icon-left mb-3 w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.search_field" placeholder="Search" />
+                    <InputText class="w-full" v-model="filter.search_field" :placeholder="$t('Search') " />
                 </div>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
 
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </div>
             </div>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label=" $t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
         <!-- <Button @click="OnSaveColumn">Save</Button> -->
@@ -156,7 +160,8 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
 import ComAddCityLedgerAccount from '@/views/city_ledger/components/ComAddCityLedgerAccount.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const moment = inject("$moment")
 const gv = inject("$gv")
 // const toast = useToast()

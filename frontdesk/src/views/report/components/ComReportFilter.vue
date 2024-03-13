@@ -102,7 +102,7 @@ const filter = ref({
     show_cash_count: "1",
     show_cash_float: "1",
     row_group: "Date",
-    cashier_shift:working_day.cashier_shift.name
+  
 
 })
 function onSelectLetterHead(l) {

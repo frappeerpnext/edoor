@@ -4,11 +4,8 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">Guest Folio</div>
+                    <div class="text-xl md:text-2xl"> {{ $t('Guest Folio') }} </div>
                 </template>
-                <!-- <template #end>
-                    <Button class="border-none" label="Add New Guest Folio" icon="pi pi-plus" @click="onAddDeskFolio()" />
-                </template> -->
             </ComHeader>
         </div>
         <div class="mb-3 flex justify-between">
@@ -16,14 +13,14 @@
                 <div v-if="!isMobile">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                     </span>
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 </div>
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
 
@@ -46,7 +43,7 @@
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)"
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
@@ -88,7 +85,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -105,16 +102,16 @@
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </li>
             </ul>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label=" $t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
     <OverlayPanel ref="showAdvanceSearch" style="max-width:80rem">
-        <ComOverlayPanelContent style="max-width:50rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
+        <ComOverlayPanelContent style="max-width:80rem" title="Advance Filter" @onSave="onClearFilter" titleButtonSave="Clear Filter"
             icon="pi pi-filter-slash" :hideButtonClose="false" @onCancel="onCloseAdvanceSearch">
             <div class="grid">
                 <div class="col-12" v-if="isMobile">
@@ -142,7 +139,7 @@
                     <div class="flex relative">
                     <!-- <lable for="filter_date">Filter Date</lable> -->
                     <Calendar class="w-full" inputClass="pl-6" :disabled="!filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true"  panelClass="no-btn-clear"
-                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" placeholder="Select Date Range"/>
+                @date-select="onSearch" dateFormat="dd-mm-yy" showIcon showButtonBar selectionMode="range" :placeholder=" $t('Select Date Range')"/>
                 <div v-tippy="'Filter By Date'" class="check-box-filter w-full">
                     <Checkbox class="absolute" inputId="filter_date" @change="onSearch" v-model="filter.filter_date" :binary="true" selectionMode="range"/>
                     </div>
@@ -160,7 +157,8 @@ import { inject, ref, reactive, useToast, getCount, getDocList, onMounted, getAp
 import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")

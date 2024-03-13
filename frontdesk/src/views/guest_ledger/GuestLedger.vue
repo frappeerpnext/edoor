@@ -85,8 +85,8 @@
                             <CurrencyFormat v-else-if="c.fieldtype == 'Currency'" :value="slotProps.data[c.fieldname]" />
                             <span v-else-if="c.fieldtype == 'ReservationStatus'"
                                 class="px-2 rounded-lg me-2 text-white p-1px border-round-3xl"
-                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">{{
-                                    slotProps.data[c.fieldname] }}</span>
+                                :style="{ backgroundColor: slotProps.data['reservation_status_color'] }">
+                                {{ $t(slotProps.data[c.fieldname]) }}</span>
                             <span v-else-if="c.fieldtype == 'Check'">
                                 <span v-if="slotProps.data[c.fieldname]">
                                     <ComIcon v-if="c.label == 'Master Folio'" v-tippy="'Is Master Folio'"
@@ -115,7 +115,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -136,7 +136,7 @@
                 </div>
             </div>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label=" $t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -150,7 +150,7 @@
 <div class="col-12">
     <div class="p-input-icon-left w-full">
         <i class="pi pi-search" />
-        <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+        <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
     </div>
     <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
 </div>

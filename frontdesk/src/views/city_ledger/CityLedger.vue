@@ -3,7 +3,7 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">City Ledger</div>
+                    <div class="text-2xl"> {{ $t('City Ledger') }} </div>
                 </template>
                 <template #end>
                     <SplitButton class="spl__btn_cs sp" @click="onPrint" label="Print" icon="pi pi-print" /> 
@@ -15,7 +15,7 @@
                         <div v-if="!isMobile" class="p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                         </div>
                         <div>
@@ -23,7 +23,7 @@
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
 
                                 <div v-if="isFilter">
-                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' "
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? $t('Clear') : $t('Clear Filter') "
                                         icon="pi pi-filter-slash" @click="onClearFilter" />
                                 </div>
                             </div>
@@ -35,7 +35,7 @@
                 <div class="flex gap-2">
                     <div>
                         <Dropdown v-model="order.order_by" :options="sortOptions" optionValue="fieldname"
-                            optionLabel="label" placeholder="Sort By" @change="onSelectOrderBy" />
+                            optionLabel="label" :placeholder="$t('Sort By') " @change="onSelectOrderBy" />
                     </div>
                     <div>
                         <!-- <Button class="content_btn_b h-full px-3" @click="onOrderTypeClick">{{order.order_type}}</Button> -->
@@ -68,10 +68,10 @@
                 :rows="20" 
                 :rowsPerPageOptions="[20, 30, 40, 50]">
                 <div class="absolute bottom-6 left-4">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong>{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </div>
                     <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
                           
@@ -121,17 +121,17 @@
             <template #top>
                 <div class="p-input-icon-left mb-3 w-full">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder=" $t('Search') " class="w-full" />
                 </div>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </div>
             </div>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" label="Reset List" @click="onResetTable" />
+                <Button class="border-none" icon="pi pi-replay" :label="$t('Reset List') " @click="onResetTable" />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -143,7 +143,7 @@
                 <div v-if="isMobile" class="col-12">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                         </div>
                 <div class="col-6 md:col-4">
@@ -175,6 +175,8 @@ import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComBoxSummaryBalanceTransaction from './components/ComBoxSummaryBalanceTransaction.vue';
 import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
 import ComReservationStayPrintButton from "@/views/reservation/components/ComReservationStayPrintButton.vue"
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))

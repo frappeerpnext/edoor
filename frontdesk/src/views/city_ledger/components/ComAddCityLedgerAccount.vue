@@ -5,31 +5,31 @@
             <template #content>
                 <div class="grid">
                 <div class="col-6">
-                    <label>City Ledger Name</label>
+                    <label>{{ $t('City Ledger Name') }} </label>
                     <InputText class="w-full" v-model="data.city_ledger_name" type="text" placeholder="City Ledger Name" :maxlength="50" />
                 </div>
                 <div class="col-6">
-                    <label>City Ledger Type</label>
+                    <label>{{ $t('City Ledger Type') }} </label>
                     <ComSelect class="w-full" v-model="data.city_ledger_type" placeholder="City Ledger Type" doctype="City Ledger Type" />
                 </div>
                 <div class="col-6">
-                    <label>Business Source</label>
+                    <label>{{ $t('Business Source') }} </label>
                     <ComAutoComplete class="w-full" v-model="data.business_source" placeholder="Business Source" doctype="Business Source" />
                 </div>
                 <div class="col-6">
-                    <label>Company Name</label><br />
+                    <label>{{ $t('Company Name') }} </label><br />
                     <InputText class="w-full" v-model="data.company_name" type="text"  placeholder="Company Name" :maxlength="50" />
                 </div>  
                 <div class="col-6">
-                    <label>Phone Number</label><br />
+                    <label>{{ $t('Phone Number') }}</label><br />
                     <InputText class="w-full" v-model="data.phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
                 </div>
                 <div class="col-6">
-                    <label>Email Address</label><br />
+                    <label>{{ $t('Email Address') }} </label><br />
                     <InputText class="w-full" v-model="data.email_address" type="text"  placeholder="Email Address" :maxlength="50" />
                 </div>
                 <div class="col-12">
-                    <label>Address</label>
+                    <label>{{ $t('Address') }} </label>
                     <div class="card flex justify-content-left">
                         <Textarea v-model="data.address"  rows="3"  style="width: 100%;" />
                     </div>
@@ -42,16 +42,16 @@
                 <div class="grid">
                     <div class="col-12">
                             <div class="w-50">
-                            <label>Bank Name</label><br />
+                            <label>{{ $t('Bank Name') }} </label><br />
                             <InputText class="w-full" v-model="data.bank_name" type="text"  placeholder="Bank Name" :maxlength="50" />
                             </div>
                         </div>  
                         <div class="col-6">
-                            <label>Bank Account Number</label><br />
+                            <label>{{ $t('Bank Account Number') }}</label><br />
                             <InputText class="w-full" v-model="data.bank_account_number" type="text"  placeholder="Bank Account Number" :maxlength="50" />
                         </div >
                         <div class="col-6">
-                            <label>Bank Account Name</label><br />
+                            <label>{{ $t('Bank Account Name') }} </label><br />
                             <InputText class="w-full" v-model="data.bank_account_name" type="text"  placeholder="Bank Account Name" :maxlength="50" />
                         </div>
                 </div>
@@ -61,11 +61,11 @@
             <template #content>
                 <div class="grid">
                 <div class="col-6">
-                    <label>Contact Name</label><br />
+                    <label>{{ $t('Contact Name') }} </label><br />
                     <InputText class="w-full" v-model="data.contact_name" type="text"  placeholder="Contact Name" :maxlength="50" />
                 </div>
                 <div class="col-6">
-                    <label>Phone Number</label><br />
+                    <label>{{ $t('Phone Number') }} </label><br />
                     <InputText class="w-full"  v-model="data.contact_phone_number" type="text"  placeholder="Phone Number" :maxlength="50" />
                 </div>                
             
@@ -87,6 +87,8 @@
 <script setup>
 import { ref, createUpdateDoc,inject,getDoc,onMounted } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const loading = ref(false);

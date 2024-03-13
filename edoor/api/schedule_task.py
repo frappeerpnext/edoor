@@ -1,6 +1,7 @@
 import functools
 import re
 
+import requests
 from edoor.api.utils import update_reservation, update_reservation_folio, update_reservation_stay_and_reservation,submit_update_audit_trail_from_version
 from edoor.api.reservation import generate_room_occupies, post_charge_to_folio_afer_check_in
 from edoor.edoor.doctype.reservation_stay.reservation_stay import generate_room_occupy, generate_temp_room_occupy
@@ -400,6 +401,8 @@ def fix_generate_duplicate_room_occupy():
 
 @frappe.whitelist()
 def generate_audit_trail_from_version():
+      
+
     audit_trail_documents = frappe.db.get_list("Audit Trail Document", pluck='name',filters={"is_epos_audit_trail":0})
     version_data = frappe.db.get_list('Version',
                         filters={

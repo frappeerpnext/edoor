@@ -4,10 +4,10 @@
             <template #end>
                 <div class="overflow-auto w-full flex gap-2">
                 <Button class="conten-btn white-space-nowrap" @click="AddTransaction(d)"
-                    v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">Post
-                    {{ d.account_name }}</Button>
+                    v-for="(d, index) in setting.account_group.filter(r => r.show_in_city_ledger == 1)" :key="index">
+                    {{ $t('Post '+ d.account_name) }}</Button>
                 <Button @click="viewCityLedgerReport" class="conten-btn">
-                    <i class="pi pi-print mr-2"></i> Print 
+                    <i class="pi pi-print mr-2"></i> {{ $t('Print') }}  
                 </Button>
                 </div>
             </template>
@@ -18,7 +18,7 @@
                 <div >
                     <div class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                     </div>
                 </div>
                 <div class="w-5">
@@ -111,7 +111,7 @@
                 tableStyle="min-width: 50rem;" 
                 @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label" :headerClass="c.header_class || ''"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)" :headerClass="c.header_class || ''"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
                             
@@ -164,7 +164,7 @@
                 <Paginator class="p__paginator bg-ed-paging" v-model:first="pageState.activePage" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                     :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                     <template #start="slotProps">
-                        <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                        <strong>{{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                     </template>
                 </Paginator>
             </ComPlaceholder>
@@ -203,6 +203,8 @@ import ComCityLedgerTransactionMoreOption from "../components/ComCityLedgerTrans
 import ComIFrameModal from "@/components/ComIFrameModal.vue";
 import ComBoxSummaryBalanceTransaction from '@/views/city_ledger/components/ComBoxSummaryBalanceTransaction.vue';
 import ComAddFolioTransaction from '@/views/reservation/components/ComAddFolioTransaction.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const isMobile = ref(window.isMobile)
 const props = defineProps({
     name: String,

@@ -5,12 +5,12 @@
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div @click="loadData()" class="text-xl white-space-nowrap md:text-2xl">Guest ledger Transaction</div>
+                            <div @click="loadData()" class="text-xl white-space-nowrap md:text-2xl">{{ $t('Guest ledger Transaction') }} </div>
                         </div>
                     </div>
                 </template>
                 <template #end>
-                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i> Print</Button>
+                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i>{{ $t('Print') }} </Button>
                 </template>
             </ComHeader>
             <div class="flex justify-between">
@@ -20,7 +20,7 @@
                         <div class="col-3 p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
@@ -74,9 +74,9 @@
                 :rows="20" 
                 :rowsPerPageOptions="[20, 30, 40, 50]">
                 <div class="absolute bottom-6 left-4">
-                    <strong>Total Records: <span class="ttl-column_re">{{pageState.totalRecords}}</span></strong>
+                    <strong>{{ $t('Total Records') }} : <span class="ttl-column_re">{{pageState.totalRecords}}</span></strong>
                 </div>
-                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)"
                         :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
                             <Button v-if="c.fieldtype == 'Link'" :class="'p-0 ' + (slotProps.data[c.fieldname] != '' ? 'link_line_action1' : '')" @click="onOpenLink(c, slotProps.data)"
@@ -180,7 +180,7 @@
                         <Checkbox class="me-2" inputId="show-ms" @change="onSearch" v-model="filter.is_master_folio"
                             :binary="true" :trueValue="1" :falseValue="0" />
                         <label ref="show-ms">
-                            <span>Show Master Folio Only</span>
+                            <span>{{ $t(' Show Master Folio Only ') }} </span>
                         </label>
                     </div>
                 </div>
@@ -194,6 +194,8 @@ import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))

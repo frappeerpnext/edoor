@@ -5,12 +5,12 @@
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div @click="loadData()" class="text-xl md:text-2xl white-space-nowrap">City ledger Transaction</div>
+                            <div @click="loadData()" class="text-xl md:text-2xl white-space-nowrap">{{ $t('City ledger Transaction') }} </div>
                         </div>
                     </div>
                 </template>
                 <template #end>
-                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i> Print</Button>
+                    <Button class="conten-btn" @click="onPrint"><i class="pi pi-print mr-2"></i>{{ $t('Print') }} </Button>
                 </template>
             </ComHeader>
             <div class="flex justify-between">
@@ -20,7 +20,7 @@
                         <div class="col-3 p-0">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                             </div>
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
@@ -37,7 +37,7 @@
                             <div class="flex gap-2">
                                 <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceFilter" />
                                 <div v-if="isFilter" >
-                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? 'Clear' : 'Clear Filter' " icon="pi pi-filter-slash"
+                                    <Button class="content_btn_b whitespace-nowrap" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash"
                                         @click="onClearFilter" />
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                 <div class="absolute bottom-6 left-4">
                     <strong>Total Records: <span class="ttl-column_re">{{pageState.totalRecords}}</span></strong>
                 </div>
-                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                    <Column v-for="c of columns?.filter(r => r.label && selectedColumns?.includes(r.fieldname))" :key="c.fieldname" :field="c.fieldname" :header="$t(c.label) "
                         :headerClass="c.header_class || ''" :bodyClass="c.header_class || ''">
                         <template #body="slotProps">
                           
@@ -122,17 +122,17 @@
             <template #top>
                 <div class="p-input-icon-left mb-3 w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.search_field" placeholder="Search" />
+                    <InputText class="w-full" v-model="filter.search_field" :placeholder="$t('Search') " />
                 </div>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </div>
             </div>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label="$t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -144,7 +144,7 @@
                         <div class="col-12">
                             <div class="p-input-icon-left w-full">
                                 <i class="pi pi-search" />
-                                <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                                <InputText class="w-full" v-model="filter.keyword" :placeholder="$t('Search')" @input="onSearch" />
                             </div>
                             <!-- <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" /> -->
                         </div>
@@ -158,15 +158,15 @@
                         </div>
                     </template>
                 <div class="col-6 md:col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" placeholder="Start Date"
+                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.start_date" :placeholder=" $t('Start Date') "
                         dateFormat="dd-mm-yy" @date-select="onDateSelect" showIcon />
                 </div>
                 <div class="col-6 md:col-4">
-                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" placeholder="End Date"
+                    <Calendar class="w-full" :selectOtherMonths="true" v-model="filter.end_date" :placeholder="$t('End Date') "
                         dateFormat="dd-mm-yy" showIcon @date-select="onDateSelect" />
                 </div>
                 <div class="col-6 md:col-4">
-                    <ComAutoComplete v-model="filter.business_source" class="w-full" placeholder="Business Source"
+                    <ComAutoComplete v-model="filter.business_source" class="w-full" :placeholder="$t('Business Source')"
                         doctype="Business Source" @onSelected="onSearch" />
                 </div>
                 <div class="col-6 md:col-4">
@@ -184,7 +184,7 @@
                         <Checkbox class="me-2" inputId="show-ms" @change="onSearch" v-model="filter.is_master_folio"
                             :binary="true" :trueValue="1" :falseValue="0" />
                         <label ref="show-ms">
-                            <span>Show Master Folio Only</span>
+                            <span> {{ $t('Show Master Folio Only') }} </span>
                         </label>
                     </div>
                 </div>
@@ -198,6 +198,8 @@ import { Timeago } from 'vue2-timeago'
 import ComIFrameModal from '@/components/ComIFrameModal.vue';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComSummaryofBalence from '@/views/city_ledger/components/ComSummaryofBalence.vue' 
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const dialog = useDialog();
 const edoor_setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const property = JSON.parse(localStorage.getItem("edoor_property"))
