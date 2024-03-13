@@ -9,9 +9,9 @@
         <div class="flex w-full mt-2" v-for="(language, index) in languages" :key="index">
             <Button class="w-full" :class="(loglang === language.name) ? 'bg-green-200' : ''" @click="onChangeLanguage(language.name)" severity="secondary" raised text >
                 <div style="padding:2px;" class="surface-ground border-round-sm">
- <img style="width:30px;" class="border-round-sm" :src="language.custom_flag" /> 
+ <img style="width:30px;" class="border-round-sm" :src="language.flag" /> 
                 </div>
-            <p class="ms-3 text-color">{{ language.custom_language_name }}</p>
+            <p class="ms-3 text-color">{{ language.language_name }}</p>
             </Button>   
         </div>
         </ComPlaceholder>
@@ -45,10 +45,10 @@ function onChangeLanguage(lang){
 function loadData() {
     let filters = []
     if (keyword.value) {
-        filters.push(["custom_language_name", "like", '%' + keyword.value + '%'])
+        filters.push(["language_name", "like", '%' + keyword.value + '%'])
     }
     getDocList('POS Translation', {
-        fields: ['custom_language_name', 'custom_flag', 'name'],
+        fields: ['language_name', 'flag', 'name'],
         filters: filters,
         limit: 10000,
     })
