@@ -2,17 +2,17 @@
     <div>
         <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
             <template #start>
-                <div class="text-xl md:text-2xl">Business Source Type</div>
+                <div class="text-xl md:text-2xl"> {{ $t('Business Source Type') }} </div>
             </template>
             <template #end>
-                <Button class="border-none" :label="isMobile ? 'Add New' : 'Add New Business Source Type' " icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
+                <Button class="border-none" :label="isMobile ? $t('Add New') : $t('Add New Business Source Type') " icon="pi pi-plus" @click="onAddNewBusinessSourceType" />
             </template>
         </ComHeader>
         <div class="mb-3 w-full md:w-20rem">
             <div class="flex w-full flex-wrap gap-2 ">
                 <div class="p-input-icon-left w-full">
                     <i class="pi pi-search" />
-                    <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                    <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                 </div>
             </div>
         </div>
@@ -20,8 +20,8 @@
             <ComPlaceholder text="No Data" :loading="gv.loading" :is-not-empty="gv.search(data, filter.keyword).length > 0">
                 <!-- data?.filter((r)=>r.business_source_type.toLowerCase().includes((filter.keyword ||'').toLowerCase()))  -->
                 <DataTable showGridlines :value="gv.search(data, filter.keyword)" tableStyle="min-width: 50rem">
-                    <Column headerClass="white-space-nowrap" field="business_source_type" header="Business Source Type"></Column>
-                    <Column header="Owner">
+                    <Column headerClass="white-space-nowrap" field="business_source_type" :header=" $t('Business Source Type') "></Column>
+                    <Column :header="$t('Owner')">
                         <template #body="slotProps">
                             <div v-if="slotProps?.data && slotProps?.data?.owner">
                                 <template v-for="(item) in slotProps.data?.owner?.split('@')[0]" :key="index">
@@ -30,14 +30,14 @@
                             </div>  
                         </template>
                     </Column>
-                    <Column field="note" class="w-6" header="Note"></Column>
-                    <Column header="Action" class="text-center w-10rem">
+                    <Column field="note" class="w-6" :header=" $t('Note')"></Column>
+                    <Column :header=" $t('Action') " class="text-center w-10rem">
                         <template #body="slotProps">
                             <div class="flex gap-2 justify-center">
                                 <Button @click="onEdit(slotProps.data)" icon="pi pi-pencil text-sm" iconPos="right"
-                                    class="h-2rem border-none" label="Edit" rounded />
+                                    class="h-2rem border-none" :label="$t('Edit')" rounded />
                                 <Button @click="onDelete(slotProps.data.name)" severity="danger" icon="pi pi-trash text-sm"
-                                    iconPos="right" class="h-2rem border-none" label="Delete" rounded />
+                                    iconPos="right" class="h-2rem border-none" :label=" $t('Delete') " rounded />
                             </div>
                         </template>
                     </Column>
@@ -49,6 +49,8 @@
 <script setup>
 import { inject, ref, getDocList, onMounted, useDialog, useConfirm, deleteDoc,computed } from '@/plugin'
 import ComAddBusinessSourceType from "@/views/business_source/components/ComAddBusinessSourceType.vue"
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const gv = inject("$gv")
 const dialog = useDialog()
 const data = ref([])

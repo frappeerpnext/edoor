@@ -12,8 +12,10 @@
                     <i class="pi pi-sliders-h text-xl" />
                 </Button>
                 <div class="border-left-1 border-primary-100"></div>
-                <Button class="white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2" /> Preview
-                    Report</Button> 
+                <Button class="white-space-nowrap content_btn_b" @click="onSearch"><i class="pi pi-file me-2" />
+                    {{ $t('Preview Report') }}
+                    
+                    </Button> 
             </div>
         </div>
         <OverlayPanel ref="showCustomReport" :style="{ width: isMobile ? '100%' : '50rem' }">
@@ -21,11 +23,11 @@
                 @onCancel="onCloseCustomReport">
                 <div class="grid">
                     <div class="col-12 lg:col-6">
-                        <label>Letter Head</label><br>
+                        <label>{{ $t('Letter Head') }} </label><br>
                         <ComLetterHead v-model="filter.letterhead" @onSelect="onSelectLetterHead" />
                     </div>
                     <div class="col-12 lg:col-6">
-                        <label>Language</label><br>
+                        <label>{{ $t('Language') }} </label><br>
                         <ComSelect :clear="false" v-model="filter._lang" doctype="Language" optionLabel="language_name"
                             optionValue="name" :filters="[['enabled', '=', 1]]" />
                     </div>
@@ -49,7 +51,8 @@
 import { ref, inject, onMounted } from "@/plugin"
 import ComReportFilterOnly from "@/views/report/components/ComReportFilterOnly.vue";
 const emit = defineEmits(['onFilter', 'onGetHeight'])
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
 const working_day = JSON.parse(localStorage.getItem("edoor_working_day"))

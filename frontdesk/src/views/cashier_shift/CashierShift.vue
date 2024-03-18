@@ -3,7 +3,7 @@
         <div>
             <ComHeader isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">Cashier Shift</div>
+                    <div class="text-xl md:text-2xl"> {{ $t('Cashier Shift') }} </div>
                 </template>
                 <template #end>
                    
@@ -15,14 +15,14 @@
                 <div v-if="!isMobile">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                     </span>
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 </div>
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label="isMobile ? $t('Clear') : $t('Clear Filter') " icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
 
@@ -45,7 +45,7 @@
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                        :key="c.fieldname" :field="c.fieldname" :header=" $t(c.label) "
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
@@ -99,17 +99,17 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder=" $t('Search') " class="w-full" />
                 </span>
             </template>
             <ul class="res__hideshow">
                 <li class="mb-2" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label)  }}</label>
                 </li>
             </ul>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label=" $t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -120,14 +120,14 @@
                 <div class="col-12" v-if="isMobile">
                     <span class="p-input-icon-left w-full">
                         <i class="pi pi-search" />
-                        <InputText class="w-full" v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText class="w-full" v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                     </span>
                 </div>
                     <ComAutoComplete class="col-6 input-wrp-search-autocomplete" width="100%" optionLabel="customer_name_en" optionValue="name"
                         v-model="filter.selected_guest" @onSelected="onSearch" placeholder="Guest" doctype="Customer" />
 
                     <ComSelect class="col-6" v-model="filter.selected_status" @onSelected="onSearch"
-                        placeholder="Status" :options="['Open', 'Closed']" />
+                        placeholder="Status"  :options="statusFilter" optionLabel="label" optionValue="value"  />
                     <ComSelect class="col-6" isFilter optionLabel="room_type" optionValue="name"
                         v-model="filter.selected_room_type" @onSelected="onSearch" placeholder="Room Type" doctype="Room Type"
                         :filters="{ property: property.name }"></ComSelect>
@@ -139,7 +139,7 @@
                 
                 <div class="col-6">
                     <Checkbox inputId="filter_date" @change="onFilterDate" v-model="filter.filter_date" :binary="true"/>
-                    <lable class="ml-1" for="filter_date">Filter Date</lable>
+                    <lable class="ml-1" for="filter_date">{{ $t('Filter Date') }} </lable>
                 </div>
                 <div class="col-6">
                     <Calendar class="w-full" v-if="filter.filter_date" v-model="filter.selected_dates" :selectOtherMonths="true" panelClass="no-btn-clear"
@@ -150,7 +150,7 @@
                 <div class="col-6" v-if="filter.search_date_type">
                     <Calendar :selectOtherMonths="true" class="w-full" hideOnRangeSelection v-if="filter.search_date_type"
                         dateFormat="dd-MM-yy" v-model="filter.date_range" selectionMode="range" :manualInput="false"
-                        @date-select="onDateSelect" placeholder="Select Date Range" showIcon />
+                        @date-select="onDateSelect" :placeholder=" $t('Select Date Range') " showIcon />
                 </div>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -163,11 +163,16 @@ import ComOrderBy from '@/components/ComOrderBy.vue';
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const toast = useToast()
 const opShowColumn = ref();
 const isMobile = ref(window.isMobile) 
 const property = JSON.parse(localStorage.getItem("edoor_property"))
- 
+const statusFilter = ref([
+    { label: $t('Open'), value: 'Open' },
+    { label: $t('Closed'), value: 'Closed' }
+]); 
 const columns = ref([
     { fieldname: 'name', label: 'Cashier Shift #', fieldtype: "Link", post_message_action: "view_cashier_shift_detail", default: true },
     { fieldname: 'posting_date', label: 'Posting Date', fieldtype: "Date", header_class: "text-center", frozen: true, default: true },

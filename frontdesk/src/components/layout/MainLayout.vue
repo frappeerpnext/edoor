@@ -52,12 +52,12 @@
                                         <span class="ml-2">Change Property</span>
                                     </button>
                                     
-                                    <button @click="changeProperty"
+                                    <!-- <button @click="changeProperty"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround"
                                         v-if="user.property.length > 1">
                                         <img :src="iconChangeProperty" style="height: 15px;" />
                                         <span class="ml-2">Change Property</span>
-                                    </button>
+                                    </button> -->
 
                                     <button @click="onBlankGuestRegistration"
                                         class="w-full p-link flex align-items-center p-2 pl-0 text-color hover:surface-200 border-noround">

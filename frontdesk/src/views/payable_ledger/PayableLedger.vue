@@ -4,10 +4,10 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-2xl">Payable Ledger</div>
+                    <div class="text-2xl"> {{$t('Payable Ledger')}} </div>
                 </template>
                 <template #end>
-                    <Button class="border-none" :label="isMobile ? 'Add New' : ' Add New Payable Ledger'" icon="pi pi-plus" @click="onAddPayableLedger()" />
+                    <Button class="border-none" :label="isMobile ? $t('Add New') : $t(' Add New Payable Ledger')" icon="pi pi-plus" @click="onAddPayableLedger()" />
                 </template>
             </ComHeader>
         </div>
@@ -16,14 +16,14 @@
                 <div v-if="!isMobile">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search" />
-                        <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                        <InputText v-model="filter.keyword" :placeholder=" $t('Search') " @input="onSearch" />
                     </span>
                 </div>
                 <div>
                     <Button icon="pi pi-sliders-h" class="content_btn_b" @click="advanceSearch" />
                 </div>
                 <div v-if="gv.isNotEmpty(filter, 'search_date_type')">
-                    <Button class="content_btn_b" label="Clear Filter" icon="pi pi-filter-slash" @click="onClearFilter" />
+                    <Button class="content_btn_b" :label=" $t('Clear Filter')" icon="pi pi-filter-slash" @click="onClearFilter" />
                 </div>
                 <div>
 
@@ -46,7 +46,7 @@
                     tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column
                         v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label && (r.can_view_rate || 'Yes') == 'Yes')"
-                        :key="c.fieldname" :field="c.fieldname" :header="c.label"
+                        :key="c.fieldname" :field="c.fieldname" :header="$t(c.label)"
                         :headerClass="[c.header_class, 'white-space-nowrap'] || 'white-space-nowrap'"
                         :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
@@ -161,6 +161,8 @@ import { useDialog } from 'primevue/usedialog';
 import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import ComAddPayableLedger from '@/views/payable_ledger/components/ComAddPayableLedger.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const showAdvanceSearch = ref()
 const moment = inject("$moment")
 const gv = inject("$gv")

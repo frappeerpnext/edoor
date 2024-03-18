@@ -3,25 +3,25 @@
     <div class="grid">
 
         <div class="col-6">
-            <label>Posting Date</label>
+            <label> {{ $t('Posting Date') }} </label>
             <div>
                 <Calendar selectOtherMonths class="w-full" showIcon v-model="data.posting_date" :manualInput="false" :disabled="true" :min-date="working_day" dateFormat="dd-mm-yy"/>
             </div>
         </div> 
         <div class="col-6">
-            <label> Room</label>
+            <label> {{ $t('Room') }} </label>
             <div class="w-full">
                 <ComAutoComplete placeholder="Select Room"  v-model="data.room_id" class="pb-2 w-full"  doctype="Room" :filters="['property','=',property.name]" :disabled="doc?.docstatus==1" />
             </div>
         </div>
         
         <div class="col-12">
-            <label for="room">Vendor<span class="text-red-500">*</span></label>
+            <label for="room"> {{ $t('Vendor') }} <span class="text-red-500">*</span></label>
             <ComAutoComplete v-model="data.vendor" placeholder="Select Vendor" doctype="Vendor"
                 class="auto__Com_Cus w-full"/>
         </div>
         <div class="col-12">
-        <label>Note</label>
+        <label> {{ $t('Note') }} </label>
         <div class=" card w-full flex justify-content-left">
             <Textarea class="w-full" v-model="data.note" autoResize />
         </div>
@@ -39,6 +39,8 @@ const working_day = moment(window.current_working_date).toDate()
 const property = JSON.parse(localStorage.getItem("edoor_property"))
 const gv = inject('$gv');
 const toast = useToast();
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 function onOK() {
     if(!data.value.vendor){
         toast.add({ severity: 'warn', summary: "Add Payable Ledger", detail: "Please select vendor for add payable ledger.", life: 5000 })

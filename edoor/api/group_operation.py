@@ -350,7 +350,7 @@ def group_change_rate(data):
 
 
     #get all room rate list to change rate
-    sql = "select name,reservation_stay,date from `tabReservation Room Rate` where reservation_stay in %(stays)s and date>=%(working_date)s and date between %(start_date)s and %(end_date)s"
+    sql = "select name,reservation_stay,date from `tabReservation Room Rate` where is_complimentary=0 and is_house_use=0 and  reservation_stay in %(stays)s and date>=%(working_date)s and date between %(start_date)s and %(end_date)s"
     room_rate_names = frappe.db.sql(sql,{
         "stays":[d["name"] for d in active_stays ],
         "working_date":working_day["date_working_day"],

@@ -6,25 +6,25 @@
           <template #content>
             <div class="grid">
               <div class="col-6">
-                <label>Vendor Name</label>
+                <label> {{ $t('Vendor Name') }} </label>
                 <InputText v-model="data.vendor_name" type="text" class="w-full" placeholder="Vendor Name" />
               </div>
               <div class="col-6">
-                <label>Company</label>
+                <label>{{ $t('Company') }} </label>
                 <InputText v-model="data.company" type="text" class="w-full" placeholder="Company" />
               </div>
               <div class="col-6">
-                <label>Vendor Type</label>
+                <label> {{ $t('Vendor Type') }} </label>
                 <ComSelect width="100%" v-model="data.vendor_type" @onSelected="onSearch"
                     placeholder="Vendor Type" :options="[ 'Individual','General','Company']" />
               </div>
               <div class="col-6">
-                <label>Vendor Group</label>
+                <label> {{ $t('Vendor Group') }} </label>
                 <ComAutoComplete class="w-full" v-model="data.vendor_group" placeholder="Vendor Group"
                   doctype="Vendor Group" />
                 <div class="col-12">
                   <Checkbox inputId="ingredient1" v-model="data.disabled" :binary="true" />
-                  <label for="ingredient1" class="ml-2">Disabled</label>
+                  <label for="ingredient1" class="ml-2"> {{ $t('Disabled') }} </label>
                 </div>
               </div>
             </div>
@@ -36,19 +36,19 @@
           <template #content>
             <div class="grid">
               <div class="col-6">
-                <label>Contact Name</label>
+                <label> {{ $t('Contact Name') }} </label>
                 <InputText v-model="data.contact_name" type="text" class="w-full" placeholder="Contact Name" />
               </div>
               <div class="col-6">
-                <label>Email Address</label>
+                <label> {{ $t('Email Address') }} </label>
                 <InputText v-model="data.email_address" type="text" class="w-full" placeholder="Email Address" />
               </div>
               <div class="col-6">
-                <label>Phone Number</label>
+                <label> {{ $t('Phone Number') }} </label>
                 <InputText v-model="data.phone_number" type="text" class="w-full" placeholder="Phone Number" />
               </div>
               <div class="col-6">
-                <label>Website</label>
+                <label> {{ $t('Website') }} </label>
                 <InputText v-model="data.website" type="text" class="w-full" placeholder="Website" />
               </div>
             </div>
@@ -60,17 +60,17 @@
           <template #content>
             <div class="grid">
               <div class="col-12">
-                <label>Province</label>
+                <label> {{ $t('Province') }} </label>
                 <InputText v-model="data.province" type="text" class="w-full" placeholder="Province" />
               </div>
 
               <div class="col-12 lg:col-6 pt-1">
-                <label class="white-space-nowrap">Address</label><br />
-                <Textarea class="p-inputtext-sm w-full" placeholder="Address" v-model="data.address" rows="4" />
+                <label class="white-space-nowrap"> {{ $t('Address') }} </label><br />
+                <Textarea class="p-inputtext-sm w-full" :placeholder=" $t('Address')" v-model="data.address" rows="4" />
               </div>
               <div class="col-12 lg:col-6 pt-1">
-                <label class="white-space-nowrap">Note</label><br />
-                <Textarea class="p-inputtext-sm w-full" placeholder="Note" v-model="data.note" rows="4" />
+                <label class="white-space-nowrap"> {{ $t('Note') }} </label><br />
+                <Textarea class="p-inputtext-sm w-full" :placeholder=" $t('Note') " v-model="data.note" rows="4" />
               </div>
 
             </div>
@@ -83,6 +83,8 @@
 <script setup>
 import { ref, createUpdateDoc, inject, getDoc, onMounted } from '@/plugin'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const data = ref({})

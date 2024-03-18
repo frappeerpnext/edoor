@@ -305,7 +305,7 @@ const config = await getConfigData()
 
 
 if (!auth.isLoggedIn) {
-	const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + window.setting.backend_port:"https://" + window.location.hostname;
+	const serverUrl = window.location.protocol=="http:"?"http://" + window.location.hostname + ":" + config.backend_port:"https://" + window.location.hostname;
 	window.location.replace(serverUrl)
 }
  

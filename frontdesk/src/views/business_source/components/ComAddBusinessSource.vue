@@ -6,36 +6,36 @@
                     <template #content>
                         <div class="grid">
                             <div class="col-6">
-                                <label>Business Source</label>
+                                <label> {{ $t('Business Source') }} </label>
                                 <InputText v-model="data.business_source" type="text" class="w-full"
                                     placeholder="Business Source" />
                             </div>
                             <div class="col-6">
-                                <label>Business Source Type</label>
+                                <label> {{ $t('Business Source Type') }} </label>
                                 <ComAutoComplete  class="w-full" v-model="data.business_source_type" placeholder="Business Source Type" doctype="Business Source Type" />
                             </div>
                             <div class="col-6">
-                                <label>Country</label>
+                                <label> {{ $t('Country') }} </label>
                                 <ComAutoComplete v-model="data.country" class="w-full" placeholder="Country"
                                     doctype="Country" />
                             </div>
                             <div class="col-6">
-                                <label>City</label>
-                                <InputText v-model="data.city" type="text" class="w-full" placeholder="City" />
+                                <label> {{ $t('City') }} </label>
+                                <InputText v-model="data.city" type="text" class="w-full" :placeholder=" $t('City') " />
                             </div>
                             <div class="col-6">
-                                <label>Contact Name</label>
+                                <label> {{ $t('Contact Name') }} </label>
                                 <InputText v-model="data.contact_name" type="text" class="w-full"
-                                    placeholder="Contact Name" />
+                                    :placeholder=" $t('Contact Name') " />
                             </div>
                             <div class="col-6">
-                                <label>Phone Number</label>
+                                <label> {{ $t('Phone Number') }} </label>
                                 <InputText v-model="data.phone_number" type="text" class="w-full"
-                                    placeholder="Phone Number" />
+                                    :placeholder=" $t('Phone Number') " />
                             </div>
                             <div class="col-6">
-                                <label>Email</label>
-                                <InputText v-model="data.email" type="text" class="w-full" placeholder="Email" />
+                                <label> {{ $t('Email') }} </label>
+                                <InputText v-model="data.email" type="text" class="w-full" :placeholder=" $t('Email') " />
                             </div>
                         </div>
                     </template>
@@ -46,18 +46,18 @@
                     <template #content>
                         <div class="grid">
                             <div class="col-6">
-                                <label>Bank Name</label>
-                                <InputText v-model="data.bank_name" type="text" class="w-full" placeholder="Bank Name" />
+                                <label> {{ $t('Bank Name') }} </label>
+                                <InputText v-model="data.bank_name" type="text" class="w-full" :placeholder=" $t('Bank Name') " />
                             </div>
                             <div class="col-6">
-                                <label>Credit Card Number</label>
+                                <label> {{ $t('Credit Card Number') }} </label>
                                 <InputText v-model="data.credit_card_number" type="text" class="w-full"
-                                    placeholder="Credit Card Number" />
+                                    :placeholder=" $t('Credit Card Number') " />
                             </div>
                             <div class="col-6">
-                                <label>Card Holder Name</label>
+                                <label> {{ $t('Card Holder Name') }} </label>
                                 <InputText v-model="data.card_holder_name" type="text" class="w-full"
-                                    placeholder="Card Holder Name" />
+                                    :placeholder=" $t('Card Holder Name') " />
                             </div>
                         </div>
                     </template>
@@ -69,11 +69,11 @@
                         <div class="grid">
                             <div class="col-12">
                                 <Checkbox inputId="ingredient1" v-model="data.auto_create_city_ledger_account" :binary="true" />
-                                <label for="ingredient1" class="ml-2"> Auto create City Ledger Account</label>
+                                <label for="ingredient1" class="ml-2"> {{ $t('Auto create City Ledger Account') }} </label>
                             </div>
 
                             <div class="col-12" v-if="data.auto_create_city_ledger_account">
-                                <label>City Ledger Type</label>
+                                <label> {{ $t('City Ledger Type') }} </label>
                                 <ComAutoComplete isIconSearch v-model="data.city_ledger_type" class="w-full"
                                     placeholder="City Ledger Type" doctype="City Ledger Type" @onSelected="onSelectedCustomer" />
                             </div>
@@ -91,7 +91,8 @@ const dialogRef = inject('dialogRef')
 const gv = inject('$gv')
 const data = ref({})
 const loading = ref(false)
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 function onLoad() {
     loading.value = true

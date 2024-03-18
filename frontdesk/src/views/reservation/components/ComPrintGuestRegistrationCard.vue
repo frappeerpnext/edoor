@@ -12,17 +12,27 @@
                         <ComLetterHead v-model="letter_head" class="w-full"  @onSelect="onSelectLetterHead"/>
                         <!-- <ComSelect  class="ml-2" place-holder="Letter Head" v-model="letter_head" doctype="Letter Head" @change="refreshReport" /> -->
                     </div>
+                    <div class="col">
+                        <div>
+                            <Checkbox v-model="show_rate" :binary="true" :trueValue="1" :falseValue="0"
+                                @input="refreshReport" inputId="show_rate" />
+                        </div>
+                        <div>
+                            <label for="show_rate">Show Rate</label>
+                        </div>
+                    </div>
                 </div>
                 <div class="col flex justify-content-end align-items-center gap-2">
                     <div v-if="(view||'')!='ui'">
                         
-                        <ComPrintButton :url="url"  @click="onPrint"/>
+                        <ComPrintButton :url="url"  @click="onPrint"/> 
                         
                     </div>
                     <div>
                         <Button @click="refreshReport" icon="pi pi-refresh" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"></Button>
                     </div>
                 </div>
+                
             </div> 
             <div class="widht-ifame">
                 <iframe @load="onIframeLoaded()" id="report-view" width="100%" :src="url"></iframe>
@@ -47,10 +57,10 @@ const serverUrl = window.location.protocol=="http:"?"http://" + window.location.
 const url = ref("")
 const guests = ref([]);
 const selected_guest = ref({})
-
+const filter_options = ref([])
 const letter_head = ref("")
 const reservationStay = ref("")
-
+const show_rate = ref([])
 
 
 function onSelectLetterHead(l){
@@ -68,6 +78,9 @@ function onIframeLoaded() {
 const refreshReport = () => {
     if (selected_guest.value) {
         url.value = serverUrl + "/printview?doctype=Reservation%20Stay&name=" + reservationStay.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&show_toolbar=0&letterhead="+ letter_head.value +"&settings=%7B%7D&_lang=en&show_toolbar=1&customer=" + selected_guest.value
+    }
+    if (show_rate.value) {
+        url.value = serverUrl + "/printview?doctype=Reservation%20Stay&name=" + reservationStay.value + "&format="+ gv.getCustomPrintFormat("eDoor Guest Registration Card")+"&no_letterhead=0&show_toolbar=0&letterhead="+ letter_head.value +"&settings=%7B%7D&_lang=en&show_toolbar=1&customer=" + selected_guest.value + "&show_rate=" + show_rate.value
     }
     document.getElementById("report-view").contentWindow.location.replace(url.value)
 }

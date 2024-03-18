@@ -2416,15 +2416,14 @@ def check_room_config_and_over_booking(property):
     return 0
 
 @frappe.whitelist()
-def get_day_end_summary_report(property, date):
+def get_day_end_summary_report(property, date): 
     # room revneue 
     sql = """select 
                 sum(amount * if(type='Debit',1,-1)) as room_revenue 
             from `tabFolio Transaction` 
             where 
             property='{}' and posting_date = '{}' and
-            transaction_type='Reservation Folio'  and 
-            account_category in ('Room Charge', 'Room Tax', 'Service Charge', 'Room Discount')
+            flash_report_revenue_group in ('Room Charge')
         """.format(property, date)
     data = frappe.db.sql(sql,as_dict=1)
     room_revenue = 0
@@ -2433,6 +2432,8 @@ def get_day_end_summary_report(property, date):
     #room nitht
     sql = """select 
                 sum(is_active=1 and type='Reservation') as total_room_sold ,
+                sum(is_active=1 and type='Reservation' and is_complimentary=1) as total_complimentary_room ,
+                sum(is_active=1 and type='Reservation' and is_house_use=1) as total_house_use_room ,
                 sum(type='Block') as total_block ,
                 sum(is_active=1 and type='Reservation' and is_arrival=1) as arrival,
                 sum(if(is_active=1 and type='Reservation' and is_arrival=1,adult,0)) as arrival_adult,
@@ -2449,14 +2450,20 @@ def get_day_end_summary_report(property, date):
         """.format(property, date)
     
     occupy_data = frappe.db.sql(sql,as_dict=1)
-    
+    calculate_adr_include_all_room_occupied = frappe.db.get_single_value("eDoor Setting", "calculate_adr_include_all_room_occupied")
     room_sold = 0
+    complimentary = 0
+    house_use = 0
     room_block = 0
     if len(occupy_data)>0:
         room_sold = occupy_data[0]["total_room_sold"] or 0
+        complimentary = occupy_data[0]["total_complimentary_room"] or 0
+        house_use = occupy_data[0]["total_house_use_room"] or 0
         room_block = occupy_data[0]["total_block"] or 0
-    adr = (room_revenue or 0) / (1 if room_sold==0 else room_sold)
-
+    if calculate_adr_include_all_room_occupied == 1:
+        adr = (room_revenue or 0) / (1 if room_sold==0 else room_sold)
+    else:
+        adr = (room_revenue or 0) / ((1 if room_sold==0 else room_sold) - (complimentary + house_use))
     #occupancy
     total_rooms =frappe.db.count('Room', {'property': property, "disabled":0})
     

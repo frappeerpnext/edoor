@@ -3,7 +3,7 @@
         <div>
             <ComHeader colClass="col-6" isRefresh @onRefresh="Refresh()">
                 <template #start>
-                    <div class="text-xl md:text-2xl">Vendor</div>
+                    <div class="text-xl md:text-2xl"> {{ $t('Vendor') }} </div>
                 </template>
                 <template #end>
                     <Button class="border-none" label="Add New Vendor" icon="pi pi-plus" @click="onAddNewVendor" />
@@ -14,7 +14,7 @@
                     <div v-if="!isMobile">
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
-                            <InputText v-model="filter.keyword" placeholder="Search" @input="onSearch" />
+                            <InputText v-model="filter.keyword" :placeholder=" $t('Search')" @input="onSearch" />
                         </span>
                     </div>
                     <div>
@@ -42,7 +42,7 @@
                     stateStorage="local" stateKey="table_vendor_list_state" scrollable :reorderableColumns="true"
                     :value="data" tableStyle="min-width: 50rem" @row-dblclick="onViewReservationStayDetail">
                     <Column v-for="c of columns.filter(r => selectedColumns.includes(r.fieldname) && r.label)"
-                        :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="c.label"
+                        :key="c.fieldname" :headerClass="c.header_class || ''" :field="c.fieldname" :header="$t(c.label)"
                         :labelClass="c.header_class || ''" :bodyClass="c.header_class || ''" :frozen="c.frozen">
                         <template #body="slotProps">
                             <Button v-if="c.fieldtype == 'Link'" class="p-0 link_line_action1"
@@ -79,7 +79,7 @@
             <Paginator class="p__paginator" :rows="pageState.rows" :totalRecords="pageState.totalRecords"
                 :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong>Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>
@@ -90,17 +90,17 @@
             <template #top>
                 <span class="p-input-icon-left w-full mb-3">
                     <i class="pi pi-search" />
-                    <InputText v-model="filter.search_field" placeholder="Search" class="w-full" />
+                    <InputText v-model="filter.search_field" :placeholder=" $t('Search') " class="w-full" />
                 </span>
             </template>
             <div class="grid">
                 <div class="col-6 py-1" v-for="(c, index) in getColumns.filter(r => r.label)" :key="index">
                     <Checkbox v-model="c.selected" :binary="true" :inputId="c.fieldname" />
-                    <label :for="c.fieldname">{{ c.label }}</label>
+                    <label :for="c.fieldname">{{ $t(c.label) }}</label>
                 </div>
             </div>
             <template #footer-left>
-                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" label="Reset List" />
+                <Button class="border-none" icon="pi pi-replay" @click="onResetTable" :label=" $t('Reset List') " />
             </template>
         </ComOverlayPanelContent>
     </OverlayPanel>
@@ -127,6 +127,8 @@ import Paginator from 'primevue/paginator';
 import ComOrderBy from '@/components/ComOrderBy.vue';
 import { Timeago } from 'vue2-timeago'
 import ComAddVendor from '@/views/vendor/ComAddVendor.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile) 
 const moment = inject("$moment")
 const gv = inject("$gv")

@@ -2,11 +2,11 @@
     <!-- {{ reports }} -->
     <div class="p-2">
         <div class="mb-3">
-            <InputText class="w-full" v-model="keyword" placeholder="Search Report" />
+            <InputText class="w-full" v-model="keyword" :placeholder="$t('Search Report')" />
         </div>
         <div v-if="!loading">
             <Accordion :activeIndex="0" @tab-click="onTabClick">
-                <AccordionTab :header="p.report_title"
+                <AccordionTab :header="$t(p.report_title)"
                     v-for="(p, index) in reports?.filter(r => r.is_group == 1 && r.parent_system_report && r.has_child)"
                     :key="index">
                     <Listbox v-model="selectedReport" :options="reports?.filter(r => r.parent_system_report == p.name)"
@@ -18,6 +18,8 @@
 </template>
 <script setup>
 import { ref, getDocList, onMounted, computed } from "@/plugin"
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const emit = defineEmits(["onSelectReport","onTabClick"])
 const selectedReport = ref()
 const data = ref()

@@ -4,7 +4,7 @@
             <div class="mt-2" v-if="isMobile">
                 <Button icon="pi pi-bars" @click="visible = true" class="d-bg-set btn-inner-set-icon p-button-icon-only content_btn_b"/>
             </div>
-            <div class="text-2xl pt-3 lg:pt-2">Reports</div>
+            <div class="text-2xl pt-3 lg:pt-2">{{ $t('Reports') }} </div>
             <div class="col flex gap-2 justify-end ">
                 <div v-if="(view||'')!='ui'">
                     <ComPrintButton :url="url"  @click="onPrint"/>
@@ -17,7 +17,7 @@
     </div>  
 
     <template v-if="isMobile">
-        <Sidebar class="sidebar-report" v-model:visible="visible" header="Reports List">
+        <Sidebar class="sidebar-report" v-model:visible="visible" :header="$t('Reports List') ">
             <ComReportTree @onTabClick="onTabClick" @onSelectReport="onSelectReport" />
         </Sidebar> 
         <div v-if="selectedReport" class="p-2">
@@ -27,7 +27,7 @@
             <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
         </div>
         <div v-else class="p-2 flex align-items-center h-100 justify-center">
-            <p class="text-center text-2xl pt-3">Please select a report from Sidebar.</p>
+            <p class="text-center text-2xl pt-3">{{ $t('Please select a report from Sidebar.') }} </p>
         </div>
     </template>
     <template v-else>
@@ -44,7 +44,7 @@
                     <iframe @load="onIframeLoaded()" id="iframe" width="100%" :src="url"></iframe>
                 </div>
                 <div v-else class="p-2 flex align-items-center h-100 justify-center">
-                    <p class="text-center text-2xl pt-3">Please select a report on the left bar.</p>
+                    <p class="text-center text-2xl pt-3">{{ $t('Please select a report on the left bar.') }} </p>
                 </div>
             </SplitterPanel>
         </Splitter>
@@ -56,6 +56,8 @@ import ComReportTree from "@/views/report/components/ComReportTree.vue"
 import ComReportFilter from "@/views/report/components/ComReportFilter.vue"
 import Splitter from 'primevue/splitter';
 import SplitterPanel from 'primevue/splitterpanel';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 
 const isMobile = ref(window.isMobile) 
 const setting = JSON.parse(localStorage.getItem("edoor_setting"))
