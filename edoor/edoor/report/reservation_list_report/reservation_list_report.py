@@ -225,7 +225,7 @@ def get_get_reservation_stay(filters):
 	sql="""
 			select 
 				name,
-				reference_number
+				reference_number,
 				reservation_date,
 				arrival_date,
 				departure_date,
