@@ -9,7 +9,7 @@
                     </div>
                     <div v-if="hasFilter('keyword')">
                         <InputText type="text" class="p-inputtext-sm w-full w-16rem" @input="reloadIframe"
-                            placeholder="Keyword" v-model="filters.keyword" :maxlength="50" />
+                            :placeholder="$t('Search')" v-model="filters.keyword" :maxlength="50" />
                     </div>
                     <div v-if="hasFilter('start_date')">
                         <Calendar :selectOtherMonths="true" panelClass="no-btn-clear"
@@ -277,7 +277,7 @@ const loadIframe = () => {
     param.value.doc = decodeURIComponent(dialogRef.value.data.doctype)
     param.value.name = decodeURIComponent(dialogRef.value.data.name)
     param.value.format = decodeURIComponent(dialogRef.value.data.report_name)
-    param.value._lang = "en"
+    param.value._lang = localStorage.getItem("lang") || "en"
     param.value.letterhead = "No Letterhead"
     param.value.show_toolbar = 0
     param.value.view = "ui"

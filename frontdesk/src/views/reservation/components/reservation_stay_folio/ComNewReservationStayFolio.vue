@@ -26,11 +26,12 @@ const guests = ref([])
 const gv = inject("$gv")
 
 function onSave() {
-    isSaving.value = true
+  
     if(!gv.cashier_shift?.name){
-        gv.toast('error', 'Please Open Cashier Shift.')
+        gv.toast('warn', 'Please Open Cashier Shift.')
         return
     }
+    isSaving.value = true
     createUpdateDoc('Reservation Folio', doc.value)
     .then((doc) => {
         dialogRef.value.close(doc)
@@ -40,7 +41,9 @@ function onSave() {
         window.postMessage({action:"GuestLedgerTransaction"},"*")
         window.postMessage({action:"ReservationDetail"},"*")
     }).catch(()=>{
+        
         isSaving.value = false
+
     })
 }
 

@@ -65,7 +65,7 @@ def update_fetch_from_field(doc, method=None, *args, **kwargs):
                 "document_name":doc.name,
                 "document_type":doc.doctype,
                 "action":"update_fetch_from_field"
-            }).insert()
+            }).insert(ignore_permissions=True, ignore_links=True)
         
  
 
@@ -79,7 +79,7 @@ def update_keyword(doc, method=None, *args, **kwargs):
             "document_type":doc.doctype,
             "action":"update_keyword"
 
-        }).insert()
+        }).insert(ignore_permissions=True, ignore_links=True)
 
         # frappe.enqueue("edoor.api.utils.update_keyword_queue", queue='long', doc=doc)
 
@@ -456,7 +456,7 @@ def update_reservation(name=None,doc=None, run_commit = True):
 
         doc.update_reservation_stay = False
         doc.flags.ignore_on_update= True
-        doc.save()
+        doc.save(ignore_permissions=True)
         if run_commit:
             frappe.db.commit()
         return doc
@@ -482,7 +482,7 @@ def update_reservation_folio(name=None, doc=None,run_commit=True):
 
     doc.total_debit =  folio_data[0]["debit"]
     doc.total_credit=folio_data[0]["credit"]
-    doc.save(   ignore_permissions=True)
+    doc.save(  ignore_permissions=True)
     if run_commit:
         frappe.db.commit()
         
@@ -826,7 +826,7 @@ def remove_temp_room_occupy(reservation):
                   """.format(reservation))
     frappe.db.commit()
 
-def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None):
+def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_day=None, cashier_shift=None,ignore_validateion_cashier_shift=False, ignore_validate_back_date_transaction=False ):
     data = frappe.db.sql("select name from  `tabFolio Transaction` where reservation_room_rate='{}'".format(rate.name),as_dict=1)
     if not data :
         rate_type_doc = frappe.get_doc("Rate Type", rate.rate_type)
@@ -861,8 +861,10 @@ def add_room_charge_to_folio(folio,rate,is_night_audit_posing=0,note="",working_
         doc = frappe.get_doc(doc)
         doc.flags.ignore_update_reservation = True
         doc.flags.ignore_validate_close_folio = True
+        doc.flags.ignore_validateion_cashier_shift = ignore_validateion_cashier_shift
+        doc.flags.ignore_validate_back_date_transaction = ignore_validate_back_date_transaction
         
-        # doc.flags.ignore_update_reservation_folio = True
+
     
         doc.insert()
         return doc
@@ -1453,7 +1455,7 @@ def update_room_status_by_reservation_stay(name):
                 room_doc.room_status = "Vacant"
             else:
                 room_doc.room_status = "Occupy"
-            room_doc.save()
+            room_doc.save(ignore_permissions=True)
             
         frappe.db.commit()
 

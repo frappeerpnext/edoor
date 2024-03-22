@@ -558,7 +558,7 @@ function onUnmarkasPaidbyMasterRoom() {
 function onDisallowPosttoCityLedger(){ 
     if(rs.reservationStay.is_active_reservation){
         confirm.require({
-            message: 'Are you sure you want to Disallow Post to City Ledger?',
+            message: $t('Are you sure you want to Disallow Post to City Ledger?'),
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             acceptClass: 'border-none crfm-dialog',
@@ -589,7 +589,7 @@ function onDisallowPosttoCityLedger(){
 function onAllowPosttoCityLedger(){
     if(rs.reservationStay.is_active_reservation){
         confirm.require({
-        message: 'Are you sure you want to Allow Post to City Ledger?',
+        message: $t('Are you sure you want to Allow Post to City Ledger?'),
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -621,7 +621,7 @@ function onAllowPosttoCityLedger(){
 
 function onMarkasGITReservation() {
     confirm.require({
-        message: 'Are you sure you want to Mark as GIT Reservation',
+        message: $t('Are you sure you want to Mark as GIT Reservation'),
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',
@@ -651,7 +651,7 @@ function onMarkasGITReservation() {
 
 function onMarkasFITReservation() {
     confirm.require({
-        message: 'Are you sure you want to Mark as FIT Reservation',
+        message: $t('Are you sure you want to Mark as FIT Reservation'),
         header: 'Confirmation',
         icon: 'pi pi-exclamation-triangle',
         acceptClass: 'border-none crfm-dialog',

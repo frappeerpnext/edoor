@@ -108,6 +108,7 @@ def get_report_data(folio_transaction_amount,filters):
 	if filters.folio_numbers:
 		sql ="""
 			select 
+			0 as indent,
 			{1}
 			from `tabFolio Transaction` 
 			where

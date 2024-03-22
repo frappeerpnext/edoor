@@ -55,7 +55,7 @@ def re_run_fail_jobs():
             if j["job_name"]  in "edoor.edoor.doctype.reservation_stay.reservation_stay.generate_room_occupy":
                 generate_room_occupy(self=None if "self" not in job["kwargs"] else job["kwargs"]["self"], stay_name=None if "stay_name" not in job["kwargs"] else job["kwargs"]["stay_name"])
             elif j["job_name"] == "edoor.api.reservation.generate_room_occupies":
-                generate_room_occupies( stay_names=job["kwargs"]["stay_names"])    
+                generate_room_occupies( stay_names=job["kwargs"]["stay_names"])
             elif j["job_name"] == "edoor.api.utils.update_reservation_folio":
                 update_reservation_folio( doc=None if "doc" not in job["kwargs"] else job["kwargs"]["doc"], name=None if "name" not in job["kwargs"] else job["kwargs"]["name"], run_commit=True)     
             elif j["job_name"] == "edoor.api.utils.update_reservation":

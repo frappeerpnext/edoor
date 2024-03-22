@@ -10,6 +10,7 @@ from py_linq import Enumerable
 from dateutil.relativedelta import relativedelta 
 from frappe.utils import getdate,add_to_date
 from frappe.desk.search import search_link
+from frappe import _ 
 
 @frappe.whitelist(methods="POST")
 def search(doctypes=None, txt="" ,filters=None):
@@ -1260,28 +1261,28 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
         chart_data["datasets"] =[
                 {
                     "chartType": 'bar',
-                    "name": 'Room Block',
+                    "name": _('Room Block'),
                     "values": block_data,
                 },
                 {
                     "chartType": 'bar',
-                    "name": 'No Show',
+                    "name": _('No-Show'),
                     "values": no_show_data,
                 },
 
                 {
                     "chartType": 'bar',
-                    "name": 'Departure',
+                    "name": _('Departure'),
                     "values": departure_data,
                 },
                 {
                     "chartType": 'bar',
-                    "name": 'Stay Over',
+                    "name": _('Stay Over'),
                     "values": stay_over_data,
                 },
                 {
                     "chartType": 'bar',
-                    "name": 'Arrival',
+                    "name": _('Arrival'),
                     "values": arrival_data,
                 },
             
@@ -1289,7 +1290,7 @@ def get_mtd_room_occupany(property,duration_type="Daily", view_chart_by="Time Se
         ]
     chart_data["datasets"].append({
                 "chartType": "line" if int(show_occupancy_only)==0 else  view_chart_type,
-                "name": 'Occupancy (%)',
+                "name": _('Occupancy') + ' (%)',
                 "values": occupancy_data,
                 
     })
@@ -2293,7 +2294,15 @@ def post_room_change_to_folio(working_day):
 
             
             if folio:
-                add_room_charge_to_folio(folio= folio,rate= r,is_night_audit_posing=1,working_day=working_day.name,cashier_shift=cashier_shift[0]["name"])
+                add_room_charge_to_folio(
+                    folio= folio,
+                    rate= r,
+                    is_night_audit_posing=1,
+                    working_day=working_day.name,
+                    cashier_shift=cashier_shift[0]["name"],
+                    ignore_validateion_cashier_shift=True,
+                    ignore_validate_back_date_transaction=True
+                    )
                 
     frappe.enqueue("edoor.api.frontdesk.update_transaction_balance_after_run_night_audit", queue='long', working_day=working_day)
 
@@ -2423,7 +2432,7 @@ def get_day_end_summary_report(property, date):
             from `tabFolio Transaction` 
             where 
             property='{}' and posting_date = '{}' and
-            flash_report_revenue_group in ('Room Charge')
+            account_category in ('Room Charge','Room Tax','Room Discount','Service Charge')
         """.format(property, date)
     data = frappe.db.sql(sql,as_dict=1)
     room_revenue = 0
@@ -2442,8 +2451,8 @@ def get_day_end_summary_report(property, date):
                 sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,adult,0)) as stay_over_adult,
                 sum(if(is_active=1 and type='Reservation' and is_arrival=0 and is_departure=0,child,0)) as stay_over_child,
                 sum(is_active=1 and type='Reservation' and is_departure=1) as departure,
-                sum(if(is_active=1 and type='Reservation' and is_departure=1,adult,0)) as departure_adult,
-                sum(if(is_active=1 and type='Reservation' and is_departure=1,child,0)) as departure_child
+                sum(if(type='Reservation' and is_departure=1,adult,0)) as departure_adult,
+                sum(if(type='Reservation' and is_departure=1,child,0)) as departure_child
             from `tabRoom Occupy` 
             where 
             property='{}' and date= '{}'  

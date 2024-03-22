@@ -23,13 +23,13 @@
         <tippy :content="$t('FIT (Free Independent Traveler) Total') + ' ' + data.fit_reservation_arrival + ' & ' + $t('Total Stay') + data.fit_stay_arrival">
             <ComTodaySummarySep   dialogKey="fit_arrival" title="FIT Arrival">{{(data.fit_reservation_arrival + ' / ' + data.fit_stay_arrival)}}</ComTodaySummarySep>
         </tippy>
-        <tippy :content="'Group Arrival '+  data?.git_reservation_arrival + ' Group(s) & ' + data?.git_stay_arrival + ' Stay(s)'">
+        <tippy :content="$t('GIT (Group Inclusive Tour) Total') + ' ' +  data?.git_reservation_arrival +  ' & ' + $t('Total Stay') + ' ' + data?.git_stay_arrival">
             <ComTodaySummarySep   dialogKey="git_arrival" title="GIT Arrival">{{ (data?.git_reservation_arrival ||0) + ' / ' +  (data?.git_stay_arrival ||0) }}</ComTodaySummarySep>
         </tippy>
         <ComTodaySummarySep  dialogKey="pickup_drop_off" title="Pickup/Drop Off">{{ data?.pick_up || 0 }} / {{data?.drop_off || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep v-tippy="'Today No-Show ' + data.today_no_show + ' & No-Show With Reserved Room ' + data.total_no_show"  dialogKey="no_show" title="No-Show"> {{ data?.today_no_show }} / {{data?.total_no_show || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep v-tippy="'Today Cancelled ' + data.today_cancelled + ' & Cancelled ' + data.total_cancelled " dialogKey="cancelled" title="Cancelled"> {{ data?.today_cancelled }} / {{data?.total_cancelled || 0}}</ComTodaySummarySep>
-        <ComTodaySummarySep v-tippy="'Today Void ' + data.today_void + ' & Void ' + data.total_void" dialogKey="void" title="Void"> {{ data?.today_void }} / {{data?.total_void || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep v-tippy="$t('Today No-Show') + ' ' + data.today_no_show + ' & '  + $t('No-Show With Reserved Room') + ' '  + data.total_no_show"  dialogKey="no_show" title="No-Show"> {{ data?.today_no_show }} / {{data?.total_no_show || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep v-tippy="$t('Today Cancelled') + ' ' + data.today_cancelled + ' & ' +$t('Cancelled') + ' '  + data.total_cancelled " dialogKey="cancelled" title="Cancelled"> {{ data?.today_cancelled }} / {{data?.total_cancelled || 0}}</ComTodaySummarySep>
+        <ComTodaySummarySep v-tippy="$t('Today Void') + ' ' + data.today_void + ' & ' + $t('Void') + data.total_void" dialogKey="void" title="Void"> {{ data?.today_void }} / {{data?.total_void || 0}}</ComTodaySummarySep>
         
     </div>
 </template>

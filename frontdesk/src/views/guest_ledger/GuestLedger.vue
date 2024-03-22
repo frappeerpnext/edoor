@@ -6,7 +6,7 @@
                 <template #start>
                     <div class="flex">
                         <div class="flex align-items-center">
-                            <div class="text-2xl">{{ $t('Guest ledger') }} </div>
+                            <div class="text-2xl">{{ $t('Guest Ledger') }} </div>
                         </div>
                     </div>
                 </template>

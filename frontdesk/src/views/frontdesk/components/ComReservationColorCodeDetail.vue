@@ -5,7 +5,7 @@
     <span class="px-3 me-2 border-round-lg" :style="{ background: i.color }"></span>
 </div>
 <div @click="toggleShowAll" v-if="doc.length > 5" class="flex justify-content-end w-full">
-    <Button :label="showAll ? 'Show Less' : 'View More'" class="mt-2 dialog_btn_transform conten-btn" text/>
+    <Button :label="showAll ? $t('View Less') : $t('View More')" class="mt-2 dialog_btn_transform conten-btn" text/>
 </div>
 
     </div>

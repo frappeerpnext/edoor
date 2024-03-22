@@ -1,6 +1,6 @@
 <template>
     <ComDialogContent :hideButtonClose="true" :hideButtonOK="true" :loading="loading">
-        <Message>Change rate is affect only current and future stay date</Message>
+        <Message> {{ $t('Change rate is affect only current and future stay date') }} </Message>
        
         <ComReservationStayPanel title="Apply To">
             <template #content>
@@ -8,13 +8,13 @@
                     <div class="flex align-items-center">
                         <RadioButton inputId="full" name="change_date_type" value="full_stay"
                             v-model="data.change_date_type" />
-                        <label for="full" class="ml-2">Full Stay</label>
+                        <label for="full" class="ml-2"> {{ $t('Full Stay') }} </label>
                     </div>
                     <div class="flex align-items-center w-full mt-3">
                         <div class="w-2">
                             <RadioButton inputId="from" name="change_date_type" value="selected_date"
                                 v-model="data.change_date_type" />
-                            <label for="from" class="ml-2 mr-3">From</label>
+                            <label for="from" class="ml-2 mr-3"> {{ $t('From') }} </label>
                         </div>
                         <div class="flex align-items-center gap-3 w-full">
                             <Calendar v-model="data.arrival_date" :selectOtherMonths="true"
@@ -38,14 +38,14 @@
             <template #content>
                 <div class="grid items-center">
                     <div class="col-12 md:col-5 pt-0">
-                        <label>Rate type</label>
+                        <label> {{ $t('Rate type') }} </label>
                         <ComSelect v-model="data.rate_type" class="w-full" placeholder="Please Select Rate Type"
                             @onSelected="onRateTypeChange" doctype="Rate Type" />
                     </div>
                     <div class="col pt-4">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-placeholder">
                             <Checkbox inputId="rate_type_input" v-model="data.is_override_rate" :binary="true" :trueValue="1" :falseValue="0" />
-                            <label class="cursor-pointer" for="rate_type_input" >Overwrite Room Rate with Rate Type</label>
+                            <label class="cursor-pointer" for="rate_type_input" > {{ $t('Overwrite Room Rate with Rate Type') }} </label>
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
                             
                             <Checkbox :disabled="!rate_type_data.allow_user_to_change_tax" inputId="rate_include_tax" v-model="rate_type_data.is_rate_include_tax" :binary="true" :trueValue="1"
                             :falseValue="0" />
-                        <label class="cursor-pointer" for="rate_include_tax" >include Rate Tax</label>
+                        <label class="cursor-pointer" for="rate_include_tax" > {{ $t('include Rate Tax') }} </label>
                         </div>
                         
                     </div>
@@ -88,7 +88,7 @@
                         <Button class="border-none btn-ok_ss" @click="onChangeRateType">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
-                                Save
+                             {{ $t('Save') }}   
                             </span>
                         </Button>
                     </div>
@@ -99,13 +99,13 @@
             <template #content>
                 <div class="grid items-center">
                     <div class="col-5 pt-0">
-                        <label for="input_amount">Rate </label>
+                        <label for="input_amount"> {{ $t('Rate') }}  </label>
                         <ComInputCurrency classCss="w-full"  v-model="data.new_rate" id="input_amount" />
                     </div>
                     <div class="col-7 pt-4">
                         <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-placeholder">
                             <Checkbox inputId="rateIncludeTax" v-model="data.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue="0" />
-                            <label class="cursor-pointer" for="rateIncludeTax">Rate Include Tax</label>
+                            <label class="cursor-pointer" for="rateIncludeTax"> {{ $t('Rate Include Tax') }} </label>
                         </div>
                     
                     </div>
@@ -117,7 +117,7 @@
                         <Button class="border-none btn-ok_ss" @click="onChangeNewRate">
                             <span class="flex align-items-center ">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
-                                Save
+                                 {{ $t('Save') }} 
                             </span>
                         </Button>
                     </div>
@@ -126,18 +126,18 @@
         
         <ComReservationStayPanel title="Group Discount" class="mt-3">
             <template #content>
-                <Message>Discount is affect to any rate type that allow discount</Message>
+                <Message> {{ $t('Discount is affect to any rate type that allow discount') }} </Message>
                 <div class="grid items-center">
                     <div class="col-5 pt-0">
-                        <label for="dis_type">Discount Type</label>
+                        <label for="dis_type"> {{ $t('Discount Type') }} </label>
                                 <div class="w-full">
                                     <ComSelect class="w-full min-w-full" id="dis_type" 
-                                        v-model="data.discount_type" :options="['Percent', 'Amount']" :clear="false" />
+                                        v-model="data.discount_type" optionLabel="label" optionValue="value"  :options="discountType" :clear="false" />
                                 </div>
                             
                     </div>
                     <div class="col pt-0">
-                        <label for="minmaxfraction">Discount</label>
+                        <label for="minmaxfraction"> {{ $t('Discount') }} </label>
                                 <div class="w-full">
                                     <InputNumber class="w-full" inputClass="w-full" 
                                         v-model="data.discount" inputId="minmaxfraction" id="discount" :minFractionDigits="2"
@@ -153,7 +153,7 @@
                         <Button class="border-none btn-ok_ss" @click="onGroupDiscount">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
-                                Save
+                               {{ $t('Save') }} 
                             </span>
                         </Button>
                     </div>
@@ -170,7 +170,7 @@
                         <div class="col-12 md:col-3">
                             <div class="py-2 gap-2 flex items-center w-full p-dropdown-label p-inputtext p-placeholder">
                             <Checkbox :disabled="t.allow_user_to_change_tax==0" inputId="rateIncludeTax_change_tax" v-model="t.is_rate_include_tax" :binary="true" :trueValue="1" :falseValue = "0"  />
-                            <label class="cursor-pointer" for="rateIncludeTax_change_tax" >Rate Include Tax</label>
+                            <label class="cursor-pointer" for="rateIncludeTax_change_tax" > {{ $t('Rate Include Tax') }} </label>
                             </div>
                         </div>
                         
@@ -200,7 +200,7 @@
                         <Button class="border-none btn-ok_ss" @click="onGroupChangeTax">
                             <span class="flex align-items-center">
                                 <img class="pi pi-check-circle mr-2" :src="BtnOkIcon" style="height: 13px;" />
-                                Save
+                               {{ $t('Save') }} 
                             </span>
                         </Button>
                     </div>
@@ -215,6 +215,8 @@ import { ref, onMounted, inject, postApi, useToast, getApi ,useConfirm} from '@/
 import Enumerable from 'linq'
 import BtnOkIcon from '@/assets/svg/icon-save.svg'
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const loading = ref(false)
 const toast = useToast()
 const data = ref({ change_date_type: 'full_stay', "discount_type":"Percent" })
@@ -225,7 +227,10 @@ const stays = ref([])
 const reservation = ref()
 const confirm = useConfirm();
 const tax_rules = ref([])
- 
+const discountType = ref([
+    { label: 'Percent', value: 'Percent' },
+    { label: 'Amount', value: 'Amount' },
+]);
 
 const onRateTypeChange = (rate_type) => {
     if (rate_type) {

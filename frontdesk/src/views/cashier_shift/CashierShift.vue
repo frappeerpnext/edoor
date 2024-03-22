@@ -88,7 +88,7 @@
             <Paginator class="p__paginator" v-model:first="pageState.activePage" :rows="pageState.rows"
                 :totalRecords="pageState.totalRecords" :pageLinkSize="isMobile ? '2' : '5'" :rowsPerPageOptions="[20, 30, 40, 50]" @page="pageChange">
                 <template #start="slotProps">
-                    <strong v-if="!isMobile">Total Records: <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
+                    <strong v-if="!isMobile"> {{ $t('Total Records') }} : <span class="ttl-column_re">{{ pageState.totalRecords }}</span></strong>
                 </template>
             </Paginator>
         </div>

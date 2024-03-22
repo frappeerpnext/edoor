@@ -119,18 +119,19 @@ class FolioTransaction(Document):
 					self.property = frappe.db.get_value("Reservation", self.reservation, "property")
 
 			working_day = get_working_day(self.property)
-			 
-			if not working_day["name"]:
-				frappe.throw("Please start working day")
-			
-			if not self.transaction_type =='Cashier Shift':
-				if not working_day["cashier_shift"]["name"]:
-					frappe.throw("Please start cashier shift")
+			if self.flags.ignore_validateion_cashier_shift == False:
+				if not working_day["name"]:
+					frappe.throw("Please start working day")
+				
+	
+				if not self.transaction_type =='Cashier Shift':
+					if not working_day["cashier_shift"]["name"]:
+						frappe.throw("Please start cashier shift")
 
 			#validate record for back date trasaction
-
-			if getdate(working_day["date_working_day"])> getdate(self.posting_date):
-				check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
+			if self.flags.ignore_validate_back_date_transaction == False:
+				if getdate(working_day["date_working_day"])> getdate(self.posting_date):
+					check_user_permission("role_for_back_date_transaction","Sorry you don't have permission to perform back date transaction")
 
 			
 			if not self.working_day:

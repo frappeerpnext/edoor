@@ -236,10 +236,10 @@ function viewCityLedgerReport(){
                 name:  window.property_name,
                 report_name:  gv.getCustomPrintFormat("City Ledger Transaction Report"),
                 fullheight: true,
-                filter_options:["start_date","end_date","city_ledger_type","business_source"]
+                filter_options:["start_date","end_date","guest","business_source","reservation","reservation_stay"]
             },
             props: {
-                header: "City Ledger Account",
+                header: "City Ledger Accountxx",
                 style: {
                     width: '80vw',
                 },

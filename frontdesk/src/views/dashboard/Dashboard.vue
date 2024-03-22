@@ -107,7 +107,7 @@
                             @onClick="viewSummary('GIT Arrival')"
                             :value="!gv.loading ? (data.git_reservation_arrival + '/' + data.git_stay_arrival) : ''"
                             :title="$t('GIT Arrival')" class="primary-btn-edoor border-round-lg cursor-pointer"> </ComKPI>
-                        <ComKPI v-tippy="$t('Today') + ' ' + (data?.unassign_room || 0) + ' ' + $t('Unassign Room') + ' & ' + $t('Total unassign') + ' ' + (data?.total_unassign_room || 0)"
+                        <ComKPI v-tippy="$t('Today') + ' ' + (data?.unassign_room || 0) + ' ' + $t('Unassign Room') + ' & ' + $t('Total Unassign Room') + ' ' + (data?.total_unassign_room || 0)"
  @onClick="viewSummary('Unassign Room')" :value="!gv.loading ? ( data.unassign_room + '/' + data.total_unassign_room ) : ''" :title="$t('Unassign Room')"
                             class="bg-og-edoor border-round-lg cursor-pointer"> </ComKPI>
                         <ComKPI @onClick="viewSummary('Pickup and Drop Off')"
@@ -277,7 +277,7 @@ function onViewData(doctype, report_name, title, extra_params, filter_options) {
             fullheight: true
         },
         props: {
-            header: title,
+            header: $t(title),
             style: {
                 width: '90vw',
             },

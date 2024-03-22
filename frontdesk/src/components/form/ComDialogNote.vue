@@ -1,14 +1,14 @@
 <template>
-    <ComDialogContent @onOK="onOk" hideButtonClose titleButtonOK="Ok" :hideIcon="false" :loading="loading">
+    <ComDialogContent @onOK="onOk" hideButtonClose :titleButtonOK="Ok" :hideIcon="false" :loading="loading">
         <Message v-if="data?.confirm_message">
             <div v-html="data?.confirm_message" />
         </Message>
 
-        <label for="reason-text" class="mb-1 font-medium block">Reason</label>
-        <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" placeholder="Please Enter Reason" class="w-full" />
+        <label for="reason-text" class="mb-1 font-medium block"> {{ $t('Reason') }} </label>
+        <Textarea autofocus v-model="note" id="reason-text" rows="3" cols="50" :placeholder=" $t('Please Enter Reason') " class="w-full" />
         <div v-if="data?.data.show_reserved_room" class="py-2">
             <Checkbox inputId="no_show_sell_room" v-model="data.data.reserved_room" :binary="true" />
-            <label for="no_show_sell_room" class="ml-1 cursor-pointer">Reserved room for this reservation.</label>
+            <label for="no_show_sell_room" class="ml-1 cursor-pointer">{{ $t('Reserved room for this reservation.') }} </label>
         </div>
 
     </ComDialogContent>
@@ -17,7 +17,8 @@
 import Message from 'primevue/message';
 import { ref, onMounted, inject, postApi, deleteApi,updateDoc } from '@/plugin'
 import { useToast } from "primevue/usetoast";
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global; 
 const toast = useToast();
 const dialogRef = inject("dialogRef");
 const rs = inject("$reservation_stay")

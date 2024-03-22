@@ -4,7 +4,7 @@
             @change="onViewRoomList">
             <template #option="slotProps">
                 <ComDashboardRowStatus
-                    v-tippy="slotProps.option.is_block_room ? 'Today Room Block  ' + slotProps.option.total + ' & Total Room Block ' + slotProps.option.total_block_room : ''"
+                    v-tippy="slotProps.option.is_block_room ? $t('Today Room Block') + ' ' + slotProps.option.total + ' & '+ $t('Total Room Block') + ' ' + slotProps.option.total_block_room : ''"
                     :is_room_block="slotProps.option.is_block_room" :value_room_block="slotProps.option.total_block_room"
                     :value="`${slotProps.option.total}`" :badgeColor="slotProps.option.color" :icon="slotProps.option.icon">
                     <template #content>{{ $t(slotProps.option.status) }}

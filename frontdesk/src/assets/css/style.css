@@ -1790,3 +1790,7 @@ flex-direction: column;
         margin-top: 0 !important;
     }
 }
+.ms-info {
+    padding: 10px;
+    background: #dbdbdb;
+}

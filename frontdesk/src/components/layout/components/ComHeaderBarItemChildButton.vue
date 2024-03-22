@@ -6,7 +6,7 @@
             :class="[current_page == item.menu_name ? 'bg-gray-300' : '']">
             <div class="flex gap-2">
                 <span v-if="item?.sub_menu_icon" v-html="item?.sub_menu_icon"></span>
-                <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ item.menu_text }}</span>
+                <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{  $t(item.menu_text) }}</span>
             </div> 
        </button>
        <template v-if="setting.edoor_menu.filter(r=>r.parent_edoor_menu == item.name).length > 0">
@@ -15,7 +15,7 @@
                 :class="[current_page == child.menu_name ? 'bg-gray-300' : '']">
                 <div class="flex gap-2 ml-3">
                     <span v-if="child?.sub_menu_icon" v-html="child?.sub_menu_icon"></span>
-                    <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ child.menu_text }}</span>
+                    <ComIcon v-else icon="iconGeneralList"></ComIcon> <span class="sub-menu-text white-space-nowrap">{{ $t(child.menu_text) }}</span>
                 </div> 
             </button>
        </template> 
@@ -33,6 +33,9 @@
     const {onClick} = inject('on_header_menu')
     const setting = JSON.parse(localStorage.getItem("edoor_setting"))
     const current_page = computed(() => useRoute().name)
+    
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
     const isCurrentPage = computed(()=>{
         if(current_page.value == props.data.menu_name){
             return 1

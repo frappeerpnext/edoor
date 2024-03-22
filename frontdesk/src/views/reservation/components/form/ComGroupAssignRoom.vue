@@ -2,17 +2,17 @@
     <ComDialogContent :hideButtonOK="data?.length == 0 ? true : false" :hideButtonClose="data?.length == 0 ? true : false"  @onClose="onClose" @onOK="onSave" :loading="loading">
     <ComReservationStayPanel title="Group Assign Room">
         <template #content> 
-    <div v-if="data?.length == 0">No Reservation Stay to Assign Room</div>
+    <div v-if="data?.length == 0"> {{ $t('No Reservation Stay to Assign Room') }} </div>
     <div v-else class="w-full overflow-auto">
     <table class="w-full" >
         <tr class="font-medium">
-            <td>Stay Date</td>
-            <td>Guest</td>
-            <td>Rate Type</td>
-            <td>Room Type</td>
-            <td>Room Name</td>
-            <td class="text-center">Nights</td>
-            <td class="text-right">Rate</td>
+            <td> {{ $t('Stay Date') }} </td>
+            <td> {{ $t('Guest') }} </td>
+            <td>{{ $t('Rate Type')}} </td>
+            <td> {{ $t('Room Type') }} </td>
+            <td> {{ $t('Room Name') }} </td>
+            <td class="text-center"> {{ $t('Nights') }} </td>
+            <td class="text-right"> {{ $t('Rate') }} </td>
         </tr>
         <template  v-for="(d, index) in data" :key="index">
             <tr>
@@ -70,9 +70,9 @@
             <td colspan="7">
                 <Message >
                     <Checkbox v-model="d.is_generate_rate" :binary="true" :trueValue="1" :falseValue="0"  @input="onUpdateRate(d)" />
- 
-                    <label class="mr-3 cursor-pointer">Room type of this reservation stay is changed. Do you want to
-                        regenerate rate</label>
+                    <label class="mr-3 cursor-pointer">
+                        {{ $t('Room type of this reservation stay is changed. Do you want to regenerate rate') }}
+                    </label>
                 </Message>
             </td>
         </tr>
@@ -92,7 +92,8 @@
 import { ref, getApi, inject, onMounted, postApi, computed } from "@/plugin"
 import Message from "primevue/message";
 import ComReservationStayPanel from '@/views/reservation/components/ComReservationStayPanel.vue';
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const loading = ref(false)
 const dialogRef = inject("dialogRef");
 const data = ref([])
