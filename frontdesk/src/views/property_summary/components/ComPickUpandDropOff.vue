@@ -5,7 +5,7 @@
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column field="reservation" :header="$t('Reservation') + ' #' " headerClass="text-center" bodyClass="text-center">
+        <Column field="reservation" :header="$t('Reservation #')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_detail', slotProps.data.reservation)" link>
@@ -15,7 +15,7 @@
         </Column>
 
 
-        <Column field="reservation_stay" :header="$t('Stay') + ' #' " headerClass="text-center" bodyClass="text-center">
+        <Column field="reservation_stay" :header="$t('Stay #') " headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 <Button class="p-0 link_line_action1"
                     @click="onViewDetail('view_reservation_stay_detail', slotProps.data.name)" link>
@@ -23,7 +23,7 @@
                 </Button>
             </template>
         </Column>
-        <Column field="reference_number" :header="$t('Ref.') + ' #' " headerClass="text-center" headerStyle="min-width:100px;"
+        <Column field="reference_number" :header="$t('Ref. #')" headerClass="text-center" headerStyle="min-width:100px;"
             bodyClass="text-center" />
         <Column field="business_source" :header="$t('Source')"></Column>
         <Column :header="$t('Pax(A/C)')" headerClass="text-center" bodyClass="text-center">
@@ -42,7 +42,7 @@
             </template>
 
         </Column>
-        <Column :header="$t('Rooms')" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Room(s)')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.room_type_alias }}
                 <span v-if="slotProps.data.rooms">/ {{ slotProps.data.rooms }}</span>

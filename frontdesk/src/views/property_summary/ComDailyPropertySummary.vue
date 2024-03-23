@@ -10,9 +10,9 @@
 
 
             <TabView>
-                <TabPanel :header="$t('TabPanelArrival/Stay Over/Departure') ">
+                <TabPanel :header="$t('Arrival') + ' / '  +   $t('Stay Over') + ' / ' + $t('Departure') ">
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
-                        <AccordionTab :header="$t('Arrival Guests') + ' (' + data?.arrival.length + ')'">
+                        <AccordionTab :header="$t('Arrival Guest') + ' (' + data?.arrival.length + ')'">
                             <ComArrivalGuest :data="data?.arrival" />
                         </AccordionTab>
                         <AccordionTab :header="$t('Stay Over Guest') + ' (' + data?.stay_over.length + ')'">
@@ -24,18 +24,22 @@
 
                     </Accordion>
                 </TabPanel>
-                <TabPanel :header="$t('Unassign room') + ' (' + data?.unassign_room.length + ')'">
+                <TabPanel :header="$t('Unassign Room') + ' (' + data?.unassign_room.length + ')'">
+                    <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data?.unassign_room.length > 0">
                     <ComArrivalGuest :data="data?.unassign_room" />
+                    </ComPlaceholder>
                 </TabPanel>
-                <TabPanel :header="$t('Pickup & Drop Off Guest')">
+                <TabPanel :header="$t('Pickup/Drop Off') + ' (' + data?.pickup_drop_off.length + ')'">
+                    <ComPlaceholder text="No Data" :loading="loading" :isNotEmpty="data?.pickup_drop_off.length > 0">
                     <ComPickUpandDropOff :data="data?.pickup_drop_off" />
+                    </ComPlaceholder>
                 </TabPanel>
-                <TabPanel :header="$t('No Show, Cancelled & Void')"> 
+                <TabPanel :header="$t('No-Show') + ',' + $t('Cancelled') + '&' + $t('Void')  "> 
                     <Accordion :multiple="true" :activeIndex="[0, 1, 2]">
-                        <AccordionTab :header="'No Show Reserved Room (' + data?.inactive_reservation.length + ')'">
+                        <AccordionTab :header="'No-Show Reserved Room (' + data?.inactive_reservation.length + ')'">
                             <ComInactiveReservation :data="data?.inactive_reservation" />
                         </AccordionTab> 
-                        <AccordionTab :header="$t('Today No Show, Cancelled & Void') + ' (' + data?.cancelled_void_and_no_show.length + ')'">
+                        <AccordionTab :header="$t('Today') + $t('No-Show') + ', ' + $t('Cancelled')  + ' & ' + $t('Void') + ' (' + data?.cancelled_void_and_no_show.length + ')'">
                             <ComInactiveReservation :data="data?.cancelled_void_and_no_show" />
                         </AccordionTab> 
                     </Accordion>

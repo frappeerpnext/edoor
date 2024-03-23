@@ -26,6 +26,7 @@
   "status_section",
   "room_status",
   "status_color",
+  "room_type_color",
   "column_break_pvyq",
   "housekeeping_status_code",
   "housekeeping_status",
@@ -250,11 +251,17 @@
    "fieldtype": "Link",
    "label": "Housekeeping Status",
    "options": "Housekeeping Status"
+  },
+  {
+   "fetch_from": "room_type_id.room_type_color",
+   "fieldname": "room_type_color",
+   "fieldtype": "Data",
+   "label": "Room Type Color"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-05 10:33:36.942811",
+ "modified": "2024-03-23 15:06:34.234249",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room",

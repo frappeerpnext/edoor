@@ -71,7 +71,7 @@
                     </ComBoxStayInformation>
                 </div>
                 <div class="flex mt-2 gap-2">
-                    <ComBoxStayInformation title="Rooms" valueClass="grow">
+                    <ComBoxStayInformation title="Room(s)" valueClass="grow">
                         <div v-if="stay.reservationStay?.stays">
                             <div 
                             v-for="(i, index)  in stay?.reservationStay.stays?.slice(0, 3)"

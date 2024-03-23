@@ -146,7 +146,7 @@
                             </div>
                             
                             <div class=" p-2"  v-if="filterTargetTransactionNumberType.length>0">
-                                <label>{{ $t('Filter' + doc.target_transaction_type + 'by') }}</label>
+                                <label>{{ $t('Filter ' + doc.target_transaction_type + ' by') }}</label>
                                  
                                     <Dropdown   class="auto__Com_Cus w-full" :placeholder="'Select Filter Option'" :options="filterTargetTransactionNumberType" optionValue="fieldname" optionLabel="label" v-model="doc.filter_target_transaction_number_by" :showClear="true" />
                 

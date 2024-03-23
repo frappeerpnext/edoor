@@ -2,23 +2,23 @@
     <ComOverlayPanelContent title="Change Date" :style="[{width : isMobile ? '100%' : '40rem'}]" :loading="loading" @onSave="onSave" @onCancel="onClose">
         <div class="grid py-2 wp-number-cus">
             <div class="col-6">
-                <label>Arrival Date</label>
+                <label>{{ $t('Arrival Date') }} </label>
                 <Calendar panelClass="no-btn-clear" showButtonBar hideOnDateTimeSelect :disabled="(stay.can_arrival) || (rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths showIcon v-model="stay.arrival_date"  :min-date="new Date(moment(stay.min_date))" @update:modelValue="onStartDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
-                <label>Arrival Time</label>
+                <label>{{ $t('Arrival Time') }} </label>
                 <Calendar panelClass="no-btn-clear" showButtonBar :disabled="(rs.reservationStay.reservation_status == 'In-house')" selectOtherMonths class="w-full" v-model="stay.arrival_time" timeOnly />
             </div>
             <div class="col-6">
-                <label>Departure Date</label>
+                <label>{{ $t('Departure Date') }} </label>
                 <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths hideOnDateTimeSelect showIcon v-model="stay.departure_date"  :min-date="new Date(moment(stay.arrival_date).add(1,'days'))" @update:modelValue="onEndDate" dateFormat="dd-mm-yy" class="w-full"/>
             </div>
             <div class="col-6">
-                <label>Departure Time</label>
+                <label>{{ $t('Departure Time') }}</label>
                 <Calendar panelClass="no-btn-clear" showButtonBar selectOtherMonths class="w-full" v-model="stay.departure_time" timeOnly /> 
             </div>
             <div class="col-6">
-                <label>Nights</label>
+                <label>{{ $t('Nights') }} </label>
                 <InputNumber v-model="stay.room_nights" @update:modelValue="onNight($event)" inputId="stacked-buttons" showButtons :min="1" class="w-full nig_in-put"/>
             </div>
         </div>
@@ -26,7 +26,8 @@
 </template>
 <script setup>
 import { ref,inject,postApi } from '@/plugin'
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const isMobile = ref(window.isMobile)
 
 const moment = inject("$moment")

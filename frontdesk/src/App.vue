@@ -50,6 +50,8 @@ import ComPayableLedgerDetail from "@/views/payable_ledger/components/ComPayable
 import ComVendorDetail from "@/views/vendor/ComVendorDetail.vue";
 import ComDailyPropertySummary from "@/views/property_summary/ComDailyPropertySummary.vue";
 const urlParams = new URLSearchParams(window.location.search);
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const ui = ref(urlParams.get('layout') || "main_layout")
 
 window.isMobile = (/mobile/i.test(navigator.userAgent));
@@ -440,7 +442,7 @@ function showReservationStayDetail(name) {
             name: name
         },
         props: {
-            header: 'Reservation Stay Detail',
+            header: $t('Reservation Stay Detail'),
             contentClass: 'ex-pedd',
             style: {
                 width: '80vw',
@@ -619,7 +621,7 @@ function onViewDailySummary(date,room_type_id, title="") {
            room_type_id: (room_type_id || '')
        },
        props: {
-           header:"Summary Data on " + moment(date).format("DD-MM-YYYY") +( title==""?"":" - " + title),
+           header: $t("Summary Data on") + ' ' + moment(date).format("DD-MM-YYYY") +( title==""?"":" - " + title),
            style: {
                width: '90vw',
            },

@@ -7,10 +7,10 @@
         </Column>
         <Column field="business_source" :header="$t('Business Source')" />
 
-        <Column field="total_room" :header="$t('Total Room(s)')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="total_room" :header="$t('Total Rooms')" headerClass="text-center" bodyClass="text-center" />
         <Column field="total_room_sold" :header="$t('Room Sold')" headerClass="text-center" bodyClass="text-center" />
         <Column field="block" :header="$t('Room Block')" headerClass="text-center" bodyClass="text-center" />
-        <Column :header="$t('PAX(A/C)')" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Pax(A/C)')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.adult }} / {{ slotProps.data.child }}
             </template>
@@ -36,7 +36,7 @@
                 {{ slotProps.data.checked_out }} / {{ slotProps.data.departure }}
             </template>
         </Column>
-        <Column field="no_show" :header="$t('No Show')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="no_show" :header="$t('No-Show')" headerClass="text-center" bodyClass="text-center" />
 
 
         <Column headerClass="text-right" bodyClass="text-right" :header="$t('ADR')">

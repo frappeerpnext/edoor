@@ -16,7 +16,8 @@
   "base_adult",
   "base_child",
   "rate",
-  "sort_order"
+  "sort_order",
+  "room_type_color"
  ],
  "fields": [
   {
@@ -74,6 +75,12 @@
    "label": "Room Type Group",
    "options": "Room Type Group",
    "reqd": 1
+  },
+  {
+   "default": "#FFFFFF",
+   "fieldname": "room_type_color",
+   "fieldtype": "Color",
+   "label": "Room Type Color"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -84,7 +91,7 @@
    "link_fieldname": "room_type_id"
   }
  ],
- "modified": "2023-12-17 14:38:51.332450",
+ "modified": "2024-03-23 14:58:44.186249",
  "modified_by": "Administrator",
  "module": "eDoor Property Setup",
  "name": "Room Type",

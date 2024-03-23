@@ -273,11 +273,11 @@ def update_fetch_from_field(data):
                 sql = "select fieldname,options,fetch_from from `tabDocField` where  fetch_from <> '' and fetch_if_empty = 0 and parent='{}' and fetch_from like '{}.%'".format(d.parent, d["fieldname"])
                 fetch_fields = frappe.db.sql(sql, as_dict=1)
                 for  f in fetch_fields:
-                    sql = "update `tab{}` set {}=%(value)s where {}='{}'".format(d["parent"],f["fieldname"],f["fetch_from"].split(".")[0], doc.name)
-                    frappe.db.sql(sql,{"value":doc.get(f["fetch_from"].split(".")[1])})
+                    sql = "update `tab{}` set {}=%(value)s where {}=%(name)s".format(d["parent"],f["fieldname"],f["fetch_from"].split(".")[0])
+                    frappe.db.sql(sql,{"value":doc.get(f["fetch_from"].split(".")[1]),"name":doc.name})
                     #frappe.msgprint(sql)
 
-        frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name='{}' and action='{}'".format(x["document_type"],x["document_name"],x["action"]))
+        frappe.db.sql("delete from `tabQueue Job` where document_type='{}' and document_name=%(name)s and action='{}'".format(x["document_type"],x["action"]),{"name":x["document_name"]})
     frappe.db.commit()
             
 

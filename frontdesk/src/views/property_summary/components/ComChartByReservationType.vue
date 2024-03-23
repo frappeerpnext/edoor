@@ -4,7 +4,8 @@
 <script setup>
 import { onMounted } from "@/plugin"
 import { Chart } from "frappe-charts/dist/frappe-charts.min.esm"
-
+import {i18n} from '@/i18n';
+const { t: $t } = i18n.global;
 const props = defineProps({param: Object})
 
 function getStatusColor(status) {
@@ -12,7 +13,7 @@ function getStatusColor(status) {
 }
 function renderChart() {
     const data = {
-        labels: ["FIT", "GIT"],
+        labels: [$t("FIT"), $t("GIT")],
         datasets: [
             {
                 name: "Reservation Type",

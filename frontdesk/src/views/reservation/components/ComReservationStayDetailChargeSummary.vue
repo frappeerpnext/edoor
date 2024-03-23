@@ -42,7 +42,7 @@
               </ComBoxStayInformation>
           </div>
           <div class="flex mt-2 gap-2">
-              <ComBoxStayInformation isCurrency title="Total TAX" :value="rs?.reservationStay?.total_room_rate_tax" valueClass="grow text-right" titleClass="col-4" >
+              <ComBoxStayInformation isCurrency title="Total Tax" :value="rs?.reservationStay?.total_room_rate_tax" valueClass="grow text-right" titleClass="col-4" >
                 <Button v-if="rs?.reservationStay?.room_rate_tax_1_amount || rs?.reservationStay?.room_rate_tax_2_amount || rs?.reservationStay?.room_rate_tax_3_amount" @click="toggleTAX"  icon="pi pi-question text-xs " class="float-left -ms-1 surface-border tax-info-btn" severity="secondary" rounded outlined aria-label="Total Tax" />
               </ComBoxStayInformation>
               <OverlayPanel ref="opTax">

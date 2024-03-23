@@ -5,22 +5,22 @@
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-    <Column :header="$t('Reservation') + ' #' ">
+    <Column :header="$t('Reservation #')">
         <template  #body="slotProps">
             <Button class="p-0 link_line_action1" @click="onViewDetail('view_reservation_detail',slotProps.data.reservation)" link>
             {{ slotProps?.data.reservation  }}
             </Button>
         </template>
     </Column>
-    <Column field="name" :header="$t('Stay') + ' #' ">
+    <Column field="name" :header="$t('Stay #') ">
         <template  #body="slotProps">
             <Button class="p-0 link_line_action1" @click="onViewDetail('view_reservation_stay_detail',slotProps.data.name)" link>
             {{ slotProps?.data.name }}
             </Button>
         </template>
     </Column>
-    <Column field="reference_number" :header="$t('Ref.') + ' #' "></Column>
-    <Column field="name" :header="$t('PAX(A/C)')" headerClass="text-center" bodyClass="text-center">
+    <Column field="reference_number" :header="$t('Ref. #') "></Column>
+    <Column field="name" :header="$t('Pax(A/C)')" headerClass="text-center" bodyClass="text-center">
         <template  #body="slotProps">
             {{slotProps?.data.adult  }} / {{slotProps?.data.child }}
         </template>
@@ -48,7 +48,7 @@
           
         </template>
     </Column>
-    <Column :header="$t('Rooms')">
+    <Column :header="$t('Room(s)')">
             <template #body="slotProps">
                 {{ slotProps.data.room_type_alias }} 
                 <span v-if="slotProps.data.rooms">/ {{ slotProps.data.rooms }}</span>

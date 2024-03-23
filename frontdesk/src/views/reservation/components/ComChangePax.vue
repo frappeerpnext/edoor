@@ -2,12 +2,12 @@
     <ComOverlayPanelContent title="Change Pax" :loading="isLoading" @onSave="onSave" @onCancel="emit('onClose')">
         <div class="wp-number-cus flex gap-3 my-2">
         <div class="flex flex-col">
-        <label>{{$t('Adult')}}</label>
+        <label>{{$t('Adults')}}</label>
         <InputNumber v-model="stay.adult" inputId="stacked-buttons" showButtons :min="1" :max="100"
             class="child-adults-txt" />
         </div>
         <div class="flex flex-col">
-        <label>{{$t('Child')}}</label>
+        <label>{{$t('Children')}}</label>
         <InputNumber v-model="stay.child" inputId="stacked-buttons" showButtons :min="0" :max="100"
             class="child-adults-txt" />
         </div>

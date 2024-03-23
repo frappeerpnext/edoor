@@ -41,7 +41,7 @@
                     <td>{{ event.extendedProps?.internal_reference_number ?? '' }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td> {{ $t('Ref. type') }}</td>
+                    <td> {{ $t('Res. Type') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.reservation_type || '' }} </td>
                 </tr>
@@ -80,7 +80,7 @@
                     <td>{{ event.extendedProps.stay_rooms || event.extendedProps?.room_number }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Pax') }}</td>
+                    <td>{{ $t('Pax(A/C)') }}</td>
                     <td class="px-2">:</td>
                     <td>{{ event.extendedProps?.adult }} / {{ event.extendedProps?.child }}</td>
                 </tr>
@@ -200,17 +200,17 @@
                     <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td> {{ $t('Total Room') }} </td>
+                    <td> {{ $t('Total Rooms') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td> {{ $t('Total Room Sold') }} </td>
+                    <td> {{ $t('Total Rooms Sold') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room_sold || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td> {{ $t('Occupacy') }} </td>
+                    <td> {{ $t('Occupancy') }} </td>
                     <td class="px-3">:</td>
                     <td> {{ occupancy || 0 }}%</td>
                 </tr>
@@ -240,12 +240,12 @@
                     <td> {{ event?.extendedProps?.room_block }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Adult') }}</td>
+                    <td>{{ $t('Adults') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.adult }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Child') }}</td>
+                    <td>{{ $t('Children') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps?.child }}</td>
                 </tr>
@@ -264,17 +264,17 @@
                     <td> {{ moment(event.extendedProps.current_date).format("DD-MM-YYYY") }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Total Room') }}</td>
+                    <td>{{ $t('Total Rooms') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Total Room Sold') }}</td>
+                    <td>{{ $t('Total Rooms Sold') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps.total_room_sold || 0 }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Occupacy') }}</td>
+                    <td>{{ $t('Occupancy') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ occupancy || 0 }}%</td>
                 </tr>
@@ -304,12 +304,12 @@
                     <td> {{ event?.extendedProps?.room_block }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Adult') }}</td>
+                    <td>{{ $t('Adults') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event?.extendedProps?.adult }}</td>
                 </tr>
                 <tr class="table-rs-de">
-                    <td>{{ $t('Child') }}</td>
+                    <td>{{ $t('Children') }}</td>
                     <td class="px-3">:</td>
                     <td> {{ event.extendedProps?.child }}</td>
                 </tr>

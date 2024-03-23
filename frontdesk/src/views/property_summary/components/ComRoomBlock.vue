@@ -5,7 +5,7 @@
                 {{ data.indexOf(slotProps.data) + 1 }}
             </template>
         </Column>
-        <Column field="name" :header="$t('Block') + ' #' ">
+        <Column field="name" :header="$t('Block #') ">
         <template  #body="slotProps">
             <Button class="p-0 link_line_action1" @click="onViewDetail('view_room_block_detail',slotProps.data.name)" link>
             {{ slotProps?.data.name }}

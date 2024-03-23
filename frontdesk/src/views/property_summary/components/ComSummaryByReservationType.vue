@@ -7,15 +7,15 @@
         </Column>
         <Column field="reservation_type" :header="$t('Reservation Type')" headerClass="text-center" bodyClass="text-center" />
 
-        <Column field="total_room" :header="$t('Total Room(s)')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="total_room" :header="$t('Total Rooms')" headerClass="text-center" bodyClass="text-center" />
         <Column field="total_room_sold" :header="$t('Room Sold')" headerClass="text-center" bodyClass="text-center" />
         <Column field="block" :header="$t('Room Block')" headerClass="text-center" bodyClass="text-center" />
-        <Column :header="$t('PAX(A/C)')" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Pax(A/C)')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.adult }} / {{ slotProps.data.child }}
             </template>
         </Column>
-        <Column :header="$t('FIT/GIT')" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('FIT') + ' / ' + $t('GIT')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.fit }} / {{ slotProps.data.git }}
             </template>
@@ -31,12 +31,12 @@
             </template>
         </Column>
         <Column :header=" $t('Stay Over') " field="stay_over" headerClass="text-center" bodyClass="text-center" />
-        <Column :header="$t('Checked Out') / $t('Departure')" headerClass="text-center" bodyClass="text-center">
+        <Column :header="$t('Checked Out') + ' / '+ $t('Departure')" headerClass="text-center" bodyClass="text-center">
             <template #body="slotProps">
                 {{ slotProps.data.checked_out }} / {{ slotProps.data.departure }}
             </template>
         </Column>
-        <Column field="no_show" :header="$t('No Show')" headerClass="text-center" bodyClass="text-center" />
+        <Column field="no_show" :header="$t('No-Show')" headerClass="text-center" bodyClass="text-center" />
 
 
         <Column headerClass="text-right" bodyClass="text-right" :header="$t('ADR')">

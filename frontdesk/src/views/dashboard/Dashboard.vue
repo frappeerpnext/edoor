@@ -54,7 +54,7 @@
 
 
                             </ComChartStatus>
-                            <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" :title="$t('Total rooms')"
+                            <ComChartStatus @onClick="onViewRoomList" :value="data.total_room" :title="$t('Total Rooms')"
                                 class="btn-sec-edoor">
                             </ComChartStatus>
                             <tippy

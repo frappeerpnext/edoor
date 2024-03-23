@@ -309,7 +309,7 @@
         <template  #footer-right>
             <Button class="border-none" v-if="doc.is_closed == 0 && doc.is_edoor_shift==1" @click="onEditCashierShift"> {{ $t('Edit') }} </Button>
             <Button class="border-none" v-if="doc.is_closed == 0 && doc.is_edoor_shift==1" @click="onOpenCloseShift"> {{ $t('Close Shift') }} </Button>
-            <Button class="border-none" v-else-if="doc.is_closed == 0 && doc.is_edoor_shift==0" @click="onOpenCloseShift"> {{ $t('Closes') }} </Button>
+            <Button class="border-none" v-else-if="doc.is_closed == 0 && doc.is_edoor_shift==0" @click="onOpenCloseShift"> {{ $t('Close') }} </Button>
         </template>
     </ComDialogContent>
 </template>

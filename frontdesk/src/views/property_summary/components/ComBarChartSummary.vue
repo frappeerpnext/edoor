@@ -13,7 +13,7 @@
                     </div>
                     <div class="col-4 md:col line-height-1 border-right-1" style="color: #50ac58;">
                         <h3 class="text-2xl font-medium">{{ data.total_in_house }}</h3>
-                        <span>{{ $t('In House') }}</span>
+                        <span>{{ $t('In-house') }}</span>
                     </div>
                     <div class="col-4 md:col line-height-1 border-right-1" style="color:rgb(79, 79, 79);">
                         <h3 class="text-2xl font-medium">{{ data.departure - data.departure_remaining }}</h3>
@@ -60,13 +60,13 @@
             <div class="shadow-2 p-3 surface-50 rounded">
                 <div class="line-height-1">
                     <h3 class="text-lg font-medium">{{ $t('Occupancy') }} </h3>
-                    <div>{{ $t('Total Room') }} : {{ data.total_room }}</div>
+                    <div>{{ $t('Total Rooms') }} : {{ data.total_room }}</div>
                 </div>
                 <div class="flex mb-2 color-text">
                     <div class="col-4 line-height-1 border-right-1 occupy">
                         <h3 class="text-2xl font-medium">{{ data.total_room_occupy }}</h3>
                         <div class="flex">
-                            <span>{{ $t('Occupy') }} - {{ data.occupancy }}%</span>
+                            <span>{{ $t('Occupancy') }} - {{ data.occupancy }}%</span>
                         </div>
                     </div>
                     <div class="col-4 line-height-1 border-right-1 vacant">
